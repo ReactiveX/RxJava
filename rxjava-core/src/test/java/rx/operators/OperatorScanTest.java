@@ -17,7 +17,7 @@ package rx.operators;
 
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
-import static rx.operators.OperationScan.*;
+import static rx.operators.OperatorScan.*;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -27,7 +27,7 @@ import rx.Observable;
 import rx.Observer;
 import rx.util.functions.Func2;
 
-public class OperationScanTest {
+public class OperatorScanTest {
 
     @Before
     public void before() {
@@ -41,14 +41,14 @@ public class OperationScanTest {
 
         Observable<Integer> observable = Observable.from(1, 2, 3);
 
-        Observable<String> m = observable.lift(scan("", new Func2<String, Integer, String>() {
+        Observable<String> m = observable.scan("", new Func2<String, Integer, String>() {
 
             @Override
             public String call(String s, Integer n) {
                 return s + n.toString();
             }
 
-        }));
+        });
         m.subscribe(observer);
 
         verify(observer, never()).onError(any(Throwable.class));
@@ -68,14 +68,14 @@ public class OperationScanTest {
 
         Observable<Integer> observable = Observable.from(1, 2, 3);
 
-        Observable<Integer> m = observable.lift(scan(new Func2<Integer, Integer, Integer>() {
+        Observable<Integer> m = observable.scan(new Func2<Integer, Integer, Integer>() {
 
             @Override
             public Integer call(Integer t1, Integer t2) {
                 return t1 + t2;
             }
 
-        }));
+        });
         m.subscribe(observer);
 
         verify(observer, never()).onError(any(Throwable.class));
@@ -95,14 +95,14 @@ public class OperationScanTest {
 
         Observable<Integer> observable = Observable.from(1);
 
-        Observable<Integer> m = observable.lift(scan(new Func2<Integer, Integer, Integer>() {
+        Observable<Integer> m = observable.scan(new Func2<Integer, Integer, Integer>() {
 
             @Override
             public Integer call(Integer t1, Integer t2) {
                 return t1 + t2;
             }
 
-        }));
+        });
         m.subscribe(observer);
 
         verify(observer, never()).onError(any(Throwable.class));

@@ -72,7 +72,7 @@ import rx.operators.OperationParallelMerge;
 import rx.operators.OperationReplay;
 import rx.operators.OperationRetry;
 import rx.operators.OperationSample;
-import rx.operators.OperationScan;
+import rx.operators.OperatorScan;
 import rx.operators.OperationSequenceEqual;
 import rx.operators.OperationSingle;
 import rx.operators.OperationSkip;
@@ -6140,7 +6140,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211665.aspx">MSDN: Observable.Scan</a>
      */
     public final Observable<T> scan(Func2<T, T, T> accumulator) {
-        return lift(OperationScan.scan(accumulator));
+        return lift(new OperatorScan<T, T>(accumulator));
     }
 
     /**
@@ -6167,7 +6167,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211665.aspx">MSDN: Observable.Scan</a>
      */
     public final <R> Observable<R> scan(R initialValue, Func2<R, ? super T, R> accumulator) {
-        return lift(OperationScan.scan(initialValue, accumulator));
+        return lift(new OperatorScan<R, T>(initialValue, accumulator));
     }
 
     /**
