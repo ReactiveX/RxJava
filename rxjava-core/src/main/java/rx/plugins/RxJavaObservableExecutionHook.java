@@ -97,7 +97,7 @@ public abstract class RxJavaObservableExecutionHook {
         return f;
     }
 
-    public <T, R> Operator<R, T> onLift(final Operator<R, T> bind) {
+    public <T, R> Operator<? extends R, ? super T> onLift(final Operator<? extends R, ? super T> bind) {
         return bind;
     }
 

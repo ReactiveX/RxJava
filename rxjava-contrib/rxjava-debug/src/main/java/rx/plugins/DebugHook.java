@@ -63,7 +63,7 @@ public class DebugHook extends RxJavaObservableExecutionHook {
     }
 
     @Override
-    public <T, R> Operator<R, T> onLift(final Operator<R, T> bind) {
+    public <T, R> Operator<? extends R, ? super T> onLift(final Operator<? extends R, ? super T> bind) {
         return new Operator<R, T>() {
             @Override
             public Subscriber<? super T> call(final Subscriber<? super R> o) {
@@ -78,7 +78,7 @@ public class DebugHook extends RxJavaObservableExecutionHook {
     }
 
     @SuppressWarnings("unchecked")
-    private <R> Subscriber<? super R> wrapOutbound(Operator<R, ?> bind, Subscriber<? super R> o) {
+    private <R> Subscriber<? super R> wrapOutbound(Operator<? extends R, ?> bind, Subscriber<? super R> o) {
         if (o instanceof DebugSubscriber) {
             if (bind != null)
                 ((DebugSubscriber<R>) o).setFrom(bind);
@@ -88,7 +88,7 @@ public class DebugHook extends RxJavaObservableExecutionHook {
     }
 
     @SuppressWarnings("unchecked")
-    private <T> Subscriber<? super T> wrapInbound(Operator<?, T> bind, Subscriber<? super T> o) {
+    private <T> Subscriber<? super T> wrapInbound(Operator<?, ? super T> bind, Subscriber<? super T> o) {
         if (o instanceof DebugSubscriber) {
             if (bind != null)
                 ((DebugSubscriber<T>) o).setTo(bind);

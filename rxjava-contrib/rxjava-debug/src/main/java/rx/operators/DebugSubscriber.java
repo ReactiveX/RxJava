@@ -11,15 +11,15 @@ public final class DebugSubscriber<T> extends Subscriber<T> {
     private final Func1<T, T> onNextHook;
     final Action1<DebugNotification> events;
     final Observer<? super T> o;
-    Operator<T, ?> from = null;
-    Operator<?, T> to = null;
+    Operator<? extends T, ?> from = null;
+    Operator<?, ? super T> to = null;
 
     public DebugSubscriber(
             Func1<T, T> onNextHook,
             Action1<DebugNotification> _events,
             Subscriber<? super T> _o,
-            Operator<T, ?> _out,
-            Operator<?, T> _in) {
+            Operator<? extends T, ?> _out,
+            Operator<?, ? super T> _in) {
         super(_o);
         this.events = _events;
         this.o = _o;
@@ -47,19 +47,19 @@ public final class DebugSubscriber<T> extends Subscriber<T> {
         o.onNext(onNextHook.call(t));
     }
 
-    public Operator<T, ?> getFrom() {
+    public Operator<? extends T, ?> getFrom() {
         return from;
     }
 
-    public void setFrom(Operator<T, ?> op) {
-        this.from = op;
+    public void setFrom(Operator<? extends T, ?> bind) {
+        this.from = bind;
     }
 
-    public Operator<?, T> getTo() {
+    public Operator<?, ? super T> getTo() {
         return to;
     }
 
-    public void setTo(Operator<?, T> op) {
+    public void setTo(Operator<?, ? super T> op) {
         this.to = op;
     }
 
