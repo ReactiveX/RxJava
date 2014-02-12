@@ -120,36 +120,13 @@ public enum MouseEventSource { ; // no instances
      * @see rx.observables.SwingObservable#fromRelativeMouseMotion
      */
     public static Observable<Point> fromRelativeMouseMotion(final Component component) {
-        class OldAndRelative {
-            public final Point old;
-            public final Point relative;
-
-            private OldAndRelative(Point old, Point relative) {
-                this.old = old;
-                this.relative = relative;
-            }
-        }
-        
-        class Relativize implements Func2<OldAndRelative, MouseEvent, OldAndRelative> {
+        final Observable<MouseEvent> events = fromMouseMotionEventsOf(component);
+        return Observable.zip(events, events.skip(1), new Func2<MouseEvent, MouseEvent, Point>() {
             @Override
-            public OldAndRelative call(OldAndRelative last, MouseEvent event) {
-                Point current = new Point(event.getX(), event.getY());
-                Point relative = new Point(current.x - last.old.x, current.y - last.old.y);
-                return new OldAndRelative(current, relative);
+            public Point call(MouseEvent ev1, MouseEvent ev2) {
+                return new Point(ev2.getX() - ev1.getX(), ev2.getY() - ev1.getY());
             }
-        }
-        
-        class OnlyRelative implements Func1<OldAndRelative, Point> {
-            @Override
-            public Point call(OldAndRelative oar) {
-                return oar.relative;
-            }
-        }
-        
-        return fromMouseMotionEventsOf(component)
-                    .scan(new OldAndRelative(new Point(0, 0), new Point(0, 0)), new Relativize())
-                    .map(new OnlyRelative())
-                    .skip(2); // skip the useless initial value and the invalid first computation
+        });
     }
     
     public static class UnitTest {
