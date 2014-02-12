@@ -7060,27 +7060,32 @@ public class Observable<T> {
      * @return the source Observable modified so that its subscriptions and unsubscriptions happen
      *         on the specified {@link Scheduler}
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#wiki-subscribeon">RxJava Wiki: subscribeOn()</a>
+     * @see #subscribeOn(rx.Scheduler, int) 
      */
     public final Observable<T> subscribeOn(Scheduler scheduler) {
         return nest().lift(new OperatorSubscribeOn<T>(scheduler, false));
     }
     /**
      * Asynchronously subscribes and unsubscribes Observers to this Observable on the specified {@link Scheduler}
-     * and allows buffering the events emitted from the source in the time gap between the original and
-     * actual subscription.
+     * and allows buffering some events emitted from the source in the time gap between the original and
+     * actual subscription, and any excess events will block the source until the actual subscription happens.
+     * <p>
+     * This overload should help mitigate issues when subscribing to a PublishSubject (and derivatives
+     * such as GroupedObservable in operator groupBy) and events fired between the original and actual subscriptions
+     * are lost. 
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/subscribeOn.png">
      * 
      * @param scheduler
      *            the {@link Scheduler} to perform subscription and unsubscription actions on
-     * @param dontLoseEvents indicate that the operator should buffer events emitted in the time gap
-     *                       between the original and actual subscription and replay it to Observers
+     * @param bufferSize the number of events to buffer before blocking the source while in the time gap,
+     *                   negative value indicates an unlimited buffer
      * @return the source Observable modified so that its subscriptions and unsubscriptions happen
      *         on the specified {@link Scheduler}
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#wiki-subscribeon">RxJava Wiki: subscribeOn()</a>
      */
-    public final Observable<T> subscribeOn(Scheduler scheduler, boolean dontLoseEvents) {
-        return nest().lift(new OperatorSubscribeOn<T>(scheduler, dontLoseEvents));
+    public final Observable<T> subscribeOn(Scheduler scheduler, int bufferSize) {
+        return nest().lift(new OperatorSubscribeOn<T>(scheduler, true, bufferSize));
     }
 
     /**

@@ -28,12 +28,14 @@ import rx.subscriptions.CompositeSubscription;
 public class BufferUntilSubscriber<T> extends Subscriber<T> {
     /** The actual subscriber. */
     private final Subscriber<? super T> actual;
-    /** The mutual exclusion for the duration of the replay. */
-    private final Object gate = new Object();
-    /** Queued events. */
-    private final Queue<Object> queue = new LinkedList<Object>();
     /** Indicate the pass-through mode. */
     private volatile boolean passthroughMode;
+    /** Protect mode transition. */
+    private final Object gate = new Object();
+    /** The buffered items. */
+    private final Queue<Object> queue = new LinkedList<Object>();
+    /** The queue capacity. */
+    private final int capacity;
     /** Null sentinel (in case queue type is changed). */
     private static final Object NULL_SENTINEL = new Object();
     /** Complete sentinel. */
@@ -51,21 +53,25 @@ public class BufferUntilSubscriber<T> extends Subscriber<T> {
     }
     /**
      * Constructor that wraps the actual subscriber and shares its subscription.
-     * @param actual 
+     * @param capacity the queue capacity to accept before blocking, negative value indicates an unbounded queue
+     * @param actual
      */
-    public BufferUntilSubscriber(Subscriber<? super T> actual) {
+    public BufferUntilSubscriber(int capacity, Subscriber<? super T> actual) {
         super(actual);
         this.actual = actual;
+        this.capacity = capacity;
     }
     /**
      * Constructor that wraps the actual subscriber and uses the given composite
      * subscription.
+     * @param capacity the queue capacity to accept before blocking, negative value indicates an unbounded queue
      * @param actual
      * @param cs 
      */
-    public BufferUntilSubscriber(Subscriber<? super T> actual, CompositeSubscription cs) {
+    public BufferUntilSubscriber(int capacity, Subscriber<? super T> actual, CompositeSubscription cs) {
         super(cs);
         this.actual = actual;
+        this.capacity = capacity;
     }
     
     /**
@@ -96,26 +102,30 @@ public class BufferUntilSubscriber<T> extends Subscriber<T> {
                             throw new NullPointerException();
                         }
                     }
-                    /* Test artificial back-pressure.
-                    try {
-                        TimeUnit.SECONDS.sleep(2);
-                    } catch (Throwable t) {
-                        
-                    }
-                    */
                     passthroughMode = true;
+                    gate.notifyAll();
                 }
             }
         }
     }
-    
     @Override
     public void onNext(T t) {
         if (!passthroughMode) {
             synchronized (gate) {
                 if (!passthroughMode) {
-                    queue.offer(t != null ? t : NULL_SENTINEL);
-                    return;
+                    if (capacity < 0 || queue.size() < capacity) {
+                        queue.offer(t != null ? t : NULL_SENTINEL);
+                        return;
+                    }
+                    try {
+                        while (!passthroughMode) {
+                            gate.wait();
+                        }
+                    } catch (InterruptedException ex) {
+                        Thread.currentThread().interrupt();
+                        actual.onError(ex);
+                        return;
+                    }
                 }
             }
         }
@@ -127,8 +137,19 @@ public class BufferUntilSubscriber<T> extends Subscriber<T> {
         if (!passthroughMode) {
             synchronized (gate) {
                 if (!passthroughMode) {
-                    queue.offer(new ErrorSentinel(e));
-                    return;
+                    if (capacity < 0 || queue.size() < capacity) {
+                        queue.offer(new ErrorSentinel(e));
+                        return;
+                    }
+                    try {
+                        while (!passthroughMode) {
+                            gate.wait();
+                        }
+                    } catch (InterruptedException ex) {
+                        Thread.currentThread().interrupt();
+                        actual.onError(ex);
+                        return;
+                    }
                 }
             }
         }
@@ -140,11 +161,23 @@ public class BufferUntilSubscriber<T> extends Subscriber<T> {
         if (!passthroughMode) {
             synchronized (gate) {
                 if (!passthroughMode) {
-                    queue.offer(COMPLETE_SENTINEL);
-                    return;
+                    if (capacity < 0 || queue.size() < capacity) {
+                        queue.offer(COMPLETE_SENTINEL);
+                        return;
+                    }
+                    try {
+                        while (!passthroughMode) {
+                            gate.wait();
+                        }
+                    } catch (InterruptedException ex) {
+                        Thread.currentThread().interrupt();
+                        actual.onError(ex);
+                        return;
+                    }
                 }
             }
         }
         actual.onCompleted();
     }
+
 }

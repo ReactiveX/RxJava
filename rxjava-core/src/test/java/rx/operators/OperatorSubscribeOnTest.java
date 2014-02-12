@@ -19,9 +19,12 @@ import java.util.ArrayList;
 import static org.junit.Assert.*;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
+import org.junit.Ignore;
 
 import org.junit.Test;
 
@@ -39,6 +42,7 @@ import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.MultipleAssignmentSubscription;
 import rx.subscriptions.Subscriptions;
+import rx.util.Timestamped;
 import rx.util.functions.Action0;
 import rx.util.functions.Action1;
 import rx.util.functions.Func1;
@@ -153,7 +157,7 @@ public class OperatorSubscribeOnTest {
         assertEquals(1, observer.getOnCompletedEvents().size());
     }
     
-     static class SlowScheduler extends Scheduler {
+    public static class SlowScheduler extends Scheduler {
         final Scheduler actual;
         final long delay;
         final TimeUnit unit;
@@ -168,35 +172,14 @@ public class OperatorSubscribeOnTest {
 
         @Override
         public Subscription schedule(final Action1<Scheduler.Inner> action) {
-            final CompositeSubscription cs = new CompositeSubscription();
-            final MultipleAssignmentSubscription mas = new MultipleAssignmentSubscription();
-            cs.add(mas);
-            mas.set(actual.schedule(new Action1<Inner>() {
-
-                @Override
-                public void call(Inner t1) {
-//                    cs.delete(mas);
-                    cs.add(actual.schedule(action, delay, unit));
-                }
-                
-            }));
-            return cs;
+            return actual.schedule(action, delay, unit);
         }
 
         @Override
         public Subscription schedule(final Action1<Scheduler.Inner> action, final long delayTime, final TimeUnit delayUnit) {
-            final CompositeSubscription cs = new CompositeSubscription();
-            final MultipleAssignmentSubscription mas = new MultipleAssignmentSubscription();
-            cs.add(mas);
-            mas.set(actual.schedule(new Action1<Inner>() {
-                @Override
-                public void call(Inner t1) {
-//                    cs.delete(mas);
-                    long nanos = unit.toNanos(delay) + delayUnit.toNanos(delayTime);
-                    cs.add(actual.schedule(action, nanos, TimeUnit.NANOSECONDS));
-                }
-            }));
-            return cs;
+            TimeUnit common = delayUnit.compareTo(unit) < 0 ? delayUnit : unit;
+            long t = common.convert(delayTime, delayUnit) + common.convert(delay, unit);
+            return actual.schedule(action, t, common);
         }
     }
     
@@ -337,5 +320,54 @@ public class OperatorSubscribeOnTest {
         
         System.out.println("Results: " + results);
         assertEquals(6, results.size());
+    }
+    void testBoundedBufferingWithSize(int size) throws Exception {
+        Observable<Long> timer = Observable.timer(100, 100, TimeUnit.MILLISECONDS);
+
+        final List<Long> deltas = Collections.synchronizedList(new ArrayList<Long>());
+        
+        Subscription s = timer.timestamp().subscribeOn(
+                new SlowScheduler(Schedulers.computation(), 1, TimeUnit.SECONDS), size).map(new Func1<Timestamped<Long>, Long>() {
+            @Override
+            public Long call(Timestamped<Long> t1) {
+                long v = System.currentTimeMillis() - t1.getTimestampMillis();
+                return v;
+            }
+        }).doOnNext(new Action1<Long>() {
+            @Override
+            public void call(Long t1) {
+                deltas.add(t1);
+            }
+        }).subscribe();
+        
+        Thread.sleep(2050);
+        
+        s.unsubscribe();
+        
+        if (deltas.size() < size + 1) {
+            fail("To few items in deltas: " + deltas);
+        }
+        for (int i = 0; i < size + 1; i++) {
+            if (deltas.get(i) < 500) {
+                fail(i + "th item arrived too early: " + deltas);
+            }
+        }
+        for (int i = size + 1; i < deltas.size(); i++) {
+            if (deltas.get(i) >= 500) {
+                fail(i + "th item arrived too late: " + deltas);
+            }
+        }
+    }
+    @Test(timeout = 5000)
+    public void testBoundedBufferingOfZero() throws Exception {
+        testBoundedBufferingWithSize(0);
+    }
+    @Test(timeout = 5000)
+    public void testBoundedBufferingOfOne() throws Exception {
+        testBoundedBufferingWithSize(1);
+    }
+    @Test(timeout = 5000)
+    public void testBoundedBufferingOfTwo() throws Exception {
+        testBoundedBufferingWithSize(2);
     }
 }
