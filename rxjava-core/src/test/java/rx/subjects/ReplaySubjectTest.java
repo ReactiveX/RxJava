@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,21 +15,19 @@
  */
 package rx.subjects;
 
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
-
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicReference;
-
+import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 import org.mockito.InOrder;
+import static org.mockito.Matchers.any;
 import org.mockito.Mockito;
-
+import static org.mockito.Mockito.*;
 import rx.Observer;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.schedulers.Schedulers;
+
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class ReplaySubjectTest {
 
@@ -63,14 +61,10 @@ public class ReplaySubjectTest {
     @Test
     public void testCompletedStopsEmittingData() {
         ReplaySubject<Integer> channel = ReplaySubject.create();
-        @SuppressWarnings("unchecked")
-        Observer<Object> observerA = mock(Observer.class);
-        @SuppressWarnings("unchecked")
-        Observer<Object> observerB = mock(Observer.class);
-        @SuppressWarnings("unchecked")
-        Observer<Object> observerC = mock(Observer.class);
-        @SuppressWarnings("unchecked")
-        Observer<Object> observerD = mock(Observer.class);
+        @SuppressWarnings("unchecked") Observer<Object> observerA = mock(Observer.class);
+        @SuppressWarnings("unchecked") Observer<Object> observerB = mock(Observer.class);
+        @SuppressWarnings("unchecked") Observer<Object> observerC = mock(Observer.class);
+        @SuppressWarnings("unchecked") Observer<Object> observerD = mock(Observer.class);
 
         Subscription a = channel.subscribe(observerA);
         Subscription b = channel.subscribe(observerB);
@@ -132,8 +126,7 @@ public class ReplaySubjectTest {
     public void testCompletedAfterError() {
         ReplaySubject<String> subject = ReplaySubject.create();
 
-        @SuppressWarnings("unchecked")
-        Observer<String> observer = mock(Observer.class);
+        @SuppressWarnings("unchecked") Observer<String> observer = mock(Observer.class);
 
         subject.onNext("one");
         subject.onError(testException);
@@ -145,6 +138,63 @@ public class ReplaySubjectTest {
         verify(observer, times(1)).onNext("one");
         verify(observer, times(1)).onError(testException);
         verifyNoMoreInteractions(observer);
+    }
+
+    @Test
+    public void testCapacity() {
+        {
+            ReplaySubject<String> subject = ReplaySubject.create(1);
+            @SuppressWarnings("unchecked") Observer<String> aObserver = mock(Observer.class);
+            subject.toObservable().subscribe(new TestObserver<String>(aObserver));
+
+            subject.onNext("one");
+            subject.onNext("two");
+            subject.onNext("three");
+            subject.onCompleted();
+
+            assertCompletedObserver(aObserver);
+
+            Observer<String> anotherObserver = mock(Observer.class);
+            subject.toObservable().subscribe(new TestObserver<String>(anotherObserver));//.toObservable().subscribe(anotherObserver);
+
+            verify(anotherObserver, times(0)).onNext("one");
+            verify(anotherObserver, times(0)).onNext("two");
+            verify(anotherObserver, times(1)).onNext("three");
+            verify(anotherObserver, times(1)).onCompleted();
+            verifyNoMoreInteractions(anotherObserver);
+        }
+        {
+            ReplaySubject<String> subject = ReplaySubject.create(1);
+            @SuppressWarnings("unchecked") Observer<String> aObserver = mock(Observer.class);
+            subject.onNext("one");
+
+            subject.toObservable().distinctUntilChanged().subscribe(new TestObserver<String>(aObserver));
+
+            subject.onNext("two");
+            subject.onNext("one");
+            subject.onNext("one");
+            verify(aObserver, times(2)).onNext("one");
+            verify(aObserver, times(1)).onNext("two");
+        }
+    }
+
+    @Test
+    public void testThatObserverReceivesLatestAndThenSubsequentEvents() {
+        ReplaySubject<String> subject = ReplaySubject.create(1);
+
+        subject.onNext("one");
+
+        @SuppressWarnings("unchecked") Observer<String> aObserver = mock(Observer.class);
+        subject.toObservable().subscribe(new TestObserver<String>(aObserver));
+        subject.onNext("two");
+        subject.onNext("three");
+
+        verify(aObserver, Mockito.never()).onNext("default");
+        verify(aObserver, times(1)).onNext("one");
+        verify(aObserver, times(1)).onNext("two");
+        verify(aObserver, times(1)).onNext("three");
+        verify(aObserver, Mockito.never()).onError(testException);
+        verify(aObserver, Mockito.never()).onCompleted();
     }
 
     private void assertCompletedObserver(Observer<String> observer) {
