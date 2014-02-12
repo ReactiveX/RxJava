@@ -6,6 +6,7 @@ import rx.Observable.Operator;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Action1;
+import rx.functions.Action2;
 import rx.functions.Actions;
 import rx.functions.Func1;
 import rx.functions.Functions;
@@ -17,9 +18,11 @@ import rx.operators.DebugSubscriber;
  * 
  * @author gscampbell
  */
-public class DebugHook extends RxJavaObservableExecutionHook {
+public class DebugHook<C> extends RxJavaObservableExecutionHook {
     private final Func1 onNextHook;
-    private final Action1<DebugNotification> events;
+    private final Func1<DebugNotification, C> start;
+    private final Action1<C> complete;
+    private final Action2<C, Throwable> error;
 
     /**
      * Creates a new instance of the DebugHook RxJava plug-in that can be passed into
@@ -31,18 +34,26 @@ public class DebugHook extends RxJavaObservableExecutionHook {
      * @param events
      *            This action is invoked as each notification is generated
      */
-    public DebugHook(Func1 onNextDataHook, Action1<DebugNotification> events) {
+    public DebugHook(Func1 onNextDataHook, Func1<DebugNotification, C> start, Action1<C> complete, Action2<C, Throwable> error) {
+        this.complete = complete;
+        this.error = error;
         this.onNextHook = onNextDataHook == null ? Functions.identity() : onNextDataHook;
-        this.events = events == null ? Actions.empty() : events;
+        this.start = (Func1<DebugNotification, C>) (start == null ? Actions.empty() : start);
     }
 
     @Override
-    public <T> OnSubscribe<T> onSubscribeStart(Observable<? extends T> observableInstance, final OnSubscribe<T> f) {
+    public <T> OnSubscribe<T> onSubscribeStart(final Observable<? extends T> observableInstance, final OnSubscribe<T> f) {
         return new OnSubscribe<T>() {
             @Override
             public void call(Subscriber<? super T> o) {
-                events.call(DebugNotification.createSubscribe(o, f));
-                f.call(wrapOutbound(null, o));
+                C context = start.call(DebugNotification.createSubscribe(o, observableInstance, f));
+                try {
+                    f.call(wrapOutbound(null, o));
+                    complete.call(context);
+                }
+                catch(Throwable e) {
+                    error.call(context, e);
+                }
             }
         };
     }
@@ -54,12 +65,7 @@ public class DebugHook extends RxJavaObservableExecutionHook {
 
     @Override
     public <T> OnSubscribe<T> onCreate(final OnSubscribe<T> f) {
-        return new OnSubscribe<T>() {
-            @Override
-            public void call(Subscriber<? super T> o) {
-                f.call(wrapInbound(null, o));
-            }
-        };
+        return new OnCreateWrapper<T>(f);
     }
 
     @Override
@@ -81,19 +87,36 @@ public class DebugHook extends RxJavaObservableExecutionHook {
     private <R> Subscriber<? super R> wrapOutbound(Operator<? extends R, ?> bind, Subscriber<? super R> o) {
         if (o instanceof DebugSubscriber) {
             if (bind != null)
-                ((DebugSubscriber<R>) o).setFrom(bind);
+                ((DebugSubscriber<R, C>) o).setFrom(bind);
             return o;
         }
-        return new DebugSubscriber<R>(onNextHook, events, o, bind, null);
+        return new DebugSubscriber<R, C>(onNextHook, start, complete, error, o, bind, null);
     }
 
     @SuppressWarnings("unchecked")
     private <T> Subscriber<? super T> wrapInbound(Operator<?, ? super T> bind, Subscriber<? super T> o) {
         if (o instanceof DebugSubscriber) {
             if (bind != null)
-                ((DebugSubscriber<T>) o).setTo(bind);
+                ((DebugSubscriber<T, C>) o).setTo(bind);
             return o;
         }
-        return new DebugSubscriber<T>(onNextHook, events, o, null, bind);
+        return new DebugSubscriber<T, C>(onNextHook, start, complete, error, o, null, bind);
+    }
+
+    public final class OnCreateWrapper<T> implements OnSubscribe<T> {
+        private final OnSubscribe<T> f;
+
+        private OnCreateWrapper(OnSubscribe<T> f) {
+            this.f = f;
+        }
+
+        @Override
+        public void call(Subscriber<? super T> o) {
+            f.call(wrapInbound(null, o));
+        }
+
+        public OnSubscribe<T> getActual() {
+            return f;
+        }
     }
 }
