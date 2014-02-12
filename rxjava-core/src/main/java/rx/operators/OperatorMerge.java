@@ -30,13 +30,13 @@ import rx.observers.SynchronizedSubscriber;
  * You can combine the items emitted by multiple Observables so that they act like a single
  * Observable, by using the merge operation.
  */
-public final class OperatorMerge<T> implements Operator<T, Observable<T>> {
+public final class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
 
     @Override
-    public Subscriber<Observable<T>> call(final Subscriber<? super T> outerOperation) {
+    public Subscriber<Observable<? extends T>> call(final Subscriber<? super T> outerOperation) {
 
         final Subscriber<T> o = new SynchronizedSubscriber<T>(outerOperation);
-        return new Subscriber<Observable<T>>(outerOperation) {
+        return new Subscriber<Observable<? extends T>>(outerOperation) {
 
             private volatile boolean completed = false;
             private final AtomicInteger runningCount = new AtomicInteger();
@@ -55,7 +55,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<T>> {
             }
 
             @Override
-            public void onNext(Observable<T> innerObservable) {
+            public void onNext(Observable<? extends T> innerObservable) {
                 runningCount.incrementAndGet();
                 innerObservable.subscribe(new InnerObserver());
             }

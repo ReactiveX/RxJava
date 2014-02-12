@@ -261,7 +261,7 @@ public class Observable<T> {
      * @param bind
      * @return an Observable that emits values that are the result of applying the bind function to the values of the current Observable
      */
-    public <R> Observable<R> lift(final Operator<R, T> bind) {
+    public <R> Observable<R> lift(final Operator<? extends R, ? super T> bind) {
         return new Observable<R>(new OnSubscribe<R>() {
             @Override
             public void call(Subscriber<? super R> o) {
@@ -1777,7 +1777,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge</a>
      */
     public final static <T> Observable<T> merge(Observable<? extends Observable<? extends T>> source) {
-        return source.lift(new OperatorMerge()); // any idea how to get these generics working?!
+        return source.lift(new OperatorMerge<T>());
     }
 
     /**
@@ -1821,7 +1821,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge</a>
      */
     public final static <T> Observable<T> merge(Observable<? extends T> t1, Observable<? extends T> t2) {
-        return merge(from(t1, t2));
+        return merge(from(Arrays.asList(t1, t2)));
     }
 
     /**
@@ -1843,7 +1843,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge</a>
      */
     public final static <T> Observable<T> merge(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3) {
-        return merge(from(t1, t2, t3));
+        return merge(from(Arrays.asList(t1, t2, t3)));
     }
 
     /**
@@ -1867,7 +1867,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge</a>
      */
     public final static <T> Observable<T> merge(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4) {
-        return merge(from(t1, t2, t3, t4));
+        return merge(from(Arrays.asList(t1, t2, t3, t4)));
     }
 
     /**
@@ -1893,7 +1893,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge</a>
      */
     public final static <T> Observable<T> merge(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5) {
-        return merge(from(t1, t2, t3, t4, t5));
+        return merge(from(Arrays.asList(t1, t2, t3, t4, t5)));
     }
 
     /**
@@ -1921,7 +1921,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge</a>
      */
     public final static <T> Observable<T> merge(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6) {
-        return merge(from(t1, t2, t3, t4, t5, t6));
+        return merge(from(Arrays.asList(t1, t2, t3, t4, t5, t6)));
     }
 
     /**
@@ -1951,7 +1951,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge</a>
      */
     public final static <T> Observable<T> merge(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6, Observable<? extends T> t7) {
-        return merge(from(t1, t2, t3, t4, t5, t6, t7));
+        return merge(from(Arrays.asList(t1, t2, t3, t4, t5, t6, t7)));
     }
 
     /**
@@ -1984,7 +1984,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge</a>
      */
     public final static <T> Observable<T> merge(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6, Observable<? extends T> t7, Observable<? extends T> t8) {
-        return merge(from(t1, t2, t3, t4, t5, t6, t7, t8));
+        return merge(from(Arrays.asList(t1, t2, t3, t4, t5, t6, t7, t8)));
     }
 
     /**
@@ -2019,7 +2019,7 @@ public class Observable<T> {
      */
     // suppress because the types are checked by the method signature before using a vararg
     public final static <T> Observable<T> merge(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6, Observable<? extends T> t7, Observable<? extends T> t8, Observable<? extends T> t9) {
-        return merge(from(t1, t2, t3, t4, t5, t6, t7, t8, t9));
+        return merge(from(Arrays.asList(t1, t2, t3, t4, t5, t6, t7, t8, t9)));
     }
 
     /**
@@ -4863,7 +4863,7 @@ public class Observable<T> {
      * @deprecated use {@link #flatMap(Func1)}
      */
     @Deprecated
-    public final <R> Observable<R> mapMany(Func1<? super T, ? extends Observable<? extends R>> func) {
+    public final <R> Observable<R> mapMany(Func1<? super T, ? extends Observable<R>> func) {
         return mergeMap(func);
     }
 

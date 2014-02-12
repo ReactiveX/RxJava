@@ -13,17 +13,17 @@ public class DebugNotification<T> {
     }
 
     private final OnSubscribe<T> source;
-    private final Operator<T, ?> from;
+    private final Operator<? extends T, ?> from;
     private final Kind kind;
     private final Notification<T> notification;
-    private final Operator<?, T> to;
+    private final Operator<?, ? super T> to;
     private final long nanoTime;
     private final long threadId;
     private Observer o;
 
     public static <T> DebugNotification<T> createSubscribe(Observer<? super T> o, OnSubscribe<T> source) {
-        Operator<?, T> to = null;
-        Operator<T, ?> from = null;
+        Operator<?, ? super T> to = null;
+        Operator<? extends T, ?> from = null;
         if (o instanceof DebugSubscriber) {
             to = ((DebugSubscriber<T>) o).getTo();
             from = ((DebugSubscriber<T>) o).getFrom();
@@ -32,23 +32,23 @@ public class DebugNotification<T> {
         return new DebugNotification<T>(o, from, Kind.Subscribe, null, to, source);
     }
 
-    public static <T> DebugNotification<T> createOnNext(Observer<? super T> o, Operator<T, ?> from, T t, Operator<?, T> to) {
+    public static <T> DebugNotification<T> createOnNext(Observer<? super T> o, Operator<? extends T, ?> from, T t, Operator<?, ? super T> to) {
         return new DebugNotification<T>(o, from, Kind.OnNext, Notification.createOnNext(t), to, null);
     }
 
-    public static <T> DebugNotification<T> createOnError(Observer<? super T> o, Operator<T, ?> from, Throwable e, Operator<?, T> to) {
+    public static <T> DebugNotification<T> createOnError(Observer<? super T> o, Operator<? extends T, ?> from, Throwable e, Operator<?, ? super T> to) {
         return new DebugNotification<T>(o, from, Kind.OnError, Notification.<T> createOnError(e), to, null);
     }
 
-    public static <T> DebugNotification<T> createOnCompleted(Observer<? super T> o, Operator<T, ?> from, Operator<?, T> to) {
+    public static <T> DebugNotification<T> createOnCompleted(Observer<? super T> o, Operator<? extends T, ?> from, Operator<?, ? super T> to) {
         return new DebugNotification<T>(o, from, Kind.OnCompleted, Notification.<T> createOnCompleted(), to, null);
     }
 
-    public static <T> DebugNotification<T> createUnsubscribe(Observer<? super T> o, Operator<T, ?> from, Operator<?, T> to) {
+    public static <T> DebugNotification<T> createUnsubscribe(Observer<? super T> o, Operator<? extends T, ?> from, Operator<?, ? super T> to) {
         return new DebugNotification<T>(o, from, Kind.Unsubscribe, null, to, null);
     }
 
-    private DebugNotification(Observer o, Operator<T, ?> from, Kind kind, Notification<T> notification, Operator<?, T> to, OnSubscribe<T> source) {
+    private DebugNotification(Observer o, Operator<? extends T, ?> from, Kind kind, Notification<T> notification, Operator<?, ? super T> to, OnSubscribe<T> source) {
         this.o = (o instanceof SafeSubscriber) ? ((SafeSubscriber) o).getActual() : o;
         this.from = from;
         this.kind = kind;
@@ -59,7 +59,7 @@ public class DebugNotification<T> {
         this.threadId = Thread.currentThread().getId();
     }
 
-    public Operator<T, ?> getFrom() {
+    public Operator<? extends T, ?> getFrom() {
         return from;
     }
 
@@ -67,7 +67,7 @@ public class DebugNotification<T> {
         return notification;
     }
 
-    public Operator<?, T> getTo() {
+    public Operator<?, ? super T> getTo() {
         return to;
     }
 
