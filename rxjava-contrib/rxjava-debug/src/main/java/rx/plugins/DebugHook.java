@@ -2,10 +2,10 @@ package rx.plugins;
 
 import rx.Observable;
 import rx.Observable.OnSubscribe;
+import rx.Observable.Operator;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.operators.DebugSubscriber;
-import rx.operators.Operator;
 import rx.util.functions.Action1;
 import rx.util.functions.Actions;
 import rx.util.functions.Func1;

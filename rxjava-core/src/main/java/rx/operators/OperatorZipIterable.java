@@ -17,6 +17,7 @@ package rx.operators;
 
 import java.util.Iterator;
 
+import rx.Observable.Operator;
 import rx.Subscriber;
 import rx.observers.Subscribers;
 import rx.util.functions.Func2;

@@ -36,8 +36,6 @@ import rx.Observable;
 import rx.Observer;
 import rx.Subscriber;
 import rx.Subscription;
-import rx.operators.SafeObservableSubscription;
-import rx.operators.SafeObserver;
 
 public class SynchronizedObserverTest {
 

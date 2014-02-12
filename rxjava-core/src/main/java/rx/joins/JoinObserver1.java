@@ -25,7 +25,6 @@ import rx.Notification;
 import rx.Observable;
 import rx.Subscriber;
 import rx.observers.SafeSubscriber;
-import rx.operators.SafeObservableSubscription;
 import rx.util.functions.Action1;
 
 /**

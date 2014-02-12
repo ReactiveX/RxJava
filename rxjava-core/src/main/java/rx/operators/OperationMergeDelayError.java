@@ -27,9 +27,7 @@ import rx.Subscription;
 import rx.observers.SynchronizedObserver;
 import rx.subscriptions.BooleanSubscription;
 import rx.subscriptions.CompositeSubscription;
-import rx.subscriptions.Subscriptions;
 import rx.util.CompositeException;
-import rx.util.functions.Action0;
 
 /**
  * This behaves like {@link OperatorMerge} except that if any of the merged Observables notify of

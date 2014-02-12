@@ -18,9 +18,9 @@ package rx.plugins;
 import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Observable.OnSubscribeFunc;
+import rx.Observable.Operator;
 import rx.Subscriber;
 import rx.Subscription;
-import rx.operators.Operator;
 import rx.util.functions.Func1;
 
 /**

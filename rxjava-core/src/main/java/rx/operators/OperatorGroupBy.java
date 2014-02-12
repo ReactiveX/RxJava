@@ -21,6 +21,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import rx.Observable.OnSubscribe;
+import rx.Observable.Operator;
 import rx.Subscriber;
 import rx.observables.GroupedObservable;
 import rx.subjects.PublishSubject;

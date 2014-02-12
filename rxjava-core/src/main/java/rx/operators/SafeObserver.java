@@ -20,6 +20,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import rx.Observer;
 import rx.Subscription;
+import rx.observers.SynchronizedObserver;
 import rx.plugins.RxJavaPlugins;
 import rx.subscriptions.Subscriptions;
 import rx.util.CompositeException;

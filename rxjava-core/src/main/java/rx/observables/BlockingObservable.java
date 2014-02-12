@@ -29,7 +29,6 @@ import rx.operators.OperationMostRecent;
 import rx.operators.OperationNext;
 import rx.operators.OperationToFuture;
 import rx.operators.OperationToIterator;
-import rx.operators.SafeObservableSubscription;
 import rx.util.functions.Action1;
 import rx.util.functions.Func1;
 

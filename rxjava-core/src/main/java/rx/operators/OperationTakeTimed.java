@@ -26,7 +26,6 @@ import rx.Scheduler.Inner;
 import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.Subscriptions;
-import rx.util.functions.Action0;
 import rx.util.functions.Action1;
 
 /**

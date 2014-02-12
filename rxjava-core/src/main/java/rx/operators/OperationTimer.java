@@ -22,7 +22,6 @@ import rx.Observer;
 import rx.Scheduler;
 import rx.Scheduler.Inner;
 import rx.Subscription;
-import rx.util.functions.Action0;
 import rx.util.functions.Action1;
 
 /**

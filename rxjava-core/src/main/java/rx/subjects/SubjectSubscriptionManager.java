@@ -20,10 +20,10 @@ import java.util.Collection;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
 
+import rx.Observable.OnSubscribe;
 import rx.Observer;
 import rx.Subscriber;
 import rx.Subscription;
-import rx.Observable.OnSubscribe;
 import rx.operators.SafeObservableSubscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;

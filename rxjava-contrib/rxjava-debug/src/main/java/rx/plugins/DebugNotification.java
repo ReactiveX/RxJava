@@ -2,11 +2,10 @@ package rx.plugins;
 
 import rx.Notification;
 import rx.Observable.OnSubscribe;
+import rx.Observable.Operator;
 import rx.Observer;
 import rx.observers.SafeSubscriber;
 import rx.operators.DebugSubscriber;
-import rx.operators.Operator;
-import rx.plugins.DebugNotification.Kind;
 
 public class DebugNotification<T> {
     public static enum Kind {

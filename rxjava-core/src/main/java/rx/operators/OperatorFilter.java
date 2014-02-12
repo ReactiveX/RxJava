@@ -15,11 +15,8 @@
  */
 package rx.operators;
 
-import rx.Observable;
-import rx.Observable.OnSubscribeFunc;
-import rx.Observer;
+import rx.Observable.Operator;
 import rx.Subscriber;
-import rx.Subscription;
 import rx.observables.GroupedObservable;
 import rx.util.functions.Func1;
 

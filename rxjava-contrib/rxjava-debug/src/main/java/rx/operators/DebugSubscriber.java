@@ -1,5 +1,6 @@
 package rx.operators;
 
+import rx.Observable.Operator;
 import rx.Observer;
 import rx.Subscriber;
 import rx.plugins.DebugNotification;

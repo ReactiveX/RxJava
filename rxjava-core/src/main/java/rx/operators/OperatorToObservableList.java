@@ -18,6 +18,7 @@ package rx.operators;
 import java.util.ArrayList;
 import java.util.List;
 
+import rx.Observable.Operator;
 import rx.Subscriber;
 
 /**
