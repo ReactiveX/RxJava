@@ -69,11 +69,6 @@ public class RxSuspendableClassifier implements SuspendableClassifier {
     }
 
     private static String packageOf(String className) {
-        try {
-            return className.substring(0, className.lastIndexOf('/')).replace('/', '.');
-        } catch (RuntimeException e) {
-            System.err.println("???? " + className);
-            throw e;
-        }
+        return className.substring(0, Math.max(0, className.lastIndexOf('/'))).replace('/', '.');
     }
 }
