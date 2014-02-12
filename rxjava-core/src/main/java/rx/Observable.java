@@ -7744,9 +7744,9 @@ public class Observable<T> {
     }
 
     /**
-     * Returns an Observable that completes if either the first item emitted by the source
-     * Observable or any subsequent item don't arrive within time windows defined by other
-     * Observables.
+     * Returns an Observable that mirrors the source Observable, but emits a TimeoutException
+     * if either the first item emitted by the source Observable or any subsequent item
+     * don't arrive within time windows defined by other Observables.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timeout5.png">
      * 
@@ -7799,16 +7799,16 @@ public class Observable<T> {
     }
 
     /**
-     * Returns an Observable that mirrors the source Observable, but completes if an item emitted by
+     * Returns an Observable that mirrors the source Observable, but emits a TimeoutException if an item emitted by
      * the source Observable doesn't arrive within a window of time after the emission of the
      * previous item, where that period of time is measured by an Observable that is a function
      * of the previous item.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timeout3.png">
      * <p>
-     * The arrival of the first source item is never timed out.
+     * Note: The arrival of the first source item is never timed out.
      * 
-     * @param <U>
+     * @param <V>
      *            the timeout value type (ignored)
      * @param timeoutSelector
      *            a function that returns an observable for each item emitted by the source
@@ -7831,7 +7831,7 @@ public class Observable<T> {
      * <p>
      * The arrival of the first source item is never timed out.
      * 
-     * @param <U>
+     * @param <V>
      *            the timeout value type (ignored)
      * @param timeoutSelector
      *            a function that returns an observable for each item emitted by the source
