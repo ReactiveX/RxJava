@@ -60,7 +60,7 @@ public class ExecutorScheduler extends Scheduler {
     }
 
     @Override
-    public Subscription schedulePeriodically(final Action1<Scheduler.Inner> action, long initialDelay, long period, TimeUnit unit) {
+    public Subscription schedulePeriodically(final Action1<Scheduler.Inner> action, long initialDelay, TimeUnit delayUnit, long period, TimeUnit periodUnit) {
         if (executor instanceof ScheduledExecutorService) {
             final InnerExecutorScheduler inner = new InnerExecutorScheduler();
             ScheduledFuture<?> f = ((ScheduledExecutorService) executor).scheduleAtFixedRate(new Runnable() {
@@ -72,12 +72,12 @@ public class ExecutorScheduler extends Scheduler {
                     }
                     action.call(inner);
                 }
-            }, initialDelay, period, unit);
+            }, delayUnit.toMillis(initialDelay), periodUnit.toMillis(period), TimeUnit.MILLISECONDS);
 
             inner.innerSubscription.set(Subscriptions.from(f));
             return inner;
         } else {
-            return super.schedulePeriodically(action, initialDelay, period, unit);
+            return super.schedulePeriodically(action, initialDelay, delayUnit, period, periodUnit);
         }
     }
 

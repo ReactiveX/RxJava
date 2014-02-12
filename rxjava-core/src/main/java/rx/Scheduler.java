@@ -71,14 +71,16 @@ public abstract class Scheduler {
      *            The action to execute periodically.
      * @param initialDelay
      *            Time to wait before executing the action for the first time.
+     * @param initialDelayUnit
+     *            The time unit the interval above is given in.
      * @param period
      *            The time interval to wait each time in between executing the action.
-     * @param unit
+     * @param periodUnit
      *            The time unit the interval above is given in.
      * @return A subscription to be able to unsubscribe from action.
      */
-    public Subscription schedulePeriodically(final Action1<Scheduler.Inner> action, long initialDelay, long period, TimeUnit unit) {
-        final long periodInNanos = unit.toNanos(period);
+    public Subscription schedulePeriodically(final Action1<Scheduler.Inner> action, long initialDelay, TimeUnit initialDelayUnit, long period, TimeUnit periodUnit) {
+        final long periodInNanos = periodUnit.toNanos(period);
 
         final Action1<Scheduler.Inner> recursiveAction = new Action1<Scheduler.Inner>() {
             @Override
@@ -91,7 +93,7 @@ public abstract class Scheduler {
                 }
             }
         };
-        return schedule(recursiveAction, initialDelay, unit);
+        return schedule(recursiveAction, initialDelay, initialDelayUnit);
     }
 
     public abstract static class Inner implements Subscription {

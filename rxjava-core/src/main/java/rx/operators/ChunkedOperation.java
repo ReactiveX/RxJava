@@ -572,7 +572,7 @@ public class ChunkedOperation {
                 public void call(Inner inner) {
                     chunks.emitAndReplaceChunk();
                 }
-            }, 0, time, unit));
+            }, 0, TimeUnit.MILLISECONDS, time, unit));
         }
 
         public TimeBasedChunkCreator(final OverlappingChunks<T, C> chunks, long time, TimeUnit unit, Scheduler scheduler) {
@@ -581,7 +581,7 @@ public class ChunkedOperation {
                 public void call(Inner inner) {
                     chunks.createChunk();
                 }
-            }, 0, time, unit));
+            }, 0, TimeUnit.MILLISECONDS, time, unit));
         }
 
         @Override

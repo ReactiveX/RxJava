@@ -74,7 +74,7 @@ public final class OperationInterval {
                     observer.onNext(currentValue);
                     currentValue++;
                 }
-            }, period, period, unit);
+            }, period, unit, period, unit);
 
             return Subscriptions.create(new Action0() {
                 @Override
