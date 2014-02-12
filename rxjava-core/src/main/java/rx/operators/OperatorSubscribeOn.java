@@ -20,6 +20,8 @@ import rx.Observable.Operator;
 import rx.Scheduler;
 import rx.Scheduler.Inner;
 import rx.Subscriber;
+import rx.observables.GroupedObservable;
+import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
@@ -33,9 +35,15 @@ import rx.util.functions.Action1;
 public class OperatorSubscribeOn<T> implements Operator<T, Observable<T>> {
 
     private final Scheduler scheduler;
+    /** 
+     * Indicate that events fired between the original subscription time and
+     * the actual subscription time should not get lost.
+     */
+    private final boolean dontLoseEvents;
 
-    public OperatorSubscribeOn(Scheduler scheduler) {
+    public OperatorSubscribeOn(Scheduler scheduler, boolean dontLoseEvents) {
         this.scheduler = scheduler;
+        this.dontLoseEvents = dontLoseEvents;
     }
 
     @Override
@@ -51,9 +59,40 @@ public class OperatorSubscribeOn<T> implements Operator<T, Observable<T>> {
             public void onError(Throwable e) {
                 subscriber.onError(e);
             }
-
+            boolean checkNeedBuffer(Observable<?> o) {
+                return (o instanceof GroupedObservable<?, ?>)
+                        || (o instanceof PublishSubject<?>)
+                        // || (o instanceof BehaviorSubject<?, ?>)
+                        ;
+            }
             @Override
             public void onNext(final Observable<T> o) {
+                if (dontLoseEvents || checkNeedBuffer(o)) {
+                    final CompositeSubscription cs = new CompositeSubscription();
+                    subscriber.add(cs);
+                    final BufferUntilSubscriber<T> bus = new BufferUntilSubscriber<T>(subscriber, new CompositeSubscription());
+                    o.subscribe(bus);
+                    scheduler.schedule(new Action1<Inner>() {
+
+                        @Override
+                        public void call(final Inner inner) {
+                            cs.add(Subscriptions.create(new Action0() {
+                                @Override
+                                public void call() {
+                                    inner.schedule(new Action1<Inner>() {
+                                        @Override
+                                        public void call(final Inner inner) {
+                                            bus.unsubscribe();
+                                        }
+                                    });
+                                }
+                            }));
+                            bus.enterPassthroughMode();
+                        }
+                        
+                    });
+                    return;
+                }
                 scheduler.schedule(new Action1<Inner>() {
 
                     @Override

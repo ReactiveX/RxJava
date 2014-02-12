@@ -7062,7 +7062,25 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#wiki-subscribeon">RxJava Wiki: subscribeOn()</a>
      */
     public final Observable<T> subscribeOn(Scheduler scheduler) {
-        return nest().lift(new OperatorSubscribeOn<T>(scheduler));
+        return nest().lift(new OperatorSubscribeOn<T>(scheduler, false));
+    }
+    /**
+     * Asynchronously subscribes and unsubscribes Observers to this Observable on the specified {@link Scheduler}
+     * and allows buffering the events emitted from the source in the time gap between the original and
+     * actual subscription.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/subscribeOn.png">
+     * 
+     * @param scheduler
+     *            the {@link Scheduler} to perform subscription and unsubscription actions on
+     * @param dontLoseEvents indicate that the operator should buffer events emitted in the time gap
+     *                       between the original and actual subscription and replay it to Observers
+     * @return the source Observable modified so that its subscriptions and unsubscriptions happen
+     *         on the specified {@link Scheduler}
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#wiki-subscribeon">RxJava Wiki: subscribeOn()</a>
+     */
+    public final Observable<T> subscribeOn(Scheduler scheduler, boolean dontLoseEvents) {
+        return nest().lift(new OperatorSubscribeOn<T>(scheduler, dontLoseEvents));
     }
 
     /**
