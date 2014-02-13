@@ -1701,7 +1701,7 @@ public class Observable<T> {
      *            the maximum number of Observables that may be subscribed to concurrently
      * @return an Observable that emits items that are the result of flattening the items emitted by the
      *         Observables in the Iterable
-     * @throw IllegalArgumentException
+     * @throws IllegalArgumentException
      *            if {@code maxConcurrent} is less than or equal to 0
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#wiki-merge">RxJava Wiki: merge()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229923.aspx">MSDN: Observable.Merge</a>
@@ -1728,7 +1728,7 @@ public class Observable<T> {
      *            the Scheduler on which to traverse the Iterable of Observables
      * @return an Observable that emits items that are the result of flattening the items emitted by the
      *         Observables in the Iterable
-     * @throw IllegalArgumentException
+     * @throws IllegalArgumentException
      *            if {@code maxConcurrent} is less than or equal to 0
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#wiki-merge">RxJava Wiki: merge()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh244329.aspx">MSDN: Observable.Merge</a>
@@ -1795,7 +1795,7 @@ public class Observable<T> {
      *            the maximum number of Observables that may be subscribed to concurrently
      * @return an Observable that emits items that are the result of flattening the Observables emitted by the
      *         {@code source} Observable
-     * @throw IllegalArgumentException
+     * @throws IllegalArgumentException
      *            if {@code maxConcurrent} is less than or equal to 0
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#wiki-merge">RxJava Wiki: merge()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211914.aspx">MSDN: Observable.Merge</a>
@@ -2466,6 +2466,10 @@ public class Observable<T> {
      * @param count
      *            the number of sequential Integers to generate
      * @return an Observable that emits a range of sequential Integers
+     * @throws IllegalArgumentException
+     *             if {@code count} is less than zero
+     * @throws IllegalArgumentException
+     *             if {@code start} + {@code count} exceeds {@code Integer.MAX_VALUE}
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#wiki-range">RxJava Wiki: range()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229460.aspx">MSDN: Observable.Range</a>
      */
@@ -5578,6 +5582,8 @@ public class Observable<T> {
      *            sequence
      * @return an Observable that repeats the sequence of items emitted by the source Observable at most
      *         {@code count} times
+     * @throws IllegalArgumentException
+     *             if {@code count} is less than zero
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#wiki-repeat">RxJava Wiki: repeat()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229428.aspx">MSDN: Observable.Repeat</a>
      */
@@ -5729,6 +5735,8 @@ public class Observable<T> {
      *         a {@link ConnectableObservable} that shares a single subscription to the source Observable, and
      *         replays no more than {@code bufferSize} items that were emitted within the window defined by
      *         {@code time}
+     * @throws IllegalArgumentException
+     *             if {@code bufferSize} is less than zero
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Connectable-Observable-Operators#wiki-observablereplay">RxJava Wiki: replay()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229404.aspx">MSDN: Observable.Replay</a>
      */
@@ -5918,6 +5926,8 @@ public class Observable<T> {
      * @return a {@link ConnectableObservable} that shares a single subscription to the source Observable and
      *         replays at most {@code bufferSize} items that were emitted during the window defined by
      *         {@code time}
+     * @throws IllegalArgumentException
+     *             if {@code bufferSize} is less than zero
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Connectable-Observable-Operators#wiki-observablereplay">RxJava Wiki: replay()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211759.aspx">MSDN: Observable.Replay</a>
      */
@@ -6984,7 +6994,13 @@ public class Observable<T> {
      * @return a {@link Subscription} reference with which Subscribers that are {@link Observer}s can 
      *         unsubscribe from the Observable
      * @throws IllegalStateException
+     *             if {@code subscribe()} is unable to obtain an {@code OnSubscribe<>} function
+     * @throws IllegalArgumentException
      *             if the {@link Subscriber} provided as the argument to {@code subscribe()} is {@code null}
+     * @throws OnErrorNotImplementedException
+     *             if the {@link Subscriber}'s {@code onError} method is null
+     * @throws RuntimeException
+     *             if the {@link Subscriber}'s {@code onError} method itself threw a {@code Throwable}
      */
     public final Subscription subscribe(Subscriber<? super T> observer) {
         // allow the hook to intercept and/or decorate
@@ -7363,6 +7379,8 @@ public class Observable<T> {
      * @return an Observable that emits at most {@code count} items from the source Observable that were emitted
      *         in a specified window of time before the Observable completed, where the timing information is
      *         provided by the given {@code scheduler}
+     * @throws IllegalArgumentException
+     *             if {@code count} is less than zero
      */
     public final Observable<T> takeLast(int count, long time, TimeUnit unit, Scheduler scheduler) {
         if (count < 0) {
@@ -7813,6 +7831,8 @@ public class Observable<T> {
      * @return an Observable that mirrors the source Observable, but switches to the {@code other} Observable if
      *         either the first item emitted by the source Observable or any subsequent item don't arrive within
      *         time windows defined by the timeout selectors
+     * @throws NullPointerException
+     *             if {@code timeoutSelector} is null
      */
     public final <U, V> Observable<T> timeout(Func0<? extends Observable<U>> firstTimeoutSelector, Func1<? super T, ? extends Observable<V>> timeoutSelector, Observable<? extends T> other) {
         if(timeoutSelector == null) {
