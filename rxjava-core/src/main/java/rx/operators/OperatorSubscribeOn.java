@@ -67,7 +67,7 @@ public class OperatorSubscribeOn<T> implements Operator<T, Observable<T>> {
 
     @Override
     public Subscriber<? super Observable<T>> call(final Subscriber<? super T> subscriber) {
-        return new Subscriber<Observable<T>>() {
+        return new Subscriber<Observable<T>>(subscriber) {
 
             @Override
             public void onCompleted() {
@@ -98,29 +98,13 @@ public class OperatorSubscribeOn<T> implements Operator<T, Observable<T>> {
                     return;
                 } else {
                     // no buffering (async subscribe)
-                    scheduler.schedule(new Action1<Inner>() {
+                    subscriber.add(scheduler.schedule(new Action1<Inner>() {
 
                         @Override
                         public void call(final Inner inner) {
-                            o.subscribe(new Subscriber<T>(subscriber) {
-
-                                @Override
-                                public void onCompleted() {
-                                    subscriber.onCompleted();
-                                }
-
-                                @Override
-                                public void onError(Throwable e) {
-                                    subscriber.onError(e);
-                                }
-
-                                @Override
-                                public void onNext(T t) {
-                                    subscriber.onNext(t);
-                                }
-                            });
+                            o.subscribe(subscriber);
                         }
-                    });
+                    }));
                 }
             }
 
