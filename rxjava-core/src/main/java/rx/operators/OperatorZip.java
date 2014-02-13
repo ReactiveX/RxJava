@@ -250,41 +250,53 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
         final class Rendezvous {
             final Object[] stride = new Object[observers.length];
             final Object[] arrived = new Object[observers.length];
-            volatile boolean done;
+            boolean done;
             void arrive(Object value, InnerSingleObserver sender) {
-                boolean d = false;
-                if (!done) {
-                    synchronized (this) {
-                        if (!done) {
-                            if (value == COMPLETE_SENTINEL) {
-                                observer.onCompleted();
-                                done = true;
-                                d = true;
-                            } else {
-                                stride[sender.index] = value;
-                                arrived[sender.index] = sender;
-                            }
+                Object[] localArrived = null;
+                boolean complete = false;
+                boolean localDone = false;
+                synchronized (this) {
+                    localDone = done;
+                    if (!localDone) {
+                        if (value == COMPLETE_SENTINEL) {
+                            observer.onCompleted();
+                            done = true;
+                            
+                            localDone = true;
+                            complete = true;
+                            
+                            localArrived = new Object[arrived.length];
+                            System.arraycopy(arrived, 0, localArrived, 0, arrived.length);
+                        } else {
+                            stride[sender.index] = value;
+                            arrived[sender.index] = sender;
                         }
                     }
                 }
-                if (done) {
-                    if (d) {
+                if (localDone) {
+                    if (complete) {
                         childSubscription.unsubscribe();
+                        for (Object o : localArrived) {
+                            if (o != null) {
+                                ((InnerSingleObserver)o).resume();
+                            }
+                        }
                     }
                     sender.resume();
+                    return;
                 }
                 if (counter.incrementAndGet() == stride.length) {
                     observer.onNext(zipFunction.call(stride));
                     
-                    Object[] a2 = new Object[arrived.length];
-                    System.arraycopy(arrived, 0, a2, 0, arrived.length);
+                    localArrived = new Object[arrived.length];
+                    System.arraycopy(arrived, 0, localArrived, 0, arrived.length);
                     
                     Arrays.fill(stride, null);
                     Arrays.fill(arrived, null);
                     
                     counter.set(0);
                     
-                    for (Object a : a2) {
+                    for (Object a : localArrived) {
                         ((InnerSingleObserver)a).resume();
                     }
                 }

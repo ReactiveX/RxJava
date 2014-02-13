@@ -21,6 +21,7 @@ import static org.mockito.Mockito.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -1067,18 +1068,26 @@ public class OperatorZipTest {
         }
         
     }
+
+    Func2<Integer, Integer, Integer> sum = new Func2<Integer, Integer, Integer>() {
+        @Override
+        public Integer call(Integer t1, Integer t2) {
+            return t1 + t2;
+        }
+    };
+    Func2<Long, Long, Long> sumLong = new Func2<Long, Long, Long>() {
+        @Override
+        public Long call(Long t1, Long t2) {
+            return t1 + t2;
+        }
+    };
+
     
     void testBlockableZippingOf2WithXBuffer(int bufferSize) throws Exception {
         int n = 10;
         Observable<Integer> source1 = Observable.range(0, n, Schedulers.io());
         Observable<Integer> source2 = Observable.range(n, n, Schedulers.io());
         
-        Func2<Integer, Integer, Integer> sum = new Func2<Integer, Integer, Integer>() {
-            @Override
-            public Integer call(Integer t1, Integer t2) {
-                return t1 + t2;
-            }
-        };
         
         Observable<Integer> result = source1.zip(source2, sum, 1);
         
@@ -1116,6 +1125,10 @@ public class OperatorZipTest {
     
     @Test(timeout = 1000)
     public void testBlockableZippingOf2WithUnBuffer() throws Exception {
+        testBlockableZippingOf2WithXBuffer(-1);
+    }
+    @Test(timeout = 1000)
+    public void testBlockableZippingOf2With0Buffer() throws Exception {
         testBlockableZippingOf2WithXBuffer(0);
     }
     @Test(timeout = 1000)
@@ -1138,13 +1151,6 @@ public class OperatorZipTest {
     @Test(timeout = 10000)
     public void testBlockableDeadlockingRecover() throws Exception {
         final CountDownLatch cdl = new CountDownLatch(1);
-        
-        final Func2<Integer, Integer, Integer> sum = new Func2<Integer, Integer, Integer>() {
-            @Override
-            public Integer call(Integer t1, Integer t2) {
-                return t1 + t2;
-            }
-        };
         
         final LinkedBlockingQueue<Throwable> q = new LinkedBlockingQueue<Throwable>();
         
@@ -1174,14 +1180,9 @@ public class OperatorZipTest {
             fail("I expected this to deadlock.");
         }
     }
-    
-    @SuppressWarnings("unchecked")
-    @Test(timeout = 5000)
-    public void testBlockableZipping() throws Exception {
-        
-        int bufferSize = 1;
 
-        final Scheduler ts = new NowOffsetScheduler(Schedulers.immediate(), System.currentTimeMillis());
+    void testBlockableZipping(int bufferSize) throws Exception {
+                final Scheduler ts = new NowOffsetScheduler(Schedulers.immediate(), System.currentTimeMillis());
         
         Observable<Long> timer1 = Observable.timer(500, 500, TimeUnit.MILLISECONDS, Schedulers.io());
         
@@ -1247,5 +1248,99 @@ public class OperatorZipTest {
                 }
             }
         }
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test(timeout = 5000)
+    public void testBlockableZipping0() throws Exception {
+        testBlockableZipping(0);
+    }
+    @SuppressWarnings("unchecked")
+    @Test(timeout = 5000)
+    public void testBlockableZipping1() throws Exception {
+        testBlockableZipping(1);
+    }
+    @Test(timeout = 1000, expected = IllegalArgumentException.class)
+    public void testBlockableEarlyCompletion1Buffer() {
+        Observable<Long> source1 = Observable.timer(2, 1, TimeUnit.SECONDS, Schedulers.io());
+        Observable<Long> source2 = Observable.empty(Schedulers.io());
+        
+        Observable<Long> result = source1.zip(source2, sumLong, 1);
+        
+        result.toBlockingObservable().last();
+    }
+    @Test(timeout = 1000, expected = IllegalArgumentException.class)
+    public void testBlockableEarlyCompletion0Buffer() {
+        Observable<Long> source1 = Observable.timer(2, 1, TimeUnit.SECONDS, Schedulers.io());
+        Observable<Long> source2 = Observable.empty(Schedulers.io());
+        
+        Observable<Long> result = source1.zip(source2, sumLong, 0);
+        
+        result.toBlockingObservable().last();
+    }
+    @Test(timeout = 2000)
+    public void testBlockableEarlyCompletion1Buffer1Value() {
+        Observable<Long> source1 = Observable.timer(500, 3000, TimeUnit.MILLISECONDS, Schedulers.io());
+        Observable<Long> source2 = Observable.from(1L).subscribeOn(Schedulers.io());
+        
+        Observable<Long> result = source1.zip(source2, sumLong, 1);
+        
+        assertEquals((Long)1L, result.toBlockingObservable().last());
+    }
+    @Test(timeout = 2000)
+    public void testBlockableEarlyCompletion0Buffer1Value() {
+        Observable<Long> source1 = Observable.timer(500, 3000, TimeUnit.MILLISECONDS, Schedulers.io());
+        Observable<Long> source2 = Observable.from(1L).subscribeOn(Schedulers.io());
+        
+        Observable<Long> result = source1.zip(source2, sumLong, 0);
+        
+        assertEquals((Long)1L, result.toBlockingObservable().last());
+    }
+    @Test(timeout = 1000)
+    public void testBlockable0BufferClassicSameSize() {
+        int n = 0;
+        Observable<Integer> source = Observable.range(0, n, Schedulers.io());
+        Observable<Integer> result = source.zip(source, sum, 0);
+        
+        Iterator<Integer> it = result.toBlockingObservable().getIterator();
+        
+        int i = 0;
+        while (it.hasNext()) {
+            assertEquals((Integer)(i * 2), it.next());
+            i++;
+        }
+        assertEquals(i, n);
+    }
+    @Test(timeout = 1000)
+    public void testBlockable0BufferClassicDifferentSize() {
+        int n = 0;
+        Observable<Integer> source1 = Observable.range(0, n, Schedulers.io());
+        Observable<Integer> source2 = Observable.range(0, n * 2, Schedulers.io());
+        Observable<Integer> result = source1.zip(source2, sum, 0);
+        
+        Iterator<Integer> it = result.toBlockingObservable().getIterator();
+        
+        int i = 0;
+        while (it.hasNext()) {
+            assertEquals((Integer)(i * 2), it.next());
+            i++;
+        }
+        assertEquals(i, n);
+    }
+    @Test(timeout = 1000)
+    public void testBlockable0BufferClassicDifferentSize2() {
+        int n = 0;
+        Observable<Integer> source1 = Observable.range(0, n, Schedulers.io());
+        Observable<Integer> source2 = Observable.range(0, n * 2, Schedulers.io());
+        Observable<Integer> result = source2.zip(source1, sum, 0);
+        
+        Iterator<Integer> it = result.toBlockingObservable().getIterator();
+        
+        int i = 0;
+        while (it.hasNext()) {
+            assertEquals((Integer)(i * 2), it.next());
+            i++;
+        }
+        assertEquals(i, n);
     }
 }
