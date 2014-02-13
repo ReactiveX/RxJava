@@ -20,8 +20,6 @@ import rx.Observable.Operator;
 import rx.Scheduler;
 import rx.Scheduler.Inner;
 import rx.Subscriber;
-import rx.observables.GroupedObservable;
-import rx.subjects.PublishSubject;
 import rx.util.functions.Action1;
 
 /**
@@ -46,8 +44,10 @@ public class OperatorSubscribeOn<T> implements Operator<T, Observable<T>> {
     /** The buffer size to avoid flooding. Negative value indicates an unbounded buffer. */
     private final int bufferSize;
 
-    public OperatorSubscribeOn(Scheduler scheduler, boolean dontLoseEvents) {
-        this(scheduler, dontLoseEvents, -1);
+    public OperatorSubscribeOn(Scheduler scheduler) {
+        this.scheduler = scheduler;
+        this.dontLoseEvents = false;
+        this.bufferSize = -1;
     }
 
     /**
@@ -55,15 +55,13 @@ public class OperatorSubscribeOn<T> implements Operator<T, Observable<T>> {
      * 
      * @param scheduler
      *            the target scheduler
-     * @param dontLoseEvents
-     *            indicate that events should be buffered until the actual subscription happens
      * @param bufferSize
      *            if dontLoseEvents == true, this indicates the buffer size. Filling the buffer will
      *            block the source. -1 indicates an unbounded buffer
      */
-    public OperatorSubscribeOn(Scheduler scheduler, boolean dontLoseEvents, int bufferSize) {
+    public OperatorSubscribeOn(Scheduler scheduler, int bufferSize) {
         this.scheduler = scheduler;
-        this.dontLoseEvents = dontLoseEvents;
+        this.dontLoseEvents = true;
         this.bufferSize = bufferSize;
     }
 
@@ -82,18 +80,7 @@ public class OperatorSubscribeOn<T> implements Operator<T, Observable<T>> {
             }
 
             boolean checkNeedBuffer(Observable<?> o) {
-                /*
-                 * Included are some Observable types known to be "hot" and thus needing
-                 * buffering when subscribing across thread boundaries otherwise
-                 * we can lose data.
-                 * 
-                 * See https://github.com/Netflix/RxJava/issues/844 for more information.
-                 */
-                return dontLoseEvents
-                        || ((o instanceof GroupedObservable<?, ?>)
-                        || (o instanceof PublishSubject<?>)
-                        // || (o instanceof BehaviorSubject<?, ?>)
-                        );
+                return dontLoseEvents;
             }
 
             @Override

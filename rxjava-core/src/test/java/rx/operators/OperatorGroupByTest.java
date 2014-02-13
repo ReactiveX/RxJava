@@ -700,7 +700,7 @@ public class OperatorGroupByTest {
 
                             });
                 } else {
-                    return group.subscribeOn(Schedulers.newThread(), 1).delay(400, TimeUnit.MILLISECONDS).map(new Func1<Integer, String>() {
+                    return group.nest().lift(new OperatorSubscribeOn<Integer>(Schedulers.newThread(), 1)).delay(400, TimeUnit.MILLISECONDS).map(new Func1<Integer, String>() {
 
                         @Override
                         public String call(Integer t1) {
@@ -826,7 +826,7 @@ public class OperatorGroupByTest {
 
             @Override
             public Observable<String> call(final GroupedObservable<Integer, Integer> group) {
-                return group.subscribeOn(Schedulers.newThread(), 0).map(new Func1<Integer, String>() {
+                return group.nest().lift(new OperatorSubscribeOn<Integer>(Schedulers.newThread(), 0)).map(new Func1<Integer, String>() {
 
                     @Override
                     public String call(Integer t1) {

@@ -186,7 +186,7 @@ public class OperatorSubscribeOnTest {
     public void testSubscribeOnPublishSubjectWithSlowScheduler() {
         PublishSubject<Integer> ps = PublishSubject.create();
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        ps.subscribeOn(new SlowScheduler()).subscribe(ts);
+        ps.nest().lift(new OperatorSubscribeOn<Integer>(new SlowScheduler(), 0)).subscribe(ts);
         ps.onNext(1);
         ps.onNext(2);
         ps.onCompleted();
@@ -220,7 +220,7 @@ public class OperatorSubscribeOnTest {
 
             @Override
             public Observable<String> call(final GroupedObservable<Integer, Integer> group) {
-                return group.subscribeOn(Schedulers.newThread()).map(new Func1<Integer, String>() {
+                return group.nest().lift(new OperatorSubscribeOn<Integer>(Schedulers.newThread(), 0)).map(new Func1<Integer, String>() {
 
                     @Override
                     public String call(Integer t1) {
@@ -326,8 +326,8 @@ public class OperatorSubscribeOnTest {
 
         final List<Long> deltas = Collections.synchronizedList(new ArrayList<Long>());
 
-        Subscription s = timer.timestamp().subscribeOn(
-                new SlowScheduler(Schedulers.computation(), 1, TimeUnit.SECONDS), size).map(new Func1<Timestamped<Long>, Long>() {
+        Subscription s = timer.timestamp().nest().lift(new OperatorSubscribeOn<Timestamped<Long>>(
+                new SlowScheduler(Schedulers.computation(), 1, TimeUnit.SECONDS), size)).map(new Func1<Timestamped<Long>, Long>() {
             @Override
             public Long call(Timestamped<Long> t1) {
                 long v = System.currentTimeMillis() - t1.getTimestampMillis();

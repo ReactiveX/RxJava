@@ -7055,32 +7055,9 @@ public class Observable<T> {
      * @see #subscribeOn(rx.Scheduler, int) 
      */
     public final Observable<T> subscribeOn(Scheduler scheduler) {
-        return nest().lift(new OperatorSubscribeOn<T>(scheduler, false));
+        return nest().lift(new OperatorSubscribeOn<T>(scheduler));
     }
     
-    /**
-     * Asynchronously subscribes and unsubscribes Observers to this Observable on the specified {@link Scheduler}
-     * and allows buffering some events emitted from the source in the time gap between the original and
-     * actual subscription, and any excess events will block the source until the actual subscription happens.
-     * <p>
-     * This overload should help mitigate issues when subscribing to a PublishSubject (and derivatives
-     * such as GroupedObservable in operator groupBy) and events fired between the original and actual subscriptions
-     * are lost. 
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/subscribeOn.png">
-     * 
-     * @param scheduler
-     *            the {@link Scheduler} to perform subscription and unsubscription actions on
-     * @param bufferSize the number of events to buffer before blocking the source while in the time gap,
-     *                   negative value indicates an unlimited buffer
-     * @return the source Observable modified so that its subscriptions and unsubscriptions happen
-     *         on the specified {@link Scheduler}
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#wiki-subscribeon">RxJava Wiki: subscribeOn()</a>
-     */
-    public final Observable<T> subscribeOn(Scheduler scheduler, int bufferSize) {
-        return nest().lift(new OperatorSubscribeOn<T>(scheduler, true, bufferSize));
-    }
-
     /**
      * Returns an Observable that extracts a Double from each of the items emitted by the source
      * Observable via a function you specify, and then emits the sum of these Doubles.
