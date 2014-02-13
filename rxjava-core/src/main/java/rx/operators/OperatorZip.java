@@ -22,6 +22,7 @@ import rx.Observable;
 import rx.Observable.Operator;
 import rx.Observer;
 import rx.Subscriber;
+import rx.operators.OperatorObserveOn.InterruptibleBlockingQueue;
 import rx.subscriptions.CompositeSubscription;
 import rx.util.functions.Func2;
 import rx.util.functions.Func3;
@@ -55,49 +56,60 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
      */
 
     final FuncN<? extends R> zipFunction;
+    /** The buffer size, nonpositive value indicates an unbounded buffer for each source. */
+    final int bufferSize;
 
-    public OperatorZip(FuncN<? extends R> f) {
+    public OperatorZip(FuncN<? extends R> f, int bufferSize) {
         this.zipFunction = f;
+        this.bufferSize = bufferSize;
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public OperatorZip(Func2 f) {
+    public OperatorZip(Func2 f, int bufferSize) {
         this.zipFunction = Functions.fromFunc(f);
+        this.bufferSize = bufferSize;
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public OperatorZip(Func3 f) {
+    public OperatorZip(Func3 f, int bufferSize) {
         this.zipFunction = Functions.fromFunc(f);
+        this.bufferSize = bufferSize;
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public OperatorZip(Func4 f) {
+    public OperatorZip(Func4 f, int bufferSize) {
         this.zipFunction = Functions.fromFunc(f);
+        this.bufferSize = bufferSize;
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public OperatorZip(Func5 f) {
+    public OperatorZip(Func5 f, int bufferSize) {
         this.zipFunction = Functions.fromFunc(f);
+        this.bufferSize = bufferSize;
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public OperatorZip(Func6 f) {
+    public OperatorZip(Func6 f, int bufferSize) {
         this.zipFunction = Functions.fromFunc(f);
+        this.bufferSize = bufferSize;
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public OperatorZip(Func7 f) {
+    public OperatorZip(Func7 f, int bufferSize) {
         this.zipFunction = Functions.fromFunc(f);
+        this.bufferSize = bufferSize;
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public OperatorZip(Func8 f) {
+    public OperatorZip(Func8 f, int bufferSize) {
         this.zipFunction = Functions.fromFunc(f);
+        this.bufferSize = bufferSize;
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public OperatorZip(Func9 f) {
+    public OperatorZip(Func9 f, int bufferSize) {
         this.zipFunction = Functions.fromFunc(f);
+        this.bufferSize = bufferSize;
     }
 
     @SuppressWarnings("rawtypes")
@@ -117,7 +129,7 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
 
             @Override
             public void onNext(Observable[] observables) {
-                new Zip<R>(observables, observer, zipFunction).zip();
+                new Zip<R>(observables, observer, zipFunction, bufferSize).zip();
             }
 
         };
@@ -126,24 +138,34 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
     private static class Zip<R> {
         @SuppressWarnings("rawtypes")
         final Observable[] os;
-        final Object[] observers;
-        final Observer<? super R> observer;
+        final InnerInteraction[] observers;
+        final Subscriber<? super R> observer;
         final FuncN<? extends R> zipFunction;
         final CompositeSubscription childSubscription = new CompositeSubscription();
 
         static Object NULL_SENTINEL = new Object();
         static Object COMPLETE_SENTINEL = new Object();
+        /** The buffer size, nonpositive value indicates an unbounded buffer for each source. */
+        final int bufferSize;
 
         @SuppressWarnings("rawtypes")
-        public Zip(Observable[] os, final Subscriber<? super R> observer, FuncN<? extends R> zipFunction) {
+        public Zip(Observable[] os, final Subscriber<? super R> observer, FuncN<? extends R> zipFunction, int bufferSize) {
             this.os = os;
             this.observer = observer;
             this.zipFunction = zipFunction;
-            observers = new Object[os.length];
+            this.bufferSize = bufferSize > 0 ? OperatorObserveOn.roundToNextPowerOfTwoIfNecessary(bufferSize) : 0;
+            this.observers = new InnerInteraction[os.length];
+            
             for (int i = 0; i < os.length; i++) {
-                InnerObserver io = new InnerObserver();
-                observers[i] = io;
-                childSubscription.add(io);
+                if (bufferSize == 0) {
+                    InnerObserver io = new InnerObserver();
+                    observers[i] = io;
+                    childSubscription.add(io);
+                } else {
+                    InnerBlockingObserver io = new InnerBlockingObserver();
+                    observers[i] = io;
+                    childSubscription.add(io);
+                }
             }
 
             observer.add(childSubscription);
@@ -152,7 +174,11 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
         @SuppressWarnings("unchecked")
         public void zip() {
             for (int i = 0; i < os.length; i++) {
-                os[i].subscribe((InnerObserver) observers[i]);
+                if (bufferSize == 0) {
+                    os[i].subscribe((InnerObserver) observers[i]);
+                } else {
+                    os[i].subscribe((InnerBlockingObserver) observers[i]);
+                }
             }
         }
 
@@ -172,30 +198,32 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
                     Object[] vs = new Object[observers.length];
                     boolean allHaveValues = true;
                     for (int i = 0; i < observers.length; i++) {
-                        vs[i] = ((InnerObserver) observers[i]).items.peek();
-                        if (vs[i] == NULL_SENTINEL) {
+                        InnerInteraction io = observers[i];
+                        Object v = io.peek();
+                        if (v == NULL_SENTINEL) {
                             // special handling for null
-                            vs[i] = null;
-                        } else if (vs[i] == COMPLETE_SENTINEL) {
+                            v = null;
+                        } else if (v == COMPLETE_SENTINEL) {
                             // special handling for onComplete
                             observer.onCompleted();
                             // we need to unsubscribe from all children since children are independently subscribed
                             childSubscription.unsubscribe();
                             return;
-                        } else if (vs[i] == null) {
+                        } else if (v == null) {
                             allHaveValues = false;
                             // we continue as there may be an onCompleted on one of the others
                             continue;
                         }
+                        vs[i] = v;
                     }
                     if (allHaveValues) {
                         // all have something so emit
                         observer.onNext(zipFunction.call(vs));
                         // now remove them
-                        for (int i = 0; i < observers.length; i++) {
-                            ((InnerObserver) observers[i]).items.poll();
+                        for (InnerInteraction io : observers) {
+                            io.poll();
                             // eagerly check if the next item on this queue is an onComplete
-                            if (((InnerObserver) observers[i]).items.peek() == COMPLETE_SENTINEL) {
+                            if (io.peek() == COMPLETE_SENTINEL) {
                                 // it is an onComplete so shut down
                                 observer.onCompleted();
                                 // we need to unsubscribe from all children since children are independently subscribed
@@ -208,11 +236,15 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
             }
 
         }
-
+        /** Exposes the peek and poll queue calls. */
+        interface InnerInteraction {
+            Object peek();
+            Object poll();
+        }
         // used to observe each Observable we are zipping together
         // it collects all items in an internal queue
         @SuppressWarnings("rawtypes")
-        final class InnerObserver extends Subscriber {
+        final class InnerObserver extends Subscriber implements InnerInteraction {
             // Concurrent* since we need to read it from across threads
             final ConcurrentLinkedQueue items = new ConcurrentLinkedQueue();
 
@@ -239,7 +271,62 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
                 }
                 tick();
             }
-        };
+
+            @Override
+            public Object peek() {
+                return items.peek();
+            }
+
+            @Override
+            public Object poll() {
+                return items.poll();
+            }
+            
+        }
+        @SuppressWarnings({ "rawtypes", "unchecked" })
+        final class InnerBlockingObserver extends Subscriber implements InnerInteraction {
+            final InterruptibleBlockingQueue items = new InterruptibleBlockingQueue(bufferSize);
+
+            @Override
+            public void onNext(Object t) {
+                try {
+                    items.addBlocking(t != null ? t : NULL_SENTINEL);
+                    tick();
+                } catch (InterruptedException ex) {
+                    if (!observer.isUnsubscribed()) {
+                        observer.onError(ex);
+                    }
+                }                
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                observer.onError(e);
+            }
+
+            @Override
+            public void onCompleted() {
+                try {
+                    items.addBlocking(COMPLETE_SENTINEL);
+                    tick();
+                } catch (InterruptedException ex) {
+                    if (!observer.isUnsubscribed()) {
+                        observer.onError(ex);
+                    }
+                }
+            }
+
+            @Override
+            public Object peek() {
+                return items.peek();
+            }
+
+            @Override
+            public Object poll() {
+                return items.poll();
+            }
+            
+        }
     }
 
 }

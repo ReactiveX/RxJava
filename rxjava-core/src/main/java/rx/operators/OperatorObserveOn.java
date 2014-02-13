@@ -66,7 +66,7 @@ public class OperatorObserveOn<T> implements Operator<T, T> {
         this(scheduler, 1);
     }
 
-    private static int roundToNextPowerOfTwoIfNecessary(int num) {
+    static int roundToNextPowerOfTwoIfNecessary(int num) {
         if ((num & -num) == num) {
             return num;
         } else {
@@ -229,15 +229,15 @@ public class OperatorObserveOn<T> implements Operator<T, T> {
      * 
      * @param <E>
      */
-    private static class InterruptibleBlockingQueue<E> {
+    static class InterruptibleBlockingQueue<E> {
 
         private final Semaphore semaphore;
         private volatile boolean interrupted = false;
 
         private final E[] buffer;
 
-        private AtomicLong tail = new AtomicLong();
-        private AtomicLong head = new AtomicLong();
+        private final AtomicLong tail = new AtomicLong();
+        private final AtomicLong head = new AtomicLong();
         private final int capacity;
         private final int mask;
 
@@ -269,9 +269,7 @@ public class OperatorObserveOn<T> implements Operator<T, T> {
                 throw new IllegalArgumentException("Can not put null");
             }
 
-            if (offer(e)) {
-                return;
-            } else {
+            if (!offer(e)) {
                 throw new IllegalStateException("Queue is full");
             }
         }
@@ -289,7 +287,20 @@ public class OperatorObserveOn<T> implements Operator<T, T> {
 
             return true;
         }
+        public E peek() {
+            if (interrupted) {
+                return null;
+            }
+            final long _h = head.get();
+            if (tail.get() == _h) {
+                // nothing available
+                return null;
+            }
+            int index = (int) (_h & mask);
 
+            // fetch the item
+            return buffer[index];
+        }
         public E poll() {
             if (interrupted) {
                 return null;
