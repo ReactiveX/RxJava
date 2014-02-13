@@ -1756,6 +1756,102 @@ trait Observable[+T]
     toScalaObservable[U](thisJava.timeout(timeout.length, timeout.unit, otherJava, scheduler.asJavaScheduler))
   }
 
+  /**
+   * Returns an Observable that mirrors the source Observable, but emits a TimeoutException if an item emitted by
+   * the source Observable doesn't arrive within a window of time after the emission of the
+   * previous item, where that period of time is measured by an Observable that is a function
+   * of the previous item.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timeout3.png">
+   * </p>
+   * Note: The arrival of the first source item is never timed out.
+   *
+   * @param timeoutSelector
+   *            a function that returns an observable for each item emitted by the source
+   *            Observable and that determines the timeout window for the subsequent item
+   * @return an Observable that mirrors the source Observable, but emits a TimeoutException if a item emitted by
+   *         the source Observable takes longer to arrive than the time window defined by the
+   *         selector for the previously emitted item
+   */
+  def timeout[V](timeoutSelector: T => Observable[V]): Observable[T] = {
+    toScalaObservable[T](asJavaObservable.timeout({ t: T => timeoutSelector(t).asJavaObservable.asInstanceOf[rx.Observable[V]] }))
+  }
+
+  /**
+   * Returns an Observable that mirrors the source Observable, but that switches to a fallback
+   * Observable if an item emitted by the source Observable doesn't arrive within a window of time
+   * after the emission of the previous item, where that period of time is measured by an
+   * Observable that is a function of the previous item.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timeout4.png">
+   * </p>
+   * Note: The arrival of the first source item is never timed out.
+   * 
+   * @param timeoutSelector
+   *            a function that returns an observable for each item emitted by the source
+   *            Observable and that determines the timeout window for the subsequent item
+   * @param other
+   *            the fallback Observable to switch to if the source Observable times out
+   * @return an Observable that mirrors the source Observable, but switches to mirroring a
+   *         fallback Observable if a item emitted by the source Observable takes longer to arrive
+   *         than the time window defined by the selector for the previously emitted item
+   */
+  def timeout[V, O >: T](timeoutSelector: T => Observable[V], other: Observable[O]): Observable[O] = {
+    val thisJava = this.asJavaObservable.asInstanceOf[rx.Observable[O]]
+    toScalaObservable[O](thisJava.timeout(
+      { t: O => timeoutSelector(t.asInstanceOf[T]).asJavaObservable.asInstanceOf[rx.Observable[V]] },
+      other.asJavaObservable))
+  }
+
+  /**
+   * Returns an Observable that mirrors the source Observable, but emits a TimeoutException
+   * if either the first item emitted by the source Observable or any subsequent item
+   * don't arrive within time windows defined by other Observables.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timeout5.png">
+   * </p>
+   * @param firstTimeoutSelector
+   *            a function that returns an Observable that determines the timeout window for the
+   *            first source item
+   * @param timeoutSelector
+   *            a function that returns an Observable for each item emitted by the source
+   *            Observable and that determines the timeout window in which the subsequent source
+   *            item must arrive in order to continue the sequence
+   * @return an Observable that mirrors the source Observable, but emits a TimeoutException if either the first item or any subsequent item doesn't
+   *         arrive within the time windows specified by the timeout selectors
+   */
+  def timeout[U, V](firstTimeoutSelector: () => Observable[U], timeoutSelector: T => Observable[V]): Observable[T] = {
+    toScalaObservable[T](asJavaObservable.timeout(
+      { firstTimeoutSelector().asJavaObservable.asInstanceOf[rx.Observable[U]] },
+      { t: T => timeoutSelector(t).asJavaObservable.asInstanceOf[rx.Observable[V]] }))
+  }
+
+  /**
+   * Returns an Observable that mirrors the source Observable, but switches to a fallback
+   * Observable if either the first item emitted by the source Observable or any subsequent item
+   * don't arrive within time windows defined by other Observables.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timeout6.png">
+   * </p>
+   * @param firstTimeoutSelector
+   *            a function that returns an Observable which determines the timeout window for the
+   *            first source item
+   * @param timeoutSelector
+   *            a function that returns an Observable for each item emitted by the source
+   *            Observable and that determines the timeout window in which the subsequent source
+   *            item must arrive in order to continue the sequence
+   * @param other
+   *            the fallback Observable to switch to if the source Observable times out
+   * @return an Observable that mirrors the source Observable, but switches to the {@code other} Observable if either the first item emitted by the source Observable or any
+   *         subsequent item don't arrive within time windows defined by the timeout selectors
+   */
+  def timeout[U, V, O >: T](firstTimeoutSelector: () => Observable[U], timeoutSelector: T => Observable[V], other: Observable[O]): Observable[O] = {
+    val thisJava = this.asJavaObservable.asInstanceOf[rx.Observable[O]]
+    toScalaObservable[O](thisJava.timeout(
+      { firstTimeoutSelector().asJavaObservable.asInstanceOf[rx.Observable[U]] },
+      { t: O => timeoutSelector(t.asInstanceOf[T]).asJavaObservable.asInstanceOf[rx.Observable[V]] },
+      other.asJavaObservable))
+  }
 
   /**
    * Returns an Observable that sums up the elements of this Observable.

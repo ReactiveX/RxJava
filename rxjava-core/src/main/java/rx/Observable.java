@@ -7753,8 +7753,8 @@ public class Observable<T> {
      *            a function that returns an Observable for each item emitted by the source
      *            Observable and that determines the timeout window in which the subsequent source
      *            item must arrive in order to continue the sequence
-     * @return an Observable that completes if either the first item or any subsequent item doesn't
-     *         arrive within the time windows specified by the timeout selectors
+     * @return an Observable that mirrors the source Observable, but emits a TimeoutException if 
+     *         either the first item or any subsequent item doesn't arrive within the time windows specified by the timeout selectors
      */
     public final <U, V> Observable<T> timeout(Func0<? extends Observable<U>> firstTimeoutSelector, Func1<? super T, ? extends Observable<V>> timeoutSelector) {
         return timeout(firstTimeoutSelector, timeoutSelector, null);
@@ -7805,7 +7805,7 @@ public class Observable<T> {
      * @param timeoutSelector
      *            a function that returns an observable for each item emitted by the source
      *            Observable and that determines the timeout window for the subsequent item
-     * @return an Observable that mirrors the source Observable, but completes if a item emitted by
+     * @return an Observable that mirrors the source Observable, but emits a TimeoutException if a item emitted by
      *         the source Observable takes longer to arrive than the time window defined by the
      *         selector for the previously emitted item
      */
@@ -7821,7 +7821,7 @@ public class Observable<T> {
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timeout4.png">
      * <p>
-     * The arrival of the first source item is never timed out.
+     * Note: The arrival of the first source item is never timed out.
      * 
      * @param <V>
      *            the timeout value type (ignored)
