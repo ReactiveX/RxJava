@@ -253,7 +253,6 @@ public class OperatorGroupByTest {
     /*
      * We will only take 1 group with 20 events from it and then unsubscribe.
      */
-    @Ignore // failing because of subscribeOn time gap issue: https://github.com/Netflix/RxJava/issues/844
     @Test
     public void testUnsubscribeOnNestedTakeAndAsyncInfiniteStream() throws InterruptedException {
         final AtomicInteger subscribeCounter = new AtomicInteger();
@@ -648,7 +647,6 @@ public class OperatorGroupByTest {
         assertEquals(6, results.size());
     }
 
-    @Ignore // failing because of subscribeOn time gap issue: https://github.com/Netflix/RxJava/issues/844
     @Test
     public void testFirstGroupsCompleteAndParentSlowToThenEmitFinalGroupsWhichThenSubscribesOnAndDelaysAndThenCompletes() throws InterruptedException {
         final CountDownLatch first = new CountDownLatch(2); // there are two groups to first complete
@@ -702,7 +700,7 @@ public class OperatorGroupByTest {
 
                             });
                 } else {
-                    return group.subscribeOn(Schedulers.newThread()).delay(400, TimeUnit.MILLISECONDS).map(new Func1<Integer, String>() {
+                    return group.subscribeOn(Schedulers.newThread(), 1).delay(400, TimeUnit.MILLISECONDS).map(new Func1<Integer, String>() {
 
                         @Override
                         public String call(Integer t1) {
@@ -803,7 +801,6 @@ public class OperatorGroupByTest {
         assertEquals(6, results.size());
     }
 
-    @Ignore // failing because of subscribeOn time gap issue: https://github.com/Netflix/RxJava/issues/844
     @Test
     public void testGroupsWithNestedSubscribeOn() throws InterruptedException {
         final ArrayList<String> results = new ArrayList<String>();
@@ -829,7 +826,7 @@ public class OperatorGroupByTest {
 
             @Override
             public Observable<String> call(final GroupedObservable<Integer, Integer> group) {
-                return group.subscribeOn(Schedulers.newThread()).map(new Func1<Integer, String>() {
+                return group.subscribeOn(Schedulers.newThread(), 0).map(new Func1<Integer, String>() {
 
                     @Override
                     public String call(Integer t1) {
