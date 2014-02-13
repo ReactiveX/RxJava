@@ -101,6 +101,14 @@ public class TestSubscriber<T> extends Subscriber<T> {
         }
     }
 
+    public void awaitTerminalEventAndUnsubscribeOnTimeout(long timeout, TimeUnit unit) {
+        try {
+            awaitTerminalEvent(timeout, unit);
+        } catch (RuntimeException e) {
+            unsubscribe();
+        }
+    }
+
     public Thread getLastSeenThread() {
         return lastSeenThread;
     }

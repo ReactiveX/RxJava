@@ -7057,6 +7057,7 @@ public class Observable<T> {
     public final Observable<T> subscribeOn(Scheduler scheduler) {
         return nest().lift(new OperatorSubscribeOn<T>(scheduler, false));
     }
+    
     /**
      * Asynchronously subscribes and unsubscribes Observers to this Observable on the specified {@link Scheduler}
      * and allows buffering some events emitted from the source in the time gap between the original and
