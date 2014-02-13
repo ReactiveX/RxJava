@@ -15,12 +15,12 @@
  */
 package rx.operators;
 
+import java.util.Arrays;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicLong;
 
 import rx.Observable;
 import rx.Observable.Operator;
-import rx.Observer;
 import rx.Subscriber;
 import rx.operators.OperatorObserveOn.InterruptibleBlockingQueue;
 import rx.subscriptions.CompositeSubscription;
@@ -142,27 +142,36 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
         final Subscriber<? super R> observer;
         final FuncN<? extends R> zipFunction;
         final CompositeSubscription childSubscription = new CompositeSubscription();
-
-        static Object NULL_SENTINEL = new Object();
-        static Object COMPLETE_SENTINEL = new Object();
+        static final Object NULL_SENTINEL = new Object();
+        static final Object COMPLETE_SENTINEL = new Object();
         /** The buffer size, nonpositive value indicates an unbounded buffer for each source. */
         final int bufferSize;
+        final AtomicLong counter = new AtomicLong(0);
 
         @SuppressWarnings("rawtypes")
         public Zip(Observable[] os, final Subscriber<? super R> observer, FuncN<? extends R> zipFunction, int bufferSize) {
             this.os = os;
             this.observer = observer;
             this.zipFunction = zipFunction;
-            this.bufferSize = bufferSize > 0 ? OperatorObserveOn.roundToNextPowerOfTwoIfNecessary(bufferSize) : 0;
+            this.bufferSize = bufferSize > 0 ? OperatorObserveOn.roundToNextPowerOfTwoIfNecessary(bufferSize) : bufferSize;
             this.observers = new InnerInteraction[os.length];
             
-            for (int i = 0; i < os.length; i++) {
-                if (bufferSize == 0) {
-                    InnerObserver io = new InnerObserver();
-                    observers[i] = io;
-                    childSubscription.add(io);
-                } else {
-                    InnerBlockingObserver io = new InnerBlockingObserver();
+            if (bufferSize != 0) {
+                for (int i = 0; i < os.length; i++) {
+                    if (bufferSize < 0) {
+                        InnerObserver io = new InnerObserver();
+                        observers[i] = io;
+                        childSubscription.add(io);
+                    } else {
+                        InnerBlockingObserver io = new InnerBlockingObserver();
+                        observers[i] = io;
+                        childSubscription.add(io);
+                    }
+                }
+            } else {
+                Rendezvous r = new Rendezvous();
+                for (int i = 0; i < os.length; i++) {
+                    InnerSingleObserver io = new InnerSingleObserver(r, i);
                     observers[i] = io;
                     childSubscription.add(io);
                 }
@@ -174,15 +183,16 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
         @SuppressWarnings("unchecked")
         public void zip() {
             for (int i = 0; i < os.length; i++) {
-                if (bufferSize == 0) {
+                if (bufferSize < 0) {
                     os[i].subscribe((InnerObserver) observers[i]);
-                } else {
+                } else 
+                if (bufferSize > 0) {
                     os[i].subscribe((InnerBlockingObserver) observers[i]);
+                } else {
+                    os[i].subscribe((InnerSingleObserver) observers[i]);
                 }
             }
         }
-
-        final AtomicLong counter = new AtomicLong(0);
 
         /**
          * check if we have values for each and emit if we do
@@ -203,7 +213,7 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
                         if (v == NULL_SENTINEL) {
                             // special handling for null
                             v = null;
-                        } else if (v == COMPLETE_SENTINEL) {
+                        } else if (v == COMPLETE_SENTINEL || (v == null && io.done())) {
                             // special handling for onComplete
                             observer.onCompleted();
                             // we need to unsubscribe from all children since children are independently subscribed
@@ -223,7 +233,8 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
                         for (InnerInteraction io : observers) {
                             io.poll();
                             // eagerly check if the next item on this queue is an onComplete
-                            if (io.peek() == COMPLETE_SENTINEL) {
+                            Object o = io.peek();
+                            if (o == COMPLETE_SENTINEL || (o == null && io.done())) {
                                 // it is an onComplete so shut down
                                 observer.onCompleted();
                                 // we need to unsubscribe from all children since children are independently subscribed
@@ -234,12 +245,56 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
                     }
                 } while (counter.decrementAndGet() > 0);
             }
-
+        }
+        /** Class that gathers inner observers and unpauses them at once. */
+        final class Rendezvous {
+            final Object[] stride = new Object[observers.length];
+            final Object[] arrived = new Object[observers.length];
+            volatile boolean done;
+            void arrive(Object value, InnerSingleObserver sender) {
+                boolean d = false;
+                if (!done) {
+                    synchronized (this) {
+                        if (!done) {
+                            if (value == COMPLETE_SENTINEL) {
+                                observer.onCompleted();
+                                done = true;
+                                d = true;
+                            } else {
+                                stride[sender.index] = value;
+                                arrived[sender.index] = sender;
+                            }
+                        }
+                    }
+                }
+                if (done) {
+                    if (d) {
+                        childSubscription.unsubscribe();
+                    }
+                    sender.resume();
+                }
+                if (counter.incrementAndGet() == stride.length) {
+                    observer.onNext(zipFunction.call(stride));
+                    
+                    Object[] a2 = new Object[arrived.length];
+                    System.arraycopy(arrived, 0, a2, 0, arrived.length);
+                    
+                    Arrays.fill(stride, null);
+                    Arrays.fill(arrived, null);
+                    
+                    counter.set(0);
+                    
+                    for (Object a : a2) {
+                        ((InnerSingleObserver)a).resume();
+                    }
+                }
+            }
         }
         /** Exposes the peek and poll queue calls. */
         interface InnerInteraction {
             Object peek();
             Object poll();
+            boolean done();
         }
         // used to observe each Observable we are zipping together
         // it collects all items in an internal queue
@@ -255,6 +310,11 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
                 tick();
             }
 
+            @Override
+            public boolean done() {
+                return false;
+            }
+            
             @Override
             public void onError(Throwable e) {
                 // emit error and shut down
@@ -286,7 +346,7 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
         @SuppressWarnings({ "rawtypes", "unchecked" })
         final class InnerBlockingObserver extends Subscriber implements InnerInteraction {
             final InterruptibleBlockingQueue items = new InterruptibleBlockingQueue(bufferSize);
-
+            volatile boolean done;
             @Override
             public void onNext(Object t) {
                 try {
@@ -306,14 +366,8 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
 
             @Override
             public void onCompleted() {
-                try {
-                    items.addBlocking(COMPLETE_SENTINEL);
-                    tick();
-                } catch (InterruptedException ex) {
-                    if (!observer.isUnsubscribed()) {
-                        observer.onError(ex);
-                    }
-                }
+                done = true;
+                tick();
             }
 
             @Override
@@ -324,6 +378,76 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
             @Override
             public Object poll() {
                 return items.poll();
+            }
+            @Override
+            public boolean done() {
+                return done;
+            }
+            
+        }
+        final class InnerSingleObserver extends Subscriber implements InnerInteraction {
+            final Rendezvous rendezvous;
+            final int index;
+            volatile boolean resume;
+            public InnerSingleObserver(Rendezvous r, int index) {
+                this.rendezvous = r;
+                this.index = index;
+            }
+            @Override
+            public void onNext(Object t) {
+                resume = false;
+                rendezvous.arrive(t != null ? t : NULL_SENTINEL, this);
+                pause();
+            }
+            public void pause() {
+                if (!resume) {
+                    try {
+                        synchronized (this) {
+                            while (!resume) {
+                                    wait();
+                            }
+                        }
+                    } catch (InterruptedException ex) {
+                        if (!observer.isUnsubscribed()) {
+                            onError(ex);
+                        }
+                    }
+                }
+            }
+            public void resume() {
+                if (!resume) {
+                    synchronized (this) {
+                        if (!resume) {
+                            resume = true;
+                            notifyAll();
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                observer.onError(e);
+            }
+
+            @Override
+            public void onCompleted() {
+                rendezvous.arrive(COMPLETE_SENTINEL, this);
+            }
+
+            @Override
+            public Object peek() {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public Object poll() {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public boolean done() {
+                throw new UnsupportedOperationException();
             }
             
         }
