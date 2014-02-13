@@ -474,4 +474,25 @@ class RxScalaDemo extends JUnitSuite {
     obs.toBlockingObservable.toIterable.last
   }
 
+  @Test def timeoutExample(): Unit = {
+    val other = List(100L, 200L, 300L).toObservable
+    val result = Observable.interval(100 millis).timeout(50 millis, other).toBlockingObservable.toList
+    println(result)
+  }
+
+  @Test def timeoutExample2(): Unit = {
+    val firstTimeoutSelector = () => {
+      Observable.timer(10 seconds, 10 seconds, ComputationScheduler()).take(1)
+    }
+    val timeoutSelector = (t: Long) => {
+      Observable.timer(
+        (500 - t * 100) max 1 millis,
+        (500 - t * 100) max 1 millis,
+        ComputationScheduler()).take(1)
+    }
+    val other = List(100L, 200L, 300L).toObservable
+    val result = Observable.interval(100 millis).timeout(firstTimeoutSelector, timeoutSelector, other).toBlockingObservable.toList
+    println(result)
+  }
+
 }
