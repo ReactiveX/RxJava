@@ -21,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import rx.Scheduler;
 import rx.Subscriber;
+import rx.observers.SafeSubscriber;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.BooleanSubscription;
 import rx.util.Timestamped;
@@ -226,7 +227,7 @@ public class BoundedReplaySubject<T> extends Subject<T, T>  {
         }
         
         void valueDispatch(Object o) {
-            if (o instanceof SubscribeSentinel) {
+            if (o.getClass() == SubscribeSentinel.class) {
                 SubscribeSentinel subs = (SubscribeSentinel)o;
                 if (done) {
                     if (replay(subs.actual)) {
@@ -240,11 +241,11 @@ public class BoundedReplaySubject<T> extends Subject<T, T>  {
                     addSubscriber(subs.actual);
                 }
             } else
-            if (o instanceof UnsubscribeSentinel) {
+            if (o.getClass() == UnsubscribeSentinel.class) {
                 UnsubscribeSentinel uns = (UnsubscribeSentinel)o;
                 removeSubscriber(uns.actual);
             } else
-            if (o instanceof ErrorSentinel) {
+            if (o.getClass() == ErrorSentinel.class) {
                 if (!done) {
                     ErrorSentinel es = (ErrorSentinel)o;
                     done = true;
@@ -302,15 +303,13 @@ public class BoundedReplaySubject<T> extends Subject<T, T>  {
             for (Object o : localSubscribers) {
                 @SuppressWarnings("unchecked")
                 Subscriber<Object> s = ((Subscriber<Object>)o);
-                if (!s.isUnsubscribed()) {
+                try {
+                    s.onNext(value);
+                } catch (Throwable t) {
                     try {
-                        s.onNext(value);
-                    } catch (Throwable t) {
-                        try {
-                            s.onError(t);
-                        } catch (Throwable t2) {
-                            // ignored?
-                        }
+                        s.onError(t);
+                    } catch (Throwable t2) {
+                        // ignored?
                     }
                 }
             }
@@ -421,19 +420,19 @@ public class BoundedReplaySubject<T> extends Subject<T, T>  {
             while (it.hasNext()) {
                 Object v = it.next();
                 if (test(v)) {
-                    if (!s.isUnsubscribed()) {
+//                    if (!s.isUnsubscribed()) {
                         try {
                             v = transform(v);
                             s.onNext(v);
                         } catch (Throwable t) {
                             try {
                                 s.onError(t);
-                                return false;
                             } catch (Throwable t2) {
                                 // ignored?
                             }
+                            return false;
                         }
-                    }
+//                    }
                 } else {
                     it.remove();
                 }
@@ -445,11 +444,11 @@ public class BoundedReplaySubject<T> extends Subject<T, T>  {
      * Buffering policy based on capacity constraints.
      */
     static final class BoundedBufferPolicy extends BufferPolicy {
-        final LinkedList<Object> buffer;
+        final SinglyLinkedList buffer;
         final int capacity;
 
         public BoundedBufferPolicy(int capacity) {
-            this.buffer = new LinkedList<Object>();
+            this.buffer = new SinglyLinkedList();
             this.capacity = capacity;
         }
 
@@ -458,9 +457,9 @@ public class BoundedReplaySubject<T> extends Subject<T, T>  {
             if (capacity == 0) {
                 return;
             }
-            buffer.addLast(o);
-            if (buffer.size() > capacity) {
-                buffer.removeFirst();
+            buffer.offer(o);
+            if (buffer.size > capacity) {
+                buffer.poll();
             }
         }
 
@@ -478,7 +477,85 @@ public class BoundedReplaySubject<T> extends Subject<T, T>  {
         Object transform(Object v) {
             return v;
         }
+    }
+    /** A singly-linked list with as few behavior as necessary for buffering. */
+    static final class SinglyLinkedList implements Iterable<Object>, Iterator<Object> {
+        static final class N {
+            final Object o;
+            N next;
+            public N(Object o) {
+                this.o = o;
+            }
+        }
+        N head;
+        N tail;
+        N point;
+        int size;
+        public void offer(Object o) {
+            N n = new N(o);
+            
+            if (head == null) {
+                head = n;
+                tail = n;
+            } else {
+                tail.next = n;
+                tail = n;
+            }
+            size++;
+        }
+        // make sure poll is never called without a guaranteed offer before it!
+        public Object poll() {
+            size--;
+            N n = head;
+            
+            head = n.next;
+            if (head == null) {
+                tail = null;
+            }
+            
+            return n.o;
+        }
+
+        @Override
+        public Iterator<Object> iterator() {
+            point = head;
+            return this;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return point != null;
+        }
+
+        @Override
+        public Object next() {
+            Object v = point.o;
+            point = point.next;
+            return v;
+        }
+
+        @Override
+        public void remove() {
+            throw new UnsupportedOperationException();
+        }
+
         
+        
+        @Override
+        public String toString() {
+            StringBuilder b = new StringBuilder();
+            b.append('[');
+            N h = head;
+            while (h != null) {
+                b.append(h.o);
+                if (h.next != null) {
+                    b.append(", ");
+                }
+                h = h.next;
+            }
+            b.append(']');
+            return b.toString();
+        }
     }
     /**
      * Timed and bounded buffering policy.
