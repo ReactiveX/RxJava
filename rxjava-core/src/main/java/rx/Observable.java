@@ -2382,7 +2382,7 @@ public class Observable<T> {
     }
 
     /**
-     * Convert the current Observable<T> into an Observable<Observable<T>>.
+     * Convert the current {@code Observable<T>} into an {@code Observable<Observable<T>>}.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/nest.png">
      * 
@@ -3403,7 +3403,7 @@ public class Observable<T> {
      * 
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#wiki-reduce">RxJava Wiki: reduce()</a>
      * @see #reduce(Func2)
-     * @deprecated use #reduce(Func2)
+     * @deprecated use {@link #reduce(Func2)}
      */
     @Deprecated
     public final Observable<T> aggregate(Func2<T, T, T> accumulator) {
@@ -3417,7 +3417,7 @@ public class Observable<T> {
      * 
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#wiki-reduce">RxJava Wiki: reduce()</a>
      * @see #reduce(Object, Func2)
-     * @deprecated use #reduce(Object, Func2)
+     * @deprecated use {@link #reduce(Object, Func2)}
      */
     @Deprecated
     public final <R> Observable<R> aggregate(R initialValue, Func2<R, ? super T, R> accumulator) {
@@ -4044,7 +4044,7 @@ public class Observable<T> {
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/delay.oo.png">
      * <p>
-     * <em>Note:</code> the resulting Observable will immediately propagate any {@code onError} notification
+     * <em>Note:</em> the resulting Observable will immediately propagate any {@code onError} notification
      * from the source Observable.
      * 
      * @param <U>
