@@ -102,7 +102,7 @@ public class OperationGroupByUntil<TSource, TKey, TResult, TDuration> implements
 
             GroupSubject<TKey, TResult> g;
             boolean newGroup = false;
-            synchronized (key) {
+            synchronized (gate) {
                 g = map.get(key);
                 if (g == null) {
                     g = create(key);
