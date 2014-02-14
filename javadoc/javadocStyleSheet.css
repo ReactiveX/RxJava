@@ -1,0 +1,59 @@
+# originally from http://sensemaya.org/files/stylesheet.css and then modified
+# http://sensemaya.org/maya/2009/07/10/making-javadoc-more-legible
+
+/* Javadoc style sheet */
+
+/* Define colors, fonts and other style attributes here to override the defaults */
+
+/* Page background color */
+body { background-color: #FFFFFF; color:#333; font-size: 100%; }
+
+body { font-size: 0.875em; line-height: 1.286em; font-family:   "Helvetica", "Arial", sans-serif; }
+
+code { color: #777; line-height: 1.286em; font-family: "Consolas", "Lucida Console", "Droid Sans Mono", "Andale Mono", "Monaco", "Lucida Sans Typewriter"; }
+
+a { text-decoration: none; color: #16569A; /* also try #2E85ED, #0033FF, #6C93C6, #1D7BBE, #1D8DD2 */ }
+a:hover { text-decoration: underline; }
+
+
+table[border="1"] { border: 1px solid #ddd; }
+table[border="1"] td, table[border="1"] th { border: 1px solid #ddd; }
+table[cellpadding="3"] td { padding: 0.5em; }
+
+font[size="-1"] { font-size: 0.85em; line-height: 1.5em; }
+font[size="-2"] { font-size: 0.8em; }
+font[size="+2"] { font-size: 1.4em; line-height: 1.3em; padding: 0.4em 0; }
+
+/* Headings */
+h1 { font-size: 1.5em; line-height: 1.286em;}
+h2.title { color: #c81f08; }
+
+/* Table colors */
+.TableHeadingColor     { background: #ccc; color:#444; } /* Dark mauve */
+.TableSubHeadingColor  { background: #ddd; color:#444; } /* Light mauve */
+.TableRowColor         { background: #FFFFFF; color:#666; font-size: 0.95em; } /* White */
+.TableRowColor code    { color:#000; } /* White */
+
+/* Font used in left-hand frame lists */
+.FrameTitleFont   { font-size: 100%; }
+.FrameHeadingFont { font-size:  90%; }
+.FrameItemFont { font-size:  0.9em; line-height: 1.3em; 
+}
+/* Java Interfaces */
+.FrameItemFont a i {
+  font-style: normal; color: #16569A;
+}
+.FrameItemFont a:hover i {
+  text-decoration: underline;
+}
+
+
+/* Navigation bar fonts and colors */
+.NavBarCell1    { background-color:#E0E6DF; } /* Light mauve */
+.NavBarCell1Rev { background-color:#16569A; color:#FFFFFF} /* Dark Blue */
+.NavBarFont1    { }
+.NavBarFont1Rev { color:#FFFFFF; }
+
+.NavBarCell2    { background-color:#FFFFFF; color:#000000}
+.NavBarCell3    { background-color:#FFFFFF; color:#000000}
+
