@@ -300,14 +300,15 @@ public class OperatorSubscribeOnTest {
 
                             });
                 } else {
-                    return group.subscribeOn(Schedulers.newThread()).delay(400, TimeUnit.MILLISECONDS).map(new Func1<Integer, String>() {
+                    return group.nest().lift(new OperatorSubscribeOn<Integer>(Schedulers.newThread(), 0))
+                            .delay(400, TimeUnit.MILLISECONDS).map(new Func1<Integer, String>() {
 
-                        @Override
-                        public String call(Integer t1) {
-                            return "last group: " + t1;
-                        }
+                                @Override
+                                public String call(Integer t1) {
+                                    return "last group: " + t1;
+                                }
 
-                    });
+                            });
                 }
             }
 

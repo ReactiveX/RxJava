@@ -31,6 +31,7 @@ import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Observer;
 import rx.Subscriber;
+import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.Subscriptions;
@@ -334,26 +335,31 @@ public class OperatorTimeoutWithSelectorTest {
             public Observable<Integer> call(Integer t1) {
                 if (t1 == 1) {
                     // Force "unsubscribe" run on another thread
-                    return Observable.create(new OnSubscribe<Integer>(){
+                    return Observable.create(new OnSubscribe<Integer>() {
                         @Override
                         public void call(Subscriber<? super Integer> subscriber) {
-                            subscriber.add(Subscriptions.create(new Action0(){
+                            subscriber.add(Subscriptions.create(new Action0() {
                                 @Override
                                 public void call() {
                                     try {
                                         // emulate "unsubscribe" is busy and finishes after timeout.onNext(1)
                                         timeoutEmittedOne.await();
                                     } catch (InterruptedException e) {
+                                        // if we are interrupted then we complete (as this can happen when unsubscribed)
+                                        observerCompleted.countDown();
                                         e.printStackTrace();
                                     }
-                                }}));
+                                }
+                            }));
                             // force the timeout message be sent after observer.onNext(2)
                             try {
                                 observerReceivedTwo.await();
                             } catch (InterruptedException e) {
+                                // if we are interrupted then we complete (as this can happen when unsubscribed)
+                                observerCompleted.countDown();
                                 e.printStackTrace();
                             }
-                            if(!subscriber.isUnsubscribed()) {
+                            if (!subscriber.isUnsubscribed()) {
                                 subscriber.onNext(1);
                                 timeoutEmittedOne.countDown();
                             }
@@ -386,12 +392,14 @@ public class OperatorTimeoutWithSelectorTest {
 
         }).when(o).onCompleted();
 
+        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>(o);
+
         new Thread(new Runnable() {
 
             @Override
             public void run() {
                 PublishSubject<Integer> source = PublishSubject.create();
-                source.timeout(timeoutFunc, Observable.from(3)).subscribe(o);
+                source.timeout(timeoutFunc, Observable.from(3)).subscribe(ts);
                 source.onNext(1); // start timeout
                 source.onNext(2); // disable timeout
                 try {
