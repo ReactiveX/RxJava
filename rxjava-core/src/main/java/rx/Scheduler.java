@@ -94,6 +94,57 @@ public abstract class Scheduler {
         return schedule(recursiveAction, initialDelay, unit);
     }
 
+    public final Subscription scheduleRecursive(final Action1<Recurse> action) {
+        return schedule(new Action1<Inner>() {
+
+            @Override
+            public void call(Inner inner) {
+                action.call(new Recurse(inner, action));
+            }
+
+        });
+    }
+
+    public static final class Recurse {
+        final Action1<Recurse> action;
+        final Inner inner;
+
+        private Recurse(Inner inner, Action1<Recurse> action) {
+            this.inner = inner;
+            this.action = action;
+        }
+
+        /**
+         * Schedule the current function for execution immediately.
+         */
+        public final void schedule() {
+            final Recurse self = this;
+            inner.schedule(new Action1<Inner>() {
+
+                @Override
+                public void call(Inner _inner) {
+                    action.call(self);
+                }
+
+            });
+        }
+
+        /**
+         * Schedule the current function for execution in the future.
+         */
+        public final void schedule(long delay, TimeUnit unit) {
+            final Recurse self = this;
+            inner.schedule(new Action1<Inner>() {
+
+                @Override
+                public void call(Inner _inner) {
+                    action.call(self);
+                }
+
+            }, delay, unit);
+        }
+    }
+
     public abstract static class Inner implements Subscription {
 
         /**
