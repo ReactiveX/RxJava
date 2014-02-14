@@ -238,7 +238,7 @@ public class CompositeSubscriptionTest {
         s.clear();
 
         assertTrue(s1.isUnsubscribed());
-        assertTrue(s1.isUnsubscribed());
+        assertTrue(s2.isUnsubscribed());
         assertFalse(s.isUnsubscribed());
 
         BooleanSubscription s3 = new BooleanSubscription();
