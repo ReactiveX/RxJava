@@ -7102,11 +7102,12 @@ public class Observable<T> {
      * @return the source Observable modified so that its subscriptions and unsubscriptions happen on the
      *         specified {@link Scheduler}
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#wiki-subscribeon">RxJava Wiki: subscribeOn()</a>
+     * @see #subscribeOn(rx.Scheduler, int) 
      */
     public final Observable<T> subscribeOn(Scheduler scheduler) {
         return nest().lift(new OperatorSubscribeOn<T>(scheduler));
     }
-
+    
     /**
      * Returns an Observable that extracts a Double from each of the items emitted by the source Observable via
      * a function you specify, and then emits the sum of these Doubles.

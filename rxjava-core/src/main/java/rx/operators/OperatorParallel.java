@@ -56,6 +56,9 @@ public final class OperatorParallel<T, R> implements Operator<R, T> {
 
                             @Override
                             public Observable<R> call(GroupedObservable<Integer, T> g) {
+                                // Must use observeOn not subscribeOn because we have a single source behind groupBy.
+                                // The origin is already subscribed to, we are moving each group on to a new thread
+                                // but the origin itself can only be on a single thread.
                                 return f.call(g.observeOn(scheduler));
                             }
                         });

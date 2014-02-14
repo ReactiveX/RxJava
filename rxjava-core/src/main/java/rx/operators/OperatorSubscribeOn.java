@@ -20,27 +20,54 @@ import rx.Observable.Operator;
 import rx.Scheduler;
 import rx.Scheduler.Inner;
 import rx.Subscriber;
-import rx.subscriptions.CompositeSubscription;
-import rx.subscriptions.Subscriptions;
-import rx.util.functions.Action0;
 import rx.util.functions.Action1;
 
 /**
- * Asynchronously subscribes and unsubscribes Observers on the specified Scheduler.
+ * Subscribes and unsubscribes Observers on the specified Scheduler.
  * <p>
+ * Will occur asynchronously except when subscribing to `GroupedObservable`, `PublishSubject` and possibly other "hot" Observables
+ * in which case it will subscribe synchronously and buffer/block onNext calls until the subscribe has occurred.
+ * <p>
+ * See https://github.com/Netflix/RxJava/issues/844 for more information on the "time gap" issue that the synchronous
+ * subscribe is solving.
+ * 
  * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/subscribeOn.png">
  */
 public class OperatorSubscribeOn<T> implements Operator<T, Observable<T>> {
 
     private final Scheduler scheduler;
+    /**
+     * Indicate that events fired between the original subscription time and
+     * the actual subscription time should not get lost.
+     */
+    private final boolean dontLoseEvents;
+    /** The buffer size to avoid flooding. Negative value indicates an unbounded buffer. */
+    private final int bufferSize;
 
     public OperatorSubscribeOn(Scheduler scheduler) {
         this.scheduler = scheduler;
+        this.dontLoseEvents = false;
+        this.bufferSize = -1;
+    }
+
+    /**
+     * Construct a SubscribeOn operator.
+     * 
+     * @param scheduler
+     *            the target scheduler
+     * @param bufferSize
+     *            if dontLoseEvents == true, this indicates the buffer size. Filling the buffer will
+     *            block the source. -1 indicates an unbounded buffer
+     */
+    public OperatorSubscribeOn(Scheduler scheduler, int bufferSize) {
+        this.scheduler = scheduler;
+        this.dontLoseEvents = true;
+        this.bufferSize = bufferSize;
     }
 
     @Override
     public Subscriber<? super Observable<T>> call(final Subscriber<? super T> subscriber) {
-        return new Subscriber<Observable<T>>() {
+        return new Subscriber<Observable<T>>(subscriber) {
 
             @Override
             public void onCompleted() {
@@ -52,48 +79,33 @@ public class OperatorSubscribeOn<T> implements Operator<T, Observable<T>> {
                 subscriber.onError(e);
             }
 
+            boolean checkNeedBuffer(Observable<?> o) {
+                return dontLoseEvents;
+            }
+
             @Override
             public void onNext(final Observable<T> o) {
-                scheduler.schedule(new Action1<Inner>() {
+                if (checkNeedBuffer(o)) {
+                    // use buffering (possibly blocking) for a possibly synchronous subscribe
+                    final BufferUntilSubscriber<T> bus = new BufferUntilSubscriber<T>(bufferSize, subscriber);
+                    o.subscribe(bus);
+                    subscriber.add(scheduler.schedule(new Action1<Inner>() {
+                        @Override
+                        public void call(final Inner inner) {
+                            bus.enterPassthroughMode();
+                        }
+                    }));
+                    return;
+                } else {
+                    // no buffering (async subscribe)
+                    subscriber.add(scheduler.schedule(new Action1<Inner>() {
 
-                    @Override
-                    public void call(final Inner inner) {
-                        final CompositeSubscription cs = new CompositeSubscription();
-                        subscriber.add(Subscriptions.create(new Action0() {
-
-                            @Override
-                            public void call() {
-                                inner.schedule(new Action1<Inner>() {
-
-                                    @Override
-                                    public void call(final Inner inner) {
-                                        cs.unsubscribe();
-                                    }
-
-                                });
-                            }
-
-                        }));
-                        cs.add(subscriber);
-                        o.subscribe(new Subscriber<T>(cs) {
-
-                            @Override
-                            public void onCompleted() {
-                                subscriber.onCompleted();
-                            }
-
-                            @Override
-                            public void onError(Throwable e) {
-                                subscriber.onError(e);
-                            }
-
-                            @Override
-                            public void onNext(T t) {
-                                subscriber.onNext(t);
-                            }
-                        });
-                    }
-                });
+                        @Override
+                        public void call(final Inner inner) {
+                            o.subscribe(subscriber);
+                        }
+                    }));
+                }
             }
 
         };
