@@ -18,9 +18,11 @@ package rx.operators;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
+import rx.Scheduler.Inner;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
+import rx.util.functions.Action1;
 import android.app.Activity;
 import android.os.Looper;
 import android.util.Log;
@@ -100,8 +102,15 @@ public class OperationObserveFromAndroidComponent {
                 @Override
                 public void call() {
                     log("unsubscribing from source sequence");
-                    releaseReferences();
-                    sourceSub.unsubscribe();
+                    AndroidSchedulers.mainThread().schedule(new Action1<Inner>() {
+
+                        @Override
+                        public void call(Inner t1) {
+                            releaseReferences();
+                            sourceSub.unsubscribe();
+                        }
+
+                    });
                 }
             });
         }

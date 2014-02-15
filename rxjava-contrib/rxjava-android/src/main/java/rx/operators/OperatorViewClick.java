@@ -21,10 +21,14 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 import rx.Observable;
+import rx.Scheduler.Inner;
 import rx.Subscriber;
 import rx.Subscription;
+import rx.android.observables.ViewObservable;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.subscriptions.Subscriptions;
 import rx.util.functions.Action0;
+import rx.util.functions.Action1;
 import android.view.View;
 
 public final class OperatorViewClick implements Observable.OnSubscribe<View> {
@@ -38,6 +42,7 @@ public final class OperatorViewClick implements Observable.OnSubscribe<View> {
 
     @Override
     public void call(final Subscriber<? super View> observer) {
+        ViewObservable.assertUiThread();
         final CompositeOnClickListener composite = CachedListeners.getFromViewOrCreate(view);
 
         final View.OnClickListener listener = new View.OnClickListener() {
@@ -50,7 +55,14 @@ public final class OperatorViewClick implements Observable.OnSubscribe<View> {
         final Subscription subscription = Subscriptions.create(new Action0() {
             @Override
             public void call() {
-                composite.removeOnClickListener(listener);
+                AndroidSchedulers.mainThread().schedule(new Action1<Inner>() {
+
+                    @Override
+                    public void call(Inner t1) {
+                        composite.removeOnClickListener(listener);
+                    }
+
+                });
             }
         });
 
