@@ -15,6 +15,8 @@
  */
 package rx;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,6 +34,11 @@ import rx.observables.GroupedObservable;
 import rx.util.functions.Action1;
 import rx.util.functions.Func1;
 import rx.util.functions.Func2;
+import rx.util.functions.FuncN;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+
 
 public class ZipTests {
 
@@ -89,6 +96,29 @@ public class ZipTests {
         Observable.<Media, Rating, ExtendedResult> zip(horrors, ratings, combine).toBlockingObservable().forEach(action);
 
         Observable.<Movie, CoolRating, Result> zip(horrors, ratings, combine);
+    }
+
+
+    /**
+     * Occasionally zip may be invoked with 0 observables. This blocks indefinitely instead
+     * of immediately invoking zip with 0 argument.
+     */
+    @Test(timeout=5000)
+    public void nonBlockingObservable(){
+
+        final Object invoked = new Object();
+
+        Collection<Observable<Object>> observables = Collections.emptyList();
+
+        Observable<Object> result = Observable.zip( observables, new FuncN<Object>() {
+            @Override
+            public Object call( final Object... args ) {
+                assertEquals("No argument should have been passed", 0, args.length);
+                return invoked;
+            }
+        } );
+
+        assertSame(invoked, result.toBlockingObservable().last());
     }
 
     Func2<Media, Rating, ExtendedResult> combine = new Func2<Media, Rating, ExtendedResult>() {
