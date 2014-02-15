@@ -261,11 +261,11 @@ public class Observable<T> {
      * @return an Observable that emits values that are the result of applying the bind function to the values
      *         of the current Observable
      */
-    public <R> Observable<R> lift(final Operator<? extends R, ? super T> bind) {
+    public <R> Observable<R> lift(final Operator<? extends R, ? super T> lift) {
         return new Observable<R>(new OnSubscribe<R>() {
             @Override
             public void call(Subscriber<? super R> o) {
-                subscribe(hook.onLift(bind).call(o));
+                f.call(hook.onLift(lift).call(o));
             }
         });
     }
