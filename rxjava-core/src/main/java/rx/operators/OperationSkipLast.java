@@ -28,7 +28,7 @@ import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
-import rx.util.Timestamped;
+import rx.schedulers.Timestamped;
 
 /**
  * Bypasses a specified number of elements at the end of an observable sequence.
