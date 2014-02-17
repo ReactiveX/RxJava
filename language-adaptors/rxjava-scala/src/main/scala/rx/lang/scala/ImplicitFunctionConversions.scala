@@ -21,7 +21,7 @@ import java.{ lang => jlang }
 import scala.language.implicitConversions
 import scala.collection.Seq
 
-import rx.util.functions._
+import rx.functions._
 import rx.lang.scala.JavaConversions._
 
 

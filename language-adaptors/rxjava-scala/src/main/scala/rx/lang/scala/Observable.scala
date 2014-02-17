@@ -16,7 +16,7 @@
 
 package rx.lang.scala
 
-import rx.util.functions.FuncN
+import rx.functions.FuncN
 import rx.Observable.OnSubscribeFunc
 import rx.lang.scala.observables.ConnectableObservable
 import scala.concurrent.duration
@@ -77,7 +77,7 @@ trait Observable[+T]
 {
   import scala.collection.Seq
   import scala.concurrent.duration.{Duration, TimeUnit}
-  import rx.util.functions._
+  import rx.functions._
   import rx.lang.scala.observables.BlockingObservable
   import ImplicitFunctionConversions._
   import JavaConversions._
@@ -278,8 +278,8 @@ trait Observable[+T]
    * @return an Observable that emits timestamped items from the source Observable
    */
   def timestamp: Observable[(Long, T)] = {
-    toScalaObservable[rx.util.Timestamped[_ <: T]](asJavaObservable.timestamp())
-      .map((t: rx.util.Timestamped[_ <: T]) => (t.getTimestampMillis, t.getValue))
+    toScalaObservable[rx.schedulers.Timestamped[_ <: T]](asJavaObservable.timestamp())
+      .map((t: rx.schedulers.Timestamped[_ <: T]) => (t.getTimestampMillis, t.getValue))
   }
 
   /**
@@ -293,8 +293,8 @@ trait Observable[+T]
    *         Observable with timestamps provided by the given Scheduler
    */
   def timestamp(scheduler: Scheduler): Observable[(Long, T)] = {
-    toScalaObservable[rx.util.Timestamped[_ <: T]](asJavaObservable.timestamp(scheduler))
-      .map((t: rx.util.Timestamped[_ <: T]) => (t.getTimestampMillis, t.getValue))
+    toScalaObservable[rx.schedulers.Timestamped[_ <: T]](asJavaObservable.timestamp(scheduler))
+      .map((t: rx.schedulers.Timestamped[_ <: T]) => (t.getTimestampMillis, t.getValue))
   }
 
   /**
