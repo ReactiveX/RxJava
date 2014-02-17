@@ -30,15 +30,10 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import rx.Observable;
-import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
-import rx.Subscription;
-import rx.schedulers.ImmediateScheduler;
 import rx.schedulers.Schedulers;
 import rx.schedulers.TestScheduler;
-import rx.schedulers.TrampolineScheduler;
-import rx.subscriptions.BooleanSubscription;
 import rx.util.functions.Action0;
 import rx.util.functions.Action1;
 import rx.util.functions.Func1;

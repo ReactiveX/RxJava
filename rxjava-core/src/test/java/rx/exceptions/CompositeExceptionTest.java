@@ -23,10 +23,6 @@ import java.util.List;
 
 import org.junit.Test;
 
-import rx.util.CompositeException.CompositeExceptionCausalChain;
-
-import rx.exceptions.CompositeException;
-
 public class CompositeExceptionTest {
 
     private final Throwable ex1 = new Throwable("Ex1");

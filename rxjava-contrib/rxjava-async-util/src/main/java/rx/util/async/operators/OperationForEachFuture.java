@@ -20,7 +20,7 @@ import java.util.concurrent.FutureTask;
 
 import rx.Observable;
 import rx.Subscription;
-import rx.util.Exceptions;
+import rx.exceptions.Exceptions;
 import rx.util.functions.Action0;
 import rx.util.functions.Action1;
 

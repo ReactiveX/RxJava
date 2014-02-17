@@ -17,7 +17,6 @@ package rx.operators;
 
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
-import static rx.operators.OperatorScan.*;
 
 import org.junit.Before;
 import org.junit.Test;

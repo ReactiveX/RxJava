@@ -19,8 +19,6 @@ import org.junit.Test;
 
 import rx.Observable;
 import rx.Observer;
-import rx.exceptions.OnErrorNotImplimport rx.util.OnErrorNotImplementedException;
-ementedException;
 import rx.subjects.PublishSubject;
 import rx.util.functions.Action1;
 
