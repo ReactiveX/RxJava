@@ -52,20 +52,6 @@ public final class OperatorFilter<T> implements Operator<T, T> {
                 try {
                     if (predicate.call(value)) {
                         child.onNext(value);
-                    } else {
-                        /*
-                         * Special casing of GroupedObservable since GroupedObservable ***MUST*** be subscribed to
-                         * otherwise it will block the GroupBy operator. 
-                         * 
-                         * See https://github.com/Netflix/RxJava/issues/844
-                         */
-                        if (value instanceof GroupedObservable) {
-                            System.out.println("value is GroupedObservable");
-                            @SuppressWarnings("rawtypes")
-                            GroupedObservable go = (GroupedObservable) value;
-                            System.out.println("********* unsubscribe from go");
-                            go.take(0).subscribe();
-                        }
                     }
                 } catch (Throwable ex) {
                     child.onError(ex);
