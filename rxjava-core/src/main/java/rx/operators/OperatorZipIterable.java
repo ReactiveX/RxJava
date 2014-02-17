@@ -19,8 +19,8 @@ import java.util.Iterator;
 
 import rx.Observable.Operator;
 import rx.Subscriber;
+import rx.functions.Func2;
 import rx.observers.Subscribers;
-import rx.util.functions.Func2;
 
 public final class OperatorZipIterable<T1, T2, R> implements Operator<R, T1> {
 

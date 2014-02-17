@@ -16,8 +16,8 @@
 package rx.util.functions;
 
 /**
- * A vector-argument action.
+ * @deprecated
  */
-public interface ActionN extends Action {
-    void call(Object... args);
+@Deprecated
+public interface ActionN extends rx.functions.ActionN, Action {
 }

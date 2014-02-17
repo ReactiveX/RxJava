@@ -12,7 +12,7 @@
  */
 package rx;
 
-import static rx.util.functions.Functions.*;
+import static rx.functions.Functions.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,6 +24,24 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
+import rx.exceptions.Exceptions;
+import rx.exceptions.OnErrorNotImplementedException;
+import rx.functions.Action0;
+import rx.functions.Action1;
+import rx.functions.Action2;
+import rx.functions.Func0;
+import rx.functions.Func1;
+import rx.functions.Func2;
+import rx.functions.Func3;
+import rx.functions.Func4;
+import rx.functions.Func5;
+import rx.functions.Func6;
+import rx.functions.Func7;
+import rx.functions.Func8;
+import rx.functions.Func9;
+import rx.functions.FuncN;
+import rx.functions.Function;
+import rx.functions.Functions;
 import rx.joins.Pattern2;
 import rx.joins.Plan0;
 import rx.observables.BlockingObservable;
@@ -114,32 +132,14 @@ import rx.operators.OperatorZipIterable;
 import rx.plugins.RxJavaObservableExecutionHook;
 import rx.plugins.RxJavaPlugins;
 import rx.schedulers.Schedulers;
+import rx.schedulers.TimeInterval;
+import rx.schedulers.Timestamped;
 import rx.subjects.AsyncSubject;
 import rx.subjects.BehaviorSubject;
 import rx.subjects.PublishSubject;
 import rx.subjects.ReplaySubject;
 import rx.subjects.Subject;
 import rx.subscriptions.Subscriptions;
-import rx.util.Exceptions;
-import rx.util.OnErrorNotImplementedException;
-import rx.util.TimeInterval;
-import rx.util.Timestamped;
-import rx.util.functions.Action0;
-import rx.util.functions.Action1;
-import rx.util.functions.Action2;
-import rx.util.functions.Func0;
-import rx.util.functions.Func1;
-import rx.util.functions.Func2;
-import rx.util.functions.Func3;
-import rx.util.functions.Func4;
-import rx.util.functions.Func5;
-import rx.util.functions.Func6;
-import rx.util.functions.Func7;
-import rx.util.functions.Func8;
-import rx.util.functions.Func9;
-import rx.util.functions.FuncN;
-import rx.util.functions.Function;
-import rx.util.functions.Functions;
 
 /**
  * The Observable class that implements the Reactive Pattern.

@@ -1,10 +1,10 @@
 package rx.operators;
 
 import rx.Observable;
+import rx.functions.Action0;
+import rx.functions.Func1;
 import rx.perf.AbstractPerformanceTester;
 import rx.perf.LongSumObserver;
-import rx.util.functions.Action0;
-import rx.util.functions.Func1;
 
 public class OperatorMapPerformance extends AbstractPerformanceTester {
 

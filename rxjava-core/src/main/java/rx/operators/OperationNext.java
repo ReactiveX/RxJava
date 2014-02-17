@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import rx.Notification;
 import rx.Observable;
 import rx.Observer;
-import rx.util.Exceptions;
+import rx.exceptions.Exceptions;
 
 /**
  * Returns an Iterable that blocks until the Observable emits another item, then returns that item.

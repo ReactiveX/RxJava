@@ -35,12 +35,12 @@ import rx.Observable;
 import rx.Observer;
 import rx.Scheduler.Inner;
 import rx.Subscription;
+import rx.functions.Action1;
+import rx.functions.Func0;
+import rx.functions.Func1;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.Subscriptions;
-import rx.util.functions.Action1;
-import rx.util.functions.Func0;
-import rx.util.functions.Func1;
 
 public class OperationBufferTest {
 

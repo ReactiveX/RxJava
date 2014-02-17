@@ -22,17 +22,17 @@ import rx.Observable;
 import rx.Observable.Operator;
 import rx.Observer;
 import rx.Subscriber;
+import rx.functions.Func2;
+import rx.functions.Func3;
+import rx.functions.Func4;
+import rx.functions.Func5;
+import rx.functions.Func6;
+import rx.functions.Func7;
+import rx.functions.Func8;
+import rx.functions.Func9;
+import rx.functions.FuncN;
+import rx.functions.Functions;
 import rx.subscriptions.CompositeSubscription;
-import rx.util.functions.Func2;
-import rx.util.functions.Func3;
-import rx.util.functions.Func4;
-import rx.util.functions.Func5;
-import rx.util.functions.Func6;
-import rx.util.functions.Func7;
-import rx.util.functions.Func8;
-import rx.util.functions.Func9;
-import rx.util.functions.FuncN;
-import rx.util.functions.Functions;
 
 /**
  * Returns an Observable that emits the results of a function applied to sets of items emitted, in

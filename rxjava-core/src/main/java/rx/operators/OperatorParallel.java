@@ -19,8 +19,8 @@ import rx.Observable;
 import rx.Observable.Operator;
 import rx.Scheduler;
 import rx.Subscriber;
+import rx.functions.Func1;
 import rx.observables.GroupedObservable;
-import rx.util.functions.Func1;
 
 /**
  * Identifies unit of work that can be executed in parallel on a given Scheduler.

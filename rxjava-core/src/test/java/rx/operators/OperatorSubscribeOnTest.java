@@ -29,10 +29,10 @@ import rx.Observable.OnSubscribe;
 import rx.Scheduler;
 import rx.Subscriber;
 import rx.Subscription;
+import rx.functions.Action1;
 import rx.observers.TestObserver;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
-import rx.util.functions.Action1;
 
 public class OperatorSubscribeOnTest {
 
@@ -52,14 +52,14 @@ public class OperatorSubscribeOnTest {
                             final Subscriber<? super Integer> subscriber) {
                         scheduled.countDown();
                         try {
-                            latch.await();
+                            try {
+                                latch.await();
+                            } catch (InterruptedException e) {
+                                // this means we were unsubscribed (Scheduler shut down and interrupts)
+                                // ... but we'll pretend we are like many Observables that ignore interrupts
+                            }
 
-                            System.out.println("emit onCompleted");
-                            // this should not run because the await above will be interrupted by the unsubscribe
                             subscriber.onCompleted();
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                            throw new RuntimeException("should not occur since we are not interuppting");
                         } catch (Throwable e) {
                             subscriber.onError(e);
                         } finally {
@@ -75,8 +75,7 @@ public class OperatorSubscribeOnTest {
         latch.countDown();
         doneLatch.await();
         assertEquals(0, observer.getOnErrorEvents().size());
-        // the unsubscribe shuts down the scheduler which causes the latch to be interrupted
-        assertEquals(0, observer.getOnCompletedEvents().size());
+        assertEquals(1, observer.getOnCompletedEvents().size());
     }
 
     public static class SlowScheduler extends Scheduler {

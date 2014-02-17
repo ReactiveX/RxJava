@@ -25,7 +25,7 @@ import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
-import rx.util.Timestamped;
+import rx.schedulers.Timestamped;
 
 /**
  * Returns an Observable that emits the last <code>count</code> items emitted by the source

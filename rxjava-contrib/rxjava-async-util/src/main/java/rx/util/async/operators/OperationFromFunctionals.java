@@ -20,10 +20,10 @@ import java.util.concurrent.Callable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
+import rx.functions.Action0;
+import rx.functions.Actions;
+import rx.functions.Func0;
 import rx.subscriptions.Subscriptions;
-import rx.util.functions.Action0;
-import rx.util.functions.Actions;
-import rx.util.functions.Func0;
 
 /**
  * Operators that invoke a function or action if

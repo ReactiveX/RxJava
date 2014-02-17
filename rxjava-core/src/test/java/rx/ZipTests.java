@@ -28,10 +28,10 @@ import rx.CovarianceTest.Movie;
 import rx.CovarianceTest.Rating;
 import rx.CovarianceTest.Result;
 import rx.EventStream.Event;
+import rx.functions.Action1;
+import rx.functions.Func1;
+import rx.functions.Func2;
 import rx.observables.GroupedObservable;
-import rx.util.functions.Action1;
-import rx.util.functions.Func1;
-import rx.util.functions.Func2;
 
 public class ZipTests {
 

@@ -33,16 +33,16 @@ import rx.Observable.OnSubscribe;
 import rx.Scheduler;
 import rx.Subscriber;
 import rx.Subscription;
+import rx.functions.Action0;
+import rx.functions.Action1;
+import rx.functions.Func1;
 import rx.observables.GroupedObservable;
 import rx.observers.TestObserver;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
+import rx.schedulers.Timestamped;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.Subscriptions;
-import rx.util.Timestamped;
-import rx.util.functions.Action0;
-import rx.util.functions.Action1;
-import rx.util.functions.Func1;
 
 public class OperatorSubscribeOnBoundedTest {
 

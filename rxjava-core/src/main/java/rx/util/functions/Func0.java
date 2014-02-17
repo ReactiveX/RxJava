@@ -15,6 +15,9 @@
  */
 package rx.util.functions;
 
-public interface Func0<R> extends Function {
-    public R call();
+/**
+ * @deprecated
+ */
+@Deprecated
+public interface Func0<R> extends rx.functions.Func0<R>, Function {
 }

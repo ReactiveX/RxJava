@@ -23,7 +23,7 @@ import org.junit.Test;
 import org.mockito.InOrder;
 
 import rx.Subscription;
-import rx.util.functions.Action0;
+import rx.functions.Action0;
 
 public class RefCountSubscriptionTest {
     Action0 main;

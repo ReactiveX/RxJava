@@ -23,8 +23,8 @@ import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
-import rx.util.functions.Func1;
 
 /**
  * Throttle by windowing a stream and returning the first value in each window.

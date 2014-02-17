@@ -19,8 +19,8 @@ import java.util.concurrent.TimeUnit;
 
 import rx.Scheduler;
 import rx.Subscription;
+import rx.functions.Action1;
 import rx.subscriptions.BooleanSubscription;
-import rx.util.functions.Action1;
 
 /**
  * Executes work immediately on the current thread.

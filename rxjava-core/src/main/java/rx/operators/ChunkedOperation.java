@@ -29,9 +29,9 @@ import rx.Observer;
 import rx.Scheduler;
 import rx.Scheduler.Inner;
 import rx.Subscription;
-import rx.util.functions.Action1;
-import rx.util.functions.Func0;
-import rx.util.functions.Func1;
+import rx.functions.Action1;
+import rx.functions.Func0;
+import rx.functions.Func1;
 
 /**
  * The base class for operations that break observables into "chunks". Currently buffers and windows.
@@ -470,7 +470,7 @@ public class ChunkedOperation {
     /**
      * This {@link rx.operators.ChunkedOperation.ChunkCreator} creates a new {@link rx.operators.ChunkedOperation.Chunk} whenever it receives an
      * object from the provided {@link rx.Observable} created with the
-     * chunkClosingSelector {@link rx.util.functions.Func0}.
+     * chunkClosingSelector {@link rx.functions.Func0}.
      * 
      * @param <T>
      *            The type of object all internal {@link rx.operators.ChunkedOperation.Chunk} objects record.
@@ -516,7 +516,7 @@ public class ChunkedOperation {
      * This {@link rx.operators.ChunkedOperation.ChunkCreator} creates a new {@link rx.operators.ChunkedOperation.Chunk} whenever it receives
      * an object from the provided chunkOpenings {@link rx.Observable}, and closes the corresponding {@link rx.operators.ChunkedOperation.Chunk} object when it receives an object from the provided
      * {@link rx.Observable} created
-     * with the chunkClosingSelector {@link rx.util.functions.Func1}.
+     * with the chunkClosingSelector {@link rx.functions.Func1}.
      * 
      * @param <T>
      *            The type of object all internal {@link rx.operators.ChunkedOperation.Chunk} objects record.

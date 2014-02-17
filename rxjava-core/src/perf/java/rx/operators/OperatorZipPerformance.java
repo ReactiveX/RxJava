@@ -1,10 +1,10 @@
 package rx.operators;
 
 import rx.Observable;
+import rx.functions.Action0;
+import rx.functions.Func2;
 import rx.perf.AbstractPerformanceTester;
 import rx.perf.IntegerSumObserver;
-import rx.util.functions.Action0;
-import rx.util.functions.Func2;
 
 public class OperatorZipPerformance extends AbstractPerformanceTester {
 

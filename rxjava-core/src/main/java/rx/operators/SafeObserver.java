@@ -20,11 +20,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import rx.Observer;
 import rx.Subscription;
+import rx.exceptions.CompositeException;
+import rx.exceptions.OnErrorNotImplementedException;
 import rx.observers.SynchronizedObserver;
 import rx.plugins.RxJavaPlugins;
 import rx.subscriptions.Subscriptions;
-import rx.util.CompositeException;
-import rx.util.OnErrorNotImplementedException;
 
 /**
  * Wrapper around Observer to ensure compliance with Rx contract.

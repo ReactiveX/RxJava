@@ -23,7 +23,7 @@ import org.mockito.Mockito;
 
 import rx.Observable;
 import rx.Observer;
-import rx.util.functions.Func1;
+import rx.functions.Func1;
 
 public class OperatorFilterTest {
 

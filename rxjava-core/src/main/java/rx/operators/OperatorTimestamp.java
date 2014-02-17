@@ -18,7 +18,7 @@ package rx.operators;
 import rx.Observable.Operator;
 import rx.Scheduler;
 import rx.Subscriber;
-import rx.util.Timestamped;
+import rx.schedulers.Timestamped;
 
 /**
  * Wraps each item emitted by a source Observable in a {@link Timestamped} object.

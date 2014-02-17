@@ -16,7 +16,7 @@
 package rx.operators;
 
 import rx.Observable;
-import rx.util.functions.Func2;
+import rx.functions.Func2;
 
 /**
  * A few operators for implementing the sum operation.

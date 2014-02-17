@@ -32,7 +32,7 @@ import org.mockito.InOrder;
 
 import rx.Scheduler.Inner;
 import rx.Subscription;
-import rx.util.functions.Action1;
+import rx.functions.Action1;
 
 /**
  * Executes work on the Swing UI thread.

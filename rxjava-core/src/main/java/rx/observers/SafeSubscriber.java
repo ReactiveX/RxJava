@@ -19,10 +19,10 @@ import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import rx.Subscriber;
+import rx.exceptions.CompositeException;
+import rx.exceptions.Exceptions;
+import rx.exceptions.OnErrorNotImplementedException;
 import rx.plugins.RxJavaPlugins;
-import rx.util.CompositeException;
-import rx.util.Exceptions;
-import rx.util.OnErrorNotImplementedException;
 
 /**
  * Wrapper around Observer to ensure compliance with Rx contract.

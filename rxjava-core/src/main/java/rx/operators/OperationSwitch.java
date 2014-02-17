@@ -19,9 +19,9 @@ import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
+import rx.functions.Func1;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.SerialSubscription;
-import rx.util.functions.Func1;
 
 /**
  * Transforms an Observable that emits Observables into a single Observable that

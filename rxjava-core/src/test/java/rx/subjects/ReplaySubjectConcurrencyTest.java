@@ -31,8 +31,8 @@ import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscriber;
 import rx.Subscription;
+import rx.functions.Action1;
 import rx.subscriptions.Subscriptions;
-import rx.util.functions.Action1;
 
 public class ReplaySubjectConcurrencyTest {
 

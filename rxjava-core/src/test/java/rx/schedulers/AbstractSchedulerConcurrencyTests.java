@@ -31,10 +31,10 @@ import rx.Scheduler;
 import rx.Scheduler.Inner;
 import rx.Subscriber;
 import rx.Subscription;
+import rx.functions.Action0;
+import rx.functions.Action1;
+import rx.functions.Func1;
 import rx.subscriptions.Subscriptions;
-import rx.util.functions.Action0;
-import rx.util.functions.Action1;
-import rx.util.functions.Func1;
 
 /**
  * Base tests for schedulers that involve threads (concurrency).

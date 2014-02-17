@@ -29,9 +29,9 @@ import org.codehaus.groovy.runtime.m12n.ExtensionModule;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
+import rx.functions.Action;
+import rx.functions.Function;
 import rx.observables.BlockingObservable;
-import rx.util.functions.Action;
-import rx.util.functions.Function;
 
 /**
  * ExtensionModule that adds extension methods to support groovy.lang.Closure

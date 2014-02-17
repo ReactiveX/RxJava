@@ -14,7 +14,7 @@ import rx.Observable.OnSubscribe;
 import rx.Observable.Operator;
 import rx.Observer;
 import rx.Subscriber;
-import rx.util.functions.Func1;
+import rx.functions.Func1;
 
 public class ObservableBenchmark {
 

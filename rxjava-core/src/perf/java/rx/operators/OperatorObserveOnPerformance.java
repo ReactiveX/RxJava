@@ -1,10 +1,10 @@
 package rx.operators;
 
 import rx.Observable;
+import rx.functions.Action0;
 import rx.perf.AbstractPerformanceTester;
 import rx.perf.IntegerSumObserver;
 import rx.schedulers.Schedulers;
-import rx.util.functions.Action0;
 
 public class OperatorObserveOnPerformance extends AbstractPerformanceTester {
 

@@ -19,9 +19,9 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import rx.Observable;
 import rx.Scheduler;
+import rx.functions.Func1;
 import rx.observables.GroupedObservable;
 import rx.schedulers.Schedulers;
-import rx.util.functions.Func1;
 
 public class OperationParallelMerge {
 

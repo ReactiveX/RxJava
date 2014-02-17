@@ -29,8 +29,8 @@ import org.mockito.MockitoAnnotations;
 import rx.Observable;
 import rx.Observer;
 import rx.schedulers.TestScheduler;
+import rx.schedulers.Timestamped;
 import rx.subjects.PublishSubject;
-import rx.util.Timestamped;
 
 public class OperatorTimestampTest {
     @Mock

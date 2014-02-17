@@ -17,8 +17,8 @@
 package rx.util.async.operators;
 
 import rx.Scheduler.Inner;
-import rx.util.functions.Action0;
-import rx.util.functions.Action1;
+import rx.functions.Action0;
+import rx.functions.Action1;
 
 /**
  * Utility methods convert between functional interfaces of actions and functions.

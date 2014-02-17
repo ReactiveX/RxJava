@@ -23,13 +23,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 import rx.Observable.OnSubscribe;
 import rx.Observable.Operator;
 import rx.Subscriber;
+import rx.functions.Action0;
+import rx.functions.Func1;
 import rx.observables.GroupedObservable;
 import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.Subscriptions;
-import rx.util.functions.Action0;
-import rx.util.functions.Func1;
 
 /**
  * Groups the items emitted by an Observable according to a specified criterion, and emits these

@@ -15,6 +15,10 @@
  */
 package rx.util.functions;
 
+/**
+ * @deprecated
+ */
+@Deprecated
 public class Functions {
 
     /**

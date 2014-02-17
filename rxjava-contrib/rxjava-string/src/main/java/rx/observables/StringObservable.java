@@ -33,8 +33,8 @@ import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Observable.Operator;
 import rx.Subscriber;
-import rx.util.functions.Func1;
-import rx.util.functions.Func2;
+import rx.functions.Func1;
+import rx.functions.Func2;
 
 public class StringObservable {
     public static Observable<byte[]> from(final InputStream i) {

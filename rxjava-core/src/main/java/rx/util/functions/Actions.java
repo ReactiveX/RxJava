@@ -18,8 +18,9 @@ package rx.util.functions;
 import rx.Observer;
 
 /**
- * Utility class for the Action interfaces.
+ * @deprecated
  */
+@Deprecated
 public final class Actions {
     private Actions() {
         throw new IllegalStateException("No instances!");

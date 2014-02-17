@@ -15,6 +15,9 @@
  */
 package rx.util.functions;
 
-public interface Action0 extends Action {
-    public void call();
+/**
+ * @deprecated
+ */
+@Deprecated
+public interface Action0 extends rx.functions.Action0 {
 }

@@ -32,12 +32,12 @@ import rx.Observer;
 import rx.Scheduler;
 import rx.Subscriber;
 import rx.Subscription;
+import rx.functions.Action0;
+import rx.functions.Func1;
+import rx.functions.Functions;
+import rx.schedulers.Timestamped;
 import rx.subjects.Subject;
 import rx.subscriptions.Subscriptions;
-import rx.util.Timestamped;
-import rx.util.functions.Action0;
-import rx.util.functions.Func1;
-import rx.util.functions.Functions;
 
 /**
  * Replay with limited buffer and/or time constraints.

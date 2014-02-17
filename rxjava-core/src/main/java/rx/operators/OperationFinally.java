@@ -19,7 +19,7 @@ import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
-import rx.util.functions.Action0;
+import rx.functions.Action0;
 
 /**
  * Registers an action to be called when an Observable invokes onComplete or onError.

@@ -21,7 +21,7 @@ import rx.Observable;
 import rx.Scheduler;
 import rx.Scheduler.Inner;
 import rx.Subscription;
-import rx.util.functions.Action1;
+import rx.functions.Action1;
 
 /**
  * Applies a timeout policy for each element in the observable sequence, using

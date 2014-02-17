@@ -29,8 +29,8 @@ import org.robolectric.annotation.Config;
 import rx.Scheduler;
 import rx.Scheduler.Inner;
 import rx.Subscription;
-import rx.util.functions.Action1;
-import rx.util.functions.Func2;
+import rx.functions.Action1;
+import rx.functions.Func2;
 import android.os.Handler;
 
 @RunWith(RobolectricTestRunner.class)

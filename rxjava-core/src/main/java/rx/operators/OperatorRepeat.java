@@ -21,9 +21,9 @@ import rx.Observable.Operator;
 import rx.Scheduler;
 import rx.Scheduler.Inner;
 import rx.Subscriber;
+import rx.functions.Action1;
 import rx.observers.Subscribers;
 import rx.schedulers.Schedulers;
-import rx.util.functions.Action1;
 
 public class OperatorRepeat<T> implements Operator<T, Observable<T>> {
 

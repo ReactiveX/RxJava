@@ -22,9 +22,9 @@ import rx.Observable.Operator;
 import rx.Scheduler;
 import rx.Scheduler.Inner;
 import rx.Subscriber;
+import rx.functions.Action1;
 import rx.schedulers.ImmediateScheduler;
 import rx.schedulers.TrampolineScheduler;
-import rx.util.functions.Action1;
 
 /**
  * Delivers events on the specified Scheduler asynchronously via an unbounded buffer.

@@ -19,11 +19,11 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Observer;
-import rx.util.functions.Action0;
-import rx.util.functions.Action1;
-import rx.util.functions.Action2;
-import rx.util.functions.Actions;
-import rx.util.functions.Func2;
+import rx.functions.Action0;
+import rx.functions.Action1;
+import rx.functions.Action2;
+import rx.functions.Actions;
+import rx.functions.Func2;
 
 /**
  * Represents an execution plan for join patterns.

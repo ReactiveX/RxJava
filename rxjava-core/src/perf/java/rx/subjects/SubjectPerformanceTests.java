@@ -16,7 +16,7 @@
 package rx.subjects;
 
 import rx.Subscriber;
-import rx.util.functions.Action0;
+import rx.functions.Action0;
 
 public class SubjectPerformanceTests {
 

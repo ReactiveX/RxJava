@@ -16,8 +16,8 @@
 package rx.joins;
 
 import rx.Notification;
-import rx.util.functions.Action0;
-import rx.util.functions.Action3;
+import rx.functions.Action0;
+import rx.functions.Action3;
 
 /**
  * Represents an active plan.

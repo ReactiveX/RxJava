@@ -25,10 +25,10 @@ import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
+import rx.functions.Func0;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
-import rx.util.functions.Func0;
-import rx.util.functions.Func1;
 
 public final class OperationBuffer extends ChunkedOperation {
 

@@ -19,8 +19,8 @@ import java.util.concurrent.TimeUnit;
 
 import rx.Scheduler;
 import rx.Subscription;
+import rx.functions.Action1;
 import rx.subscriptions.BooleanSubscription;
-import rx.util.functions.Action1;
 import android.os.Handler;
 
 /**
@@ -41,9 +41,9 @@ public class HandlerThreadScheduler extends Scheduler {
     }
 
     /**
-     * Calls {@link HandlerThreadScheduler#schedule(Object, rx.util.functions.Func2, long, java.util.concurrent.TimeUnit)} with a delay of zero milliseconds.
+     * Calls {@link HandlerThreadScheduler#schedule(Object, rx.functions.Func2, long, java.util.concurrent.TimeUnit)} with a delay of zero milliseconds.
      * 
-     * See {@link #schedule(Object, rx.util.functions.Func2, long, java.util.concurrent.TimeUnit)}
+     * See {@link #schedule(Object, rx.functions.Func2, long, java.util.concurrent.TimeUnit)}
      */
     @Override
     public Subscription schedule(Action1<Inner> action) {

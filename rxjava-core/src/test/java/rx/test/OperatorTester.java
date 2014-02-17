@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 
 import rx.Scheduler;
 import rx.Subscription;
-import rx.util.functions.Action1;
+import rx.functions.Action1;
 
 /**
  * Common utility functions for testing operator implementations.

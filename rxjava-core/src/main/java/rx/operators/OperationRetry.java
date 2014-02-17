@@ -38,8 +38,8 @@ import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler.Inner;
 import rx.Subscription;
+import rx.functions.Action1;
 import rx.schedulers.Schedulers;
-import rx.util.functions.Action1;
 
 public class OperationRetry {
 

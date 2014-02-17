@@ -16,10 +16,9 @@
 package rx.util.functions;
 
 /**
- * All Func and Action interfaces extend from this.
- * <p>
- * Marker interface to allow instanceof checks.
+ * @deprecated
  */
+@Deprecated
 public interface Function {
 
 }

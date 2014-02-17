@@ -22,10 +22,10 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.Test;
 
 import rx.Subscriber;
+import rx.exceptions.CompositeException;
+import rx.exceptions.OnErrorNotImplementedException;
+import rx.functions.Action0;
 import rx.subscriptions.Subscriptions;
-import rx.util.CompositeException;
-import rx.util.OnErrorNotImplementedException;
-import rx.util.functions.Action0;
 
 public class SafeObserverTest {
 

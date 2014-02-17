@@ -2,7 +2,7 @@ package rx.perf;
 
 import java.util.Iterator;
 
-import rx.util.functions.Action0;
+import rx.functions.Action0;
 
 public abstract class AbstractPerformanceTester {
 

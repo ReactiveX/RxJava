@@ -27,11 +27,11 @@ import org.mockito.InOrder;
 
 import rx.Observable;
 import rx.Observer;
+import rx.functions.Func1;
 import rx.observables.ConnectableObservable;
 import rx.operators.OperationReplay.VirtualBoundedList;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
-import rx.util.functions.Func1;
 
 public class OperationReplayTest {
     @Test

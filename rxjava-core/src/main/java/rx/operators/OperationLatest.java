@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import rx.Notification;
 import rx.Observable;
 import rx.Observer;
-import rx.util.Exceptions;
+import rx.exceptions.Exceptions;
 
 /**
  * Wait for and iterate over the latest values of the source observable.

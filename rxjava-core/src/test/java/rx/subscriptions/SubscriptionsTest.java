@@ -21,7 +21,7 @@ import static rx.subscriptions.Subscriptions.*;
 import org.junit.Test;
 
 import rx.Subscription;
-import rx.util.functions.Action0;
+import rx.functions.Action0;
 
 public class SubscriptionsTest {
 
