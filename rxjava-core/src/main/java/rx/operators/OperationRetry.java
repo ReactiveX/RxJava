@@ -44,8 +44,6 @@ public class OperationRetry {
 
         private final Observable<T> source;
         private final int retryCount;
-        private final AtomicInteger attempts = new AtomicInteger(0);
-        private final CompositeSubscription subscription = new CompositeSubscription();
 
         public Retry(Observable<T> source, int retryCount) {
             this.source = source;
@@ -54,17 +52,23 @@ public class OperationRetry {
 
         @Override
         public Subscription onSubscribe(Observer<? super T> observer) {
-            MultipleAssignmentSubscription rescursiveSubscription = new MultipleAssignmentSubscription();
-            subscription.add(Schedulers.currentThread().schedule(rescursiveSubscription, attemptSubscription(observer)));
-            subscription.add(rescursiveSubscription);
+            final CompositeSubscription subscription = new CompositeSubscription();
+            final AtomicInteger attempts = new AtomicInteger(0);
+            MultipleAssignmentSubscription recursiveSubscription = new MultipleAssignmentSubscription();
+            subscription.add(Schedulers.currentThread().schedule(recursiveSubscription,
+                    attemptSubscription(observer, attempts, subscription)));
+            subscription.add(recursiveSubscription);
             return subscription;
         }
 
-        private Func2<Scheduler, MultipleAssignmentSubscription, Subscription> attemptSubscription(final Observer<? super T> observer) {
+        private Func2<Scheduler, MultipleAssignmentSubscription, Subscription> attemptSubscription(
+                final Observer<? super T> observer, final AtomicInteger attempts,
+                final CompositeSubscription subscription) {
             return new Func2<Scheduler, MultipleAssignmentSubscription, Subscription>() {
 
                 @Override
-                public Subscription call(final Scheduler scheduler, final MultipleAssignmentSubscription rescursiveSubscription) {
+                public Subscription call(final Scheduler scheduler,
+                        final MultipleAssignmentSubscription recursiveSubscription) {
                     attempts.incrementAndGet();
                     return source.subscribe(new Observer<T>() {
 
@@ -75,10 +79,13 @@ public class OperationRetry {
 
                         @Override
                         public void onError(Throwable e) {
-                            if ((retryCount == INFINITE_RETRY || attempts.get() <= retryCount) && !subscription.isUnsubscribed()) {
+                            if ((retryCount == INFINITE_RETRY || attempts.get() <= retryCount)
+                                    && !subscription.isUnsubscribed()) {
                                 // retry again
-                                // add the new subscription and schedule a retry recursively
-                                rescursiveSubscription.setSubscription(scheduler.schedule(rescursiveSubscription, attemptSubscription(observer)));
+                                // add the new subscription and schedule a retry
+                                // recursively
+                                recursiveSubscription.setSubscription(scheduler.schedule(recursiveSubscription,
+                                        attemptSubscription(observer, attempts, subscription)));
                             } else {
                                 // give up and pass the failure
                                 observer.onError(e);
@@ -90,9 +97,7 @@ public class OperationRetry {
                             observer.onNext(v);
                         }
                     });
-
                 }
-
             };
         }
 
