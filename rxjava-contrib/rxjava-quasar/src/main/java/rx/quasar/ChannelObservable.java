@@ -17,17 +17,13 @@
 import co.paralleluniverse.fibers.SuspendExecution;
 import co.paralleluniverse.fibers.Suspendable;
 import co.paralleluniverse.strands.Strand;
-import co.paralleluniverse.strands.Timeout;
 import co.paralleluniverse.strands.channels.Channel;
 import co.paralleluniverse.strands.channels.Channels;
 import co.paralleluniverse.strands.channels.ReceivePort;
 import co.paralleluniverse.strands.channels.SendPort;
-import java.util.concurrent.TimeUnit;
 import rx.Observable;
 import rx.Observer;
 import rx.Scheduler;
-import rx.util.Exceptions;
-import rx.util.OnErrorNotImplementedException;
 import rx.util.functions.Action2;
 import rx.util.functions.Actions;
 import rx.util.functions.Func1;
@@ -109,7 +105,7 @@ public final class ChannelObservable {
 
             @Override
             public void onError(Throwable e) {
-                throw new OnErrorNotImplementedException(e);
+                channel.close(e);
             }
         };
     }
@@ -124,7 +120,7 @@ public final class ChannelObservable {
      * @return A new channel with the given buffer size and overflow policy that will receive all events emitted by the observable.
      */
     public final static <T> ReceivePort<T> subscribe(int bufferSize, Channels.OverflowPolicy policy, Observable<T> o) {
-        final ChannelWithErrors<T> channel = new ChannelWithErrors<T>(Channels.newChannel(bufferSize, policy));
+        final Channel<T> channel = Channels.newChannel(bufferSize, policy);
 
         System.out.println(Functions.fromFunc(new Func1<String, String>() {
 
@@ -146,7 +142,7 @@ public final class ChannelObservable {
             @Suspendable
             public void onNext(T t) {
                 try {
-                    channel.sendPort().send(t);
+                    channel.send(t);
                 } catch (InterruptedException ex) {
                     Strand.interrupted();
                 } catch (SuspendExecution ex) {
@@ -156,85 +152,14 @@ public final class ChannelObservable {
 
             @Override
             public void onCompleted() {
-                channel.sendPort().close();
+                channel.close();
             }
 
             @Override
             public void onError(Throwable e) {
-                channel.error(e);
+                channel.close(e);
             }
         });
-        return channel.receivePort();
-    }
-
-    private static class ChannelWithErrors<T> {
-        private final Channel<Object> ch;
-
-        public ChannelWithErrors(Channel<Object> ch) {
-            this.ch = ch;
-        }
-
-        @Suspendable
-        public void error(Throwable t) {
-            try {
-                ch.send(new ThrowableWrapper(t));
-                ch.close();
-            } catch (InterruptedException e) {
-            } catch (SuspendExecution e) {
-                throw new AssertionError(e);
-            }
-        }
-
-        public ReceivePort<T> receivePort() {
-            return new ReceivePort<T>() {
-                @Override
-                public T receive() throws SuspendExecution, InterruptedException {
-                    return get(ch.receive());
-                }
-
-                @Override
-                public T receive(long timeout, TimeUnit unit) throws SuspendExecution, InterruptedException {
-                    return get(ch.receive(timeout, unit));
-                }
-
-                @Override
-                public T receive(Timeout timeout) throws SuspendExecution, InterruptedException {
-                    return get(ch.receive(timeout));
-                }
-
-                @Override
-                public T tryReceive() {
-                    return get(ch.tryReceive());
-                }
-
-                @Override
-                public void close() {
-                    ch.close();
-                }
-
-                @Override
-                public boolean isClosed() {
-                    return ch.isClosed();
-                }
-            };
-        }
-
-        public SendPort<T> sendPort() {
-            return (SendPort<T>) ch;
-        }
-
-        private T get(Object m) {
-            if (m instanceof ThrowableWrapper)
-                throw Exceptions.propagate(((ThrowableWrapper) m).t);
-            return (T) m;
-        }
-
-        private static class ThrowableWrapper {
-            final Throwable t;
-
-            public ThrowableWrapper(Throwable t) {
-                this.t = t;
-            }
-        }
+        return channel;
     }
 }

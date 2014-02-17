@@ -20,6 +20,7 @@ import co.paralleluniverse.fibers.Suspendable;
 import co.paralleluniverse.strands.Strand;
 import co.paralleluniverse.strands.channels.Channel;
 import co.paralleluniverse.strands.channels.Channels;
+import co.paralleluniverse.strands.channels.ProducerException;
 import co.paralleluniverse.strands.channels.ReceivePort;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -117,10 +118,10 @@ public class ChannelObservableTest {
         try {
             c.receive();
             fail();
-        } catch(MyException e) {
-            
+        } catch(ProducerException e) {
+            assertThat(e.getCause(), instanceOf(MyException.class));
         }
-        assertThat(c.receive(), is(nullValue()));
+        assertThat(c.isClosed(), is(true));
     }
     
     static class MyException extends RuntimeException {
