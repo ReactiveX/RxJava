@@ -67,7 +67,6 @@ import rx.operators.OperationOnErrorReturn;
 import rx.operators.OperationOnExceptionResumeNextViaObservable;
 import rx.operators.OperationParallelMerge;
 import rx.operators.OperationReplay;
-import rx.operators.OperationRetry;
 import rx.operators.OperationSample;
 import rx.operators.OperatorScan;
 import rx.operators.OperationSequenceEqual;
@@ -100,6 +99,7 @@ import rx.operators.OperatorMerge;
 import rx.operators.OperatorObserveOn;
 import rx.operators.OperatorParallel;
 import rx.operators.OperatorRepeat;
+import rx.operators.OperatorRetry;
 import rx.operators.OperatorSubscribeOn;
 import rx.operators.OperatorTake;
 import rx.operators.OperatorTimeout;
@@ -6036,7 +6036,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Error-Handling-Operators#wiki-retry">RxJava Wiki: retry()</a>
      */
     public final Observable<T> retry() {
-        return create(OperationRetry.retry(this));
+        return create(new OperatorRetry<T>(this));
     }
 
     /**
@@ -6060,7 +6060,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Error-Handling-Operators#wiki-retry">RxJava Wiki: retry()</a>
      */
     public final Observable<T> retry(int retryCount) {
-        return create(OperationRetry.retry(this, retryCount));
+        return create(new OperatorRetry<T>(this, retryCount));
     }
 
     /**
