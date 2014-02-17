@@ -20,7 +20,9 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
+import rx.Observable.Operator;
 import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.exceptions.CompositeException;
 import rx.functions.Action0;
@@ -46,10 +48,18 @@ import rx.subscriptions.Subscriptions;
  * You can use this to prevent errors from propagating or to supply fallback data should errors be
  * encountered.
  */
-public final class OperationOnErrorResumeNextViaFunction<T> {
+public final class OperatorOnErrorResumeNextViaFunction<T> implements Operator<T, T> {
 
-    public static <T> OnSubscribeFunc<T> onErrorResumeNextViaFunction(Observable<? extends T> originalSequence, Func1<Throwable, ? extends Observable<? extends T>> resumeFunction) {
-        return new OnErrorResumeNextViaFunction<T>(originalSequence, resumeFunction);
+    private final Func1<Throwable, ? extends Observable<? extends T>> resumeFunction;
+    
+    OperatorOnErrorResumeNextViaFunction(Func1<Throwable, ? extends Observable<? extends T>> f) {
+        this.resumeFunction = f;
+    }
+    
+    @Override
+    public Subscriber<? super T> call(Subscriber<? super T> t1) {
+        // TODO Auto-generated method stub
+        return null;
     }
 
     private static class OnErrorResumeNextViaFunction<T> implements OnSubscribeFunc<T> {
@@ -116,4 +126,6 @@ public final class OperationOnErrorResumeNextViaFunction<T> {
             });
         }
     }
+
+
 }

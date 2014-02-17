@@ -18,7 +18,7 @@ package rx.operators;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
-import static rx.operators.OperationOnErrorResumeNextViaFunction.*;
+import static rx.operators.OperatorOnErrorResumeNextViaFunction.*;
 
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -31,7 +31,7 @@ import rx.Subscription;
 import rx.functions.Func1;
 import rx.subscriptions.Subscriptions;
 
-public class OperationOnErrorResumeNextViaFunctionTest {
+public class OperatorOnErrorResumeNextViaFunctionTest {
 
     @Test
     public void testResumeNextWithSynchronousExecution() {

@@ -79,7 +79,7 @@ import rx.operators.OperationMergeDelayError;
 import rx.operators.OperationMergeMaxConcurrent;
 import rx.operators.OperationMinMax;
 import rx.operators.OperationMulticast;
-import rx.operators.OperationOnErrorResumeNextViaFunction;
+import rx.operators.OperatorOnErrorResumeNextViaFunction;
 import rx.operators.OperationOnErrorResumeNextViaObservable;
 import rx.operators.OperationOnErrorReturn;
 import rx.operators.OperationOnExceptionResumeNextViaObservable;
@@ -5209,7 +5209,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Error-Handling-Operators#wiki-onerrorresumenext">RxJava Wiki: onErrorResumeNext()</a>
      */
     public final Observable<T> onErrorResumeNext(final Func1<Throwable, ? extends Observable<? extends T>> resumeFunction) {
-        return create(OperationOnErrorResumeNextViaFunction.onErrorResumeNextViaFunction(this, resumeFunction));
+        return create(OperatorOnErrorResumeNextViaFunction.onErrorResumeNextViaFunction(this, resumeFunction));
     }
 
     /**
