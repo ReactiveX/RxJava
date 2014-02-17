@@ -24,12 +24,12 @@ import rx.Observer;
 import rx.Scheduler;
 import rx.Scheduler.Inner;
 import rx.Subscription;
+import rx.functions.Action1;
+import rx.functions.Func1;
 import rx.observers.SynchronizedObserver;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.SerialSubscription;
-import rx.util.functions.Action1;
-import rx.util.functions.Func1;
 
 /**
  * This operation is used to filter out bursts of events. This is done by ignoring the events from an observable which are too

@@ -27,10 +27,10 @@ import org.mockito.InOrder;
 
 import rx.Observable;
 import rx.Observer;
+import rx.functions.Func2;
+import rx.functions.Func3;
 import rx.operators.OperationReduceTest.CustomException;
 import rx.subjects.PublishSubject;
-import rx.util.functions.Func2;
-import rx.util.functions.Func3;
 
 public class OperatorZipIterableTest {
     Func2<String, String, String> concat2Strings;

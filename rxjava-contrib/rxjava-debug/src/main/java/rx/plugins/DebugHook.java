@@ -5,11 +5,11 @@ import rx.Observable.OnSubscribe;
 import rx.Observable.Operator;
 import rx.Subscriber;
 import rx.Subscription;
+import rx.functions.Action1;
+import rx.functions.Actions;
+import rx.functions.Func1;
+import rx.functions.Functions;
 import rx.operators.DebugSubscriber;
-import rx.util.functions.Action1;
-import rx.util.functions.Actions;
-import rx.util.functions.Func1;
-import rx.util.functions.Functions;
 
 /**
  * Implements hooks into the {@link Observable} chain to emit a detailed account of all the events

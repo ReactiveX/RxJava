@@ -13,11 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rx.util.functions;
+package rx.functions;
 
 /**
- * A vector-argument action.
+ * All Func and Action interfaces extend from this.
+ * <p>
+ * Marker interface to allow instanceof checks.
  */
-public interface ActionN extends Action {
-    void call(Object... args);
+public interface Function {
+
 }

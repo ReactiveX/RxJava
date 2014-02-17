@@ -22,7 +22,7 @@ import java.util.List;
 
 import rx.Observable.Operator;
 import rx.Subscriber;
-import rx.util.functions.Func2;
+import rx.functions.Func2;
 
 /**
  * Return an Observable that emits the items emitted by the source Observable, in a sorted order

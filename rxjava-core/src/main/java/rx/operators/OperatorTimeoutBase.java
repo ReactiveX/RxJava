@@ -23,10 +23,10 @@ import rx.Observable;
 import rx.Observable.Operator;
 import rx.Subscriber;
 import rx.Subscription;
+import rx.functions.Func2;
+import rx.functions.Func3;
 import rx.observers.SynchronizedSubscriber;
 import rx.subscriptions.SerialSubscription;
-import rx.util.functions.Func2;
-import rx.util.functions.Func3;
 
 class OperatorTimeoutBase<T> implements Operator<T, T> {
 

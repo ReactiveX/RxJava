@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rx.util.functions;
+package rx.functions;
 
 public interface Func1<T1, R> extends Function {
     public R call(T1 t1);

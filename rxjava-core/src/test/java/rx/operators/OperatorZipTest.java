@@ -37,13 +37,13 @@ import rx.Observable.OnSubscribe;
 import rx.Observer;
 import rx.Subscriber;
 import rx.Subscription;
+import rx.functions.Action1;
+import rx.functions.Func2;
+import rx.functions.Func3;
+import rx.functions.FuncN;
+import rx.functions.Functions;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.Subscriptions;
-import rx.util.functions.Action1;
-import rx.util.functions.Func2;
-import rx.util.functions.Func3;
-import rx.util.functions.FuncN;
-import rx.util.functions.Functions;
 
 public class OperatorZipTest {
     Func2<String, String, String> concat2Strings;

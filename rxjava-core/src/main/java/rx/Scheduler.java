@@ -17,7 +17,7 @@ package rx;
 
 import java.util.concurrent.TimeUnit;
 
-import rx.util.functions.Action1;
+import rx.functions.Action1;
 
 /**
  * Represents an object that schedules units of work.

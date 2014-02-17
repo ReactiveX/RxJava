@@ -19,7 +19,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import rx.Observable;
 import rx.Subscription;
-import rx.util.functions.Action0;
+import rx.functions.Action0;
 
 /**
  * Subscription that can be checked for status such as in a loop inside an {@link Observable} to exit the loop if unsubscribed.

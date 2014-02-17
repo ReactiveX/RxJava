@@ -21,7 +21,7 @@ import org.junit.Test;
 
 import rx.CovarianceTest.HorrorMovie;
 import rx.CovarianceTest.Movie;
-import rx.util.functions.Func2;
+import rx.functions.Func2;
 
 public class ReduceTests {
 

@@ -19,9 +19,9 @@ import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.exceptions.Exceptions;
+import rx.functions.Func0;
+import rx.functions.Func1;
 import rx.subscriptions.Subscriptions;
-import rx.util.functions.Func0;
-import rx.util.functions.Func1;
 
 /**
  * Returns an Observable that mirrors the source Observable. If either the first

@@ -26,9 +26,9 @@ import org.mockito.MockitoAnnotations;
 
 import rx.Observable;
 import rx.Observer;
-import rx.util.functions.Func1;
-import rx.util.functions.Func2;
-import rx.util.functions.Functions;
+import rx.functions.Func1;
+import rx.functions.Func2;
+import rx.functions.Functions;
 
 public class OperationReduceTest {
     @Mock

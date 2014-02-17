@@ -26,10 +26,10 @@ import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
+import rx.functions.Action0;
+import rx.functions.Func1;
 import rx.observables.SwingObservable;
 import rx.subscriptions.Subscriptions;
-import rx.util.functions.Action0;
-import rx.util.functions.Func1;
 
 public enum ComponentEventSource { ; // no instances
 
@@ -88,7 +88,7 @@ public enum ComponentEventSource { ; // no instances
     /**
      * Predicates that help with filtering observables for specific component events. 
      */
-    public enum Predicate implements rx.util.functions.Func1<java.awt.event.ComponentEvent, Boolean> { 
+    public enum Predicate implements rx.functions.Func1<java.awt.event.ComponentEvent, Boolean> { 
         RESIZED(ComponentEvent.COMPONENT_RESIZED),
         HIDDEN(ComponentEvent.COMPONENT_HIDDEN),
         MOVED(ComponentEvent.COMPONENT_MOVED),

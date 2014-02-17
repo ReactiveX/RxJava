@@ -13,8 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rx.util.functions;
 
-public interface Action2<T1, T2> extends Action {
-    public void call(T1 t1, T2 t2);
+package rx.functions;
+
+/**
+ * A five-argument action.
+ */
+public interface Action5<T1, T2, T3, T4, T5> extends Action {
+    void call(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5);
 }

@@ -19,8 +19,8 @@ import org.junit.Test;
 
 import rx.Observable;
 import rx.Observer;
+import rx.functions.Action1;
 import rx.subjects.PublishSubject;
-import rx.util.functions.Action1;
 
 public class ExceptionsTest {
 

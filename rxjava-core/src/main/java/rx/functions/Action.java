@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rx.util.functions;
+package rx.functions;
 
 /**
- * All Func and Action interfaces extend from this.
+ * All Action interfaces extend from this.
  * <p>
  * Marker interface to allow instanceof checks.
  */
-public interface Function {
+public interface Action extends Function {
 
 }

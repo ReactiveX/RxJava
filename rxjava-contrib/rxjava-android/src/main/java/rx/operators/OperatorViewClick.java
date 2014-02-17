@@ -26,9 +26,9 @@ import rx.Subscriber;
 import rx.Subscription;
 import rx.android.observables.ViewObservable;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action0;
+import rx.functions.Action1;
 import rx.subscriptions.Subscriptions;
-import rx.util.functions.Action0;
-import rx.util.functions.Action1;
 import android.view.View;
 
 public final class OperatorViewClick implements Observable.OnSubscribe<View> {

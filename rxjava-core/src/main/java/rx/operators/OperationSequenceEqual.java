@@ -18,9 +18,9 @@ package rx.operators;
 import static rx.Observable.*;
 import rx.Notification;
 import rx.Observable;
-import rx.util.functions.Func1;
-import rx.util.functions.Func2;
-import rx.util.functions.Functions;
+import rx.functions.Func1;
+import rx.functions.Func2;
+import rx.functions.Functions;
 
 /**
  * Returns an Observable that emits a Boolean value that indicate whether two

@@ -19,7 +19,7 @@ import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
-import rx.util.functions.Func0;
+import rx.functions.Func0;
 
 /**
  * Do not create the Observable until an Observer subscribes; create a fresh Observable on each

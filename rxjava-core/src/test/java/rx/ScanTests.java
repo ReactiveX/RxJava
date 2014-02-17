@@ -21,8 +21,8 @@ import java.util.Map;
 import org.junit.Test;
 
 import rx.EventStream.Event;
-import rx.util.functions.Action1;
-import rx.util.functions.Func2;
+import rx.functions.Action1;
+import rx.functions.Func2;
 
 public class ScanTests {
 

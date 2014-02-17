@@ -20,7 +20,7 @@ import rx.Observable.Operator;
 import rx.Scheduler;
 import rx.Scheduler.Inner;
 import rx.Subscriber;
-import rx.util.functions.Action1;
+import rx.functions.Action1;
 
 /**
  * Subscribes Observers on the specified Scheduler.

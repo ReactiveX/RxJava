@@ -31,9 +31,9 @@ import org.mockito.InOrder;
 
 import rx.Observable;
 import rx.Observer;
+import rx.functions.Func0;
 import rx.schedulers.Schedulers;
 import rx.util.async.Async;
-import rx.util.functions.Func0;
 
 public class OperationStartFutureTest {
     /** Custom exception to distinguish from any other RuntimeException. */

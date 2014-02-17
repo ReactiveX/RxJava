@@ -15,7 +15,7 @@
  */
 package rx.operators;
 
-import static rx.util.functions.Functions.*;
+import static rx.functions.Functions.*;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -23,7 +23,7 @@ import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
-import rx.util.functions.Func1;
+import rx.functions.Func1;
 
 /**
  * Returns an {@link Observable} that emits <code>true</code> if any element of

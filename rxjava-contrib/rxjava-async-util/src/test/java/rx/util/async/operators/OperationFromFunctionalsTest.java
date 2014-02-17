@@ -32,11 +32,11 @@ import org.mockito.InOrder;
 
 import rx.Observable;
 import rx.Observer;
+import rx.functions.Action0;
+import rx.functions.Func0;
 import rx.observers.TestObserver;
 import rx.schedulers.TestScheduler;
 import rx.util.async.Async;
-import rx.util.functions.Action0;
-import rx.util.functions.Func0;
 
 public class OperationFromFunctionalsTest {
     TestScheduler scheduler;

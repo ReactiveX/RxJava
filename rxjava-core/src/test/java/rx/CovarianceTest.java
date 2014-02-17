@@ -19,7 +19,7 @@ import java.util.ArrayList;
 
 import org.junit.Test;
 
-import rx.util.functions.Func2;
+import rx.functions.Func2;
 
 /**
  * Test super/extends of generics.

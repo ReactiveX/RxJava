@@ -34,11 +34,11 @@ import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Observer;
 import rx.Subscriber;
+import rx.functions.Func0;
+import rx.functions.Func1;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
-import rx.util.functions.Func0;
-import rx.util.functions.Func1;
 
 public class OperatorTimeoutWithSelectorTest {
     @Test(timeout = 2000)

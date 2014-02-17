@@ -42,13 +42,13 @@ import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
 import rx.observers.TestObserver;
 import rx.observers.TestSubscriber;
 import rx.operators.OperationObserveFromAndroidComponent;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.BooleanSubscription;
-import rx.util.functions.Action1;
 import android.app.Activity;
 import android.app.Fragment;
 

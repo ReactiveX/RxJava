@@ -34,7 +34,7 @@ import java.util.concurrent.Future;
 
 import rx.Observable;
 import rx.Scheduler;
-import rx.util.functions.Func0;
+import rx.functions.Func0;
 
 /**
  * Start an asynchronous Future immediately and observe its result through

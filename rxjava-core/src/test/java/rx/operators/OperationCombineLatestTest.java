@@ -28,11 +28,11 @@ import org.mockito.Matchers;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
+import rx.functions.Func2;
+import rx.functions.Func3;
+import rx.functions.FuncN;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.Subscriptions;
-import rx.util.functions.Func2;
-import rx.util.functions.Func3;
-import rx.util.functions.FuncN;
 
 public class OperationCombineLatestTest {
 

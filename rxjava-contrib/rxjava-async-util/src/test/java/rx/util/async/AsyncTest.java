@@ -17,6 +17,7 @@
 package rx.util.async;
 
 import java.util.concurrent.CountDownLatch;
+
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
@@ -36,31 +37,31 @@ import org.mockito.stubbing.Answer;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
+import rx.functions.Action0;
+import rx.functions.Action1;
+import rx.functions.Action2;
+import rx.functions.Action3;
+import rx.functions.Action4;
+import rx.functions.Action5;
+import rx.functions.Action6;
+import rx.functions.Action7;
+import rx.functions.Action8;
+import rx.functions.Action9;
+import rx.functions.ActionN;
+import rx.functions.Func0;
+import rx.functions.Func1;
+import rx.functions.Func2;
+import rx.functions.Func3;
+import rx.functions.Func4;
+import rx.functions.Func5;
+import rx.functions.Func6;
+import rx.functions.Func7;
+import rx.functions.Func8;
+import rx.functions.Func9;
+import rx.functions.FuncN;
 import rx.observers.TestObserver;
 import rx.schedulers.Schedulers;
 import rx.schedulers.TestScheduler;
-import rx.util.functions.Action0;
-import rx.util.functions.Action1;
-import rx.util.functions.Action2;
-import rx.util.functions.Action3;
-import rx.util.functions.Action4;
-import rx.util.functions.Action5;
-import rx.util.functions.Action6;
-import rx.util.functions.Action7;
-import rx.util.functions.Action8;
-import rx.util.functions.Action9;
-import rx.util.functions.ActionN;
-import rx.util.functions.Func0;
-import rx.util.functions.Func1;
-import rx.util.functions.Func2;
-import rx.util.functions.Func3;
-import rx.util.functions.Func4;
-import rx.util.functions.Func5;
-import rx.util.functions.Func6;
-import rx.util.functions.Func7;
-import rx.util.functions.Func8;
-import rx.util.functions.Func9;
-import rx.util.functions.FuncN;
 
 public class AsyncTest {
     @Mock

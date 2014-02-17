@@ -35,14 +35,14 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import rx.Observable.OnSubscribeFunc;
+import rx.functions.Action1;
+import rx.functions.Action2;
+import rx.functions.Func1;
+import rx.functions.Func2;
 import rx.observables.ConnectableObservable;
 import rx.schedulers.TestScheduler;
 import rx.subscriptions.BooleanSubscription;
 import rx.subscriptions.Subscriptions;
-import rx.util.functions.Action1;
-import rx.util.functions.Action2;
-import rx.util.functions.Func1;
-import rx.util.functions.Func2;
 
 public class ObservableTests {
 

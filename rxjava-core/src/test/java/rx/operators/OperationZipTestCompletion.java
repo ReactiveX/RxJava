@@ -23,8 +23,8 @@ import org.mockito.InOrder;
 
 import rx.Observable;
 import rx.Observer;
+import rx.functions.Func2;
 import rx.subjects.PublishSubject;
-import rx.util.functions.Func2;
 
 /**
  * Systematically tests that when zipping an infinite and a finite Observable,

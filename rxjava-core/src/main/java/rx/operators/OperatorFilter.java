@@ -17,8 +17,8 @@ package rx.operators;
 
 import rx.Observable.Operator;
 import rx.Subscriber;
+import rx.functions.Func1;
 import rx.observables.GroupedObservable;
-import rx.util.functions.Func1;
 
 /**
  * Filters an Observable by discarding any items it emits that do not meet some test.

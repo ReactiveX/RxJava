@@ -28,9 +28,9 @@ import rx.Observable;
 import rx.Observer;
 import rx.Scheduler.Inner;
 import rx.Subscription;
+import rx.functions.Action1;
 import rx.schedulers.TestScheduler;
 import rx.subscriptions.Subscriptions;
-import rx.util.functions.Action1;
 
 public class OperationThrottleFirstTest {
 

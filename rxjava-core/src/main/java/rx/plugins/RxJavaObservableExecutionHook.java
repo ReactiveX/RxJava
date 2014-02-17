@@ -21,7 +21,7 @@ import rx.Observable.OnSubscribeFunc;
 import rx.Observable.Operator;
 import rx.Subscriber;
 import rx.Subscription;
-import rx.util.functions.Func1;
+import rx.functions.Func1;
 
 /**
  * Abstract ExecutionHook with invocations at different lifecycle points of {@link Observable} execution with a default no-op implementation.

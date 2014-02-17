@@ -28,8 +28,8 @@ import org.mockito.Mockito;
 
 import rx.Scheduler.Inner;
 import rx.Subscription;
-import rx.util.functions.Action1;
-import rx.util.functions.Func1;
+import rx.functions.Action1;
+import rx.functions.Func1;
 
 public class TestSchedulerTest {
 

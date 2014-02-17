@@ -24,9 +24,9 @@ import rx.Observer;
 import rx.Scheduler;
 import rx.Scheduler.Inner;
 import rx.Subscription;
+import rx.functions.Action1;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.Subscriptions;
-import rx.util.functions.Action1;
 
 /**
  * Returns an Observable that emits the first <code>num</code> items emitted by the source

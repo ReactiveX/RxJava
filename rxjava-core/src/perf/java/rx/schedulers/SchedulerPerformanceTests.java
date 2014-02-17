@@ -20,7 +20,7 @@ import java.util.Arrays;
 import rx.Observable;
 import rx.Scheduler;
 import rx.Subscriber;
-import rx.util.functions.Action0;
+import rx.functions.Action0;
 
 public class SchedulerPerformanceTests {
 

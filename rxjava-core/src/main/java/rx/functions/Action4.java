@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rx.util.functions;
+
+package rx.functions;
 
 /**
- * An eight-argument action.
+ * A four-argument action.
  */
-public interface Action8<T1, T2, T3, T4, T5, T6, T7, T8> extends Action {
-    void call(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8);
+public interface Action4<T1, T2, T3, T4> extends Action {
+    void call(T1 t1, T2 t2, T3 t3, T4 t4);
 }

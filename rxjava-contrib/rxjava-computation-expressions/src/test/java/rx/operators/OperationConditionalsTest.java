@@ -33,10 +33,10 @@ import rx.Observable;
 import rx.Observer;
 import rx.Statement;
 import rx.Subscription;
+import rx.functions.Func0;
 import rx.observers.TestObserver;
 import rx.schedulers.Schedulers;
 import rx.schedulers.TestScheduler;
-import rx.util.functions.Func0;
 
 public class OperationConditionalsTest {
     @Mock

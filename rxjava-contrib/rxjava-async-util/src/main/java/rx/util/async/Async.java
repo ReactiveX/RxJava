@@ -25,6 +25,29 @@ import rx.Scheduler;
 import rx.Scheduler.Inner;
 import rx.Subscriber;
 import rx.Subscription;
+import rx.functions.Action0;
+import rx.functions.Action1;
+import rx.functions.Action2;
+import rx.functions.Action3;
+import rx.functions.Action4;
+import rx.functions.Action5;
+import rx.functions.Action6;
+import rx.functions.Action7;
+import rx.functions.Action8;
+import rx.functions.Action9;
+import rx.functions.ActionN;
+import rx.functions.Actions;
+import rx.functions.Func0;
+import rx.functions.Func1;
+import rx.functions.Func2;
+import rx.functions.Func3;
+import rx.functions.Func4;
+import rx.functions.Func5;
+import rx.functions.Func6;
+import rx.functions.Func7;
+import rx.functions.Func8;
+import rx.functions.Func9;
+import rx.functions.FuncN;
 import rx.schedulers.Schedulers;
 import rx.subjects.AsyncSubject;
 import rx.subjects.PublishSubject;
@@ -35,29 +58,6 @@ import rx.util.async.operators.OperationDeferFuture;
 import rx.util.async.operators.OperationForEachFuture;
 import rx.util.async.operators.OperationFromFunctionals;
 import rx.util.async.operators.OperationStartFuture;
-import rx.util.functions.Action0;
-import rx.util.functions.Action1;
-import rx.util.functions.Action2;
-import rx.util.functions.Action3;
-import rx.util.functions.Action4;
-import rx.util.functions.Action5;
-import rx.util.functions.Action6;
-import rx.util.functions.Action7;
-import rx.util.functions.Action8;
-import rx.util.functions.Action9;
-import rx.util.functions.ActionN;
-import rx.util.functions.Actions;
-import rx.util.functions.Func0;
-import rx.util.functions.Func1;
-import rx.util.functions.Func2;
-import rx.util.functions.Func3;
-import rx.util.functions.Func4;
-import rx.util.functions.Func5;
-import rx.util.functions.Func6;
-import rx.util.functions.Func7;
-import rx.util.functions.Func8;
-import rx.util.functions.Func9;
-import rx.util.functions.FuncN;
 
 /**
  * Utility methods to convert functions and actions into asynchronous operations
@@ -1340,7 +1340,7 @@ public final class Async {
      * @param <T> the result type
      * @param functionAsync the asynchronous function to run
      * @return an Observable that surfaces the result of the future
-     * @see #startFuture(rx.util.functions.Func0, rx.Scheduler)
+     * @see #startFuture(rx.functions.Func0, rx.Scheduler)
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Async-Operators#startfuture">RxJava Wiki: startFuture()</a>
      */
     public static <T> Observable<T> startFuture(Func0<? extends Future<? extends T>> functionAsync) {
@@ -1379,7 +1379,7 @@ public final class Async {
      *                               observer
      * @return the Observable emitting items produced by the asynchronous
      *         observer produced by the factory
-     * @see #deferFuture(rx.util.functions.Func0, rx.Scheduler)
+     * @see #deferFuture(rx.functions.Func0, rx.Scheduler)
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Async-Operators#deferfuture">RxJava Wiki: deferFuture()</a>
      */
     public static <T> Observable<T> deferFuture(Func0<? extends Future<? extends Observable<? extends T>>> observableFactoryAsync) {
@@ -1420,7 +1420,7 @@ public final class Async {
      * @param source the source Observable
      * @param onNext the action to call with each emitted element
      * @return the Future representing the entire for-each operation
-     * @see #forEachFuture(rx.util.functions.Action1, rx.Scheduler)
+     * @see #forEachFuture(rx.functions.Action1, rx.Scheduler)
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Async-Operators#foreachfuture">RxJava Wiki: forEachFuture()</a>
      */
     public static <T> FutureTask<Void> forEachFuture(
@@ -1444,7 +1444,7 @@ public final class Async {
      * @param onNext the action to call with each emitted element
      * @param onError the action to call when an exception is emitted
      * @return the Future representing the entire for-each operation
-     * @see #forEachFuture(rx.util.functions.Action1, rx.util.functions.Action1, rx.Scheduler)
+     * @see #forEachFuture(rx.functions.Action1, rx.functions.Action1, rx.Scheduler)
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Async-Operators#foreachfuture">RxJava Wiki: forEachFuture()</a>
      */
     public static <T> FutureTask<Void> forEachFuture(
@@ -1470,7 +1470,7 @@ public final class Async {
      * @param onError the action to call when an exception is emitted
      * @param onCompleted the action to call when the source completes
      * @return the Future representing the entire for-each operation
-     * @see #forEachFuture(rx.util.functions.Action1, rx.util.functions.Action1, rx.util.functions.Action0, rx.Scheduler)
+     * @see #forEachFuture(rx.functions.Action1, rx.functions.Action1, rx.functions.Action0, rx.Scheduler)
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Async-Operators#foreachfuture">RxJava Wiki: forEachFuture()</a>
      */
     public static <T> FutureTask<Void> forEachFuture(
@@ -1593,7 +1593,7 @@ public final class Async {
      * @param function the function to call on each subscription
      * @return an Observable that calls the given function and emits its
      *         result when an Observer subscribes
-     * @see #start(rx.util.functions.Func0) 
+     * @see #start(rx.functions.Func0) 
      * @see #fromCallable(java.util.concurrent.Callable) 
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Async-Operators#fromfunc0">RxJava Wiki: fromFunc0()</a>
      */
@@ -1613,8 +1613,8 @@ public final class Async {
      * @param callable the callable to call on each subscription
      * @return an Observable that calls the given Callable and emits its
      *         result or Exception when an Observer subscribes
-     * @see #start(rx.util.functions.Func0) 
-     * @see #fromFunc0(rx.util.functions.Func0) 
+     * @see #start(rx.functions.Func0) 
+     * @see #fromFunc0(rx.functions.Func0) 
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Async-Operators#fromcallable">RxJava Wiki: fromCallable()</a>
      */
     public static <R> Observable<R> fromCallable(Callable<? extends R> callable) {
@@ -1671,7 +1671,7 @@ public final class Async {
      *                  result is emitted
      * @return an Observable that calls the given function and emits its
      *         result when an Observer subscribes
-     * @see #start(rx.util.functions.Func0) 
+     * @see #start(rx.functions.Func0) 
      * @see #fromCallable(java.util.concurrent.Callable) 
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Async-Operators#fromfunc0">RxJava Wiki: fromFunc0()</a>
      */
@@ -1691,8 +1691,8 @@ public final class Async {
      *                  result is emitted
      * @return an Observable that calls the given Callable and emits its
      *         result or Exception when an Observer subscribes
-     * @see #start(rx.util.functions.Func0) 
-     * @see #fromFunc0(rx.util.functions.Func0) 
+     * @see #start(rx.functions.Func0) 
+     * @see #fromFunc0(rx.functions.Func0) 
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Async-Operators#fromcallable">RxJava Wiki: fromCallable()</a>
      */
     public static <R> Observable<R> fromCallable(Callable<? extends R> callable, Scheduler scheduler) {

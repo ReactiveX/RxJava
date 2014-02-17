@@ -21,8 +21,8 @@ import java.util.concurrent.FutureTask;
 import rx.Observable;
 import rx.Subscription;
 import rx.exceptions.Exceptions;
-import rx.util.functions.Action0;
-import rx.util.functions.Action1;
+import rx.functions.Action0;
+import rx.functions.Action1;
 
 /**
  * Convert the observation of a source observable to a big Future call.

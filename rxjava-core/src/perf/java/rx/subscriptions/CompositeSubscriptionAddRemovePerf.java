@@ -1,7 +1,7 @@
 package rx.subscriptions;
 
+import rx.functions.Action0;
 import rx.perf.AbstractPerformanceTester;
-import rx.util.functions.Action0;
 
 public class CompositeSubscriptionAddRemovePerf extends AbstractPerformanceTester {
 

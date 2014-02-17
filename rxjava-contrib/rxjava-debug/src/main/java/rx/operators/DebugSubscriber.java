@@ -3,9 +3,9 @@ package rx.operators;
 import rx.Observable.Operator;
 import rx.Observer;
 import rx.Subscriber;
+import rx.functions.Action1;
+import rx.functions.Func1;
 import rx.plugins.DebugNotification;
-import rx.util.functions.Action1;
-import rx.util.functions.Func1;
 
 public final class DebugSubscriber<T> extends Subscriber<T> {
     private final Func1<T, T> onNextHook;

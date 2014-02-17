@@ -27,11 +27,11 @@ import java.util.Set;
 import javax.swing.AbstractButton;
 
 import rx.Observable;
+import rx.functions.Func1;
 import rx.swing.sources.AbstractButtonSource;
 import rx.swing.sources.ComponentEventSource;
 import rx.swing.sources.KeyEventSource;
 import rx.swing.sources.MouseEventSource;
-import rx.util.functions.Func1;
 
 /**
  * Allows creating observables from various sources specific to Swing. 

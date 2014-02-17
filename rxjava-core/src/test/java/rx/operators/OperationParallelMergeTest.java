@@ -24,10 +24,10 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 
 import rx.Observable;
+import rx.functions.Action1;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
-import rx.util.functions.Action1;
-import rx.util.functions.Func1;
 
 public class OperationParallelMergeTest {
 

@@ -24,8 +24,8 @@ import org.junit.Test;
 import rx.Subscriber;
 import rx.exceptions.CompositeException;
 import rx.exceptions.OnErrorNotImplementedException;
+import rx.functions.Action0;
 import rx.subscriptions.Subscriptions;
-import rx.util.functions.Action0;
 
 public class SafeObserverTest {
 
