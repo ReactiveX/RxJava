@@ -23,46 +23,16 @@ import rx.Subscriber;
 import rx.util.functions.Action1;
 
 /**
- * Subscribes and unsubscribes Observers on the specified Scheduler.
+ * Subscribes Observers on the specified Scheduler.
  * <p>
- * Will occur asynchronously except when subscribing to `GroupedObservable`, `PublishSubject` and possibly other "hot" Observables
- * in which case it will subscribe synchronously and buffer/block onNext calls until the subscribe has occurred.
- * <p>
- * See https://github.com/Netflix/RxJava/issues/844 for more information on the "time gap" issue that the synchronous
- * subscribe is solving.
- * 
  * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/subscribeOn.png">
  */
 public class OperatorSubscribeOn<T> implements Operator<T, Observable<T>> {
 
     private final Scheduler scheduler;
-    /**
-     * Indicate that events fired between the original subscription time and
-     * the actual subscription time should not get lost.
-     */
-    private final boolean dontLoseEvents;
-    /** The buffer size to avoid flooding. Negative value indicates an unbounded buffer. */
-    private final int bufferSize;
 
     public OperatorSubscribeOn(Scheduler scheduler) {
         this.scheduler = scheduler;
-        this.dontLoseEvents = false;
-        this.bufferSize = -1;
-    }
-
-    /**
-     * Construct a SubscribeOn operator.
-     * 
-     * @param scheduler
-     *            the target scheduler
-     * @param bufferSize
-     *            if dontLoseEvents == true, this indicates the buffer size. Filling the buffer will
-     *            block the source. -1 indicates an unbounded buffer
-     */
-    public OperatorSubscribeOn(Scheduler scheduler, int bufferSize) {
-        this.scheduler = scheduler;
-        this.dontLoseEvents = true;
-        this.bufferSize = bufferSize;
     }
 
     @Override
@@ -71,7 +41,7 @@ public class OperatorSubscribeOn<T> implements Operator<T, Observable<T>> {
 
             @Override
             public void onCompleted() {
-                // ignore
+                // ignore because this is a nested Observable and we expect only 1 Observable<T> emitted to onNext
             }
 
             @Override
@@ -79,33 +49,15 @@ public class OperatorSubscribeOn<T> implements Operator<T, Observable<T>> {
                 subscriber.onError(e);
             }
 
-            boolean checkNeedBuffer(Observable<?> o) {
-                return dontLoseEvents;
-            }
-
             @Override
             public void onNext(final Observable<T> o) {
-                if (checkNeedBuffer(o)) {
-                    // use buffering (possibly blocking) for a possibly synchronous subscribe
-                    final BufferUntilSubscriber<T> bus = new BufferUntilSubscriber<T>(bufferSize, subscriber);
-                    o.subscribe(bus);
-                    subscriber.add(scheduler.schedule(new Action1<Inner>() {
-                        @Override
-                        public void call(final Inner inner) {
-                            bus.enterPassthroughMode();
-                        }
-                    }));
-                    return;
-                } else {
-                    // no buffering (async subscribe)
-                    subscriber.add(scheduler.schedule(new Action1<Inner>() {
+                subscriber.add(scheduler.schedule(new Action1<Inner>() {
 
-                        @Override
-                        public void call(final Inner inner) {
-                            o.subscribe(subscriber);
-                        }
-                    }));
-                }
+                    @Override
+                    public void call(final Inner inner) {
+                        o.subscribe(subscriber);
+                    }
+                }));
             }
 
         };

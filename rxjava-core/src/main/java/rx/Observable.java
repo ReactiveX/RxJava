@@ -108,6 +108,7 @@ import rx.operators.OperatorTimeoutWithSelector;
 import rx.operators.OperatorTimestamp;
 import rx.operators.OperatorToObservableList;
 import rx.operators.OperatorToObservableSortedList;
+import rx.operators.OperatorUnsubscribeOn;
 import rx.operators.OperatorZip;
 import rx.operators.OperatorZipIterable;
 import rx.plugins.RxJavaObservableExecutionHook;
@@ -7074,14 +7075,14 @@ public class Observable<T> {
     }
 
     /**
-     * Asynchronously subscribes and unsubscribes Observers to this Observable on the specified
+     * Asynchronously subscribes Observers to this Observable on the specified
      * {@link Scheduler}.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/subscribeOn.png">
      * 
      * @param scheduler
-     *            the {@link Scheduler} to perform subscription and unsubscription actions on
-     * @return the source Observable modified so that its subscriptions and unsubscriptions happen on the
+     *            the {@link Scheduler} to perform subscription actions on
+     * @return the source Observable modified so that its subscriptions happen on the
      *         specified {@link Scheduler}
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#wiki-subscribeon">RxJava Wiki: subscribeOn()</a>
      * @see #subscribeOn(rx.Scheduler, int) 
@@ -8204,6 +8205,17 @@ public class Observable<T> {
         return lift(new OperatorToObservableSortedList<T>(sortFunction));
     }
 
+    /**
+     * Asynchronously unsubscribes on the specified {@link Scheduler}.
+     * 
+     * @param scheduler
+     *            the {@link Scheduler} to perform subscription and unsubscription actions on
+     * @return the source Observable modified so that its unsubscriptions happen on the specified {@link Scheduler}
+     */
+    public final Observable<T> unsubscribeOn(Scheduler scheduler) {
+        return lift(new OperatorUnsubscribeOn<T>(scheduler));
+    }
+    
     /**
      * Returns an Observable that represents a filtered version of the source Observable.
      * <p>
