@@ -15,16 +15,22 @@
  */
 package rx.operators;
 
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
-import static rx.operators.OperationRetry.*;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static rx.operators.OperationRetry.retry;
 
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 import org.mockito.InOrder;
 
 import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
@@ -55,7 +61,8 @@ public class OperationRetryTest {
         Observable.create(retry(origin, NUM_RETRIES)).subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
-        // should show 2 attempts (first time fail, second time (1st retry) fail)
+        // should show 2 attempts (first time fail, second time (1st retry)
+        // fail)
         inOrder.verify(observer, times(1 + NUM_RETRIES)).onNext("beginningEveryTime");
         // should only retry once, fail again and emit onError
         inOrder.verify(observer, times(1)).onError(any(RuntimeException.class));
@@ -104,6 +111,32 @@ public class OperationRetryTest {
         // should have a single successful onCompleted
         inOrder.verify(observer, times(1)).onCompleted();
         inOrder.verifyNoMoreInteractions();
+    }
+
+    @Test
+    public void testRetryAllowsSubscriptionAfterAllSubscriptionsUnsubsribed() {
+        final AtomicInteger subsCount = new AtomicInteger(0);
+        OnSubscribeFunc<String> onSubscribe = new OnSubscribeFunc<String>() {
+            @Override
+            public Subscription onSubscribe(Observer<? super String> observer) {
+                subsCount.incrementAndGet();
+                return new Subscription() {
+
+                    @Override
+                    public void unsubscribe() {
+                        subsCount.decrementAndGet();
+                    }
+                };
+            }
+        };
+        Observable<String> stream = Observable.create(onSubscribe);
+        Observable<String> streamWithRetry = stream.delay(1, TimeUnit.SECONDS);
+        Subscription sub = streamWithRetry.subscribe();
+        assertEquals(1, subsCount.get());
+        sub.unsubscribe();
+        assertEquals(0, subsCount.get());
+        streamWithRetry.subscribe();
+        assertEquals(1, subsCount.get());
     }
 
     public static class FuncWithErrors implements Observable.OnSubscribeFunc<String> {
