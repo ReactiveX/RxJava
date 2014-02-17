@@ -27,6 +27,7 @@ import java.nio.charset.CharsetEncoder;
 import java.nio.charset.CoderResult;
 import java.nio.charset.CodingErrorAction;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 import rx.Observable;
@@ -37,10 +38,28 @@ import rx.util.functions.Func1;
 import rx.util.functions.Func2;
 
 public class StringObservable {
+    /**
+     * Reads from the bytes from a source {@link InputStream} and outputs {@link Observable} of
+     * {@link byte[]}s
+     * 
+     * @param i
+     *            Source {@link InputStream}
+     * @return
+     */
     public static Observable<byte[]> from(final InputStream i) {
         return from(i, 8 * 1024);
     }
 
+    /**
+     * Reads from the bytes from a source {@link InputStream} and outputs {@link Observable} of
+     * {@link byte[]}s
+     * 
+     * @param i
+     *            Source {@link InputStream}
+     * @param size
+     *            internal buffer size
+     * @return
+     */
     public static Observable<byte[]> from(final InputStream i, final int size) {
         return Observable.create(new OnSubscribe<byte[]>() {
             @Override
@@ -65,10 +84,28 @@ public class StringObservable {
         });
     }
 
+    /**
+     * Reads from the characters from a source {@link Reader} and outputs {@link Observable} of
+     * {@link String}s
+     * 
+     * @param i
+     *            Source {@link Reader}
+     * @return
+     */
     public static Observable<String> from(final Reader i) {
         return from(i, 8 * 1024);
     }
 
+    /**
+     * Reads from the characters from a source {@link Reader} and outputs {@link Observable} of
+     * {@link String}s
+     * 
+     * @param i
+     *            Source {@link Reader}
+     * @param size
+     *            internal buffer size
+     * @return
+     */
     public static Observable<String> from(final Reader i, final int size) {
         return Observable.create(new OnSubscribe<String>() {
             @Override
@@ -80,7 +117,7 @@ public class StringObservable {
                     int n = 0;
                     n = i.read(buffer);
                     while (n != -1 && !o.isUnsubscribed()) {
-                        o.onNext(new String(buffer));
+                        o.onNext(new String(buffer, 0, n));
                         n = i.read(buffer);
                     }
                 } catch (IOException e) {
@@ -119,7 +156,7 @@ public class StringObservable {
 
     /**
      * Decodes a stream the multibyte chunks into a stream of strings that works on infinite streams
-     * and where handles when a multibyte character spans two chunks.
+     * and where it handles when a multibyte character spans two chunks.
      * This method allows for more control over how malformed and unmappable characters are handled.
      * 
      * @param src
@@ -151,6 +188,9 @@ public class StringObservable {
                     }
 
                     public boolean process(byte[] next, ByteBuffer last, boolean endOfInput) {
+                        if (o.isUnsubscribed())
+                            return false;
+
                         ByteBuffer bb;
                         if (last != null) {
                             if (next != null) {
@@ -270,8 +310,10 @@ public class StringObservable {
     /**
      * Rechunks the strings based on a regex pattern and works on infinite stream.
      * 
-     * resplit(["boo:an", "d:foo"], ":") --> ["boo", "and", "foo"]
-     * resplit(["boo:an", "d:foo"], "o") --> ["b", "", ":and:f", "", ""]
+     * <pre>
+     * split(["boo:an", "d:foo"], ":") --> ["boo", "and", "foo"]
+     * split(["boo:an", "d:foo"], "o") --> ["b", "", ":and:f", "", ""]
+     * </pre>
      * 
      * See {@link Pattern}
      * 
@@ -396,6 +438,58 @@ public class StringObservable {
                         b.append(String.valueOf(t));
                     }
                 };
+            }
+        });
+    }
+
+    public final static class Line {
+        private final int number;
+        private final String text;
+
+        public Line(int number, String text) {
+            this.number = number;
+            this.text = text;
+        }
+
+        public int getNumber() {
+            return number;
+        }
+
+        public String getText() {
+            return text;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(number, text);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (!(obj instanceof Line))
+                return false;
+            return Objects.equals(number, ((Line) obj).number) && Objects.equals(text, ((Line) obj).text);
+        }
+
+        @Override
+        public String toString() {
+            return number + ":" + text;
+        }
+    }
+
+    /**
+     * Splits the {@link Observable} of Strings by lines and numbers them (zero based index)
+     * 
+     * @param source
+     * @return
+     */
+    public static Observable<Line> byLine(Observable<String> source) {
+        return split(source, System.getProperty("line.separator")).map(new Func1<String, Line>() {
+            int lineNumber = 0;
+
+            @Override
+            public Line call(String text) {
+                return new Line(lineNumber++, text);
             }
         });
     }
