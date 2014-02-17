@@ -23,7 +23,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static rx.operators.OperationRetry.retry;
 
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
@@ -130,7 +129,7 @@ public class OperationRetryTest {
             }
         };
         Observable<String> stream = Observable.create(onSubscribe);
-        Observable<String> streamWithRetry = stream.delay(1, TimeUnit.SECONDS);
+        Observable<String> streamWithRetry = stream.retry();
         Subscription sub = streamWithRetry.subscribe();
         assertEquals(1, subsCount.get());
         sub.unsubscribe();
