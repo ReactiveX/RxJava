@@ -24,10 +24,10 @@ import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
+import rx.exceptions.CompositeException;
 import rx.observers.SynchronizedObserver;
 import rx.subscriptions.BooleanSubscription;
 import rx.subscriptions.CompositeSubscription;
-import rx.util.CompositeException;
 
 /**
  * This behaves like {@link OperatorMerge} except that if any of the merged Observables notify of

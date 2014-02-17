@@ -24,6 +24,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
+import rx.exceptions.Exceptions;
+import rx.exceptions.OnErrorNotImplementedException;
 import rx.joins.Pattern2;
 import rx.joins.Plan0;
 import rx.observables.BlockingObservable;
@@ -120,8 +122,6 @@ import rx.subjects.PublishSubject;
 import rx.subjects.ReplaySubject;
 import rx.subjects.Subject;
 import rx.subscriptions.Subscriptions;
-import rx.util.Exceptions;
-import rx.util.OnErrorNotImplementedException;
 import rx.util.TimeInterval;
 import rx.util.Timestamped;
 import rx.util.functions.Action0;

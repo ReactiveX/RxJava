@@ -25,7 +25,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 
 import rx.Subscription;
-import rx.util.CompositeException;
+import rx.exceptions.CompositeException;
 
 public class CompositeSubscriptionTest {
 

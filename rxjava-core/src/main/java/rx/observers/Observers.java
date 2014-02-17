@@ -1,7 +1,7 @@
 package rx.observers;
 
 import rx.Observer;
-import rx.util.OnErrorNotImplementedException;
+import rx.exceptions.OnErrorNotImplementedException;
 import rx.util.functions.Action0;
 import rx.util.functions.Action1;
 

@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Subscription;
-import rx.util.CompositeException;
+import rx.exceptions.CompositeException;
 
 /**
  * Subscription that represents a group of Subscriptions that are unsubscribed

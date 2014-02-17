@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rx.util;
+package rx.exceptions;
 
 import org.junit.Test;
 
 import rx.Observable;
 import rx.Observer;
+import rx.exceptions.OnErrorNotImplimport rx.util.OnErrorNotImplementedException;
+ementedException;
 import rx.subjects.PublishSubject;
 import rx.util.functions.Action1;
 

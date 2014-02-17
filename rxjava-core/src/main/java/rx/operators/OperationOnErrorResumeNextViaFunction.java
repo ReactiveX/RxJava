@@ -22,8 +22,8 @@ import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
+import rx.exceptions.CompositeException;
 import rx.subscriptions.Subscriptions;
-import rx.util.CompositeException;
 import rx.util.functions.Action0;
 import rx.util.functions.Func1;
 
