@@ -43,7 +43,7 @@ import rx.util.functions.Action0;
 import rx.util.functions.Action1;
 import rx.util.functions.Func1;
 
-public class OperatorObserveOnTest {
+public class OperatorObserveOnBoundedTest {
 
     /**
      * This is testing a no-op path since it uses Schedulers.immediate() which will not do scheduling.
@@ -52,7 +52,7 @@ public class OperatorObserveOnTest {
     @SuppressWarnings("unchecked")
     public void testObserveOn() {
         Observer<Integer> observer = mock(Observer.class);
-        Observable.from(1, 2, 3).observeOn(Schedulers.immediate()).subscribe(observer);
+        Observable.from(1, 2, 3).lift(new OperatorObserveOnBounded<Integer>(Schedulers.immediate(), 1)).subscribe(observer);
 
         verify(observer, times(1)).onNext(1);
         verify(observer, times(1)).onNext(2);
@@ -79,7 +79,7 @@ public class OperatorObserveOnTest {
             }
         }).when(observer).onCompleted();
 
-        obs.observeOn(Schedulers.computation()).subscribe(observer);
+        obs.lift(new OperatorObserveOnBounded<String>(Schedulers.computation(), 1)).subscribe(observer);
 
         if (!completedLatch.await(1000, TimeUnit.MILLISECONDS)) {
             fail("timed out waiting");
@@ -118,7 +118,7 @@ public class OperatorObserveOnTest {
         });
 
         // assert observe is on new thread
-        obs.observeOn(Schedulers.newThread()).doOnNext(new Action1<String>() {
+        obs.lift(new OperatorObserveOnBounded<String>(Schedulers.newThread(), 1)).doOnNext(new Action1<String>() {
 
             @Override
             public void call(String t1) {
@@ -151,7 +151,7 @@ public class OperatorObserveOnTest {
         Scheduler scheduler = Schedulers.immediate();
 
         Observable<Integer> o = Observable.from(1, 2, 3);
-        Observable<Integer> o2 = o.observeOn(scheduler);
+        Observable<Integer> o2 = o.lift(new OperatorObserveOnBounded<Integer>(scheduler, 1));
 
         @SuppressWarnings("unchecked")
         Observer<Object> observer1 = mock(Observer.class);
@@ -185,8 +185,8 @@ public class OperatorObserveOnTest {
         TestScheduler scheduler2 = new TestScheduler();
 
         Observable<Integer> o = Observable.from(1, 2, 3);
-        Observable<Integer> o1 = o.observeOn(scheduler1);
-        Observable<Integer> o2 = o.observeOn(scheduler2);
+        Observable<Integer> o1 = o.lift(new OperatorObserveOnBounded<Integer>(scheduler1, 1));
+        Observable<Integer> o2 = o.lift(new OperatorObserveOnBounded<Integer>(scheduler2, 1));
 
         @SuppressWarnings("unchecked")
         Observer<Object> observer1 = mock(Observer.class);
@@ -232,7 +232,7 @@ public class OperatorObserveOnTest {
                 return t1 * _multiple;
             }
 
-        }).observeOn(Schedulers.newThread())
+        }).lift(new OperatorObserveOnBounded<Integer>(Schedulers.newThread(), 1))
                 .toBlockingObservable().forEach(new Action1<Integer>() {
 
                     @Override
@@ -259,7 +259,7 @@ public class OperatorObserveOnTest {
                 return t1 * _multiple;
             }
 
-        }).observeOn(Schedulers.computation())
+        }).lift(new OperatorObserveOnBounded<Integer>(Schedulers.computation(), 1))
                 .toBlockingObservable().forEach(new Action1<Integer>() {
 
                     @Override
@@ -299,7 +299,7 @@ public class OperatorObserveOnTest {
                 return t1 * _multiple;
             }
 
-        }).observeOn(Schedulers.computation())
+        }).lift(new OperatorObserveOnBounded<Integer>(Schedulers.computation(), 1))
                 .toBlockingObservable().forEach(new Action1<Integer>() {
 
                     @Override
@@ -317,7 +317,7 @@ public class OperatorObserveOnTest {
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicLong completeTime = new AtomicLong();
         // use subscribeOn to make async, observeOn to move
-        Observable.range(1, 1000).subscribeOn(Schedulers.newThread()).observeOn(Schedulers.newThread()).subscribe(new Observer<Integer>() {
+        Observable.range(1, 1000).subscribeOn(Schedulers.newThread()).lift(new OperatorObserveOnBounded<Integer>(Schedulers.newThread(), 1)).subscribe(new Observer<Integer>() {
 
             @Override
             public void onCompleted() {
@@ -346,6 +346,109 @@ public class OperatorObserveOnTest {
         System.out.println("onComplete nanos after subscribe: " + (completeTime.get() - afterSubscribeTime));
     }
 
+    @Test
+    public final void testBackpressureOnFastProducerSlowConsumerWithUnsubscribeNewThread() throws InterruptedException {
+        testBackpressureOnFastProducerSlowConsumerWithUnsubscribe(Schedulers.newThread(), 1);
+    }
+
+    @Test
+    public final void testBackpressureOnFastProducerSlowConsumerWithUnsubscribeNewThreadAndBuffer8() throws InterruptedException {
+        testBackpressureOnFastProducerSlowConsumerWithUnsubscribe(Schedulers.newThread(), 8);
+    }
+
+    @Test
+    public final void testBackpressureOnFastProducerSlowConsumerWithUnsubscribeIO() throws InterruptedException {
+        testBackpressureOnFastProducerSlowConsumerWithUnsubscribe(Schedulers.io(), 1);
+    }
+
+    @Test
+    public final void testBackpressureOnFastProducerSlowConsumerWithUnsubscribeTrampoline() throws InterruptedException {
+        testBackpressureOnFastProducerSlowConsumerWithUnsubscribe(Schedulers.trampoline(), 1);
+    }
+
+    @Test
+    public final void testBackpressureOnFastProducerSlowConsumerWithUnsubscribeTestScheduler() throws InterruptedException {
+        testBackpressureOnFastProducerSlowConsumerWithUnsubscribe(Schedulers.test(), 1);
+    }
+
+    @Test
+    public final void testBackpressureOnFastProducerSlowConsumerWithUnsubscribeComputation() throws InterruptedException {
+        testBackpressureOnFastProducerSlowConsumerWithUnsubscribe(Schedulers.computation(), 1);
+    }
+
+    private final void testBackpressureOnFastProducerSlowConsumerWithUnsubscribe(Scheduler scheduler, int bufferSize) throws InterruptedException {
+        final AtomicInteger countEmitted = new AtomicInteger();
+        final AtomicInteger countTaken = new AtomicInteger();
+        int value = Observable.create(new OnSubscribeFunc<Integer>() {
+
+            @Override
+            public Subscription onSubscribe(final Observer<? super Integer> o) {
+                final BooleanSubscription s = BooleanSubscription.create();
+                Thread t = new Thread(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        int i = 1;
+                        while (!s.isUnsubscribed() && i <= 100) {
+                            //                            System.out.println("onNext from fast producer [" + Thread.currentThread() + "]: " + i);
+                            o.onNext(i++);
+                        }
+                        o.onCompleted();
+                    }
+                });
+                t.setDaemon(true);
+                t.start();
+                return s;
+            }
+        }).doOnNext(new Action1<Integer>() {
+
+            @Override
+            public void call(Integer i) {
+                countEmitted.incrementAndGet();
+            }
+        }).doOnCompleted(new Action0() {
+
+            @Override
+            public void call() {
+                //                System.out.println("-------- Done Emitting from Source ---------");
+            }
+        }).lift(new OperatorObserveOnBounded<Integer>(scheduler, bufferSize)).doOnNext(new Action1<Integer>() {
+
+            @Override
+            public void call(Integer i) {
+                //                System.out.println(">> onNext to slowConsumer  [" + Thread.currentThread() + "] pre-take: " + i);
+                //force it to be slower than the producer
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                countTaken.incrementAndGet();
+            }
+        }).take(10).doOnNext(new Action1<Integer>() {
+
+            @Override
+            public void call(Integer t) {
+                System.out.println("*********** value: " + t);
+            }
+
+        }).toBlockingObservable().last();
+
+        if (scheduler instanceof TrampolineScheduler || scheduler instanceof ImmediateScheduler || scheduler instanceof TestScheduler) {
+            // since there is no concurrency it will block and only emit as many as it can process
+            assertEquals(10, countEmitted.get());
+        } else {
+            // the others with concurrency should not emit all 100 ... but 10 + 2 in the pipeline
+            // NOTE: The +2 could change if the implementation of the queue logic changes. See Javadoc at top of class.
+            assertEquals(11, countEmitted.get(), bufferSize); // can be up to 11 + bufferSize
+        }
+        // number received after take (but take will filter any extra)
+        assertEquals(10, value);
+        // so we also want to check the doOnNext after observeOn to see if it got unsubscribed
+        Thread.sleep(200); // let time pass to see if the scheduler is still doing work
+        // we expect only 10 to make it through the observeOn side
+        assertEquals(10, countTaken.get());
+    }
 
     private static int randomIntFrom0to100() {
         // XORShift instead of Math.random http://javamex.com/tutorials/random_numbers/xorshift.shtml

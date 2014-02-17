@@ -69,6 +69,7 @@ import rx.operators.OperationParallelMerge;
 import rx.operators.OperationReplay;
 import rx.operators.OperationRetry;
 import rx.operators.OperationSample;
+import rx.operators.OperatorObserveOnBounded;
 import rx.operators.OperatorScan;
 import rx.operators.OperationSequenceEqual;
 import rx.operators.OperationSingle;
@@ -5148,7 +5149,7 @@ public class Observable<T> {
     }
 
     /**
-     * Move notifications to the specified {@link Scheduler} one {@code onNext} at a time.
+     * Move notifications to the specified {@link Scheduler} asynchronously with an unbounded buffer.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/observeOn.png">
      * 
@@ -5162,25 +5163,6 @@ public class Observable<T> {
         return lift(new OperatorObserveOn<T>(scheduler));
     }
 
-    /**
-     * Move notifications to the specified {@link Scheduler} asynchronously with a buffer of a specified size.
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/observeOn.png">
-     * <p>
-     * If the buffer fills to its maximum size...
-     * 
-     * @param scheduler
-     *            the {@link Scheduler} to notify {@link Observer}s on
-     * @param bufferSize
-     *            that will be rounded up to the next power of 2
-     * @return the source Observable modified so that its {@link Observer}s are notified on the specified
-     *         {@link Scheduler}
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#wiki-observeon">RxJava Wiki: observeOn()</a>
-     */
-    public final Observable<T> observeOn(Scheduler scheduler, int bufferSize) {
-        return lift(new OperatorObserveOn<T>(scheduler, bufferSize));
-    }
-    
     /**
      * Filters the items emitted by an Observable, only emitting those of the specified type.
      * <p>
