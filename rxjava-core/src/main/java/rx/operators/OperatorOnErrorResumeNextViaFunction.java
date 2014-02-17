@@ -15,19 +15,10 @@
  */
 package rx.operators;
 
-import java.util.Arrays;
-import java.util.concurrent.atomic.AtomicReference;
-
 import rx.Observable;
-import rx.Observable.OnSubscribeFunc;
 import rx.Observable.Operator;
-import rx.Observer;
 import rx.Subscriber;
-import rx.Subscription;
-import rx.exceptions.CompositeException;
-import rx.functions.Action0;
 import rx.functions.Func1;
-import rx.subscriptions.Subscriptions;
 
 /**
  * Instruct an Observable to pass control to another Observable (the return value of a function)
@@ -51,81 +42,36 @@ import rx.subscriptions.Subscriptions;
 public final class OperatorOnErrorResumeNextViaFunction<T> implements Operator<T, T> {
 
     private final Func1<Throwable, ? extends Observable<? extends T>> resumeFunction;
-    
-    OperatorOnErrorResumeNextViaFunction(Func1<Throwable, ? extends Observable<? extends T>> f) {
+
+    public OperatorOnErrorResumeNextViaFunction(Func1<Throwable, ? extends Observable<? extends T>> f) {
         this.resumeFunction = f;
     }
-    
+
     @Override
-    public Subscriber<? super T> call(Subscriber<? super T> t1) {
-        // TODO Auto-generated method stub
-        return null;
+    public Subscriber<? super T> call(final Subscriber<? super T> child) {
+        return new Subscriber<T>(child) {
+
+            @Override
+            public void onCompleted() {
+                child.onCompleted();
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                try {
+                    Observable<? extends T> resume = resumeFunction.call(e);
+                    resume.subscribe(child);
+                } catch (Throwable e2) {
+                    child.onError(e2);
+                }
+            }
+
+            @Override
+            public void onNext(T t) {
+                child.onNext(t);
+            }
+
+        };
     }
-
-    private static class OnErrorResumeNextViaFunction<T> implements OnSubscribeFunc<T> {
-
-        private final Func1<Throwable, ? extends Observable<? extends T>> resumeFunction;
-        private final Observable<? extends T> originalSequence;
-
-        public OnErrorResumeNextViaFunction(Observable<? extends T> originalSequence, Func1<Throwable, ? extends Observable<? extends T>> resumeFunction) {
-            this.resumeFunction = resumeFunction;
-            this.originalSequence = originalSequence;
-        }
-
-        public Subscription onSubscribe(final Observer<? super T> observer) {
-            // AtomicReference since we'll be accessing/modifying this across threads so we can switch it if needed
-            final AtomicReference<SafeObservableSubscription> subscriptionRef = new AtomicReference<SafeObservableSubscription>(new SafeObservableSubscription());
-
-            // subscribe to the original Observable and remember the subscription
-            subscriptionRef.get().wrap(new SafeObservableSubscription(originalSequence.subscribe(new Observer<T>() {
-                public void onNext(T value) {
-                    // forward the successful calls
-                    observer.onNext(value);
-                }
-
-                /**
-                 * Instead of passing the onError forward, we intercept and "resume" with the resumeSequence.
-                 */
-                public void onError(Throwable ex) {
-                    /* remember what the current subscription is so we can determine if someone unsubscribes concurrently */
-                    SafeObservableSubscription currentSubscription = subscriptionRef.get();
-                    // check that we have not been unsubscribed before we can process the error
-                    if (currentSubscription != null) {
-                        try {
-                            Observable<? extends T> resumeSequence = resumeFunction.call(ex);
-                            /* error occurred, so switch subscription to the 'resumeSequence' */
-                            SafeObservableSubscription innerSubscription = new SafeObservableSubscription(resumeSequence.subscribe(observer));
-                            /* we changed the sequence, so also change the subscription to the one of the 'resumeSequence' instead */
-                            if (!subscriptionRef.compareAndSet(currentSubscription, innerSubscription)) {
-                                // we failed to set which means 'subscriptionRef' was set to NULL via the unsubscribe below
-                                // so we want to immediately unsubscribe from the resumeSequence we just subscribed to
-                                innerSubscription.unsubscribe();
-                            }
-                        } catch (Throwable e) {
-                            // the resume function failed so we need to call onError
-                            // I am using CompositeException so that both exceptions can be seen
-                            observer.onError(new CompositeException("OnErrorResume function failed", Arrays.asList(ex, e)));
-                        }
-                    }
-                }
-
-                public void onCompleted() {
-                    // forward the successful calls
-                    observer.onCompleted();
-                }
-            })));
-
-            return Subscriptions.create(new Action0() {
-                public void call() {
-                    // this will get either the original, or the resumeSequence one and unsubscribe on it
-                    Subscription s = subscriptionRef.getAndSet(null);
-                    if (s != null) {
-                        s.unsubscribe();
-                    }
-                }
-            });
-        }
-    }
-
 
 }

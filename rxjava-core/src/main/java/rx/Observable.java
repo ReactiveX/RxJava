@@ -25,6 +25,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import rx.exceptions.Exceptions;
+import rx.exceptions.OnErrorThrowable;
 import rx.exceptions.OnErrorNotImplementedException;
 import rx.functions.Action0;
 import rx.functions.Action1;
@@ -79,7 +80,6 @@ import rx.operators.OperationMergeDelayError;
 import rx.operators.OperationMergeMaxConcurrent;
 import rx.operators.OperationMinMax;
 import rx.operators.OperationMulticast;
-import rx.operators.OperatorOnErrorResumeNextViaFunction;
 import rx.operators.OperationOnErrorResumeNextViaObservable;
 import rx.operators.OperationOnErrorReturn;
 import rx.operators.OperationOnExceptionResumeNextViaObservable;
@@ -87,8 +87,6 @@ import rx.operators.OperationParallelMerge;
 import rx.operators.OperationReplay;
 import rx.operators.OperationRetry;
 import rx.operators.OperationSample;
-import rx.operators.OperatorObserveOnBounded;
-import rx.operators.OperatorScan;
 import rx.operators.OperationSequenceEqual;
 import rx.operators.OperationSingle;
 import rx.operators.OperationSkip;
@@ -117,8 +115,11 @@ import rx.operators.OperatorGroupBy;
 import rx.operators.OperatorMap;
 import rx.operators.OperatorMerge;
 import rx.operators.OperatorObserveOn;
+import rx.operators.OperatorOnErrorResumeNextViaFunction;
+import rx.operators.OperatorOnErrorFlatMap;
 import rx.operators.OperatorParallel;
 import rx.operators.OperatorRepeat;
+import rx.operators.OperatorScan;
 import rx.operators.OperatorSubscribeOn;
 import rx.operators.OperatorTake;
 import rx.operators.OperatorTimeout;
@@ -5209,7 +5210,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Error-Handling-Operators#wiki-onerrorresumenext">RxJava Wiki: onErrorResumeNext()</a>
      */
     public final Observable<T> onErrorResumeNext(final Func1<Throwable, ? extends Observable<? extends T>> resumeFunction) {
-        return create(OperatorOnErrorResumeNextViaFunction.onErrorResumeNextViaFunction(this, resumeFunction));
+        return lift(new OperatorOnErrorResumeNextViaFunction<T>(resumeFunction));
     }
 
     /**
@@ -5265,6 +5266,15 @@ public class Observable<T> {
      */
     public final Observable<T> onErrorReturn(Func1<Throwable, ? extends T> resumeFunction) {
         return create(OperationOnErrorReturn.onErrorReturn(this, resumeFunction));
+    }
+
+    /**
+     * Allows inserting onNext events into a stream when onError events are received
+     * and continuing the original sequence instead of terminating. Thus it allows a sequence
+     * with multiple onError events.
+     */
+    public final Observable<T> onErrorFlatMap(final Func1<OnErrorThrowable, ? extends Observable<? extends T>> resumeFunction) {
+        return lift(new OperatorOnErrorFlatMap<T>(resumeFunction));
     }
 
     /**

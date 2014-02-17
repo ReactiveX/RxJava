@@ -17,8 +17,8 @@ package rx.operators;
 
 import rx.Observable.Operator;
 import rx.Subscriber;
+import rx.exceptions.OnErrorThrowable;
 import rx.functions.Func1;
-import rx.observables.GroupedObservable;
 
 /**
  * Filters an Observable by discarding any items it emits that do not meet some test.
@@ -48,13 +48,13 @@ public final class OperatorFilter<T> implements Operator<T, T> {
             }
 
             @Override
-            public void onNext(T value) {
+            public void onNext(T t) {
                 try {
-                    if (predicate.call(value)) {
-                        child.onNext(value);
+                    if (predicate.call(t)) {
+                        child.onNext(t);
                     }
-                } catch (Throwable ex) {
-                    child.onError(ex);
+                } catch (Throwable e) {
+                    child.onError(new OnErrorThrowable(e, t));
                 }
             }
 

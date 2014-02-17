@@ -23,6 +23,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import rx.Observable.OnSubscribe;
 import rx.Observable.Operator;
 import rx.Subscriber;
+import rx.exceptions.OnErrorThrowable;
 import rx.functions.Action0;
 import rx.functions.Func1;
 import rx.observables.GroupedObservable;
@@ -130,7 +131,7 @@ public final class OperatorGroupBy<K, T> implements Operator<GroupedObservable<K
                     // we have the correct group so send value to it
                     gps.onNext(t);
                 } catch (Throwable e) {
-                    onError(e);
+                    onError(new OnErrorThrowable(e, t));
                 }
             }
 

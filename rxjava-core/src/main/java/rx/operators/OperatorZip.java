@@ -22,6 +22,7 @@ import rx.Observable;
 import rx.Observable.Operator;
 import rx.Observer;
 import rx.Subscriber;
+import rx.exceptions.OnErrorThrowable;
 import rx.functions.Func2;
 import rx.functions.Func3;
 import rx.functions.Func4;
@@ -189,8 +190,13 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
                         }
                     }
                     if (allHaveValues) {
-                        // all have something so emit
-                        observer.onNext(zipFunction.call(vs));
+                        try {
+                            // all have something so emit
+                            observer.onNext(zipFunction.call(vs));
+                        } catch (Throwable e) {
+                            observer.onError(new OnErrorThrowable(e, vs));
+                            return;
+                        }
                         // now remove them
                         for (int i = 0; i < observers.length; i++) {
                             ((InnerObserver) observers[i]).items.poll();
