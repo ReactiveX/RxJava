@@ -1,7 +1,7 @@
 package rx.operators;
 
 /**
- * Copyright 2014 Netflix, Inc.
+ * Copyright 2013 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,22 +16,24 @@ package rx.operators;
  * limitations under the License.
  */
 
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
+import rx.Scheduler;
 import rx.Subscription;
-import rx.subscriptions.Subscriptions;
+import rx.schedulers.Schedulers;
+import rx.subscriptions.CompositeSubscription;
+import rx.subscriptions.MultipleAssignmentSubscription;
+import rx.util.functions.Func2;
 
 public class OperationRetry {
 
     private static final int INFINITE_RETRY = -1;
 
-    public static <T> OnSubscribeFunc<T> retry(final Observable<T> observable, final int maxRetries) {
-        return new Retry<T>(observable, maxRetries);
+    public static <T> OnSubscribeFunc<T> retry(final Observable<T> observable, final int retryCount) {
+        return new Retry<T>(observable, retryCount);
     }
 
     public static <T> OnSubscribeFunc<T> retry(final Observable<T> observable) {
@@ -41,89 +43,63 @@ public class OperationRetry {
     private static class Retry<T> implements OnSubscribeFunc<T> {
 
         private final Observable<T> source;
-        private final int maxRetries;
+        private final int retryCount;
 
-        Retry(Observable<T> source, int maxRetries) {
+        public Retry(Observable<T> source, int retryCount) {
             this.source = source;
-            this.maxRetries = maxRetries;
+            this.retryCount = retryCount;
         }
 
         @Override
         public Subscription onSubscribe(Observer<? super T> observer) {
-            return new RetrySubscription<T>(source, observer, maxRetries);
-        }
-    }
-
-    private static class RetrySubscription<T> implements Subscription {
-
-        private final Observable<T> source;
-        private final Observer<? super T> observer;
-        private final AtomicReference<Subscription> sourceSubscription = new AtomicReference<Subscription>(
-                Subscriptions.empty());
-
-        private final AtomicInteger attempts;
-        private final AtomicBoolean subscribed = new AtomicBoolean(false);
-
-        private final int maxRetries;
-        /**
-         * This lock guards the suscribe/unsubscribe to source actions so that
-         * an unsubscribe+subscribe pair is unaffected by a concurrent
-         * unsubscribe and vic-versa.
-         */
-        private final Object lock = new Object();
-
-        RetrySubscription(Observable<T> source, Observer<? super T> observer, int maxRetries) {
-            this.source = source;
-            this.observer = observer;
-            this.attempts = new AtomicInteger(0);
-            this.maxRetries = maxRetries;
-            subscribeToSource();
+            final CompositeSubscription subscription = new CompositeSubscription();
+            final AtomicInteger attempts = new AtomicInteger(0);
+            MultipleAssignmentSubscription recursiveSubscription = new MultipleAssignmentSubscription();
+            subscription.add(Schedulers.currentThread().schedule(recursiveSubscription,
+                    attemptSubscription(observer, attempts, subscription)));
+            subscription.add(recursiveSubscription);
+            return subscription;
         }
 
-        private void subscribeToSource() {
-            sourceSubscription.set(source.subscribe(createObserver()));
-            subscribed.set(true);
-        }
-
-        private void unsubscribeFromSource() {
-            // only unsubscribe once
-            if (subscribed.get()) {
-                sourceSubscription.get().unsubscribe();
-                subscribed.set(false);
-            }
-        }
-
-        @Override
-        public void unsubscribe() {
-            synchronized (lock) {
-                unsubscribeFromSource();
-            }
-        }
-
-        private Observer<? super T> createObserver() {
-            return new Observer<T>() {
+        private Func2<Scheduler, MultipleAssignmentSubscription, Subscription> attemptSubscription(
+                final Observer<? super T> observer, final AtomicInteger attempts,
+                final CompositeSubscription subscription) {
+            return new Func2<Scheduler, MultipleAssignmentSubscription, Subscription>() {
 
                 @Override
-                public void onCompleted() {
-                    observer.onCompleted();
-                }
+                public Subscription call(final Scheduler scheduler,
+                        final MultipleAssignmentSubscription recursiveSubscription) {
+                    attempts.incrementAndGet();
+                    return source.subscribe(new Observer<T>() {
 
-                @Override
-                public void onError(Throwable e) {
-                    if (attempts.incrementAndGet() <= maxRetries || maxRetries == INFINITE_RETRY) {
-                        synchronized (lock) {
-                            unsubscribeFromSource();
-                            subscribeToSource();
+                        @Override
+                        public void onCompleted() {
+                            observer.onCompleted();
                         }
-                    } else
-                        observer.onError(e);
-                }
 
-                @Override
-                public void onNext(T t) {
-                    observer.onNext(t);
+                        @Override
+                        public void onError(Throwable e) {
+                            if ((retryCount == INFINITE_RETRY || attempts.get() <= retryCount)
+                                    && !subscription.isUnsubscribed()) {
+                                // retry again
+                                // add the new subscription and schedule a retry
+                                // recursively
+                                recursiveSubscription.setSubscription(scheduler.schedule(recursiveSubscription,
+                                        attemptSubscription(observer, attempts, subscription)));
+                            } else {
+                                // give up and pass the failure
+                                observer.onError(e);
+                            }
+                        }
+
+                        @Override
+                        public void onNext(T v) {
+                            observer.onNext(v);
+                        }
+                    });
                 }
             };
         }
+
     }
 }
