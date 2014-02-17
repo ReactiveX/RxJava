@@ -24,10 +24,6 @@ import co.paralleluniverse.strands.channels.SendPort;
 import rx.Observable;
 import rx.Observer;
 import rx.Scheduler;
-import rx.util.functions.Action2;
-import rx.util.functions.Actions;
-import rx.util.functions.Func1;
-import rx.util.functions.Functions;
 
 /**
  * This class contains static methods that connect {@link Observable}s and {@link Channel}s.
@@ -121,21 +117,6 @@ public final class ChannelObservable {
      */
     public final static <T> ReceivePort<T> subscribe(int bufferSize, Channels.OverflowPolicy policy, Observable<T> o) {
         final Channel<T> channel = Channels.newChannel(bufferSize, policy);
-
-        System.out.println(Functions.fromFunc(new Func1<String, String>() {
-
-            @Override
-            public String call(String t1) {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-            }
-        }));
-        System.out.println(Actions.toFunc(new Action2<String, String>() {
-
-            @Override
-            public void call(String t1, String t2) {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-            }
-        }));
         
         o.subscribe(new Observer<T>() {
             @Override
