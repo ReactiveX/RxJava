@@ -1,7 +1,6 @@
 (ns rx.lang.clojure.chunk
   (:refer-clojure :exclude [chunk])
-  (:require [rx.lang.clojure.core :as rx]
-            [rx.lang.clojure.base :as rx-base]))
+  (:require [rx.lang.clojure.core :as rx]))
 
 (def ^:private -ns- *ns*)
 (set! *warn-on-reflection* true)

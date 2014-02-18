@@ -1,6 +1,7 @@
 (ns rx.lang.clojure.core-test
   (:require [rx.lang.clojure.core :as rx]
             [rx.lang.clojure.blocking :as b]
+            [rx.lang.clojure.future :as f]
             [clojure.test :refer [deftest is testing are]]))
 
 (deftest test-observable?
@@ -52,6 +53,37 @@
                     (rx/lift o)
                     (b/into []))]
     (is (= [2 4] result))))
+
+(deftest test-zip
+  (testing "is happy with less than 4 args"
+    (is (= [[1 2 3]] (b/into [] (rx/zip vector
+                                        (rx/seq->o [1]) (rx/seq->o [2]) (rx/seq->o [3]))))))
+  (testing "is happy with more than 4 args"
+    (is (= [[1 2 3 4 5 6 7 8]]
+           (b/into [] (rx/zip vector
+                              (rx/seq->o [1])
+                              (rx/seq->o [2])
+                              (rx/seq->o [3])
+                              (rx/seq->o [4])
+                              (rx/seq->o [5])
+                              (rx/seq->o [6])
+                              (rx/seq->o [7])
+                              (rx/seq->o [8])))))))
+
+(deftest test-merge
+  (is (= [[1 3 5] [2 4 6]]
+         (let [r (b/into []
+                   (rx/merge [(f/future-generator f/default-runner [o]
+                                                   (doseq [x [1 3 5]]
+                                                     (Thread/sleep 10)
+                                                     (rx/on-next o x)))
+                              (f/future-generator f/default-runner [o]
+                                                   (doseq [x [2 4 6]]
+                                                     (Thread/sleep 10)
+                                                     (rx/on-next o x)))]))]
+           ; make sure each sequence maintained original order
+           [(keep #{1 3 5} r)
+            (keep #{2 4 6} r) ]))))
 
 (deftest test-generator
   (testing "calls on-completed automatically"
@@ -209,10 +241,6 @@
   (is (= (map-indexed vector [:a :b :c])
          (b/into [] (rx/map-indexed vector (rx/seq->o [:a :b :c]))))))
 
-(deftest test-merge
-  (is (= [{:a 1 :b 2 :c 3 :d 4}]
-         (b/into [] (rx/merge (rx/seq->o [{:a 1 :d 0} {:b 2} {:c 3} {:d 4} ]))))))
-
 (deftest test-mapcat
   (let [f  (fn [v] [v (* v v)])
         xs (range 10)]
@@ -361,6 +389,7 @@
         (is (= "got it" @called))
         (is (identical? expected @completed))))))
 
+
 ;################################################################################
 
 (deftest test-graph-imports
@@ -381,3 +410,5 @@
                                 b (rx/return 2)]
                 {:a a :b b})
               b/single))))
+
+

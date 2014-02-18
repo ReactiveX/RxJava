@@ -1,8 +1,7 @@
 (ns rx.lang.clojure.future
   (:refer-clojure :exclude [future])
   (:require [rx.lang.clojure.interop :as iop]
-            [rx.lang.clojure.core :as rx :refer [fn->o fn->subscription]]
-            [rx.lang.clojure.base :as base]))
+            [rx.lang.clojure.core :as rx]))
 
 (def ^:private -ns- *ns*)
 (set! *warn-on-reflection* true)
@@ -26,13 +25,13 @@
   "
   [runner f & args]
   {:pre [(ifn? runner) (ifn? f)]}
-  (fn->o (fn [observer]
+  (rx/fn->o (fn [observer]
            (let [wrapped (-> (fn [o]
                                (apply f o args))
-                             base/wrap-on-completed
-                             base/wrap-on-error)
+                             rx/wrap-on-completed
+                             rx/wrap-on-error)
                  fu      (runner #(wrapped observer))]
-             (fn->subscription #(future-cancel fu))))))
+             (rx/fn->subscription #(future-cancel fu))))))
 
 (defmacro future-generator
   "Same as rx/generator macro except body is invoked in a separate thread.
@@ -60,12 +59,12 @@
   "
   [runner f & args]
   {:pre [(ifn? runner) (ifn? f)]}
-  (fn->o (fn [observer]
+  (rx/fn->o (fn [observer]
            (let [wrapped (-> #(rx/on-next % (apply f args))
-                             base/wrap-on-completed
-                             base/wrap-on-error)
+                             rx/wrap-on-completed
+                             rx/wrap-on-error)
                  fu      (runner #(wrapped observer))]
-             (fn->subscription #(future-cancel fu))))))
+             (rx/fn->subscription #(future-cancel fu))))))
 
 (defmacro future
   "Executes body in a separate thread and passes the single result to onNext.

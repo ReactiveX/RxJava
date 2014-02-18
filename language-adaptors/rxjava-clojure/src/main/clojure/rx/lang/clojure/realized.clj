@@ -1,6 +1,5 @@
 (ns rx.lang.clojure.realized
-  (:require [rx.lang.clojure.interop :as iop]
-            [rx.lang.clojure.base :as rx-base]))
+  (:require [rx.lang.clojure.interop :as iop]))
 
 (def ^:private -ns- *ns*)
 (set! *warn-on-reflection* true)
@@ -62,10 +61,12 @@
   single key maps, merging and then folding all the separate maps together. So code
   like this:
 
-    (rx/merge (rx-base/merge (->> (user-info-o user-id)
-                                  (rx/map (fn [u] {:user u})))
-                             (->> (user-likes-o user-id)
-                                  (rx/map (fn [u] {:likes u})))))
+    ; TODO update
+    (->> (rx/merge (->> (user-info-o user-id)
+                             (rx/map (fn [u] {:user u})))
+                        (->> (user-likes-o user-id)
+                             (rx/map (fn [u] {:likes u}))))
+         (rx/reduce merge {}))
 
   becomes:
 
@@ -86,8 +87,8 @@
                             .toList
                             (.map (iop/fn [list] {k (f list)})))))))]
 
-    (-> o
-        rx-base/merge ; funnel all the observables into a single sequence
+    (-> ^Iterable o
+        (rx.Observable/merge) ; funnel all the observables into a single sequence
         (.reduce {} (iop/fn* merge))))) ; do the map merge dance
 
 (defn ^rx.Observable realized-map*
