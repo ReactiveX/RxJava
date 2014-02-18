@@ -194,7 +194,7 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
                             // all have something so emit
                             observer.onNext(zipFunction.call(vs));
                         } catch (Throwable e) {
-                            observer.onError(OnErrorThrowable.decorate(e, vs));
+                            observer.onError(OnErrorThrowable.addValueAsLastCause(e, vs));
                             return;
                         }
                         // now remove them

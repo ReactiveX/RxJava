@@ -51,7 +51,14 @@ public class OnErrorThrowable extends RuntimeException {
         }
     }
 
-    public static Throwable decorate(Throwable e, Object value) {
+    /**
+     * Adds the given value as the final cause of the given Throwable wrapped in OnNextValue RuntimeException..
+     * 
+     * @param e
+     * @param value
+     * @return Throwable e passed in
+     */
+    public static Throwable addValueAsLastCause(Throwable e, Object value) {
         Exceptions.addCause(e, new OnNextValue(value));
         return e;
     }

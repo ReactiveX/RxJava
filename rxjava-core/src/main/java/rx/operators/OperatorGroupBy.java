@@ -131,7 +131,7 @@ public final class OperatorGroupBy<K, T> implements Operator<GroupedObservable<K
                     // we have the correct group so send value to it
                     gps.onNext(t);
                 } catch (Throwable e) {
-                    onError(OnErrorThrowable.decorate(e, t));
+                    onError(OnErrorThrowable.addValueAsLastCause(e, t));
                 }
             }
 

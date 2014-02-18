@@ -50,7 +50,7 @@ public class OperatorCast<T, R> implements Operator<R, T> {
                 try {
                     o.onNext(castClass.cast(t));
                 } catch (Throwable e) {
-                    onError(OnErrorThrowable.decorate(e, t));
+                    onError(OnErrorThrowable.addValueAsLastCause(e, t));
                 }
             }
         };
