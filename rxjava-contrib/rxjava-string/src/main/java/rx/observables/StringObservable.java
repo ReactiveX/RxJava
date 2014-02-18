@@ -27,7 +27,6 @@ import java.nio.charset.CharsetEncoder;
 import java.nio.charset.CoderResult;
 import java.nio.charset.CodingErrorAction;
 import java.util.Arrays;
-import java.util.Objects;
 import java.util.regex.Pattern;
 
 import rx.Observable;
@@ -461,14 +460,23 @@ public class StringObservable {
 
         @Override
         public int hashCode() {
-            return Objects.hash(number, text);
+            int result = 31 + number;
+            result = 31 * result + (text == null ? 0 : text.hashCode());
+            return result;
         }
 
         @Override
         public boolean equals(Object obj) {
             if (!(obj instanceof Line))
                 return false;
-            return Objects.equals(number, ((Line) obj).number) && Objects.equals(text, ((Line) obj).text);
+            Line other = (Line) obj;
+            if (number != other.number)
+                return false;
+            if (other.text == text)
+                return true;
+            if (text == null)
+                return false;
+            return text.equals(other.text);
         }
 
         @Override
