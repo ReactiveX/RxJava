@@ -15,8 +15,10 @@
  */
 package rx.android.schedulers;
 
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 import java.util.concurrent.TimeUnit;
 
@@ -28,9 +30,7 @@ import org.robolectric.annotation.Config;
 
 import rx.Scheduler;
 import rx.Scheduler.Inner;
-import rx.Subscription;
 import rx.functions.Action1;
-import rx.functions.Func2;
 import android.os.Handler;
 
 @RunWith(RobolectricTestRunner.class)
