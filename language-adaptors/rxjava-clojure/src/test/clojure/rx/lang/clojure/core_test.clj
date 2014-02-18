@@ -1,20 +1,7 @@
 (ns rx.lang.clojure.core-test
   (:require [rx.lang.clojure.core :as rx]
             [rx.lang.clojure.blocking :as b]
-            [clojure.test :refer [deftest is testing]]))
-(comment
-  (rx/subscribe
-    (->>
-      (rx/map (fn [a b] (hash-map :a a :b b)) (rx/seq->o [1 2 3 4 5 6])
-              (rx/seq->o ["x" "y" 9 10 "z"]))
-      (rx/map    #(update-in % [:a] (partial * 2)))
-      (rx/filter (comp not number? :b))
-      (rx/concat (rx/seq->o (range 3)))
-      (rx/drop 1)
-      (rx/take 6)
-      (rx/into []))
-    println
-    println))
+            [clojure.test :refer [deftest is testing are]]))
 
 (deftest test-observable?
   (is (rx/observable? (rx/return 99)))
@@ -27,6 +14,45 @@
       (rx/subscribe o (fn [v] (swap! called (fn [_] v))))
       (is (= 1 @called)))))
 
+(deftest test-fn->predicate
+  (are [f arg result] (= result (.call (rx/fn->predicate f) arg))
+       identity nil    false
+       identity false  false
+       identity 1      true
+       identity "true" true
+       identity true   true))
+
+(deftest test-fn->subscription
+  (let [called (atom 0)
+        s (rx/fn->subscription #(swap! called inc))]
+    (is (identical? s (rx/unsubscribe s)))
+    (is (= 1 @called))))
+
+(deftest test-unsubscribed?
+  (let [s (rx/fn->subscription #())]
+    (is (not (rx/unsubscribed? s)))
+    (rx/unsubscribe s)
+    (is (rx/unsubscribed? s))))
+
+
+(deftest test-fn->o
+  (let [o (rx/fn->o (fn [s]
+                      (rx/on-next s 0)
+                      (rx/on-next s 1)
+                      (when-not (rx/unsubscribed? s) (rx/on-next s 2))
+                      (rx/on-completed s)))]
+    (is (= [0 1 2] (b/into [] o)))))
+
+(deftest test-->operator
+  (let [o (rx/->operator #(rx/->subscriber %
+                                           (fn [o v]
+                                             (if (even? v)
+                                               (rx/on-next o v)))))
+        result (->> (rx/seq->o [1 2 3 4 5])
+                    (rx/lift o)
+                    (b/into []))]
+    (is (= [2 4] result))))
+
 (deftest test-generator
   (testing "calls on-completed automatically"
     (let [o (rx/generator [o])
@@ -38,7 +64,7 @@
     (let [expected (IllegalArgumentException. "hi")
           actual   (atom nil)]
       (rx/subscribe (rx/generator [o] (throw expected))
-                     (fn [v])
+                     #()
                      #(reset! actual %))
       (is (identical? expected @actual)))))
 
@@ -114,6 +140,12 @@
                     (filter #{:b :e :G})))
          (b/into [] (->> (rx/seq->o [:a :b :c :d :e :f :G :e])
                         (rx/filter #{:b :e :G}))))))
+
+(deftest test-first
+  (is (= [3]
+         (b/into [] (rx/first (rx/seq->o [3 4 5])))))
+  (is (= []
+         (b/into [] (rx/first (rx/empty))))))
 
 (deftest test-interpose
   (is (= (interpose \, [1 2 3])
