@@ -17,6 +17,7 @@ package rx.operators;
 
 import rx.Observable.Operator;
 import rx.Subscriber;
+import rx.exceptions.Exceptions;
 import rx.exceptions.OnErrorThrowable;
 
 /**
@@ -49,7 +50,7 @@ public class OperatorCast<T, R> implements Operator<R, T> {
                 try {
                     o.onNext(castClass.cast(t));
                 } catch (Throwable e) {
-                    onError(new OnErrorThrowable(e, t));
+                    onError(OnErrorThrowable.decorate(e, t));
                 }
             }
         };

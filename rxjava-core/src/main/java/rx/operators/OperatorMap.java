@@ -53,7 +53,7 @@ public final class OperatorMap<T, R> implements Operator<R, T> {
                 try {
                     o.onNext(transformer.call(t));
                 } catch (Throwable e) {
-                    onError(new OnErrorThrowable(e, t));
+                    onError(OnErrorThrowable.decorate(e, t));
                 }
             }
 

@@ -54,7 +54,7 @@ public final class OperatorFilter<T> implements Operator<T, T> {
                         child.onNext(t);
                     }
                 } catch (Throwable e) {
-                    child.onError(new OnErrorThrowable(e, t));
+                    child.onError(OnErrorThrowable.decorate(e, t));
                 }
             }
 

@@ -97,7 +97,7 @@ public final class OperatorScan<R, T> implements Operator<R, T> {
                     try {
                         this.value = accumulator.call(this.value, value);
                     } catch (Throwable e) {
-                        observer.onError(new OnErrorThrowable(e, value));
+                        observer.onError(OnErrorThrowable.decorate(e, value));
                     }
                 }
                 observer.onNext(this.value);

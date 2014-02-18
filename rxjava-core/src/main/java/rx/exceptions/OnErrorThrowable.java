@@ -22,13 +22,13 @@ public class OnErrorThrowable extends RuntimeException {
     private final boolean hasValue;
     private final Object value;
 
-    public OnErrorThrowable(Throwable exception) {
+    private OnErrorThrowable(Throwable exception) {
         super(exception);
         hasValue = false;
         this.value = null;
     }
 
-    public OnErrorThrowable(Throwable exception, Object value) {
+    private OnErrorThrowable(Throwable exception, Object value) {
         super(exception);
         hasValue = true;
         this.value = value;
@@ -43,10 +43,32 @@ public class OnErrorThrowable extends RuntimeException {
     }
 
     public static OnErrorThrowable from(Throwable t) {
-        if (t instanceof OnErrorThrowable) {
-            return (OnErrorThrowable) t;
+        Throwable cause = Exceptions.getFinalCause(t);
+        if (cause instanceof OnErrorThrowable.OnNextValue) {
+            return new OnErrorThrowable(t, ((OnNextValue) cause).getValue());
         } else {
             return new OnErrorThrowable(t);
         }
+    }
+
+    public static Throwable decorate(Throwable e, Object value) {
+        Exceptions.addCause(e, new OnNextValue(value));
+        return e;
+    }
+
+    public static class OnNextValue extends RuntimeException {
+
+        private static final long serialVersionUID = -3454462756050397899L;
+        private final Object value;
+
+        public OnNextValue(Object value) {
+            super("OnError while emitting onNext value: " + value);
+            this.value = value;
+        }
+
+        public Object getValue() {
+            return value;
+        }
+
     }
 }

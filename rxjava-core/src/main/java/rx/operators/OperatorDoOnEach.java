@@ -60,7 +60,7 @@ public class OperatorDoOnEach<T> implements Operator<T, T> {
                 try {
                     doOnEachObserver.onNext(value);
                 } catch (Throwable e) {
-                    onError(new OnErrorThrowable(e, value));
+                    onError(OnErrorThrowable.decorate(e, value));
                     return;
                 }
                 observer.onNext(value);
