@@ -7,7 +7,6 @@
                             rest seq some sort sort-by split-with
                             take take-while throw])
   (:require [rx.lang.clojure.interop :as iop]
-            [rx.lang.clojure.base :as base]
             [rx.lang.clojure.graph :as graph]
             [rx.lang.clojure.realized :as realized])
   (:import [rx Observable Observer Subscriber Subscription Observable$Operator Observable$OnSubscribe]
@@ -156,6 +155,81 @@
 
 ;################################################################################
 
+(defn wrap-on-completed
+  "Wrap handler with code that automaticaly calls rx.Observable.onCompleted."
+  [handler]
+  (fn [^Observer observer]
+    (handler observer)
+    (.onCompleted observer)))
+
+(defn wrap-on-error
+  "Wrap handler with code that automaticaly calls (on-error) if an exception is thrown"
+  [handler]
+  (fn [^Observer observer]
+    (try
+      (handler observer)
+      (catch Throwable e
+        (.onError observer e)))))
+
+(defn ^Observable merge
+  "Observable.merge, renamed because merge means something else in Clojure
+
+  os is one of:
+
+    * An Iterable of Observables to merge
+    * An Observable<Observable<T>> to merge
+
+  If you want clojure.core/merge, it's just this:
+
+    (rx/reduce clojure.core/merge {} maps)
+
+  "
+  [os]
+  (cond
+    (instance? Iterable os)
+      (Observable/merge (Observable/from ^Iterable os))
+    (instance? Observable os)
+      (Observable/merge ^Observable os)
+    :else
+      (throw (IllegalArgumentException. (str "Don't know how to merge " (type os))))))
+
+(defn ^Observable merge-delay-error
+  "Observable.mergeDelayError, renamed because merge means something else in Clojure"
+  [os]
+  (cond
+    (instance? java.util.List os)
+      (Observable/mergeDelayError ^java.util.List os)
+    (instance? Observable os)
+      (Observable/mergeDelayError ^Observable os)
+    :else
+      (throw (IllegalArgumentException. (str "Don't know how to merge " (type os))))))
+
+(defn ^Observable zip
+  "Observable.zip. You want map."
+  ([f ^Observable a ^Observable b] (Observable/zip a b (iop/fn* f)))
+  ([f ^Observable a ^Observable b ^Observable c] (Observable/zip a b c (iop/fn* f)))
+  ([f ^Observable a ^Observable b ^Observable c ^Observable d] (Observable/zip a b c d (iop/fn* f)))
+  ([f a b c d & more]
+    ; recurse on more and then pull everything together with 4 parameter version
+   (zip (fn [a b c more-value]
+          (apply f a b c more-value))
+        a
+        b
+        c
+        (apply zip vector d more))))
+
+(defmacro zip-let
+  [bindings & body]
+  (let [pairs  (clojure.core/partition 2 bindings)
+        names  (clojure.core/mapv clojure.core/first pairs)
+        values (clojure.core/map second pairs)]
+    `(zip (fn ~names ~@body) ~@values)))
+;################################################################################
+
+
+
+
+
 (defn ^Observable never [] (Observable/never))
 (defn ^Observable empty [] (Observable/empty))
 
@@ -288,7 +362,7 @@
   "Map a function over an observable sequence. Unlike clojure.core/map, only supports up
   to 4 simultaneous source sequences at the moment."
   ([f ^Observable xs] (.map xs (iop/fn* f)))
-  ([f xs & observables] (apply base/zip f xs observables)))
+  ([f xs & observables] (apply zip f xs observables)))
 
 (defn ^Observable mapcat
   "Returns an observable which, for each value x in xs, calls (f x), which must
@@ -316,23 +390,6 @@
                            (->subscriber o
                                   (fn [o v] (on-next o (f (swap! n inc) v)))))))]
     (lift op xs)))
-
-; TODO which merge goes here?
-(defn merge
-  "
-  Returns an observable that emits a single map that consists of the rest of the
-  maps emitted by the input observable conj-ed onto the first.  If a key occurs
-  in more than one map, the mapping from the latter (left-to-right) will be the
-  mapping in the result.
-
-  NOTE: This is very different from rx.Observable/merge. See rx.base/merge for that
-  one.
-
-  See:
-    clojure.core/merge
-  "
-  [maps]
-  (reduce clojure.core/merge {} maps))
 
 (def next
   "Returns an observable that emits all but the first element of the input observable.
@@ -545,8 +602,8 @@
   "
   [f & args]
   (fn->o (-> #(apply f % args)
-             base/wrap-on-completed
-             base/wrap-on-error)))
+             wrap-on-completed
+             wrap-on-error)))
 
 (defmacro generator
   "Create an observable that executes body which should emit a sequence. bindings

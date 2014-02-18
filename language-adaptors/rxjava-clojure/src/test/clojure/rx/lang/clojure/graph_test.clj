@@ -47,7 +47,7 @@
                       ?b (rx-future/future rx-future/default-runner (Thread/sleep 500) 100)
                       ?c (rx/map #(hash-map :a %1 :b %2 :z %3) ?a ?b ?z)
                       ?z z]
-                     (rx/merge ?c)))))))))
+                     (rx/reduce merge {} ?c)))))))))
 
 (deftest test-complicated-graph
   ; These funcs model network requests for various stuff. They all return observable.
