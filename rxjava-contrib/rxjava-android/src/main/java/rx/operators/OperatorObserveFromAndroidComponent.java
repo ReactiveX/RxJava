@@ -17,17 +17,15 @@ package rx.operators;
 
 import rx.Observable;
 import rx.Observer;
-import rx.Subscription;
-import rx.Scheduler.Inner;
+import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.android.subscriptions.AndroidSubscriptions;
 import rx.functions.Action0;
-import rx.functions.Action1;
-import rx.subscriptions.Subscriptions;
 import android.app.Activity;
 import android.os.Looper;
 import android.util.Log;
 
-public class OperationObserveFromAndroidComponent {
+public class OperatorObserveFromAndroidComponent {
 
     public static <T> Observable<T> observeFromAndroidComponent(Observable<T> source, android.app.Fragment fragment) {
         return Observable.create(new OnSubscribeFragment<T>(source, fragment));
@@ -41,7 +39,7 @@ public class OperationObserveFromAndroidComponent {
         return Observable.create(new OnSubscribeBase<T, Activity>(source, activity));
     }
 
-    private static class OnSubscribeBase<T, AndroidComponent> implements Observable.OnSubscribeFunc<T> {
+    private static class OnSubscribeBase<T, AndroidComponent> implements Observable.OnSubscribe<T> {
 
         private static final String LOG_TAG = "AndroidObserver";
 
@@ -67,10 +65,10 @@ public class OperationObserveFromAndroidComponent {
         }
 
         @Override
-        public Subscription onSubscribe(Observer<? super T> observer) {
+        public void call(Subscriber<? super T> subscriber) {
             assertUiThread();
-            observerRef = observer;
-            final Subscription sourceSub = source.observeOn(AndroidSchedulers.mainThread()).subscribe(new Observer<T>() {
+            observerRef = subscriber;
+            source.observeOn(AndroidSchedulers.mainThread()).subscribe(new Subscriber<T>(subscriber) {
                 @Override
                 public void onCompleted() {
                     if (componentRef != null && isComponentValid(componentRef)) {
@@ -98,21 +96,13 @@ public class OperationObserveFromAndroidComponent {
                     }
                 }
             });
-            return Subscriptions.create(new Action0() {
+            subscriber.add(AndroidSubscriptions.unsubscribeInUiThread(new Action0() {
                 @Override
                 public void call() {
                     log("unsubscribing from source sequence");
-                    AndroidSchedulers.mainThread().schedule(new Action1<Inner>() {
-
-                        @Override
-                        public void call(Inner t1) {
-                            releaseReferences();
-                            sourceSub.unsubscribe();
-                        }
-
-                    });
+                    releaseReferences();
                 }
-            });
+            }));
         }
 
         private void releaseReferences() {

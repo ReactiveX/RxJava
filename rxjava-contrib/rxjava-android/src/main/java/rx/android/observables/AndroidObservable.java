@@ -16,7 +16,7 @@
 package rx.android.observables;
 
 import rx.Observable;
-import rx.operators.OperationObserveFromAndroidComponent;
+import rx.operators.OperatorObserveFromAndroidComponent;
 import android.app.Activity;
 import android.app.Fragment;
 import android.os.Build;
@@ -59,7 +59,7 @@ public final class AndroidObservable {
      * @return a new observable sequence that will emit notifications on the main UI thread
      */
     public static <T> Observable<T> fromActivity(Activity activity, Observable<T> sourceObservable) {
-        return OperationObserveFromAndroidComponent.observeFromAndroidComponent(sourceObservable, activity);
+        return OperatorObserveFromAndroidComponent.observeFromAndroidComponent(sourceObservable, activity);
     }
 
     /**
@@ -88,9 +88,9 @@ public final class AndroidObservable {
      */
     public static <T> Observable<T> fromFragment(Object fragment, Observable<T> sourceObservable) {
         if (USES_SUPPORT_FRAGMENTS && fragment instanceof android.support.v4.app.Fragment) {
-            return OperationObserveFromAndroidComponent.observeFromAndroidComponent(sourceObservable, (android.support.v4.app.Fragment) fragment);
+            return OperatorObserveFromAndroidComponent.observeFromAndroidComponent(sourceObservable, (android.support.v4.app.Fragment) fragment);
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB && fragment instanceof Fragment) {
-            return OperationObserveFromAndroidComponent.observeFromAndroidComponent(sourceObservable, (Fragment) fragment);
+            return OperatorObserveFromAndroidComponent.observeFromAndroidComponent(sourceObservable, (Fragment) fragment);
         } else {
             throw new IllegalArgumentException("Target fragment is neither a native nor support library Fragment");
         }
