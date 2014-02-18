@@ -19,16 +19,23 @@ import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.NotSerializableException;
+import java.io.StringReader;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.MalformedInputException;
 import java.util.Arrays;
+import java.util.List;
+
+import junit.framework.Assert;
 
 import org.junit.Test;
 
 import rx.Observable;
 import rx.Observer;
+import rx.observables.StringObservable.Line;
 import rx.observers.TestObserver;
 import rx.util.AssertObservable;
 
@@ -220,5 +227,28 @@ public class StringObservableTest {
         verify(observer, never()).onNext("a");
         verify(observer, never()).onCompleted();
         verify(observer, times(1)).onError(any(Throwable.class));
+    }
+
+    @Test
+    public void testFromInputStream() {
+        final byte[] inBytes = "test".getBytes();
+        final byte[] outBytes = StringObservable.from(new ByteArrayInputStream(inBytes)).toBlockingObservable().single();
+        assertNotSame(inBytes, outBytes);
+        assertArrayEquals(inBytes, outBytes);
+    }
+
+    @Test
+    public void testFromReader() {
+        final String inStr = "test";
+        final String outStr = StringObservable.from(new StringReader(inStr)).toBlockingObservable().single();
+        assertNotSame(inStr, outStr);
+        assertEquals(inStr, outStr);
+    }
+
+    @Test
+    public void testByLine() {
+        List<Line> lines = StringObservable.byLine(Observable.from(Arrays.asList("qwer", "\nasdf\n", "zx", "cv"))).toList().toBlockingObservable().single();
+
+        assertEquals(Arrays.asList(new Line(0, "qwer"), new Line(1, "asdf"), new Line(2, "zxcv")), lines);
     }
 }
