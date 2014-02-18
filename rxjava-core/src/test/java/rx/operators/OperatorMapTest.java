@@ -165,7 +165,14 @@ public class OperatorMapTest {
                 }
                 return s;
             }
-        }));
+        })).doOnError(new Action1<Throwable>() {
+
+            @Override
+            public void call(Throwable t1) {
+                t1.printStackTrace();
+            }
+            
+        });
 
         m.subscribe(stringObserver);
         verify(stringObserver, times(1)).onNext("one");

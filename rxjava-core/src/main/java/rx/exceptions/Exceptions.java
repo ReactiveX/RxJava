@@ -15,6 +15,9 @@
  */
 package rx.exceptions;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class Exceptions {
     private Exceptions() {
 
@@ -53,4 +56,45 @@ public class Exceptions {
             throw (LinkageError) t;
         }
     }
+
+    private static final int MAX_DEPTH = 25;
+
+    public static void addCause(Throwable e, Throwable cause) {
+        Set<Throwable> seenCauses = new HashSet<Throwable>();
+
+        int i = 0;
+        while (e.getCause() != null) {
+            if (i++ >= MAX_DEPTH) {
+                // stack too deep to associate cause
+                return;
+            }
+            e = e.getCause();
+            if (seenCauses.contains(e.getCause())) {
+                break;
+            } else {
+                seenCauses.add(e.getCause());
+            }
+        }
+        // we now have 'e' as the last in the chain
+        try {
+            e.initCause(cause);
+        } catch (Throwable t) {
+            // ignore
+            // the javadocs say that some Throwables (depending on how they're made) will never
+            // let me call initCause without blowing up even if it returns null
+        }
+    }
+
+    public static Throwable getFinalCause(Throwable e) {
+        int i = 0;
+        while (e.getCause() != null) {
+            if (i++ >= MAX_DEPTH) {
+                // stack too deep to get final cause
+                return new RuntimeException("Stack too deep to get final cause");
+            }
+            e = e.getCause();
+        }
+        return e;
+    }
+
 }

@@ -18,8 +18,8 @@ package rx.operators;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
-import static rx.operators.OperationOnErrorResumeNextViaFunction.*;
 
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
@@ -29,9 +29,10 @@ import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
 import rx.functions.Func1;
+import rx.observers.TestSubscriber;
 import rx.subscriptions.Subscriptions;
 
-public class OperationOnErrorResumeNextViaFunctionTest {
+public class OperatorOnErrorResumeNextViaFunctionTest {
 
     @Test
     public void testResumeNextWithSynchronousExecution() {
@@ -55,7 +56,7 @@ public class OperationOnErrorResumeNextViaFunctionTest {
             }
 
         };
-        Observable<String> observable = Observable.create(onErrorResumeNextViaFunction(w, resume));
+        Observable<String> observable = w.onErrorResumeNext(resume);
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
@@ -85,7 +86,7 @@ public class OperationOnErrorResumeNextViaFunctionTest {
             }
 
         };
-        Observable<String> observable = Observable.create(onErrorResumeNextViaFunction(Observable.create(w), resume));
+        Observable<String> observable = Observable.create(w).onErrorResumeNext(resume);
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
@@ -122,7 +123,7 @@ public class OperationOnErrorResumeNextViaFunctionTest {
             }
 
         };
-        Observable<String> observable = Observable.create(onErrorResumeNextViaFunction(Observable.create(w), resume));
+        Observable<String> observable = Observable.create(w).onErrorResumeNext(resume);
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);

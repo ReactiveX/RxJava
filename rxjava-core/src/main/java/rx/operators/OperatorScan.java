@@ -17,6 +17,7 @@ package rx.operators;
 
 import rx.Observable.Operator;
 import rx.Subscriber;
+import rx.exceptions.OnErrorThrowable;
 import rx.functions.Func2;
 
 /**
@@ -96,8 +97,7 @@ public final class OperatorScan<R, T> implements Operator<R, T> {
                     try {
                         this.value = accumulator.call(this.value, value);
                     } catch (Throwable e) {
-                        observer.onError(e);
-                        observer.unsubscribe();
+                        observer.onError(OnErrorThrowable.addValueAsLastCause(e, value));
                     }
                 }
                 observer.onNext(this.value);
