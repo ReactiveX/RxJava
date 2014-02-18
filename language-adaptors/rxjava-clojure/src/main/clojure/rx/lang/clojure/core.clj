@@ -1,6 +1,6 @@
 (ns rx.lang.clojure.core
   (:refer-clojure :exclude [concat cons do drop drop-while empty
-                            filter future
+                            filter first future
                             interpose into keep keep-indexed
                             map mapcat map-indexed
                             merge next partition reduce reductions
@@ -10,14 +10,14 @@
             [rx.lang.clojure.base :as base]
             [rx.lang.clojure.graph :as graph]
             [rx.lang.clojure.realized :as realized])
-  (:import [rx Observable Observer Subscription]
+  (:import [rx Observable Observer Subscriber Subscription Observable$Operator Observable$OnSubscribe]
            [rx.observables BlockingObservable]
            [rx.subscriptions Subscriptions]
            [rx.util.functions Action0 Action1 Func0 Func1 Func2]))
 
 (set! *warn-on-reflection* true)
 
-(declare map map-indexed reduce take take-while)
+(declare concat map map-indexed reduce take take-while)
 
 (defn ^Func1 fn->predicate
   "Turn f into a predicate that returns true/false like Rx predicates should"
@@ -62,22 +62,74 @@
   ([^Observable o on-next-action on-error-action on-completed-action]
     (.subscribe o ^Action1 (iop/action* on-next-action) ^Action1 (iop/action* on-error-action) ^Action0 (iop/action* on-completed-action))))
 
-(defn chain
-  "Like subscribe, but any omitted handlers pass-through to the next observable."
-  ([from to]
-    (chain from to #(on-next to %)))
-  ([from to on-next-action]
-    (chain from to on-next-action #(on-error to %)))
-  ([from to on-next-action on-error-action]
-    (chain from to on-next-action on-error-action #(on-completed to)))
-  ([from to on-next-action on-error-action on-completed-action]
-    (subscribe from on-next-action on-error-action on-completed-action)))
+(defn ^Subscriber ->subscriber
+  ""
+  ([o on-next-action] (->subscriber o on-next-action nil nil))
+  ([o on-next-action on-error-action] (->subscriber o on-next-action on-error-action))
+  ([^Subscriber o on-next-action on-error-action on-completed-action]
+   (proxy [Subscriber] [o]
+     (onCompleted []
+       (if on-completed-action
+         (on-completed-action o)
+         (on-completed o)))
+     (onError [e]
+       (if on-error-action
+         (on-error-action o e)
+         (on-error o e)))
+     (onNext [t]
+       (if on-next-action
+         (on-next-action o t)
+         (on-next o t))))))
+
+(defn ^Observable$Operator ->operator
+  "Create a basic Operator with the given handler fns. If a handler is omitted or nil
+  it's treated as a pass-through.
+
+  on-next-action  Passed Subscriber and value
+  on-error-action Passed Throwable
+  on-completed-action No-args
+
+  See:
+  lift
+  rx.Observable$Operator
+  "
+  [input]
+  {:pre [(fn? input)]}
+  (reify Observable$Operator
+    (call [this o]
+      (input o))))
+
+(defn lift
+  "Lift the Operator op over the given Observable xs
+
+  Example:
+
+    (->> my-observable
+         (rx/lift (rx/->operator ...))
+         ...)
+
+  See:
+    rx.Observable/lift
+    ->operator
+  "
+  [^Observable$Operator op ^Observable xs]
+  (.lift xs op))
 
 (defn unsubscribe
   "Unsubscribe from Subscription s and return it."
   [^Subscription s]
   (.unsubscribe s)
   s)
+
+(defn unsubscribed?
+  "Returns true if the given Subscription (or Subscriber) is unsubscribed.
+
+  See:
+    rx.Observable/create
+    fn->o
+  "
+  [^Subscription s]
+  (.isUnsubscribed s))
 
 (defn ^Subscription fn->subscription
   "Create a new subscription that calls the given no-arg handler function when
@@ -88,6 +140,19 @@
   "
   [handler]
   (Subscriptions/create ^Action0 (iop/action* handler)))
+
+(defn ^Observable fn->o
+  "Create an Observable from the given function.
+
+  When subscribed to, (f subscriber) is called at which point, f can start emitting values, etc.
+  The passed subscriber is of type rx.Subscriber.
+
+  See:
+    rx.Subscriber
+    rx.Observable/create
+  "
+  [f]
+  (Observable/create ^Observable$OnSubscribe (iop/action* f)))
 
 ;################################################################################
 
@@ -103,12 +168,6 @@
   [value]
   (Observable/just value))
 
-(defn ^Observable fn->o
-  "Create an observable from the given handler. When subscribed to, (f observer)
-  is called at which point, f can start emitting values, etc."
-  [f]
-  (Observable/create (iop/fn* f)))
-
 (defn ^Observable seq->o
   "Make an observable out of some seq-able thing. The rx equivalent of clojure.core/seq."
   [xs]
@@ -119,16 +178,17 @@
 ;################################################################################
 
 (defn cache
-  "caches the observable value so that multiple subscribers don't re-evaluate it"
+  "caches the observable value so that multiple subscribers don't re-evaluate it.
+
+  See:
+    rx.Observable/cache"
   [^Observable xs]
   (.cache xs))
 
 (defn cons
   "cons x to the beginning of xs"
   [x xs]
-  (fn->o (fn [target]
-           (on-next target x)
-           (chain xs target))))
+  (concat (return x) xs))
 
 (defn ^Observable concat
   "Concatenate the given Observables one after the another.
@@ -162,64 +222,46 @@
 
   Example:
 
-    (->> (rx/seq->o [1 2 3])
-         (rx/do println)
-        ...)
+  (->> (rx/seq->o [1 2 3])
+  (rx/do println)
+  ...)
 
-    Will print 1, 2, 3.
+  Will print 1, 2, 3.
   "
-  ([do-fn xs]
-   (fn->o (fn [target]
-            (let [state (atom {:sub   nil
-                               :error nil })
-                  on-next-fn (fn [v]
-                               ; since we may not be able to unsubscribe, drop
-                               ; anything after an error
-                               (let [{:keys [sub error]} @state]
-                                 (if-not error
-                                   (try
-                                     (do-fn v)
-                                     (on-next target v)
-                                     (catch Throwable e
-                                       (reset! state {:error e :sub nil})
-                                       (if sub
-                                         (unsubscribe sub))
-                                       (on-error target e))))))]
-              (let [sub (chain xs target on-next-fn)]
-                ; dependening on xs, this may not be reached until after the sequence
-                ; is complete.
-                (swap! state update-in [:sub] (constantly sub))
-                sub))))))
+  [do-fn xs]
+  (map #(do (do-fn %) %) xs))
 
 (defn ^Observable drop
   [n ^Observable xs]
   (.skip xs n))
 
 (defn ^Observable drop-while
-  [p xs]
-  (fn->o (fn [target]
-           (let [dropping (atom true)]
-             (chain xs
-                    target
-                    (fn [v]
-                      (when (or (not @dropping)
-                                (not (reset! dropping (p v))))
-                        (on-next target v))))))))
+  [p ^Observable xs]
+  (.skipWhile xs (fn->predicate p)))
 
 (defn ^Observable filter
   [p ^Observable xs]
   (.filter xs (fn->predicate p)))
 
+(defn ^Observable first
+  "Returns an Observable that emits the first item emitted by xs, or an
+  empty Observable if xs is empty.
+
+  See:
+    rx.Observable/takeFirst
+  "
+  [^Observable xs]
+  (.takeFirst xs))
+
 (defn interpose
   [sep xs]
-  (fn->o (fn [target]
-           (let [first? (atom true)]
-             (chain xs
-                    target
-                    (fn [v]
-                      (if-not (compare-and-set! first? true false)
-                        (on-next target sep))
-                      (on-next target v)))))))
+  (let [op (->operator (fn [o]
+                         (let [first? (atom true)]
+                           (->subscriber o (fn [o v]
+                                             (if-not (compare-and-set! first? true false)
+                                               (on-next o sep))
+                                             (on-next o v))))))]
+    (lift op xs)))
 
 (defn into
   "Returns an observable that emits a single value which is all of the
@@ -233,10 +275,6 @@
   (->> from-observable
    .toList
    (map (partial clojure.core/into to))))
-
-(defn keep
-  [f xs]
-  (filter (complement nil?) (map xs f)))
 
 (defn keep
   [f xs]
@@ -273,12 +311,13 @@
     clojure.core/map-indexed
   "
   [f xs]
-  (fn->o (fn [target]
-           (let [n (atom -1)]
-             (chain xs
-                    target
-                    (fn [v] (on-next target (f (swap! n inc) v))))))))
+  (let [op (->operator (fn [o]
+                         (let [n (atom -1)]
+                           (->subscriber o
+                                  (fn [o v] (on-next o (f (swap! n inc) v)))))))]
+    (lift op xs)))
 
+; TODO which merge goes here?
 (defn merge
   "
   Returns an observable that emits a single map that consists of the rest of the
@@ -296,7 +335,7 @@
   (reduce clojure.core/merge {} maps))
 
 (def next
-  "Returns an observable that emits all of the first element of the input observable.
+  "Returns an observable that emits all but the first element of the input observable.
 
   See:
     clojure.core/next
@@ -325,13 +364,10 @@
     clojure.core/some
   "
   [p ^Observable xs]
-  (fn->o (fn [target]
-           (chain xs
-                  target
-                  (fn [v]
-                    (when-let [result (p v)]
-                      (on-next target result)
-                      (on-completed target)))))))
+  (->> xs
+       (map p)
+       (filter identity)
+       first))
 
 (defn sort
   "Returns an observable that emits a single value which is a sorted sequence
@@ -387,14 +423,15 @@
   (.take xs n))
 
 (defn take-while
-  [p xs]
-  (fn->o (fn [target]
-           (chain xs
-                  target
-                  (fn [v]
-                    (if (p v)
-                      (on-next target v)
-                      (on-completed target)))))))
+  "Returns an Observable that emits xs until the first x such that
+  (p x) is falsey.
+
+  See:
+    clojure.core/take-while
+    rx.Observable/takeWhile
+  "
+  [p ^Observable xs]
+  (.takeWhile xs (fn->predicate p)))
 
 ;################################################################################;
 
@@ -402,9 +439,9 @@
   "Returns an Observable the simply emits the given exception with on-error
 
   See:
-    http://netflix.github.io/RxJava/javadoc/rx/Observable.html#error(java.lang.Exception)
+    rx.Observable/error
   "
-  [^Exception e]
+  [^Throwable e]
   (Observable/error e))
 
 (defn catch*
@@ -443,6 +480,9 @@
   "Macro version of catch*.
 
   The body of the catch is wrapped in an implicit (do). It must evaluate to an Observable.
+
+  Note that the source observable is the first argument so this won't mix well with ->>
+  threading.
 
   Example:
 
@@ -504,9 +544,7 @@
     (generator* on-next 99)
   "
   [f & args]
-  (fn->o (-> (fn [observer]
-               (apply f observer args)
-               (Subscriptions/empty))
+  (fn->o (-> #(apply f % args)
              base/wrap-on-completed
              base/wrap-on-error)))
 
