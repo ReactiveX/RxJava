@@ -16,6 +16,7 @@
 package rx.operators;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,6 +30,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
+import org.mockito.Matchers;
 
 import rx.Observable;
 import rx.Observable.OnSubscribe;
@@ -930,6 +932,38 @@ public class OperatorGroupByTest {
             }
 
         });
+    };
+
+    @Test
+    public void testGroupByOnAsynchronousSourceAcceptsMultipleSubscriptions() throws InterruptedException {
+
+        // choose an asynchronous source
+        Observable<Long> source = Observable.interval(10, TimeUnit.MILLISECONDS).take(1);
+
+        // apply groupBy to the source
+        Observable<GroupedObservable<Boolean, Long>> stream = source.groupBy(IS_EVEN);
+
+        // create two observers
+        @SuppressWarnings("unchecked")
+        Observer<GroupedObservable<Boolean, Long>> o1 = mock(Observer.class);
+        @SuppressWarnings("unchecked")
+        Observer<GroupedObservable<Boolean, Long>> o2 = mock(Observer.class);
+
+        // subscribe with the observers
+        stream.subscribe(o1);
+        stream.subscribe(o2);
+
+        // check that subscriptions were successful
+        verify(o1, never()).onError(Matchers.<Throwable> any());
+        verify(o2, never()).onError(Matchers.<Throwable> any());
+    }
+
+    private static Func1<Long, Boolean> IS_EVEN = new Func1<Long, Boolean>() {
+
+        @Override
+        public Boolean call(Long n) {
+            return n % 2 == 0;
+        }
     };
 
 }
