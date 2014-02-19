@@ -14,6 +14,8 @@
 (set! *warn-on-reflection* true)
 
 (defmacro ^:private with-ex-unwrap
+  "The blocking ops wrap errors stuff in RuntimeException because of stupid Java.
+  This tries to unwrap them so callers get the exceptions they expect."
   [& body]
   `(try
     ~@body
@@ -80,7 +82,7 @@
 (defn single
   "*Blocks* and waits for the first value emitted by the given observable.
 
-   An error is thrown if more then one value is produced.
+   An error is thrown if zero or more then one value is produced.
   "
   [observable]
   (with-ex-unwrap

@@ -18,7 +18,9 @@
     (.cache o)))
 
 (defn let-o*
-  "Given a graph description, returns an observable that emits a single
+  "EXTREMELY EXPERIMENTAL AND SUBJECT TO CHANGE OR DELETION
+
+  Given a graph description, returns an observable that emits a single
   map of observables all hooked up and ready for subscription.
 
   A graph is a map from name to a map with keys:
@@ -73,7 +75,9 @@
         (assoc ::non-terminals non-terminals))))
 
 (defmacro let-o
-  "Similar to clojure.core/let, but bindings are Observables and the result of the body
+  "EXTREMELY EXPERIMENTAL AND SUBJECT TO CHANGE OR DELETION
+
+  Similar to clojure.core/let, but bindings are Observables and the result of the body
   must be an Observable. Binding names must start with ?. Binding order doesn't matter
   and any binding is visible to all other expressions as long as no cycles are produced
   in the resulting Observable expression.

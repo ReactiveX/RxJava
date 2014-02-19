@@ -34,7 +34,9 @@
     :else                       (->post-proc (rx.Observable/just v))))
 
 (defn realized-map
-  "See let-realized.
+  "EXTREMELY EXPERIMENTAL AND SUBJECT TO CHANGE OR DELETION
+
+  See let-realized.
 
   Given a map from key to observable, returns an observable that emits a single
   map from the same keys to the values emitted by their corresponding observable.
@@ -92,12 +94,16 @@
         (.reduce {} (iop/fn* merge))))) ; do the map merge dance
 
 (defn ^rx.Observable realized-map*
-  "Same as realized-map, but takes a map argument rather than key-value pairs."
+  "EXTREMELY EXPERIMENTAL AND SUBJECT TO CHANGE OR DELETION
+
+  Same as realized-map, but takes a map argument rather than key-value pairs."
   [map-description]
   (apply realized-map (apply concat map-description)))
 
 (defmacro let-realized
-  "'let' version of realized map.
+  "EXTREMELY EXPERIMENTAL AND SUBJECT TO CHANGE OR DELETION
+
+  'let' version of realized map.
 
     (let-realized [a (make-observable)]
       (* 2 a))
