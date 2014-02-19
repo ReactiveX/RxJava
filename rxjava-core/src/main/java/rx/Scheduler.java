@@ -106,8 +106,8 @@ public abstract class Scheduler {
     }
 
     public static final class Recurse {
-        final Action1<Recurse> action;
-        final Inner inner;
+        private final Action1<Recurse> action;
+        private final Inner inner;
 
         private Recurse(Inner inner, Action1<Recurse> action) {
             this.inner = inner;
