@@ -31,6 +31,7 @@ public class RxJavaPlugins {
 
     private final AtomicReference<RxJavaErrorHandler> errorHandler = new AtomicReference<RxJavaErrorHandler>();
     private final AtomicReference<RxJavaObservableExecutionHook> observableExecutionHook = new AtomicReference<RxJavaObservableExecutionHook>();
+    private final AtomicReference<RxJavaSchedulers> schedulerOverrides = new AtomicReference<RxJavaSchedulers>();
 
     public static RxJavaPlugins getInstance() {
         return INSTANCE;
@@ -147,6 +148,45 @@ public class RxJavaPlugins {
             }
         } else {
             return null;
+        }
+    }
+
+    /**
+     * Retrieve instance of {@link RxJavaSchedulers} to use based on order of precedence as defined in {@link RxJavaPlugins} class header.
+     * <p>
+     * Override default by using {@link #registerSchedulers(RxJavaSchedulers)} or setting property: <code>rxjava.plugin.RxJavaDefaultSchedulers.implementation</code> with the full
+     * classname to
+     * load.
+     * 
+     * @return {@link RxJavaErrorHandler} implementation to use
+     */
+    public RxJavaSchedulers getSchedulers() {
+        if (schedulerOverrides.get() == null) {
+            // check for an implementation from System.getProperty first
+            Object impl = getPluginImplementationViaProperty(RxJavaSchedulers.class);
+            if (impl == null) {
+                // nothing set via properties so initialize with default 
+                schedulerOverrides.compareAndSet(null, RxJavaSchedulersDefault.getInstance());
+                // we don't return from here but call get() again in case of thread-race so the winner will always get returned
+            } else {
+                // we received an implementation from the system property so use it
+                schedulerOverrides.compareAndSet(null, (RxJavaSchedulers) impl);
+            }
+        }
+        return schedulerOverrides.get();
+    }
+
+    /**
+     * Register a {@link RxJavaSchedulers} implementation as a global override of any injected or default implementations.
+     * 
+     * @param impl
+     *            {@link RxJavaSchedulers} implementation
+     * @throws IllegalStateException
+     *             if called more than once or after the default was initialized (if usage occurs before trying to register)
+     */
+    public void registerSchedulers(RxJavaSchedulers impl) {
+        if (!schedulerOverrides.compareAndSet(null, impl)) {
+            throw new IllegalStateException("Another strategy was already registered: " + schedulerOverrides.get());
         }
     }
 }

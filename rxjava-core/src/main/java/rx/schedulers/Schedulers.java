@@ -23,15 +23,62 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import rx.Scheduler;
+import rx.functions.Func0;
+import rx.plugins.RxJavaPlugins;
 
 /**
  * Static factory methods for creating Schedulers.
  */
 public class Schedulers {
-    private static final ScheduledExecutorService COMPUTATION_EXECUTOR = createComputationExecutor();
-    private static final Executor IO_EXECUTOR = createIOExecutor();
+
+    private final Func0<Scheduler> computationScheduler;
+    private final Func0<Scheduler> ioScheduler;
+    private final Func0<Scheduler> newThreadScheduler;
+
+    private static final Schedulers INSTANCE = new Schedulers();
 
     private Schedulers() {
+        Func0<Scheduler> c = RxJavaPlugins.getInstance().getSchedulers().getComputationScheduler();
+        if (c != null) {
+            computationScheduler = c;
+        } else {
+            computationScheduler = new Func0<Scheduler>() {
+
+                @Override
+                public Scheduler call() {
+                    return executor(createComputationExecutor());
+                }
+
+            };
+        }
+
+        Func0<Scheduler> io = RxJavaPlugins.getInstance().getSchedulers().getIOScheduler();
+        if (io != null) {
+            ioScheduler = io;
+        } else {
+            ioScheduler = new Func0<Scheduler>() {
+
+                @Override
+                public Scheduler call() {
+                    return executor(createIOExecutor());
+                }
+
+            };
+        }
+
+        Func0<Scheduler> nt = RxJavaPlugins.getInstance().getSchedulers().getNewThreadScheduler();
+        if (nt != null) {
+            newThreadScheduler = nt;
+        } else {
+            newThreadScheduler = new Func0<Scheduler>() {
+
+                @Override
+                public Scheduler call() {
+                    return NewThreadScheduler.getInstance();
+                }
+
+            };
+        }
 
     }
 
@@ -63,14 +110,14 @@ public class Schedulers {
     public static Scheduler trampoline() {
         return TrampolineScheduler.getInstance();
     }
-    
+
     /**
      * {@link Scheduler} that creates a new {@link Thread} for each unit of work.
      * 
      * @return {@link NewThreadScheduler} instance
      */
     public static Scheduler newThread() {
-        return NewThreadScheduler.getInstance();
+        return INSTANCE.newThreadScheduler.call();
     }
 
     /**
@@ -107,7 +154,7 @@ public class Schedulers {
      */
     @Deprecated
     public static Scheduler threadPoolForComputation() {
-        return executor(COMPUTATION_EXECUTOR);
+        return computation();
     }
 
     /**
@@ -120,7 +167,7 @@ public class Schedulers {
      * @return {@link Scheduler} for computation-bound work.
      */
     public static Scheduler computation() {
-        return executor(COMPUTATION_EXECUTOR);
+        return INSTANCE.computationScheduler.call();
     }
 
     /**
@@ -137,7 +184,7 @@ public class Schedulers {
      */
     @Deprecated
     public static Scheduler threadPoolForIO() {
-        return executor(IO_EXECUTOR);
+        return io();
     }
 
     /**
@@ -152,7 +199,7 @@ public class Schedulers {
      * @return {@link ExecutorScheduler} for IO-bound work.
      */
     public static Scheduler io() {
-        return executor(IO_EXECUTOR);
+        return INSTANCE.ioScheduler.call();
     }
 
     private static ScheduledExecutorService createComputationExecutor() {
