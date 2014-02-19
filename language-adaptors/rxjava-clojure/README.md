@@ -13,7 +13,7 @@ Example for Leiningen:
 and for Gradle:
 
 ```groovy
-compile 'com.netflix.rx:rxjava-clojure:x.y.z'
+compile 'com.netflix.rxjava:rxjava-clojure:x.y.z'
 ```
 
 and for Maven:
