@@ -9,7 +9,10 @@
   (:require [rx.lang.clojure.interop :as iop]
             [rx.lang.clojure.graph :as graph]
             [rx.lang.clojure.realized :as realized])
-  (:import [rx Observable Observer Subscriber Subscription Observable$Operator Observable$OnSubscribe]
+  (:import [rx
+            Observable
+            Observer Observable$Operator Observable$OnSubscribe
+            Subscriber Subscription]
            [rx.observables BlockingObservable]
            [rx.subscriptions Subscriptions]
            [rx.util.functions Action0 Action1 Func0 Func1 Func2]))
@@ -47,24 +50,29 @@
   [^Observer o e]
   (.onError o e))
 
-(defn on-error-return
-  [^Observable o f]
-  (.onErrorReturn o f))
-
 ;################################################################################
 
 (defn ^Subscription subscribe
+
   ([^Observable o on-next-action]
-    (.subscribe o ^Action1 (iop/action* on-next-action)))
+    (.subscribe o
+                ^Action1 (iop/action* on-next-action)))
+
   ([^Observable o on-next-action on-error-action]
-    (.subscribe o ^Action1 (iop/action* on-next-action) ^Action1 (iop/action* on-error-action)))
+    (.subscribe o
+                ^Action1 (iop/action* on-next-action)
+                ^Action1 (iop/action* on-error-action)))
+
   ([^Observable o on-next-action on-error-action on-completed-action]
-    (.subscribe o ^Action1 (iop/action* on-next-action) ^Action1 (iop/action* on-error-action) ^Action0 (iop/action* on-completed-action))))
+    (.subscribe o
+                ^Action1 (iop/action* on-next-action)
+                ^Action1 (iop/action* on-error-action)
+                ^Action0 (iop/action* on-completed-action))))
 
 (defn ^Subscriber ->subscriber
   ""
   ([o on-next-action] (->subscriber o on-next-action nil nil))
-  ([o on-next-action on-error-action] (->subscriber o on-next-action on-error-action))
+  ([o on-next-action on-error-action] (->subscriber o on-next-action on-error-action nil))
   ([^Subscriber o on-next-action on-error-action on-completed-action]
    (proxy [Subscriber] [o]
      (onCompleted []
@@ -80,8 +88,8 @@
          (on-next-action o t)
          (on-next o t))))))
 
-(defn ^Observable$Operator ->operator
-  "Create a basic Operator with the given handler fns. If a handler is omitted or nil
+(defn ^Observable$Operator fn->operator
+  "Create a basic Operator with f. If a handler is omitted or nil
   it's treated as a pass-through.
 
   on-next-action  Passed Subscriber and value
@@ -92,11 +100,11 @@
   lift
   rx.Observable$Operator
   "
-  [input]
-  {:pre [(fn? input)]}
+  [f]
+  {:pre [(fn? f)]}
   (reify Observable$Operator
     (call [this o]
-      (input o))))
+      (f o))))
 
 (defn lift
   "Lift the Operator op over the given Observable xs
@@ -104,12 +112,12 @@
   Example:
 
     (->> my-observable
-         (rx/lift (rx/->operator ...))
+         (rx/lift (rx/fn->operator ...))
          ...)
 
   See:
     rx.Observable/lift
-    ->operator
+    fn->operator
   "
   [^Observable$Operator op ^Observable xs]
   (.lift xs op))
@@ -160,7 +168,8 @@
   [handler]
   (fn [^Observer observer]
     (handler observer)
-    (.onCompleted observer)))
+    (when-not (unsubscribed? observer)
+      (.onCompleted observer))))
 
 (defn wrap-on-error
   "Wrap handler with code that automaticaly calls (on-error) if an exception is thrown"
@@ -169,7 +178,8 @@
     (try
       (handler observer)
       (catch Throwable e
-        (.onError observer e)))))
+        (when-not (unsubscribed? observer)
+          (.onError observer e))))))
 
 (defn ^Observable merge
   "Observable.merge, renamed because merge means something else in Clojure
@@ -194,7 +204,7 @@
       (throw (IllegalArgumentException. (str "Don't know how to merge " (type os))))))
 
 (defn ^Observable merge-delay-error
-  "Observable.mergeDelayError, renamed because merge means something else in Clojure"
+  "Observable.mergeDelayError"
   [os]
   (cond
     (instance? java.util.List os)
@@ -205,7 +215,7 @@
       (throw (IllegalArgumentException. (str "Don't know how to merge " (type os))))))
 
 (defn ^Observable zip
-  "Observable.zip. You want map."
+  "rx.Observable.zip. You want map."
   ([f ^Observable a ^Observable b] (Observable/zip a b (iop/fn* f)))
   ([f ^Observable a ^Observable b ^Observable c] (Observable/zip a b c (iop/fn* f)))
   ([f ^Observable a ^Observable b ^Observable c ^Observable d] (Observable/zip a b c d (iop/fn* f)))
@@ -224,20 +234,32 @@
         names  (clojure.core/mapv clojure.core/first pairs)
         values (clojure.core/map second pairs)]
     `(zip (fn ~names ~@body) ~@values)))
+
 ;################################################################################
 
+(defn ^Observable never
+  "Returns an Observable that never emits any values and never completes.
 
+  See:
+    rx.Observable/never
+  "
+  []
+  (Observable/never))
 
+(defn ^Observable empty
+  "Returns an Observable that completes immediately without emitting any values.
 
-
-(defn ^Observable never [] (Observable/never))
-(defn ^Observable empty [] (Observable/empty))
+  See:
+    rx.Observable/empty
+  "
+  []
+  (Observable/empty))
 
 (defn ^Observable return
   "Returns an observable that emits a single value.
 
   See:
-    Observable/just
+    rx.Observable/just
   "
   [value]
   (Observable/just value))
@@ -329,7 +351,7 @@
 
 (defn interpose
   [sep xs]
-  (let [op (->operator (fn [o]
+  (let [op (fn->operator (fn [o]
                          (let [first? (atom true)]
                            (->subscriber o (fn [o v]
                                              (if-not (compare-and-set! first? true false)
@@ -385,7 +407,7 @@
     clojure.core/map-indexed
   "
   [f xs]
-  (let [op (->operator (fn [o]
+  (let [op (fn->operator (fn [o]
                          (let [n (atom -1)]
                            (->subscriber o
                                   (fn [o v] (on-next o (f (swap! n inc) v)))))))]
@@ -589,16 +611,17 @@
 ;################################################################################;
 
 (defn generator*
-  "Creates an observable that calls (f observable & args) which should emit a sequence.
+  "Creates an observable that calls (f observable & args) which should emit values
+  with (rx/on-next observable value).
 
   Automatically calls on-completed on return, or on-error if any exception is thrown.
 
-  Subscribers will block.
+  f should exit early if (rx/unsubscribed? observable) returns true
 
   Examples:
 
     ; An observable that emits just 99
-    (generator* on-next 99)
+    (rx/generator* on-next 99)
   "
   [f & args]
   (fn->o (-> #(apply f % args)
@@ -611,7 +634,7 @@
 
   Automatically calls on-completed on return, or on-error if any exception is thrown.
 
-  Subscribe will block.
+  The body should exit early if (rx/unsubscribed? observable) returns true
 
   Examples:
 

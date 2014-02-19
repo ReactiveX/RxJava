@@ -44,8 +44,8 @@
                       (rx/on-completed s)))]
     (is (= [0 1 2] (b/into [] o)))))
 
-(deftest test-->operator
-  (let [o (rx/->operator #(rx/->subscriber %
+(deftest test-fn->operator
+  (let [o (rx/fn->operator #(rx/->subscriber %
                                            (fn [o v]
                                              (if (even? v)
                                                (rx/on-next o v)))))
