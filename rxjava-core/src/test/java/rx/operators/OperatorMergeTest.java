@@ -20,6 +20,8 @@ import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -32,11 +34,16 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import rx.Observable;
+import rx.Observable.OnSubscribe;
 import rx.Observer;
+import rx.Scheduler;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Action0;
 import rx.functions.Action1;
+import rx.observers.TestSubscriber;
+import rx.schedulers.Schedulers;
+import rx.schedulers.TestScheduler;
 import rx.subscriptions.Subscriptions;
 
 public class OperatorMergeTest {
@@ -370,6 +377,99 @@ public class OperatorMergeTest {
 
             return Subscriptions.empty();
         }
+    }
+
+    @Test
+    public void testUnsubscribeAsObservablesComplete() {
+        TestScheduler scheduler1 = Schedulers.test();
+        AtomicBoolean os1 = new AtomicBoolean(false);
+        Observable<Long> o1 = createObservableOf5IntervalsOf1SecondIncrementsWithSubscriptionHook(scheduler1, os1);
+
+        TestScheduler scheduler2 = Schedulers.test();
+        AtomicBoolean os2 = new AtomicBoolean(false);
+        Observable<Long> o2 = createObservableOf5IntervalsOf1SecondIncrementsWithSubscriptionHook(scheduler2, os2);
+
+        TestSubscriber<Long> ts = new TestSubscriber<Long>();
+        Observable.merge(o1, o2).subscribe(ts);
+
+        // we haven't incremented time so nothing should be received yet
+        ts.assertReceivedOnNext(Collections.<Long> emptyList());
+
+        scheduler1.advanceTimeBy(3, TimeUnit.SECONDS);
+        scheduler2.advanceTimeBy(2, TimeUnit.SECONDS);
+
+        ts.assertReceivedOnNext(Arrays.asList(0L, 1L, 2L, 0L, 1L));
+        // not unsubscribed yet
+        assertFalse(os1.get());
+        assertFalse(os2.get());
+
+        // advance to the end at which point it should complete
+        scheduler1.advanceTimeBy(3, TimeUnit.SECONDS);
+
+        ts.assertReceivedOnNext(Arrays.asList(0L, 1L, 2L, 0L, 1L, 3L, 4L));
+        assertTrue(os1.get());
+        assertFalse(os2.get());
+
+        // both should be completed now
+        scheduler2.advanceTimeBy(3, TimeUnit.SECONDS);
+
+        ts.assertReceivedOnNext(Arrays.asList(0L, 1L, 2L, 0L, 1L, 3L, 4L, 2L, 3L, 4L));
+        assertTrue(os1.get());
+        assertTrue(os2.get());
+
+        ts.assertTerminalEvent();
+    }
+
+    @Test
+    public void testEarlyUnsubscribe() {
+        TestScheduler scheduler1 = Schedulers.test();
+        AtomicBoolean os1 = new AtomicBoolean(false);
+        Observable<Long> o1 = createObservableOf5IntervalsOf1SecondIncrementsWithSubscriptionHook(scheduler1, os1);
+
+        TestScheduler scheduler2 = Schedulers.test();
+        AtomicBoolean os2 = new AtomicBoolean(false);
+        Observable<Long> o2 = createObservableOf5IntervalsOf1SecondIncrementsWithSubscriptionHook(scheduler2, os2);
+
+        TestSubscriber<Long> ts = new TestSubscriber<Long>();
+        Subscription s = Observable.merge(o1, o2).subscribe(ts);
+
+        // we haven't incremented time so nothing should be received yet
+        ts.assertReceivedOnNext(Collections.<Long> emptyList());
+
+        scheduler1.advanceTimeBy(3, TimeUnit.SECONDS);
+        scheduler2.advanceTimeBy(2, TimeUnit.SECONDS);
+
+        ts.assertReceivedOnNext(Arrays.asList(0L, 1L, 2L, 0L, 1L));
+        // not unsubscribed yet
+        assertFalse(os1.get());
+        assertFalse(os2.get());
+
+        // early unsubscribe
+        s.unsubscribe();
+
+        assertTrue(os1.get());
+        assertTrue(os2.get());
+
+        ts.assertReceivedOnNext(Arrays.asList(0L, 1L, 2L, 0L, 1L));
+        ts.assertUnsubscribed();
+    }
+
+    private Observable<Long> createObservableOf5IntervalsOf1SecondIncrementsWithSubscriptionHook(final Scheduler scheduler, final AtomicBoolean unsubscribed) {
+        return Observable.create(new OnSubscribe<Long>() {
+
+            @Override
+            public void call(Subscriber<? super Long> s) {
+                s.add(Subscriptions.create(new Action0() {
+
+                    @Override
+                    public void call() {
+                        unsubscribed.set(true);
+                    }
+
+                }));
+                Observable.interval(1, TimeUnit.SECONDS, scheduler).take(5).subscribe(s);
+            }
+        });
     }
 
 }

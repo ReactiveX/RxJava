@@ -85,6 +85,12 @@ public class TestSubscriber<T> extends Subscriber<T> {
         testObserver.assertTerminalEvent();
     }
 
+    public void assertUnsubscribed() {
+        if (!isUnsubscribed()) {
+            throw new AssertionError("Not unsubscribed.");
+        }
+    }
+
     public void awaitTerminalEvent() {
         try {
             latch.await();

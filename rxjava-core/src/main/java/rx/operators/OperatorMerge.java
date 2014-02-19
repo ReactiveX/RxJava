@@ -21,6 +21,7 @@ import rx.Observable;
 import rx.Observable.Operator;
 import rx.Subscriber;
 import rx.observers.SynchronizedSubscriber;
+import rx.subscriptions.CompositeSubscription;
 
 /**
  * Flattens a list of Observables into one Observable sequence, without any transformation.
@@ -36,6 +37,9 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
     public Subscriber<Observable<? extends T>> call(final Subscriber<? super T> outerOperation) {
 
         final Subscriber<T> o = new SynchronizedSubscriber<T>(outerOperation);
+        final CompositeSubscription childrenSubscriptions = new CompositeSubscription();
+        outerOperation.add(childrenSubscriptions);
+
         return new Subscriber<Observable<? extends T>>(outerOperation) {
 
             private volatile boolean completed = false;
@@ -57,13 +61,14 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
             @Override
             public void onNext(Observable<? extends T> innerObservable) {
                 runningCount.incrementAndGet();
-                innerObservable.subscribe(new InnerObserver());
+                Subscriber<T> i = new InnerObserver();
+                childrenSubscriptions.add(i);
+                innerObservable.subscribe(i);
             }
 
             final class InnerObserver extends Subscriber<T> {
 
                 public InnerObserver() {
-                    super(o);
                 }
 
                 @Override
@@ -71,16 +76,24 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
                     if (runningCount.decrementAndGet() == 0 && completed) {
                         o.onCompleted();
                     }
+                    cleanup();
                 }
 
                 @Override
                 public void onError(Throwable e) {
                     o.onError(e);
+                    cleanup();
                 }
 
                 @Override
                 public void onNext(T a) {
                     o.onNext(a);
+                }
+
+                private void cleanup() {
+                    // remove subscription onCompletion so it cleans up immediately and doesn't memory leak
+                    // see https://github.com/Netflix/RxJava/issues/897
+                    childrenSubscriptions.remove(this);
                 }
 
             };
