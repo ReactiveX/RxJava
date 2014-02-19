@@ -93,7 +93,9 @@ public class ResponseConsumerDelegate extends AbstractAsyncResponseConsumer<Http
 
     @Override
     protected void releaseResources() {
-        consumer._releaseResources();
+        if (consumer != null) {
+            consumer._releaseResources();
+        }
     }
 
 }
