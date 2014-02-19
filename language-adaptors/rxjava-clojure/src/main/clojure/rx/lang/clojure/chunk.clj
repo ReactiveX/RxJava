@@ -6,7 +6,11 @@
 (set! *warn-on-reflection* true)
 
 (defn chunk
-  "Same as rx.Observable.merge(Observable<Observable<T>>) but the input Observables
+  "EXTREMELY EXPERIMENTAL AND SUBJECT TO CHANGE OR DELETION
+
+  TODO RxJava's much bigger since this was written. Is there something built in?
+
+  Same as rx.Observable.merge(Observable<Observable<T>>) but the input Observables
   are \"chunked\" so that at most chunk-size of them are \"in flight\" at any given
   time.
 
@@ -19,7 +23,7 @@
   Example:
 
     (->> users
-         (map #(-> (GetUserCommand. %) .toObservable))
+         (rx/map #(-> (GetUserCommand. %) .toObservable))
          (chunk 10))
 
   See:
