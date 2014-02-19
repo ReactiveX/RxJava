@@ -54,21 +54,21 @@
                     (b/into []))]
     (is (= [2 4] result))))
 
-(deftest test-zip
-  (testing "is happy with less than 4 args"
-    (is (= [[1 2 3]] (b/into [] (rx/zip vector
-                                        (rx/seq->o [1]) (rx/seq->o [2]) (rx/seq->o [3]))))))
-  (testing "is happy with more than 4 args"
-    (is (= [[1 2 3 4 5 6 7 8]]
-           (b/into [] (rx/zip vector
-                              (rx/seq->o [1])
-                              (rx/seq->o [2])
-                              (rx/seq->o [3])
-                              (rx/seq->o [4])
-                              (rx/seq->o [5])
-                              (rx/seq->o [6])
-                              (rx/seq->o [7])
-                              (rx/seq->o [8])))))))
+
+(deftest test-syncrhonize
+  ; I'm going to believe synchronize works and just exercise it
+  ; here for sanity.
+  (is (= [1 2 3]
+         (->> [1 2 3]
+              (rx/seq->o)
+              (rx/synchronize)
+              (b/into []))))
+  (let [lock (Object.)]
+    (is (= [1 2 3]
+           (->> [1 2 3]
+                (rx/seq->o)
+                (rx/synchronize lock)
+                (b/into []))))))
 
 (deftest test-merge
   (is (= [[1 3 5] [2 4 6]]
@@ -140,6 +140,35 @@
          (b/into [] (rx/concat* (rx/seq->o [(rx/seq->o [:q :r])
                                             (rx/seq->o [1 2 3])]))))))
 
+(deftest test-count
+  (are [xs] (= (count xs) (->> xs (rx/seq->o) (rx/count) (b/single)))
+       []
+       [1]
+       [5 6 7]
+       (range 10000)))
+
+(deftest test-cycle
+  (is (= [1 2 3 1 2 3 1 2 3 1 2]
+         (->> [1 2 3]
+              (rx/seq->o)
+              (rx/cycle)
+              (rx/take 11)
+              (b/into [])))))
+
+(deftest test-distinct
+  (let [input [{:a 1} {:a 1} {:b 1} {"a" (int 1)} {:a (int 1)}]]
+    (is (= (distinct input)
+           (->> input
+                (rx/seq->o)
+                (rx/distinct)
+                (b/into [])))))
+  (let [input [{:name "Bob" :x 2} {:name "Jim" :x 99} {:name "Bob" :x 3}]]
+    (is (= [{:name "Bob" :x 2} {:name "Jim" :x 99}]
+           (->> input
+                (rx/seq->o)
+                (rx/distinct :name)
+                (b/into []))))))
+
 (deftest test-do
   (testing "calls a function with each element"
     (let [collected (atom [])]
@@ -166,6 +195,13 @@
          (b/into [] (rx/drop-while even? (rx/seq->o [2 4 6 8 1 2 3])))))
   (is (= (into [] (drop-while even? [2 4 6 8 1 2 3]))
          (b/into [] (rx/drop-while even? (rx/seq->o [2 4 6 8 1 2 3]))))))
+
+(deftest test-every?
+  (are [xs p result] (= result (->> xs (rx/seq->o) (rx/every? p) (b/single)))
+       [2 4 6 8] even?      true
+       [2 4 3 8] even?      false
+       [1 2 3 4] #{1 2 3 4} true
+       [1 2 3 4] #{1 3 4}   false))
 
 (deftest test-filter
   (is (= (into [] (->> [:a :b :c :d :e :f :G :e]
@@ -237,6 +273,17 @@
                             (rx/seq->o ["a" "b" "c" "d" "e"])
                             (rx/seq->o ["a" "b" "c" "d" "e"]))))))
 
+(deftest test-map*
+  (is (= [[1 2 3 4 5 6 7 8]]
+           (b/into [] (rx/map* vector
+                               (rx/seq->o [(rx/seq->o [1])
+                                           (rx/seq->o [2])
+                                           (rx/seq->o [3])
+                                           (rx/seq->o [4])
+                                           (rx/seq->o [5])
+                                           (rx/seq->o [6])
+                                           (rx/seq->o [7])
+                                           (rx/seq->o [8])]))))))
 (deftest test-map-indexed
   (is (= (map-indexed vector [:a :b :c])
          (b/into [] (rx/map-indexed vector (rx/seq->o [:a :b :c]))))))
@@ -245,20 +292,17 @@
   (let [f  (fn [v] [v (* v v)])
         xs (range 10)]
     (is (= (mapcat f xs)
-           (b/into [] (rx/mapcat (comp rx/seq->o f) (rx/seq->o xs))))))
-  (comment
-    (is (= (into [] (mapcat vector
-                              [:q :r :s :t :u]
-                              (range 10)
-                              ["a" "b" "c" "d" "e"] ))
-        (b/into [] (rx/mapcat vector
-                              (rx/seq->o [:q :r :s :t :u])
-                              (rx/seq->o (range 10) )
-                              (rx/seq->o ["a" "b" "c" "d" "e"] )))))))
+           (b/into [] (rx/mapcat (comp rx/seq->o f) (rx/seq->o xs)))))))
 
 (deftest test-next
   (let [in [:q :r :s :t :u]]
     (is (= (next in) (b/into [] (rx/next (rx/seq->o in)))))))
+
+(deftest test-nth
+  (is (= [:a]
+         (b/into [] (rx/nth (rx/seq->o [:s :b :a :c]) 2))))
+  (is (= [:fallback]
+         (b/into [] (rx/nth (rx/seq->o [:s :b :a :c]) 25 :fallback)))))
 
 (deftest test-rest
   (let [in [:q :r :s :t :u]]
@@ -276,18 +320,32 @@
   (is (= [:r] (b/into [] (rx/some #{:r :s :t} (rx/seq->o [:q :v :r])))))
   (is (= [] (b/into [] (rx/some #{:r :s :t} (rx/seq->o [:q :v]))))))
 
-(deftest test-sort
-  (is (= [[]] (b/into [] (rx/sort (rx/empty)))))
+(deftest test-sorted-list
+  (is (= [[]] (b/into [] (rx/sorted-list (rx/empty)))))
   (is (= [[1 2 3]]
-         (b/into [] (rx/sort (rx/seq->o [3 1 2])))))
+         (b/into [] (rx/sorted-list (rx/seq->o [3 1 2])))))
   (is (= [[3 2 1]]
+         (b/into [] (rx/sorted-list (fn [a b] (- (compare a b))) (rx/seq->o [2 1 3]))))))
+
+(deftest test-sorted-list-by
+  (is (= [[]] (b/into [] (rx/sorted-list-by :foo (rx/empty)))))
+  (is (= [[{:foo 1} {:foo 2} {:foo 3}]]
+         (b/into [] (rx/sorted-list-by :foo (rx/seq->o [{:foo 2}{:foo 1}{:foo 3}])))))
+  (is (= [[{:foo 3} {:foo 2} {:foo 1}]]
+         (b/into [] (rx/sorted-list-by :foo (fn [a b] (- (compare a b))) (rx/seq->o [{:foo 2}{:foo 1}{:foo 3}]))))))
+
+(deftest test-sort
+  (is (= [] (b/into [] (rx/sort (rx/empty)))))
+  (is (= [1 2 3]
+         (b/into [] (rx/sort (rx/seq->o [3 1 2])))))
+  (is (= [3 2 1]
          (b/into [] (rx/sort (fn [a b] (- (compare a b))) (rx/seq->o [2 1 3]))))))
 
 (deftest test-sort-by
-  (is (= [[]] (b/into [] (rx/sort-by :foo (rx/empty)))))
-  (is (= [[{:foo 1} {:foo 2} {:foo 3}]]
+  (is (= [] (b/into [] (rx/sort-by :foo (rx/empty)))))
+  (is (= [{:foo 1} {:foo 2} {:foo 3}]
          (b/into [] (rx/sort-by :foo (rx/seq->o [{:foo 2}{:foo 1}{:foo 3}])))))
-  (is (= [[{:foo 3} {:foo 2} {:foo 1}]]
+  (is (= [{:foo 3} {:foo 2} {:foo 1}]
          (b/into [] (rx/sort-by :foo (fn [a b] (- (compare a b))) (rx/seq->o [{:foo 2}{:foo 1}{:foo 3}]))))))
 
 (deftest test-split-with

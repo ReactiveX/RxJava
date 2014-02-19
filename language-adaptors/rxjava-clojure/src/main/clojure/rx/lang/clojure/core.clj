@@ -1,9 +1,12 @@
 (ns rx.lang.clojure.core
-  (:refer-clojure :exclude [concat cons do drop drop-while empty
+  (:refer-clojure :exclude [concat cons count cycle
+                            distinct do drop drop-while
+                            empty every?
                             filter first future
-                            interpose into keep keep-indexed
+                            interpose into
+                            keep keep-indexed
                             map mapcat map-indexed
-                            merge next partition reduce reductions
+                            merge next nth partition reduce reductions
                             rest seq some sort sort-by split-with
                             take take-while throw])
   (:require [rx.lang.clojure.interop :as iop]
@@ -128,6 +131,28 @@
   (.unsubscribe s)
   s)
 
+(defn subscribe-on
+  "Cause subscriptions to the given observable to happen on the given scheduler.
+
+  Returns a new Observable.
+
+  See:
+    rx.Observable/subscribeOn
+  "
+  [^rx.Scheduler s ^Observable xs]
+  (.subscribeOn xs s))
+
+(defn unsubscribe-on
+  "Cause unsubscriptions from the given observable to happen on the given scheduler.
+
+  Returns a new Observable.
+
+  See:
+    rx.Observable/unsubscribeOn
+  "
+  [^rx.Scheduler s ^Observable xs]
+  (.unsubscribeOn xs s))
+
 (defn unsubscribed?
   "Returns true if the given Subscription (or Subscriber) is unsubscribed.
 
@@ -161,8 +186,6 @@
   [f]
   (Observable/create ^Observable$OnSubscribe (iop/action* f)))
 
-;################################################################################
-
 (defn wrap-on-completed
   "Wrap handler with code that automaticaly calls rx.Observable.onCompleted."
   [handler]
@@ -180,6 +203,14 @@
       (catch Throwable e
         (when-not (unsubscribed? observer)
           (.onError observer e))))))
+
+;################################################################################
+
+(defn synchronize
+  ([^Observable xs]
+  (.synchronize xs))
+  ([lock ^Observable xs]
+  (.synchronize xs lock)))
 
 (defn ^Observable merge
   "Observable.merge, renamed because merge means something else in Clojure
@@ -214,26 +245,6 @@
     :else
       (throw (IllegalArgumentException. (str "Don't know how to merge " (type os))))))
 
-(defn ^Observable zip
-  "rx.Observable.zip. You want map."
-  ([f ^Observable a ^Observable b] (Observable/zip a b (iop/fn* f)))
-  ([f ^Observable a ^Observable b ^Observable c] (Observable/zip a b c (iop/fn* f)))
-  ([f ^Observable a ^Observable b ^Observable c ^Observable d] (Observable/zip a b c d (iop/fn* f)))
-  ([f a b c d & more]
-    ; recurse on more and then pull everything together with 4 parameter version
-   (zip (fn [a b c more-value]
-          (apply f a b c more-value))
-        a
-        b
-        c
-        (apply zip vector d more))))
-
-(defmacro zip-let
-  [bindings & body]
-  (let [pairs  (clojure.core/partition 2 bindings)
-        names  (clojure.core/mapv clojure.core/first pairs)
-        values (clojure.core/map second pairs)]
-    `(zip (fn ~names ~@body) ~@values)))
 
 ;################################################################################
 
@@ -309,6 +320,50 @@
   [^Observable os]
   (Observable/concat os))
 
+(defn count
+  "Returns an Observable that emits the number of items is xs as a long.
+
+  See:
+    rx.Observable/longCount
+  "
+  [^Observable xs]
+  (.longCount xs))
+
+(defn cycle
+  "Returns an Observable that emits the items of xs repeatedly, forever.
+
+  TODO: Other sigs.
+
+  See:
+    rx.Observable/repeat
+    clojure.core/cycle
+  "
+  [^Observable xs]
+  (.repeat xs))
+
+(defn distinct
+  "Returns an Observable of the elements of Observable xs with duplicates
+  removed. key-fn, if provided, is a one arg function that determines the
+  key used to determined duplicates. key-fn defaults to identity.
+
+  This implementation doesn't use rx.Observable/distinct because it doesn't
+  honor Clojure's equality semantics.
+
+  See:
+    clojure.core/distinct
+  "
+  ([xs] (distinct identity xs))
+  ([key-fn ^Observable xs]
+  (let [op (fn->operator (fn [o]
+                           (let [seen (atom #{})]
+                             (->subscriber o
+                                           (fn [o v]
+                                             (let [key (key-fn v)]
+                                               (when-not (contains? @seen key)
+                                                 (swap! seen conj key)
+                                                 (on-next o v))))))))]
+    (lift op xs))))
+
 (defn ^Observable do
   "Returns a new Observable that, for each x in Observable xs, executes (do-fn x),
   presumably for its side effects, and then passes x along unchanged.
@@ -318,14 +373,17 @@
 
   Example:
 
-  (->> (rx/seq->o [1 2 3])
-  (rx/do println)
-  ...)
+    (->> (rx/seq->o [1 2 3])
+    (rx/do println)
+    ...)
 
   Will print 1, 2, 3.
+
+  See:
+    rx.Observable/doOnNext
   "
-  [do-fn xs]
-  (map #(do (do-fn %) %) xs))
+  [do-fn ^Observable xs]
+  (.doOnNext xs (iop/action* do-fn)))
 
 (defn ^Observable drop
   [n ^Observable xs]
@@ -334,6 +392,17 @@
 (defn ^Observable drop-while
   [p ^Observable xs]
   (.skipWhile xs (fn->predicate p)))
+
+(defn ^Observable every?
+  "Returns an Observable that emits a single true value if (p x) is true for
+  all x in xs. Otherwise emits false.
+
+  See:
+    clojure.core/every?
+    rx.Observable/all
+  "
+  [p ^Observable xs]
+  (.all xs (fn->predicate p)))
 
 (defn ^Observable filter
   [p ^Observable xs]
@@ -348,6 +417,8 @@
   "
   [^Observable xs]
   (.takeFirst xs))
+
+; TODO group-by
 
 (defn interpose
   [sep xs]
@@ -380,11 +451,34 @@
   [f xs]
   (filter (complement nil?) (map-indexed f xs)))
 
+(defn ^Observable map*
+  "Map a function over an Observable of Observables.
+
+  Each item from the first emitted Observable is the first arg, each
+  item from the second emitted Observable is the second arg, and so on.
+
+  See:
+    map
+    clojure.core/map
+    rx.Observable/zip
+  "
+  [f ^Observable observable]
+  (Observable/zip observable
+                  ^rx.functions.FuncN (iop/fnN* f)))
+
 (defn ^Observable map
-  "Map a function over an observable sequence. Unlike clojure.core/map, only supports up
-  to 4 simultaneous source sequences at the moment."
-  ([f ^Observable xs] (.map xs (iop/fn* f)))
-  ([f xs & observables] (apply zip f xs observables)))
+  "Map a function over one or more observable sequences.
+
+  Each item from the first Observable is the first arg, each item
+  from the second Observable is the second arg, and so on.
+
+  See:
+    clojure.core/map
+    rx.Observable/zip
+  "
+  [f & observables]
+  (Observable/zip ^Iterable observables
+                  ^rx.functions.FuncN (iop/fnN* f)))
 
 (defn ^Observable mapcat
   "Returns an observable which, for each value x in xs, calls (f x), which must
@@ -393,11 +487,9 @@
 
   See:
     clojure.core/mapcat
-    rx.Observable/mapMany
+    rx.Observable/flatMap
   "
-  ([f ^Observable xs] (.mapMany xs (iop/fn* f)))
-  ; TODO multi-arg version
-  )
+  ([f ^Observable xs] (.flatMap xs (iop/fn* f))))
 
 (defn map-indexed
   "Returns an observable that invokes (f index value) for each value of the input
@@ -408,9 +500,9 @@
   "
   [f xs]
   (let [op (fn->operator (fn [o]
-                         (let [n (atom -1)]
-                           (->subscriber o
-                                  (fn [o v] (on-next o (f (swap! n inc) v)))))))]
+                           (let [n (atom -1)]
+                             (->subscriber o
+                                           (fn [o v] (on-next o (f (swap! n inc) v)))))))]
     (lift op xs)))
 
 (def next
@@ -421,7 +513,19 @@
   "
   (partial drop 1))
 
-; TODO partition. Use Buffer whenever it's implemented.
+(defn nth
+  "Returns an Observable that emits the value at the index in the given
+  Observable.  nth throws an IndexOutOfBoundsException unless not-found
+  is supplied.
+
+  Note that the Observable is the *first* arg!
+  "
+  ([^Observable xs index]
+   (.elementAt xs index))
+  ([^Observable xs index not-found]
+   (.elementAtOrDefault xs index not-found)))
+
+; TODO partition. Use window
 
 (defn ^Observable reduce
   ([f ^Observable xs] (.reduce xs (iop/fn* f)))
@@ -448,35 +552,75 @@
        (filter identity)
        first))
 
-(defn sort
-  "Returns an observable that emits a single value which is a sorted sequence
+(defn sorted-list
+  "Returns an observable that emits a *single value* which is a sorted List
   of the items in coll, where the sort order is determined by comparing
   items.  If no comparator is supplied, uses compare. comparator must
   implement java.util.Comparator.
 
+  Use sort if you don't want the sequence squashed down to a List.
+
   See:
-    clojure.core/sort
+    rx.Observable/toSortedList
+    sort
   "
-  ([coll] (sort clojure.core/compare coll))
+  ([coll] (sorted-list clojure.core/compare coll))
   ([comp ^Observable coll]
    (.toSortedList coll (iop/fn [a b]
                          ; force to int so rxjava doesn't have a fit
                          (int (comp a b))))))
 
-(defn sort-by
-  "Returns an observable that emits a single value which is a sorted sequence
+(defn sorted-list-by
+  "Returns an observable that emits a *single value* which is a sorted List
   of the items in coll, where the sort order is determined by comparing
   (keyfn item).  If no comparator is supplied, uses compare. comparator must
   implement java.util.Comparator.
 
+  Use sort-by if you don't want the sequence squashed down to a List.
+
   See:
-    clojure.core/sort-by
+    rx.Observable/toSortedList
+    sort-by
   "
-  ([keyfn coll] (sort-by keyfn clojure.core/compare coll))
+  ([keyfn coll] (sorted-list-by keyfn clojure.core/compare coll))
   ([keyfn comp ^Observable coll]
    (.toSortedList coll (iop/fn [a b]
                          ; force to int so rxjava doesn't have a fit
                          (int (comp (keyfn a) (keyfn b)))))))
+
+(defn sort
+  "Returns an observable that emits the items in xs, where the sort order is
+  determined by comparing items. If no comparator is supplied, uses compare.
+  comparator must implement java.util.Comparator.
+
+  See:
+    sorted-list
+    clojure.core/sort
+  "
+  ([xs]
+   (->> xs
+        (sorted-list)
+        (mapcat seq->o)))
+  ([comp xs]
+   (->> xs
+        (sorted-list comp)
+        (mapcat seq->o))))
+
+(defn sort-by
+  "Returns an observable that emits the items in xs, where the sort order is
+  determined by comparing (keyfn item). If no comparator is supplied, uses
+  compare. comparator must implement java.util.Comparator.
+
+  See:
+    clojure.core/sort-by
+  "
+  ([keyfn xs]
+   (->> (sorted-list-by keyfn xs)
+        (mapcat seq->o)))
+  ([keyfn comp ^Observable xs]
+   (->> xs
+        (sorted-list-by keyfn comp)
+        (mapcat seq->o))))
 
 (defn split-with
   "Returns an observable that emits a pair of observables
