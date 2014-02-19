@@ -41,7 +41,7 @@ public class Schedulers {
      * @return {@link ImmediateScheduler} instance
      */
     public static Scheduler immediate() {
-        return ImmediateScheduler.getInstance();
+        return ImmediateScheduler.instance();
     }
 
     /**
@@ -52,7 +52,7 @@ public class Schedulers {
      */
     @Deprecated
     public static Scheduler currentThread() {
-        return TrampolineScheduler.getInstance();
+        return TrampolineScheduler.instance();
     }
 
     /**
@@ -61,7 +61,7 @@ public class Schedulers {
      * @return {@link TrampolineScheduler} instance
      */
     public static Scheduler trampoline() {
-        return TrampolineScheduler.getInstance();
+        return TrampolineScheduler.instance();
     }
     
     /**
@@ -70,7 +70,7 @@ public class Schedulers {
      * @return {@link NewThreadScheduler} instance
      */
     public static Scheduler newThread() {
-        return NewThreadScheduler.getInstance();
+        return NewThreadScheduler.instance();
     }
 
     /**

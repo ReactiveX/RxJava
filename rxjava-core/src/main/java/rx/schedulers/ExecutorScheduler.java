@@ -36,10 +36,20 @@ import rx.subscriptions.Subscriptions;
 public class ExecutorScheduler extends Scheduler {
     private final Executor executor;
 
+    /**
+     * @deprecated Use Schedulers.executor();
+     * @return
+     */
+    @Deprecated
     public ExecutorScheduler(Executor executor) {
         this.executor = executor;
     }
 
+    /**
+     * @deprecated Use Schedulers.executor();
+     * @return
+     */
+    @Deprecated
     public ExecutorScheduler(ScheduledExecutorService executor) {
         this.executor = executor;
     }
@@ -50,7 +60,6 @@ public class ExecutorScheduler extends Scheduler {
         inner.schedule(action);
         return inner.innerSubscription;
     }
-    
 
     @Override
     public Subscription schedule(Action1<Inner> action, long delayTime, TimeUnit unit) {
