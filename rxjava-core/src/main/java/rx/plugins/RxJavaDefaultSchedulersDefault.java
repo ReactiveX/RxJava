@@ -23,23 +23,23 @@ import rx.functions.Func0;
  * 
  * @ExcludeFromJavadoc
  */
-public class RxJavaSchedulersDefault extends RxJavaSchedulers {
+public class RxJavaDefaultSchedulersDefault extends RxJavaDefaultSchedulers {
 
-    private static RxJavaSchedulersDefault INSTANCE = new RxJavaSchedulersDefault();
+    private static RxJavaDefaultSchedulersDefault INSTANCE = new RxJavaDefaultSchedulersDefault();
 
-    public Func0<Scheduler> getComputationScheduler() {
+    public Func0<Scheduler> getComputationSchedulerFactory() {
         return null;
     }
 
-    public Func0<Scheduler> getIOScheduler() {
+    public Func0<Scheduler> getIOSchedulerFactory() {
         return null;
     }
 
-    public Func0<Scheduler> getNewThreadScheduler() {
+    public Func0<Scheduler> getNewThreadSchedulerFactory() {
         return null;
     }
 
-    public static RxJavaSchedulers getInstance() {
+    public static RxJavaDefaultSchedulers getInstance() {
         return INSTANCE;
     }
 

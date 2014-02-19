@@ -38,7 +38,7 @@ public class Schedulers {
     private static final Schedulers INSTANCE = new Schedulers();
 
     private Schedulers() {
-        Func0<Scheduler> c = RxJavaPlugins.getInstance().getSchedulers().getComputationScheduler();
+        Func0<Scheduler> c = RxJavaPlugins.getInstance().getDefaultSchedulers().getComputationSchedulerFactory();
         if (c != null) {
             computationScheduler = c;
         } else {
@@ -52,7 +52,7 @@ public class Schedulers {
             };
         }
 
-        Func0<Scheduler> io = RxJavaPlugins.getInstance().getSchedulers().getIOScheduler();
+        Func0<Scheduler> io = RxJavaPlugins.getInstance().getDefaultSchedulers().getIOSchedulerFactory();
         if (io != null) {
             ioScheduler = io;
         } else {
@@ -66,7 +66,7 @@ public class Schedulers {
             };
         }
 
-        Func0<Scheduler> nt = RxJavaPlugins.getInstance().getSchedulers().getNewThreadScheduler();
+        Func0<Scheduler> nt = RxJavaPlugins.getInstance().getDefaultSchedulers().getNewThreadSchedulerFactory();
         if (nt != null) {
             newThreadScheduler = nt;
         } else {
@@ -74,7 +74,7 @@ public class Schedulers {
 
                 @Override
                 public Scheduler call() {
-                    return NewThreadScheduler.getInstance();
+                    return NewThreadScheduler.instance();
                 }
 
             };

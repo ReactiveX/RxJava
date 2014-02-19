@@ -24,20 +24,20 @@ import rx.functions.Func0;
  * See {@link RxJavaPlugins} or the RxJava GitHub Wiki for information on configuring plugins: <a
  * href="https://github.com/Netflix/RxJava/wiki/Plugins">https://github.com/Netflix/RxJava/wiki/Plugins</a>.
  */
-public abstract class RxJavaSchedulers {
+public abstract class RxJavaDefaultSchedulers {
 
     /**
      * Factory of Scheduler to return from {@link Schedulers.computation()} or null if default should be used.
      */
-    public abstract Func0<Scheduler> getComputationScheduler();
+    public abstract Func0<Scheduler> getComputationSchedulerFactory();
 
     /**
      * Factory of Scheduler to return from {@link Schedulers.io()} or null if default should be used.
      */
-    public abstract Func0<Scheduler> getIOScheduler();
+    public abstract Func0<Scheduler> getIOSchedulerFactory();
 
     /**
      * Factory of Scheduler to return from {@link Schedulers.newThread()} or null if default should be used.
      */
-    public abstract Func0<Scheduler> getNewThreadScheduler();
+    public abstract Func0<Scheduler> getNewThreadSchedulerFactory();
 }
