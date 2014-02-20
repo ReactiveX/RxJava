@@ -3,6 +3,7 @@
                             distinct do drop drop-while
                             empty every?
                             filter first future
+                            group-by
                             interpose into
                             keep keep-indexed
                             map mapcat map-indexed
@@ -16,7 +17,9 @@
             Observable
             Observer Observable$Operator Observable$OnSubscribe
             Subscriber Subscription]
-           [rx.observables BlockingObservable]
+           [rx.observables
+            BlockingObservable
+            GroupedObservable]
            [rx.subscriptions Subscriptions]
            [rx.util.functions Action0 Action1 Func0 Func1 Func2]))
 
@@ -453,7 +456,33 @@
   [^Observable xs]
   (.takeFirst xs))
 
-; TODO group-by
+(defn ^Observable group-by
+  "Returns an Observable of clojure.lang.MapEntry where the key is the result of
+  (key-fn x) and the val is an Observable of (val-fn x) for each key. If val-fn is
+  omitted, it defaults to identity.
+
+  This returns a clojure.lang.MapEntry rather than rx.observables.GroupedObservable
+  for some vague consistency with clojure.core/group-by and so that clojure.core/key,
+  clojure.core/val and destructuring will work as expected.
+
+  See:
+    clojure.core/group-by
+    rx.Observable/groupBy
+    rx.observables.GroupedObservable
+  "
+  ([key-fn ^Observable xs]
+   (->> (.groupBy xs (iop/fn* key-fn))
+        (map (fn [^GroupedObservable go]
+               (clojure.lang.MapEntry. (.getKey go) go)))))
+  ([key-fn val-fn ^Observable xs]
+   ; TODO reinstate once this is implemented
+   ; see https://github.com/Netflix/RxJava/commit/02ccc4d727a9297f14219549208757c6e0efce2a
+   (throw (UnsupportedOperationException. "groupBy with val-fn is currently unimplemented in RxJava"))
+   (->> (.groupBy xs
+                  (iop/fn* key-fn)
+                  (iop/fn* val-fn))
+        (map (fn [^GroupedObservable go]
+               (clojure.lang.MapEntry. (.getKey go) go))))))
 
 (defn interpose
   [sep xs]
