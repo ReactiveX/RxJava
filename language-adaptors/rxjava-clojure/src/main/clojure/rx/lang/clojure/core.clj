@@ -554,10 +554,11 @@
     clojure.core/into
     rx.Observable/toList
   "
-  [to ^Observable from-observable]
-  (->> from-observable
-   .toList
-   (map (partial clojure.core/into to))))
+  [to ^Observable from]
+  ; clojure.core/into uses transients if to is IEditableCollection
+  ; I don't think we have any guarantee that all on-next calls will be on the
+  ; same thread, so we can't do that here.
+  (reduce conj to from))
 
 (defn keep
   [f xs]
