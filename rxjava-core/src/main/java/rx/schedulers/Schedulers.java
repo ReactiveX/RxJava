@@ -23,7 +23,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import rx.Scheduler;
-import rx.functions.Func0;
 import rx.plugins.RxJavaPlugins;
 
 /**
@@ -31,53 +30,32 @@ import rx.plugins.RxJavaPlugins;
  */
 public class Schedulers {
 
-    private final Func0<Scheduler> computationScheduler;
-    private final Func0<Scheduler> ioScheduler;
-    private final Func0<Scheduler> newThreadScheduler;
+    private final Scheduler computationScheduler;
+    private final Scheduler ioScheduler;
+    private final Scheduler newThreadScheduler;
 
     private static final Schedulers INSTANCE = new Schedulers();
 
     private Schedulers() {
-        Func0<Scheduler> c = RxJavaPlugins.getInstance().getDefaultSchedulers().getComputationSchedulerFactory();
+        Scheduler c = RxJavaPlugins.getInstance().getDefaultSchedulers().getComputationScheduler();
         if (c != null) {
             computationScheduler = c;
         } else {
-            computationScheduler = new Func0<Scheduler>() {
-
-                @Override
-                public Scheduler call() {
-                    return executor(createComputationExecutor());
-                }
-
-            };
+            computationScheduler = executor(createComputationExecutor());
         }
 
-        Func0<Scheduler> io = RxJavaPlugins.getInstance().getDefaultSchedulers().getIOSchedulerFactory();
+        Scheduler io = RxJavaPlugins.getInstance().getDefaultSchedulers().getIOScheduler();
         if (io != null) {
             ioScheduler = io;
         } else {
-            ioScheduler = new Func0<Scheduler>() {
-
-                @Override
-                public Scheduler call() {
-                    return executor(createIOExecutor());
-                }
-
-            };
+            ioScheduler = executor(createIOExecutor());
         }
 
-        Func0<Scheduler> nt = RxJavaPlugins.getInstance().getDefaultSchedulers().getNewThreadSchedulerFactory();
+        Scheduler nt = RxJavaPlugins.getInstance().getDefaultSchedulers().getNewThreadScheduler();
         if (nt != null) {
             newThreadScheduler = nt;
         } else {
-            newThreadScheduler = new Func0<Scheduler>() {
-
-                @Override
-                public Scheduler call() {
-                    return NewThreadScheduler.instance();
-                }
-
-            };
+            newThreadScheduler = NewThreadScheduler.instance();
         }
 
     }
@@ -117,7 +95,7 @@ public class Schedulers {
      * @return {@link NewThreadScheduler} instance
      */
     public static Scheduler newThread() {
-        return INSTANCE.newThreadScheduler.call();
+        return INSTANCE.newThreadScheduler;
     }
 
     /**
@@ -167,7 +145,7 @@ public class Schedulers {
      * @return {@link Scheduler} for computation-bound work.
      */
     public static Scheduler computation() {
-        return INSTANCE.computationScheduler.call();
+        return INSTANCE.computationScheduler;
     }
 
     /**
@@ -199,7 +177,7 @@ public class Schedulers {
      * @return {@link ExecutorScheduler} for IO-bound work.
      */
     public static Scheduler io() {
-        return INSTANCE.ioScheduler.call();
+        return INSTANCE.ioScheduler;
     }
 
     private static ScheduledExecutorService createComputationExecutor() {
