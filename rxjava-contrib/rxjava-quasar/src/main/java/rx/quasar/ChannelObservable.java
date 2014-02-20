@@ -14,6 +14,7 @@
  * limitations under the License.
  */package rx.quasar;
 
+import co.paralleluniverse.fibers.FiberAsync;
 import co.paralleluniverse.fibers.SuspendExecution;
 import co.paralleluniverse.fibers.Suspendable;
 import co.paralleluniverse.strands.Strand;
@@ -21,6 +22,9 @@ import co.paralleluniverse.strands.channels.Channel;
 import co.paralleluniverse.strands.channels.Channels;
 import co.paralleluniverse.strands.channels.ReceivePort;
 import co.paralleluniverse.strands.channels.SendPort;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import rx.Observable;
 import rx.Observer;
 import rx.Scheduler;
@@ -45,7 +49,7 @@ public final class ChannelObservable {
      * @return an Observable that emits each message received on the source {@link ReceivePort}
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#wiki-from">RxJava Wiki: from()</a>
      */
-    public final static <T> Observable<T> from(ReceivePort<T> channel) {
+    public static <T> Observable<T> from(ReceivePort<T> channel) {
         return Observable.create(new OnSubscribeFromChannel<T>(channel));
     }
 
@@ -67,7 +71,7 @@ public final class ChannelObservable {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#wiki-from">RxJava Wiki: from()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh212140.aspx">MSDN: Observable.ToObservable</a>
      */
-    public final static <T> Observable<T> from(ReceivePort<T> channel, Scheduler scheduler) {
+    public static <T> Observable<T> from(ReceivePort<T> channel, Scheduler scheduler) {
         return Observable.create(new OnSubscribeFromChannel<T>(channel)).subscribeOn(scheduler);
     }
 
@@ -79,7 +83,7 @@ public final class ChannelObservable {
      * @param channel the target {@link SendPort}
      * @return
      */
-    public final static <T> Observer<T> to(final SendPort<T> channel) {
+    public static <T> Observer<T> to(final SendPort<T> channel) {
         return new Observer<T>() {
 
             @Override
@@ -115,9 +119,9 @@ public final class ChannelObservable {
      * @param o          the observable
      * @return A new channel with the given buffer size and overflow policy that will receive all events emitted by the observable.
      */
-    public final static <T> ReceivePort<T> subscribe(int bufferSize, Channels.OverflowPolicy policy, Observable<T> o) {
+    public static <T> ReceivePort<T> subscribe(int bufferSize, Channels.OverflowPolicy policy, Observable<T> o) {
         final Channel<T> channel = Channels.newChannel(bufferSize, policy);
-        
+
         o.subscribe(new Observer<T>() {
             @Override
             @Suspendable
@@ -142,5 +146,73 @@ public final class ChannelObservable {
             }
         });
         return channel;
+    }
+
+    /**
+     * Takes an observable that generates <i>at most one value</i>, blocks until it completes and returns the result.
+     * If the observable completes before a value has been emitted, this method returns {@code null}.
+     * It the observable fails, this function throws an {@link ExecutionException} that wraps the observable's exception.
+     *
+     * @param o the observable
+     * @return the observable's result, or {@code null} if the observable completes before a value is emitted.
+     * @throws ExecutionException if the observable fails
+     */
+    public static <T> T get(final Observable<T> o) throws ExecutionException, SuspendExecution, InterruptedException {
+        return new AsyncObservable<T>(o).run();
+    }
+
+    /**
+     * Takes an observable that generates <i>at most one value</i>, blocks until it completes or the timeout expires, and returns the result.
+     * If the observable completes before a value has been emitted, this method returns {@code null}.
+     * It the observable fails, this function throws an {@link ExecutionException} that wraps the observable's exception.
+     *
+     * @param o       the observable
+     * @param timeout the maximum time this method will blcok
+     * @param unit    the timeout's time unit
+     * @return the observable's result, or {@code null} if the observable completes before a value is emitted.
+     * @throws ExecutionException if the observable fails
+     * @throws TimeoutException   if the timeout expires before the observable completes
+     */
+    public static <T> T get(final Observable<T> o, long timeout, TimeUnit unit) throws ExecutionException, SuspendExecution, InterruptedException, TimeoutException {
+        return new AsyncObservable<T>(o).run(timeout, unit);
+    }
+
+    private static class AsyncObservable<T> extends FiberAsync<T, Void, ExecutionException> implements Observer<T> {
+        private final Observable<T> o;
+
+        public AsyncObservable(Observable<T> o) {
+            this.o = o;
+        }
+
+        @Override
+        protected Void requestAsync() {
+            o.subscribe(this);
+            return null;
+        }
+
+        @Override
+        public void onNext(T t) {
+            if (isCompleted())
+                throw new IllegalStateException("Operation already completed");
+            asyncCompleted(t);
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            if (isCompleted())
+                throw new IllegalStateException("Operation already completed");
+            asyncFailed(e);
+        }
+
+        @Override
+        public void onCompleted() {
+            if (!isCompleted())
+                asyncCompleted(null);
+        }
+
+        @Override
+        protected ExecutionException wrapException(Throwable t) {
+            return new ExecutionException(t);
+        }
     }
 }

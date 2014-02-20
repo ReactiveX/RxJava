@@ -15,9 +15,11 @@
  */
 package rx.quasar;
 
+import co.paralleluniverse.fibers.Fiber;
 import co.paralleluniverse.fibers.SuspendExecution;
 import co.paralleluniverse.fibers.Suspendable;
 import co.paralleluniverse.strands.Strand;
+import co.paralleluniverse.strands.SuspendableCallable;
 import co.paralleluniverse.strands.channels.Channel;
 import co.paralleluniverse.strands.channels.Channels;
 import co.paralleluniverse.strands.channels.ProducerException;
@@ -26,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
@@ -113,18 +116,91 @@ public class ChannelObservableTest {
         o.onNext("a");
         o.onError(new MyException());
         o.onNext("c");
-        
+
         assertThat(c.receive(), equalTo("a"));
         try {
             c.receive();
             fail();
-        } catch(ProducerException e) {
+        } catch (ProducerException e) {
             assertThat(e.getCause(), instanceOf(MyException.class));
         }
         assertThat(c.isClosed(), is(true));
     }
-    
+
+    @Test
+    public void whenGetThenBlockAndReturnResult() throws Exception {
+        final PublishSubject<String> o = PublishSubject.create();
+
+        Fiber<String> f = new Fiber<String>(new SuspendableCallable<String>() {
+
+            @Override
+            public String run() throws SuspendExecution, InterruptedException {
+                try {
+                    return ChannelObservable.get(o);
+                } catch (ExecutionException e) {
+                    throw new AssertionError();
+                }
+            }
+        }).start();
+
+        Thread.sleep(100);
+
+        o.onNext("foo");
+        o.onCompleted();
+
+        assertThat(f.get(), equalTo("foo"));
+    }
+
+    @Test
+    public void whenGetAndObservableFailsThenThrowExecutionException() throws Exception {
+        final PublishSubject<String> o = PublishSubject.create();
+
+        Fiber<String> f = new Fiber<String>(new SuspendableCallable<String>() {
+
+            @Override
+            public String run() throws SuspendExecution, InterruptedException {
+                try {
+                    return ChannelObservable.get(o);
+                } catch (ExecutionException e) {
+                    return e.getCause().getMessage();
+                }
+            }
+        }).start();
+
+        Thread.sleep(100);
+
+        o.onError(new Exception("ohoh"));
+
+        assertThat(f.get(), equalTo("ohoh"));
+    }
+
+    @Test
+    public void whenGetAndObservableEmitsTwoValuesThenBlowup() throws Exception {
+        final PublishSubject<String> o = PublishSubject.create();
+
+        Fiber<String> f = new Fiber<String>(new SuspendableCallable<String>() {
+
+            @Override
+            public String run() throws SuspendExecution, InterruptedException {
+                try {
+                    return ChannelObservable.get(o);
+                } catch (ExecutionException e) {
+                    throw new AssertionError();
+                }
+            }
+        }).start();
+
+        Thread.sleep(100);
+
+        o.onNext("foo");
+        try {
+            o.onNext("bar");
+            fail();
+        } catch (Exception e) {
+        }
+    }
+
     static class MyException extends RuntimeException {
-        
+
     }
 }
