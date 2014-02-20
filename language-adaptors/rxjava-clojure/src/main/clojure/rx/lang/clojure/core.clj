@@ -288,39 +288,45 @@
   ([lock ^Observable xs]
   (.synchronize xs lock)))
 
-(defn ^Observable merge
-  "Observable.merge, renamed because merge means something else in Clojure
-
-  os is one of:
-
-    * An Iterable of Observables to merge
-    * An Observable<Observable<T>> to merge
+(defn merge*
+  "Merge an Observable of Observables into a single Observable
 
   If you want clojure.core/merge, it's just this:
 
     (rx/reduce clojure.core/merge {} maps)
 
+  See:
+    merge
+    merge-delay-error*
+    rx.Observable/merge
   "
-  [os]
-  (cond
-    (instance? Iterable os)
-      (Observable/merge (Observable/from ^Iterable os))
-    (instance? Observable os)
-      (Observable/merge ^Observable os)
-    :else
-      (throw (IllegalArgumentException. (str "Don't know how to merge " (type os))))))
+  [^Observable xs]
+  (Observable/merge xs))
+
+(defn ^Observable merge
+  "Merge one or more Observables into a single observable.
+
+  If you want clojure.core/merge, it's just this:
+
+    (rx/reduce clojure.core/merge {} maps)
+
+  See:
+    merge*
+    merge-delay-error
+    rx.Observable/merge
+  "
+  [& os]
+  (merge* (seq->o os)))
+
+(defn ^Observable merge-delay-error*
+  "Same as merge*, but all values are emitted before errors are propagated"
+  [^Observable xs]
+  (Observable/mergeDelayError xs))
 
 (defn ^Observable merge-delay-error
-  "Observable.mergeDelayError"
-  [os]
-  (cond
-    (instance? java.util.List os)
-      (Observable/mergeDelayError ^java.util.List os)
-    (instance? Observable os)
-      (Observable/mergeDelayError ^Observable os)
-    :else
-      (throw (IllegalArgumentException. (str "Don't know how to merge " (type os))))))
-
+  "Same as merge, but all values are emitted before errors are propagated"
+  [& os]
+  (merge-delay-error* (seq->o os)))
 
 (defn cache
   "caches the observable value so that multiple subscribers don't re-evaluate it.
