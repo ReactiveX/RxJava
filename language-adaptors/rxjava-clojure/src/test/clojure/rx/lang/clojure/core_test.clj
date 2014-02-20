@@ -115,7 +115,7 @@
       sleepy-o        #(f/future-generator f/default-runner [o]
                                            (doseq [x %]
                                              (Thread/sleep 10)
-                                             (rx/on-next o x))) 
+                                             (rx/on-next o x)))
       make-inputs (fn [] (mapv sleepy-o expected-result))
       make-output (fn [r] [(keep #{1 3 5} r)
                            (keep #{2 4 6} r)])]
@@ -338,8 +338,13 @@
          (b/into [] (rx/interpose \, (rx/seq->o [1 2 3]))))))
 
 (deftest test-into
-  (is (= (into [6 7 8] [9 10 [11]])
-         (b/first (rx/into [6 7 8] (rx/seq->o [9 10 [11]]))))))
+  (are [input to] (= (into to input)
+                     (b/single (rx/into to (rx/seq->o input))))
+       [6 7 8] [9 10 [11]]
+       #{} [1 2 3 2 4 5]
+       {} [[1 2] [3 2] [4 5]]
+       {} []
+       '() (range 50)))
 
 (deftest test-keep
   (is (= (into [] (keep identity [true true false]))
