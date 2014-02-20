@@ -72,7 +72,7 @@ Blocking operators, which are useful for testing, but should otherwise be avoide
 ## Open Issues
 
 * The missing stuff mentioned below
-* `group-by`
+* `group-by` val-fn variant isn't implemented in RxJava
 * There are some functions for defining customer Observables and Operators (`subscriber`, `operator*`, `observable*`). I don't think these are really enough for serious operator implementation, but I'm hesitant to guess at an abstraction at this point. These will probably change dramatically.
 
 ## What's Missing

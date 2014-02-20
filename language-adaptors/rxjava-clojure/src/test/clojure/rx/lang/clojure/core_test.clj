@@ -256,6 +256,36 @@
   (is (= []
          (b/into [] (rx/first (rx/empty))))))
 
+(deftest test-group-by
+  (let [xs [{:k :a :v 1} {:k :b :v 2} {:k :a :v 3} {:k :c :v 4}]]
+    (testing "with just a key-fn"
+      (is (= [[:a {:k :a :v 1}]
+              [:b {:k :b :v 2}]
+              [:a {:k :a :v 3}]
+              [:c {:k :c :v 4}]]
+             (->> xs
+                  (rx/seq->o)
+                  (rx/group-by :k)
+                  (rx/mapcat (fn [[k vo :as me]]
+                               (is (instance? clojure.lang.MapEntry me))
+                               (rx/map #(vector k %) vo)))
+                  (b/into [])))))
+
+    ; TODO reinstate once this is implemented
+    ; see https://github.com/Netflix/RxJava/commit/02ccc4d727a9297f14219549208757c6e0efce2a
+    #_(testing "with a val-fn"
+      (is (= [[:a 1]
+              [:b 2]
+              [:a 3]
+              [:c 4]]
+             (->> xs
+                  (rx/seq->o)
+                  (rx/group-by :k :v)
+                  (rx/mapcat (fn [[k vo :as me]]
+                               (is (instance? clojure.lang.MapEntry me))
+                               (rx/map #(vector k %) vo)))
+                  (b/into [])))))
+    ))
 (deftest test-interpose
   (is (= (interpose \, [1 2 3])
          (b/into [] (rx/interpose \, (rx/seq->o [1 2 3]))))))
