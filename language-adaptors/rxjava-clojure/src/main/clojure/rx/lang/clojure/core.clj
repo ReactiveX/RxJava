@@ -96,7 +96,7 @@
 (declare unsubscribed?)
 
 (defn ^Subscriber subscriber
-  ""
+  "Experimental, subject to change or deletion."
   ([o on-next-action] (subscriber o on-next-action nil nil))
   ([o on-next-action on-error-action] (subscriber o on-next-action on-error-action nil))
   ([^Subscriber o on-next-action on-error-action on-completed-action]
@@ -125,7 +125,9 @@
   (Subscriptions/create ^Action0 (iop/action* handler)))
 
 (defn ^Observable$Operator operator*
-  "Returns a new implementation of rx.Observable$Operator that calls the given
+  "Experimental, subject to change or deletion.
+
+  Returns a new implementation of rx.Observable$Operator that calls the given
   function with a rx.Subscriber. The function should return a rx.Subscriber.
 
   See:
@@ -188,6 +190,13 @@
 ;################################################################################
 
 (defn ^Subscription subscribe
+  "Subscribe to the given observable.
+
+  on-X-action is a normal clojure function.
+
+  See:
+    rx.Observable/subscribe
+  "
 
   ([^Observable o on-next-action]
     (.subscribe o
@@ -283,6 +292,11 @@
 ; Operators
 
 (defn synchronize
+  "Synchronize execution.
+
+  See:
+    rx.Observable/synchronize
+  "
   ([^Observable xs]
   (.synchronize xs))
   ([lock ^Observable xs]
