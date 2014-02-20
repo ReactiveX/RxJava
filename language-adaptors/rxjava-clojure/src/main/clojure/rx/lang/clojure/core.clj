@@ -532,6 +532,11 @@
        (concat*)))
 
 (defn interpose
+  "Returns an Observable of the elements of xs separated by sep
+
+  See:
+    clojure.core/interpose
+  "
   [sep xs]
   (let [op (operator* (fn [o]
                         (let [first? (atom true)]
