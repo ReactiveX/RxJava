@@ -4,7 +4,7 @@
                             empty every?
                             filter first future
                             group-by
-                            interpose into
+                            interleave interpose into
                             keep keep-indexed
                             map mapcat map-indexed
                             merge next nth partition reduce reductions
@@ -25,7 +25,7 @@
 
 (set! *warn-on-reflection* true)
 
-(declare concat map map-indexed reduce take take-while)
+(declare concat* concat map* map map-indexed reduce take take-while)
 
 (defn ^Func1 fn->predicate
   "Turn f into a predicate that returns true/false like Rx predicates should"
@@ -483,6 +483,33 @@
                   (iop/fn* val-fn))
         (map (fn [^GroupedObservable go]
                (clojure.lang.MapEntry. (.getKey go) go))))))
+
+(defn interleave*
+  "Returns an Observable of the first item in each Observable emitted by observables, then
+  the second etc.
+
+  observables is an Observable of Observables
+
+  See:
+    interleave
+    clojure.core/interleave
+  "
+  [observables]
+  (->> (map* #(seq->o %&) observables)
+       (concat*)))
+
+(defn interleave
+  "Returns an Observable of the first item in each Observable, then the second etc.
+
+  Each argument is an individual Observable
+
+  See:
+    observable*
+    clojure.core/interleave
+  "
+  [o1 & observables]
+  (->> (apply map #(seq->o %&) o1 observables)
+       (concat*)))
 
 (defn interpose
   [sep xs]
