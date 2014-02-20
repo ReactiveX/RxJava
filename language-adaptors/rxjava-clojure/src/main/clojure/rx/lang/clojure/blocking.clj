@@ -99,7 +99,8 @@
     rx/into
   "
   [to from-observable]
-  (first (rx/into to from-observable)))
+  (with-ex-unwrap
+    (clojure.core/into to (o->seq from-observable))))
 
 (defn doseq*
   "*Blocks* and executes (f x) for each x emitted by xs
