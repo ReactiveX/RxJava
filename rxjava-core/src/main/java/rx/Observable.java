@@ -4590,30 +4590,6 @@ public class Observable<T> {
     }
 
     /**
-     * Groups the items emitted by an Observable according to a specified criterion, and emits these grouped
-     * items, transformed by a selector, within {@link GroupedObservable}s, one {@code GroupedObservable} per
-     * group.
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/groupBy.png">
-     * 
-     * @param keySelector
-     *            a function that extracts the key from an item
-     * @param elementSelector
-     *            a function to map a source item to an item emitted by a {@link GroupedObservable}
-     * @param <K>
-     *            the key type
-     * @param <R>
-     *            the type of items emitted by the resulting {@link GroupedObservable}s
-     * @return an Observable that emits {@link GroupedObservable}s, each of which corresponds to a unique key
-     *         value and emits transformed items corresponding to items from the source Observable that share
-     *         that key value
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#wiki-groupby-and-groupbyuntil">RxJava Wiki: groupBy</a>
-     */
-    public final <K, R> Observable<GroupedObservable<K, R>> groupBy(final Func1<? super T, ? extends K> keySelector, final Func1<? super T, ? extends R> elementSelector) {
-        return null;
-    }
-
-    /**
      * Groups the items emitted by an Observable according to a specified key selector function until the
      * duration Observable expires for the key.
      * <p>
