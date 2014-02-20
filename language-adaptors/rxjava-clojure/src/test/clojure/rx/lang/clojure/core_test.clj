@@ -416,6 +416,33 @@
   (let [in [:q :r :s :t :u]]
     (is (= (rest in) (b/into [] (rx/rest (rx/seq->o in)))))))
 
+(deftest test-partition-all
+  (are [input-size part-size step] (= (->> (range input-size)
+                                           (partition-all part-size step))
+                                      (->> (range input-size)
+                                           (rx/seq->o)
+                                           (rx/partition-all part-size step)
+                                           (rx/map #(rx/into [] %))
+                                           (rx/concat*)
+                                           (b/into [])))
+       0 1 1
+       10 2 2
+       10 3 2
+       15 30 4)
+
+  (are [input-size part-size] (= (->> (range input-size)
+                                      (partition-all part-size))
+                                 (->> (range input-size)
+                                      (rx/seq->o)
+                                      (rx/partition-all part-size)
+                                      (rx/map #(rx/into [] %))
+                                      (rx/concat*)
+                                      (b/into [])))
+       0 1
+       10 2
+       10 3
+       15 30))
+
 (deftest test-reduce
   (is (= (reduce + 0 (range 4))
          (b/first (rx/reduce + 0 (rx/seq->o (range 4)))))))
