@@ -111,20 +111,40 @@
                 (rx/synchronize lock)
                 (b/into []))))))
 
-(deftest test-merge
-  (is (= [[1 3 5] [2 4 6]]
-         (let [r (b/into []
-                   (rx/merge [(f/future-generator f/default-runner [o]
-                                                   (doseq [x [1 3 5]]
-                                                     (Thread/sleep 10)
-                                                     (rx/on-next o x)))
-                              (f/future-generator f/default-runner [o]
-                                                   (doseq [x [2 4 6]]
-                                                     (Thread/sleep 10)
-                                                     (rx/on-next o x)))]))]
-           ; make sure each sequence maintained original order
-           [(keep #{1 3 5} r)
-            (keep #{2 4 6} r) ]))))
+(let [expected-result [[1 3 5] [2 4 6]]
+      sleepy-o        #(f/future-generator f/default-runner [o]
+                                           (doseq [x %]
+                                             (Thread/sleep 10)
+                                             (rx/on-next o x))) 
+      make-inputs (fn [] (mapv sleepy-o expected-result))
+      make-output (fn [r] [(keep #{1 3 5} r)
+                           (keep #{2 4 6} r)])]
+  (deftest test-merge*
+    (is (= expected-result
+           (->> (make-inputs)
+                (rx/seq->o)
+                (rx/merge*)
+                (b/into [])
+                (make-output)))))
+  (deftest test-merge
+    (is (= expected-result
+           (->> (make-inputs)
+                (apply rx/merge)
+                (b/into [])
+                (make-output)))))
+  (deftest test-merge-delay-error*
+    (is (= expected-result
+           (->> (make-inputs)
+                (rx/seq->o)
+                (rx/merge-delay-error*)
+                (b/into [])
+                (make-output)))))
+  (deftest test-merge-delay-error
+    (is (= expected-result
+           (->> (make-inputs)
+                (apply rx/merge-delay-error)
+                (b/into [])
+                (make-output))))))
 
 (deftest test-generator
   (testing "calls on-completed automatically"
