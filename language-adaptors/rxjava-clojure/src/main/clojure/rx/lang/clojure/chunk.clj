@@ -92,8 +92,8 @@
                                   (fn []
                                     (swap! state-atom assoc :complete :complete)
                                     (advance! state-atom))))
-        observable (rx/fn->o (fn [observer]
-                               (subscribe (new-state-atom observer)))) ]
+        observable (rx/observable* (fn [observer]
+                                     (subscribe (new-state-atom observer)))) ]
     (if (:delay-error? options)
       (rx.Observable/mergeDelayError observable)
       (rx.Observable/merge observable)))))

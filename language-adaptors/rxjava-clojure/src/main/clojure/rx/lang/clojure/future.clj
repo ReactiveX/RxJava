@@ -29,14 +29,14 @@
   "
   [runner f & args]
   {:pre [(ifn? runner) (ifn? f)]}
-  (rx/fn->o (fn [^rx.Subscriber observer]
+  (rx/observable* (fn [^rx.Subscriber observer]
               (let [wrapped (-> (fn [o]
                                   (apply f o args))
                                 rx/wrap-on-completed
                                 rx/wrap-on-error)
                     fu      (runner #(wrapped observer))]
               (.add observer
-                    (rx/fn->subscription #(future-cancel fu)))))))
+                    (rx/subscription #(future-cancel fu)))))))
 
 (defmacro future-generator
   "Same as rx/generator macro except body is invoked in a separate thread.
@@ -74,13 +74,13 @@
   "
   [runner f & args]
   {:pre [(ifn? runner) (ifn? f)]}
-  (rx/fn->o (fn [^rx.Subscriber observer]
+  (rx/observable* (fn [^rx.Subscriber observer]
            (let [wrapped (-> #(rx/on-next % (apply f args))
                              rx/wrap-on-completed
                              rx/wrap-on-error)
                  fu      (runner #(wrapped observer))]
              (.add observer
-                   (rx/fn->subscription #(future-cancel fu)))))))
+                   (rx/subscription #(future-cancel fu)))))))
 
 (defmacro future
   "Executes body in a separate thread and passes the single result to onNext.
