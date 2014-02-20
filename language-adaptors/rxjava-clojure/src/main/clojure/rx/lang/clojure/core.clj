@@ -432,7 +432,7 @@
   Example:
 
     (->> (rx/seq->o [1 2 3])
-    (rx/do println)
+         (rx/do println)
     ...)
 
   Will print 1, 2, 3.
@@ -884,8 +884,8 @@
 ;################################################################################;
 
 (defn generator*
-  "Creates an observable that calls (f observable & args) which should emit values
-  with (rx/on-next observable value).
+  "Creates an observable that calls (f observer & args) which should emit values
+  with (rx/on-next observer value).
 
   Automatically calls on-completed on return, or on-error if any exception is thrown.
 
@@ -902,8 +902,8 @@
                    wrap-on-error)))
 
 (defmacro generator
-  "Create an observable that executes body which should emit a sequence. bindings
-  should be a single [observer] argument.
+  "Create an observable that executes body which should emit values with
+  (rx/on-next observer value) where observer comes from bindings.
 
   Automatically calls on-completed on return, or on-error if any exception is thrown.
 
