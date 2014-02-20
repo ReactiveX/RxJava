@@ -284,8 +284,35 @@
                   (rx/mapcat (fn [[k vo :as me]]
                                (is (instance? clojure.lang.MapEntry me))
                                (rx/map #(vector k %) vo)))
-                  (b/into [])))))
-    ))
+                  (b/into [])))))))
+
+(deftest test-interleave
+  (are [inputs] (= (apply interleave inputs)
+                   (->> (apply rx/interleave (map rx/seq->o inputs))
+                        (b/into [])))
+       [[] []]
+       [[] [1]]
+       [(range 5) (range 10) (range 10) (range 3)]
+       [(range 50) (range 10)]
+       [(range 5) (range 10 60) (range 10) (range 50)])
+
+  ; one-arg case, not supported by clojure.core/interleave
+  (is (= (range 10)
+         (->> (rx/interleave (rx/seq->o (range 10)))
+              (b/into [])))))
+
+(deftest test-interleave*
+  (are [inputs] (= (apply interleave inputs)
+                   (->> (rx/interleave* (->> inputs
+                                             (map rx/seq->o)
+                                             (rx/seq->o)))
+                        (b/into [])))
+       [[] []]
+       [[] [1]]
+       [(range 5) (range 10) (range 10) (range 3)]
+       [(range 50) (range 10)]
+       [(range 5) (range 10 60) (range 10) (range 50)]))
+
 (deftest test-interpose
   (is (= (interpose \, [1 2 3])
          (b/into [] (rx/interpose \, (rx/seq->o [1 2 3]))))))
