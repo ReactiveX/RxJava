@@ -8,6 +8,48 @@
   (is (rx/observable? (rx/return 99)))
   (is (not (rx/observable? "I'm not an observable"))))
 
+(deftest test-on-next
+  (testing "calls onNext"
+    (let [called (atom [])
+          o (reify rx.Observer (onNext [this value] (swap! called conj value)))]
+      (is (identical? o (rx/on-next o 1)))
+      (is (= [1] @called)))))
+
+(deftest test-on-completed
+  (testing "calls onCompleted"
+    (let [called (atom 0)
+          o (reify rx.Observer (onCompleted [this] (swap! called inc)))]
+      (is (identical? o (rx/on-completed o)))
+      (is (= 1 @called)))))
+
+(deftest test-on-error
+  (testing "calls onError"
+    (let [called (atom [])
+          e (java.io.FileNotFoundException. "yum")
+          o (reify rx.Observer (onError [this e] (swap! called conj e)))]
+      (is (identical? o (rx/on-error o e)))
+      (is (= [e] @called)))))
+
+(deftest test-catch-error-value
+  (testing "if no exception, returns body"
+    (let [o (reify rx.Observer)]
+      (is (= 3 (rx/catch-error-value o 99
+                 (+ 1 2))))))
+
+  (testing "exceptions call onError on observable and inject value in exception"
+    (let [called (atom [])
+          e      (java.io.FileNotFoundException. "boo")
+          o      (reify rx.Observer
+                   (onError [this e]
+                     (swap! called conj e)))
+          result (rx/catch-error-value o 100
+                   (throw e))
+          cause  (.getCause e)]
+      (is (identical? e result))
+      (is (= [e] @called))
+      (when (is (instance? rx.exceptions.OnErrorThrowable$OnNextValue cause))
+        (is (= 100 (.getValue cause)))))))
+
 (deftest test-subscribe
   (testing "subscribe overload with only onNext"
     (let [o (rx/return 1)
@@ -285,7 +327,17 @@
                                            (rx/seq->o [8])]))))))
 (deftest test-map-indexed
   (is (= (map-indexed vector [:a :b :c])
-         (b/into [] (rx/map-indexed vector (rx/seq->o [:a :b :c]))))))
+         (b/into [] (rx/map-indexed vector (rx/seq->o [:a :b :c])))))
+  (testing "exceptions from fn have error value injected"
+    (try
+      (->> (rx/seq->o [:a :b :c])
+           (rx/map-indexed (fn [i v]
+                        (if (= 1 i)
+                          (throw (java.io.FileNotFoundException. "blah")))
+                        v))
+           (b/into []))
+      (catch java.io.FileNotFoundException e
+        (is (= :b (-> e .getCause .getValue)))))))
 
 (deftest test-mapcat
   (let [f  (fn [v] [v (* v v)])

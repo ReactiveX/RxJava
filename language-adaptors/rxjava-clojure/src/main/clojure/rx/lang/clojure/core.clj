@@ -39,19 +39,53 @@
 ;################################################################################
 
 (defn on-next
-  "Call onNext on the given observer."
+  "Call onNext on the given observer and return o."
   [^Observer o value]
-  (.onNext o value))
+  (.onNext o value)
+  o)
 
 (defn on-completed
-  "Call onCompleted on the given observer."
+  "Call onCompleted on the given observer and return o."
   [^Observer o]
-  (.onCompleted o))
+  (.onCompleted o)
+  o)
 
 (defn on-error
-  "Call onError on the given observer."
+  "Call onError on the given observer and return o."
   [^Observer o e]
-  (.onError o e))
+  (.onError o e)
+  o)
+
+(defmacro catch-error-value
+  "Experimental
+
+  TODO: Better name, better abstraction.
+
+  Evaluate body and return its value.  If an exception e is thrown, inject the
+  given value into the exception's cause and call (on-error error-observer e),
+  returning e.
+
+  This is meant to facilitate implementing Observers that call user-supplied code
+  safely. The general pattern is something like:
+
+    (fn [o v]
+      (rx/catch-error-value o v
+        (rx/on-next o (some-func v))))
+
+  If (some-func v) throws an exception, it is caught, v is injected into the
+  exception's cause (with OnErrorThrowable/addValueAsLastCause) and
+  (rx/on-error o e) is invoked.
+
+  See:
+    rx.exceptions.OnErrorThrowable/addValueAsLastCause
+  "
+  [error-observer value & body]
+  `(try
+    ~@body
+    (catch Throwable e#
+      (on-error ~error-observer
+                (rx.exceptions.OnErrorThrowable/addValueAsLastCause e# ~value))
+      e#)))
 
 ;################################################################################
 ; Tools for creating new operators and observables
@@ -504,7 +538,8 @@
                         (let [n (atom -1)]
                           (subscriber o
                                       (fn [o v]
-                                        (on-next o (f (swap! n inc) v)))))))]
+                                        (catch-error-value o v
+                                          (on-next o (f (swap! n inc) v))))))))]
     (lift op xs)))
 
 (def next
