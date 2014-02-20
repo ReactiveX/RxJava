@@ -23,29 +23,29 @@
        identity "true" true
        identity true   true))
 
-(deftest test-fn->subscription
+(deftest test-subscription
   (let [called (atom 0)
-        s (rx/fn->subscription #(swap! called inc))]
+        s (rx/subscription #(swap! called inc))]
     (is (identical? s (rx/unsubscribe s)))
     (is (= 1 @called))))
 
 (deftest test-unsubscribed?
-  (let [s (rx/fn->subscription #())]
+  (let [s (rx/subscription #())]
     (is (not (rx/unsubscribed? s)))
     (rx/unsubscribe s)
     (is (rx/unsubscribed? s))))
 
 
-(deftest test-fn->o
-  (let [o (rx/fn->o (fn [s]
-                      (rx/on-next s 0)
-                      (rx/on-next s 1)
-                      (when-not (rx/unsubscribed? s) (rx/on-next s 2))
-                      (rx/on-completed s)))]
+(deftest test-observable*
+  (let [o (rx/observable* (fn [s]
+                            (rx/on-next s 0)
+                            (rx/on-next s 1)
+                            (when-not (rx/unsubscribed? s) (rx/on-next s 2))
+                            (rx/on-completed s)))]
     (is (= [0 1 2] (b/into [] o)))))
 
-(deftest test-fn->operator
-  (let [o (rx/fn->operator #(rx/->subscriber %
+(deftest test-operator*
+  (let [o (rx/operator* #(rx/subscriber %
                                            (fn [o v]
                                              (if (even? v)
                                                (rx/on-next o v)))))
@@ -53,7 +53,6 @@
                     (rx/lift o)
                     (b/into []))]
     (is (= [2 4] result))))
-
 
 (deftest test-syncrhonize
   ; I'm going to believe synchronize works and just exercise it

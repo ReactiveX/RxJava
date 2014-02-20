@@ -54,6 +54,101 @@
   (.onError o e))
 
 ;################################################################################
+; Tools for creating new operators and observables
+
+(declare unsubscribed?)
+
+(defn ^Subscriber subscriber
+  ""
+  ([o on-next-action] (subscriber o on-next-action nil nil))
+  ([o on-next-action on-error-action] (subscriber o on-next-action on-error-action nil))
+  ([^Subscriber o on-next-action on-error-action on-completed-action]
+   (proxy [Subscriber] [o]
+     (onCompleted []
+       (if on-completed-action
+         (on-completed-action o)
+         (on-completed o)))
+     (onError [e]
+       (if on-error-action
+         (on-error-action o e)
+         (on-error o e)))
+     (onNext [t]
+       (if on-next-action
+         (on-next-action o t)
+         (on-next o t))))))
+
+(defn ^Subscription subscription
+  "Create a new subscription that calls the given no-arg handler function when
+  unsubscribe is called
+
+  See:
+    rx.subscriptions.Subscriptions/create
+  "
+  [handler]
+  (Subscriptions/create ^Action0 (iop/action* handler)))
+
+(defn ^Observable$Operator operator*
+  "Returns a new implementation of rx.Observable$Operator that calls the given
+  function with a rx.Subscriber. The function should return a rx.Subscriber.
+
+  See:
+    lift
+    rx.Observable$Operator
+  "
+  [f]
+  {:pre [(fn? f)]}
+  (reify Observable$Operator
+    (call [this o]
+      (f o))))
+
+(defn ^Observable observable*
+  "Create an Observable from the given function.
+
+  When subscribed to, (f subscriber) is called at which point, f can start emitting values, etc.
+  The passed subscriber is of type rx.Subscriber.
+
+  See:
+    rx.Subscriber
+    rx.Observable/create
+  "
+  [f]
+  (Observable/create ^Observable$OnSubscribe (iop/action* f)))
+
+(defn wrap-on-completed
+  "Wrap handler with code that automaticaly calls rx.Observable.onCompleted."
+  [handler]
+  (fn [^Observer observer]
+    (handler observer)
+    (when-not (unsubscribed? observer)
+      (.onCompleted observer))))
+
+(defn wrap-on-error
+  "Wrap handler with code that automaticaly calls (on-error) if an exception is thrown"
+  [handler]
+  (fn [^Observer observer]
+    (try
+      (handler observer)
+      (catch Throwable e
+        (when-not (unsubscribed? observer)
+          (.onError observer e))))))
+
+(defn lift
+  "Lift the Operator op over the given Observable xs
+
+  Example:
+
+    (->> my-observable
+         (rx/lift (rx/operator ...))
+         ...)
+
+  See:
+    rx.Observable/lift
+    operator
+  "
+  [^Observable$Operator op ^Observable xs]
+  (.lift xs op))
+
+;################################################################################
 
 (defn ^Subscription subscribe
 
@@ -71,59 +166,6 @@
                 ^Action1 (iop/action* on-next-action)
                 ^Action1 (iop/action* on-error-action)
                 ^Action0 (iop/action* on-completed-action))))
-
-(defn ^Subscriber ->subscriber
-  ""
-  ([o on-next-action] (->subscriber o on-next-action nil nil))
-  ([o on-next-action on-error-action] (->subscriber o on-next-action on-error-action nil))
-  ([^Subscriber o on-next-action on-error-action on-completed-action]
-   (proxy [Subscriber] [o]
-     (onCompleted []
-       (if on-completed-action
-         (on-completed-action o)
-         (on-completed o)))
-     (onError [e]
-       (if on-error-action
-         (on-error-action o e)
-         (on-error o e)))
-     (onNext [t]
-       (if on-next-action
-         (on-next-action o t)
-         (on-next o t))))))
-
-(defn ^Observable$Operator fn->operator
-  "Create a basic Operator with f. If a handler is omitted or nil
-  it's treated as a pass-through.
-
-  on-next-action  Passed Subscriber and value
-  on-error-action Passed Throwable
-  on-completed-action No-args
-
-  See:
-  lift
-  rx.Observable$Operator
-  "
-  [f]
-  {:pre [(fn? f)]}
-  (reify Observable$Operator
-    (call [this o]
-      (f o))))
-
-(defn lift
-  "Lift the Operator op over the given Observable xs
-
-  Example:
-
-    (->> my-observable
-         (rx/lift (rx/fn->operator ...))
-         ...)
-
-  See:
-    rx.Observable/lift
-    fn->operator
-  "
-  [^Observable$Operator op ^Observable xs]
-  (.lift xs op))
 
 (defn unsubscribe
   "Unsubscribe from Subscription s and return it."
@@ -158,53 +200,50 @@
 
   See:
     rx.Observable/create
-    fn->o
+    observable*
   "
   [^Subscription s]
   (.isUnsubscribed s))
 
-(defn ^Subscription fn->subscription
-  "Create a new subscription that calls the given no-arg handler function when
-  unsubscribe is called
+;################################################################################
+; Functions for creating Observables
+
+(defn ^Observable never
+  "Returns an Observable that never emits any values and never completes.
 
   See:
-    rx.subscriptions.Subscriptions/create
+    rx.Observable/never
   "
-  [handler]
-  (Subscriptions/create ^Action0 (iop/action* handler)))
+  []
+  (Observable/never))
 
-(defn ^Observable fn->o
-  "Create an Observable from the given function.
-
-  When subscribed to, (f subscriber) is called at which point, f can start emitting values, etc.
-  The passed subscriber is of type rx.Subscriber.
+(defn ^Observable empty
+  "Returns an Observable that completes immediately without emitting any values.
 
   See:
-    rx.Subscriber
-    rx.Observable/create
+    rx.Observable/empty
   "
-  [f]
-  (Observable/create ^Observable$OnSubscribe (iop/action* f)))
+  []
+  (Observable/empty))
 
-(defn wrap-on-completed
-  "Wrap handler with code that automaticaly calls rx.Observable.onCompleted."
-  [handler]
-  (fn [^Observer observer]
-    (handler observer)
-    (when-not (unsubscribed? observer)
-      (.onCompleted observer))))
+(defn ^Observable return
+  "Returns an observable that emits a single value.
 
-(defn wrap-on-error
-  "Wrap handler with code that automaticaly calls (on-error) if an exception is thrown"
-  [handler]
-  (fn [^Observer observer]
-    (try
-      (handler observer)
-      (catch Throwable e
-        (when-not (unsubscribed? observer)
-          (.onError observer e))))))
+  See:
+    rx.Observable/just
+  "
+  [value]
+  (Observable/just value))
+
+(defn ^Observable seq->o
+  "Make an observable out of some seq-able thing. The rx equivalent of clojure.core/seq."
+  [xs]
+  (if xs
+    (Observable/from ^Iterable xs)
+    (empty)))
 
 ;################################################################################
+; Operators
 
 (defn synchronize
   ([^Observable xs]
@@ -245,44 +284,6 @@
     :else
       (throw (IllegalArgumentException. (str "Don't know how to merge " (type os))))))
 
-
-;################################################################################
-
-(defn ^Observable never
-  "Returns an Observable that never emits any values and never completes.
-
-  See:
-    rx.Observable/never
-  "
-  []
-  (Observable/never))
-
-(defn ^Observable empty
-  "Returns an Observable that completes immediately without emitting any values.
-
-  See:
-    rx.Observable/empty
-  "
-  []
-  (Observable/empty))
-
-(defn ^Observable return
-  "Returns an observable that emits a single value.
-
-  See:
-    rx.Observable/just
-  "
-  [value]
-  (Observable/just value))
-
-(defn ^Observable seq->o
-  "Make an observable out of some seq-able thing. The rx equivalent of clojure.core/seq."
-  [xs]
-  (if xs
-    (Observable/from ^Iterable xs)
-    (empty)))
-
-;################################################################################
 
 (defn cache
   "caches the observable value so that multiple subscribers don't re-evaluate it.
@@ -354,14 +355,14 @@
   "
   ([xs] (distinct identity xs))
   ([key-fn ^Observable xs]
-  (let [op (fn->operator (fn [o]
-                           (let [seen (atom #{})]
-                             (->subscriber o
-                                           (fn [o v]
-                                             (let [key (key-fn v)]
-                                               (when-not (contains? @seen key)
-                                                 (swap! seen conj key)
-                                                 (on-next o v))))))))]
+   (let [op (operator* (fn [o]
+                         (let [seen (atom #{})]
+                           (subscriber o
+                                       (fn [o v]
+                                         (let [key (key-fn v)]
+                                           (when-not (contains? @seen key)
+                                             (swap! seen conj key)
+                                             (on-next o v))))))))]
     (lift op xs))))
 
 (defn ^Observable do
@@ -422,12 +423,12 @@
 
 (defn interpose
   [sep xs]
-  (let [op (fn->operator (fn [o]
-                         (let [first? (atom true)]
-                           (->subscriber o (fn [o v]
-                                             (if-not (compare-and-set! first? true false)
-                                               (on-next o sep))
-                                             (on-next o v))))))]
+  (let [op (operator* (fn [o]
+                        (let [first? (atom true)]
+                          (subscriber o (fn [o v]
+                                          (if-not (compare-and-set! first? true false)
+                                            (on-next o sep))
+                                          (on-next o v))))))]
     (lift op xs)))
 
 (defn into
@@ -499,10 +500,11 @@
     clojure.core/map-indexed
   "
   [f xs]
-  (let [op (fn->operator (fn [o]
-                           (let [n (atom -1)]
-                             (->subscriber o
-                                           (fn [o v] (on-next o (f (swap! n inc) v)))))))]
+  (let [op (operator* (fn [o]
+                        (let [n (atom -1)]
+                          (subscriber o
+                                      (fn [o v]
+                                        (on-next o (f (swap! n inc) v)))))))]
     (lift op xs)))
 
 (def next
@@ -768,9 +770,9 @@
     (rx/generator* on-next 99)
   "
   [f & args]
-  (fn->o (-> #(apply f % args)
-             wrap-on-completed
-             wrap-on-error)))
+  (observable* (-> #(apply f % args)
+                   wrap-on-completed
+                   wrap-on-error)))
 
 (defmacro generator
   "Create an observable that executes body which should emit a sequence. bindings
