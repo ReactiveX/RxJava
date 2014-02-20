@@ -30,7 +30,16 @@ import rx.subscriptions.BooleanSubscription;
 public class TrampolineScheduler extends Scheduler {
     private static final TrampolineScheduler INSTANCE = new TrampolineScheduler();
 
+    /**
+     * @deprecated Use Schedulers.trampoline();
+     * @return
+     */
+    @Deprecated
     public static TrampolineScheduler getInstance() {
+        return INSTANCE;
+    }
+    
+    /* package */ static TrampolineScheduler instance() {
         return INSTANCE;
     }
 
