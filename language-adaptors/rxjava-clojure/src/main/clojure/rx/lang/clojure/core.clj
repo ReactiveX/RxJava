@@ -7,7 +7,7 @@
                             interleave interpose into
                             keep keep-indexed
                             map mapcat map-indexed
-                            merge next nth partition reduce reductions
+                            merge next nth partition-all reduce reductions
                             rest seq some sort sort-by split-with
                             take take-while throw])
   (:require [rx.lang.clojure.interop :as iop]
@@ -618,7 +618,17 @@
   ([^Observable xs index not-found]
    (.elementAtOrDefault xs index not-found)))
 
-; TODO partition. Use window
+(defn ^Observable partition-all
+  "Returns an Observable of Observables of n items each, at offsets step
+  apart. If step is not supplied, defaults to n, i.e. the partitions
+  do not overlap. May include partitions with fewer than n items at the end.
+
+  See:
+    clojure.core/partition-all
+    rx.Observable/window
+  "
+  ([n ^Observable xs] (.window xs (int n)))
+  ([n step ^Observable xs] (.window xs (int n) (int step))))
 
 (defn ^Observable reduce
   ([f ^Observable xs] (.reduce xs (iop/fn* f)))
