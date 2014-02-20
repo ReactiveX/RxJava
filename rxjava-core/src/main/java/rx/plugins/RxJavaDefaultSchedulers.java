@@ -16,7 +16,6 @@
 package rx.plugins;
 
 import rx.Scheduler;
-import rx.functions.Func0;
 
 /**
  * Define alternate Scheduler implementations to be returned by the `Schedulers` factory methods.
@@ -27,17 +26,23 @@ import rx.functions.Func0;
 public abstract class RxJavaDefaultSchedulers {
 
     /**
-     * Factory of Scheduler to return from {@link Schedulers.computation()} or null if default should be used.
+     * Scheduler to return from {@link Schedulers.computation()} or null if default should be used.
+     * 
+     * This instance should be or behave like a stateless singleton;
      */
-    public abstract Func0<Scheduler> getComputationSchedulerFactory();
+    public abstract Scheduler getComputationScheduler();
 
     /**
-     * Factory of Scheduler to return from {@link Schedulers.io()} or null if default should be used.
+     * Scheduler to return from {@link Schedulers.io()} or null if default should be used.
+     * 
+     * This instance should be or behave like a stateless singleton;
      */
-    public abstract Func0<Scheduler> getIOSchedulerFactory();
+    public abstract Scheduler getIOScheduler();
 
     /**
-     * Factory of Scheduler to return from {@link Schedulers.newThread()} or null if default should be used.
+     * Scheduler to return from {@link Schedulers.newThread()} or null if default should be used.
+     * 
+     * This instance should be or behave like a stateless singleton;
      */
-    public abstract Func0<Scheduler> getNewThreadSchedulerFactory();
+    public abstract Scheduler getNewThreadScheduler();
 }

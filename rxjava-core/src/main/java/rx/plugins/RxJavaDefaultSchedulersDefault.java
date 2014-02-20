@@ -16,7 +16,6 @@
 package rx.plugins;
 
 import rx.Scheduler;
-import rx.functions.Func0;
 
 /**
  * Default implementation of {@link RxJavaErrorHandler} that does nothing.
@@ -27,20 +26,23 @@ public class RxJavaDefaultSchedulersDefault extends RxJavaDefaultSchedulers {
 
     private static RxJavaDefaultSchedulersDefault INSTANCE = new RxJavaDefaultSchedulersDefault();
 
-    public Func0<Scheduler> getComputationSchedulerFactory() {
-        return null;
-    }
-
-    public Func0<Scheduler> getIOSchedulerFactory() {
-        return null;
-    }
-
-    public Func0<Scheduler> getNewThreadSchedulerFactory() {
-        return null;
-    }
-
     public static RxJavaDefaultSchedulers getInstance() {
         return INSTANCE;
+    }
+
+    @Override
+    public Scheduler getComputationScheduler() {
+        return null;
+    }
+
+    @Override
+    public Scheduler getIOScheduler() {
+        return null;
+    }
+
+    @Override
+    public Scheduler getNewThreadScheduler() {
+        return null;
     }
 
 }
