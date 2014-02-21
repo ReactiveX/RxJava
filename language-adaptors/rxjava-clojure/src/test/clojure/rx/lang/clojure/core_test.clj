@@ -498,6 +498,28 @@
        10 3
        15 30))
 
+(deftest test-range
+  (are [start end step] (= (range start end step)
+                           (->> (rx/range start end step) (b/into [])))
+       0   10  2
+       0 -100 -1
+       5 100   9)
+
+  (are [start end] (= (range start end)
+                      (->> (rx/range start end) (b/into [])))
+       0   10
+       0 -100
+       5 100)
+
+  (are [start] (= (->> (range start) (take 100))
+                  (->> (rx/range start) (rx/take 100) (b/into [])))
+       50
+       0
+       5
+       -20)
+  (is (= (->> (range) (take 500))
+         (->> (rx/range) (rx/take 500) (b/into [])))))
+
 (deftest test-reduce
   (is (= (reduce + 0 (range 4))
          (b/first (rx/reduce + 0 (rx/seq->o (range 4)))))))

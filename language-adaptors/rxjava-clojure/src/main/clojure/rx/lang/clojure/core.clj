@@ -7,7 +7,8 @@
                             interleave interpose into iterate
                             keep keep-indexed
                             map mapcat map-indexed
-                            merge next nth partition-all reduce reductions
+                            merge next nth partition-all
+                            range reduce reductions
                             rest seq some sort sort-by split-with
                             take take-while throw])
   (:require [rx.lang.clojure.interop :as iop]
@@ -677,6 +678,30 @@
   "
   ([n ^Observable xs] (.window xs (int n)))
   ([n step ^Observable xs] (.window xs (int n) (int step))))
+
+(defn range
+  "Returns an Observable nums from start (inclusive) to end
+  (exclusive), by step, where start defaults to 0, step to 1, and end
+  to infinity.
+
+  Note: this is not implemented on rx.Observable/range
+
+  See:
+    clojure.core/range
+  "
+  ([] (range 0 Double/POSITIVE_INFINITY 1))
+  ([end] (range 0 end 1))
+  ([start end] (range start end 1))
+  ([start end step]
+   (observable* (fn [s]
+                  (let [comp (if (pos? step) < >)]
+                    (loop [i start]
+                      (if-not (unsubscribed? s)
+                        (if (comp i end)
+                          (do
+                            (on-next s i)
+                            (recur (+ i step)))
+                          (on-completed s)))))))))
 
 (defn ^Observable reduce
   ([f ^Observable xs] (.reduce xs (iop/fn* f)))
