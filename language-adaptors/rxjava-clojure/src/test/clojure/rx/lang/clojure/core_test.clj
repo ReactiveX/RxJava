@@ -423,11 +423,31 @@
       (catch java.io.FileNotFoundException e
         (is (= :b (-> e .getCause .getValue)))))))
 
+(deftest test-mapcat*
+  (let [f (fn [a b c d e]
+            [(+ a b) (+ c d) e])]
+    (is (= (->> (range 5)
+                (map (fn [_] (range 5)))
+                (apply mapcat f))
+           (->> (range 5)
+                (map (fn [_] (rx/seq->o (range 5))))
+                (rx/seq->o)
+                (rx/mapcat* (fn [& args] (rx/seq->o (apply f args))))
+                (b/into []))))))
+
 (deftest test-mapcat
   (let [f  (fn [v] [v (* v v)])
         xs (range 10)]
     (is (= (mapcat f xs)
-           (b/into [] (rx/mapcat (comp rx/seq->o f) (rx/seq->o xs)))))))
+           (b/into [] (rx/mapcat (comp rx/seq->o f) (rx/seq->o xs))))))
+
+  (let [f  (fn [a b] [a b (* a b)])
+        as (range 10)
+        bs (range 15)]
+    (is (= (mapcat f as bs)
+           (b/into [] (rx/mapcat (comp rx/seq->o f)
+                                 (rx/seq->o as)
+                                 (rx/seq->o bs)))))))
 
 (deftest test-next
   (let [in [:q :r :s :t :u]]
