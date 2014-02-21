@@ -348,6 +348,14 @@
        {} []
        '() (range 50)))
 
+(deftest test-iterate
+  (are [f x n] (= (->> (iterate f x) (take n))
+                  (->> (rx/iterate f x) (rx/take n) (b/into [])))
+       inc 0 10
+       dec 20 100
+       #(conj % (count %)) [] 5
+       #(cons (count %) % ) nil 5))
+
 (deftest test-keep
   (is (= (into [] (keep identity [true true false]))
          (b/into [] (rx/keep identity (rx/seq->o [true true false])))))

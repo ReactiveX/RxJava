@@ -4,7 +4,7 @@
                             empty every?
                             filter first future
                             group-by
-                            interleave interpose into
+                            interleave interpose into iterate
                             keep keep-indexed
                             map mapcat map-indexed
                             merge next nth partition-all reduce reductions
@@ -549,6 +549,19 @@
   ; I don't think we have any guarantee that all on-next calls will be on the
   ; same thread, so we can't do that here.
   (reduce conj to from))
+
+(defn iterate
+  "Returns an Observable of x, (f x), (f (f x)) etc. f must be free of side-effects
+
+  See:
+    clojure.core/iterate
+  "
+  [f x]
+  (observable* (fn [s]
+                 (loop [x x]
+                   (when-not (unsubscribed? s)
+                     (on-next s x)
+                     (recur (f x)))))))
 
 (defn keep
   [f xs]
