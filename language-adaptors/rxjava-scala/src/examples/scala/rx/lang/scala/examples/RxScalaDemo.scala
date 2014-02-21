@@ -32,7 +32,7 @@ import org.scalatest.junit.JUnitSuite
 import rx.lang.scala._
 import rx.lang.scala.schedulers._
 
-@Ignore // Since this doesn't do automatic testing, don't increase build time unnecessarily
+//@Ignore // Since this doesn't do automatic testing, don't increase build time unnecessarily
 class RxScalaDemo extends JUnitSuite {
 
   @Test def intervalExample() {
@@ -78,13 +78,9 @@ class RxScalaDemo extends JUnitSuite {
     val first = Observable.from(List(10, 11, 12))
     val second = Observable.from(List(10, 11, 12))
 
-    val b1 = (first zip second) map (p => p._1 == p._2) forall (b => b)
+    val b = (first zip second) forall { case (a, b) => a == b }
 
-    val equality = (a: Any, b: Any) => a == b
-    val b2 = (first zip second) map (p => equality(p._1, p._2)) forall (b => b)
-
-    assertTrue(b1.toBlockingObservable.single)
-    assertTrue(b2.toBlockingObservable.single)
+    assertTrue(b.toBlockingObservable.single)
   }
 
   @Test def testObservableComparisonWithForComprehension() {
@@ -93,7 +89,7 @@ class RxScalaDemo extends JUnitSuite {
 
     val booleans = for ((n1, n2) <- (first zip second)) yield (n1 == n2)
 
-    val b1 = booleans.forall(_ == true) // without `== true`, b1 is assigned the forall function
+    val b1 = booleans.forall(identity)
 
     assertTrue(b1.toBlockingObservable.single)
   }
@@ -216,7 +212,6 @@ class RxScalaDemo extends JUnitSuite {
     }).flatten.toBlockingObservable.foreach(println(_))
   }
 
-  @Ignore // TODO something's bad here
   @Test def timingTest1() {
     val numbersByModulo3 = Observable.interval(1000 millis).take(9).groupBy(_ % 3)
 
@@ -224,9 +219,13 @@ class RxScalaDemo extends JUnitSuite {
 
     (for ((modulo, numbers) <- numbersByModulo3) yield {
       println("Observable for modulo" + modulo + " started at t = " + (System.currentTimeMillis - t0))
-      numbers.take(1) // <- TODO very unexpected
-      //numbers
+      numbers.map(n => s"${n} is in the modulo-$modulo group")
     }).flatten.toBlockingObservable.foreach(println(_))
+  }
+  
+  @Test def testOlympicYearTicks() {
+    Olympics.yearTicks.subscribe(println(_))
+    waitFor(Olympics.yearTicks)
   }
 
   @Test def groupByExample() {
@@ -238,8 +237,10 @@ class RxScalaDemo extends JUnitSuite {
     firstMedalOfEachCountry.subscribe(medal => {
       println(s"${medal.country} wins its first medal in ${medal.year}")
     })
+    
+    Olympics.yearTicks.subscribe(year => println(s"\nYear $year starts."))
 
-    waitFor(firstMedalOfEachCountry)
+    waitFor(Olympics.yearTicks)
   }
 
   @Test def groupByUntilExample() {
@@ -469,7 +470,10 @@ class RxScalaDemo extends JUnitSuite {
 
   def output(s: String): Unit = println(s)
 
-  // blocks until obs has completed
+  /** Subscribes to obs and waits until obs has completed. Note that if you subscribe to
+   *  obs yourself and also call waitFor(obs), all side-effects of subscribing to obs
+   *  will happen twice.
+   */
   def waitFor[T](obs: Observable[T]): Unit = {
     obs.toBlockingObservable.toIterable.last
   }
