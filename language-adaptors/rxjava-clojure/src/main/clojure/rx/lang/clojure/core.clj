@@ -681,36 +681,7 @@
        (filter identity)
        first))
 
-(defn sorted-list
-  "Returns an observable that emits a *single value* which is a sorted List
-  of the items in coll, where the sort order is determined by comparing
-  items.  If no comparator is supplied, uses compare. comparator must
-  implement java.util.Comparator.
-
-  Use sort if you don't want the sequence squashed down to a List.
-
-  See:
-    rx.Observable/toSortedList
-    sort
-  "
-  ([coll] (sorted-list clojure.core/compare coll))
-  ([comp ^Observable coll]
-   (.toSortedList coll (iop/fn [a b]
-                         ; force to int so rxjava doesn't have a fit
-                         (int (comp a b))))))
-
-(defn sorted-list-by
-  "Returns an observable that emits a *single value* which is a sorted List
-  of the items in coll, where the sort order is determined by comparing
-  (keyfn item).  If no comparator is supplied, uses compare. comparator must
-  implement java.util.Comparator.
-
-  Use sort-by if you don't want the sequence squashed down to a List.
-
-  See:
-    rx.Observable/toSortedList
-    sort-by
-  "
+(defn ^:private sorted-list-by
   ([keyfn coll] (sorted-list-by keyfn clojure.core/compare coll))
   ([keyfn comp ^Observable coll]
    (.toSortedList coll (iop/fn [a b]
@@ -723,16 +694,13 @@
   comparator must implement java.util.Comparator.
 
   See:
-    sorted-list
     clojure.core/sort
   "
   ([xs]
-   (->> xs
-        (sorted-list)
-        (mapcat seq->o)))
+   (sort clojure.core/compare xs))
   ([comp xs]
    (->> xs
-        (sorted-list comp)
+        (sorted-list-by identity comp)
         (mapcat seq->o))))
 
 (defn sort-by
@@ -744,8 +712,7 @@
     clojure.core/sort-by
   "
   ([keyfn xs]
-   (->> (sorted-list-by keyfn xs)
-        (mapcat seq->o)))
+   (sort-by keyfn clojure.core/compare xs))
   ([keyfn comp ^Observable xs]
    (->> xs
         (sorted-list-by keyfn comp)
