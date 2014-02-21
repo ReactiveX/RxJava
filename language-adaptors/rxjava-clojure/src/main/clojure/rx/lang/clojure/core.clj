@@ -478,8 +478,7 @@
 
 (defn ^Observable group-by
   "Returns an Observable of clojure.lang.MapEntry where the key is the result of
-  (key-fn x) and the val is an Observable of (val-fn x) for each key. If val-fn is
-  omitted, it defaults to identity.
+  (key-fn x) and the val is an Observable of x for each key.
 
   This returns a clojure.lang.MapEntry rather than rx.observables.GroupedObservable
   for some vague consistency with clojure.core/group-by and so that clojure.core/key,
@@ -492,15 +491,6 @@
   "
   ([key-fn ^Observable xs]
    (->> (.groupBy xs (iop/fn* key-fn))
-        (map (fn [^GroupedObservable go]
-               (clojure.lang.MapEntry. (.getKey go) go)))))
-  ([key-fn val-fn ^Observable xs]
-   ; TODO reinstate once this is implemented
-   ; see https://github.com/Netflix/RxJava/commit/02ccc4d727a9297f14219549208757c6e0efce2a
-   (throw (UnsupportedOperationException. "groupBy with val-fn is currently unimplemented in RxJava"))
-   (->> (.groupBy xs
-                  (iop/fn* key-fn)
-                  (iop/fn* val-fn))
         (map (fn [^GroupedObservable go]
                (clojure.lang.MapEntry. (.getKey go) go))))))
 
