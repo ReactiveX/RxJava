@@ -480,33 +480,37 @@
   (is (= [:r] (b/into [] (rx/some #{:r :s :t} (rx/seq->o [:q :v :r])))))
   (is (= [] (b/into [] (rx/some #{:r :s :t} (rx/seq->o [:q :v]))))))
 
-(deftest test-sorted-list
-  (is (= [[]] (b/into [] (rx/sorted-list (rx/empty)))))
-  (is (= [[1 2 3]]
-         (b/into [] (rx/sorted-list (rx/seq->o [3 1 2])))))
-  (is (= [[3 2 1]]
-         (b/into [] (rx/sorted-list (fn [a b] (- (compare a b))) (rx/seq->o [2 1 3]))))))
-
-(deftest test-sorted-list-by
-  (is (= [[]] (b/into [] (rx/sorted-list-by :foo (rx/empty)))))
-  (is (= [[{:foo 1} {:foo 2} {:foo 3}]]
-         (b/into [] (rx/sorted-list-by :foo (rx/seq->o [{:foo 2}{:foo 1}{:foo 3}])))))
-  (is (= [[{:foo 3} {:foo 2} {:foo 1}]]
-         (b/into [] (rx/sorted-list-by :foo (fn [a b] (- (compare a b))) (rx/seq->o [{:foo 2}{:foo 1}{:foo 3}]))))))
-
 (deftest test-sort
-  (is (= [] (b/into [] (rx/sort (rx/empty)))))
-  (is (= [1 2 3]
-         (b/into [] (rx/sort (rx/seq->o [3 1 2])))))
-  (is (= [3 2 1]
-         (b/into [] (rx/sort (fn [a b] (- (compare a b))) (rx/seq->o [2 1 3]))))))
+  (are [in cmp] (= (if cmp
+                     (sort cmp in)
+                     (sort in))
+                   (->> in
+                        (rx/seq->o)
+                        (#(if cmp (rx/sort cmp %) (rx/sort %)))
+                        (b/into [])))
+       []      nil
+       []      (comp - compare)
+       [3 1 2] nil
+       [1 2 3] nil
+       [1 2 3] (comp - compare)
+       [2 1 3] (comp - compare)))
 
 (deftest test-sort-by
-  (is (= [] (b/into [] (rx/sort-by :foo (rx/empty)))))
-  (is (= [{:foo 1} {:foo 2} {:foo 3}]
-         (b/into [] (rx/sort-by :foo (rx/seq->o [{:foo 2}{:foo 1}{:foo 3}])))))
-  (is (= [{:foo 3} {:foo 2} {:foo 1}]
-         (b/into [] (rx/sort-by :foo (fn [a b] (- (compare a b))) (rx/seq->o [{:foo 2}{:foo 1}{:foo 3}]))))))
+  (are [rin cmp] (let [in (map #(hash-map :foo %) rin)]
+                   (= (if cmp
+                        (sort-by :foo cmp in)
+                        (sort-by :foo in))
+                      (->> in
+                           (rx/seq->o)
+                           (#(if cmp (rx/sort-by :foo cmp %) (rx/sort-by :foo %)))
+                           (b/into []))))
+       []      nil
+       []      (comp - compare)
+       [3 1 2] nil
+       [1 2 3] nil
+       [1 2 3] (comp - compare)
+       [2 1 3] (comp - compare)))
+
 
 (deftest test-split-with
   (is (= (split-with (partial >= 3) (range 6))
