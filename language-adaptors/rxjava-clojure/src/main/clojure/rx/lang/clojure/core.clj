@@ -597,16 +597,35 @@
   (Observable/zip ^Iterable observables
                   ^rx.functions.FuncN (iop/fnN* f)))
 
+(defn ^Observable mapcat*
+  "Same as multi-arg mapcat, but input is an Observable of Observables.
+
+  See:
+    mapcat
+    clojure.core/mapcat
+  "
+  [f ^Observable xs]
+  (->> xs
+       (map* f)
+       (concat*)))
+
 (defn ^Observable mapcat
   "Returns an observable which, for each value x in xs, calls (f x), which must
   return an Observable. The resulting observables are concatentated together
   into one observable.
 
+  If multiple Observables are given, the arguments to f are the first item from
+  each observable, then the second item, etc.
+
   See:
     clojure.core/mapcat
     rx.Observable/flatMap
   "
-  ([f ^Observable xs] (.flatMap xs (iop/fn* f))))
+  [f & xs]
+  (if (clojure.core/next xs)
+    (mapcat* f (seq->o xs))
+    ; use built-in flatMap for single-arg case
+    (.flatMap ^Observable (clojure.core/first xs) (iop/fn* f))))
 
 (defn map-indexed
   "Returns an observable that invokes (f index value) for each value of the input
