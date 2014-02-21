@@ -1133,6 +1133,21 @@ trait Observable[+T]
   }
 
   /**
+   * Return an Observable that emits the results of sampling the items emitted by the source Observable
+   * whenever the specified sampler Observable emits an item or completes.
+   *
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/sample.o.png">
+   *
+   * @param sampler
+   *            the Observable to use for sampling the source Observable
+   * @return an Observable that emits the results of sampling the items emitted by this Observable whenever
+   *         the sampler Observable emits an item or completes
+   */
+  def sample(sampler: Observable[Any]): Observable[T] = {
+    toScalaObservable[T](asJavaObservable.sample(sampler))
+  }
+
+  /**
    * Returns an Observable that applies a function of your choosing to the first item emitted by a
    * source Observable, then feeds the result of that function along with the second item emitted
    * by an Observable into the same function, and so on until all items have been emitted by the
