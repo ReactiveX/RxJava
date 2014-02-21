@@ -49,12 +49,6 @@ public abstract class RxJavaObservableExecutionHook {
      *            original {@link Func1}<{@link Subscriber}{@code <T>}, {@link Subscription}> to be executed
      * @return {@link Func1}<{@link Subscriber}{@code <T>}, {@link Subscription}> function that can be modified, decorated, replaced or just returned as a pass-thru.
      */
-    @Deprecated
-    public <T> OnSubscribeFunc<T> onSubscribeStart(Observable<? extends T> observableInstance, OnSubscribeFunc<T> onSubscribe) {
-        // pass-thru by default
-        return onSubscribe;
-    }
-
     public <T> OnSubscribe<T> onSubscribeStart(Observable<? extends T> observableInstance, final OnSubscribe<T> onSubscribe) {
         // pass-thru by default
         return onSubscribe;
