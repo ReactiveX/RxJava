@@ -798,7 +798,7 @@
 
 (defn catch*
   "Returns an observable that, when Observable o triggers an error, e, continues with
-  Observable returned by (apply f e args) if (p e) is true. If (p e) returns a Throwable
+  Observable returned by (f e) if (p e) is true. If (p e) returns a Throwable
   that value is passed as e.
 
   If p is a class object, a normal instance? check is performed rather than calling it
@@ -806,26 +806,30 @@
 
   Examples:
 
-    (-> my-observable
+    (->> my-observable
 
-        ; On IllegalArgumentException, just emit 1
-        (catch* IllegalArgumentException (fn [e] (rx/return 1)))
+         ; On IllegalArgumentException, just emit 1
+         (catch* IllegalArgumentException
+                 (fn [e] (rx/return 1)))
 
-        ; If exception message contains \"WAT\", emit [\\W \\A \\T]
-        (catch* #(-> % .getMessage (.contains \"WAT\")) (rx/seq->o [\\W \\A \\T])))
+         ; If exception message contains \"WAT\", emit [\\W \\A \\T]
+         (catch* (fn [e] (-> e .getMessage (.contains \"WAT\")))
+                 (fn [e] (rx/seq->o [\\W \\A \\T]))))
 
   See:
-
+    rx.Observable/onErrorResumeNext
     http://netflix.github.io/RxJava/javadoc/rx/Observable.html#onErrorResumeNext(rx.util.functions.Func1)
   "
-  [^Observable o p f & args]
+  [p f ^Observable o]
   (let [p (if (class? p)
             (fn [e] (.isInstance ^Class p e))
             p)]
     (.onErrorResumeNext o
                         ^Func1 (iop/fn [e]
                                  (if-let [maybe-e (p e)]
-                                   (apply f (if (instance? Throwable maybe-e) maybe-e e) args)
+                                   (f (if (instance? Throwable maybe-e)
+                                        maybe-e
+                                        e))
                                    (rx.lang.clojure.core/throw e))))))
 
 (defmacro catch
@@ -833,53 +837,64 @@
 
   The body of the catch is wrapped in an implicit (do). It must evaluate to an Observable.
 
-  Note that the source observable is the first argument so this won't mix well with ->>
-  threading.
+  Note that the source observable is the last argument so this works with ->> but may look
+  slightly odd when used standalone.
 
   Example:
 
-    (-> my-observable
-        ; just emit 0 on IllegalArgumentException
-        (catch IllegalArgumentException e
-          (rx/return 0))
+    (->> my-observable
+         ; just emit 0 on IllegalArgumentException
+         (catch IllegalArgumentException e
+           (rx/return 0))
 
-        (catch DependencyException e
-          (if (.isMinor e)
-            (rx/return 0)
-            (rx/throw (WebException. 503)))))
+         (catch DependencyException e
+           (if (.isMinor e)
+             (rx/return 0)
+             (rx/throw (WebException. 503)))))
 
   See:
     catch*
   "
-  [o p binding & body]
-  `(catch* ~o ~p (fn [~binding] ~@body)))
+  {:arglists '([p binding & body observable])}
+  [p binding & body]
+  (let [o    (last body)
+        body (butlast body)]
+    `(catch* ~p
+             (fn [~binding] ~@body)
+             ~o)))
 
 (defn finally*
-  "Returns an Observable that, as a side-effect, executes (apply f args) when the given
+  "Returns an Observable that, as a side-effect, executes (f) when the given
   Observable completes regardless of success or failure.
 
   Example:
 
-    (-> my-observable
-        (finally* (fn [] (println \"Done\"))))
+    (->> my-observable
+         (finally* (fn [] (println \"Done\"))))
 
   "
-  [^Observable o f & args]
-  (.finallyDo o ^Action0 (iop/action [] (apply f args))))
+  [f ^Observable o]
+  (.finallyDo o ^Action0 (iop/action* f)))
 
 (defmacro finally
   "Macro version of finally*.
 
+  Note that the source observable is the last argument so this works with ->> but may look
+  slightly odd when used standalone.
+
   Example:
 
-    (-> my-observable
-        (finally (println \"Done\")))
+    (->> my-observable
+         (finally (println \"Done\")))
 
   See:
     finally*
   "
-  [o & body]
-  `(finally* ~o (fn [] ~@body)))
+  {:arglists '([& body observable])}
+  [& body]
+  (let [o    (last body)
+        body (butlast body)]
+    `(finally* (fn [] ~@body) ~o)))
 
 ;################################################################################;
 

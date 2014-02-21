@@ -531,33 +531,30 @@
 (deftest test-catch*
   (testing "Is just a passthrough if there's no error"
     (is (= [1 2 3]
-           (b/into []
-                   (->
-                     (rx/seq->o [1 2 3])
-                     (rx/catch* Exception (fn [e] (throw "OH NO"))))))))
+           (->> (rx/seq->o [1 2 3])
+                (rx/catch* Exception (fn [e] (throw "OH NO")))
+                (b/into [])))))
 
   (testing "Can catch a particular exception type and continue with an observable"
     (is (= [1 2 4 5 6 "foo"]
-           (b/into []
-                   (->
-                     (rx/generator [o]
-                                   (rx/on-next o 1)
-                                   (rx/on-next o 2)
-                                   (rx/on-error o (IllegalStateException. "foo")))
-                     (rx/catch* IllegalStateException
-                             (fn [e]
-                               (rx/seq->o [4 5 6 (.getMessage e)]))))))))
+           (->> (rx/generator [o]
+                              (rx/on-next o 1)
+                              (rx/on-next o 2)
+                              (rx/on-error o (IllegalStateException. "foo")))
+                (rx/catch* IllegalStateException
+                           (fn [e]
+                             (rx/seq->o [4 5 6 (.getMessage e)])))
+                (b/into [])))))
 
   (testing "if exception isn't matched, it's passed to on-error"
     (let [expected (IllegalArgumentException. "HI")
           called (atom nil)]
-    (rx/subscribe (->
-                    (rx/generator [o]
-                                   (rx/on-next o 1)
-                                   (rx/on-next o 2)
-                                   (rx/on-error o expected))
-                    (rx/catch* IllegalStateException (fn [e]
-                      (rx/return "WAT?"))))
+      (rx/subscribe (->> (rx/generator [o]
+                                       (rx/on-next o 1)
+                                       (rx/on-next o 2)
+                                       (rx/on-error o expected))
+                         (rx/catch* IllegalStateException (fn [e]
+                                                            (rx/return "WAT?"))))
                   (fn [_])
                   (fn [e] (reset! called expected))
                   (fn [_]))
@@ -567,12 +564,10 @@
     (let [cause (IllegalArgumentException. "HI")
           wrapper (java.util.concurrent.ExecutionException. cause)]
       (is (= [cause]
-             (b/into []
-                     (->
-                       (rx/generator [o]
-                                     (rx/on-error o wrapper))
-                       (rx/catch #(.getCause %) e
-                         (rx/return e)))))))))
+             (->> (rx/throw wrapper)
+                  (rx/catch #(.getCause %) e
+                    (rx/return e))
+                  (b/into [])))))))
 
 
 (deftest test-finally
@@ -580,10 +575,8 @@
     (testing "called on completed"
       (let [completed (atom nil)
             called (atom nil)]
-        (rx/subscribe (->
-                        (rx/seq->o [1 2 3])
-                        (rx/finally* (fn [extra] (reset! called (str "got " extra)))
-                                     "it"))
+        (rx/subscribe (->> (rx/seq->o [1 2 3])
+                           (rx/finally* (fn [] (reset! called (str "got it")))))
                       (fn [_])
                       (fn [_] (throw (IllegalStateException. "WAT")))
                       (fn [] (reset! completed "DONE")))
@@ -594,13 +587,12 @@
       (let [expected (IllegalStateException. "expected")
             completed (atom nil)
             called (atom nil)]
-        (rx/subscribe (->
-                        (rx/generator [o]
-                                   (rx/on-next o 1)
-                                   (rx/on-next o 2)
-                                   (rx/on-error o expected))
-                        (rx/finally
-                          (reset! called "got it")))
+        (rx/subscribe (->> (rx/generator [o]
+                                         (rx/on-next o 1)
+                                         (rx/on-next o 2)
+                                         (rx/on-error o expected))
+                           (rx/finally
+                             (reset! called "got it")))
                       (fn [_])
                       (fn [e] (reset! completed e))
                       (fn [] (throw (IllegalStateException. "WAT"))))

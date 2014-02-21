@@ -17,10 +17,10 @@
 
 (deftest test-future-exception
   (is (= "Caught: boo"
-         (-> (f/future f/default-runner (throw (java.io.FileNotFoundException. "boo")))
-             (rx/catch java.io.FileNotFoundException e
-               (rx/return (str "Caught: " (.getMessage e))))
-             (b/single)))))
+         (->> (f/future f/default-runner (throw (java.io.FileNotFoundException. "boo")))
+              (rx/catch java.io.FileNotFoundException e
+                (rx/return (str "Caught: " (.getMessage e))))
+              (b/single)))))
 
 (deftest test-future-cancel
   (let [exited? (atom nil)
@@ -52,11 +52,12 @@
 (deftest test-future-generator-exception
   (let [e (java.io.FileNotFoundException. "snake")]
     (is (= [1 2 e]
-           (b/into [] (-> (f/future-generator
-                            f/default-runner
-                            [o]
-                            (rx/on-next o 1)
-                            (rx/on-next o 2)
-                            (throw e))
-                          (rx/catch java.io.FileNotFoundException e
-                            (rx/return e))))))))
+           (->> (f/future-generator
+                  f/default-runner
+                  [o]
+                  (rx/on-next o 1)
+                  (rx/on-next o 2)
+                  (throw e))
+                (rx/catch java.io.FileNotFoundException e
+                  (rx/return e))
+                (b/into []))))))
