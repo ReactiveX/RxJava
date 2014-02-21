@@ -9,13 +9,16 @@
 (deftest test-chunk
   (let [n          20
         chunk-size 10
-        factory (rx-future/future-generator rx-future/default-runner [o]
-                  (doseq [i (range n)]
-                    (Thread/sleep (rand-int 50))
-                    (rx/on-next o (rx-future/future rx-future/default-runner
-                                      (let [t (rand-int 500)]
-                                        (Thread/sleep t))
-                                      i))))]
+        factory (rx-future/future-generator*
+                  future-call
+                  (fn[o]
+                    (doseq [i (range n)]
+                      (Thread/sleep (rand-int 50))
+                      (rx/on-next o (rx-future/future*
+                                      future-call
+                                      #(let [t (rand-int 500)]
+                                         (Thread/sleep t)
+                                         i))))))]
     (is (= (range n)
            (sort (rx-blocking/into []
                                    (rx-chunk/chunk chunk-size {:debug true} factory)))))))
@@ -24,14 +27,17 @@
   (testing "error from source is propagated"
     (let [n          20
           chunk-size 4
-          factory (rx-future/future-generator rx-future/default-runner [o]
-                                              (doseq [i (range n)]
-                                                (Thread/sleep (rand-int 50))
-                                                (rx/on-next o (rx-future/future rx-future/default-runner
-                                                                                (let [t (rand-int 1000)]
-                                                                                  (Thread/sleep t))
-                                                                                i)))
-                                              (throw (IllegalArgumentException. "hi")))]
+          factory (rx-future/future-generator*
+                    future-call
+                    (fn [o]
+                      (doseq [i (range n)]
+                        (Thread/sleep (rand-int 50))
+                        (rx/on-next o (rx-future/future*
+                                        future-call
+                                        #(let [t (rand-int 1000)]
+                                           (Thread/sleep t)
+                                           i))))
+                      (throw (IllegalArgumentException. "hi"))))]
       (is (thrown-with-msg? IllegalArgumentException #"hi"
                             (rx-blocking/into []
                                               (rx-chunk/chunk chunk-size {:debug true} factory))))))
@@ -39,14 +45,17 @@
   (testing "error from single observable is propagated"
     (let [n          20
           chunk-size 4
-          factory (rx-future/future-generator rx-future/default-runner [o]
-                                              (doseq [i (range n)]
-                                                (Thread/sleep (rand-int 50))
-                                                (rx/on-next o (rx-future/future rx-future/default-runner
-                                                                                (let [t (rand-int 1000)]
-                                                                                  (throw (IllegalArgumentException. "byebye"))
-                                                                                  (Thread/sleep t))
-                                                                                i))))]
+          factory (rx-future/future-generator*
+                    future-call
+                    (fn [o]
+                      (doseq [i (range n)]
+                        (Thread/sleep (rand-int 50))
+                        (rx/on-next o (rx-future/future*
+                                        future-call
+                                        #(let [t (rand-int 1000)]
+                                           (throw (IllegalArgumentException. "byebye"))
+                                           (Thread/sleep t)
+                                           i))))))]
       (is (thrown? rx.exceptions.CompositeException
                    (rx-blocking/into []
                                      (rx-chunk/chunk chunk-size

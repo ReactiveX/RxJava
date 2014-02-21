@@ -7,27 +7,25 @@
 (deftest test-future-generator
   (is (not= [(.getId (Thread/currentThread))]
             (b/into []
-                      (f/future-generator f/default-runner
-                        [observer]
-                        (rx/on-next observer (.getId (Thread/currentThread))))))))
+                      (f/future-generator* future-call
+                        #(rx/on-next % (.getId (Thread/currentThread))))))))
 
 (deftest test-future
-  (is (= [15] (b/into [] (f/future* f/default-runner + 1 2 3 4 5))))
-  (is (= [15] (b/into [] (f/future f/default-runner (println "HI") (+ 1 2 3 4 5))))) )
+  (is (= [15] (b/into [] (f/future* future-call + 1 2 3 4 5)))))
 
 (deftest test-future-exception
   (is (= "Caught: boo"
-         (->> (f/future f/default-runner (throw (java.io.FileNotFoundException. "boo")))
+         (->> (f/future* future-call #(throw (java.io.FileNotFoundException. "boo")))
               (rx/catch java.io.FileNotFoundException e
                 (rx/return (str "Caught: " (.getMessage e))))
               (b/single)))))
 
 (deftest test-future-cancel
   (let [exited? (atom nil)
-        o (f/future f/default-runner
-            (Thread/sleep 1000)
-            (reset! exited? true)
-            "WAT")
+        o (f/future* future-call
+                     (fn [] (Thread/sleep 1000)
+                       (reset! exited? true)
+                       "WAT"))
         result (->> o
                     (rx/take 0)
                     (b/into []))]
@@ -37,11 +35,11 @@
 
 (deftest test-future-generator-cancel
   (let [exited? (atom nil)
-        o (f/future-generator f/default-runner
-            [o]
-            (rx/on-next o "FIRST")
-            (Thread/sleep 1000)
-            (reset! exited? true))
+        o (f/future-generator* future-call
+                               (fn [o]
+                                 (rx/on-next o "FIRST")
+                                 (Thread/sleep 1000)
+                                 (reset! exited? true)))
         result (->> o
                     (rx/take 1)
                     (b/into []))]
@@ -52,12 +50,12 @@
 (deftest test-future-generator-exception
   (let [e (java.io.FileNotFoundException. "snake")]
     (is (= [1 2 e]
-           (->> (f/future-generator
-                  f/default-runner
-                  [o]
-                  (rx/on-next o 1)
-                  (rx/on-next o 2)
-                  (throw e))
+           (->> (f/future-generator*
+                  future-call
+                  (fn [o]
+                    (rx/on-next o 1)
+                    (rx/on-next o 2)
+                    (throw e)))
                 (rx/catch java.io.FileNotFoundException e
                   (rx/return e))
                 (b/into []))))))

@@ -112,10 +112,12 @@
                 (b/into []))))))
 
 (let [expected-result [[1 3 5] [2 4 6]]
-      sleepy-o        #(f/future-generator f/default-runner [o]
-                                           (doseq [x %]
-                                             (Thread/sleep 10)
-                                             (rx/on-next o x)))
+      sleepy-o        #(f/future-generator*
+                         future-call
+                         (fn [o]
+                           (doseq [x %]
+                             (Thread/sleep 10)
+                             (rx/on-next o x))))
       make-inputs (fn [] (mapv sleepy-o expected-result))
       make-output (fn [r] [(keep #{1 3 5} r)
                            (keep #{2 4 6} r)])]
