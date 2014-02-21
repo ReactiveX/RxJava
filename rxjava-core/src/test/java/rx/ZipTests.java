@@ -97,10 +97,12 @@ public class ZipTests {
     }
 
     /**
-     * Occasionally zip may be invoked with 0 observables. This blocks indefinitely instead
+     * Occasionally zip may be invoked with 0 observables. Test that we don't block indefinitely instead
      * of immediately invoking zip with 0 argument.
+     * 
+     * We now expect an IllegalArgumentException since last() requires at least one value and nothing will be emitted.
      */
-    @Test(timeout = 5000)
+    @Test(expected = IllegalArgumentException.class)
     public void nonBlockingObservable() {
 
         final Object invoked = new Object();
@@ -110,6 +112,7 @@ public class ZipTests {
         Observable<Object> result = Observable.zip(observables, new FuncN<Object>() {
             @Override
             public Object call(final Object... args) {
+                System.out.println("received: " + args);
                 assertEquals("No argument should have been passed", 0, args.length);
                 return invoked;
             }

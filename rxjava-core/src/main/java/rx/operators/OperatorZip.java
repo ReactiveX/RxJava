@@ -106,9 +106,14 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
     public Subscriber<? super Observable[]> call(final Subscriber<? super R> observer) {
         return new Subscriber<Observable[]>(observer) {
 
+            boolean started = false;
+
             @Override
             public void onCompleted() {
-                // we only complete once a child Observable completes or errors
+                if (!started) {
+                    // this means we have not received a valid onNext before termination so we emit the onCompleted
+                    observer.onCompleted();
+                }
             }
 
             @Override
@@ -118,7 +123,12 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
 
             @Override
             public void onNext(Observable[] observables) {
-                new Zip<R>(observables, observer, zipFunction).zip();
+                if (observables == null || observables.length == 0) {
+                    observer.onCompleted();
+                } else {
+                    started = true;
+                    new Zip<R>(observables, observer, zipFunction).zip();
+                }
             }
 
         };
