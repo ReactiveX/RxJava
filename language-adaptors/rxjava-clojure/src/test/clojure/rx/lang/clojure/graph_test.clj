@@ -43,8 +43,8 @@
            (rx-blocking/single
              (-> (let [z (rx/return "hi")] ; an observable from "somewhere else"
                    (graph/let-o
-                     [?a (rx-future/future rx-future/default-runner (Thread/sleep 50) 99)
-                      ?b (rx-future/future rx-future/default-runner (Thread/sleep 500) 100)
+                     [?a (rx-future/future* future-call #(do (Thread/sleep 50) 99))
+                      ?b (rx-future/future* future-call #(do (Thread/sleep 500) 100))
                       ?c (rx/map #(hash-map :a %1 :b %2 :z %3) ?a ?b ?z)
                       ?z z]
                      (rx/reduce merge {} ?c)))))))))
@@ -52,21 +52,24 @@
 (deftest test-complicated-graph
   ; These funcs model network requests for various stuff. They all return observable.
   (let [request-vhs (fn []
-                      (rx-future/future-generator rx-future/default-runner
-                                                 [o]
-                                                 (Thread/sleep 50)
-                                                 (doseq [i (range 3)]
-                                                   (rx/on-next o {:id i}))))
+                      (rx-future/future-generator*
+                        future-call
+                        (fn [o]
+                          (Thread/sleep 50)
+                          (doseq [i (range 3)]
+                            (rx/on-next o {:id i})))))
         request-user (fn [id]
-                       (rx-future/future rx-future/default-runner
-                                         (Thread/sleep (rand-int 250))
-                                         {:id id
-                                          :name (str "friend" id) }))
+                       (rx-future/future*
+                         future-call
+                         #(do (Thread/sleep (rand-int 250))
+                            {:id id
+                             :name (str "friend" id) })))
         request-ab (fn [u]
-                     (rx-future/future rx-future/default-runner
-                                       (Thread/sleep (rand-int 250))
-                                       {:user-id (:id u)
-                                        :cell    (* 2 (:id u))}))
+                     (rx-future/future*
+                       future-call
+                       #(do (Thread/sleep (rand-int 250))
+                          {:user-id (:id u)
+                           :cell    (* 2 (:id u))})))
 
         request-video-md (fn [v]
                            (rx/return {:video v
@@ -74,11 +77,12 @@
 
         ; Now we can stitch all these requests together into an rx graph to
         ; produce a response.
-        o (graph/let-o [?user-info (rx-future/future rx-future/default-runner
-                                                     (Thread/sleep 20)
-                                                     {:name "Bob"
-                                                      :id 12345
-                                                      :friend-ids [1 2 3] })
+        o (graph/let-o [?user-info (rx-future/future*
+                                     future-call
+                                     #(do (Thread/sleep 20)
+                                        {:name "Bob"
+                                         :id 12345
+                                         :friend-ids [1 2 3] }))
 
                         ?friends   (->> ?user-info
                                         (rx/mapcat (fn [ui]
