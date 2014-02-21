@@ -19,7 +19,8 @@ import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
-import rx.util.functions.Func1;
+import rx.functions.Action0
+import rx.functions.Func1;
 
 // --------------------------------------------------
 // Hello World!
@@ -123,13 +124,13 @@ def customObservableNonBlocking() {
             });
             t.start();
         
-            return new Subscription() {
-                public void unsubscribe() {
+            return Subscriptions.create(new Action0() {
+                public void call() {
                     // Ask the thread to stop doing work.
                     // For this simple example it just interrupts.
                     t.interrupt();
                 }
-            };
+            });
         };
     });
 }

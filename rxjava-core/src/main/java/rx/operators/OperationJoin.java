@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,14 +17,15 @@ package rx.operators;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
+import rx.functions.Func1;
+import rx.functions.Func2;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.SerialSubscription;
-import rx.util.functions.Func1;
-import rx.util.functions.Func2;
 
 /**
  * Correlates the elements of two sequences based on overlapping durations.
@@ -35,8 +36,9 @@ public class OperationJoin<TLeft, TRight, TLeftDuration, TRightDuration, R> impl
     final Func1<TLeft, Observable<TLeftDuration>> leftDurationSelector;
     final Func1<TRight, Observable<TRightDuration>> rightDurationSelector;
     final Func2<TLeft, TRight, R> resultSelector;
+
     public OperationJoin(
-            Observable<TLeft> left, 
+            Observable<TLeft> left,
             Observable<TRight> right,
             Func1<TLeft, Observable<TLeftDuration>> leftDurationSelector,
             Func1<TRight, Observable<TRightDuration>> rightDurationSelector,
@@ -55,6 +57,7 @@ public class OperationJoin<TLeft, TRight, TLeftDuration, TRightDuration, R> impl
         cancel.setSubscription(result.run());
         return cancel;
     }
+
     /** Manage the left and right sources. */
     class ResultSink {
         final Object gate = new Object();
@@ -67,28 +70,33 @@ public class OperationJoin<TLeft, TRight, TLeftDuration, TRightDuration, R> impl
         final Map<Integer, TRight> rightMap = new HashMap<Integer, TRight>();
         final Observer<? super R> observer;
         final Subscription cancel;
+
         public ResultSink(Observer<? super R> observer, Subscription cancel) {
             this.observer = observer;
             this.cancel = cancel;
         }
+
         public Subscription run() {
             SerialSubscription leftCancel = new SerialSubscription();
             SerialSubscription rightCancel = new SerialSubscription();
-            
+
             group.add(leftCancel);
             group.add(rightCancel);
-            
+
             leftCancel.setSubscription(left.subscribe(new LeftObserver(leftCancel)));
             rightCancel.setSubscription(right.subscribe(new RightObserver(rightCancel)));
-            
+
             return group;
         }
+
         /** Observes the left values. */
         class LeftObserver implements Observer<TLeft> {
             final Subscription self;
+
             public LeftObserver(Subscription self) {
                 this.self = self;
             }
+
             protected void expire(int id, Subscription resource) {
                 synchronized (gate) {
                     if (leftMap.remove(id) != null && leftMap.isEmpty() && leftDone) {
@@ -98,16 +106,19 @@ public class OperationJoin<TLeft, TRight, TLeftDuration, TRightDuration, R> impl
                 }
                 group.remove(resource);
             }
+
             @Override
             public void onNext(TLeft args) {
-                int id;
+                int id, highRightId;
+
                 synchronized (gate) {
                     id = leftId++;
                     leftMap.put(id, args);
+                    highRightId = rightId;
                 }
                 SerialSubscription md = new SerialSubscription();
                 group.add(md);
-                
+
                 Observable<TLeftDuration> duration;
                 try {
                     duration = leftDurationSelector.call(args);
@@ -116,23 +127,27 @@ public class OperationJoin<TLeft, TRight, TLeftDuration, TRightDuration, R> impl
                     cancel.unsubscribe();
                     return;
                 }
-                
+
                 md.setSubscription(duration.subscribe(new LeftDurationObserver(id, md)));
-                
+
                 synchronized (gate) {
-                    for (TRight r : rightMap.values()) {
-                        R result;
-                        try {
-                            result = resultSelector.call(args, r);
-                        } catch (Throwable t) {
-                            observer.onError(t);
-                            cancel.unsubscribe();
-                            return;
+                    for (Map.Entry<Integer, TRight> entry : rightMap.entrySet()) {
+                        if (entry.getKey() < highRightId) {
+                            TRight r = entry.getValue();
+                            R result;
+                            try {
+                                result = resultSelector.call(args, r);
+                            } catch (Throwable t) {
+                                observer.onError(t);
+                                cancel.unsubscribe();
+                                return;
+                            }
+                            observer.onNext(result);
                         }
-                        observer.onNext(result);
                     }
                 }
             }
+
             @Override
             public void onError(Throwable e) {
                 synchronized (gate) {
@@ -140,6 +155,7 @@ public class OperationJoin<TLeft, TRight, TLeftDuration, TRightDuration, R> impl
                     cancel.unsubscribe();
                 }
             }
+
             @Override
             public void onCompleted() {
                 synchronized (gate) {
@@ -152,10 +168,12 @@ public class OperationJoin<TLeft, TRight, TLeftDuration, TRightDuration, R> impl
                     }
                 }
             }
+
             /** Observes the left duration. */
             class LeftDurationObserver implements Observer<TLeftDuration> {
                 final int id;
                 final Subscription handle;
+
                 public LeftDurationObserver(int id, Subscription handle) {
                     this.id = id;
                     this.handle = handle;
@@ -175,15 +193,18 @@ public class OperationJoin<TLeft, TRight, TLeftDuration, TRightDuration, R> impl
                 public void onCompleted() {
                     expire(id, handle);
                 }
-                
+
             }
         }
+
         /** Observes the right values. */
         class RightObserver implements Observer<TRight> {
             final Subscription self;
+
             public RightObserver(Subscription self) {
                 this.self = self;
             }
+
             void expire(int id, Subscription resource) {
                 synchronized (gate) {
                     if (rightMap.remove(id) != null && rightMap.isEmpty() && rightDone) {
@@ -193,16 +214,18 @@ public class OperationJoin<TLeft, TRight, TLeftDuration, TRightDuration, R> impl
                 }
                 group.remove(resource);
             }
+
             @Override
             public void onNext(TRight args) {
-                int id = 0;
+                int id = 0, highLeftId;
                 synchronized (gate) {
                     id = rightId++;
                     rightMap.put(id, args);
+                    highLeftId = leftId;
                 }
                 SerialSubscription md = new SerialSubscription();
                 group.add(md);
-                
+
                 Observable<TRightDuration> duration;
                 try {
                     duration = rightDurationSelector.call(args);
@@ -211,23 +234,27 @@ public class OperationJoin<TLeft, TRight, TLeftDuration, TRightDuration, R> impl
                     cancel.unsubscribe();
                     return;
                 }
-                
+
                 md.setSubscription(duration.subscribe(new RightDurationObserver(id, md)));
-                
+
                 synchronized (gate) {
-                    for (TLeft lv : leftMap.values()) {
-                        R result;
-                        try {
-                            result = resultSelector.call(lv, args);
-                        } catch (Throwable t) {
-                            observer.onError(t);
-                            cancel.unsubscribe();
-                            return;
+                    for (Map.Entry<Integer, TLeft> entry : leftMap.entrySet()) {
+                        if (entry.getKey() < highLeftId) {
+                            TLeft lv = entry.getValue();
+                            R result;
+                            try {
+                                result = resultSelector.call(lv, args);
+                            } catch (Throwable t) {
+                                observer.onError(t);
+                                cancel.unsubscribe();
+                                return;
+                            }
+                            observer.onNext(result);
                         }
-                        observer.onNext(result);
                     }
                 }
             }
+
             @Override
             public void onError(Throwable e) {
                 synchronized (gate) {
@@ -235,6 +262,7 @@ public class OperationJoin<TLeft, TRight, TLeftDuration, TRightDuration, R> impl
                     cancel.unsubscribe();
                 }
             }
+
             @Override
             public void onCompleted() {
                 synchronized (gate) {
@@ -247,10 +275,12 @@ public class OperationJoin<TLeft, TRight, TLeftDuration, TRightDuration, R> impl
                     }
                 }
             }
+
             /** Observe the right duration. */
             class RightDurationObserver implements Observer<TRightDuration> {
                 final int id;
                 final Subscription handle;
+
                 public RightDurationObserver(int id, Subscription handle) {
                     this.id = id;
                     this.handle = handle;
@@ -270,7 +300,7 @@ public class OperationJoin<TLeft, TRight, TLeftDuration, TRightDuration, R> impl
                 public void onCompleted() {
                     expire(id, handle);
                 }
-                
+
             }
         }
     }

@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,17 +15,20 @@
  */
 package rx.operators;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
-import rx.concurrency.Schedulers;
-import rx.util.functions.Func0;
-import rx.util.functions.Func1;
+import rx.functions.Func0;
+import rx.functions.Func1;
+import rx.schedulers.Schedulers;
+import rx.subscriptions.CompositeSubscription;
 
 public final class OperationBuffer extends ChunkedOperation {
 
@@ -40,7 +43,7 @@ public final class OperationBuffer extends ChunkedOperation {
 
     /**
      * <p>This method creates a {@link Func1} object which represents the buffer operation. This operation takes
-     * values from the specified {@link Observable} source and stores them in a buffer until the {@link Observable} constructed using the {@link Func0} argument, produces a 
+     * values from the specified {@link Observable} source and stores them in a buffer until the {@link Observable} constructed using the {@link Func0} argument, produces a
      * value. The buffer is then
      * emitted, and a new buffer is created to replace it. A new {@link Observable} will be constructed using the
      * provided {@link Func0} object, which will determine when this new buffer is emitted. When the source {@link Observable} completes or produces an error, the current buffer is emitted, and the
@@ -65,7 +68,9 @@ public final class OperationBuffer extends ChunkedOperation {
             public Subscription onSubscribe(Observer<? super List<T>> observer) {
                 NonOverlappingChunks<T, List<T>> buffers = new NonOverlappingChunks<T, List<T>>(observer, OperationBuffer.<T> bufferMaker());
                 ChunkCreator creator = new ObservableBasedSingleChunkCreator<T, List<T>, TClosing>(buffers, bufferClosingSelector);
-                return source.subscribe(new ChunkObserver<T, List<T>>(buffers, observer, creator));
+                return new CompositeSubscription(
+                        new ChunkToSubscription(creator),
+                        source.subscribe(new ChunkObserver<T, List<T>>(buffers, observer, creator)));
             }
         };
     }
@@ -101,7 +106,9 @@ public final class OperationBuffer extends ChunkedOperation {
             public Subscription onSubscribe(final Observer<? super List<T>> observer) {
                 OverlappingChunks<T, List<T>> buffers = new OverlappingChunks<T, List<T>>(observer, OperationBuffer.<T> bufferMaker());
                 ChunkCreator creator = new ObservableBasedMultiChunkCreator<T, List<T>, TOpening, TClosing>(buffers, bufferOpenings, bufferClosingSelector);
-                return source.subscribe(new ChunkObserver<T, List<T>>(buffers, observer, creator));
+                return new CompositeSubscription(
+                        new ChunkToSubscription(creator),
+                        source.subscribe(new ChunkObserver<T, List<T>>(buffers, observer, creator)));
             }
         };
     }
@@ -156,7 +163,9 @@ public final class OperationBuffer extends ChunkedOperation {
             public Subscription onSubscribe(final Observer<? super List<T>> observer) {
                 Chunks<T, List<T>> chunks = new SizeBasedChunks<T, List<T>>(observer, OperationBuffer.<T> bufferMaker(), count);
                 ChunkCreator creator = new SkippingChunkCreator<T, List<T>>(chunks, skip);
-                return source.subscribe(new ChunkObserver<T, List<T>>(chunks, observer, creator));
+                return new CompositeSubscription(
+                        new ChunkToSubscription(creator),
+                        source.subscribe(new ChunkObserver<T, List<T>>(chunks, observer, creator)));
             }
         };
     }
@@ -211,7 +220,9 @@ public final class OperationBuffer extends ChunkedOperation {
             public Subscription onSubscribe(final Observer<? super List<T>> observer) {
                 NonOverlappingChunks<T, List<T>> buffers = new NonOverlappingChunks<T, List<T>>(observer, OperationBuffer.<T> bufferMaker());
                 ChunkCreator creator = new TimeBasedChunkCreator<T, List<T>>(buffers, timespan, unit, scheduler);
-                return source.subscribe(new ChunkObserver<T, List<T>>(buffers, observer, creator));
+                return new CompositeSubscription(
+                        new ChunkToSubscription(creator),
+                        source.subscribe(new ChunkObserver<T, List<T>>(buffers, observer, creator)));
             }
         };
     }
@@ -270,9 +281,12 @@ public final class OperationBuffer extends ChunkedOperation {
         return new OnSubscribeFunc<List<T>>() {
             @Override
             public Subscription onSubscribe(final Observer<? super List<T>> observer) {
-                Chunks<T, List<T>> chunks = new TimeAndSizeBasedChunks<T, List<T>>(observer, OperationBuffer.<T> bufferMaker(), count, timespan, unit, scheduler);
+                TimeAndSizeBasedChunks<T, List<T>> chunks = new TimeAndSizeBasedChunks<T, List<T>>(observer, OperationBuffer.<T> bufferMaker(), count, timespan, unit, scheduler);
                 ChunkCreator creator = new SingleChunkCreator<T, List<T>>(chunks);
-                return source.subscribe(new ChunkObserver<T, List<T>>(chunks, observer, creator));
+                return new CompositeSubscription(
+                        chunks,
+                        new ChunkToSubscription(creator),
+                        source.subscribe(new ChunkObserver<T, List<T>>(chunks, observer, creator)));
             }
         };
     }
@@ -331,9 +345,12 @@ public final class OperationBuffer extends ChunkedOperation {
         return new OnSubscribeFunc<List<T>>() {
             @Override
             public Subscription onSubscribe(final Observer<? super List<T>> observer) {
-                OverlappingChunks<T, List<T>> buffers = new TimeBasedChunks<T, List<T>>(observer, OperationBuffer.<T> bufferMaker(), timespan, unit, scheduler);
+                TimeBasedChunks<T, List<T>> buffers = new TimeBasedChunks<T, List<T>>(observer, OperationBuffer.<T> bufferMaker(), timespan, unit, scheduler);
                 ChunkCreator creator = new TimeBasedChunkCreator<T, List<T>>(buffers, timeshift, unit, scheduler);
-                return source.subscribe(new ChunkObserver<T, List<T>>(buffers, observer, creator));
+                return new CompositeSubscription(
+                        buffers,
+                        new ChunkToSubscription(creator),
+                        source.subscribe(new ChunkObserver<T, List<T>>(buffers, observer, creator)));
             }
         };
     }
@@ -353,6 +370,176 @@ public final class OperationBuffer extends ChunkedOperation {
         @Override
         public List<T> getContents() {
             return contents;
+        }
+    }
+
+    /**
+     * Converts a chunk creator into a subscription which stops the chunk.
+     */
+    private static class ChunkToSubscription implements Subscription {
+        private ChunkCreator cc;
+        private final AtomicBoolean done;
+
+        public ChunkToSubscription(ChunkCreator cc) {
+            this.cc = cc;
+            this.done = new AtomicBoolean();
+        }
+
+        @Override
+        public void unsubscribe() {
+            if (done.compareAndSet(false, true)) {
+                ChunkCreator cc0 = cc;
+                cc = null;
+                cc0.stop();
+            }
+        }
+
+        @Override
+        public boolean isUnsubscribed() {
+            return done.get();
+        }
+    }
+
+    /**
+     * Create a buffer operator with the given observable sequence as the buffer boundary.
+     */
+    public static <T, B> OnSubscribeFunc<List<T>> bufferWithBoundaryObservable(Observable<? extends T> source, Observable<B> boundary) {
+        return new BufferWithObservableBoundary<T, B>(source, boundary, 16);
+    }
+
+    /**
+     * Create a buffer operator with the given observable sequence as the buffer boundary and
+     * with the given initial capacity for buffers.
+     */
+    public static <T, B> OnSubscribeFunc<List<T>> bufferWithBoundaryObservable(Observable<? extends T> source, Observable<B> boundary, int initialCapacity) {
+        if (initialCapacity <= 0) {
+            throw new IllegalArgumentException("initialCapacity > 0 required");
+        }
+        return new BufferWithObservableBoundary<T, B>(source, boundary, initialCapacity);
+    }
+
+    /**
+     * Buffer until an element is emitted from a helper observable.
+     * 
+     * @param <T>
+     *            the buffered value type
+     */
+    private static final class BufferWithObservableBoundary<T, B> implements OnSubscribeFunc<List<T>> {
+        final Observable<? extends T> source;
+        final Observable<B> boundary;
+        final int initialCapacity;
+
+        public BufferWithObservableBoundary(Observable<? extends T> source, Observable<B> boundary, int initialCapacity) {
+            this.source = source;
+            this.boundary = boundary;
+            this.initialCapacity = initialCapacity;
+        }
+
+        @Override
+        public Subscription onSubscribe(Observer<? super List<T>> t1) {
+            CompositeSubscription csub = new CompositeSubscription();
+
+            SourceObserver<T> so = new SourceObserver<T>(t1, initialCapacity, csub);
+            csub.add(source.subscribe(so));
+            csub.add(boundary.subscribe(new BoundaryObserver<B>(so)));
+
+            return csub;
+        }
+
+        /**
+         * Observes the source.
+         */
+        private static final class SourceObserver<T> implements Observer<T> {
+            final Observer<? super List<T>> observer;
+            /** The buffer, if null, that indicates a terminal state. */
+            List<T> buffer;
+            final int initialCapacity;
+            final Object guard;
+            final Subscription cancel;
+
+            public SourceObserver(Observer<? super List<T>> observer, int initialCapacity, Subscription cancel) {
+                this.observer = observer;
+                this.initialCapacity = initialCapacity;
+                this.guard = new Object();
+                this.cancel = cancel;
+                buffer = new ArrayList<T>(initialCapacity);
+            }
+
+            @Override
+            public void onNext(T args) {
+                synchronized (guard) {
+                    buffer.add(args);
+                }
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                synchronized (guard) {
+                    if (buffer == null) {
+                        return;
+                    }
+                    buffer = null;
+                }
+                observer.onError(e);
+                cancel.unsubscribe();
+            }
+
+            @Override
+            public void onCompleted() {
+                emitAndComplete();
+                cancel.unsubscribe();
+            }
+
+            void emitAndReplace() {
+                List<T> buf;
+                synchronized (guard) {
+                    if (buffer == null) {
+                        return;
+                    }
+                    buf = buffer;
+                    buffer = new ArrayList<T>(initialCapacity);
+                }
+                observer.onNext(buf);
+            }
+
+            void emitAndComplete() {
+                List<T> buf;
+                synchronized (guard) {
+                    if (buffer == null) {
+                        return;
+                    }
+                    buf = buffer;
+                    buffer = null;
+                }
+                observer.onNext(buf);
+                observer.onCompleted();
+            }
+        }
+
+        /**
+         * Observes the boundary.
+         */
+        private static final class BoundaryObserver<T> implements Observer<T> {
+            final SourceObserver so;
+
+            public BoundaryObserver(SourceObserver so) {
+                this.so = so;
+            }
+
+            @Override
+            public void onNext(T args) {
+                so.emitAndReplace();
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                so.onError(e);
+            }
+
+            @Override
+            public void onCompleted() {
+                so.onCompleted();
+            }
         }
     }
 }

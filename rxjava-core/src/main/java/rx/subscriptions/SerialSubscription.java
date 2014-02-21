@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,6 @@
  */
 package rx.subscriptions;
 
-import static rx.subscriptions.Subscriptions.empty;
-
 import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Subscription;
@@ -27,36 +25,78 @@ import rx.Subscription;
  * 
  * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.disposables.serialdisposable(v=vs.103).aspx">Rx.Net equivalent SerialDisposable</a>
  */
-public class SerialSubscription implements Subscription {
-    private final AtomicReference<Subscription> reference = new AtomicReference<Subscription>(empty());
-    
-    private static final Subscription UNSUBSCRIBED = new Subscription() {
-        @Override
-        public void unsubscribe() {
+public final class SerialSubscription implements Subscription {
+
+    private final AtomicReference<State> state = new AtomicReference<State>(new State(false, Subscriptions.empty()));
+
+    private static final class State {
+        final boolean isUnsubscribed;
+        final Subscription subscription;
+
+        State(boolean u, Subscription s) {
+            this.isUnsubscribed = u;
+            this.subscription = s;
         }
-    };
+
+        State unsubscribe() {
+            return new State(true, subscription);
+        }
+
+        State set(Subscription s) {
+            return new State(isUnsubscribed, s);
+        }
+
+    }
+
+    public boolean isUnsubscribed() {
+        return state.get().isUnsubscribed;
+    }
 
     @Override
     public void unsubscribe() {
-        setSubscription(UNSUBSCRIBED);
+        State oldState;
+        State newState;
+        do {
+            oldState = state.get();
+            if (oldState.isUnsubscribed) {
+                return;
+            } else {
+                newState = oldState.unsubscribe();
+            }
+        } while (!state.compareAndSet(oldState, newState));
+        oldState.subscription.unsubscribe();
     }
 
-    public void setSubscription(final Subscription subscription) {
+    @Deprecated
+    public void setSubscription(Subscription s) {
+        set(s);
+    }
+
+    public void set(Subscription s) {
+        if (s == null) {
+            throw new IllegalArgumentException("Subscription can not be null");
+        }
+        State oldState;
+        State newState;
         do {
-            final Subscription current = reference.get();
-            if (current == UNSUBSCRIBED) {
-                subscription.unsubscribe();
-                break;
+            oldState = state.get();
+            if (oldState.isUnsubscribed) {
+                s.unsubscribe();
+                return;
+            } else {
+                newState = oldState.set(s);
             }
-            if (reference.compareAndSet(current, subscription)) {
-                current.unsubscribe();
-                break;
-            }
-        } while (true);
+        } while (!state.compareAndSet(oldState, newState));
+        oldState.subscription.unsubscribe();
     }
-    
+
+    @Deprecated
     public Subscription getSubscription() {
-        final Subscription subscription = reference.get();
-        return subscription == UNSUBSCRIBED ? null : subscription;
+        return get();
     }
+
+    public Subscription get() {
+        return state.get().subscription;
+    }
+
 }

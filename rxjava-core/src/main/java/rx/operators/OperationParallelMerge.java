@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,9 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import rx.Observable;
 import rx.Scheduler;
-import rx.concurrency.Schedulers;
+import rx.functions.Func1;
 import rx.observables.GroupedObservable;
-import rx.util.functions.Func1;
+import rx.schedulers.Schedulers;
 
 public class OperationParallelMerge {
 

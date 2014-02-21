@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,13 +15,8 @@
  */
 package rx.subscriptions;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,28 +44,20 @@ public class SerialSubscriptionTests {
     }
 
     @Test
-    public void getSubscriptionShouldReturnSubscriptionAfterUnsubscribe() {
+    public void getSubscriptionShouldReturnset() {
         final Subscription underlying = mock(Subscription.class);
-        serialSubscription.setSubscription(underlying);
-        serialSubscription.unsubscribe();
-        assertEquals(null, serialSubscription.getSubscription());
-    }
-
-    @Test
-    public void getSubscriptionShouldReturnSetSubscription() {
-        final Subscription underlying = mock(Subscription.class);
-        serialSubscription.setSubscription(underlying);
-        assertSame(underlying, serialSubscription.getSubscription());
+        serialSubscription.set(underlying);
+        assertSame(underlying, serialSubscription.get());
 
         final Subscription another = mock(Subscription.class);
-        serialSubscription.setSubscription(another);
-        assertSame(another, serialSubscription.getSubscription());
+        serialSubscription.set(another);
+        assertSame(another, serialSubscription.get());
     }
 
     @Test
     public void unsubscribingTwiceDoesUnsubscribeOnce() {
         Subscription underlying = mock(Subscription.class);
-        serialSubscription.setSubscription(underlying);
+        serialSubscription.set(underlying);
 
         serialSubscription.unsubscribe();
         verify(underlying).unsubscribe();
@@ -82,16 +69,16 @@ public class SerialSubscriptionTests {
     @Test
     public void settingSameSubscriptionTwiceDoesUnsubscribeIt() {
         Subscription underlying = mock(Subscription.class);
-        serialSubscription.setSubscription(underlying);
+        serialSubscription.set(underlying);
         verifyZeroInteractions(underlying);
-        serialSubscription.setSubscription(underlying);
+        serialSubscription.set(underlying);
         verify(underlying).unsubscribe();
     }
 
     @Test
     public void unsubscribingWithSingleUnderlyingUnsubscribes() {
         Subscription underlying = mock(Subscription.class);
-        serialSubscription.setSubscription(underlying);
+        serialSubscription.set(underlying);
         underlying.unsubscribe();
         verify(underlying).unsubscribe();
     }
@@ -99,18 +86,18 @@ public class SerialSubscriptionTests {
     @Test
     public void replacingFirstUnderlyingCausesUnsubscription() {
         Subscription first = mock(Subscription.class);
-        serialSubscription.setSubscription(first);
+        serialSubscription.set(first);
         Subscription second = mock(Subscription.class);
-        serialSubscription.setSubscription(second);
+        serialSubscription.set(second);
         verify(first).unsubscribe();
     }
 
     @Test
     public void whenUnsubscribingSecondUnderlyingUnsubscribed() {
         Subscription first = mock(Subscription.class);
-        serialSubscription.setSubscription(first);
+        serialSubscription.set(first);
         Subscription second = mock(Subscription.class);
-        serialSubscription.setSubscription(second);
+        serialSubscription.set(second);
         serialSubscription.unsubscribe();
         verify(second).unsubscribe();
     }
@@ -119,7 +106,7 @@ public class SerialSubscriptionTests {
     public void settingUnderlyingWhenUnsubscribedCausesImmediateUnsubscription() {
         serialSubscription.unsubscribe();
         Subscription underlying = mock(Subscription.class);
-        serialSubscription.setSubscription(underlying);
+        serialSubscription.set(underlying);
         verify(underlying).unsubscribe();
     }
 
@@ -127,7 +114,7 @@ public class SerialSubscriptionTests {
     public void settingUnderlyingWhenUnsubscribedCausesImmediateUnsubscriptionConcurrently()
             throws InterruptedException {
         final Subscription firstSet = mock(Subscription.class);
-        serialSubscription.setSubscription(firstSet);
+        serialSubscription.set(firstSet);
 
         final CountDownLatch start = new CountDownLatch(1);
 
@@ -135,7 +122,7 @@ public class SerialSubscriptionTests {
         final CountDownLatch end = new CountDownLatch(count);
 
         final List<Thread> threads = new ArrayList<Thread>();
-        for (int i = 0 ; i < count ; i++) {
+        for (int i = 0; i < count; i++) {
             final Thread t = new Thread() {
                 @Override
                 public void run() {
@@ -155,7 +142,7 @@ public class SerialSubscriptionTests {
 
         final Subscription underlying = mock(Subscription.class);
         start.countDown();
-        serialSubscription.setSubscription(underlying);
+        serialSubscription.set(underlying);
         end.await();
         verify(firstSet).unsubscribe();
         verify(underlying).unsubscribe();
@@ -175,7 +162,7 @@ public class SerialSubscriptionTests {
         final CountDownLatch end = new CountDownLatch(count);
 
         final List<Thread> threads = new ArrayList<Thread>();
-        for (int i = 0 ; i < count ; i++) {
+        for (int i = 0; i < count; i++) {
             final Subscription subscription = mock(Subscription.class);
             subscriptions.add(subscription);
 
@@ -184,7 +171,7 @@ public class SerialSubscriptionTests {
                 public void run() {
                     try {
                         start.await();
-                        serialSubscription.setSubscription(subscription);
+                        serialSubscription.set(subscription);
                     } catch (InterruptedException e) {
                         fail(e.getMessage());
                     } finally {
@@ -200,7 +187,7 @@ public class SerialSubscriptionTests {
         end.await();
         serialSubscription.unsubscribe();
 
-        for(final Subscription subscription : subscriptions) {
+        for (final Subscription subscription : subscriptions) {
             verify(subscription).unsubscribe();
         }
 

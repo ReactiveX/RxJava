@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,9 @@
  */
 package rx.util.functions;
 
-public interface Action1<T1> extends Action {
-    public void call(T1 t1);
+/**
+ * @deprecated
+ */
+@Deprecated
+public interface Action1<T1> extends rx.functions.Action1<T1>, Action {
 }

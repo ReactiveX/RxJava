@@ -1,12 +1,12 @@
 /**
- * Copyright 2013 Netflix, Inc.
- *
+ * Copyright 2014 Netflix, Inc.
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,6 +23,7 @@ import org.junit.Test;
 
 import rx.Observer;
 import rx.Subscription;
+import rx.observers.TestObserver;
 import rx.operators.OperationToObservableFuture.ToObservableFuture;
 
 public class OperationToObservableFutureTest {
@@ -35,7 +36,7 @@ public class OperationToObservableFutureTest {
         ToObservableFuture<Object> ob = new ToObservableFuture<Object>(future);
         Observer<Object> o = mock(Observer.class);
 
-        Subscription sub = ob.onSubscribe(o);
+        Subscription sub = ob.onSubscribe(new TestObserver<Object>(o));
         sub.unsubscribe();
 
         verify(o, times(1)).onNext(value);
@@ -52,7 +53,7 @@ public class OperationToObservableFutureTest {
         ToObservableFuture<Object> ob = new ToObservableFuture<Object>(future);
         Observer<Object> o = mock(Observer.class);
 
-        Subscription sub = ob.onSubscribe(o);
+        Subscription sub = ob.onSubscribe(new TestObserver<Object>(o));
         sub.unsubscribe();
 
         verify(o, never()).onNext(null);

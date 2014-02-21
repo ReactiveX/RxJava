@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,9 @@
 package rx.util.functions;
 
 /**
- * Implements the negation of a predicate.
- * 
- * @param <T>
- *            The type of the single input parameter.
+ * @deprecated
  */
+@Deprecated
 public class Not<T> implements Func1<T, Boolean> {
     private final Func1<? super T, Boolean> predicate;
 

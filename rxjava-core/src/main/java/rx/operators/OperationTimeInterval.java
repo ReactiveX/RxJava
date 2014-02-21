@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,8 @@ import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
-import rx.concurrency.Schedulers;
-import rx.util.TimeInterval;
+import rx.schedulers.Schedulers;
+import rx.schedulers.TimeInterval;
 
 /**
  * Records the time interval between consecutive elements in an observable sequence.

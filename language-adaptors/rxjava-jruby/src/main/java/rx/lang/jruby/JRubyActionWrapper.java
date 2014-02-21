@@ -15,17 +15,17 @@
  */
 package rx.lang.jruby;
 
-import org.jruby.RubyProc;
 import org.jruby.Ruby;
+import org.jruby.RubyProc;
+import org.jruby.javasupport.JavaUtil;
 import org.jruby.runtime.ThreadContext;
 import org.jruby.runtime.builtin.IRubyObject;
-import org.jruby.javasupport.JavaUtil;
 
-import rx.util.functions.Action;
-import rx.util.functions.Action0;
-import rx.util.functions.Action1;
-import rx.util.functions.Action2;
-import rx.util.functions.Action3;
+import rx.functions.Action;
+import rx.functions.Action0;
+import rx.functions.Action1;
+import rx.functions.Action2;
+import rx.functions.Action3;
 
 /**
  * Concrete wrapper that accepts a {@link RubyProc} and produces any needed Rx {@link Action}.

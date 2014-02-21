@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,8 @@ import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
-import rx.util.functions.Func1;
-import rx.util.functions.Func2;
+import rx.functions.Func1;
+import rx.functions.Func2;
 
 /**
  * Skips any emitted source items as long as the specified condition holds true. Emits all further source items

@@ -19,11 +19,18 @@
        (reify
          ; If they want Func1, give them onSubscribe as well so Observable/create can be
          ; used seemlessly with rx/fn.
-         ~@(if (and (= prefix "rx.util.functions.Func")
+         ; TODO remove this when OnSubscriberFunc is removed
+         ~@(if (and (= prefix "rx.functions.Func")
                     (some #{1} arities))
              `(rx.Observable$OnSubscribeFunc
                 (~'onSubscribe [~'this observer#]
                   (~f-name observer#))))
+
+         ; OnSubscribe is just an Action1, so add it to the list of implemented interfaces
+         ; so an action cab be used with Observable/create
+         ~@(if (and (= prefix "rx.functions.Action")
+                    (some #{1} arities))
+             `(rx.Observable$OnSubscribe))
 
          ~@(mapcat (clojure.core/fn [n]
                      (let [ifc-sym  (symbol (str prefix n))
@@ -34,7 +41,7 @@
              arities) ))))
 
 (defn fn*
-  "Given function f, returns an object that implements rx.util.functions.Func0-9
+  "Given function f, returns an object that implements rx.functions.Func0-9
   by delegating the call() method to the given function.
 
   If the f has the wrong arity, an ArityException will be thrown at runtime.
@@ -48,28 +55,28 @@
     (.reduce my-numbers (rx/fn* +))
 
   See:
-    http://netflix.github.io/RxJava/javadoc/rx/util/functions/Func0.html
+    http://netflix.github.io/RxJava/javadoc/rx/functions/Func0.html
   "
   [f]
-  (reify-callable "rx.util.functions.Func" [0 1 2 3 4 5 6 7 8 9] f))
+  (reify-callable "rx.functions.Func" [0 1 2 3 4 5 6 7 8 9] f))
 
 (defn fnN*
-  "Given function f, returns an object that implements rx.util.functions.FuncN
+  "Given function f, returns an object that implements rx.functions.FuncN
   by delegating to the given function.
 
   Unfortunately, this can't be included in fn* because of ambiguities between
   the single arg call() method and the var args call method.
 
   See:
-    http://netflix.github.io/RxJava/javadoc/rx/util/functions/FuncN.html
+    http://netflix.github.io/RxJava/javadoc/rx/functions/FuncN.html
   "
   [f]
-  (reify rx.util.functions.FuncN
+  (reify rx.functions.FuncN
     (call [this objects]
       (apply f objects))))
 
 (defmacro fn
-  "Like clojure.core/fn, but returns the appropriate rx.util.functions.Func*
+  "Like clojure.core/fn, but returns the appropriate rx.functions.Func*
   interface.
 
   Example:
@@ -93,21 +100,22 @@
              (meta &form)))
 
 (defn action*
-  "Given function f, returns an object that implements rx.util.functions.Action0-3
-  by delegating to the given function.
+  "Given function f, returns an object that implements rx.functions.Action0-3
+  by delegating to the given function. Also implements rx.Observable$OnSubscribe which
+  is just an Action1.
 
   Example:
 
     (.subscribe my-observable (rx/action* println))
 
   See:
-    http://netflix.github.io/RxJava/javadoc/rx/util/functions/Action0.html
+    http://netflix.github.io/RxJava/javadoc/rx/functions/Action0.html
   "
   [f]
-  (reify-callable "rx.util.functions.Action" [0 1 2 3] f))
+  (reify-callable "rx.functions.Action" [0 1 2 3] f))
 
 (defmacro action
-  "Like clojure.core/fn, but returns the appropriate rx.util.functions.Action*
+  "Like clojure.core/fn, but returns the appropriate rx.functions.Action*
   interface.
 
   Example:

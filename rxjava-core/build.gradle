@@ -1,5 +1,6 @@
 apply plugin: 'maven'
 apply plugin: 'osgi'
+apply plugin:'application'
 
 sourceCompatibility = JavaVersion.VERSION_1_6
 targetCompatibility = JavaVersion.VERSION_1_6
@@ -31,3 +32,9 @@ jar {
     }
 }
 
+task time(type:JavaExec) {
+    classpath = sourceSets.perf.runtimeClasspath
+    group 'Application'
+    description 'Execute the calipser benchmark timing of Rx'
+    main 'rx.operators.ObservableBenchmark'
+}

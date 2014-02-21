@@ -1,12 +1,12 @@
 /**
- * Copyright 2013 Netflix, Inc.
- *
+ * Copyright 2014 Netflix, Inc.
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,7 +26,7 @@ import org.mockito.Mockito;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
-import rx.util.functions.Func1;
+import rx.functions.Func1;
 
 public class OperationOnErrorResumeNextViaObservableTest {
 
@@ -40,8 +40,8 @@ public class OperationOnErrorResumeNextViaObservableTest {
         Observable<String> observable = Observable.create(onErrorResumeNextViaObservable(w, resume));
 
         @SuppressWarnings("unchecked")
-        Observer<String> aObserver = mock(Observer.class);
-        observable.subscribe(aObserver);
+        Observer<String> observer = mock(Observer.class);
+        observable.subscribe(observer);
 
         try {
             f.t.join();
@@ -49,13 +49,13 @@ public class OperationOnErrorResumeNextViaObservableTest {
             fail(e.getMessage());
         }
 
-        verify(aObserver, Mockito.never()).onError(any(Throwable.class));
-        verify(aObserver, times(1)).onCompleted();
-        verify(aObserver, times(1)).onNext("one");
-        verify(aObserver, Mockito.never()).onNext("two");
-        verify(aObserver, Mockito.never()).onNext("three");
-        verify(aObserver, times(1)).onNext("twoResume");
-        verify(aObserver, times(1)).onNext("threeResume");
+        verify(observer, Mockito.never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onCompleted();
+        verify(observer, times(1)).onNext("one");
+        verify(observer, Mockito.never()).onNext("two");
+        verify(observer, Mockito.never()).onNext("three");
+        verify(observer, times(1)).onNext("twoResume");
+        verify(observer, times(1)).onNext("threeResume");
     }
 
     @Test
@@ -81,8 +81,8 @@ public class OperationOnErrorResumeNextViaObservableTest {
         Observable<String> observable = Observable.create(onErrorResumeNextViaObservable(w, resume));
 
         @SuppressWarnings("unchecked")
-        Observer<String> aObserver = mock(Observer.class);
-        observable.subscribe(aObserver);
+        Observer<String> observer = mock(Observer.class);
+        observable.subscribe(observer);
 
         try {
             f.t.join();
@@ -90,13 +90,13 @@ public class OperationOnErrorResumeNextViaObservableTest {
             fail(e.getMessage());
         }
 
-        verify(aObserver, Mockito.never()).onError(any(Throwable.class));
-        verify(aObserver, times(1)).onCompleted();
-        verify(aObserver, times(1)).onNext("one");
-        verify(aObserver, Mockito.never()).onNext("two");
-        verify(aObserver, Mockito.never()).onNext("three");
-        verify(aObserver, times(1)).onNext("twoResume");
-        verify(aObserver, times(1)).onNext("threeResume");
+        verify(observer, Mockito.never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onCompleted();
+        verify(observer, times(1)).onNext("one");
+        verify(observer, Mockito.never()).onNext("two");
+        verify(observer, Mockito.never()).onNext("three");
+        verify(observer, times(1)).onNext("twoResume");
+        verify(observer, times(1)).onNext("threeResume");
     }
 
     private static class TestObservable implements Observable.OnSubscribeFunc<String> {

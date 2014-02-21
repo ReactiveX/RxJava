@@ -15,7 +15,7 @@
  */
 package rx.swing.sources;
 
-import static rx.swing.sources.ComponentEventSource.Predicate.*;
+import static rx.swing.sources.ComponentEventSource.Predicate.RESIZED;
 
 import java.awt.Component;
 import java.awt.Dimension;
@@ -23,13 +23,12 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 
 import rx.Observable;
-import rx.Observable.OnSubscribeFunc;
-import rx.Observer;
-import rx.Subscription;
+import rx.Observable.OnSubscribe;
+import rx.Subscriber;
+import rx.functions.Action0;
+import rx.functions.Func1;
 import rx.observables.SwingObservable;
-import rx.subscriptions.Subscriptions;
-import rx.util.functions.Action0;
-import rx.util.functions.Func1;
+import rx.subscriptions.SwingSubscriptions;
 
 public enum ComponentEventSource { ; // no instances
 
@@ -37,38 +36,38 @@ public enum ComponentEventSource { ; // no instances
      * @see rx.observables.SwingObservable#fromComponentEvents
      */
     public static Observable<ComponentEvent> fromComponentEventsOf(final Component component) {
-        return Observable.create(new OnSubscribeFunc<ComponentEvent>() {
+        return Observable.create(new OnSubscribe<ComponentEvent>() {
             @Override
-            public Subscription onSubscribe(final Observer<? super ComponentEvent> observer) {
+            public void call(final Subscriber<? super ComponentEvent> subscriber) {
+                SwingObservable.assertEventDispatchThread();
                 final ComponentListener listener = new ComponentListener() {
                     @Override
                     public void componentHidden(ComponentEvent event) {
-                        observer.onNext(event);
+                        subscriber.onNext(event);
                     }
 
                     @Override
                     public void componentMoved(ComponentEvent event) {
-                        observer.onNext(event);
+                        subscriber.onNext(event);
                     }
 
                     @Override
                     public void componentResized(ComponentEvent event) {
-                        observer.onNext(event);
+                        subscriber.onNext(event);
                     }
 
                     @Override
                     public void componentShown(ComponentEvent event) {
-                        observer.onNext(event);
+                        subscriber.onNext(event);
                     }
                 };
                 component.addComponentListener(listener);
-                
-                return Subscriptions.create(new Action0() {
+                subscriber.add(SwingSubscriptions.unsubscribeInEventDispatchThread(new Action0() {
                     @Override
                     public void call() {
                         component.removeComponentListener(listener);
                     }
-                });
+                }));
             }
         });
     }
@@ -88,7 +87,7 @@ public enum ComponentEventSource { ; // no instances
     /**
      * Predicates that help with filtering observables for specific component events. 
      */
-    public enum Predicate implements rx.util.functions.Func1<java.awt.event.ComponentEvent, Boolean> { 
+    public enum Predicate implements rx.functions.Func1<java.awt.event.ComponentEvent, Boolean> { 
         RESIZED(ComponentEvent.COMPONENT_RESIZED),
         HIDDEN(ComponentEvent.COMPONENT_HIDDEN),
         MOVED(ComponentEvent.COMPONENT_MOVED),

@@ -1,12 +1,12 @@
 /**
- * Copyright 2013 Netflix, Inc.
- *
+ * Copyright 2014 Netflix, Inc.
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -31,7 +31,8 @@ import org.mockito.MockitoAnnotations;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
-import rx.util.CompositeException;
+import rx.exceptions.CompositeException;
+import rx.subscriptions.Subscriptions;
 
 public class OperationMergeDelayErrorTest {
 
@@ -225,14 +226,7 @@ public class OperationMergeDelayErrorTest {
                 observer.onNext(o2);
                 observer.onCompleted();
 
-                return new Subscription() {
-
-                    @Override
-                    public void unsubscribe() {
-                        // unregister ... will never be called here since we are executing synchronously
-                    }
-
-                };
+                return Subscriptions.empty();
             }
 
         });
@@ -275,33 +269,6 @@ public class OperationMergeDelayErrorTest {
     }
 
     @Test
-    public void testUnSubscribe() {
-        TestObservable tA = new TestObservable();
-        TestObservable tB = new TestObservable();
-
-        @SuppressWarnings("unchecked")
-        Observable<String> m = Observable.create(mergeDelayError(Observable.create(tA), Observable.create(tB)));
-        Subscription s = m.subscribe(stringObserver);
-
-        tA.sendOnNext("Aone");
-        tB.sendOnNext("Bone");
-        s.unsubscribe();
-        tA.sendOnNext("Atwo");
-        tB.sendOnNext("Btwo");
-        tA.sendOnCompleted();
-        tB.sendOnCompleted();
-
-        verify(stringObserver, never()).onError(any(Throwable.class));
-        verify(stringObserver, times(1)).onNext("Aone");
-        verify(stringObserver, times(1)).onNext("Bone");
-        assertTrue(tA.unsubscribed);
-        assertTrue(tB.unsubscribed);
-        verify(stringObserver, never()).onNext("Atwo");
-        verify(stringObserver, never()).onNext("Btwo");
-        verify(stringObserver, never()).onCompleted();
-    }
-
-    @Test
     public void testMergeArrayWithThreading() {
         final TestASynchronousObservable o1 = new TestASynchronousObservable();
         final TestASynchronousObservable o2 = new TestASynchronousObservable();
@@ -330,14 +297,7 @@ public class OperationMergeDelayErrorTest {
             observer.onNext("hello");
             observer.onCompleted();
 
-            return new Subscription() {
-
-                @Override
-                public void unsubscribe() {
-                    // unregister ... will never be called here since we are executing synchronously
-                }
-
-            };
+            return Subscriptions.empty();
         }
     }
 
@@ -357,14 +317,7 @@ public class OperationMergeDelayErrorTest {
             });
             t.start();
 
-            return new Subscription() {
-
-                @Override
-                public void unsubscribe() {
-
-                }
-
-            };
+            return Subscriptions.empty();
         }
     }
 
@@ -381,6 +334,11 @@ public class OperationMergeDelayErrorTest {
             public void unsubscribe() {
                 unsubscribed = true;
 
+            }
+
+            @Override
+            public boolean isUnsubscribed() {
+                return unsubscribed;
             }
 
         };
@@ -434,14 +392,7 @@ public class OperationMergeDelayErrorTest {
                 observer.onCompleted();
             }
 
-            return new Subscription() {
-
-                @Override
-                public void unsubscribe() {
-                    // unregister ... will never be called here since we are executing synchronously
-                }
-
-            };
+            return Subscriptions.empty();
         }
     }
 
@@ -482,14 +433,7 @@ public class OperationMergeDelayErrorTest {
             });
             t.start();
 
-            return new Subscription() {
-
-                @Override
-                public void unsubscribe() {
-
-                }
-
-            };
+            return Subscriptions.empty();
         }
     }
 

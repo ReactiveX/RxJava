@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,9 @@
 package rx.util.functions;
 
 /**
- * All Func and Action interfaces extend from this.
- * <p>
- * Marker interface to allow instanceof checks.
+ * @deprecated
  */
+@Deprecated
 public interface Function {
 
 }

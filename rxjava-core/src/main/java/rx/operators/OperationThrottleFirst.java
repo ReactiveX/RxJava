@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,8 +23,8 @@ import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
-import rx.concurrency.Schedulers;
-import rx.util.functions.Func1;
+import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 
 /**
  * Throttle by windowing a stream and returning the first value in each window.
@@ -43,7 +43,7 @@ public final class OperationThrottleFirst {
      * @return A {@link Func1} which performs the throttle operation.
      */
     public static <T> OnSubscribeFunc<T> throttleFirst(Observable<T> items, long windowDuration, TimeUnit unit) {
-        return throttleFirst(items, windowDuration, unit, Schedulers.threadPoolForComputation());
+        return throttleFirst(items, windowDuration, unit, Schedulers.computation());
     }
 
     /**

@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@
  * <p>Services which intend on exposing data asynchronously and wish
  * to allow reactive processing and composition can implement the {@link rx.Observable} interface which then allows Observers to subscribe to them
  * and receive events.</p>
- * <p>Usage examples can be found on the {@link rx.Observable} and {@link rx.Observer} classes.</p>
+ * <p>Usage examples can be found on the {@link rx.Observable} and {@link rx.Subscriber} classes.</p>
  */
 package rx;
 

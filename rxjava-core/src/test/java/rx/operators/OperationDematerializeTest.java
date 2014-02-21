@@ -1,12 +1,12 @@
 /**
- * Copyright 2013 Netflix, Inc.
- *
+ * Copyright 2014 Netflix, Inc.
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,13 +33,13 @@ public class OperationDematerializeTest {
         Observable<Notification<Integer>> notifications = Observable.from(1, 2).materialize();
         Observable<Integer> dematerialize = notifications.dematerialize();
 
-        Observer<Integer> aObserver = mock(Observer.class);
-        dematerialize.subscribe(aObserver);
+        Observer<Integer> observer = mock(Observer.class);
+        dematerialize.subscribe(observer);
 
-        verify(aObserver, times(1)).onNext(1);
-        verify(aObserver, times(1)).onNext(2);
-        verify(aObserver, times(1)).onCompleted();
-        verify(aObserver, never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onNext(1);
+        verify(observer, times(1)).onNext(2);
+        verify(observer, times(1)).onCompleted();
+        verify(observer, never()).onError(any(Throwable.class));
     }
 
     @Test
@@ -49,12 +49,12 @@ public class OperationDematerializeTest {
         Observable<Integer> observable = Observable.error(exception);
         Observable<Integer> dematerialize = Observable.create(dematerialize(observable.materialize()));
 
-        Observer<Integer> aObserver = mock(Observer.class);
-        dematerialize.subscribe(aObserver);
+        Observer<Integer> observer = mock(Observer.class);
+        dematerialize.subscribe(observer);
 
-        verify(aObserver, times(1)).onError(exception);
-        verify(aObserver, times(0)).onCompleted();
-        verify(aObserver, times(0)).onNext(any(Integer.class));
+        verify(observer, times(1)).onError(exception);
+        verify(observer, times(0)).onCompleted();
+        verify(observer, times(0)).onNext(any(Integer.class));
     }
 
     @Test
@@ -64,11 +64,11 @@ public class OperationDematerializeTest {
         Observable<Integer> observable = Observable.error(exception);
         Observable<Integer> dematerialize = Observable.create(dematerialize(observable.materialize()));
 
-        Observer<Integer> aObserver = mock(Observer.class);
-        dematerialize.subscribe(aObserver);
+        Observer<Integer> observer = mock(Observer.class);
+        dematerialize.subscribe(observer);
 
-        verify(aObserver, times(1)).onError(exception);
-        verify(aObserver, times(0)).onCompleted();
-        verify(aObserver, times(0)).onNext(any(Integer.class));
+        verify(observer, times(1)).onError(exception);
+        verify(observer, times(0)).onCompleted();
+        verify(observer, times(0)).onNext(any(Integer.class));
     }
 }

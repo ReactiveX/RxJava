@@ -1,12 +1,12 @@
 /**
- * Copyright 2013 Netflix, Inc.
- *
+ * Copyright 2014 Netflix, Inc.
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,12 +25,14 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
-import rx.concurrency.Schedulers;
+import rx.observables.BlockingObservable;
+import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
 import rx.subscriptions.Subscriptions;
@@ -292,5 +294,30 @@ public class OperationNextTest {
         assertFalse(it.hasNext());
 
         System.out.println("a: " + a + " b: " + b + " c: " + c);
+    }
+
+    @Test /* (timeout = 8000) */
+    public void testSingleSourceManyIterators() throws InterruptedException {
+        PublishSubject<Long> ps = PublishSubject.create();
+        BlockingObservable<Long> source = ps.take(10).toBlockingObservable();
+
+        Iterable<Long> iter = source.next();
+
+        for (int j = 0; j < 3; j++) {
+            OperationNext.NextIterator<Long> it = (OperationNext.NextIterator<Long>)iter.iterator();
+
+            for (long i = 0; i < 9; i++) {
+                // hasNext has to set the waiting to true, otherwise, all onNext will be skipped
+                it.setWaiting(true);
+                ps.onNext(i);
+                Assert.assertEquals(true, it.hasNext());
+                Assert.assertEquals(j + "th iteration", Long.valueOf(i), it.next());
+            }
+            it.setWaiting(true);
+            ps.onNext(9L);
+
+            Assert.assertEquals(j + "th iteration", false, it.hasNext());
+        }
+
     }
 }

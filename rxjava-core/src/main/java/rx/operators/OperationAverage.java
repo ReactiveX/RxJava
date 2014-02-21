@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,11 @@
 package rx.operators;
 
 import rx.Observable;
-import rx.util.functions.Func1;
-import rx.util.functions.Func2;
+import rx.Observable.OnSubscribeFunc;
+import rx.Observer;
+import rx.Subscription;
+import rx.functions.Func1;
+import rx.functions.Func2;
 
 /**
  * A few operators for implementing the averaging operation.
@@ -101,5 +104,245 @@ public final class OperationAverage {
                 return result.current / result.count;
             }
         });
+    }
+
+    /**
+     * Compute the average by extracting integer values from the source via an
+     * extractor function.
+     * 
+     * @param <T>
+     *            the source value type
+     */
+    public static final class AverageIntegerExtractor<T> implements OnSubscribeFunc<Integer> {
+        final Observable<? extends T> source;
+        final Func1<? super T, Integer> valueExtractor;
+
+        public AverageIntegerExtractor(Observable<? extends T> source, Func1<? super T, Integer> valueExtractor) {
+            this.source = source;
+            this.valueExtractor = valueExtractor;
+        }
+
+        @Override
+        public Subscription onSubscribe(Observer<? super Integer> t1) {
+            return source.subscribe(new AverageObserver(t1));
+        }
+
+        /** Computes the average. */
+        private final class AverageObserver implements Observer<T> {
+            final Observer<? super Integer> observer;
+            int sum;
+            int count;
+
+            public AverageObserver(Observer<? super Integer> observer) {
+                this.observer = observer;
+            }
+
+            @Override
+            public void onNext(T args) {
+                sum += valueExtractor.call(args);
+                count++;
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                observer.onError(e);
+            }
+
+            @Override
+            public void onCompleted() {
+                if (count > 0) {
+                    try {
+                        observer.onNext(sum / count);
+                    } catch (Throwable t) {
+                        observer.onError(t);
+                        return;
+                    }
+                    observer.onCompleted();
+                } else {
+                    observer.onError(new IllegalArgumentException("Sequence contains no elements"));
+                }
+            }
+
+        }
+    }
+
+    /**
+     * Compute the average by extracting long values from the source via an
+     * extractor function.
+     * 
+     * @param <T>
+     *            the source value type
+     */
+    public static final class AverageLongExtractor<T> implements OnSubscribeFunc<Long> {
+        final Observable<? extends T> source;
+        final Func1<? super T, Long> valueExtractor;
+
+        public AverageLongExtractor(Observable<? extends T> source, Func1<? super T, Long> valueExtractor) {
+            this.source = source;
+            this.valueExtractor = valueExtractor;
+        }
+
+        @Override
+        public Subscription onSubscribe(Observer<? super Long> t1) {
+            return source.subscribe(new AverageObserver(t1));
+        }
+
+        /** Computes the average. */
+        private final class AverageObserver implements Observer<T> {
+            final Observer<? super Long> observer;
+            long sum;
+            int count;
+
+            public AverageObserver(Observer<? super Long> observer) {
+                this.observer = observer;
+            }
+
+            @Override
+            public void onNext(T args) {
+                sum += valueExtractor.call(args);
+                count++;
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                observer.onError(e);
+            }
+
+            @Override
+            public void onCompleted() {
+                if (count > 0) {
+                    try {
+                        observer.onNext(sum / count);
+                    } catch (Throwable t) {
+                        observer.onError(t);
+                        return;
+                    }
+                    observer.onCompleted();
+                } else {
+                    observer.onError(new IllegalArgumentException("Sequence contains no elements"));
+                }
+            }
+
+        }
+    }
+
+    /**
+     * Compute the average by extracting float values from the source via an
+     * extractor function.
+     * 
+     * @param <T>
+     *            the source value type
+     */
+    public static final class AverageFloatExtractor<T> implements OnSubscribeFunc<Float> {
+        final Observable<? extends T> source;
+        final Func1<? super T, Float> valueExtractor;
+
+        public AverageFloatExtractor(Observable<? extends T> source, Func1<? super T, Float> valueExtractor) {
+            this.source = source;
+            this.valueExtractor = valueExtractor;
+        }
+
+        @Override
+        public Subscription onSubscribe(Observer<? super Float> t1) {
+            return source.subscribe(new AverageObserver(t1));
+        }
+
+        /** Computes the average. */
+        private final class AverageObserver implements Observer<T> {
+            final Observer<? super Float> observer;
+            float sum;
+            int count;
+
+            public AverageObserver(Observer<? super Float> observer) {
+                this.observer = observer;
+            }
+
+            @Override
+            public void onNext(T args) {
+                sum += valueExtractor.call(args);
+                count++;
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                observer.onError(e);
+            }
+
+            @Override
+            public void onCompleted() {
+                if (count > 0) {
+                    try {
+                        observer.onNext(sum / count);
+                    } catch (Throwable t) {
+                        observer.onError(t);
+                        return;
+                    }
+                    observer.onCompleted();
+                } else {
+                    observer.onError(new IllegalArgumentException("Sequence contains no elements"));
+                }
+            }
+
+        }
+    }
+
+    /**
+     * Compute the average by extracting double values from the source via an
+     * extractor function.
+     * 
+     * @param <T>
+     *            the source value type
+     */
+    public static final class AverageDoubleExtractor<T> implements OnSubscribeFunc<Double> {
+        final Observable<? extends T> source;
+        final Func1<? super T, Double> valueExtractor;
+
+        public AverageDoubleExtractor(Observable<? extends T> source, Func1<? super T, Double> valueExtractor) {
+            this.source = source;
+            this.valueExtractor = valueExtractor;
+        }
+
+        @Override
+        public Subscription onSubscribe(Observer<? super Double> t1) {
+            return source.subscribe(new AverageObserver(t1));
+        }
+
+        /** Computes the average. */
+        private final class AverageObserver implements Observer<T> {
+            final Observer<? super Double> observer;
+            double sum;
+            int count;
+
+            public AverageObserver(Observer<? super Double> observer) {
+                this.observer = observer;
+            }
+
+            @Override
+            public void onNext(T args) {
+                sum += valueExtractor.call(args);
+                count++;
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                observer.onError(e);
+            }
+
+            @Override
+            public void onCompleted() {
+                if (count > 0) {
+                    try {
+                        observer.onNext(sum / count);
+                    } catch (Throwable t) {
+                        observer.onError(t);
+                        return;
+                    }
+                    observer.onCompleted();
+                } else {
+                    observer.onError(new IllegalArgumentException("Sequence contains no elements"));
+                }
+            }
+
+        }
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,14 +21,10 @@ import rx.Subscription;
 
 /**
  * Thread-safe wrapper around Observable Subscription that ensures unsubscribe can be called only once.
- * <p>
- * Also used to:
- * <p>
- * <ul>
- * <li>allow the AtomicObserver to have access to the subscription in asynchronous execution for checking if unsubscribed occurred without onComplete/onError.</li>
- * <li>handle both synchronous and asynchronous subscribe() execution flows</li>
- * </ul>
+ * 
+ * @deprecated since `Observer` now implements `Subscription` and `CompositeSubscription` etc handle these things
  */
+@Deprecated
 public final class SafeObservableSubscription implements Subscription {
 
     private static final Subscription UNSUBSCRIBED = new Subscription()
@@ -36,6 +32,11 @@ public final class SafeObservableSubscription implements Subscription {
         @Override
         public void unsubscribe()
         {
+        }
+
+        @Override
+        public boolean isUnsubscribed() {
+            return true;
         }
     };
     private final AtomicReference<Subscription> actualSubscription = new AtomicReference<Subscription>();

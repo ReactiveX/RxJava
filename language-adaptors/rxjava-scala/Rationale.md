@@ -91,7 +91,7 @@ and consumption of Rx values from Java but not for Scala as a producer.
 If we take that approach, we can make bindings that feels like a completely native Scala library,
 without needing any complications of the Scala side.
 ```scala
-object Observer { …}
+object Observable { …}
 trait Observable[+T] {
    def asJavaObservable: rx.Observable[_ <: T]
 }

@@ -33,18 +33,8 @@ import kotlin.concurrent.thread
 /**
  * This class contains tests using the extension functions provided by the language adaptor.
  */
-public class ExtensionTests {
-    [Mock] var a: ScriptAssertion? = null
-    [Mock] var w: Observable<Int>? = null
+public class ExtensionTests : KotlinTests() {
 
-    [Before]
-    public fun before() {
-        MockitoAnnotations.initMocks(this)
-    }
-
-    fun received<T>(): (T?) -> Unit {
-        return {(result: T?) -> a!!.received(result) }
-    }
 
     [Test]
     public fun testCreate() {
@@ -53,7 +43,7 @@ public class ExtensionTests {
             observer.onNext("Hello")
             observer.onCompleted()
             Subscriptions.empty()!!
-        }.asObservable().subscribe { result ->
+        }.asObservableFunc().subscribe { result ->
             a!!.received(result)
         }
 
@@ -226,7 +216,7 @@ public class ExtensionTests {
 
     [Test]
     public fun testForEach() {
-        asyncObservable.asObservable().toBlockingObservable()!!.forEach(received())
+        asyncObservable.asObservableFunc().toBlockingObservable()!!.forEach(received())
         verify(a, times(1))!!.received(1)
         verify(a, times(1))!!.received(2)
         verify(a, times(1))!!.received(3)
@@ -234,7 +224,7 @@ public class ExtensionTests {
 
     [Test(expected = javaClass<RuntimeException>())]
     public fun testForEachWithError() {
-        asyncObservable.asObservable().toBlockingObservable()!!.forEach { throw RuntimeException("err") }
+        asyncObservable.asObservableFunc().toBlockingObservable()!!.forEach { throw RuntimeException("err") }
         fail("we expect an exception to be thrown")
     }
 
@@ -259,9 +249,9 @@ public class ExtensionTests {
 
     [Test]
     public fun testZip() {
-        val o1 = Observable.from(1, 2, 3)!!
-        val o2 = Observable.from(4, 5, 6)!!
-        val o3 = Observable.from(7, 8, 9)!!
+        val o1 = Triple(1, 2, 3).asObservable()
+        val o2 = Triple(4, 5, 6).asObservable()
+        val o3 = Triple(7, 8, 9).asObservable()
 
         val values = Observable.zip(o1, o2, o3) { a, b, c -> listOf(a, b, c) }!!.toList()!!.toBlockingObservable()!!.single()!!
         assertEquals(listOf(1, 4, 7), values[0])
@@ -269,16 +259,10 @@ public class ExtensionTests {
         assertEquals(listOf(3, 6, 9), values[2])
     }
 
-    public trait ScriptAssertion{
-        fun error(e: Throwable?)
-
-        fun received(e: Any?)
-    }
-
     val funOnSubscribe: (Int, Observer<in String>) -> Subscription = { counter, observer ->
         observer.onNext("hello_$counter")
         observer.onCompleted()
-        Subscription { }
+        Subscriptions.empty()!!
     }
 
     val asyncObservable: (Observer<in Int>) -> Subscription = { observer ->
@@ -314,7 +298,7 @@ public class ExtensionTests {
 
         val observable: Observable<String>
             get(){
-                return onSubscribe.asObservable()
+                return onSubscribe.asObservableFunc()
             }
 
     }

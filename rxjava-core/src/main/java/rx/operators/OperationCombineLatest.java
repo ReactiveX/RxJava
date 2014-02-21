@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,27 +15,28 @@
  */
 package rx.operators;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.BitSet;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
-import rx.util.functions.Func2;
-import rx.util.functions.Func3;
-import rx.util.functions.Func4;
-import rx.util.functions.Func5;
-import rx.util.functions.Func6;
-import rx.util.functions.Func7;
-import rx.util.functions.Func8;
-import rx.util.functions.Func9;
-import rx.util.functions.FuncN;
-import rx.util.functions.Functions;
+import rx.functions.Func2;
+import rx.functions.Func3;
+import rx.functions.Func4;
+import rx.functions.Func5;
+import rx.functions.Func6;
+import rx.functions.Func7;
+import rx.functions.Func8;
+import rx.functions.Func9;
+import rx.functions.FuncN;
+import rx.functions.Functions;
+import rx.subscriptions.CompositeSubscription;
 
 /**
  * Returns an Observable that combines the emissions of multiple source observables. Once each
@@ -59,290 +60,256 @@ public class OperationCombineLatest {
      *            The aggregation function used to combine the source observable values.
      * @return A function from an observer to a subscription. This can be used to create an observable from.
      */
+    @SuppressWarnings("unchecked")
     public static <T0, T1, R> OnSubscribeFunc<R> combineLatest(Observable<? extends T0> w0, Observable<T1> w1, Func2<? super T0, ? super T1, ? extends R> combineLatestFunction) {
-        Aggregator<R> a = new Aggregator<R>(Functions.fromFunc(combineLatestFunction));
-        a.addObserver(new CombineObserver<R, T0>(a, w0));
-        a.addObserver(new CombineObserver<R, T1>(a, w1));
-        return a;
+        return new CombineLatest<Object, R>(Arrays.asList(w0, w1), Functions.fromFunc(combineLatestFunction));
     }
 
     /**
      * @see #combineLatest(Observable w0, Observable w1, Func2 combineLatestFunction)
      */
+    @SuppressWarnings("unchecked")
     public static <T0, T1, T2, R> OnSubscribeFunc<R> combineLatest(Observable<? extends T0> w0, Observable<? extends T1> w1, Observable<? extends T2> w2,
             Func3<? super T0, ? super T1, ? super T2, ? extends R> combineLatestFunction) {
-        Aggregator<R> a = new Aggregator<R>(Functions.fromFunc(combineLatestFunction));
-        a.addObserver(new CombineObserver<R, T0>(a, w0));
-        a.addObserver(new CombineObserver<R, T1>(a, w1));
-        a.addObserver(new CombineObserver<R, T2>(a, w2));
-        return a;
+        return new CombineLatest<Object, R>(Arrays.asList(w0, w1, w2), Functions.fromFunc(combineLatestFunction));
     }
 
     /**
      * @see #combineLatest(Observable w0, Observable w1, Func2 combineLatestFunction)
      */
+    @SuppressWarnings("unchecked")
     public static <T0, T1, T2, T3, R> OnSubscribeFunc<R> combineLatest(Observable<? extends T0> w0, Observable<? extends T1> w1, Observable<? extends T2> w2, Observable<? extends T3> w3,
             Func4<? super T0, ? super T1, ? super T2, ? super T3, ? extends R> combineLatestFunction) {
-        Aggregator<R> a = new Aggregator<R>(Functions.fromFunc(combineLatestFunction));
-        a.addObserver(new CombineObserver<R, T0>(a, w0));
-        a.addObserver(new CombineObserver<R, T1>(a, w1));
-        a.addObserver(new CombineObserver<R, T2>(a, w2));
-        a.addObserver(new CombineObserver<R, T3>(a, w3));
-        return a;
+        return new CombineLatest<Object, R>(Arrays.asList(w0, w1, w2, w3), Functions.fromFunc(combineLatestFunction));
     }
 
     /**
      * @see #combineLatest(Observable w0, Observable w1, Func2 combineLatestFunction)
      */
+    @SuppressWarnings("unchecked")
     public static <T0, T1, T2, T3, T4, R> OnSubscribeFunc<R> combineLatest(Observable<? extends T0> w0, Observable<? extends T1> w1, Observable<? extends T2> w2, Observable<? extends T3> w3, Observable<? extends T4> w4,
             Func5<? super T0, ? super T1, ? super T2, ? super T3, ? super T4, ? extends R> combineLatestFunction) {
-        Aggregator<R> a = new Aggregator<R>(Functions.fromFunc(combineLatestFunction));
-        a.addObserver(new CombineObserver<R, T0>(a, w0));
-        a.addObserver(new CombineObserver<R, T1>(a, w1));
-        a.addObserver(new CombineObserver<R, T2>(a, w2));
-        a.addObserver(new CombineObserver<R, T3>(a, w3));
-        a.addObserver(new CombineObserver<R, T4>(a, w4));
-        return a;
+        return new CombineLatest<Object, R>(Arrays.asList(w0, w1, w2, w3, w4), Functions.fromFunc(combineLatestFunction));
     }
 
     /**
      * @see #combineLatest(Observable w0, Observable w1, Func2 combineLatestFunction)
      */
+    @SuppressWarnings("unchecked")
     public static <T0, T1, T2, T3, T4, T5, R> OnSubscribeFunc<R> combineLatest(Observable<? extends T0> w0, Observable<? extends T1> w1, Observable<? extends T2> w2, Observable<? extends T3> w3, Observable<? extends T4> w4, Observable<? extends T5> w5,
             Func6<? super T0, ? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> combineLatestFunction) {
-        Aggregator<R> a = new Aggregator<R>(Functions.fromFunc(combineLatestFunction));
-        a.addObserver(new CombineObserver<R, T0>(a, w0));
-        a.addObserver(new CombineObserver<R, T1>(a, w1));
-        a.addObserver(new CombineObserver<R, T2>(a, w2));
-        a.addObserver(new CombineObserver<R, T3>(a, w3));
-        a.addObserver(new CombineObserver<R, T4>(a, w4));
-        a.addObserver(new CombineObserver<R, T5>(a, w5));
-        return a;
+        return new CombineLatest<Object, R>(Arrays.asList(w0, w1, w2, w3, w4, w5), Functions.fromFunc(combineLatestFunction));
     }
 
     /**
      * @see #combineLatest(Observable w0, Observable w1, Func2 combineLatestFunction)
      */
+    @SuppressWarnings("unchecked")
     public static <T0, T1, T2, T3, T4, T5, T6, R> OnSubscribeFunc<R> combineLatest(Observable<? extends T0> w0, Observable<? extends T1> w1, Observable<? extends T2> w2, Observable<? extends T3> w3, Observable<? extends T4> w4, Observable<? extends T5> w5, Observable<? extends T6> w6,
             Func7<? super T0, ? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> combineLatestFunction) {
-        Aggregator<R> a = new Aggregator<R>(Functions.fromFunc(combineLatestFunction));
-        a.addObserver(new CombineObserver<R, T0>(a, w0));
-        a.addObserver(new CombineObserver<R, T1>(a, w1));
-        a.addObserver(new CombineObserver<R, T2>(a, w2));
-        a.addObserver(new CombineObserver<R, T3>(a, w3));
-        a.addObserver(new CombineObserver<R, T4>(a, w4));
-        a.addObserver(new CombineObserver<R, T5>(a, w5));
-        a.addObserver(new CombineObserver<R, T6>(a, w6));
-        return a;
+        return new CombineLatest<Object, R>(Arrays.asList(w0, w1, w2, w3, w4, w5, w6), Functions.fromFunc(combineLatestFunction));
     }
 
     /**
      * @see #combineLatest(Observable w0, Observable w1, Func2 combineLatestFunction)
      */
+    @SuppressWarnings("unchecked")
     public static <T0, T1, T2, T3, T4, T5, T6, T7, R> OnSubscribeFunc<R> combineLatest(Observable<? extends T0> w0, Observable<? extends T1> w1, Observable<? extends T2> w2, Observable<? extends T3> w3, Observable<? extends T4> w4, Observable<? extends T5> w5, Observable<? extends T6> w6, Observable<? extends T7> w7,
             Func8<? super T0, ? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> combineLatestFunction) {
-        Aggregator<R> a = new Aggregator<R>(Functions.fromFunc(combineLatestFunction));
-        a.addObserver(new CombineObserver<R, T0>(a, w0));
-        a.addObserver(new CombineObserver<R, T1>(a, w1));
-        a.addObserver(new CombineObserver<R, T2>(a, w2));
-        a.addObserver(new CombineObserver<R, T3>(a, w3));
-        a.addObserver(new CombineObserver<R, T4>(a, w4));
-        a.addObserver(new CombineObserver<R, T5>(a, w5));
-        a.addObserver(new CombineObserver<R, T6>(a, w6));
-        a.addObserver(new CombineObserver<R, T7>(a, w7));
-        return a;
+        return new CombineLatest<Object, R>(Arrays.asList(w0, w1, w2, w3, w4, w5, w6, w7), Functions.fromFunc(combineLatestFunction));
     }
 
     /**
      * @see #combineLatest(Observable w0, Observable w1, Func2 combineLatestFunction)
      */
+    @SuppressWarnings("unchecked")
     public static <T0, T1, T2, T3, T4, T5, T6, T7, T8, R> OnSubscribeFunc<R> combineLatest(Observable<? extends T0> w0, Observable<? extends T1> w1, Observable<? extends T2> w2, Observable<? extends T3> w3, Observable<? extends T4> w4, Observable<? extends T5> w5, Observable<? extends T6> w6, Observable<? extends T7> w7,
             Observable<? extends T8> w8,
             Func9<? super T0, ? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> combineLatestFunction) {
-        Aggregator<R> a = new Aggregator<R>(Functions.fromFunc(combineLatestFunction));
-        a.addObserver(new CombineObserver<R, T0>(a, w0));
-        a.addObserver(new CombineObserver<R, T1>(a, w1));
-        a.addObserver(new CombineObserver<R, T2>(a, w2));
-        a.addObserver(new CombineObserver<R, T3>(a, w3));
-        a.addObserver(new CombineObserver<R, T4>(a, w4));
-        a.addObserver(new CombineObserver<R, T5>(a, w5));
-        a.addObserver(new CombineObserver<R, T6>(a, w6));
-        a.addObserver(new CombineObserver<R, T7>(a, w7));
-        a.addObserver(new CombineObserver<R, T8>(a, w8));
-        return a;
+        return new CombineLatest<Object, R>(Arrays.asList(w0, w1, w2, w3, w4, w5, w6, w7, w8), Functions.fromFunc(combineLatestFunction));
     }
 
-    /* package accessible for unit tests */static class CombineObserver<R, T> implements Observer<T> {
-        final Observable<? extends T> w;
-        final Aggregator<R> a;
-        private Subscription subscription;
+    static final class CombineLatest<T, R> implements OnSubscribeFunc<R> {
+        final List<Observable<? extends T>> sources;
+        final FuncN<? extends R> combiner;
 
-        public CombineObserver(Aggregator<R> a, Observable<? extends T> w) {
-            this.a = a;
-            this.w = w;
-        }
-
-        private void startWatching() {
-            if (subscription != null) {
-                throw new RuntimeException("This should only be called once.");
+        public CombineLatest(Iterable<? extends Observable<? extends T>> sources, FuncN<? extends R> combiner) {
+            this.sources = new ArrayList<Observable<? extends T>>();
+            this.combiner = combiner;
+            for (Observable<? extends T> source : sources) {
+                this.sources.add(source);
             }
-            subscription = w.subscribe(this);
         }
 
         @Override
-        public void onCompleted() {
-            a.complete(this);
-        }
+        public Subscription onSubscribe(Observer<? super R> t1) {
+            CompositeSubscription csub = new CompositeSubscription();
 
-        @Override
-        public void onError(Throwable e) {
-            a.error(e);
-        }
+            Collector collector = new Collector(t1, csub, sources.size());
 
-        @Override
-        public void onNext(T args) {
-            a.next(this, args);
-        }
-    }
+            int index = 0;
+            List<SourceObserver> observers = new ArrayList<SourceObserver>(sources.size() + 1);
+            for (Observable<? extends T> source : sources) {
+                SafeObservableSubscription sas = new SafeObservableSubscription();
+                csub.add(sas);
+                observers.add(new SourceObserver(collector, sas, index, source));
+                index++;
+            }
 
-    /**
-     * Receive notifications from each of the observables we are reducing and execute the combineLatestFunction
-     * whenever we have received an event from one of the observables, as soon as each Observable has received
-     * at least one event.
-     */
-    /* package accessible for unit tests */static class Aggregator<R> implements OnSubscribeFunc<R> {
+            for (SourceObserver so : observers) {
+                // if we run to completion, don't bother any further
+                if (!csub.isUnsubscribed()) {
+                    so.connect();
+                }
+            }
 
-        private volatile Observer<R> observer;
-
-        private final FuncN<? extends R> combineLatestFunction;
-        private final AtomicBoolean running = new AtomicBoolean(true);
-
-        // Stores how many observers have already completed
-        private final AtomicInteger numCompleted = new AtomicInteger(0);
-
-        /**
-         * The latest value from each observer.
-         */
-        private final Map<CombineObserver<? extends R, ?>, Object> latestValue = new ConcurrentHashMap<CombineObserver<? extends R, ?>, Object>();
-
-        /**
-         * Ordered list of observers to combine.
-         * No synchronization is necessary as these can not be added or changed asynchronously.
-         */
-        private final List<CombineObserver<R, ?>> observers = new LinkedList<CombineObserver<R, ?>>();
-
-        public Aggregator(FuncN<? extends R> combineLatestFunction) {
-            this.combineLatestFunction = combineLatestFunction;
+            return csub;
         }
 
         /**
-         * Receive notification of a Observer starting (meaning we should require it for aggregation)
-         * 
-         * @param w
-         *            The observer to add.
+         * The collector that combines the latest values from many sources.
          */
-        <T> void addObserver(CombineObserver<R, T> w) {
-            observers.add(w);
-        }
+        final class Collector {
+            final Observer<? super R> observer;
+            final Subscription cancel;
+            final Lock lock;
+            final Object[] values;
+            /** Bitmap to keep track who produced a value already. */
+            final BitSet hasValue;
+            /** Bitmap to keep track who has completed. */
+            final BitSet completed;
+            /** Number of source observers who have produced a value. */
+            int hasCount;
+            /** Number of completed source observers. */
+            int completedCount;
 
-        /**
-         * Receive notification of a Observer completing its iterations.
-         * 
-         * @param w
-         *            The observer that has completed.
-         */
-        <T> void complete(CombineObserver<? extends R, T> w) {
-            int completed = numCompleted.incrementAndGet();
-            // if all CombineObservers are completed, we mark the whole thing as completed
-            if (completed == observers.size()) {
-                if (running.get()) {
-                    // mark ourselves as done
+            public Collector(Observer<? super R> observer, Subscription cancel, int count) {
+                this.observer = observer;
+                this.cancel = cancel;
+                this.values = new Object[count];
+                this.hasValue = new BitSet(count);
+                this.completed = new BitSet(count);
+                this.lock = new ReentrantLock();
+            }
+
+            public void next(int index, T value) {
+                Throwable err = null;
+                lock.lock();
+                try {
+                    if (!isTerminated()) {
+                        values[index] = value;
+                        if (!hasValue.get(index)) {
+                            hasValue.set(index);
+                            hasCount++;
+                        }
+                        if (hasCount == values.length) {
+                            // clone: defensive copy due to varargs
+                            try {
+                                observer.onNext(combiner.call(values.clone()));
+                            } catch (Throwable t) {
+                                terminate();
+                                err = t;
+                            }
+                        }
+                    }
+                } finally {
+                    lock.unlock();
+                }
+                if (err != null) {
+                    // no need to lock here
+                    observer.onError(err);
+                    cancel.unsubscribe();
+                }
+            }
+
+            public void error(int index, Throwable e) {
+                boolean unsub = false;
+                lock.lock();
+                try {
+                    if (!isTerminated()) {
+                        terminate();
+                        unsub = true;
+                    }
+                } finally {
+                    lock.unlock();
+                }
+                if (unsub) {
+                    observer.onError(e);
+                    cancel.unsubscribe();
+                }
+            }
+
+            boolean isTerminated() {
+                return completedCount == values.length + 1;
+            }
+
+            void terminate() {
+                completedCount = values.length + 1;
+                Arrays.fill(values, null);
+            }
+
+            public void completed(int index) {
+                boolean unsub = false;
+                lock.lock();
+                try {
+                    if (!completed.get(index)) {
+                        completed.set(index);
+                        completedCount++;
+                    }
+                    if ((!hasValue.get(index) || completedCount == values.length)
+                            && !isTerminated()) {
+                        terminate();
+                        unsub = true;
+                    }
+                } finally {
+                    lock.unlock();
+                }
+                if (unsub) {
+                    // no need to hold a lock at this point
                     observer.onCompleted();
-                    // just to ensure we stop processing in case we receive more onNext/complete/error calls after this
-                    running.set(false);
+                    cancel.unsubscribe();
                 }
             }
         }
 
         /**
-         * Receive error for a Observer. Throw the error up the chain and stop processing.
+         * Observes a specific source and communicates with the collector.
          */
-        void error(Throwable e) {
-            observer.onError(e);
-            /* tell all observers to unsubscribe since we had an error */
-            stop();
-        }
+        final class SourceObserver implements Observer<T> {
+            final SafeObservableSubscription self;
+            final Collector collector;
+            final int index;
+            Observable<? extends T> source;
 
-        /**
-         * Receive the next value from an observer.
-         * <p>
-         * If we have received values from all observers, trigger the combineLatest function, otherwise store the value and keep waiting.
-         * 
-         * @param w
-         * @param arg
-         */
-        <T> void next(CombineObserver<? extends R, T> w, T arg) {
-            if (observer == null) {
-                throw new RuntimeException("This shouldn't be running if an Observer isn't registered");
+            public SourceObserver(Collector collector,
+                    SafeObservableSubscription self, int index,
+                    Observable<? extends T> source) {
+                this.self = self;
+                this.collector = collector;
+                this.index = index;
+                this.source = source;
             }
 
-            /* if we've been 'unsubscribed' don't process anything further even if the things we're watching keep sending (likely because they are not responding to the unsubscribe call) */
-            if (!running.get()) {
-                return;
+            @Override
+            public void onNext(T args) {
+                collector.next(index, args);
             }
 
-            // remember this as the latest value for this observer
-            latestValue.put(w, arg);
-
-            if (latestValue.size() < observers.size()) {
-                // we don't have a value yet for each observer to combine, so we don't have a combined value yet either
-                return;
+            @Override
+            public void onError(Throwable e) {
+                collector.error(index, e);
             }
 
-            Object[] argsToCombineLatest = new Object[observers.size()];
-            int i = 0;
-            for (CombineObserver<R, ?> _w : observers) {
-                argsToCombineLatest[i++] = latestValue.get(_w);
+            @Override
+            public void onCompleted() {
+                collector.completed(index);
+                self.unsubscribe();
             }
 
-            try {
-                R combinedValue = combineLatestFunction.call(argsToCombineLatest);
-                observer.onNext(combinedValue);
-            } catch (Throwable ex) {
-                observer.onError(ex);
-            }
-        }
-
-        @Override
-        public Subscription onSubscribe(Observer<? super R> observer) {
-            if (this.observer != null) {
-                throw new IllegalStateException("Only one Observer can subscribe to this Observable.");
-            }
-
-            SafeObservableSubscription subscription = new SafeObservableSubscription(new Subscription() {
-                @Override
-                public void unsubscribe() {
-                    stop();
-                }
-            });
-            this.observer = new SynchronizedObserver<R>(observer, subscription);
-
-            /* start the observers */
-            for (CombineObserver<R, ?> rw : observers) {
-                rw.startWatching();
-            }
-
-            return subscription;
-        }
-
-        private void stop() {
-            /* tell ourselves to stop processing onNext events */
-            running.set(false);
-            /* propogate to all observers to unsubscribe */
-            for (CombineObserver<R, ?> rw : observers) {
-                if (rw.subscription != null) {
-                    rw.subscription.unsubscribe();
-                }
+            /** Connect to the source. */
+            void connect() {
+                self.wrap(source.subscribe(this));
+                source = null;
             }
         }
     }

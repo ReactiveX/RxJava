@@ -15,26 +15,25 @@
  */
 package rx.lang.scala
 
-import rx.joins.ObserverBase
-
 /**
 * A Subject is an Observable and an Observer at the same time.
 */
-trait Subject[-T, +R] extends Observable[R] with Observer[T] {
-  val asJavaSubject: rx.subjects.Subject[_ >: T, _<: R]
+trait Subject[T] extends Observable[T] with Observer[T] {
+  private [scala] val asJavaSubject: rx.subjects.Subject[_ >: T, _<: T]
 
-  def asJavaObservable: rx.Observable[_ <: R] = asJavaSubject
+  val asJavaObservable: rx.Observable[_ <: T] = asJavaSubject
 
-  // temporary hack to workaround bugs in rx Subjects
-  override def asJavaObserver: rx.Observer[_ >: T] = new ObserverBase[T] {
-    protected def onNextCore(value: T) = asJavaSubject.onNext(value)
-    protected def onErrorCore(error: Throwable) =  asJavaSubject.onError(error)
-    protected def onCompletedCore() = asJavaSubject.onCompleted()
-  }
-
-  def onNext(value: T): Unit = asJavaObserver.onNext(value)
-  def onError(error: Throwable): Unit = asJavaObserver.onError(error)
-  def onCompleted(): Unit = asJavaObserver.onCompleted()
-
+  override val asJavaObserver: rx.Observer[_ >: T] = asJavaSubject
+  override def onNext(value: T): Unit = { asJavaObserver.onNext(value)}
+  override def onError(error: Throwable): Unit = { asJavaObserver.onError(error)  }
+  override def onCompleted() { asJavaObserver.onCompleted() }
 }
+
+object Subject {
+  def apply[T](): Subject[T] = new rx.lang.scala.subjects.PublishSubject[T](rx.subjects.PublishSubject.create())
+}
+
+
+
+
 

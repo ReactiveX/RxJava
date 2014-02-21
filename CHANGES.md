@@ -1,5 +1,102 @@
 # RxJava Releases #
 
+### Version 0.16.1 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.16.1%22)) ###
+
+* [Pull 730](https://github.com/Netflix/RxJava/pull/730) Improve Error Handling and Stacktraces When Unsubscribe Fails
+* [Pull 720](https://github.com/Netflix/RxJava/pull/720) Added `Observable.timeout` wrappers to scala adapter
+* [Pull 731](https://github.com/Netflix/RxJava/pull/731) Fix non-deterministic unit test
+* [Pull 742](https://github.com/Netflix/RxJava/pull/742) Build with Gradle 1.10
+* [Pull 718](https://github.com/Netflix/RxJava/pull/718) Merge overloads
+* [Pull 733](https://github.com/Netflix/RxJava/pull/733) Buffer with Observable boundary
+* [Pull 734](https://github.com/Netflix/RxJava/pull/734) Delay with subscription and item delaying observables
+* [Pull 735](https://github.com/Netflix/RxJava/pull/735) Window with Observable boundary
+* [Pull 736](https://github.com/Netflix/RxJava/pull/736) MergeMap with Iterable and resultSelector overloads
+* [Pull 738](https://github.com/Netflix/RxJava/pull/738) Publish and PublishLast overloads
+* [Pull 739](https://github.com/Netflix/RxJava/pull/739) Debounce with selector
+* [Pull 740](https://github.com/Netflix/RxJava/pull/740) Timeout with selector overloads
+* [Pull 745](https://github.com/Netflix/RxJava/pull/745) Fixed `switch` bug
+* [Pull 741](https://github.com/Netflix/RxJava/pull/741) Zip with iterable, removed old aggregator version and updated tests
+* [Pull 749](https://github.com/Netflix/RxJava/pull/749) Separated Android test code from source
+* [Pull 732](https://github.com/Netflix/RxJava/pull/732) Ported groupByUntil function to scala-adapter
+
+
+### Version 0.16.0 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.16.0%22)) ###
+
+
+This is a significant release with the following changes:
+
+- Refactor of Subjects and Subscriptions to non-blocking implementations 
+- Many bug fixes, new operators and behavior changes to match Rx.Net. 
+- Deprecation of some operators due to renaming or eliminating duplicates 
+- The `rx.concurrency` package has been renamed to `rx.schedulers`. Existing classes still remain in `rx.concurrency` but are deprecated. Use of `rx.concurrency` should be migrated to `rx.schedulers` as these deprecated classes will be removed in a future release. 
+- Breaking changes to Scala bindings. See [Release Notes](https://github.com/Netflix/RxJava/blob/master/language-adaptors/rxjava-scala/ReleaseNotes.md) for details.
+- New modules: rxjava-string, rxjava-async-util and rxjava-computation-expressions for operators deemed not applicable to the core library. 
+
+---
+
+* [Pull 516](https://github.com/Netflix/RxJava/pull/516) rxjava-string module with StringObservable
+* [Pull 533](https://github.com/Netflix/RxJava/pull/533) Operator: ToAsync
+* [Pull 535](https://github.com/Netflix/RxJava/pull/535) Fix compilation errors due to referencing the Android support library directly
+* [Pull 545](https://github.com/Netflix/RxJava/pull/545) Fixed Zip issue with infinite streams
+* [Pull 539](https://github.com/Netflix/RxJava/pull/539) Zipping a finite and an infinite Observable
+* [Pull 541](https://github.com/Netflix/RxJava/pull/541) Operator: SkipUntil
+* [Pull 537](https://github.com/Netflix/RxJava/pull/537) Add scala adapters for doOnEach operator
+* [Pull 560](https://github.com/Netflix/RxJava/pull/560) Add type variances for doOnEach actions
+* [Pull 562](https://github.com/Netflix/RxJava/pull/562) Scala Adaptor Improvements
+* [Pull 563](https://github.com/Netflix/RxJava/pull/563) Operator: GroupByUntil
+* [Pull 561](https://github.com/Netflix/RxJava/pull/561) Revised Approach to Creating Observables in Scala
+* [Pull 565](https://github.com/Netflix/RxJava/pull/565) Operator: GroupJoin v2
+* [Pull 567](https://github.com/Netflix/RxJava/pull/567) Operator: Timestamp with Scheduler
+* [Pull 568](https://github.com/Netflix/RxJava/pull/568) Use lock free strategy for several Subscription implementations
+* [Pull 571](https://github.com/Netflix/RxJava/pull/571) Operator: Sample with Observable v2
+* [Pull 572](https://github.com/Netflix/RxJava/pull/572) Multiple Subscriptions to ObserveOn
+* [Pull 573](https://github.com/Netflix/RxJava/pull/573) Removed Opening and Closing historical artifacts
+* [Pull 575](https://github.com/Netflix/RxJava/pull/575) Operator: SequenceEqual reimplementation
+* [Pull 587](https://github.com/Netflix/RxJava/pull/587) Operator: LongCount
+* [Pull 586](https://github.com/Netflix/RxJava/pull/586) Fix Concat to allow multiple observers
+* [Pull 598](https://github.com/Netflix/RxJava/pull/598) New Scala Bindings
+* [Pull 596](https://github.com/Netflix/RxJava/pull/596) Fix for buffer not stopping when unsubscribed
+* [Pull 576](https://github.com/Netflix/RxJava/pull/576) Operators: Timer and Delay
+* [Pull 593](https://github.com/Netflix/RxJava/pull/593) Lock-free subscriptions
+* [Pull 599](https://github.com/Netflix/RxJava/pull/599) Refactor rx.concurrency to rx.schedulers
+* [Pull 600](https://github.com/Netflix/RxJava/pull/600) BugFix: Replay Subject
+* [Pull 594](https://github.com/Netflix/RxJava/pull/594) Operator: Start
+* [Pull 604](https://github.com/Netflix/RxJava/pull/604) StringObservable.join
+* [Pull 609](https://github.com/Netflix/RxJava/pull/609) Operation: Timer
+* [Pull 612](https://github.com/Netflix/RxJava/pull/612) Operation: Replay (overloads)
+* [Pull 628](https://github.com/Netflix/RxJava/pull/628) BugFix: MergeDelayError Synchronization
+* [Pull 602](https://github.com/Netflix/RxJava/pull/602) BugFix: ObserveOn Subscription leak
+* [Pull 631](https://github.com/Netflix/RxJava/pull/631) Make NewThreadScheduler create Daemon threads
+* [Pull 651](https://github.com/Netflix/RxJava/pull/651) Subjects Refactor - Non-Blocking, Common Abstraction, Performance
+* [Pull 661](https://github.com/Netflix/RxJava/pull/661) Subscriptions Rewrite
+* [Pull 520](https://github.com/Netflix/RxJava/pull/520) BugFix: blocking/non-blocking `first`
+* [Pull 621](https://github.com/Netflix/RxJava/pull/621) Scala: SerialSubscription & From
+* [Pull 626](https://github.com/Netflix/RxJava/pull/626) BO.Latest, fixed: BO.next, BO.mostRecent, BO.toIterable
+* [Pull 633](https://github.com/Netflix/RxJava/pull/633) BugFix: null in toList operator
+* [Pull 635](https://github.com/Netflix/RxJava/pull/635) Conditional Operators
+* [Pull 638](https://github.com/Netflix/RxJava/pull/638) Operations: DelaySubscription, TakeLast w/ time, TakeLastBuffer
+* [Pull 659](https://github.com/Netflix/RxJava/pull/659) Missing fixes from the subject rewrite
+* [Pull 688](https://github.com/Netflix/RxJava/pull/688) Fix SafeObserver handling of onComplete errors
+* [Pull 690](https://github.com/Netflix/RxJava/pull/690) Fixed Scala bindings
+* [Pull 693](https://github.com/Netflix/RxJava/pull/693) Kotlin M6.2
+* [Pull 689](https://github.com/Netflix/RxJava/pull/689) Removed ObserverBase
+* [Pull 664](https://github.com/Netflix/RxJava/pull/664) Operation: AsObservable
+* [Pull 697](https://github.com/Netflix/RxJava/pull/697) Operations: Skip, SkipLast, Take with time
+* [Pull 698](https://github.com/Netflix/RxJava/pull/698) Operations: Average, Sum
+* [Pull 699](https://github.com/Netflix/RxJava/pull/699) Operation: Repeat
+* [Pull 701](https://github.com/Netflix/RxJava/pull/701) Operation: Collect
+* [Pull 707](https://github.com/Netflix/RxJava/pull/707) Module: rxjava-async-util
+* [Pull 708](https://github.com/Netflix/RxJava/pull/708) BugFix: combineLatest
+* [Pull 712](https://github.com/Netflix/RxJava/pull/712) Fix Scheduler Memory Leaks
+* [Pull 714](https://github.com/Netflix/RxJava/pull/714) Module: rxjava-computation-expressions
+* [Pull 715](https://github.com/Netflix/RxJava/pull/715) Add missing type hint to clojure example
+* [Pull 717](https://github.com/Netflix/RxJava/pull/717) Scala: Added ConnectableObservable
+* [Pull 723](https://github.com/Netflix/RxJava/pull/723) Deprecate multiple arity ‘from’
+* [Pull 724](https://github.com/Netflix/RxJava/pull/724) Revert use of CurrentThreadScheduler for Observable.from
+* [Pull 725](https://github.com/Netflix/RxJava/pull/725) Simpler computation/io naming for Schedulers
+* [Pull 727](https://github.com/Netflix/RxJava/pull/727) ImmediateScheduler optimization for toObservableIterable
+
+
 ### Version 0.15.1 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.15.1%22)) ###
 
 This release should be additive functionality and bug fixes.
@@ -445,11 +542,4 @@ Also [removed](https://github.com/Netflix/RxJava/issues/173) were the `Observabl
 ### Version 0.5.1 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.5.1%22)) ###
 
 * variety of code cleanup commits
-* [Pull 132](https://github.com/Netflix/RxJava/pull/132) Broke rxjava-examples module into each language-adaptor module
-* [Issue 118](https://github.com/Netflix/RxJava/issues/118) & [Issue 119](https://github.com/Netflix/Hystrix/issues/119) Cleaned up Javadocs still referencing internal Netflix paths
-* Javadoc and README changes
-
-### Version 0.5.0  ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.5.0%22)) ###
-
-* Initial open source release 
-* See [Netflix Tech Blog](http://techblog.netflix.com/2013/02/rxjava-netflix-api.html) for introduction
+* [Pull 132](https://github.com/Netflix/RxJava/pull/132) Broke rxjava-examples mo

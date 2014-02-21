@@ -1,12 +1,12 @@
 /**
- * Copyright 2013 Netflix, Inc.
- *
+ * Copyright 2014 Netflix, Inc.
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -28,12 +28,11 @@ import org.mockito.Matchers;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
-import rx.operators.OperationCombineLatest.Aggregator;
-import rx.operators.OperationCombineLatest.CombineObserver;
+import rx.functions.Func2;
+import rx.functions.Func3;
+import rx.functions.FuncN;
+import rx.subjects.PublishSubject;
 import rx.subscriptions.Subscriptions;
-import rx.util.functions.Func2;
-import rx.util.functions.Func3;
-import rx.util.functions.FuncN;
 
 public class OperationCombineLatestTest {
 
@@ -176,321 +175,6 @@ public class OperationCombineLatestTest {
         inOrder.verify(w, times(1)).onCompleted();
     }
 
-    /**
-     * Testing internal private logic due to the complexity so I want to use TDD to test as a I build it rather than relying purely on the overall functionality expected by the public methods.
-     */
-    @SuppressWarnings("unchecked")
-    /* mock calls don't do generics */
-    @Test
-    public void testAggregatorSimple() {
-        FuncN<String> combineLatestFunction = getConcatCombineLatestFunction();
-        /* create the aggregator which will execute the combineLatest function when all Observables provide values */
-        Aggregator<String> a = new Aggregator<String>(combineLatestFunction);
-
-        /* define a Observer to receive aggregated events */
-        Observer<String> aObserver = mock(Observer.class);
-        Observable.create(a).subscribe(aObserver);
-
-        /* mock the Observable Observers that are 'pushing' data for us */
-        CombineObserver<String, String> r1 = mock(CombineObserver.class);
-        CombineObserver<String, String> r2 = mock(CombineObserver.class);
-
-        /* pretend we're starting up */
-        a.addObserver(r1);
-        a.addObserver(r2);
-
-        /* simulate the Observables pushing data into the aggregator */
-        a.next(r1, "hello");
-        a.next(r2, "world");
-
-        InOrder inOrder = inOrder(aObserver);
-
-        verify(aObserver, never()).onError(any(Throwable.class));
-        verify(aObserver, never()).onCompleted();
-        inOrder.verify(aObserver, times(1)).onNext("helloworld");
-
-        a.next(r1, "hello ");
-        a.next(r2, "again");
-
-        verify(aObserver, never()).onError(any(Throwable.class));
-        verify(aObserver, never()).onCompleted();
-        inOrder.verify(aObserver, times(1)).onNext("hello again");
-
-        a.complete(r1);
-        a.complete(r2);
-
-        inOrder.verify(aObserver, never()).onNext(anyString());
-        verify(aObserver, times(1)).onCompleted();
-    }
-
-    @SuppressWarnings("unchecked")
-    /* mock calls don't do generics */
-    @Test
-    public void testAggregatorDifferentSizedResultsWithOnComplete() {
-        FuncN<String> combineLatestFunction = getConcatCombineLatestFunction();
-        /* create the aggregator which will execute the combineLatest function when all Observables provide values */
-        Aggregator<String> a = new Aggregator<String>(combineLatestFunction);
-
-        /* define a Observer to receive aggregated events */
-        Observer<String> aObserver = mock(Observer.class);
-        Observable.create(a).subscribe(aObserver);
-
-        /* mock the Observable Observers that are 'pushing' data for us */
-        CombineObserver<String, String> r1 = mock(CombineObserver.class);
-        CombineObserver<String, String> r2 = mock(CombineObserver.class);
-
-        /* pretend we're starting up */
-        a.addObserver(r1);
-        a.addObserver(r2);
-
-        /* simulate the Observables pushing data into the aggregator */
-        a.next(r1, "hello");
-        a.next(r2, "world");
-        a.complete(r2);
-
-        verify(aObserver, never()).onError(any(Throwable.class));
-        verify(aObserver, never()).onCompleted();
-        verify(aObserver, times(1)).onNext("helloworld");
-
-        a.next(r1, "hi");
-        a.complete(r1);
-
-        verify(aObserver, never()).onError(any(Throwable.class));
-        verify(aObserver, times(1)).onCompleted();
-        verify(aObserver, times(1)).onNext("hiworld");
-    }
-
-    @SuppressWarnings("unchecked")
-    /* mock calls don't do generics */
-    @Test
-    public void testAggregateMultipleTypes() {
-        FuncN<String> combineLatestFunction = getConcatCombineLatestFunction();
-        /* create the aggregator which will execute the combineLatest function when all Observables provide values */
-        Aggregator<String> a = new Aggregator<String>(combineLatestFunction);
-
-        /* define a Observer to receive aggregated events */
-        Observer<String> aObserver = mock(Observer.class);
-        Observable.create(a).subscribe(aObserver);
-
-        /* mock the Observable Observers that are 'pushing' data for us */
-        CombineObserver<String, String> r1 = mock(CombineObserver.class);
-        CombineObserver<String, String> r2 = mock(CombineObserver.class);
-
-        /* pretend we're starting up */
-        a.addObserver(r1);
-        a.addObserver(r2);
-
-        /* simulate the Observables pushing data into the aggregator */
-        a.next(r1, "hello");
-        a.next(r2, "world");
-        a.complete(r2);
-
-        verify(aObserver, never()).onError(any(Throwable.class));
-        verify(aObserver, never()).onCompleted();
-        verify(aObserver, times(1)).onNext("helloworld");
-
-        a.next(r1, "hi");
-        a.complete(r1);
-
-        verify(aObserver, never()).onError(any(Throwable.class));
-        verify(aObserver, times(1)).onCompleted();
-        verify(aObserver, times(1)).onNext("hiworld");
-    }
-
-    @SuppressWarnings("unchecked")
-    /* mock calls don't do generics */
-    @Test
-    public void testAggregate3Types() {
-        FuncN<String> combineLatestFunction = getConcatCombineLatestFunction();
-        /* create the aggregator which will execute the combineLatest function when all Observables provide values */
-        Aggregator<String> a = new Aggregator<String>(combineLatestFunction);
-
-        /* define a Observer to receive aggregated events */
-        Observer<String> aObserver = mock(Observer.class);
-        Observable.create(a).subscribe(aObserver);
-
-        /* mock the Observable Observers that are 'pushing' data for us */
-        CombineObserver<String, String> r1 = mock(CombineObserver.class);
-        CombineObserver<String, Integer> r2 = mock(CombineObserver.class);
-        CombineObserver<String, int[]> r3 = mock(CombineObserver.class);
-
-        /* pretend we're starting up */
-        a.addObserver(r1);
-        a.addObserver(r2);
-        a.addObserver(r3);
-
-        /* simulate the Observables pushing data into the aggregator */
-        a.next(r1, "hello");
-        a.next(r2, 2);
-        a.next(r3, new int[] { 5, 6, 7 });
-
-        verify(aObserver, never()).onError(any(Throwable.class));
-        verify(aObserver, never()).onCompleted();
-        verify(aObserver, times(1)).onNext("hello2[5, 6, 7]");
-    }
-
-    @SuppressWarnings("unchecked")
-    /* mock calls don't do generics */
-    @Test
-    public void testAggregatorsWithDifferentSizesAndTiming() {
-        FuncN<String> combineLatestFunction = getConcatCombineLatestFunction();
-        /* create the aggregator which will execute the combineLatest function when all Observables provide values */
-        Aggregator<String> a = new Aggregator<String>(combineLatestFunction);
-
-        /* define a Observer to receive aggregated events */
-        Observer<String> aObserver = mock(Observer.class);
-        Observable.create(a).subscribe(aObserver);
-
-        /* mock the Observable Observers that are 'pushing' data for us */
-        CombineObserver<String, String> r1 = mock(CombineObserver.class);
-        CombineObserver<String, String> r2 = mock(CombineObserver.class);
-
-        /* pretend we're starting up */
-        a.addObserver(r1);
-        a.addObserver(r2);
-
-        /* simulate the Observables pushing data into the aggregator */
-        a.next(r1, "one");
-        a.next(r1, "two");
-        a.next(r1, "three");
-        a.next(r2, "A");
-
-        verify(aObserver, never()).onError(any(Throwable.class));
-        verify(aObserver, never()).onCompleted();
-        verify(aObserver, times(1)).onNext("threeA");
-
-        a.next(r1, "four");
-        a.complete(r1);
-        a.next(r2, "B");
-        verify(aObserver, times(1)).onNext("fourB");
-        a.next(r2, "C");
-        verify(aObserver, times(1)).onNext("fourC");
-        a.next(r2, "D");
-        verify(aObserver, times(1)).onNext("fourD");
-        a.next(r2, "E");
-        verify(aObserver, times(1)).onNext("fourE");
-        a.complete(r2);
-
-        verify(aObserver, never()).onError(any(Throwable.class));
-        verify(aObserver, times(1)).onCompleted();
-    }
-
-    @SuppressWarnings("unchecked")
-    /* mock calls don't do generics */
-    @Test
-    public void testAggregatorError() {
-        FuncN<String> combineLatestFunction = getConcatCombineLatestFunction();
-        /* create the aggregator which will execute the combineLatest function when all Observables provide values */
-        Aggregator<String> a = new Aggregator<String>(combineLatestFunction);
-
-        /* define a Observer to receive aggregated events */
-        Observer<String> aObserver = mock(Observer.class);
-        Observable.create(a).subscribe(aObserver);
-
-        /* mock the Observable Observers that are 'pushing' data for us */
-        CombineObserver<String, String> r1 = mock(CombineObserver.class);
-        CombineObserver<String, String> r2 = mock(CombineObserver.class);
-
-        /* pretend we're starting up */
-        a.addObserver(r1);
-        a.addObserver(r2);
-
-        /* simulate the Observables pushing data into the aggregator */
-        a.next(r1, "hello");
-        a.next(r2, "world");
-
-        verify(aObserver, never()).onError(any(Throwable.class));
-        verify(aObserver, never()).onCompleted();
-        verify(aObserver, times(1)).onNext("helloworld");
-
-        a.error(new RuntimeException(""));
-        a.next(r1, "hello");
-        a.next(r2, "again");
-
-        verify(aObserver, times(1)).onError(any(Throwable.class));
-        verify(aObserver, never()).onCompleted();
-        // we don't want to be called again after an error
-        verify(aObserver, times(0)).onNext("helloagain");
-    }
-
-    @SuppressWarnings("unchecked")
-    /* mock calls don't do generics */
-    @Test
-    public void testAggregatorUnsubscribe() {
-        FuncN<String> combineLatestFunction = getConcatCombineLatestFunction();
-        /* create the aggregator which will execute the combineLatest function when all Observables provide values */
-        Aggregator<String> a = new Aggregator<String>(combineLatestFunction);
-
-        /* define a Observer to receive aggregated events */
-        Observer<String> aObserver = mock(Observer.class);
-        Subscription subscription = Observable.create(a).subscribe(aObserver);
-
-        /* mock the Observable Observers that are 'pushing' data for us */
-        CombineObserver<String, String> r1 = mock(CombineObserver.class);
-        CombineObserver<String, String> r2 = mock(CombineObserver.class);
-
-        /* pretend we're starting up */
-        a.addObserver(r1);
-        a.addObserver(r2);
-
-        /* simulate the Observables pushing data into the aggregator */
-        a.next(r1, "hello");
-        a.next(r2, "world");
-
-        verify(aObserver, never()).onError(any(Throwable.class));
-        verify(aObserver, never()).onCompleted();
-        verify(aObserver, times(1)).onNext("helloworld");
-
-        subscription.unsubscribe();
-        a.next(r1, "hello");
-        a.next(r2, "again");
-
-        verify(aObserver, times(0)).onError(any(Throwable.class));
-        verify(aObserver, never()).onCompleted();
-        // we don't want to be called again after an error
-        verify(aObserver, times(0)).onNext("helloagain");
-    }
-
-    @SuppressWarnings("unchecked")
-    /* mock calls don't do generics */
-    @Test
-    public void testAggregatorEarlyCompletion() {
-        FuncN<String> combineLatestFunction = getConcatCombineLatestFunction();
-        /* create the aggregator which will execute the combineLatest function when all Observables provide values */
-        Aggregator<String> a = new Aggregator<String>(combineLatestFunction);
-
-        /* define a Observer to receive aggregated events */
-        Observer<String> aObserver = mock(Observer.class);
-        Observable.create(a).subscribe(aObserver);
-
-        /* mock the Observable Observers that are 'pushing' data for us */
-        CombineObserver<String, String> r1 = mock(CombineObserver.class);
-        CombineObserver<String, String> r2 = mock(CombineObserver.class);
-
-        /* pretend we're starting up */
-        a.addObserver(r1);
-        a.addObserver(r2);
-
-        /* simulate the Observables pushing data into the aggregator */
-        a.next(r1, "one");
-        a.next(r1, "two");
-        a.complete(r1);
-        a.next(r2, "A");
-
-        InOrder inOrder = inOrder(aObserver);
-
-        inOrder.verify(aObserver, never()).onError(any(Throwable.class));
-        inOrder.verify(aObserver, never()).onCompleted();
-        inOrder.verify(aObserver, times(1)).onNext("twoA");
-
-        a.complete(r2);
-
-        inOrder.verify(aObserver, never()).onError(any(Throwable.class));
-        inOrder.verify(aObserver, times(1)).onCompleted();
-        // we shouldn't get this since completed is called before any other onNext calls could trigger this
-        inOrder.verify(aObserver, never()).onNext(anyString());
-    }
-
     @SuppressWarnings("unchecked")
     /* mock calls don't do generics */
     @Test
@@ -498,16 +182,16 @@ public class OperationCombineLatestTest {
         Func2<String, Integer, String> combineLatestFunction = getConcatStringIntegerCombineLatestFunction();
 
         /* define a Observer to receive aggregated events */
-        Observer<String> aObserver = mock(Observer.class);
+        Observer<String> observer = mock(Observer.class);
 
         Observable<String> w = Observable.create(combineLatest(Observable.from("one", "two"), Observable.from(2, 3, 4), combineLatestFunction));
-        w.subscribe(aObserver);
+        w.subscribe(observer);
 
-        verify(aObserver, never()).onError(any(Throwable.class));
-        verify(aObserver, times(1)).onCompleted();
-        verify(aObserver, times(1)).onNext("two2");
-        verify(aObserver, times(1)).onNext("two3");
-        verify(aObserver, times(1)).onNext("two4");
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onCompleted();
+        verify(observer, times(1)).onNext("two2");
+        verify(observer, times(1)).onNext("two3");
+        verify(observer, times(1)).onNext("two4");
     }
 
     @SuppressWarnings("unchecked")
@@ -517,14 +201,14 @@ public class OperationCombineLatestTest {
         Func3<String, Integer, int[], String> combineLatestFunction = getConcatStringIntegerIntArrayCombineLatestFunction();
 
         /* define a Observer to receive aggregated events */
-        Observer<String> aObserver = mock(Observer.class);
+        Observer<String> observer = mock(Observer.class);
 
         Observable<String> w = Observable.create(combineLatest(Observable.from("one", "two"), Observable.from(2), Observable.from(new int[] { 4, 5, 6 }), combineLatestFunction));
-        w.subscribe(aObserver);
+        w.subscribe(observer);
 
-        verify(aObserver, never()).onError(any(Throwable.class));
-        verify(aObserver, times(1)).onCompleted();
-        verify(aObserver, times(1)).onNext("two2[4, 5, 6]");
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onCompleted();
+        verify(observer, times(1)).onNext("two2[4, 5, 6]");
     }
 
     @SuppressWarnings("unchecked")
@@ -534,15 +218,15 @@ public class OperationCombineLatestTest {
         Func3<String, Integer, int[], String> combineLatestFunction = getConcatStringIntegerIntArrayCombineLatestFunction();
 
         /* define a Observer to receive aggregated events */
-        Observer<String> aObserver = mock(Observer.class);
+        Observer<String> observer = mock(Observer.class);
 
         Observable<String> w = Observable.create(combineLatest(Observable.from("one"), Observable.from(2), Observable.from(new int[] { 4, 5, 6 }, new int[] { 7, 8 }), combineLatestFunction));
-        w.subscribe(aObserver);
+        w.subscribe(observer);
 
-        verify(aObserver, never()).onError(any(Throwable.class));
-        verify(aObserver, times(1)).onCompleted();
-        verify(aObserver, times(1)).onNext("one2[4, 5, 6]");
-        verify(aObserver, times(1)).onNext("one2[7, 8]");
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onCompleted();
+        verify(observer, times(1)).onNext("one2[4, 5, 6]");
+        verify(observer, times(1)).onNext("one2[7, 8]");
     }
 
     private Func3<String, String, String, String> getConcat3StringsCombineLatestFunction() {
@@ -632,5 +316,160 @@ public class OperationCombineLatestTest {
             return Subscriptions.empty();
         }
 
+    }
+
+    Func2<Integer, Integer, Integer> or = new Func2<Integer, Integer, Integer>() {
+        @Override
+        public Integer call(Integer t1, Integer t2) {
+            return t1 | t2;
+        }
+    };
+
+    @Test
+    public void combineSimple() {
+        PublishSubject<Integer> a = PublishSubject.create();
+        PublishSubject<Integer> b = PublishSubject.create();
+
+        Observable<Integer> source = Observable.combineLatest(a, b, or);
+
+        Observer<Object> observer = mock(Observer.class);
+
+        source.subscribe(observer);
+
+        InOrder inOrder = inOrder(observer);
+
+        a.onNext(1);
+
+        inOrder.verify(observer, never()).onNext(any());
+
+        a.onNext(2);
+
+        inOrder.verify(observer, never()).onNext(any());
+
+        b.onNext(0x10);
+
+        inOrder.verify(observer, times(1)).onNext(0x12);
+
+        b.onNext(0x20);
+        inOrder.verify(observer, times(1)).onNext(0x22);
+
+        b.onCompleted();
+
+        inOrder.verify(observer, never()).onCompleted();
+
+        a.onCompleted();
+
+        inOrder.verify(observer, times(1)).onCompleted();
+
+        a.onNext(3);
+        b.onNext(0x30);
+        a.onCompleted();
+        b.onCompleted();
+
+        inOrder.verifyNoMoreInteractions();
+        verify(observer, never()).onError(any(Throwable.class));
+    }
+
+    @Test
+    public void combineMultipleObservers() {
+        PublishSubject<Integer> a = PublishSubject.create();
+        PublishSubject<Integer> b = PublishSubject.create();
+
+        Observable<Integer> source = Observable.combineLatest(a, b, or);
+
+        Observer<Object> observer1 = mock(Observer.class);
+        Observer<Object> observer2 = mock(Observer.class);
+
+        source.subscribe(observer1);
+        source.subscribe(observer2);
+
+        InOrder inOrder1 = inOrder(observer1);
+        InOrder inOrder2 = inOrder(observer2);
+
+        a.onNext(1);
+
+        inOrder1.verify(observer1, never()).onNext(any());
+        inOrder2.verify(observer2, never()).onNext(any());
+
+        a.onNext(2);
+
+        inOrder1.verify(observer1, never()).onNext(any());
+        inOrder2.verify(observer2, never()).onNext(any());
+
+        b.onNext(0x10);
+
+        inOrder1.verify(observer1, times(1)).onNext(0x12);
+        inOrder2.verify(observer2, times(1)).onNext(0x12);
+
+        b.onNext(0x20);
+        inOrder1.verify(observer1, times(1)).onNext(0x22);
+        inOrder2.verify(observer2, times(1)).onNext(0x22);
+
+        b.onCompleted();
+
+        inOrder1.verify(observer1, never()).onCompleted();
+        inOrder2.verify(observer2, never()).onCompleted();
+
+        a.onCompleted();
+
+        inOrder1.verify(observer1, times(1)).onCompleted();
+        inOrder2.verify(observer2, times(1)).onCompleted();
+
+        a.onNext(3);
+        b.onNext(0x30);
+        a.onCompleted();
+        b.onCompleted();
+
+        inOrder1.verifyNoMoreInteractions();
+        inOrder2.verifyNoMoreInteractions();
+        verify(observer1, never()).onError(any(Throwable.class));
+        verify(observer2, never()).onError(any(Throwable.class));
+    }
+
+    @Test
+    public void testFirstNeverProduces() {
+        PublishSubject<Integer> a = PublishSubject.create();
+        PublishSubject<Integer> b = PublishSubject.create();
+
+        Observable<Integer> source = Observable.combineLatest(a, b, or);
+
+        Observer<Object> observer = mock(Observer.class);
+
+        source.subscribe(observer);
+
+        InOrder inOrder = inOrder(observer);
+
+        b.onNext(0x10);
+        b.onNext(0x20);
+
+        a.onCompleted();
+
+        inOrder.verify(observer, times(1)).onCompleted();
+        verify(observer, never()).onNext(any());
+        verify(observer, never()).onError(any(Throwable.class));
+    }
+
+    @Test
+    public void testSecondNeverProduces() {
+        PublishSubject<Integer> a = PublishSubject.create();
+        PublishSubject<Integer> b = PublishSubject.create();
+
+        Observable<Integer> source = Observable.combineLatest(a, b, or);
+
+        Observer<Object> observer = mock(Observer.class);
+
+        source.subscribe(observer);
+
+        InOrder inOrder = inOrder(observer);
+
+        a.onNext(0x1);
+        a.onNext(0x2);
+
+        b.onCompleted();
+        a.onCompleted();
+
+        inOrder.verify(observer, times(1)).onCompleted();
+        verify(observer, never()).onNext(any());
+        verify(observer, never()).onError(any(Throwable.class));
     }
 }

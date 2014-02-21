@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,9 @@ package rx;
 /**
  * Provides a mechanism for receiving push-based notifications.
  * <p>
- * After an Observer calls an {@link Observable}'s <code>Observable.subscribe</code> method, the {@link Observable} calls the Observer's <code>onNext</code> method to provide notifications. A
- * well-behaved {@link Observable} will
- * call an Observer's <code>onCompleted</code> closure exactly once or the Observer's <code>onError</code> closure exactly once.
+ * After an Observer calls an {@link Observable}'s <code>Observable.subscribe</code> method, the {@link Observable} calls the
+ * Observer's <code>onNext</code> method to provide notifications. A well-behaved {@link Observable} will call an Observer's
+ * <code>onCompleted</code> closure exactly once or the Observer's <code>onError</code> closure exactly once.
  * <p>
  * For more information see the <a href="https://github.com/Netflix/RxJava/wiki/Observable">RxJava Wiki</a>
  * 
@@ -33,7 +33,7 @@ public interface Observer<T> {
      * <p>
      * The {@link Observable} will not call this closure if it calls <code>onError</code>.
      */
-    public void onCompleted();
+    public abstract void onCompleted();
 
     /**
      * Notifies the Observer that the {@link Observable} has experienced an error condition.
@@ -42,7 +42,7 @@ public interface Observer<T> {
      * 
      * @param e
      */
-    public void onError(Throwable e);
+    public abstract void onError(Throwable e);
 
     /**
      * Provides the Observer with new data.
@@ -53,5 +53,6 @@ public interface Observer<T> {
      * 
      * @param args
      */
-    public void onNext(T args);
+    public abstract void onNext(T t);
+
 }

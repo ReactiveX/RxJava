@@ -1,12 +1,12 @@
 /**
- * Copyright 2013 Netflix, Inc.
- *
+ * Copyright 2014 Netflix, Inc.
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,14 +15,9 @@
  */
 package rx.operators;
 
-import static org.mockito.Matchers.isA;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static rx.operators.OperationMinMax.max;
-import static rx.operators.OperationMinMax.maxBy;
-import static rx.operators.OperationMinMax.min;
-import static rx.operators.OperationMinMax.minBy;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
+import static rx.operators.OperationMinMax.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,7 +29,7 @@ import org.mockito.InOrder;
 
 import rx.Observable;
 import rx.Observer;
-import rx.util.functions.Func1;
+import rx.functions.Func1;
 
 public class OperationMinMaxTest {
     @Test

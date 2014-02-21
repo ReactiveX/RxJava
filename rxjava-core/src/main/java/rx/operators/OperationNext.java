@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import rx.Notification;
 import rx.Observable;
 import rx.Observer;
-import rx.util.Exceptions;
+import rx.exceptions.Exceptions;
 
 /**
  * Returns an Iterable that blocks until the Observable emits another item, then returns that item.
@@ -34,22 +34,22 @@ import rx.util.Exceptions;
 public final class OperationNext {
 
     public static <T> Iterable<T> next(final Observable<? extends T> items) {
-
-        NextObserver<T> nextObserver = new NextObserver<T>();
-        final NextIterator<T> nextIterator = new NextIterator<T>(nextObserver);
-
-        items.materialize().subscribe(nextObserver);
-
         return new Iterable<T>() {
             @Override
             public Iterator<T> iterator() {
+                NextObserver<T> nextObserver = new NextObserver<T>();
+                final NextIterator<T> nextIterator = new NextIterator<T>(nextObserver);
+
+                items.materialize().subscribe(nextObserver);
+
                 return nextIterator;
             }
         };
 
     }
 
-    private static class NextIterator<T> implements Iterator<T> {
+    // test needs to access the observer.waiting flag non-blockingly.
+    /* private */static final class NextIterator<T> implements Iterator<T> {
 
         private final NextObserver<? extends T> observer;
         private T next;
@@ -61,6 +61,12 @@ public final class OperationNext {
             this.observer = observer;
         }
 
+        // in tests, set the waiting flag without blocking for the next value to 
+        // allow lockstepping instead of multi-threading
+        void setWaiting(boolean value) {
+            observer.waiting.set(value);
+        }
+        
         @Override
         public boolean hasNext() {
             if (error != null) {

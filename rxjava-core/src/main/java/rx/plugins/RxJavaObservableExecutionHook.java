@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,12 @@
 package rx.plugins;
 
 import rx.Observable;
+import rx.Observable.OnSubscribe;
 import rx.Observable.OnSubscribeFunc;
-import rx.Observer;
+import rx.Observable.Operator;
+import rx.Subscriber;
 import rx.Subscription;
-import rx.util.functions.Func1;
+import rx.functions.Func1;
 
 /**
  * Abstract ExecutionHook with invocations at different lifecycle points of {@link Observable} execution with a default no-op implementation.
@@ -36,25 +38,30 @@ import rx.util.functions.Func1;
  * 
  * */
 public abstract class RxJavaObservableExecutionHook {
-
     /**
-     * Invoked before {@link Observable#subscribe(rx.Observer)} is about to be executed.
+     * Invoked before {@link Observable#subscribe(rx.Subscriber)} is about to be executed.
      * <p>
      * This can be used to decorate or replace the <code>onSubscribe</code> function or just perform extra logging, metrics and other such things and pass-thru the function.
      * 
      * @param observableInstance
      *            The executing {@link Observable} instance.
      * @param onSubscribe
-     *            original {@link Func1}<{@link Observer}{@code <T>}, {@link Subscription}> to be executed
-     * @return {@link Func1}<{@link Observer}{@code <T>}, {@link Subscription}> function that can be modified, decorated, replaced or just returned as a pass-thru.
+     *            original {@link Func1}<{@link Subscriber}{@code <T>}, {@link Subscription}> to be executed
+     * @return {@link Func1}<{@link Subscriber}{@code <T>}, {@link Subscription}> function that can be modified, decorated, replaced or just returned as a pass-thru.
      */
+    @Deprecated
     public <T> OnSubscribeFunc<T> onSubscribeStart(Observable<? extends T> observableInstance, OnSubscribeFunc<T> onSubscribe) {
         // pass-thru by default
         return onSubscribe;
     }
 
+    public <T> OnSubscribe<T> onSubscribeStart(Observable<? extends T> observableInstance, final OnSubscribe<T> onSubscribe) {
+        // pass-thru by default
+        return onSubscribe;
+    }
+
     /**
-     * Invoked after successful execution of {@link Observable#subscribe(rx.Observer)} with returned {@link Subscription}.
+     * Invoked after successful execution of {@link Observable#subscribe(rx.Subscriber)} with returned {@link Subscription}.
      * <p>
      * This can be used to decorate or replace the {@link Subscription} instance or just perform extra logging, metrics and other such things and pass-thru the subscription.
      * 
@@ -70,15 +77,15 @@ public abstract class RxJavaObservableExecutionHook {
     }
 
     /**
-     * Invoked after failed execution of {@link Observable#subscribe(Observer)} with thrown Throwable.
+     * Invoked after failed execution of {@link Observable#subscribe(Subscriber)} with thrown Throwable.
      * <p>
-     * This is NOT errors emitted via {@link Observer#onError(Throwable)} but exceptions thrown when attempting
-     * to subscribe to a {@link Func1}<{@link Observer}{@code <T>}, {@link Subscription}>.
+     * This is NOT errors emitted via {@link Subscriber#onError(Throwable)} but exceptions thrown when attempting
+     * to subscribe to a {@link Func1}<{@link Subscriber}{@code <T>}, {@link Subscription}>.
      * 
      * @param observableInstance
      *            The executing {@link Observable} instance.
      * @param e
-     *            Throwable thrown by {@link Observable#subscribe(Observer)}
+     *            Throwable thrown by {@link Observable#subscribe(Subscriber)}
      * @return Throwable that can be decorated, replaced or just returned as a pass-thru.
      */
     public <T> Throwable onSubscribeError(Observable<? extends T> observableInstance, Throwable e) {
@@ -86,4 +93,15 @@ public abstract class RxJavaObservableExecutionHook {
         return e;
     }
 
+    public <T> OnSubscribe<T> onCreate(OnSubscribe<T> f) {
+        return f;
+    }
+
+    public <T, R> Operator<? extends R, ? super T> onLift(final Operator<? extends R, ? super T> bind) {
+        return bind;
+    }
+
+    public <T> Subscription onAdd(Subscriber<T> subscriber, Subscription s) {
+        return s;
+    }
 }

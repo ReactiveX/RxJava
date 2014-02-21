@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,12 +26,39 @@ public class Notification<T> {
     private final Throwable throwable;
     private final T value;
 
+    private static final Notification<Void> ON_COMPLETED = new Notification<Void>(Kind.OnCompleted, null, null);
+
+    public static <T> Notification<T> createOnNext(T t) {
+        return new Notification<T>(Kind.OnNext, t, null);
+    }
+
+    public static <T> Notification<T> createOnError(Throwable e) {
+        return new Notification<T>(Kind.OnError, null, e);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> Notification<T> createOnCompleted() {
+        return (Notification<T>) ON_COMPLETED;
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> Notification<T> createOnCompleted(Class<T> type) {
+        return (Notification<T>) ON_COMPLETED;
+    }
+
+    private Notification(Kind kind, T value, Throwable e) {
+        this.value = value;
+        this.throwable = e;
+        this.kind = kind;
+    }
+
     /**
      * A constructor used to represent an onNext notification.
      * 
      * @param value
      *            The data passed to the onNext method.
      */
+    @Deprecated
     public Notification(T value) {
         this.value = value;
         this.throwable = null;
@@ -43,7 +70,9 @@ public class Notification<T> {
      * 
      * @param exception
      *            The exception passed to the onError notification.
+     * @deprecated Because type Throwable can't disambiguate the constructors if both onNext and onError are type "Throwable"
      */
+    @Deprecated
     public Notification(Throwable exception) {
         this.throwable = exception;
         this.value = null;
@@ -53,6 +82,7 @@ public class Notification<T> {
     /**
      * A constructor used to represent an onCompleted notification.
      */
+    @Deprecated
     public Notification() {
         this.throwable = null;
         this.value = null;

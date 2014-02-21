@@ -1,12 +1,12 @@
 /**
- * Copyright 2013 Netflix, Inc.
- *
+ * Copyright 2014 Netflix, Inc.
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,7 +27,9 @@ import org.junit.Test;
 import rx.Notification;
 import rx.Observable;
 import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
+import rx.subscriptions.Subscriptions;
 
 public class OperationMaterializeTest {
 
@@ -93,7 +95,7 @@ public class OperationMaterializeTest {
         assertEquals(3, m.toList().toBlockingObservable().toFuture().get().size());
     }
 
-    private static class TestObserver implements Observer<Notification<String>> {
+    private static class TestObserver extends Subscriber<Notification<String>> {
 
         boolean onCompleted = false;
         boolean onError = false;
@@ -153,14 +155,7 @@ public class OperationMaterializeTest {
             });
             t.start();
 
-            return new Subscription() {
-
-                @Override
-                public void unsubscribe() {
-
-                }
-
-            };
+            return Subscriptions.empty();
         }
     }
 }

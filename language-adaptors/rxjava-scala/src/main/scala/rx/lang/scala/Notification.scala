@@ -19,12 +19,50 @@ package rx.lang.scala
  * Emitted by Observables returned by [[rx.lang.scala.Observable.materialize]].
  */
 sealed trait Notification[+T] {
-  def asJava: rx.Notification[_ <: T]
+  private [scala] val asJavaNotification: rx.Notification[_ <: T]
+
   override def equals(that: Any): Boolean = that match {
-    case other: Notification[_] => asJava.equals(other.asJava)
+    case other: Notification[_] => asJavaNotification.equals(other.asJavaNotification)
     case _ => false
   }
-  override def hashCode(): Int = asJava.hashCode()
+  override def hashCode(): Int = asJavaNotification.hashCode()
+
+  /**
+   * Invokes the function corresponding to the notification.
+   *
+   * @param onNext
+   *               The function to invoke for an [[rx.lang.scala.Notification.OnNext]] notification.
+   * @param onError
+   *               The function to invoke for an [[rx.lang.scala.Notification.OnError]] notification.
+   * @param onCompleted
+   *               The function to invoke for an [[rx.lang.scala.Notification.OnCompleted]] notification.
+   */
+  def accept[R](onNext: T=>R, onError: Throwable=>R, onCompleted: ()=>R): R = {
+    this match {
+      case Notification.OnNext(value)  => onNext(value)
+      case Notification.OnError(error) => onError(error)
+      case Notification.OnCompleted  => onCompleted()
+    }
+  }
+
+  def apply[R](onNext: T=>R, onError: Throwable=>R, onCompleted: ()=>R): R =
+     accept(onNext, onError, onCompleted)
+
+  /**
+   * Invokes the observer corresponding to the notification
+   *
+   * @param observer
+   *                 The observer that to observe the notification
+   */
+  def accept(observer: Observer[T]): Unit = {
+    this match {
+      case Notification.OnNext(value)  => observer.onNext(value)
+      case Notification.OnError(error) => observer.onError(error)
+      case Notification.OnCompleted  => observer.onCompleted()
+    }
+  }
+
+  def apply(observer: Observer[T]): Unit = accept(observer)
 }
 
 /**
@@ -34,71 +72,87 @@ sealed trait Notification[+T] {
  * {{{
  * import Notification._
  * Observable(1, 2, 3).materialize.subscribe(n => n match {
- *   case OnNext(v) => println("Got value " + v)
+ *   case OnNext(v)     => println("Got value " + v)
  *   case OnCompleted() => println("Completed")
- *   case OnError(err) => println("Error: " + err.getMessage)
+ *   case OnError(err)  => println("Error: " + err.getMessage)
  * })
  * }}}
  */
 object Notification {
 
-  def apply[T](n: rx.Notification[_ <: T]): Notification[T] = n.getKind match {
+  private [scala] def apply[T](n: rx.Notification[_ <: T]): Notification[T] = n.getKind match {
     case rx.Notification.Kind.OnNext => new OnNext(n)
-    case rx.Notification.Kind.OnCompleted => new OnCompleted(n)
+    case rx.Notification.Kind.OnCompleted => OnCompleted
     case rx.Notification.Kind.OnError => new OnError(n)
   }
   
   // OnNext, OnError, OnCompleted are not case classes because we don't want pattern matching
   // to extract the rx.Notification
-  
-  class OnNext[+T](val asJava: rx.Notification[_ <: T]) extends Notification[T] {
-    def value: T = asJava.getValue
-    override def toString = s"OnNext($value)"
-  }
-  
+
   object OnNext {
 
+    /**
+     * Constructor for onNext notifications.
+     *
+     * @param value
+     * The item passed to the onNext method.
+     */
     def apply[T](value: T): Notification[T] = {
-      Notification(new rx.Notification[T](value))
+      Notification(rx.Notification.createOnNext[T](value))
     }
 
-    def unapply[U](n: Notification[U]): Option[U] = n match {
-      case n2: OnNext[U] => Some(n.asJava.getValue)
+    /**
+     * Extractor for onNext notifications.
+     * @param notification
+     *                     The [[rx.lang.scala.Notification]] to be destructed.
+     * @return
+     *         The item contained in this notification.
+     */
+    def unapply[U](notification: Notification[U]): Option[U] = notification match {
+      case onNext: OnNext[U] => Some(onNext.value)
       case _ => None
     }
   }
-  
-  class OnError[+T](val asJava: rx.Notification[_ <: T]) extends Notification[T] {
-    def error: Throwable = asJava.getThrowable
-    override def toString = s"OnError($error)"
+
+  class OnNext[+T] private[scala] (val asJavaNotification: rx.Notification[_ <: T]) extends Notification[T] {
+    def value: T = asJavaNotification.getValue
+    override def toString = s"OnNext($value)"
   }
-  
+
   object OnError {
 
+    /**
+     * Constructor for onError notifications.
+     *
+     * @param error
+     * The exception passed to the onNext method.
+     */
     def apply[T](error: Throwable): Notification[T] = {
-      Notification(new rx.Notification[T](error))
+      Notification(rx.Notification.createOnError[T](error))
     }
 
-    def unapply[U](n: Notification[U]): Option[Throwable] = n match {
-      case n2: OnError[U] => Some(n2.asJava.getThrowable)
+    /**
+     * Destructor for onError notifications.
+     *
+     * @param notification
+     *                     The [[rx.lang.scala.Notification]] to be deconstructed
+     * @return
+     *         The [[java.lang.Throwable]] value contained in this notification.
+     */
+    def unapply[U](notification: Notification[U]): Option[Throwable] = notification match {
+      case onError: OnError[U] => Some(onError.error)
       case _ => None
     }
   }
-  
-  class OnCompleted[T](val asJava: rx.Notification[_ <: T]) extends Notification[T] {
-    override def toString = "OnCompleted()"
+
+  class OnError[+T] private[scala] (val asJavaNotification: rx.Notification[_ <: T]) extends Notification[T] {
+    def error: Throwable = asJavaNotification.getThrowable
+    override def toString = s"OnError($error)"
   }
-  
-  object OnCompleted {
 
-    def apply[T](): Notification[T] = {
-      Notification(new rx.Notification())
-    }
-
-    def unapply[U](n: Notification[U]): Option[Unit] = n match {
-      case n2: OnCompleted[U] => Some()
-      case _ => None
-    }
+  object OnCompleted extends Notification[Nothing] {
+    override def toString = "OnCompleted"
+    val asJavaNotification = rx.Notification.createOnCompleted[Nothing]()
   }
 
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,8 @@
 package rx.util.functions;
 
 /**
- * A vector-argument action.
+ * @deprecated
  */
-public interface ActionN extends Action {
-    void call(Object... args);
+@Deprecated
+public interface ActionN extends rx.functions.ActionN, Action {
 }

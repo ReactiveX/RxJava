@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,14 +15,20 @@
  */
 package rx.operators;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
+import rx.Scheduler;
 import rx.Subscription;
+import rx.schedulers.Timestamped;
 
 /**
  * Bypasses a specified number of elements at the end of an observable sequence.
@@ -121,6 +127,78 @@ public class OperationSkipLast {
                 }
 
             }));
+        }
+    }
+
+    /**
+     * Skip delivering values in the time window before the values.
+     * 
+     * @param <T>
+     *            the result value type
+     */
+    public static final class SkipLastTimed<T> implements OnSubscribeFunc<T> {
+        final Observable<? extends T> source;
+        final long timeInMillis;
+        final Scheduler scheduler;
+
+        public SkipLastTimed(Observable<? extends T> source, long time, TimeUnit unit, Scheduler scheduler) {
+            this.source = source;
+            this.timeInMillis = unit.toMillis(time);
+            this.scheduler = scheduler;
+        }
+
+        @Override
+        public Subscription onSubscribe(Observer<? super T> t1) {
+            return source.subscribe(new SourceObserver<T>(t1, timeInMillis, scheduler));
+        }
+
+        /** Observes the source. */
+        private static final class SourceObserver<T> implements Observer<T> {
+            final Observer<? super T> observer;
+            final long timeInMillis;
+            final Scheduler scheduler;
+            List<Timestamped<T>> buffer = new ArrayList<Timestamped<T>>();
+
+            public SourceObserver(Observer<? super T> observer,
+                    long timeInMillis, Scheduler scheduler) {
+                this.observer = observer;
+                this.timeInMillis = timeInMillis;
+                this.scheduler = scheduler;
+            }
+
+            @Override
+            public void onNext(T args) {
+                buffer.add(new Timestamped<T>(scheduler.now(), args));
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                buffer = Collections.emptyList();
+                observer.onError(e);
+            }
+
+            @Override
+            public void onCompleted() {
+                long limit = scheduler.now() - timeInMillis;
+                try {
+                    for (Timestamped<T> v : buffer) {
+                        if (v.getTimestampMillis() < limit) {
+                            try {
+                                observer.onNext(v.getValue());
+                            } catch (Throwable t) {
+                                observer.onError(t);
+                                return;
+                            }
+                        } else {
+                            observer.onCompleted();
+                            break;
+                        }
+                    }
+                } finally {
+                    buffer = Collections.emptyList();
+                }
+            }
+
         }
     }
 }

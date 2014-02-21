@@ -16,27 +16,22 @@
 package rx.lang.groovy;
 
 import groovy.lang.Closure;
-import groovy.lang.GroovySystem;
 import groovy.lang.MetaMethod;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Properties;
 
 import org.codehaus.groovy.reflection.CachedClass;
 import org.codehaus.groovy.reflection.ReflectionCache;
 import org.codehaus.groovy.runtime.m12n.ExtensionModule;
-import org.codehaus.groovy.runtime.metaclass.MetaClassRegistryImpl;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
+import rx.functions.Action;
+import rx.functions.Function;
 import rx.observables.BlockingObservable;
-import rx.util.functions.Action;
-import rx.util.functions.Function;
 
 /**
  * ExtensionModule that adds extension methods to support groovy.lang.Closure
@@ -75,6 +70,9 @@ public class RxGroovyExtensionModule extends ExtensionModule {
     }
 
     private MetaMethod createMetaMethod(final Method m) {
+        if (m.getDeclaringClass().equals(Observable.class) && m.getName().equals("create")) {
+            return specialCasedOverrideForCreate(m);
+        }
         return new MetaMethod() {
 
             @Override
@@ -109,12 +107,11 @@ public class RxGroovyExtensionModule extends ExtensionModule {
                         if (o instanceof Closure) {
                             if (Action.class.isAssignableFrom(m.getParameterTypes()[i])) {
                                 newArgs[i] = new GroovyActionWrapper((Closure) o);
-                            } else if(OnSubscribeFunc.class.isAssignableFrom(m.getParameterTypes()[i])) {
+                            } else if (OnSubscribeFunc.class.isAssignableFrom(m.getParameterTypes()[i])) {
                                 newArgs[i] = new GroovyOnSubscribeFuncWrapper((Closure) o);
                             } else {
                                 newArgs[i] = new GroovyFunctionWrapper((Closure) o);
                             }
-
                         } else {
                             newArgs[i] = o;
                         }
@@ -152,4 +149,55 @@ public class RxGroovyExtensionModule extends ExtensionModule {
             }
         };
     }
+
+    /**
+     * Special case until we finish migrating off the deprecated 'create' method signature
+     */
+    private MetaMethod specialCasedOverrideForCreate(final Method m) {
+        return new MetaMethod() {
+
+            @Override
+            public int getModifiers() {
+                return m.getModifiers();
+            }
+
+            @Override
+            public String getName() {
+                return m.getName();
+            }
+
+            @Override
+            public Class getReturnType() {
+                return m.getReturnType();
+            }
+
+            @Override
+            public CachedClass getDeclaringClass() {
+                return ReflectionCache.getCachedClass(m.getDeclaringClass());
+            }
+
+            @Override
+            public Object invoke(Object object, final Object[] arguments) {
+                return Observable.create(new GroovyCreateWrapper((Closure) arguments[0]));
+            }
+
+            @SuppressWarnings("rawtypes")
+            @Override
+            public CachedClass[] getParameterTypes() {
+                Class[] pts = m.getParameterTypes();
+                CachedClass[] cc = new CachedClass[pts.length];
+                for (int i = 0; i < pts.length; i++) {
+                    if (Function.class.isAssignableFrom(pts[i])) {
+                        // function type to be replaced by closure
+                        cc[i] = ReflectionCache.getCachedClass(Closure.class);
+                    } else {
+                        // non-function type
+                        cc[i] = ReflectionCache.getCachedClass(pts[i]);
+                    }
+                }
+                return cc;
+            }
+        };
+    }
+
 }

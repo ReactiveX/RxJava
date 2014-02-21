@@ -9,16 +9,16 @@
   (testing "implements Func0-9"
     (let [f (rx/fn* vector)]
       (is (instance? rx.Observable$OnSubscribeFunc f))
-      (is (instance? rx.util.functions.Func0 f))
-      (is (instance? rx.util.functions.Func1 f))
-      (is (instance? rx.util.functions.Func2 f))
-      (is (instance? rx.util.functions.Func3 f))
-      (is (instance? rx.util.functions.Func4 f))
-      (is (instance? rx.util.functions.Func5 f))
-      (is (instance? rx.util.functions.Func6 f))
-      (is (instance? rx.util.functions.Func7 f))
-      (is (instance? rx.util.functions.Func8 f))
-      (is (instance? rx.util.functions.Func9 f))
+      (is (instance? rx.functions.Func0 f))
+      (is (instance? rx.functions.Func1 f))
+      (is (instance? rx.functions.Func2 f))
+      (is (instance? rx.functions.Func3 f))
+      (is (instance? rx.functions.Func4 f))
+      (is (instance? rx.functions.Func5 f))
+      (is (instance? rx.functions.Func6 f))
+      (is (instance? rx.functions.Func7 f))
+      (is (instance? rx.functions.Func8 f))
+      (is (instance? rx.functions.Func9 f))
       (is (= []                  (.call f)))
       (is (= [1]                 (.call f 1)))
       (is (= [1 2]               (.call f 1 2)))
@@ -35,12 +35,12 @@
       ; No type hint, picks Object overload
       (is (= "Object"
              (.call dummy (rx/fn* +))))
-      (is (= "rx.util.functions.Func1"
+      (is (= "rx.functions.Func1"
              (.call dummy
-                    ^rx.util.functions.Func1 (rx/fn* +))))
-      (is (= "rx.util.functions.Func2"
+                    ^rx.functions.Func1 (rx/fn* +))))
+      (is (= "rx.functions.Func2"
              (.call dummy
-                    ^rx.util.functions.Func2 (rx/fn* *)))))))
+                    ^rx.functions.Func2 (rx/fn* *)))))))
 
 (deftest test-fn
   (testing "makes appropriate Func*"
@@ -53,12 +53,12 @@
       (is (= "Object"
              (.call dummy
                     (rx/fn [a] a))))
-      (is (= "rx.util.functions.Func1"
+      (is (= "rx.functions.Func1"
              (.call dummy
-                    ^rx.util.functions.Func1 (rx/fn [a] a))))
-      (is (= "rx.util.functions.Func2"
+                    ^rx.functions.Func1 (rx/fn [a] a))))
+      (is (= "rx.functions.Func2"
              (.call dummy
-                    ^rx.util.functions.Func2 (rx/fn [a b] (* a b))))))))
+                    ^rx.functions.Func2 (rx/fn [a b] (* a b))))))))
 
 
 (deftest test-fnN*
@@ -70,10 +70,11 @@
   (testing "implements Action0-3"
     (let [calls (atom [])
           a (rx/action* #(swap! calls conj (vec %&)))]
-      (is (instance? rx.util.functions.Action0 a))
-      (is (instance? rx.util.functions.Action1 a))
-      (is (instance? rx.util.functions.Action2 a))
-      (is (instance? rx.util.functions.Action3 a))
+      (is (instance? rx.Observable$OnSubscribe a))
+      (is (instance? rx.functions.Action0 a))
+      (is (instance? rx.functions.Action1 a))
+      (is (instance? rx.functions.Action2 a))
+      (is (instance? rx.functions.Action3 a))
       (.call a)
       (.call a 1)
       (.call a 1 2)
@@ -85,12 +86,12 @@
       (is (= "Object"
              (.call dummy
                     (rx/action* println))))
-      (is (= "rx.util.functions.Action1"
+      (is (= "rx.functions.Action1"
              (.call dummy
-                    ^rx.util.functions.Action1 (rx/action* println))))
-      (is (= "rx.util.functions.Action2"
+                    ^rx.functions.Action1 (rx/action* println))))
+      (is (= "rx.functions.Action2"
              (.call dummy
-                    ^rx.util.functions.Action2 (rx/action* prn)))))))
+                    ^rx.functions.Action2 (rx/action* prn)))))))
 
 (deftest test-action
   (testing "makes appropriate Action*"
@@ -105,16 +106,16 @@
       (is (= "Object"
              (.call dummy
                     (rx/action [a] a))))
-      (is (= "rx.util.functions.Action1"
+      (is (= "rx.functions.Action1"
              (.call dummy
-                    ^rx.util.functions.Action1 (rx/action [a] a))))
-      (is (= "rx.util.functions.Action2"
+                    ^rx.functions.Action1 (rx/action [a] a))))
+      (is (= "rx.functions.Action2"
              (.call dummy
-                    ^rx.util.functions.Action2 (rx/action [a b] (* a b))))))))
+                    ^rx.functions.Action2 (rx/action [a b] (* a b))))))))
 
 (deftest test-basic-usage
 
-  (testing "can create an observable"
+  (testing "can create an observable with old style fn"
     (is (= 99
            (-> (Observable/create (rx/fn [^rx.Observer o]
                                     (.onNext o 99)
@@ -123,6 +124,14 @@
                .toBlockingObservable
                .single))))
 
+  (testing "can create an observable with new-style action"
+    (is (= 99
+           (-> (Observable/create (rx/action [^rx.Subscriber s]
+                                    (when-not (.isUnsubscribed s)
+                                      (.onNext s 99))
+                                    (.onCompleted s)))
+               .toBlockingObservable
+               .single))))
   (testing "can pass rx/fn to map and friends"
     (is (= (+ 1 4 9)
            (-> (Observable/from [1 2 3])

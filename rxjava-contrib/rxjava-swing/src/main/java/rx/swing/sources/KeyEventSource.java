@@ -15,8 +15,12 @@
  */
 package rx.swing.sources;
 
-import static java.util.Arrays.*;
-import static org.mockito.Mockito.*;
+import static java.util.Arrays.asList;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import java.awt.Component;
 import java.awt.event.KeyEvent;
@@ -32,14 +36,15 @@ import org.mockito.InOrder;
 import org.mockito.Matchers;
 
 import rx.Observable;
-import rx.Observable.OnSubscribeFunc;
-import rx.Observer;
+import rx.Observable.OnSubscribe;
+import rx.Subscriber;
 import rx.Subscription;
-import rx.subscriptions.Subscriptions;
-import rx.util.functions.Action0;
-import rx.util.functions.Action1;
-import rx.util.functions.Func1;
-import rx.util.functions.Func2;
+import rx.functions.Action0;
+import rx.functions.Action1;
+import rx.functions.Func1;
+import rx.functions.Func2;
+import rx.observables.SwingObservable;
+import rx.subscriptions.SwingSubscriptions;
 
 public enum KeyEventSource { ; // no instances
 
@@ -47,33 +52,34 @@ public enum KeyEventSource { ; // no instances
      * @see rx.observables.SwingObservable#fromKeyEvents(Component)
      */
     public static Observable<KeyEvent> fromKeyEventsOf(final Component component) {
-        return Observable.create(new OnSubscribeFunc<KeyEvent>() {
+        return Observable.create(new OnSubscribe<KeyEvent>() {
             @Override
-            public Subscription onSubscribe(final Observer<? super KeyEvent> observer) {
+            public void call(final Subscriber<? super KeyEvent> subscriber) {
+                SwingObservable.assertEventDispatchThread();
                 final KeyListener listener = new KeyListener() {
                     @Override
                     public void keyPressed(KeyEvent event) {
-                        observer.onNext(event);
+                        subscriber.onNext(event);
                     }
-  
+
                     @Override
                     public void keyReleased(KeyEvent event) {
-                        observer.onNext(event);
+                        subscriber.onNext(event);
                     }
-  
+
                     @Override
                     public void keyTyped(KeyEvent event) {
-                        observer.onNext(event);
+                        subscriber.onNext(event);
                     }
                 };
                 component.addKeyListener(listener);
-                
-                return Subscriptions.create(new Action0() {
+
+                subscriber.add(SwingSubscriptions.unsubscribeInEventDispatchThread(new Action0() {
                     @Override
                     public void call() {
                         component.removeKeyListener(listener);
                     }
-                });
+                }));
             }
         });
     }
@@ -115,73 +121,87 @@ public enum KeyEventSource { ; // no instances
         private Component comp = new JPanel();
         
         @Test
-        public void testObservingKeyEvents() {
-            @SuppressWarnings("unchecked")
-            Action1<KeyEvent> action = mock(Action1.class);
-            @SuppressWarnings("unchecked")
-            Action1<Throwable> error = mock(Action1.class);
-            Action0 complete = mock(Action0.class);
-            
-            final KeyEvent event = mock(KeyEvent.class);
-            
-            Subscription sub = fromKeyEventsOf(comp).subscribe(action, error, complete);
-            
-            verify(action, never()).call(Matchers.<KeyEvent>any());
-            verify(error, never()).call(Matchers.<Throwable>any());
-            verify(complete, never()).call();
-            
-            fireKeyEvent(event);
-            verify(action, times(1)).call(Matchers.<KeyEvent>any());
-            
-            fireKeyEvent(event);
-            verify(action, times(2)).call(Matchers.<KeyEvent>any());
-            
-            sub.unsubscribe();
-            fireKeyEvent(event);
-            verify(action, times(2)).call(Matchers.<KeyEvent>any());
-            verify(error, never()).call(Matchers.<Throwable>any());
-            verify(complete, never()).call();
+        public void testObservingKeyEvents() throws Throwable {
+            SwingTestHelper.create().runInEventDispatchThread(new Action0(){
+
+                @Override
+                public void call() {
+                    @SuppressWarnings("unchecked")
+                    Action1<KeyEvent> action = mock(Action1.class);
+                    @SuppressWarnings("unchecked")
+                    Action1<Throwable> error = mock(Action1.class);
+                    Action0 complete = mock(Action0.class);
+
+                    final KeyEvent event = mock(KeyEvent.class);
+
+                    Subscription sub = fromKeyEventsOf(comp).subscribe(action, error, complete);
+
+                    verify(action, never()).call(Matchers.<KeyEvent> any());
+                    verify(error, never()).call(Matchers.<Throwable> any());
+                    verify(complete, never()).call();
+
+                    fireKeyEvent(event);
+                    verify(action, times(1)).call(Matchers.<KeyEvent> any());
+
+                    fireKeyEvent(event);
+                    verify(action, times(2)).call(Matchers.<KeyEvent> any());
+
+                    sub.unsubscribe();
+                    fireKeyEvent(event);
+                    verify(action, times(2)).call(Matchers.<KeyEvent> any());
+                    verify(error, never()).call(Matchers.<Throwable> any());
+                    verify(complete, never()).call();
+                }
+
+            }).awaitTerminal();
         }
-        
+
         @Test
-        public void testObservingPressedKeys() {
-            @SuppressWarnings("unchecked")
-            Action1<Set<Integer>> action = mock(Action1.class);
-            @SuppressWarnings("unchecked")
-            Action1<Throwable> error = mock(Action1.class);
-            Action0 complete = mock(Action0.class);
-            
-            Subscription sub = currentlyPressedKeysOf(comp).subscribe(action, error, complete);
-            
-            InOrder inOrder = inOrder(action);
-            inOrder.verify(action, times(1)).call(Collections.<Integer>emptySet());
-            verify(error, never()).call(Matchers.<Throwable>any());
-            verify(complete, never()).call();
-            
-            fireKeyEvent(keyEvent(1, KeyEvent.KEY_PRESSED));
-            inOrder.verify(action, times(1)).call(new HashSet<Integer>(asList(1)));
-            verify(error, never()).call(Matchers.<Throwable>any());
-            verify(complete, never()).call();
+        public void testObservingPressedKeys() throws Throwable {
+            SwingTestHelper.create().runInEventDispatchThread(new Action0() {
 
-            fireKeyEvent(keyEvent(2, KeyEvent.KEY_PRESSED));
-            fireKeyEvent(keyEvent(KeyEvent.VK_UNDEFINED, KeyEvent.KEY_TYPED));
-            inOrder.verify(action, times(1)).call(new HashSet<Integer>(asList(1, 2)));
+                @Override
+                public void call() {
+                    @SuppressWarnings("unchecked")
+                    Action1<Set<Integer>> action = mock(Action1.class);
+                    @SuppressWarnings("unchecked")
+                    Action1<Throwable> error = mock(Action1.class);
+                    Action0 complete = mock(Action0.class);
 
-            fireKeyEvent(keyEvent(2, KeyEvent.KEY_RELEASED));
-            inOrder.verify(action, times(1)).call(new HashSet<Integer>(asList(1)));
+                    Subscription sub = currentlyPressedKeysOf(comp).subscribe(action, error, complete);
 
-            fireKeyEvent(keyEvent(3, KeyEvent.KEY_RELEASED));
-            inOrder.verify(action, times(1)).call(new HashSet<Integer>(asList(1)));
+                    InOrder inOrder = inOrder(action);
+                    inOrder.verify(action, times(1)).call(Collections.<Integer> emptySet());
+                    verify(error, never()).call(Matchers.<Throwable> any());
+                    verify(complete, never()).call();
 
-            fireKeyEvent(keyEvent(1, KeyEvent.KEY_RELEASED));
-            inOrder.verify(action, times(1)).call(Collections.<Integer>emptySet());
+                    fireKeyEvent(keyEvent(1, KeyEvent.KEY_PRESSED));
+                    inOrder.verify(action, times(1)).call(new HashSet<Integer>(asList(1)));
+                    verify(error, never()).call(Matchers.<Throwable> any());
+                    verify(complete, never()).call();
 
-            sub.unsubscribe();
+                    fireKeyEvent(keyEvent(2, KeyEvent.KEY_PRESSED));
+                    fireKeyEvent(keyEvent(KeyEvent.VK_UNDEFINED, KeyEvent.KEY_TYPED));
+                    inOrder.verify(action, times(1)).call(new HashSet<Integer>(asList(1, 2)));
 
-            fireKeyEvent(keyEvent(1, KeyEvent.KEY_PRESSED));
-            inOrder.verify(action, never()).call(Matchers.<Set<Integer>>any());
-            verify(error, never()).call(Matchers.<Throwable>any());
-            verify(complete, never()).call();
+                    fireKeyEvent(keyEvent(2, KeyEvent.KEY_RELEASED));
+                    inOrder.verify(action, times(1)).call(new HashSet<Integer>(asList(1)));
+
+                    fireKeyEvent(keyEvent(3, KeyEvent.KEY_RELEASED));
+                    inOrder.verify(action, times(1)).call(new HashSet<Integer>(asList(1)));
+
+                    fireKeyEvent(keyEvent(1, KeyEvent.KEY_RELEASED));
+                    inOrder.verify(action, times(1)).call(Collections.<Integer> emptySet());
+
+                    sub.unsubscribe();
+
+                    fireKeyEvent(keyEvent(1, KeyEvent.KEY_PRESSED));
+                    inOrder.verify(action, never()).call(Matchers.<Set<Integer>> any());
+                    verify(error, never()).call(Matchers.<Throwable> any());
+                    verify(complete, never()).call();
+                }
+
+            }).awaitTerminal();
         }
 
         private KeyEvent keyEvent(int keyCode, int id) {

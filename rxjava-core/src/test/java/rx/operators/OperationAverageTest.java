@@ -1,12 +1,12 @@
 /**
- * Copyright 2013 Netflix, Inc.
- *
+ * Copyright 2014 Netflix, Inc.
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,6 +23,8 @@ import org.junit.Test;
 
 import rx.Observable;
 import rx.Observer;
+import rx.functions.Func1;
+import rx.operators.OperationReduceTest.CustomException;
 
 public class OperationAverageTest {
 
@@ -117,5 +119,221 @@ public class OperationAverageTest {
         verify(wd, never()).onNext(anyDouble());
         verify(wd, times(1)).onError(isA(IllegalArgumentException.class));
         verify(wd, never()).onCompleted();
+    }
+
+    void testThrows(Observer<Object> o, Class<? extends Throwable> errorClass) {
+        verify(o, never()).onNext(any());
+        verify(o, never()).onCompleted();
+        verify(o, times(1)).onError(any(errorClass));
+    }
+
+    <N extends Number> void testValue(Observer<Object> o, N value) {
+        verify(o, times(1)).onNext(value);
+        verify(o, times(1)).onCompleted();
+        verify(o, never()).onError(any(Throwable.class));
+    }
+
+    @Test
+    public void testIntegerAverageSelector() {
+        Observable<String> source = Observable.from("a", "bb", "ccc", "dddd");
+        Func1<String, Integer> length = new Func1<String, Integer>() {
+            @Override
+            public Integer call(String t1) {
+                return t1.length();
+            }
+        };
+
+        Observable<Integer> result = source.averageInteger(length);
+        Observer<Object> o = mock(Observer.class);
+        result.subscribe(o);
+
+        testValue(o, 2);
+    }
+
+    @Test
+    public void testLongAverageSelector() {
+        Observable<String> source = Observable.from("a", "bb", "ccc", "dddd");
+        Func1<String, Long> length = new Func1<String, Long>() {
+            @Override
+            public Long call(String t1) {
+                return (long) t1.length();
+            }
+        };
+
+        Observable<Long> result = source.averageLong(length);
+        Observer<Object> o = mock(Observer.class);
+        result.subscribe(o);
+
+        testValue(o, 2L);
+    }
+
+    @Test
+    public void testFloatAverageSelector() {
+        Observable<String> source = Observable.from("a", "bb", "ccc", "dddd");
+        Func1<String, Float> length = new Func1<String, Float>() {
+            @Override
+            public Float call(String t1) {
+                return (float) t1.length();
+            }
+        };
+
+        Observable<Float> result = source.averageFloat(length);
+        Observer<Object> o = mock(Observer.class);
+        result.subscribe(o);
+
+        testValue(o, 2.5f);
+    }
+
+    @Test
+    public void testDoubleAverageSelector() {
+        Observable<String> source = Observable.from("a", "bb", "ccc", "dddd");
+        Func1<String, Double> length = new Func1<String, Double>() {
+            @Override
+            public Double call(String t1) {
+                return (double) t1.length();
+            }
+        };
+
+        Observable<Double> result = source.averageDouble(length);
+        Observer<Object> o = mock(Observer.class);
+        result.subscribe(o);
+
+        testValue(o, 2.5d);
+    }
+
+    @Test
+    public void testIntegerAverageSelectorEmpty() {
+        Observable<String> source = Observable.empty();
+        Func1<String, Integer> length = new Func1<String, Integer>() {
+            @Override
+            public Integer call(String t1) {
+                return t1.length();
+            }
+        };
+
+        Observable<Integer> result = source.averageInteger(length);
+        Observer<Object> o = mock(Observer.class);
+        result.subscribe(o);
+
+        testThrows(o, IllegalArgumentException.class);
+    }
+
+    @Test
+    public void testLongAverageSelectorEmpty() {
+        Observable<String> source = Observable.empty();
+        Func1<String, Long> length = new Func1<String, Long>() {
+            @Override
+            public Long call(String t1) {
+                return (long) t1.length();
+            }
+        };
+
+        Observable<Long> result = source.averageLong(length);
+        Observer<Object> o = mock(Observer.class);
+        result.subscribe(o);
+
+        testThrows(o, IllegalArgumentException.class);
+    }
+
+    @Test
+    public void testFloatAverageSelectorEmpty() {
+        Observable<String> source = Observable.empty();
+        Func1<String, Float> length = new Func1<String, Float>() {
+            @Override
+            public Float call(String t1) {
+                return (float) t1.length();
+            }
+        };
+
+        Observable<Float> result = source.averageFloat(length);
+        Observer<Object> o = mock(Observer.class);
+        result.subscribe(o);
+
+        testThrows(o, IllegalArgumentException.class);
+    }
+
+    @Test
+    public void testDoubleAverageSelectorEmpty() {
+        Observable<String> source = Observable.empty();
+        Func1<String, Double> length = new Func1<String, Double>() {
+            @Override
+            public Double call(String t1) {
+                return (double) t1.length();
+            }
+        };
+
+        Observable<Double> result = source.averageDouble(length);
+        Observer<Object> o = mock(Observer.class);
+        result.subscribe(o);
+
+        testThrows(o, IllegalArgumentException.class);
+    }
+
+    @Test
+    public void testIntegerAverageSelectorThrows() {
+        Observable<String> source = Observable.from("a");
+        Func1<String, Integer> length = new Func1<String, Integer>() {
+            @Override
+            public Integer call(String t1) {
+                throw new CustomException();
+            }
+        };
+
+        Observable<Integer> result = source.averageInteger(length);
+        Observer<Object> o = mock(Observer.class);
+        result.subscribe(o);
+
+        testThrows(o, CustomException.class);
+    }
+
+    @Test
+    public void testLongAverageSelectorThrows() {
+        Observable<String> source = Observable.from("a");
+        Func1<String, Long> length = new Func1<String, Long>() {
+            @Override
+            public Long call(String t1) {
+                throw new CustomException();
+            }
+        };
+
+        Observable<Long> result = source.averageLong(length);
+        Observer<Object> o = mock(Observer.class);
+        result.subscribe(o);
+
+        testThrows(o, CustomException.class);
+    }
+
+    @Test
+    public void testFloatAverageSelectorThrows() {
+        Observable<String> source = Observable.from("a");
+        Func1<String, Float> length = new Func1<String, Float>() {
+            @Override
+            public Float call(String t1) {
+                throw new CustomException();
+            }
+        };
+
+        Observable<Float> result = source.averageFloat(length);
+        Observer<Object> o = mock(Observer.class);
+        result.subscribe(o);
+
+        testThrows(o, CustomException.class);
+    }
+
+    @Test
+    public void testDoubleAverageSelectorThrows() {
+        Observable<String> source = Observable.from("a");
+        Func1<String, Double> length = new Func1<String, Double>() {
+            @Override
+            public Double call(String t1) {
+                throw new CustomException();
+            }
+        };
+
+        Observable<Double> result = source.averageDouble(length);
+        Observer<Object> o = mock(Observer.class);
+        result.subscribe(o);
+
+        testThrows(o, CustomException.class);
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,9 @@ package rx.operators;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
+import rx.functions.Action0;
 import rx.observables.ConnectableObservable;
 import rx.subscriptions.Subscriptions;
-import rx.util.functions.Action0;
 
 /**
  * Returns an observable sequence that stays connected to the source as long

@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,15 +22,15 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
 
-import rx.util.functions.Action0;
-import rx.util.functions.Action1;
+import rx.functions.Action0;
+import rx.functions.Action1;
 
 public class ObservableDoOnTest {
 
     @Test
     public void testDoOnEach() {
         final AtomicReference<String> r = new AtomicReference<String>();
-        String output = Observable.from("one").doOnEach(new Action1<String>() {
+        String output = Observable.from("one").doOnNext(new Action1<String>() {
 
             @Override
             public void call(String v) {

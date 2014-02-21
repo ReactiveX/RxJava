@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,9 @@ import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
+import rx.functions.Func1;
 import rx.subscriptions.CompositeSubscription;
-import rx.subscriptions.MultipleAssignmentSubscription;
-import rx.util.functions.Func1;
+import rx.subscriptions.SerialSubscription;
 
 /**
  * Transforms an Observable that emits Observables into a single Observable that
@@ -62,8 +62,7 @@ public final class OperationSwitch {
             SafeObservableSubscription parent;
             parent = new SafeObservableSubscription();
 
-            MultipleAssignmentSubscription child;
-            child = new MultipleAssignmentSubscription();
+            SerialSubscription child = new SerialSubscription();
 
             parent.wrap(sequences.subscribe(new SwitchObserver<T>(observer, parent, child)));
 
@@ -76,13 +75,13 @@ public final class OperationSwitch {
         private final Object gate;
         private final Observer<? super T> observer;
         private final SafeObservableSubscription parent;
-        private final MultipleAssignmentSubscription child;
+        private final SerialSubscription child;
         private long latest;
         private boolean stopped;
         private boolean hasLatest;
 
         public SwitchObserver(Observer<? super T> observer, SafeObservableSubscription parent,
-                MultipleAssignmentSubscription child) {
+                SerialSubscription child) {
             this.observer = observer;
             this.parent = parent;
             this.child = child;
@@ -97,8 +96,7 @@ public final class OperationSwitch {
                 this.hasLatest = true;
             }
 
-            final SafeObservableSubscription sub;
-            sub = new SafeObservableSubscription();
+            final SafeObservableSubscription sub = new SafeObservableSubscription();
             sub.wrap(args.subscribe(new Observer<T>() {
                 @Override
                 public void onNext(T args) {
@@ -111,28 +109,35 @@ public final class OperationSwitch {
 
                 @Override
                 public void onError(Throwable e) {
+                    sub.unsubscribe();
+                    SafeObservableSubscription s = null;
                     synchronized (gate) {
-                        sub.unsubscribe();
                         if (latest == id) {
                             SwitchObserver.this.observer.onError(e);
-                            SwitchObserver.this.parent.unsubscribe();
+                            s = SwitchObserver.this.parent;
                         }
+                    }
+                    if (s != null) {
+                        s.unsubscribe();
                     }
                 }
 
                 @Override
                 public void onCompleted() {
+                    sub.unsubscribe();
+                    SafeObservableSubscription s = null;
                     synchronized (gate) {
-                        sub.unsubscribe();
                         if (latest == id) {
                             SwitchObserver.this.hasLatest = false;
-                        }
 
-                        if (stopped) {
-                            SwitchObserver.this.observer.onCompleted();
-                            SwitchObserver.this.parent.unsubscribe();
+                            if (stopped) {
+                                SwitchObserver.this.observer.onCompleted();
+                                s = SwitchObserver.this.parent;
+                            }
                         }
-
+                    }
+                    if (s != null) {
+                        s.unsubscribe();
                     }
                 }
 
@@ -152,12 +157,16 @@ public final class OperationSwitch {
 
         @Override
         public void onCompleted() {
+            SafeObservableSubscription s = null;
             synchronized (gate) {
                 this.stopped = true;
                 if (!this.hasLatest) {
                     this.observer.onCompleted();
-                    this.parent.unsubscribe();
+                    s = this.parent;
                 }
+            }
+            if (s != null) {
+                s.unsubscribe();
             }
         }
 

@@ -15,28 +15,21 @@
  */
 package rx.lang.groovy
 
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.*
+import static org.mockito.Matchers.*
+import static org.mockito.Mockito.*
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Map;
+import org.junit.Before
+import org.junit.Test
+import org.mockito.Mock
+import org.mockito.MockitoAnnotations
 
-import org.junit.Before;
-import org.junit.Test;
-import static org.junit.Assert.*;
-
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-
-import rx.Notification;
-import rx.Observable;
-import rx.Observable.OnSubscribeFunc;
-import rx.Observer;
-import rx.Subscription;
-import rx.observables.GroupedObservable;
-import rx.subscriptions.Subscriptions;
-import rx.util.functions.Func1;
+import rx.Notification
+import rx.Observable
+import rx.Observer
+import rx.Subscription
+import rx.Observable.OnSubscribeFunc
+import rx.subscriptions.Subscriptions
 
 def class ObservableTests {
 
@@ -278,7 +271,7 @@ def class ObservableTests {
         assertEquals("one", s)
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testSingle2() {
         Observable.from("one", "two").toBlockingObservable().single({ x -> x.length() == 3})
     }
@@ -537,12 +530,7 @@ def class ObservableTests {
             observer.onNext("hello_" + count);
             observer.onCompleted();
 
-            return new Subscription() {
-
-                public void unsubscribe() {
-                    // unregister ... will never be called here since we are executing synchronously
-                }
-            };
+            return Subscriptions.empty();
         }
     }
 }

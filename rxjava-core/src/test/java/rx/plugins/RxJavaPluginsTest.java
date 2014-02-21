@@ -1,12 +1,12 @@
 /**
- * Copyright 2013 Netflix, Inc.
- *
+ * Copyright 2014 Netflix, Inc.
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,9 +17,24 @@ package rx.plugins;
 
 import static org.junit.Assert.*;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
+import rx.Observable;
+import rx.Subscriber;
+
 public class RxJavaPluginsTest {
+
+    @Before
+    public void resetBefore() {
+        RxJavaPlugins.getInstance().reset();
+    }
+
+    @After
+    public void resetAfter() {
+        RxJavaPlugins.getInstance().reset();
+    }
 
     @Test
     public void testErrorHandlerDefaultImpl() {
@@ -50,7 +65,17 @@ public class RxJavaPluginsTest {
 
     // inside test so it is stripped from Javadocs
     public static class RxJavaErrorHandlerTestImpl extends RxJavaErrorHandler {
-        // just use defaults
+
+        @SuppressWarnings("unused")
+        private volatile Throwable e;
+        private volatile int count = 0;
+
+        @Override
+        public void handleError(Throwable e) {
+            this.e = e;
+            count++;
+        }
+
     }
 
     @Test
@@ -79,6 +104,45 @@ public class RxJavaPluginsTest {
         } finally {
             System.clearProperty("rxjava.plugin.RxJavaObservableExecutionHook.implementation");
         }
+    }
+
+    @Test
+    public void testOnErrorWhenImplementedViaSubscribe() {
+        RxJavaErrorHandlerTestImpl errorHandler = new RxJavaErrorHandlerTestImpl();
+        RxJavaPlugins.getInstance().registerErrorHandler(errorHandler);
+
+        RuntimeException re = new RuntimeException("test onError");
+        Observable.error(re).subscribe(new Subscriber<Object>() {
+
+            @Override
+            public void onCompleted() {
+            }
+
+            @Override
+            public void onError(Throwable e) {
+            }
+
+            @Override
+            public void onNext(Object args) {
+            }
+        });
+        assertEquals(re, errorHandler.e);
+        assertEquals(1, errorHandler.count);
+    }
+
+    @Test
+    public void testOnErrorWhenNotImplemented() {
+        RxJavaErrorHandlerTestImpl errorHandler = new RxJavaErrorHandlerTestImpl();
+        RxJavaPlugins.getInstance().registerErrorHandler(errorHandler);
+
+        RuntimeException re = new RuntimeException("test onError");
+        try {
+            Observable.error(re).subscribe();
+        } catch (Throwable e) {
+            // ignore as we expect it to throw
+        }
+        assertEquals(re, errorHandler.e);
+        assertEquals(1, errorHandler.count);
     }
 
     // inside test so it is stripped from Javadocs

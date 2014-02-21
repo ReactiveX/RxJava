@@ -23,20 +23,20 @@ public class DummyObservable {
         return "Object";
     }
 
-    public String call(rx.util.functions.Func1 f) {
-        return "rx.util.functions.Func1";
+    public String call(rx.functions.Func1 f) {
+        return "rx.functions.Func1";
     }
 
-    public String call(rx.util.functions.Func2 f) {
-        return "rx.util.functions.Func2";
+    public String call(rx.functions.Func2 f) {
+        return "rx.functions.Func2";
     }
 
-    public String call(rx.util.functions.Action1 f) {
-        return "rx.util.functions.Action1";
+    public String call(rx.functions.Action1 f) {
+        return "rx.functions.Action1";
     }
 
-    public String call(rx.util.functions.Action2 f) {
-        return "rx.util.functions.Action2";
+    public String call(rx.functions.Action2 f) {
+        return "rx.functions.Action2";
     }
 
 }

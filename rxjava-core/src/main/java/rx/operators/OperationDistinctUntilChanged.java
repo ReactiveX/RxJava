@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,10 +21,10 @@ import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
+import rx.functions.Action0;
+import rx.functions.Func1;
+import rx.functions.Functions;
 import rx.subscriptions.Subscriptions;
-import rx.util.functions.Action0;
-import rx.util.functions.Func1;
-import rx.util.functions.Functions;
 
 /**
  * Returns an Observable that emits all sequentially distinct items emitted by the source.

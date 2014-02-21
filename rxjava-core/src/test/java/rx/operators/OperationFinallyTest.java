@@ -1,12 +1,12 @@
 /**
- * Copyright 2013 Netflix, Inc.
- *
+ * Copyright 2014 Netflix, Inc.
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,23 +23,23 @@ import org.junit.Test;
 
 import rx.Observable;
 import rx.Observer;
-import rx.util.functions.Action0;
+import rx.functions.Action0;
 
 public class OperationFinallyTest {
 
     private Action0 aAction0;
-    private Observer<String> aObserver;
+    private Observer<String> observer;
 
     @SuppressWarnings("unchecked")
     // mocking has to be unchecked, unfortunately
     @Before
     public void before() {
         aAction0 = mock(Action0.class);
-        aObserver = mock(Observer.class);
+        observer = mock(Observer.class);
     }
 
     private void checkActionCalled(Observable<String> input) {
-        Observable.create(finallyDo(input, aAction0)).subscribe(aObserver);
+        Observable.create(finallyDo(input, aAction0)).subscribe(observer);
         verify(aAction0, times(1)).call();
     }
 

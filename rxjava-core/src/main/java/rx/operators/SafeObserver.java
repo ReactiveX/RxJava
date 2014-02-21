@@ -19,9 +19,12 @@ import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import rx.Observer;
+import rx.Subscription;
+import rx.exceptions.CompositeException;
+import rx.exceptions.OnErrorNotImplementedException;
+import rx.observers.SynchronizedObserver;
 import rx.plugins.RxJavaPlugins;
-import rx.util.CompositeException;
-import rx.util.OnErrorNotImplementedException;
+import rx.subscriptions.Subscriptions;
 
 /**
  * Wrapper around Observer to ensure compliance with Rx contract.
@@ -54,12 +57,19 @@ import rx.util.OnErrorNotImplementedException;
  * It will not synchronize onNext execution. Use the {@link SynchronizedObserver} to do that.
  * 
  * @param <T>
+ * @Deprecated Replaced by SafeSubscriber
  */
+@Deprecated
 public class SafeObserver<T> implements Observer<T> {
 
     private final Observer<? super T> actual;
     private final AtomicBoolean isFinished = new AtomicBoolean(false);
-    private final SafeObservableSubscription subscription;
+    private final Subscription subscription;
+
+    public SafeObserver(Observer<? super T> actual) {
+        this.subscription = Subscriptions.empty();
+        this.actual = actual;
+    }
 
     public SafeObserver(SafeObservableSubscription subscription, Observer<? super T> actual) {
         this.subscription = subscription;
@@ -73,44 +83,18 @@ public class SafeObserver<T> implements Observer<T> {
                 actual.onCompleted();
             } catch (Throwable e) {
                 // handle errors if the onCompleted implementation fails, not just if the Observable fails
-                onError(e);
+                _onError(e);
+            } finally {
+                // auto-unsubscribe
+                subscription.unsubscribe();
             }
-            // auto-unsubscribe
-            subscription.unsubscribe();
         }
     }
 
     @Override
     public void onError(Throwable e) {
         if (isFinished.compareAndSet(false, true)) {
-            try {
-                actual.onError(e);
-            } catch (Throwable e2) {
-                if (e2 instanceof OnErrorNotImplementedException) {
-                    /**
-                     * onError isn't implemented so throw
-                     * 
-                     * https://github.com/Netflix/RxJava/issues/198
-                     * 
-                     * Rx Design Guidelines 5.2
-                     * 
-                     * "when calling the Subscribe method that only has an onNext argument, the OnError behavior will be
-                     * to rethrow the exception on the thread that the message comes out from the observable sequence.
-                     * The OnCompleted behavior in this case is to do nothing."
-                     */
-                    throw (OnErrorNotImplementedException) e2;
-                } else {
-                    // if the onError itself fails then pass to the plugin
-                    // see https://github.com/Netflix/RxJava/issues/216 for further discussion
-                    RxJavaPlugins.getInstance().getErrorHandler().handleError(e);
-                    RxJavaPlugins.getInstance().getErrorHandler().handleError(e2);
-                    // and throw exception despite that not being proper for Rx
-                    // https://github.com/Netflix/RxJava/issues/198
-                    throw new RuntimeException("Error occurred when trying to propagate error to Observer.onError", new CompositeException(Arrays.asList(e, e2)));
-                }
-            }
-            // auto-unsubscribe
-            subscription.unsubscribe();
+            _onError(e);
         }
     }
 
@@ -123,6 +107,61 @@ public class SafeObserver<T> implements Observer<T> {
         } catch (Throwable e) {
             // handle errors if the onNext implementation fails, not just if the Observable fails
             onError(e);
+        }
+    }
+
+    /*
+     * The logic for `onError` without the `isFinished` check so it can be called from within `onCompleted`.
+     * 
+     * See https://github.com/Netflix/RxJava/issues/630 for the report of this bug.
+     */
+    protected void _onError(Throwable e) {
+        try {
+            RxJavaPlugins.getInstance().getErrorHandler().handleError(e);
+            actual.onError(e);
+        } catch (Throwable e2) {
+            if (e2 instanceof OnErrorNotImplementedException) {
+                /*
+                 * onError isn't implemented so throw
+                 * 
+                 * https://github.com/Netflix/RxJava/issues/198
+                 * 
+                 * Rx Design Guidelines 5.2
+                 * 
+                 * "when calling the Subscribe method that only has an onNext argument, the OnError behavior will be
+                 * to rethrow the exception on the thread that the message comes out from the observable sequence.
+                 * The OnCompleted behavior in this case is to do nothing."
+                 */
+                try {
+                    subscription.unsubscribe();
+                } catch (Throwable unsubscribeException) {
+                    RxJavaPlugins.getInstance().getErrorHandler().handleError(unsubscribeException);
+                    throw new RuntimeException("Observer.onError not implemented and error while unsubscribing.", new CompositeException(Arrays.asList(e, unsubscribeException)));
+                }
+                throw (OnErrorNotImplementedException) e2;
+            } else {
+                /*
+                 * throw since the Rx contract is broken if onError failed
+                 * 
+                 * https://github.com/Netflix/RxJava/issues/198
+                 */
+                RxJavaPlugins.getInstance().getErrorHandler().handleError(e2);
+                try {
+                    subscription.unsubscribe();
+                } catch (Throwable unsubscribeException) {
+                    RxJavaPlugins.getInstance().getErrorHandler().handleError(unsubscribeException);
+                    throw new RuntimeException("Error occurred when trying to propagate error to Observer.onError and during unsubscription.", new CompositeException(Arrays.asList(e, e2, unsubscribeException)));
+                }
+
+                throw new RuntimeException("Error occurred when trying to propagate error to Observer.onError", new CompositeException(Arrays.asList(e, e2)));
+            }
+        }
+        // if we did not throw about we will unsubscribe here, if onError failed then unsubscribe happens in the catch
+        try {
+            subscription.unsubscribe();
+        } catch (RuntimeException unsubscribeException) {
+            RxJavaPlugins.getInstance().getErrorHandler().handleError(unsubscribeException);
+            throw unsubscribeException;
         }
     }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,13 +18,13 @@ package rx.subscriptions;
 import java.util.concurrent.Future;
 
 import rx.Subscription;
+import rx.functions.Action0;
 import rx.operators.SafeObservableSubscription;
-import rx.util.functions.Action0;
 
 /**
  * Helper methods and utilities for creating and working with {@link Subscription} objects
  */
-public class Subscriptions {
+public final class Subscriptions {
     /**
      * A {@link Subscription} that does nothing.
      * 
@@ -44,9 +44,17 @@ public class Subscriptions {
     public static Subscription create(final Action0 unsubscribe) {
         return new SafeObservableSubscription(new Subscription() {
 
+            private volatile boolean unsubscribed = false;
+
             @Override
             public void unsubscribe() {
+                unsubscribed = true;
                 unsubscribe.call();
+            }
+
+            @Override
+            public boolean isUnsubscribed() {
+                return unsubscribed;
             }
 
         });
@@ -68,24 +76,9 @@ public class Subscriptions {
                 f.cancel(true);
             }
 
-        };
-    }
-
-    /**
-     * A {@link Subscription} that wraps a {@link Future} and cancels it when unsubscribed.
-     * 
-     * 
-     * @param f
-     *            {@link Future}
-     * @return {@link Subscription}
-     * @deprecated Use {@link #from(Future)} instead
-     */
-    public static Subscription create(final Future<?> f) {
-        return new Subscription() {
-
             @Override
-            public void unsubscribe() {
-                f.cancel(true);
+            public boolean isUnsubscribed() {
+                return f.isCancelled();
             }
 
         };
@@ -104,23 +97,15 @@ public class Subscriptions {
     }
 
     /**
-     * A {@link Subscription} that groups multiple Subscriptions together and unsubscribes from all of them together.
-     * 
-     * @param subscriptions
-     *            Subscriptions to group together
-     * @return {@link Subscription}
-     * @deprecated Use {@link #from(Subscription...)} instead
-     */
-
-    public static CompositeSubscription create(Subscription... subscriptions) {
-        return new CompositeSubscription(subscriptions);
-    }
-
-    /**
      * A {@link Subscription} that does nothing when its unsubscribe method is called.
      */
     private static Subscription EMPTY = new Subscription() {
         public void unsubscribe() {
+        }
+
+        @Override
+        public boolean isUnsubscribed() {
+            return false;
         }
     };
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,7 @@ import java.util.concurrent.TimeUnit;
 
 import rx.Scheduler;
 import rx.Subscription;
-import rx.util.functions.Action0;
-import rx.util.functions.Func2;
+import rx.functions.Action1;
 
 /**
  * Common utility functions for testing operator implementations.
@@ -57,38 +56,14 @@ public class OperatorTester {
         }
 
         @Override
-        public Subscription schedule(Action0 action) {
+        public Subscription schedule(Action1<Inner> action) {
             return underlying.schedule(action);
         }
 
         @Override
-        public <T> Subscription schedule(T state, Func2<? super Scheduler, ? super T, ? extends Subscription> action) {
-            return underlying.schedule(state, action);
+        public Subscription schedule(Action1<Inner> action, long delayTime, TimeUnit unit) {
+            return underlying.schedule(action, delayTime, unit);
         }
 
-        @Override
-        public Subscription schedule(Action0 action, long dueTime, TimeUnit unit) {
-            return underlying.schedule(action, dueTime, unit);
-        }
-
-        @Override
-        public <T> Subscription schedule(T state, Func2<? super Scheduler, ? super T, ? extends Subscription> action, long dueTime, TimeUnit unit) {
-            return underlying.schedule(state, action, dueTime, unit);
-        }
-
-        @Override
-        public Subscription schedulePeriodically(Action0 action, long initialDelay, long period, TimeUnit unit) {
-            return underlying.schedulePeriodically(action, initialDelay, period, unit);
-        }
-
-        @Override
-        public <T> Subscription schedulePeriodically(T state, Func2<? super Scheduler, ? super T, ? extends Subscription> action, long initialDelay, long period, TimeUnit unit) {
-            return underlying.schedulePeriodically(state, action, initialDelay, period, unit);
-        }
-
-        @Override
-        public long now() {
-            return underlying.now();
-        }
     }
 }

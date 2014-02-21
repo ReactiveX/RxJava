@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,15 @@ package rx.operators;
 
 import java.util.Deque;
 import java.util.LinkedList;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
+import rx.Scheduler;
 import rx.Subscription;
+import rx.schedulers.Timestamped;
 
 /**
  * Returns an Observable that emits the last <code>count</code> items emitted by the source
@@ -116,6 +119,125 @@ public final class OperationTakeLast {
                 }
             }
 
+        }
+
+    }
+
+    /**
+     * Returns the items emitted by source whose arrived in the time window
+     * before the source completed.
+     */
+    public static <T> OnSubscribeFunc<T> takeLast(Observable<? extends T> source, long time, TimeUnit unit, Scheduler scheduler) {
+        return new TakeLastTimed<T>(source, -1, time, unit, scheduler);
+    }
+
+    /**
+     * Returns the items emitted by source whose arrived in the time window
+     * before the source completed and at most count values.
+     */
+    public static <T> OnSubscribeFunc<T> takeLast(Observable<? extends T> source, int count, long time, TimeUnit unit, Scheduler scheduler) {
+        return new TakeLastTimed<T>(source, count, time, unit, scheduler);
+    }
+
+    /** Take only the values which appeared some time before the completion. */
+    static final class TakeLastTimed<T> implements OnSubscribeFunc<T> {
+        final Observable<? extends T> source;
+        final long ageMillis;
+        final Scheduler scheduler;
+        final int count;
+
+        public TakeLastTimed(Observable<? extends T> source, int count, long time, TimeUnit unit, Scheduler scheduler) {
+            this.source = source;
+            this.ageMillis = unit.toMillis(time);
+            this.scheduler = scheduler;
+            this.count = count;
+        }
+
+        @Override
+        public Subscription onSubscribe(Observer<? super T> t1) {
+            SafeObservableSubscription sas = new SafeObservableSubscription();
+            sas.wrap(source.subscribe(new TakeLastTimedObserver<T>(t1, sas, count, ageMillis, scheduler)));
+            return sas;
+        }
+    }
+
+    /** Observes source values and keeps the most recent items. */
+    static final class TakeLastTimedObserver<T> implements Observer<T> {
+        final Observer<? super T> observer;
+        final Subscription cancel;
+        final long ageMillis;
+        final Scheduler scheduler;
+        /** -1 indicates unlimited buffer. */
+        final int count;
+
+        final Deque<Timestamped<T>> buffer = new LinkedList<Timestamped<T>>();
+
+        public TakeLastTimedObserver(Observer<? super T> observer, Subscription cancel,
+                int count, long ageMillis, Scheduler scheduler) {
+            this.observer = observer;
+            this.cancel = cancel;
+            this.ageMillis = ageMillis;
+            this.scheduler = scheduler;
+            this.count = count;
+        }
+
+        protected void runEvictionPolicy(long now) {
+            // trim size
+            while (count >= 0 && buffer.size() > count) {
+                buffer.pollFirst();
+            }
+            // remove old entries
+            while (!buffer.isEmpty()) {
+                Timestamped<T> v = buffer.peekFirst();
+                if (v.getTimestampMillis() < now - ageMillis) {
+                    buffer.pollFirst();
+                } else {
+                    break;
+                }
+            }
+        }
+
+        @Override
+        public void onNext(T args) {
+            long t = scheduler.now();
+            buffer.add(new Timestamped<T>(t, args));
+            runEvictionPolicy(t);
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            buffer.clear();
+            observer.onError(e);
+            cancel.unsubscribe();
+        }
+
+        /**
+         * Emit the contents of the buffer.
+         * 
+         * @return true if no exception was raised in the process
+         */
+        protected boolean emitBuffer() {
+            for (Timestamped<T> v : buffer) {
+                try {
+                    observer.onNext(v.getValue());
+                } catch (Throwable t) {
+                    buffer.clear();
+                    observer.onError(t);
+                    return false;
+                }
+            }
+            buffer.clear();
+            return true;
+        }
+
+        @Override
+        public void onCompleted() {
+            runEvictionPolicy(scheduler.now());
+
+            if (emitBuffer()) {
+                observer.onCompleted();
+            }
+            cancel.unsubscribe();
         }
 
     }

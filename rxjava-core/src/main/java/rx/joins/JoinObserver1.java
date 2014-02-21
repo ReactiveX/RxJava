@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,40 +19,52 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import rx.Notification;
 import rx.Observable;
-import rx.subscriptions.SingleAssignmentSubscription;
-import rx.util.functions.Action1;
+import rx.Subscriber;
+import rx.functions.Action1;
+import rx.observers.SafeSubscriber;
 
 /**
  * Default implementation of a join observer.
  */
-public final class JoinObserver1<T> extends ObserverBase<Notification<T>> implements JoinObserver {
+public final class JoinObserver1<T> extends Subscriber<Notification<T>> implements JoinObserver {
     private Object gate;
     private final Observable<T> source;
     private final Action1<Throwable> onError;
     private final List<ActivePlan0> activePlans;
     private final Queue<Notification<T>> queue;
-    private final SingleAssignmentSubscription subscription;
-    private volatile boolean done;
-    
+    private final AtomicBoolean subscribed = new AtomicBoolean(false);
+    private final SafeSubscriber<Notification<T>> safeObserver;
+
     public JoinObserver1(Observable<T> source, Action1<Throwable> onError) {
         this.source = source;
         this.onError = onError;
         queue = new LinkedList<Notification<T>>();
-        subscription = new SingleAssignmentSubscription();
         activePlans = new ArrayList<ActivePlan0>();
+        safeObserver = new SafeSubscriber<Notification<T>>(new InnerObserver());
+        // add this subscription so it gets unsubscribed when the parent does
+        add(safeObserver);
     }
+
     public Queue<Notification<T>> queue() {
         return queue;
     }
+
     public void addActivePlan(ActivePlan0 activePlan) {
         activePlans.add(activePlan);
     }
+
     @Override
     public void subscribe(Object gate) {
-        this.gate = gate;
-        subscription.set(source.materialize().subscribe(this));
+        if (subscribed.compareAndSet(false, true)) {
+            this.gate = gate;
+            source.materialize().subscribe(this);
+        } else {
+            throw new IllegalStateException("Can only be subscribed to once.");
+        }
     }
 
     @Override
@@ -60,48 +72,59 @@ public final class JoinObserver1<T> extends ObserverBase<Notification<T>> implem
         queue.remove();
     }
 
+
     @Override
-    protected void onNextCore(Notification<T> args) {
-        synchronized (gate) {
-            if (!done) {
-                if (args.isOnError()) {
-                    onError.call(args.getThrowable());
-                    return;
-                }
-                queue.add(args);
-                
-                // remark: activePlans might change while iterating
-                for (ActivePlan0 a : new ArrayList<ActivePlan0>(activePlans)) {
-                    a.match();
-                }
-            }
-        }
+    public void onNext(Notification<T> args) {
+        safeObserver.onNext(args);
     }
 
     @Override
-    protected void onErrorCore(Throwable e) {
-        // not expected
+    public void onError(Throwable e) {
+        safeObserver.onError(e);
     }
 
     @Override
-    protected void onCompletedCore() {
-        // not expected or ignored
+    public void onCompleted() {
+        safeObserver.onCompleted();
     }
-    
-    
+
     void removeActivePlan(ActivePlan0 activePlan) {
         activePlans.remove(activePlan);
         if (activePlans.isEmpty()) {
             unsubscribe();
         }
     }
+    
+    
+    private final class InnerObserver extends Subscriber<Notification<T>> {
 
-    @Override
-    public void unsubscribe() {
-        if (!done) {
-            done = true;
-            subscription.unsubscribe();
+        @Override
+        public void onNext(Notification<T> args) {
+            synchronized (gate) {
+                if (!isUnsubscribed()) {
+                    if (args.isOnError()) {
+                        onError.call(args.getThrowable());
+                        return;
+                    }
+                    queue.add(args);
+
+                    // remark: activePlans might change while iterating
+                    for (ActivePlan0 a : new ArrayList<ActivePlan0>(activePlans)) {
+                        a.match();
+                    }
+                }
+            }
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            // not expected
+        }
+
+        @Override
+        public void onCompleted() {
+            // not expected or ignored
         }
     }
-    
+
 }

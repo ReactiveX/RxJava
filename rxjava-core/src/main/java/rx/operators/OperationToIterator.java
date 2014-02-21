@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,14 @@
 package rx.operators;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import rx.Notification;
 import rx.Observable;
 import rx.Observer;
-import rx.util.Exceptions;
+import rx.exceptions.Exceptions;
 
 /**
  * Returns an Iterator that iterates over all items emitted by a specified Observable.
@@ -69,21 +70,20 @@ public class OperationToIterator {
                 if (buf == null) {
                     buf = take();
                 }
+                if (buf.isOnError()) {
+                    throw Exceptions.propagate(buf.getThrowable());
+                }
                 return !buf.isOnCompleted();
             }
 
             @Override
             public T next() {
-                if (buf == null) {
-                    buf = take();
+                if (hasNext()) {
+                    T result = buf.getValue();
+                    buf = null;
+                    return result;
                 }
-                if (buf.isOnError()) {
-                    throw Exceptions.propagate(buf.getThrowable());
-                }
-
-                T result = buf.getValue();
-                buf = null;
-                return result;
+                throw new NoSuchElementException();
             }
 
             private Notification<? extends T> take() {

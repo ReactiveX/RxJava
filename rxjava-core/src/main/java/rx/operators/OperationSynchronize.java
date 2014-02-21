@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
+import rx.observers.SynchronizedObserver;
 
 /**
  * Wraps an Observable in another Observable that ensures that the resulting Observable is
@@ -85,14 +86,13 @@ public final class OperationSynchronize<T> {
         private Object lock;
 
         public Subscription onSubscribe(Observer<? super T> observer) {
-            SafeObservableSubscription subscription = new SafeObservableSubscription();
             if (lock == null) {
-                atomicObserver = new SynchronizedObserver<T>(observer, subscription);
+                atomicObserver = new SynchronizedObserver<T>(observer);
             }
             else {
-                atomicObserver = new SynchronizedObserver<T>(observer, subscription, lock);
+                atomicObserver = new SynchronizedObserver<T>(observer, lock);
             }
-            return subscription.wrap(innerObservable.subscribe(atomicObserver));
+            return innerObservable.subscribe(atomicObserver);
         }
 
     }

@@ -1,9 +1,24 @@
+/**
+ * Copyright 2014 Netflix, Inc.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package rx.util;
 
 import rx.Notification;
 import rx.Observable;
-import rx.util.functions.Func1;
-import rx.util.functions.Func2;
+import rx.functions.Func1;
+import rx.functions.Func2;
 
 public class AssertObservable {
     /**
@@ -38,8 +53,7 @@ public class AssertObservable {
 
     /**
      * Asserts that two {@link Observable}s are equal and returns an empty {@link Observable}. If
-     * they are not, an {@link Observable} is returned that calls onError with an
-     * {@link AssertionError} when subscribed to. If <code>expected</code> and <code>actual</code>
+     * they are not, an {@link Observable} is returned that calls onError with an {@link AssertionError} when subscribed to. If <code>expected</code> and <code>actual</code>
      * are <code>null</code>, they are considered equal.
      * 
      * @param message
@@ -55,8 +69,7 @@ public class AssertObservable {
 
     /**
      * Asserts that two {@link Observable}s are equal and returns an empty {@link Observable}. If
-     * they are not, an {@link Observable} is returned that calls onError with an
-     * {@link AssertionError} when subscribed to with the given message. If <code>expected</code>
+     * they are not, an {@link Observable} is returned that calls onError with an {@link AssertionError} when subscribed to with the given message. If <code>expected</code>
      * and <code>actual</code> are <code>null</code>, they are considered equal.
      * 
      * @param message
@@ -87,7 +100,7 @@ public class AssertObservable {
                         message.append(" ").append(expectedNotfication.getValue());
                     if (expectedNotfication.hasThrowable())
                         message.append(" ").append(expectedNotfication.getThrowable());
-                    return new Notification<String>("equals " + message.toString());
+                    return Notification.createOnNext("equals " + message.toString());
                 }
                 else {
                     StringBuilder error = new StringBuilder();
@@ -103,7 +116,7 @@ public class AssertObservable {
                         error.append(" ").append(actualNotification.getThrowable());
                     error.append(">");
 
-                    return new Notification<String>(new AssertionError(error.toString()));
+                    return Notification.createOnError(new AssertionError(error.toString()));
                 }
             }
         };
@@ -118,9 +131,9 @@ public class AssertObservable {
                 fail |= b.isOnError();
 
                 if (fail)
-                    return new Notification<String>(new AssertionError(message));
+                    return Notification.createOnError(new AssertionError(message));
                 else
-                    return new Notification<String>(message);
+                    return Notification.createOnNext(message);
             }
         };
 
@@ -129,9 +142,9 @@ public class AssertObservable {
             public Notification<Void> call(Notification<String> outcome) {
                 if (outcome.isOnError()) {
                     String fullMessage = (message != null ? message + ": " : "") + "Observables are different\n\t" + outcome.getThrowable().getMessage();
-                    return new Notification<Void>(new AssertionError(fullMessage));
+                    return Notification.createOnError(new AssertionError(fullMessage));
                 }
-                return new Notification<Void>();
+                return Notification.createOnCompleted();
             }
         }).dematerialize();
         return outcomeObservable;

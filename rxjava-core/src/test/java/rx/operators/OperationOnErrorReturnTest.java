@@ -1,12 +1,12 @@
 /**
- * Copyright 2013 Netflix, Inc.
- *
+ * Copyright 2014 Netflix, Inc.
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -28,7 +28,7 @@ import org.mockito.Mockito;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
-import rx.util.functions.Func1;
+import rx.functions.Func1;
 
 public class OperationOnErrorReturnTest {
 
@@ -50,8 +50,8 @@ public class OperationOnErrorReturnTest {
         }));
 
         @SuppressWarnings("unchecked")
-        Observer<String> aObserver = mock(Observer.class);
-        observable.subscribe(aObserver);
+        Observer<String> observer = mock(Observer.class);
+        observable.subscribe(observer);
 
         try {
             f.t.join();
@@ -59,10 +59,10 @@ public class OperationOnErrorReturnTest {
             fail(e.getMessage());
         }
 
-        verify(aObserver, Mockito.never()).onError(any(Throwable.class));
-        verify(aObserver, times(1)).onCompleted();
-        verify(aObserver, times(1)).onNext("one");
-        verify(aObserver, times(1)).onNext("failure");
+        verify(observer, Mockito.never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onCompleted();
+        verify(observer, times(1)).onNext("one");
+        verify(observer, times(1)).onNext("failure");
         assertNotNull(capturedException.get());
     }
 
@@ -87,8 +87,8 @@ public class OperationOnErrorReturnTest {
         }));
 
         @SuppressWarnings("unchecked")
-        Observer<String> aObserver = mock(Observer.class);
-        observable.subscribe(aObserver);
+        Observer<String> observer = mock(Observer.class);
+        observable.subscribe(observer);
 
         try {
             f.t.join();
@@ -97,11 +97,11 @@ public class OperationOnErrorReturnTest {
         }
 
         // we should get the "one" value before the error
-        verify(aObserver, times(1)).onNext("one");
+        verify(observer, times(1)).onNext("one");
 
         // we should have received an onError call on the Observer since the resume function threw an exception
-        verify(aObserver, times(1)).onError(any(Throwable.class));
-        verify(aObserver, times(0)).onCompleted();
+        verify(observer, times(1)).onError(any(Throwable.class));
+        verify(observer, times(0)).onCompleted();
         assertNotNull(capturedException.get());
     }
 
