@@ -166,6 +166,7 @@
 (deftest test-seq->o
   (is (= [] (b/into [] (rx/seq->o []))))
   (is (= [] (b/into [] (rx/seq->o nil))))
+  (is (= [\a \b \c] (b/into [] (rx/seq->o "abc"))))
   (is (= [0 1 2 3] (b/first (rx/into [] (rx/seq->o (range 4))))))
   (is (= #{0 1 2 3} (b/first (rx/into #{} (rx/seq->o (range 4))))))
   (is (= {:a 1 :b 2 :c 3} (b/first (rx/into {} (rx/seq->o [[:a 1] [:b 2] [:c 3]]))))))
