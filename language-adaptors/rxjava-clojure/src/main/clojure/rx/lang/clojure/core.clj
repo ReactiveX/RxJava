@@ -285,8 +285,8 @@
 (defn ^Observable seq->o
   "Make an observable out of some seq-able thing. The rx equivalent of clojure.core/seq."
   [xs]
-  (if xs
-    (Observable/from ^Iterable xs)
+  (if-let [s (clojure.core/seq xs)]
+    (Observable/from ^Iterable s)
     (empty)))
 
 ;################################################################################
