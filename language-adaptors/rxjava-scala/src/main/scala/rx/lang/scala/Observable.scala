@@ -2285,6 +2285,7 @@ object Observable {
    * @return
    *         an Observable that, when an [[rx.lang.scala.Observer]] subscribes to it, will execute the given function.
    */
+  @deprecated("Use `apply[T](Subscriber[T] => Unit)` instead", "0.17.0")
   def create[T](func: Observer[T] => Subscription): Observable[T] = {
     toScalaObservable[T](rx.Observable.create(new OnSubscribeFunc[T] {
       def onSubscribe(t1: rx.Observer[_ >: T]): rx.Subscription = {
