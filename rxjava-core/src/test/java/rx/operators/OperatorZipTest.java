@@ -22,6 +22,7 @@ import static org.mockito.Mockito.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -42,6 +43,7 @@ import rx.functions.Func2;
 import rx.functions.Func3;
 import rx.functions.FuncN;
 import rx.functions.Functions;
+import rx.observers.TestSubscriber;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.Subscriptions;
 
@@ -984,6 +986,72 @@ public class OperatorZipTest {
         assertEquals("OnNext_2-OnNext_b", list.get(1));
         assertEquals("OnNext_3-OnNext_c", list.get(2));
         assertEquals("OnCompleted_null-OnCompleted_null", list.get(3));
+    }
+
+    @Test
+    public void testZipEmptyObservables() {
+
+        Observable<String> o = Observable.zip(Observable.<Integer> empty(), Observable.<String> empty(), new Func2<Integer, String, String>() {
+
+            @Override
+            public String call(Integer t1, String t2) {
+                return t1 + "-" + t2;
+            }
+
+        });
+
+        final ArrayList<String> list = new ArrayList<String>();
+        o.subscribe(new Action1<String>() {
+
+            @Override
+            public void call(String s) {
+                System.out.println(s);
+                list.add(s);
+            }
+        });
+
+        assertEquals(0, list.size());
+    }
+
+    @Test
+    public void testZipEmptyList() {
+
+        final Object invoked = new Object();
+        Collection<Observable<Object>> observables = Collections.emptyList();
+
+        Observable<Object> o = Observable.zip(observables, new FuncN<Object>() {
+            @Override
+            public Object call(final Object... args) {
+                assertEquals("No argument should have been passed", 0, args.length);
+                return invoked;
+            }
+        });
+
+        TestSubscriber<Object> ts = new TestSubscriber<Object>();
+        o.subscribe(ts);
+        ts.awaitTerminalEvent(200, TimeUnit.MILLISECONDS);
+        ts.assertReceivedOnNext(Collections.emptyList());
+    }
+
+    /**
+     * Expect IllegalArgumentException instead of blocking forever as zip should emit onCompleted and no onNext
+     * and last() expects at least a single response.
+     */
+    @Test(expected = IllegalArgumentException.class)
+    public void testZipEmptyListBlocking() {
+
+        final Object invoked = new Object();
+        Collection<Observable<Object>> observables = Collections.emptyList();
+
+        Observable<Object> o = Observable.zip(observables, new FuncN<Object>() {
+            @Override
+            public Object call(final Object... args) {
+                assertEquals("No argument should have been passed", 0, args.length);
+                return invoked;
+            }
+        });
+
+        o.toBlockingObservable().last();
     }
 
     Observable<Integer> OBSERVABLE_OF_5_INTEGERS = OBSERVABLE_OF_5_INTEGERS(new AtomicInteger());

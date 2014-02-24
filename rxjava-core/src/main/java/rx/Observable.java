@@ -4293,17 +4293,17 @@ public class Observable<T> {
         Observer<T> observer = new Observer<T>() {
             @Override
             public final void onCompleted() {
-                onNotification.call(new Notification<T>());
+                onNotification.call(Notification.createOnCompleted());
             }
 
             @Override
             public final void onError(Throwable e) {
-                onNotification.call(new Notification<T>(e));
+                onNotification.call(Notification.createOnError(e));
             }
 
             @Override
             public final void onNext(T v) {
-                onNotification.call(new Notification<T>(v));
+                onNotification.call(Notification.createOnNext(v));
             }
 
         };
@@ -4381,6 +4381,40 @@ public class Observable<T> {
             @Override
             public final void onNext(T args) {
                 onNext.call(args);
+            }
+
+        };
+
+        return lift(new OperatorDoOnEach<T>(observer));
+    }
+    
+    /**
+     * Modifies an Observable so that it invokes an action when it calls {@code onCompleted} or {@code onError}.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/doOnTerminate.png">
+     * <p>
+     * This differs from {@code finallyDo} in that this happens BEFORE onCompleted/onError are emitted.
+     * 
+     * @param onTerminate
+     *            the action to invoke when the source Observable calls {@code onCompleted} or {@code onError}
+     * @return the source Observable with the side-effecting behavior applied
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#wiki-doonterminate">RxJava Wiki: doOnTerminate()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229804.aspx">MSDN: Observable.Do</a>
+     */
+    public final Observable<T> doOnTerminate(final Action0 onTerminate) {
+        Observer<T> observer = new Observer<T>() {
+            @Override
+            public final void onCompleted() {
+                onTerminate.call();
+            }
+
+            @Override
+            public final void onError(Throwable e) {
+                onTerminate.call();
+            }
+
+            @Override
+            public final void onNext(T args) {
             }
 
         };
