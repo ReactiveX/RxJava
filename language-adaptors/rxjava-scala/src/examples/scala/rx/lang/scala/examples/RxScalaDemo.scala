@@ -32,7 +32,16 @@ import org.scalatest.junit.JUnitSuite
 import rx.lang.scala._
 import rx.lang.scala.schedulers._
 
-//@Ignore // Since this doesn't do automatic testing, don't increase build time unnecessarily
+/**
+ * Demo how the different operators can be used. In Eclipse, you can right-click
+ * a test and choose "Run As" > "Scala JUnit Test".
+ * 
+ * For each operator added to Observable.java, we add a little usage demo here.
+ * It does not need to test the functionality (that's already done by the tests in
+ * RxJava core), but it should demonstrate how it can be used, to make sure that
+ * the method signature makes sense.
+ */
+@Ignore // Since this doesn't do automatic testing, don't increase build time unnecessarily
 class RxScalaDemo extends JUnitSuite {
 
   @Test def intervalExample() {
@@ -251,30 +260,36 @@ class RxScalaDemo extends JUnitSuite {
   }
 
   @Test def combineLatestExample() {
-    val first_counter = Observable.interval(250 millis)
-    val second_counter = Observable.interval(550 millis)
-    val combined_counter = first_counter.combineLatest(second_counter,
+    val firstCounter = Observable.interval(250 millis)
+    val secondCounter = Observable.interval(550 millis)
+    val combinedCounter = firstCounter.combineLatest(secondCounter,
       (x: Long, y: Long) => List(x,y)) take 10
 
-    combined_counter subscribe {x => println(s"Emitted group: $x")}
+    combinedCounter subscribe {x => println(s"Emitted group: $x")}
+    waitFor(combinedCounter)
   }
 
+  @Test def olympicsExampleWithoutPublish() {
+    val medals = Olympics.mountainBikeMedals.doOnEach(_ => println("onNext"))
+    medals.subscribe(println(_)) // triggers an execution of medals Observable
+    waitFor(medals) // triggers another execution of medals Observable
+  }
 
-  @Test def olympicsExample() {
-    val medals = Olympics.mountainBikeMedals.publish
-    medals.subscribe(println(_))
+  @Test def olympicsExampleWithPublish() {
+    val medals = Olympics.mountainBikeMedals.doOnEach(_ => println("onNext")).publish
+    medals.subscribe(println(_)) // triggers an execution of medals Observable
     medals.connect
-    //waitFor(medals)
+    waitFor(medals) // triggers another execution of medals Observable
   }
 
   @Test def exampleWithoutPublish() {
-    val unshared = List(1 to 4).toObservable
+    val unshared = Observable.from(1 to 4)
     unshared.subscribe(n => println(s"subscriber 1 gets $n"))
     unshared.subscribe(n => println(s"subscriber 2 gets $n"))
   }
 
   @Test def exampleWithPublish() {
-    val unshared = List(1 to 4).toObservable
+    val unshared = Observable.from(1 to 4)
     val shared = unshared.publish
     shared.subscribe(n => println(s"subscriber 1 gets $n"))
     shared.subscribe(n => println(s"subscriber 2 gets $n"))
@@ -403,7 +418,7 @@ class RxScalaDemo extends JUnitSuite {
   }
 
   @Test def timestampExample() {
-    val timestamped = Observable.interval(100 millis).take(3).timestamp.toBlockingObservable
+    val timestamped = Observable.interval(100 millis).take(6).timestamp.toBlockingObservable
     for ((millis, value) <- timestamped if value > 0) {
       println(value + " at t = " + millis)
     }
@@ -441,15 +456,6 @@ class RxScalaDemo extends JUnitSuite {
     val oc2: Notification[Int] = OnCompleted
     val oc3: rx.Notification[_ <: Int] = oc2.asJavaNotification
     val oc4: rx.Notification[_ <: Any] = oc2.asJavaNotification
-  }
-  
-  @Test def elementAtReplacement() {
-    assertEquals("b", List("a", "b", "c").toObservable.drop(1).first.toBlockingObservable.single)
-  }
-
-  @Test def elementAtOrDefaultReplacement() {
-    assertEquals("b", List("a", "b", "c").toObservable.drop(1).firstOrElse("!").toBlockingObservable.single)
-    assertEquals("!!", List("a", "b", "c").toObservable.drop(10).firstOrElse("!!").toBlockingObservable.single)
   }
 
   @Test def takeWhileWithIndexAlternative {
