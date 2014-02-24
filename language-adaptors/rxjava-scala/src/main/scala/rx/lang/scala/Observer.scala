@@ -56,7 +56,7 @@ trait Observer[-T] {
 
 }
 
-object Observer {
+object Observer extends ObserverFactoryMethods[Observer] {
 
   /**
    * Scala calls XXX; Java receives XXX.
@@ -72,17 +72,25 @@ object Observer {
 
    }
 
-  def apply[T](                                                                ): Observer[T] = apply[T]((v:T)=>(), (e: Throwable)=>(), ()=>())
-  def apply[T](onNext: T=>Unit                                                 ): Observer[T] = apply[T](onNext, (e: Throwable)=>(), ()=>())
-  def apply[T](onNext: T=>Unit, onError: Throwable=>Unit                       ): Observer[T] = apply[T](onNext, onError, ()=>())
-  def apply[T](onNext: T=>Unit,                           onCompleted: ()=>Unit): Observer[T] = apply[T](onNext, (e: Throwable)=>(), onCompleted)
-  def apply[T](onNext: T=>Unit, onError: Throwable=>Unit, onCompleted: ()=>Unit): Observer[T] = {
-      val n = onNext; val e = onError; val c = onCompleted
-      // Java calls XXX; Scala receives XXX.
-      Observer(new rx.Observer[T] {
-         override def onNext(value: T): Unit = n(value)
-         override def onError(error: Throwable): Unit = e(error)
-         override def onCompleted(): Unit = c()
-       })
+  def apply[T](onNext: T => Unit, onError: Throwable => Unit, onCompleted: () => Unit): Observer[T] = {
+    val n = onNext; val e = onError; val c = onCompleted
+    // Java calls XXX; Scala receives XXX.
+    Observer(new rx.Observer[T] {
+      override def onNext(value: T): Unit = n(value)
+      override def onError(error: Throwable): Unit = e(error)
+      override def onCompleted(): Unit = c()
+    })
   }
 }
+
+
+private [scala] trait ObserverFactoryMethods[P[_] <: Observer[_]] {
+
+  def apply[T](onNext: T => Unit, onError: Throwable => Unit, onCompleted: () => Unit): P[T]
+  
+  def apply[T](                                                                ): P[T] = apply[T]((v:T)=>(), (e: Throwable)=>(), ()=>())
+  def apply[T](onNext: T=>Unit                                                 ): P[T] = apply[T](onNext,    (e: Throwable)=>(), ()=>())
+  def apply[T](onNext: T=>Unit, onError: Throwable=>Unit                       ): P[T] = apply[T](onNext,    onError,            ()=>())
+  def apply[T](onNext: T=>Unit,                           onCompleted: ()=>Unit): P[T] = apply[T](onNext,    (e: Throwable)=>(), onCompleted)    
+}
+

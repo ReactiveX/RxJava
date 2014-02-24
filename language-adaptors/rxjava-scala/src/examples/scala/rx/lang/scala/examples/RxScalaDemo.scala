@@ -463,15 +463,43 @@ class RxScalaDemo extends JUnitSuite {
     List("a", "b").toObservable.zipWithIndex.takeWhile{case (elem, index) => condition}.map(_._1)
   }
   
-  @Test def createExample() {
+  def calculateElement(index: Int): String = {
+    println("omg I'm calculating so hard")
+    index match {
+      case 0 => "a"
+      case 1 => "b"
+      case _ => throw new IllegalArgumentException
+    }
+  }
+  
+  /**
+   * This is a bad way of using Observable.create, because even if the consumer unsubscribes,
+   * all elements are calculated.
+   */
+  @Test def createExampleBad() {
     val o = Observable.create[String](observer => {
-      // this is bad because you cannot unsubscribe!
-      observer.onNext("a")
-      observer.onNext("b")
+      observer.onNext(calculateElement(0))
+      observer.onNext(calculateElement(1))
       observer.onCompleted()
       Subscription {}
     })
-    o.subscribe(println(_))
+    o.take(1).subscribe(println(_))
+  }
+  
+  /**
+   * This is the good way of doing it: If the consumer unsubscribes, no more elements are 
+   * calculated.
+   */
+  @Test def createExampleGood() {
+    val o = Observable[String](subscriber => {
+      var i = 0
+      while (i < 2 && !subscriber.isUnsubscribed) {
+        subscriber.onNext(calculateElement(i))
+        i += 1
+      }
+      if (!subscriber.isUnsubscribed) subscriber.onCompleted()
+    })
+    o.take(1).subscribe(println(_))
   }
 
   def output(s: String): Unit = println(s)

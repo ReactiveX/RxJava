@@ -2272,9 +2272,6 @@ object Observable {
    * should invoke the Observer's [[rx.lang.scala.Observer.onNext onNext]], [[rx.lang.scala.Observer.onError onError]], and [[rx.lang.scala.Observer.onCompleted onCompleted]] methods
    * appropriately.
    *
-   * A well-formed Observable must invoke either the Observer's `onCompleted` method
-   * exactly once or its `onError` method exactly once.
-   *
    * See <a href="http://go.microsoft.com/fwlink/?LinkID=205219">Rx Design Guidelines (PDF)</a>
    * for detailed information.
    *
@@ -2296,6 +2293,41 @@ object Observable {
     }))
   }
 
+  /*
+  Note: It's dangerous to have two overloads where one takes an `Observer[T] => Subscription`
+  function and the other takes a `Subscriber[T] => Unit` function, because expressions like
+  `o => Subscription{}` have both of these types.
+  So we call the old create method "create", and the new create method "apply".
+  Try it out yourself here:
+  def foo[T]: Unit = { 
+    val fMeant: Observer[T] => Subscription = o => Subscription{}
+    val fWrong: Subscriber[T] => Unit = o => Subscription{}
+  }
+  */
+
+  /**
+   * Returns an Observable that will execute the specified function when a someone subscribes to it.
+   *
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/create.png">
+   *
+   * Write the function you pass so that it behaves as an Observable: It should invoke the
+   * Subscriber's `onNext`, `onError`, and `onCompleted` methods appropriately.
+   *
+   * See <a href="http://go.microsoft.com/fwlink/?LinkID=205219">Rx Design Guidelines (PDF)</a> for detailed
+   * information.
+   *
+   * @tparam T
+   *            the type of the items that this Observable emits
+   * @param f
+   *            a function that accepts a `Subscriber[T]`, and invokes its `onNext`,
+   *            `onError`, and `onCompleted` methods as appropriate
+   * @return an Observable that, when someone subscribes to it, will execute the specified
+   *         function
+   */
+  def apply[T](f: Subscriber[T] => Unit): Observable[T] = {
+    toScalaObservable(rx.Observable.create(f))
+  }
+  
   /**
    * Returns an Observable that invokes an [[rx.lang.scala.Observer]]'s [[rx.lang.scala.Observer.onError onError]]
    * method when the Observer subscribes to it.
