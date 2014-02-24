@@ -4,47 +4,72 @@ import rx.Observable.Operator;
 import rx.Observer;
 import rx.Subscriber;
 import rx.functions.Action1;
+import rx.functions.Action2;
 import rx.functions.Func1;
 import rx.plugins.DebugNotification;
 
-public final class DebugSubscriber<T> extends Subscriber<T> {
+public final class DebugSubscriber<T, C> extends Subscriber<T> {
     private final Func1<T, T> onNextHook;
-    final Action1<DebugNotification> events;
-    final Observer<? super T> o;
-    Operator<? extends T, ?> from = null;
-    Operator<?, ? super T> to = null;
+    private final Func1<DebugNotification, C> start;
+    private final Action1<C> complete;
+    private final Action2<C, Throwable> error;
+    private final Observer<? super T> o;
+    private Operator<? extends T, ?> from = null;
+    private Operator<?, ? super T> to = null;
 
     public DebugSubscriber(
             Func1<T, T> onNextHook,
-            Action1<DebugNotification> _events,
+            Func1<DebugNotification, C> start,
+            Action1<C> complete,
+            Action2<C, Throwable> error,
             Subscriber<? super T> _o,
             Operator<? extends T, ?> _out,
             Operator<?, ? super T> _in) {
         super(_o);
-        this.events = _events;
+        this.start = start;
+        this.complete = complete;
+        this.error = error;
         this.o = _o;
         this.onNextHook = onNextHook;
         this.from = _out;
         this.to = _in;
-        this.add(new DebugSubscription<T>(this));
+        this.add(new DebugSubscription<T, C>(this, start, complete, error));
     }
 
     @Override
     public void onCompleted() {
-        events.call(DebugNotification.createOnCompleted(o, from, to));
-        o.onCompleted();
+        final DebugNotification<T, C> n = DebugNotification.createOnCompleted(o, from, to);
+        C context = start.call(n);
+        try {
+            o.onCompleted();
+            complete.call(context);
+        } catch (Throwable e) {
+            error.call(context, e);
+        }
     }
 
     @Override
     public void onError(Throwable e) {
-        events.call(DebugNotification.createOnError(o, from, e, to));
-        o.onError(e);
+        final DebugNotification<T, C> n = DebugNotification.createOnError(o, from, e, to);
+        C context = start.call(n);
+        try {
+            o.onError(e);
+            complete.call(context);
+        } catch (Throwable e2) {
+            error.call(context, e2);
+        }
     }
 
     @Override
     public void onNext(T t) {
-        events.call(DebugNotification.createOnNext(o, from, t, to));
-        o.onNext(onNextHook.call(t));
+        final DebugNotification<T, C> n = DebugNotification.createOnNext(o, from, t, to);
+        C context = start.call(n);
+        try {
+            o.onNext(onNextHook.call(t));
+            complete.call(context);
+        } catch (Throwable e) {
+            error.call(context, e);
+        }
     }
 
     public Operator<? extends T, ?> getFrom() {
