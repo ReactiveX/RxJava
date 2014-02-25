@@ -41,13 +41,33 @@ public class TestSubscriber<T> extends Subscriber<T> {
     }
 
     public TestSubscriber() {
-        this.testObserver = new TestObserver<T>(Subscribers.<T> empty());
+        this.testObserver = new TestObserver<T>(new Observer<T>() {
+
+            @Override
+            public void onCompleted() {
+                // do nothing
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                // do nothing
+            }
+
+            @Override
+            public void onNext(T t) {
+                // do nothing
+            }
+
+        });
     }
 
     @Override
     public void onCompleted() {
-        testObserver.onCompleted();
-        latch.countDown();
+        try {
+            testObserver.onCompleted();
+        } finally {
+            latch.countDown();
+        }
     }
 
     public List<Notification<T>> getOnCompletedEvents() {
@@ -56,8 +76,11 @@ public class TestSubscriber<T> extends Subscriber<T> {
 
     @Override
     public void onError(Throwable e) {
-        testObserver.onError(e);
-        latch.countDown();
+        try {
+            testObserver.onError(e);
+        } finally {
+            latch.countDown();
+        }
     }
 
     public List<Throwable> getOnErrorEvents() {
