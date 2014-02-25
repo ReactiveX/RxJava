@@ -59,6 +59,14 @@ public class OnErrorThrowable extends RuntimeException {
      * @return Throwable e passed in
      */
     public static Throwable addValueAsLastCause(Throwable e, Object value) {
+        Throwable lastCause = Exceptions.getFinalCause(e);
+        if (lastCause != null && lastCause instanceof OnNextValue) {
+            // purposefully using == for object reference check
+            if (((OnNextValue) lastCause).getValue() == value) {
+                // don't add another
+                return e;
+            }
+        }
         Exceptions.addCause(e, new OnNextValue(value));
         return e;
     }
