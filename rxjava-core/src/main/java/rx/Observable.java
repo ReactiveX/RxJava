@@ -266,7 +266,17 @@ public class Observable<T> {
         return new Observable<R>(new OnSubscribe<R>() {
             @Override
             public void call(Subscriber<? super R> o) {
-                f.call(hook.onLift(lift).call(o));
+                try {
+                    f.call(hook.onLift(lift).call(o));
+                } catch (Throwable e) {
+                    // localized capture of errors rather than it skipping all operators 
+                    // and ending up in the try/catch of the subscribe method which then
+                    // prevents onErrorResumeNext and other similar approaches to error handling
+                    if (e instanceof OnErrorNotImplementedException) {
+                        throw (OnErrorNotImplementedException) e;
+                    }
+                    o.onError(e);
+                }
             }
         });
     }

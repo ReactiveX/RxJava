@@ -26,7 +26,9 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import rx.Observable;
+import rx.Observable.Operator;
 import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Func1;
 import rx.observers.TestSubscriber;
@@ -141,6 +143,87 @@ public class OperatorOnErrorResumeNextViaFunctionTest {
         // we should have received an onError call on the Observer since the resume function threw an exception
         verify(observer, times(1)).onError(any(Throwable.class));
         verify(observer, times(0)).onCompleted();
+    }
+
+    /**
+     * Test that we receive the onError if an exception is thrown from an operator that
+     * does not have manual try/catch handling like map does.
+     */
+    @Test
+    public void testOnErrorResumeReceivesErrorFromPreviousNonProtectedOperator() {
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+        Observable.from(1).lift(new Operator<String, Integer>() {
+
+            @Override
+            public Subscriber<? super Integer> call(Subscriber<? super String> t1) {
+                throw new RuntimeException("failed");
+            }
+
+        }).onErrorResumeNext(new Func1<Throwable, Observable<String>>() {
+
+            @Override
+            public Observable<String> call(Throwable t1) {
+                if (t1.getMessage().equals("failed")) {
+                    return Observable.from("success");
+                } else {
+                    return Observable.error(t1);
+                }
+            }
+
+        }).subscribe(ts);
+
+        ts.assertTerminalEvent();
+        System.out.println(ts.getOnNextEvents());
+        ts.assertReceivedOnNext(Arrays.asList("success"));
+    }
+
+    /**
+     * Test that we receive the onError if an exception is thrown from an operator that
+     * does not have manual try/catch handling like map does.
+     */
+    @Test
+    public void testOnErrorResumeReceivesErrorFromPreviousNonProtectedOperatorOnNext() {
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+        Observable.from(1).lift(new Operator<String, Integer>() {
+
+            @Override
+            public Subscriber<? super Integer> call(Subscriber<? super String> t1) {
+                return new Subscriber<Integer>() {
+
+                    @Override
+                    public void onCompleted() {
+                        throw new RuntimeException("failed");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        throw new RuntimeException("failed");
+                    }
+
+                    @Override
+                    public void onNext(Integer t) {
+                        throw new RuntimeException("failed");
+                    }
+
+                };
+            }
+
+        }).onErrorResumeNext(new Func1<Throwable, Observable<String>>() {
+
+            @Override
+            public Observable<String> call(Throwable t1) {
+                if (t1.getMessage().equals("failed")) {
+                    return Observable.from("success");
+                } else {
+                    return Observable.error(t1);
+                }
+            }
+
+        }).subscribe(ts);
+
+        ts.assertTerminalEvent();
+        System.out.println(ts.getOnNextEvents());
+        ts.assertReceivedOnNext(Arrays.asList("success"));
     }
 
     private static class TestObservable implements Observable.OnSubscribeFunc<String> {
