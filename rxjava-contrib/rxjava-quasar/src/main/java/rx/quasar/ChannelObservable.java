@@ -119,7 +119,7 @@ public final class ChannelObservable {
      * @param o          the observable
      * @return A new channel with the given buffer size and overflow policy that will receive all events emitted by the observable.
      */
-    public static <T> ReceivePort<T> subscribe(int bufferSize, Channels.OverflowPolicy policy, Observable<T> o) {
+    public static <T> ReceivePort<T> subscribe(int bufferSize, Channels.OverflowPolicy policy, Observable<? extends T> o) {
         final Channel<T> channel = Channels.newChannel(bufferSize, policy);
 
         o.subscribe(new Observer<T>() {

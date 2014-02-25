@@ -7,6 +7,7 @@ Main Classes:
 
 - [NewFiberScheduler](https://github.com/Netflix/RxJava/blob/master/rxjava-contrib/rxjava-quasar/src/main/java/rx/quasar/NewFiberScheduler.java)
 - [ChannelObservable](https://github.com/Netflix/RxJava/blob/master/rxjava-contrib/rxjava-quasar/src/main/java/rx/quasar/ChannelObservable.java)
+- [BlockingObservable](https://github.com/Netflix/RxJava/blob/master/rxjava-contrib/rxjava-quasar/src/main/java/rx/quasar/BlockingObservable.java)
 
 
 # Binaries
