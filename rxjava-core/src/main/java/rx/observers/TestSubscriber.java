@@ -64,6 +64,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
     @Override
     public void onCompleted() {
         try {
+            lastSeenThread = Thread.currentThread();
             testObserver.onCompleted();
         } finally {
             latch.countDown();
@@ -77,6 +78,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
     @Override
     public void onError(Throwable e) {
         try {
+            lastSeenThread = Thread.currentThread();
             testObserver.onError(e);
         } finally {
             latch.countDown();
