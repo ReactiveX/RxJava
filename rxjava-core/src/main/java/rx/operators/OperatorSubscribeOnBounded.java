@@ -88,14 +88,13 @@ public class OperatorSubscribeOnBounded<T> implements Operator<T, Observable<T>>
                 if (checkNeedBuffer(o)) {
                     // use buffering (possibly blocking) for a possibly synchronous subscribe
                     final BufferUntilSubscriber<T> bus = new BufferUntilSubscriber<T>(bufferSize, subscriber);
-                    o.subscribe(bus);
                     subscriber.add(scheduler.schedule(new Action1<Inner>() {
                         @Override
                         public void call(final Inner inner) {
                             bus.enterPassthroughMode();
                         }
                     }));
-                    return;
+                    o.subscribe(bus);
                 } else {
                     // no buffering (async subscribe)
                     subscriber.add(scheduler.schedule(new Action1<Inner>() {
