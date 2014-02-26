@@ -39,6 +39,7 @@ Thumbs.db
 # Gradle Files #
 ################
 .gradle
+.gradletasknamecache
 .m2
 
 # Build output directies

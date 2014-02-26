@@ -1,0 +1,19 @@
+def androidHome = System.getenv("ANDROID_HOME")
+tasks.build.doLast {
+  if (androidHome.isEmpty()) {
+    println("No Android SDK detected; skipping Android samples build")
+  } else {
+    println("Android SDK detected at $androidHome, running samples build")
+    project.exec {
+      workingDir '../rxjava-android-samples'
+
+      def props = new Properties()
+      file("$rootDir/gradle.properties").withReader { reader ->
+        props.load(reader)
+        properties.putAll(props)
+      }
+
+      commandLine "./gradlew", "clean", "packageDebug", "-PrxjVersion=${props.getProperty("version")}"
+    }
+  }
+}
