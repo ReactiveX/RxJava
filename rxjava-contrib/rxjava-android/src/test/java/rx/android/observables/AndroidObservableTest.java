@@ -15,7 +15,7 @@
  */
 package rx.android.observables;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -25,13 +25,19 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
-
 import rx.Observable;
 import rx.Observer;
 import rx.observers.TestObserver;
+
 import android.app.Activity;
 import android.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 
 @RunWith(RobolectricTestRunner.class)
@@ -78,5 +84,37 @@ public class AndroidObservableTest {
     @Test(expected = IllegalArgumentException.class)
     public void itThrowsIfObjectPassedIsNotAFragment() {
         AndroidObservable.fromFragment("not a fragment", Observable.never());
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void itThrowsIfObserverCallsFromFragmentFromBackgroundThread() throws Throwable {
+        final Future<Object> future = Executors.newSingleThreadExecutor().submit(new Callable<Object>() {
+            @Override
+            public Object call() throws Exception {
+                AndroidObservable.fromFragment(fragment, Observable.empty());
+                return null;
+            }
+        });
+        try {
+            future.get(1, TimeUnit.SECONDS);
+        } catch (ExecutionException e) {
+            throw e.getCause();
+        }
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void itThrowsIfObserverCallsFromActivityFromBackgroundThread() throws Throwable {
+        final Future<Object> future = Executors.newSingleThreadExecutor().submit(new Callable<Object>() {
+            @Override
+            public Object call() throws Exception {
+                AndroidObservable.fromActivity(activity, Observable.empty());
+                return null;
+            }
+        });
+        try {
+            future.get(1, TimeUnit.SECONDS);
+        } catch (ExecutionException e) {
+            throw e.getCause();
+        }
     }
 }
