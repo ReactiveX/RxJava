@@ -36,7 +36,7 @@ public class RetainedFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        strings = SampleObservables.numberStrings2().cache();
+        strings = SampleObservables.numberStrings().cache();
     }
 
     @Override

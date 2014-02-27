@@ -7,7 +7,7 @@ tasks.build.doLast {
     project.exec {
       workingDir '../rxjava-android-samples'
 
-      commandLine "./gradlew", "clean", "packageDebug", "-PrxjVersion=${version}"
+      commandLine "./gradlew", "clean", "packageDebug"
     }
   }
 }
