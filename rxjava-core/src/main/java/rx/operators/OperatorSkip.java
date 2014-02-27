@@ -14,7 +14,7 @@ import rx.Subscriber;
  */
 public final class OperatorSkip<T> implements Observable.Operator<T, T> {
 
-    int n;
+    final int n;
 
     public OperatorSkip(int n) {
         this.n = n;
@@ -23,6 +23,8 @@ public final class OperatorSkip<T> implements Observable.Operator<T, T> {
     @Override
     public Subscriber<? super T> call(final Subscriber<? super T> child) {
         return new Subscriber<T>(child) {
+
+           int skipped = 0;
 
             @Override
             public void onCompleted() {
@@ -36,10 +38,10 @@ public final class OperatorSkip<T> implements Observable.Operator<T, T> {
 
             @Override
             public void onNext(T t) {
-                if(n <= 0) {
+                if(skipped >= n) {
                     child.onNext(t);
                 } else {
-                    n -= 1;
+                    skipped += 1;
                 }
             }
 
