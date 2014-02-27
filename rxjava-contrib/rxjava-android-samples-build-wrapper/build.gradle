@@ -7,13 +7,7 @@ tasks.build.doLast {
     project.exec {
       workingDir '../rxjava-android-samples'
 
-      def props = new Properties()
-      file("$rootDir/gradle.properties").withReader { reader ->
-        props.load(reader)
-        properties.putAll(props)
-      }
-
-      commandLine "./gradlew", "clean", "packageDebug", "-PrxjVersion=${props.getProperty("version")}"
+      commandLine "./gradlew", "clean", "packageDebug", "-PrxjVersion=${version}"
     }
   }
 }
