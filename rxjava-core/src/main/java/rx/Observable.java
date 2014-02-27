@@ -6433,7 +6433,7 @@ public class Observable<T> {
 
     /**
      * Returns an Observable that emits the items in a specified {@link Observable} before it begins to emit items
-     * emitted by the source Observable.
+     * emitted by the source Observable. 
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.png">
      * 
