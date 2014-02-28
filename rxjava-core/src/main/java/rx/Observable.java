@@ -94,7 +94,6 @@ import rx.operators.OperationSkipUntil;
 import rx.operators.OperatorSkipWhile;
 import rx.operators.OperationSum;
 import rx.operators.OperationSwitch;
-import rx.operators.OperationSynchronize;
 import rx.operators.OperationTakeLast;
 import rx.operators.OperationTakeTimed;
 import rx.operators.OperationTakeUntil;
@@ -122,6 +121,7 @@ import rx.operators.OperatorRetry;
 import rx.operators.OperatorScan;
 import rx.operators.OperatorSkip;
 import rx.operators.OperatorSubscribeOn;
+import rx.operators.OperatorSynchronize;
 import rx.operators.OperatorTake;
 import rx.operators.OperatorTimeout;
 import rx.operators.OperatorTimeoutWithSelector;
@@ -2712,7 +2712,7 @@ public class Observable<T> {
      */
     @Deprecated
     public final static <T> Observable<T> synchronize(Observable<T> source) {
-        return create(OperationSynchronize.synchronize(source));
+        return source.synchronize();
     }
 
     /**
@@ -7261,7 +7261,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#wiki-synchronize">RxJava Wiki: synchronize()</a>
      */
     public final Observable<T> synchronize() {
-        return create(OperationSynchronize.synchronize(this));
+        return lift(new OperatorSynchronize<T>());
     }
 
     /**
@@ -7285,7 +7285,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#wiki-synchronize">RxJava Wiki: synchronize()</a>
      */
     public final Observable<T> synchronize(Object lock) {
-        return create(OperationSynchronize.synchronize(this, lock));
+        return lift(new OperatorSynchronize<T>(lock));
     }
 
     /**
