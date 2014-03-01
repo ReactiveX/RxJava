@@ -288,7 +288,7 @@ public class SynchronizedObserverTest {
      * @param tw
      */
     @Test
-    public void runConcurrencyTest() {
+    public void runOutOfOrderConcurrencyTest() {
         ExecutorService tp = Executors.newFixedThreadPool(20);
         try {
             TestConcurrencyObserver tw = new TestConcurrencyObserver();
@@ -304,7 +304,7 @@ public class SynchronizedObserverTest {
             Future<?> f7 = tp.submit(new OnNextThread(w, 7500));
             Future<?> f8 = tp.submit(new OnNextThread(w, 23500));
 
-            Future<?> f10 = tp.submit(new CompletionThread(w, TestConcurrencyObserverEvent.onCompleted, f1, f2, f3, f4));
+            Future<?> f10 = tp.submit(new CompletionThread(w, TestConcurrencyObserverEvent.onCompleted, f1, f2, f3, f4, f5, f6, f7, f8));
             try {
                 Thread.sleep(1);
             } catch (InterruptedException e) {
@@ -323,6 +323,55 @@ public class SynchronizedObserverTest {
             waitOnThreads(f1, f2, f3, f4, f5, f6, f7, f8, f10, f11, f12, f13, f14, f15, f16, f17, f18);
             @SuppressWarnings("unused")
             int numNextEvents = tw.assertEvents(null); // no check of type since we don't want to test barging results here, just interleaving behavior
+            // System.out.println("Number of events executed: " + numNextEvents);
+        } catch (Throwable e) {
+            fail("Concurrency test failed: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            tp.shutdown();
+            try {
+                tp.awaitTermination(5000, TimeUnit.MILLISECONDS);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * 
+     * @param w
+     * @param tw
+     */
+    @Test
+    public void runConcurrencyTest() {
+        ExecutorService tp = Executors.newFixedThreadPool(20);
+        try {
+            TestConcurrencyObserver tw = new TestConcurrencyObserver();
+            // we need Synchronized + SafeSubscriber to handle synchronization plus life-cycle
+            SynchronizedObserver<String> w = new SynchronizedObserver<String>(new SafeSubscriber<String>(tw));
+
+            Future<?> f1 = tp.submit(new OnNextThread(w, 12000));
+            Future<?> f2 = tp.submit(new OnNextThread(w, 5000));
+            Future<?> f3 = tp.submit(new OnNextThread(w, 75000));
+            Future<?> f4 = tp.submit(new OnNextThread(w, 13500));
+            Future<?> f5 = tp.submit(new OnNextThread(w, 22000));
+            Future<?> f6 = tp.submit(new OnNextThread(w, 15000));
+            Future<?> f7 = tp.submit(new OnNextThread(w, 7500));
+            Future<?> f8 = tp.submit(new OnNextThread(w, 23500));
+
+            // 12000 + 5000 + 75000 + 13500 + 22000 + 15000 + 7500 + 23500 = 173500
+
+            Future<?> f10 = tp.submit(new CompletionThread(w, TestConcurrencyObserverEvent.onCompleted, f1, f2, f3, f4));
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException e) {
+                // ignore
+            }
+
+            waitOnThreads(f1, f2, f3, f4, f5, f6, f7, f8, f10);
+            @SuppressWarnings("unused")
+            int numNextEvents = tw.assertEvents(null); // no check of type since we don't want to test barging results here, just interleaving behavior
+            assertEquals(173500, numNextEvents);
             // System.out.println("Number of events executed: " + numNextEvents);
         } catch (Throwable e) {
             fail("Concurrency test failed: " + e.getMessage());

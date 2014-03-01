@@ -14,11 +14,11 @@ import rx.perf.IntegerSumObserver;
 import rx.schedulers.Schedulers;
 
 public class OperatorSerializePerformance extends AbstractPerformanceTester {
-    //    static int reps = Integer.MAX_VALUE / 16384; // timeTwoStreams
+        static int reps = Integer.MAX_VALUE / 16384; // timeTwoStreams
 
     //    static int reps = Integer.MAX_VALUE / 1024; // timeSingleStream
 
-    static int reps = 1000; // interval streams
+//    static int reps = 1000; // interval streams
 
     OperatorSerializePerformance() {
         super(reps);

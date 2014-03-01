@@ -26,9 +26,8 @@ public class SerializedObserver<T> implements Observer<T> {
             }
             newState = current.complete();
         } while (!state.compareAndSet(current, newState));
-        if (newState.count == 0) {
-            s.onCompleted();
-        }
+        System.out.println("********** onCompleted");
+        terminateIfNecessary(newState);
     }
 
     @Override
@@ -43,9 +42,8 @@ public class SerializedObserver<T> implements Observer<T> {
             }
             newState = current.error(e);
         } while (!state.compareAndSet(current, newState));
-        if (newState.count == 0) {
-            s.onError(e);
-        }
+        System.out.println("********** onError");
+        terminateIfNecessary(newState);
     }
 
     @SuppressWarnings("unchecked")
@@ -59,71 +57,82 @@ public class SerializedObserver<T> implements Observer<T> {
                 // already received terminal state
                 return;
             }
-            newState = current.increment(t);
+            newState = current.offerItem(t);
         } while (!state.compareAndSet(current, newState));
 
-        if (newState.count == 1) {
+        if (newState.shouldProcess()) {
             // this thread wins and will emit then drain queue if it concurrently gets added to
-            try {
-                s.onNext(t);
-            } finally {
-                // decrement after finishing
-                do {
-                    current = state.get();
-                    newState = current.decrement();
-                } while (!state.compareAndSet(current, newState));
-            }
+            s.onNext(t);
 
             // drain queue if exists
             // we do "if" instead of "while" so we don't starve one thread
-            if (newState.queue.length > 0) {
-                Object[] items = newState.queue;
-                for (int i = 0; i < items.length; i++) {
-                    s.onNext((T) items[i]);
-                }
-                // clear state of queue
-                do {
-                    current = state.get();
-                    newState = current.drain(items.length);
-                } while (!state.compareAndSet(current, newState));
-                terminateIfNecessary(newState);
-            } else {
-                terminateIfNecessary(newState);
+            Object[] items = newState.queue;
+            for (int i = 0; i < items.length; i++) {
+                s.onNext((T) items[i]);
             }
 
+            // finish processing to let this thread move on
+            do {
+                current = state.get();
+                newState = current.finishProcessing(items.length + 1); // the + 1 is for the first onNext of itself
+            } while (!state.compareAndSet(current, newState));
+            System.out.println("********** finishProcessing");
+            terminateIfNecessary(newState);
         }
     }
 
-    private void terminateIfNecessary(State state) {
-        if (state.isTerminated()) {
-            if (state.onComplete) {
-                s.onCompleted();
-            } else {
-                s.onError(state.onError);
+    @SuppressWarnings("unchecked")
+    private void terminateIfNecessary(State current) {
+        if (current.isTerminated()) {
+            State newState = null;
+            do {
+                current = state.get();
+                newState = current.startTermination();
+            } while (!state.compareAndSet(current, newState));
+            if (newState.shouldProcess()) {
+                // drain any items left
+                for (int i = 0; i < newState.queue.length; i++) {
+                    s.onNext((T) newState.queue[i]);
+                }
+
+                // now terminate
+                if (newState.onComplete) {
+                    s.onCompleted();
+                } else {
+                    s.onError(newState.onError);
+                }
             }
         }
     }
 
     public static class State {
-        final int count;
+        final boolean shouldProcess;
+        final boolean isSomeoneProcessing;
+        final int queueSize;
         final Object[] queue;
         final boolean onComplete;
         final Throwable onError;
 
         private final static Object[] EMPTY = new Object[0];
 
-        private final static State NON_TERMINATED_EMPTY = new State(0, false, null, EMPTY);
-        private final static State NON_TERMINATED_SINGLE = new State(1, false, null, EMPTY);
+        private final static State NON_TERMINATED_EMPTY = new State(false, false, 0, false, null, EMPTY);
+        private final static State NON_TERMINATED_PROCESS_SELF = new State(true, true, 1, false, null, EMPTY);
 
-        public State(int count, boolean onComplete, Throwable onError, Object[] queue) {
-            this.count = count;
+        public State(boolean shouldProcess, boolean isSomeoneProcessing, int queueSize, boolean onComplete, Throwable onError, Object[] queue) {
+            this.shouldProcess = shouldProcess;
+            this.isSomeoneProcessing = isSomeoneProcessing;
+            this.queueSize = queueSize;
             this.queue = queue;
             this.onComplete = onComplete;
             this.onError = onError;
         }
 
         public static State createNew() {
-            return new State(0, false, null, EMPTY);
+            return new State(false, false, 0, false, null, EMPTY);
+        }
+
+        public boolean shouldProcess() {
+            return shouldProcess;
         }
 
         public boolean isTerminated() {
@@ -131,52 +140,63 @@ public class SerializedObserver<T> implements Observer<T> {
         }
 
         public State complete() {
-            return new State(count, true, onError, queue);
+            return new State(false, isSomeoneProcessing, queueSize, true, onError, queue);
         }
 
         public State error(Throwable e) {
-            return new State(count, onComplete, e, queue);
+            // immediately empty the queue and emit error as soon as possible
+            return new State(false, isSomeoneProcessing, queueSize, onComplete, e, EMPTY);
+        }
+
+        public State startTermination() {
+            if (isSomeoneProcessing) {
+                System.out.println("start terminate and DO NOT process => queue size: " + (queueSize + 1));
+                return new State(false, isSomeoneProcessing, queueSize, onComplete, onError, queue);
+            } else {
+                System.out.println("start terminate and process => queue size: " + (queueSize + 1));
+                return new State(true, isSomeoneProcessing, queueSize, onComplete, onError, queue);
+            }
         }
 
         AtomicInteger max = new AtomicInteger();
 
-        public State increment(Object item) {
-            if (count == 0) {
+        public State offerItem(Object item) {
+            if (queueSize == 0) {
                 // no concurrent requests so don't queue, we'll process immediately
                 if (isTerminated()) {
                     // return count of 0 meaning don't emit as we are terminated
-                    return new State(0, onComplete, onError, EMPTY);
+                    return new State(false, false, 0, onComplete, onError, EMPTY);
                 } else {
-                    return NON_TERMINATED_SINGLE;
+                    return NON_TERMINATED_PROCESS_SELF;
                 }
             } else {
-                // concurrent requests so need to queue
+                // there are items queued so we need to queue
                 int idx = queue.length;
                 Object[] newQueue = new Object[idx + 1];
                 System.arraycopy(queue, 0, newQueue, 0, idx);
                 newQueue[idx] = item;
 
-                if (max.get() < newQueue.length) {
-                    max.set(newQueue.length);
-                    System.out.println("max queue: " + newQueue.length);
+                if (isSomeoneProcessing) {
+                    // we just add to queue
+                    return new State(false, isSomeoneProcessing, queueSize + 1, onComplete, onError, newQueue);
+                } else {
+                    // we add to queue and claim work
+                    return new State(false, true, queueSize + 1, onComplete, onError, newQueue);
                 }
-
-                return new State(count + 1, onComplete, onError, newQueue);
             }
         }
 
-        public State decrement() {
-            if (count > 1 || isTerminated()) {
-                return new State(count - 1, onComplete, onError, queue);
+        public State finishProcessing(int numOnNextSent) {
+            int numOnNextFromQueue = numOnNextSent - 1; // we remove the "self" onNext as it doesn't affect the queue
+            int size = queueSize - numOnNextFromQueue;
+            System.out.println("finishProcessing => queue size: " + size + "   after processing: " + numOnNextSent);
+            if (size > 1 || isTerminated()) {
+                Object[] newQueue = new Object[queue.length - numOnNextFromQueue];
+                System.arraycopy(queue, numOnNextFromQueue, newQueue, 0, newQueue.length);
+                return new State(false, false, size, onComplete, onError, newQueue);
             } else {
                 return NON_TERMINATED_EMPTY;
             }
-        }
-
-        public State drain(int c) {
-            Object[] newQueue = new Object[queue.length - c];
-            System.arraycopy(queue, c, newQueue, 0, newQueue.length);
-            return new State(count - c, onComplete, onError, newQueue);
         }
 
     }

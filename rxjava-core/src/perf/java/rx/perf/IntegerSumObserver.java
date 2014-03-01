@@ -13,6 +13,7 @@ public class IntegerSumObserver extends Subscriber<Integer> {
 
     @Override
     public void onError(Throwable e) {
+        e.printStackTrace();
         throw new RuntimeException(e);
     }
 

@@ -19,7 +19,6 @@ import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
-import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -136,7 +135,13 @@ public class SerializedObserverTest {
         w.subscribe(aw);
         onSubscribe.waitToFinish();
 
-        System.out.println("maxConcurrentThreads: " + onSubscribe.maxConcurrentThreads.get());
+        System.out.println("OnSubscribe maxConcurrentThreads: " + onSubscribe.maxConcurrentThreads.get() + "  Observer maxConcurrentThreads: " + busyObserver.maxConcurrentThreads.get());
+
+        // we can have concurrency ...
+        assertTrue(onSubscribe.maxConcurrentThreads.get() > 1);
+        // ... but the onNext execution should be single threaded
+        assertEquals(1, busyObserver.maxConcurrentThreads.get());
+
         // this should not be the full number of items since the error should stop it before it completes all 9
         System.out.println("onNext count: " + busyObserver.onNextCount.get());
         assertTrue(busyObserver.onNextCount.get() < 9);
@@ -146,11 +151,6 @@ public class SerializedObserverTest {
         // non-deterministic because unsubscribe happens after 'waitToFinish' releases
         // so commenting out for now as this is not a critical thing to test here
         // verify(s, times(1)).unsubscribe();
-
-        // we can have concurrency ...
-        assertTrue(onSubscribe.maxConcurrentThreads.get() > 1);
-        // ... but the onNext execution should be single threaded
-        assertEquals(1, busyObserver.maxConcurrentThreads.get());
     }
 
     /**
@@ -161,7 +161,7 @@ public class SerializedObserverTest {
      * @param tw
      */
     @Test
-    public void runConcurrencyTest() {
+    public void runOutOfOrderConcurrencyTest() {
         ExecutorService tp = Executors.newFixedThreadPool(20);
         try {
             TestConcurrencyObserver tw = new TestConcurrencyObserver();
@@ -196,7 +196,7 @@ public class SerializedObserverTest {
             waitOnThreads(f1, f2, f3, f4, f5, f6, f7, f8, f10, f11, f12, f13, f14, f15, f16, f17, f18);
             @SuppressWarnings("unused")
             int numNextEvents = tw.assertEvents(null); // no check of type since we don't want to test barging results here, just interleaving behavior
-            // System.out.println("Number of events executed: " + numNextEvents);
+            //            System.out.println("Number of events executed: " + numNextEvents);
         } catch (Throwable e) {
             fail("Concurrency test failed: " + e.getMessage());
             e.printStackTrace();
@@ -210,10 +210,59 @@ public class SerializedObserverTest {
         }
     }
 
+    /**
+     * 
+     * @param w
+     * @param tw
+     */
+    @Test
+    public void runConcurrencyTest() {
+        ExecutorService tp = Executors.newFixedThreadPool(20);
+        try {
+            TestConcurrencyObserver tw = new TestConcurrencyObserver();
+            // we need Synchronized + SafeSubscriber to handle synchronization plus life-cycle
+            SerializedObserver<String> w = new SerializedObserver<String>(new SafeSubscriber<String>(tw));
+
+            Future<?> f1 = tp.submit(new OnNextThread(w, 12000));
+            Future<?> f2 = tp.submit(new OnNextThread(w, 5000));
+            Future<?> f3 = tp.submit(new OnNextThread(w, 75000));
+            Future<?> f4 = tp.submit(new OnNextThread(w, 13500));
+            Future<?> f5 = tp.submit(new OnNextThread(w, 22000));
+            Future<?> f6 = tp.submit(new OnNextThread(w, 15000));
+            Future<?> f7 = tp.submit(new OnNextThread(w, 7500));
+            Future<?> f8 = tp.submit(new OnNextThread(w, 23500));
+
+            // 12000 + 5000 + 75000 + 13500 + 22000 + 15000 + 7500 + 23500 = 173500
+
+            Future<?> f10 = tp.submit(new CompletionThread(w, TestConcurrencyObserverEvent.onCompleted, f1, f2, f3, f4, f5, f6, f7, f8));
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException e) {
+                // ignore
+            }
+
+            waitOnThreads(f1, f2, f3, f4, f5, f6, f7, f8, f10);
+            @SuppressWarnings("unused")
+            int numNextEvents = tw.assertEvents(null); // no check of type since we don't want to test barging results here, just interleaving behavior
+            assertEquals(173500, numNextEvents);
+            // System.out.println("Number of events executed: " + numNextEvents);
+        } catch (Throwable e) {
+            fail("Concurrency test failed: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            tp.shutdown();
+            try {
+                tp.awaitTermination(25000, TimeUnit.MILLISECONDS);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     private static void waitOnThreads(Future<?>... futures) {
         for (Future<?> f : futures) {
             try {
-                f.get(10, TimeUnit.SECONDS);
+                f.get(20, TimeUnit.SECONDS);
             } catch (Throwable e) {
                 System.err.println("Failed while waiting on future.");
                 e.printStackTrace();
@@ -521,31 +570,23 @@ public class SerializedObserverTest {
         @Override
         public void onCompleted() {
             threadsRunning.incrementAndGet();
-
-            System.out.println(">>> BusyObserver received onCompleted");
-            onCompleted = true;
-
-            int concurrentThreads = threadsRunning.get();
-            int maxThreads = maxConcurrentThreads.get();
-            if (concurrentThreads > maxThreads) {
-                maxConcurrentThreads.compareAndSet(maxThreads, concurrentThreads);
+            try {
+                onCompleted = true;
+            } finally {
+                captureMaxThreads();
+                threadsRunning.decrementAndGet();
             }
-            threadsRunning.decrementAndGet();
         }
 
         @Override
         public void onError(Throwable e) {
             threadsRunning.incrementAndGet();
-
-            System.out.println(">>> BusyObserver received onError: " + e.getMessage());
-            onError = true;
-
-            int concurrentThreads = threadsRunning.get();
-            int maxThreads = maxConcurrentThreads.get();
-            if (concurrentThreads > maxThreads) {
-                maxConcurrentThreads.compareAndSet(maxThreads, concurrentThreads);
+            try {
+                onError = true;
+            } finally {
+                captureMaxThreads();
+                threadsRunning.decrementAndGet();
             }
-            threadsRunning.decrementAndGet();
         }
 
         @Override
@@ -553,7 +594,6 @@ public class SerializedObserverTest {
             threadsRunning.incrementAndGet();
             try {
                 onNextCount.incrementAndGet();
-                System.out.println(">>> BusyObserver received onNext: " + args);
                 try {
                     // simulate doing something computational
                     Thread.sleep(200);
@@ -562,12 +602,19 @@ public class SerializedObserverTest {
                 }
             } finally {
                 // capture 'maxThreads'
-                int concurrentThreads = threadsRunning.get();
-                int maxThreads = maxConcurrentThreads.get();
-                if (concurrentThreads > maxThreads) {
-                    maxConcurrentThreads.compareAndSet(maxThreads, concurrentThreads);
-                }
+                captureMaxThreads();
                 threadsRunning.decrementAndGet();
+            }
+        }
+
+        protected void captureMaxThreads() {
+            int concurrentThreads = threadsRunning.get();
+            int maxThreads = maxConcurrentThreads.get();
+            if (concurrentThreads > maxThreads) {
+                maxConcurrentThreads.compareAndSet(maxThreads, concurrentThreads);
+                if (concurrentThreads > 1) {
+                    new RuntimeException("should not be greater than 1").printStackTrace();
+                }
             }
         }
 
