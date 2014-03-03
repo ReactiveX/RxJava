@@ -25,8 +25,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import rx.exceptions.Exceptions;
-import rx.exceptions.OnErrorThrowable;
 import rx.exceptions.OnErrorNotImplementedException;
+import rx.exceptions.OnErrorThrowable;
 import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Action2;
@@ -115,8 +115,8 @@ import rx.operators.OperatorGroupBy;
 import rx.operators.OperatorMap;
 import rx.operators.OperatorMerge;
 import rx.operators.OperatorObserveOn;
-import rx.operators.OperatorOnErrorResumeNextViaFunction;
 import rx.operators.OperatorOnErrorFlatMap;
+import rx.operators.OperatorOnErrorResumeNextViaFunction;
 import rx.operators.OperatorParallel;
 import rx.operators.OperatorRepeat;
 import rx.operators.OperatorScan;
@@ -171,10 +171,10 @@ public class Observable<T> {
      *            {@link OnSubscribe} to be executed when {@link #subscribe(Subscriber)} is called
      */
     protected Observable(OnSubscribe<T> f) {
-        this.f = hook.onCreate(f);
+        this.f = f;
     }
 
-    private final static RxJavaObservableExecutionHook hook = RxJavaPlugins.getInstance().getObservableExecutionHook();
+    private final RxJavaObservableExecutionHook hook = RxJavaPlugins.getInstance().getObservableExecutionHook();
 
     /**
      * Returns an Observable that will execute the specified function when a {@link Subscriber} subscribes to
@@ -7041,7 +7041,7 @@ public class Observable<T> {
                 observer = new SafeSubscriber<T>(observer);
                 onSubscribeFunction.call(observer);
             }
-            final Subscription returnSubscription = hook.onSubscribeReturn(this, observer);
+            final Subscription returnSubscription = hook.onSubscribeReturn(observer);
             // we return it inside a Subscription so it can't be cast back to Subscriber
             return Subscriptions.create(new Action0() {
 
@@ -7056,7 +7056,7 @@ public class Observable<T> {
             Exceptions.throwIfFatal(e);
             // if an unhandled error occurs executing the onSubscribe we will propagate it
             try {
-                observer.onError(hook.onSubscribeError(this, e));
+                observer.onError(hook.onSubscribeError(e));
             } catch (OnErrorNotImplementedException e2) {
                 // special handling when onError is not implemented ... we just rethrow
                 throw e2;
@@ -7064,7 +7064,9 @@ public class Observable<T> {
                 // if this happens it means the onError itself failed (perhaps an invalid function implementation)
                 // so we are unable to propagate the error correctly and will just throw
                 RuntimeException r = new RuntimeException("Error occurred attempting to subscribe [" + e.getMessage() + "] and then again while trying to pass to onError.", e2);
-                hook.onSubscribeError(this, r);
+                // TODO could the hook be the cause of the error in the on error handling.
+                hook.onSubscribeError(r);
+                // TODO why aren't we throwing the hook's return value.
                 throw r;
             }
             return Subscriptions.empty();

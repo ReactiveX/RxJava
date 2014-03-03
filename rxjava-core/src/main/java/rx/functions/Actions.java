@@ -25,51 +25,63 @@ public final class Actions {
         throw new IllegalStateException("No instances!");
     }
 
-    public static final EmptyAction empty() {
-        return EMPTY_ACTION;
+    @SuppressWarnings("unchecked")
+    public static final <T0, T1, T2, T3, T4, T5, T6, T7, T8, T9> EmptyAction<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9> empty() {
+        return (EmptyAction<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9>) EMPTY_ACTION;
     }
 
     private static final EmptyAction EMPTY_ACTION = new EmptyAction();
 
-    private static final class EmptyAction implements Action0, Action1, Action2, Action3, Action4, Action5, Action6, Action7, Action8, Action9, ActionN {
+    private static final class EmptyAction<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9> implements
+            Action0,
+            Action1<T0>,
+            Action2<T0, T1>,
+            Action3<T0, T1, T2>,
+            Action4<T0, T1, T2, T3>,
+            Action5<T0, T1, T2, T3, T4>,
+            Action6<T0, T1, T2, T3, T4, T5>,
+            Action7<T0, T1, T2, T3, T4, T5, T6>,
+            Action8<T0, T1, T2, T3, T4, T5, T6, T7>,
+            Action9<T0, T1, T2, T3, T4, T5, T6, T7, T8>,
+            ActionN {
         @Override
         public void call() {
         }
 
         @Override
-        public void call(Object t1) {
+        public void call(T0 t1) {
         }
 
         @Override
-        public void call(Object t1, Object t2) {
+        public void call(T0 t1, T1 t2) {
         }
 
         @Override
-        public void call(Object t1, Object t2, Object t3) {
+        public void call(T0 t1, T1 t2, T2 t3) {
         }
 
         @Override
-        public void call(Object t1, Object t2, Object t3, Object t4) {
+        public void call(T0 t1, T1 t2, T2 t3, T3 t4) {
         }
 
         @Override
-        public void call(Object t1, Object t2, Object t3, Object t4, Object t5) {
+        public void call(T0 t1, T1 t2, T2 t3, T3 t4, T4 t5) {
         }
 
         @Override
-        public void call(Object t1, Object t2, Object t3, Object t4, Object t5, Object t6) {
+        public void call(T0 t1, T1 t2, T2 t3, T3 t4, T4 t5, T5 t6) {
         }
 
         @Override
-        public void call(Object t1, Object t2, Object t3, Object t4, Object t5, Object t6, Object t7) {
+        public void call(T0 t1, T1 t2, T2 t3, T3 t4, T4 t5, T5 t6, T6 t7) {
         }
 
         @Override
-        public void call(Object t1, Object t2, Object t3, Object t4, Object t5, Object t6, Object t7, Object t8) {
+        public void call(T0 t1, T1 t2, T2 t3, T3 t4, T4 t5, T5 t6, T6 t7, T7 t8) {
         }
 
         @Override
-        public void call(Object t1, Object t2, Object t3, Object t4, Object t5, Object t6, Object t7, Object t8, Object t9) {
+        public void call(T0 t1, T1 t2, T2 t3, T3 t4, T4 t5, T5 t6, T6 t7, T7 t8, T8 t9) {
         }
 
         @Override
