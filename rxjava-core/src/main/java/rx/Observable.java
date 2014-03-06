@@ -441,6 +441,7 @@ public class Observable<T> {
      *         Observable
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#wiki-averageinteger-averagelong-averagefloat-and-averagedouble">RxJava Wiki: averageDouble()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.average.aspx">MSDN: Observable.Average</a>
+     * @deprecated Use rxjava-math module instead
      */
     public final static Observable<Double> averageDouble(Observable<Double> source) {
         return OperationAverage.averageDoubles(source);
@@ -457,6 +458,7 @@ public class Observable<T> {
      *         Observable
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#wiki-averageinteger-averagelong-averagefloat-and-averagedouble">RxJava Wiki: averageFloat()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.average.aspx">MSDN: Observable.Average</a>
+     * @deprecated Use rxjava-math module instead
      */
     public final static Observable<Float> averageFloat(Observable<Float> source) {
         return OperationAverage.averageFloats(source);
@@ -475,6 +477,7 @@ public class Observable<T> {
      *             if the source Observable emits no items
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#wiki-averageinteger-averagelong-averagefloat-and-averagedouble">RxJava Wiki: averageInteger()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.average.aspx">MSDN: Observable.Average</a>
+     * @deprecated Use rxjava-math module instead
      */
     public final static Observable<Integer> averageInteger(Observable<Integer> source) {
         return OperationAverage.average(source);
@@ -491,6 +494,7 @@ public class Observable<T> {
      *         Observable
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#wiki-averageinteger-averagelong-averagefloat-and-averagedouble">RxJava Wiki: averageLong()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.average.aspx">MSDN: Observable.Average</a>
+     * @deprecated Use rxjava-math module instead
      */
     public final static Observable<Long> averageLong(Observable<Long> source) {
         return OperationAverage.averageLongs(source);
@@ -1595,6 +1599,7 @@ public class Observable<T> {
      *             if the source is empty
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#wiki-max">RxJava Wiki: max()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211837.aspx">MSDN: Observable.Max</a>
+     * @deprecated Use rxjava-math module instead
      */
     public final static <T extends Comparable<? super T>> Observable<T> max(Observable<T> source) {
         return OperationMinMax.max(source);
@@ -2309,6 +2314,7 @@ public class Observable<T> {
      * @throws IllegalArgumentException
      *             if the source is empty
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229715.aspx">MSDN: Observable.Min</a>
+     * @deprecated Use rxjava-math module instead
      */
     public final static <T extends Comparable<? super T>> Observable<T> min(Observable<T> source) {
         return OperationMinMax.min(source);
@@ -2485,7 +2491,7 @@ public class Observable<T> {
     public final static <T> Observable<Boolean> sequenceEqual(Observable<? extends T> first, Observable<? extends T> second, Func2<? super T, ? super T, Boolean> equality) {
         return OperationSequenceEqual.sequenceEqual(first, second, equality);
     }
-
+    
     /**
      * Returns an Observable that emits the sum of all the Doubles emitted by the source Observable.
      * <p>
@@ -2497,6 +2503,7 @@ public class Observable<T> {
      *         Observable
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#wiki-suminteger-sumlong-sumfloat-and-sumdouble">RxJava Wiki: sumDouble()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum.aspx">MSDN: Observable.Sum</a>
+     * @deprecated Use rxjava-math module instead
      */
     public final static Observable<Double> sumDouble(Observable<Double> source) {
         return OperationSum.sumDoubles(source);
@@ -2513,6 +2520,7 @@ public class Observable<T> {
      *         Observable
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#wiki-suminteger-sumlong-sumfloat-and-sumdouble">RxJava Wiki: sumFloat()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum.aspx">MSDN: Observable.Sum</a>
+     * @deprecated Use rxjava-math module instead
      */
     public final static Observable<Float> sumFloat(Observable<Float> source) {
         return OperationSum.sumFloats(source);
@@ -2529,6 +2537,7 @@ public class Observable<T> {
      *         Observable
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#wiki-suminteger-sumlong-sumfloat-and-sumdouble">RxJava Wiki: sumInteger()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum.aspx">MSDN: Observable.Sum</a>
+     * @deprecated Use rxjava-math module instead
      */
     public final static Observable<Integer> sumInteger(Observable<Integer> source) {
         return OperationSum.sumIntegers(source);
@@ -2545,6 +2554,7 @@ public class Observable<T> {
      *         source Observable
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#wiki-suminteger-sumlong-sumfloat-and-sumdouble">RxJava Wiki: sumLong()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum.aspx">MSDN: Observable.Sum</a>
+     * @deprecated Use rxjava-math module instead
      */
     public final static Observable<Long> sumLong(Observable<Long> source) {
         return OperationSum.sumLongs(source);
@@ -3413,6 +3423,7 @@ public class Observable<T> {
      *         emitted by the source Observable when transformed into Doubles by the specified function
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#wiki-averageinteger-averagelong-averagefloat-and-averagedouble">RxJava Wiki: averageDouble()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.average.aspx">MSDN: Observable.Average</a>
+     * @deprecated Use rxjava-math module instead
      */
     public final Observable<Double> averageDouble(Func1<? super T, Double> valueExtractor) {
         return create(new OperationAverage.AverageDoubleExtractor<T>(this, valueExtractor));
@@ -3430,6 +3441,7 @@ public class Observable<T> {
      *         emitted by the source Observable when transformed into Floats by the specified function
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#wiki-averageinteger-averagelong-averagefloat-and-averagedouble">RxJava Wiki: averageFloat()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.average.aspx">MSDN: Observable.Average</a>
+     * @deprecated Use rxjava-math module instead
      */
     public final Observable<Float> averageFloat(Func1<? super T, Float> valueExtractor) {
         return create(new OperationAverage.AverageFloatExtractor<T>(this, valueExtractor));
@@ -3447,6 +3459,7 @@ public class Observable<T> {
      *         emitted by the source Observable when transformed into Integers by the specified function
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#wiki-averageinteger-averagelong-averagefloat-and-averagedouble">RxJava Wiki: averageInteger()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.average.aspx">MSDN: Observable.Average</a>
+     * @deprecated Use rxjava-math module instead
      */
     public final Observable<Integer> averageInteger(Func1<? super T, Integer> valueExtractor) {
         return create(new OperationAverage.AverageIntegerExtractor<T>(this, valueExtractor));
@@ -3464,6 +3477,7 @@ public class Observable<T> {
      *         emitted by the source Observable when transformed into Longs by the specified function
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#wiki-averageinteger-averagelong-averagefloat-and-averagedouble">RxJava Wiki: averageLong()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.average.aspx">MSDN: Observable.Average</a>
+     * @deprecated Use rxjava-math module instead
      */
     public final Observable<Long> averageLong(Func1<? super T, Long> valueExtractor) {
         return create(new OperationAverage.AverageLongExtractor<T>(this, valueExtractor));
@@ -4843,6 +4857,7 @@ public class Observable<T> {
      *             if the source is empty
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#wiki-max">RxJava Wiki: max()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211635.aspx">MSDN: Observable.Max</a>
+     * @deprecated Use rxjava-math module instead
      */
     public final Observable<T> max(Comparator<? super T> comparator) {
         return OperationMinMax.max(this, comparator);
@@ -5011,6 +5026,7 @@ public class Observable<T> {
      *             if the source is empty
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#wiki-min">RxJava Wiki: min()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229095.aspx">MSDN: Observable.Min</a>
+     * @deprecated Use rxjava-math module instead
      */
     public final Observable<T> min(Comparator<? super T> comparator) {
         return OperationMinMax.min(this, comparator);
@@ -7053,6 +7069,7 @@ public class Observable<T> {
      *         by the source Observable as transformed by the provided function
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#wiki-suminteger-sumlong-sumfloat-and-sumdouble">RxJava Wiki: sumDouble()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum.aspx">MSDN: Observable.Sum</a>
+     * @deprecated Use rxjava-math module instead
      */
     public final Observable<Double> sumDouble(Func1<? super T, Double> valueExtractor) {
         return OperationSum.sumAtLeastOneDoubles(map(valueExtractor));
@@ -7070,6 +7087,7 @@ public class Observable<T> {
      *         the source Observable as transformed by the provided function
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#wiki-suminteger-sumlong-sumfloat-and-sumdouble">RxJava Wiki: sumFloat()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum.aspx">MSDN: Observable.Sum</a>
+     * @deprecated Use rxjava-math module instead
      */
     public final Observable<Float> sumFloat(Func1<? super T, Float> valueExtractor) {
         return OperationSum.sumAtLeastOneFloats(map(valueExtractor));
@@ -7087,6 +7105,7 @@ public class Observable<T> {
      *         by the source Observable as transformed by the provided function
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#wiki-suminteger-sumlong-sumfloat-and-sumdouble">RxJava Wiki: sumInteger()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum.aspx">MSDN: Observable.Sum</a>
+     * @deprecated Use rxjava-math module instead
      */
     public final Observable<Integer> sumInteger(Func1<? super T, Integer> valueExtractor) {
         return OperationSum.sumAtLeastOneIntegers(map(valueExtractor));
@@ -7104,6 +7123,7 @@ public class Observable<T> {
      *         the source Observable as transformed by the provided function
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#wiki-suminteger-sumlong-sumfloat-and-sumdouble">RxJava Wiki: sumLong()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum.aspx">MSDN: Observable.Sum</a>
+     * @deprecated Use rxjava-math module instead
      */
     public final Observable<Long> sumLong(Func1<? super T, Long> valueExtractor) {
         return OperationSum.sumAtLeastOneLongs(map(valueExtractor));
