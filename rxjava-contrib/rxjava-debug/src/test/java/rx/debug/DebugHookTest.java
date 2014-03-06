@@ -13,6 +13,7 @@ import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.InOrder;
 
@@ -85,6 +86,7 @@ public class DebugHookTest {
     }
 
     @SuppressWarnings("unchecked")
+    @Ignore
     @Test
     public void testSimple() {
         TestDebugNotificationListener listener = new TestDebugNotificationListener();
@@ -107,6 +109,7 @@ public class DebugHookTest {
     }
 
     @SuppressWarnings("unchecked")
+    @Ignore
     @Test
     public void testOneOp() {
         TestDebugNotificationListener listener = new TestDebugNotificationListener();
