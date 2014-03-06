@@ -6449,6 +6449,22 @@ public class Observable<T> {
     }
 
     /**
+     * Returns an Observable that emits the items in a specified {@link Observable} before it begins to emit items
+     * emitted by the source Observable. 
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.png">
+     * 
+     * @param values
+     *            an Observable that contains the items you want the modified Observable to emit first
+     * @return an Observable that emits the items in the specified {@link Observable} and then emits the items
+     *         emitted by the source Observable
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#wiki-startwith">RxJava Wiki: startWith()</a>
+     */
+    public final Observable<T> startWith(Observable<T> values) {
+        return concat(values, this);
+    }
+
+    /**
      * Returns an Observable that emits the items in a specified {@link Iterable} before it begins to emit items
      * emitted by the source Observable.
      * <p>
