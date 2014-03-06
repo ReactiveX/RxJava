@@ -1,27 +1,28 @@
 package rx.debug;
 
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
+import org.mockito.InOrder;
 
 import rx.Observable;
-import rx.Subscriber;
-import rx.functions.Action1;
-import rx.functions.Action2;
 import rx.functions.Func1;
+import rx.observers.Subscribers;
 import rx.plugins.DebugHook;
 import rx.plugins.DebugNotification;
 import rx.plugins.DebugNotification.Kind;
+import rx.plugins.DebugNotificationListener;
 import rx.plugins.PlugReset;
 import rx.plugins.RxJavaPlugins;
 
@@ -32,86 +33,149 @@ public class DebugHookTest {
         PlugReset.reset();
     }
 
-    @Test
-    @Ignore
-    public void testSimple() {
-        Func1 start = mock(Func1.class);
-        Action1 complete = mock(Action1.class);
-        Action2 error = mock(Action2.class);
-        final DebugHook hook = new DebugHook(null, start, complete, error);
-        RxJavaPlugins.getInstance().registerObservableExecutionHook(hook);
-        Observable.empty().subscribe();
-        verify(start, times(1)).call(subscribe());
-        verify(start, times(1)).call(onCompleted());
+    private static class TestDebugNotificationListener extends DebugNotificationListener<Object> {
+        ConcurrentHashMap<Thread, AtomicInteger> allThreadDepths = new ConcurrentHashMap<Thread, AtomicInteger>(1);
+        ThreadLocal<AtomicInteger> currentThreadDepth = new ThreadLocal<AtomicInteger>() {
+            protected AtomicInteger initialValue() {
+                AtomicInteger depth = new AtomicInteger();
+                allThreadDepths.put(Thread.currentThread(), depth);
+                return depth;
+            };
+        };
 
-        verify(complete, times(2)).call(any());
+        @Override
+        public <T> T onNext(DebugNotification<T> n) {
+            if (n == null)
+                return null; // because we are verifying on a spied object.
+            System.err.println("next: " + n.getValue());
+            return super.onNext(n);
+        }
 
-        verify(error, never()).call(any(), any());
+        @Override
+        public <T> Object start(DebugNotification<T> n) {
+            if (n == null)
+                return null; // because we are verifying on a spied object.
+            currentThreadDepth.get().incrementAndGet();
+            Object context = new Object();
+            System.err.println("start: " + Integer.toHexString(context.hashCode()) + " " + n);
+            return context;
+        }
+
+        @Override
+        public void complete(Object context) {
+            if (context == null)
+                return; // because we are verifying on a spied object.
+            currentThreadDepth.get().decrementAndGet();
+            System.err.println("complete: " + Integer.toHexString(context.hashCode()));
+        }
+
+        @Override
+        public void error(Object context, Throwable e) {
+            if (context == null)
+                return; // because we are verifying on a spied object.
+            currentThreadDepth.get().decrementAndGet();
+            System.err.println("error: " + Integer.toHexString(context.hashCode()));
+        }
+
+        public void assertValidState() {
+            for (Entry<Thread, AtomicInteger> threadDepth : allThreadDepths.entrySet()) {
+                assertEquals(0, threadDepth.getValue().get());
+            }
+        }
     }
 
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testSimple() {
+        TestDebugNotificationListener listener = new TestDebugNotificationListener();
+        listener = spy(listener);
+        final DebugHook hook = new DebugHook(listener);
+        RxJavaPlugins.getInstance().registerObservableExecutionHook(hook);
+
+        Observable.from(1).subscribe(Subscribers.empty());
+
+        final InOrder inOrder = inOrder(listener);
+        inOrder.verify(listener).start(subscribe());
+        inOrder.verify(listener).onNext(onNext(1));
+        inOrder.verify(listener).start(onNext(1));
+        inOrder.verify(listener).complete(any());
+        inOrder.verify(listener).start(onCompleted());
+        inOrder.verify(listener, times(2)).complete(any());
+        inOrder.verifyNoMoreInteractions();
+
+        listener.assertValidState();
+    }
+
+    @SuppressWarnings("unchecked")
     @Test
     public void testOneOp() {
-        Func1<DebugNotification<Integer, Object>, Object> start = mock(Func1.class);
-        doAnswer(new Answer() {
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                Object context = new Object();
-                System.out.println("start: " + context.hashCode() + " " + invocation.getArguments()[0]);
-                return context;
-            }
-        }).when(start).call(any(DebugNotification.class));
-        Action1<Object> complete = mock(Action1.class);
-        doAnswer(new Answer() {
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                System.out.println("complete: " + invocation.getArguments()[0].hashCode());
-                return null;
-            }
-        }).when(complete).call(any());
-        Action2<Object, Throwable> error = mock(Action2.class);
-        doAnswer(new Answer() {
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                System.out.println("error: " + invocation.getArguments()[1].hashCode());
-                return null;
-            }
-        }).when(error).call(any(), any(Throwable.class));
-        final DebugHook hook = new DebugHook(null, start, complete, error);
+        TestDebugNotificationListener listener = new TestDebugNotificationListener();
+        listener = spy(listener);
+
+        // create and register the hooks.
+        final DebugHook<Object> hook = new DebugHook<Object>(listener);
         RxJavaPlugins.getInstance().registerObservableExecutionHook(hook);
-        Observable.from(Arrays.asList(1, 3)).flatMap(new Func1<Integer, Observable<Integer>>() {
-            @Override
-            public Observable<Integer> call(Integer it) {
-                return Observable.from(Arrays.asList(it, it + 1));
-            }
-        }).take(3).subscribe(new Subscriber<Integer>() {
-            @Override
-            public void onCompleted() {
-            }
 
-            @Override
-            public void onError(Throwable e) {
-            }
+        // do the operation
+        Observable
+                .from(Arrays.asList(1, 3))
+                .flatMap(new Func1<Integer, Observable<Integer>>() {
+                    @Override
+                    public Observable<Integer> call(Integer it) {
+                        return Observable.from(Arrays.asList(it * 10, (it + 1) * 10));
+                    }
+                })
+                .take(3)
+                .subscribe(Subscribers.<Integer> empty());
 
-            @Override
-            public void onNext(Integer t) {
-            }
-        });
-        verify(start, atLeast(3)).call(subscribe());
-        verify(start, times(4)).call(onNext(1));
-        // one less because it originates from the inner observable sent to merge
-        verify(start, times(3)).call(onNext(2));
-        verify(start, times(4)).call(onNext(3));
-        // because the take unsubscribes
-        verify(start, never()).call(onNext(4));
+        InOrder calls = inOrder(listener);
 
-        verify(complete, atLeast(14)).call(any());
+        calls.verify(listener).start(subscribe());
+        calls.verify(listener).start(onNext(1)); // from to map
+        calls.verify(listener).start(onNext(Observable.class)); // map to merge
+        calls.verify(listener).start(subscribe()); // merge inner
+        calls.verify(listener).start(onNext(10)); // from to merge inner
+        calls.verify(listener).start(onNext(10)); // merge inner to take
+        calls.verify(listener).start(onNext(10)); // take to empty subscriber
+        calls.verify(listener, times(3)).complete(any());
+        calls.verify(listener).start(onNext(20)); // next from to merge inner
+        calls.verify(listener).start(onNext(20)); // merge inner to take
+        calls.verify(listener).start(onNext(20)); // take to output
+        calls.verify(listener, times(3)).complete(any());
+        calls.verify(listener).start(onCompleted()); // sub from completes
+        // calls.verify(listener).start(unsubscribe()); // merge's composite subscription
+        // unnecessarily calls unsubscribe during the removing the subscription from the array.
+        //
+        // i didn't include it because it could cause a test failure if the internals change.
+        calls.verify(listener, times(5)).complete(any()); // pop the call stack up to onNext(1)
+        calls.verify(listener).start(onNext(3)); // from to map
+        calls.verify(listener).start(onNext(Observable.class)); // map to merge
+        calls.verify(listener).start(subscribe());
+        calls.verify(listener).start(onNext(30)); // next from to merge inner
+        calls.verify(listener).start(onNext(30)); // merge inner to take
+        calls.verify(listener).start(onNext(30)); // take to output
+        calls.verify(listener).complete(any());
+        calls.verify(listener).start(onCompleted()); // take to output
+        calls.verify(listener).start(unsubscribe()); // take unsubscribes
+        calls.verify(listener).complete(any());
+        calls.verify(listener).start(unsubscribe()); // merge inner unsubscribes
+        calls.verify(listener).complete(any());
+        calls.verify(listener).start(unsubscribe()); // merge outer unsubscribes
+        calls.verify(listener).complete(any());
+        calls.verify(listener).start(unsubscribe()); // map unsubscribe
+        calls.verify(listener, times(7)).complete(any());
+        calls.verifyNoMoreInteractions();
 
-        verify(error, never()).call(any(), any(Throwable.class));
+        listener.assertValidState();
     }
 
-    private static <T, C> DebugNotification<T, C> onNext(final T value) {
-        return argThat(new BaseMatcher<DebugNotification<T, C>>() {
+    private static <T> DebugNotification<T> onNext(final T value) {
+        return argThat(new BaseMatcher<DebugNotification<T>>() {
             @Override
             public boolean matches(Object item) {
                 if (item instanceof DebugNotification) {
-                    DebugNotification<T, C> dn = (DebugNotification<T, C>) item;
+                    @SuppressWarnings("unchecked")
+                    DebugNotification<T> dn = (DebugNotification<T>) item;
                     return dn.getKind() == Kind.OnNext && dn.getValue().equals(value);
                 }
                 return false;
@@ -124,8 +188,27 @@ public class DebugHookTest {
         });
     }
 
-    private static DebugNotification subscribe() {
-        return argThat(new BaseMatcher<DebugNotification>() {
+    private static <T> DebugNotification<T> onNext(final Class<T> type) {
+        return argThat(new BaseMatcher<DebugNotification<T>>() {
+            @Override
+            public boolean matches(Object item) {
+                if (item instanceof DebugNotification) {
+                    @SuppressWarnings("unchecked")
+                    DebugNotification<T> dn = (DebugNotification<T>) item;
+                    return dn.getKind() == Kind.OnNext && type.isAssignableFrom(dn.getValue().getClass());
+                }
+                return false;
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("OnNext " + type);
+            }
+        });
+    }
+
+    private static <T> DebugNotification subscribe() {
+        return argThat(new BaseMatcher<DebugNotification<T>>() {
             @Override
             public boolean matches(Object item) {
                 if (item instanceof DebugNotification) {
@@ -138,6 +221,24 @@ public class DebugHookTest {
             @Override
             public void describeTo(Description description) {
                 description.appendText("Subscribe");
+            }
+        });
+    }
+
+    private static <T> DebugNotification unsubscribe() {
+        return argThat(new BaseMatcher<DebugNotification<T>>() {
+            @Override
+            public boolean matches(Object item) {
+                if (item instanceof DebugNotification) {
+                    DebugNotification dn = (DebugNotification) item;
+                    return dn.getKind() == DebugNotification.Kind.Unsubscribe;
+                }
+                return false;
+            }
+
+            @Override
+            public void describeTo(Description description) {
+                description.appendText("Unsubscribe");
             }
         });
     }
