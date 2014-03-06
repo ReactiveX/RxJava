@@ -5985,7 +5985,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Error-Handling-Operators#wiki-retry">RxJava Wiki: retry()</a>
      */
     public final Observable<T> retry() {
-        return create(OperationRetry.retry(this));
+        return nest().lift(new OperatorRetry<T>());
     }
 
     /**
@@ -6009,7 +6009,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Error-Handling-Operators#wiki-retry">RxJava Wiki: retry()</a>
      */
     public final Observable<T> retry(int retryCount) {
-        return create(OperationRetry.retry(this, retryCount));
+        return nest().lift(new OperatorRetry<T>(retryCount));
     }
 
     /**
