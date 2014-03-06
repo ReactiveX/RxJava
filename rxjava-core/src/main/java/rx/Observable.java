@@ -6449,10 +6449,10 @@ public class Observable<T> {
     }
 
     /**
-     * Returns an Observable that emits the items in a specified {@link Observable} before it begins to emit items
-     * emitted by the source Observable. 
+     * Returns an Observable that emits the items in a specified {@link Observable} before it begins to emit
+     * items emitted by the source Observable. 
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.o.png">
      * 
      * @param values
      *            an Observable that contains the items you want the modified Observable to emit first
