@@ -99,11 +99,13 @@ public class NewThreadScheduler extends Scheduler {
                 @Override
                 public void run() {
                     try {
+                        Schedulers.setCurrentScheduler(_inner);
                         if (innerSubscription.isUnsubscribed()) {
                             return;
                         }
                         action.call(_inner);
                     } finally {
+                        Schedulers.setCurrentScheduler(null);
                         // remove the subscription now that we're completed
                         Subscription s = sf.get();
                         if (s != null) {
