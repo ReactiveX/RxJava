@@ -45,7 +45,6 @@ public class OperatorRetry<T> implements Operator<T, Observable<T>> {
     private static final int INFINITE_RETRY = -1;
 
     private final int retryCount;
-    private final AtomicInteger attempts = new AtomicInteger(0);
 
     public OperatorRetry(int retryCount) {
         this.retryCount = retryCount;
@@ -58,7 +57,8 @@ public class OperatorRetry<T> implements Operator<T, Observable<T>> {
     @Override
     public Subscriber<? super Observable<T>> call(final Subscriber<? super T> s) {
         return new Subscriber<Observable<T>>(s) {
-
+            final AtomicInteger attempts = new AtomicInteger(0);
+            
             @Override
             public void onCompleted() {
                 // ignore as we expect a single nested Observable<T>
