@@ -23,7 +23,7 @@ import java.util.WeakHashMap;
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
-import rx.android.observables.ViewObservable;
+import rx.android.observables.Assertions;
 import rx.android.subscriptions.AndroidSubscriptions;
 import rx.functions.Action0;
 import android.view.View;
@@ -39,7 +39,7 @@ public final class OperatorViewClick implements Observable.OnSubscribe<View> {
 
     @Override
     public void call(final Subscriber<? super View> observer) {
-        ViewObservable.assertUiThread();
+        Assertions.assertUiThread();
         final CompositeOnClickListener composite = CachedListeners.getFromViewOrCreate(view);
 
         final View.OnClickListener listener = new View.OnClickListener() {

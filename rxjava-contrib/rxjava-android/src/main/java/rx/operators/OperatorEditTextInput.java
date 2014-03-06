@@ -18,7 +18,7 @@ package rx.operators;
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
-import rx.android.observables.ViewObservable;
+import rx.android.observables.Assertions;
 import rx.android.subscriptions.AndroidSubscriptions;
 import rx.functions.Action0;
 import android.text.Editable;
@@ -36,7 +36,7 @@ public class OperatorEditTextInput implements Observable.OnSubscribe<String> {
 
     @Override
     public void call(final Subscriber<? super String> observer) {
-        ViewObservable.assertUiThread();
+        Assertions.assertUiThread();
         final TextWatcher watcher = new SimpleTextWatcher() {
             @Override
             public void afterTextChanged(final Editable editable) {

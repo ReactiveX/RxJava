@@ -15,14 +15,14 @@
  */
 package rx.android.observables;
 
-import android.os.Looper;
-import android.view.View;
-import android.widget.CompoundButton;
-import android.widget.EditText;
 import rx.Observable;
 import rx.operators.OperatorCompoundButtonInput;
 import rx.operators.OperatorEditTextInput;
 import rx.operators.OperatorViewClick;
+
+import android.view.View;
+import android.widget.CompoundButton;
+import android.widget.EditText;
 
 public class ViewObservable {
 
@@ -38,10 +38,5 @@ public class ViewObservable {
         return Observable.create(new OperatorCompoundButtonInput(button, emitInitialValue));
     }
 
-    public static void assertUiThread() {
-        if (Looper.getMainLooper() != Looper.myLooper()) {
-            throw new IllegalStateException("Observers must subscribe from the main UI thread, but was " + Thread.currentThread());
-        }
-    }
 }
 

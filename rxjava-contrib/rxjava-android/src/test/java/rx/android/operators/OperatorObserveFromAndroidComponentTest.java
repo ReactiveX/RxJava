@@ -70,22 +70,6 @@ public class OperatorObserveFromAndroidComponentTest {
         when(mockFragment.isAdded()).thenReturn(true);
     }
 
-    @Test
-    public void itThrowsIfObserverSubscribesFromBackgroundThread() throws Exception {
-        final Observable<Integer> testObservable = Observable.from(1);
-        final Future<Object> future = Executors.newSingleThreadExecutor().submit(new Callable<Object>() {
-            @Override
-            public Object call() throws Exception {
-                OperatorObserveFromAndroidComponent.observeFromAndroidComponent(
-                        testObservable, mockFragment).subscribe(mockObserver);
-                return null;
-            }
-        });
-        future.get(1, TimeUnit.SECONDS);
-        verify(mockObserver).onError(any(IllegalStateException.class));
-        verifyNoMoreInteractions(mockObserver);
-    }
-
     // TODO needs to be fixed, see comments inline below
     @Ignore
     public void itObservesTheSourceSequenceOnTheMainUIThread() {
