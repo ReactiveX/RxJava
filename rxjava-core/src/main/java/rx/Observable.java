@@ -25,8 +25,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import rx.exceptions.Exceptions;
-import rx.exceptions.OnErrorThrowable;
 import rx.exceptions.OnErrorNotImplementedException;
+import rx.exceptions.OnErrorThrowable;
 import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Action2;
@@ -49,7 +49,88 @@ import rx.observables.BlockingObservable;
 import rx.observables.ConnectableObservable;
 import rx.observables.GroupedObservable;
 import rx.observers.SafeSubscriber;
-import rx.operators.*;
+import rx.operators.OnSubscribeFromIterable;
+import rx.operators.OnSubscribeRange;
+import rx.operators.OperationAll;
+import rx.operators.OperationAmb;
+import rx.operators.OperationAny;
+import rx.operators.OperationAsObservable;
+import rx.operators.OperationAverage;
+import rx.operators.OperationBuffer;
+import rx.operators.OperationCache;
+import rx.operators.OperationCombineLatest;
+import rx.operators.OperationConcat;
+import rx.operators.OperationDebounce;
+import rx.operators.OperationDefaultIfEmpty;
+import rx.operators.OperationDefer;
+import rx.operators.OperationDelay;
+import rx.operators.OperationDematerialize;
+import rx.operators.OperationDistinct;
+import rx.operators.OperationDistinctUntilChanged;
+import rx.operators.OperationElementAt;
+import rx.operators.OperationFinally;
+import rx.operators.OperationFlatMap;
+import rx.operators.OperationGroupByUntil;
+import rx.operators.OperationGroupJoin;
+import rx.operators.OperationInterval;
+import rx.operators.OperationJoin;
+import rx.operators.OperationJoinPatterns;
+import rx.operators.OperationMaterialize;
+import rx.operators.OperationMergeDelayError;
+import rx.operators.OperationMergeMaxConcurrent;
+import rx.operators.OperationMinMax;
+import rx.operators.OperationMulticast;
+import rx.operators.OperationOnErrorResumeNextViaObservable;
+import rx.operators.OperationOnErrorReturn;
+import rx.operators.OperationOnExceptionResumeNextViaObservable;
+import rx.operators.OperationParallelMerge;
+import rx.operators.OperationReplay;
+import rx.operators.OperationSample;
+import rx.operators.OperationSequenceEqual;
+import rx.operators.OperationSingle;
+import rx.operators.OperationSkip;
+import rx.operators.OperationSkipLast;
+import rx.operators.OperationSkipUntil;
+import rx.operators.OperationSkipWhile;
+import rx.operators.OperationSum;
+import rx.operators.OperationSwitch;
+import rx.operators.OperationSynchronize;
+import rx.operators.OperationTakeLast;
+import rx.operators.OperationTakeTimed;
+import rx.operators.OperationTakeUntil;
+import rx.operators.OperationTakeWhile;
+import rx.operators.OperationThrottleFirst;
+import rx.operators.OperationTimeInterval;
+import rx.operators.OperationTimer;
+import rx.operators.OperationToMap;
+import rx.operators.OperationToMultimap;
+import rx.operators.OperationToObservableFuture;
+import rx.operators.OperationUsing;
+import rx.operators.OperationWindow;
+import rx.operators.OperatorCast;
+import rx.operators.OperatorDoOnEach;
+import rx.operators.OperatorFilter;
+import rx.operators.OperatorGroupBy;
+import rx.operators.OperatorMap;
+import rx.operators.OperatorMerge;
+import rx.operators.OperatorObserveOn;
+import rx.operators.OperatorOnErrorFlatMap;
+import rx.operators.OperatorOnErrorResumeNextViaFunction;
+import rx.operators.OperatorParallel;
+import rx.operators.OperatorRepeat;
+import rx.operators.OperatorRetry;
+import rx.operators.OperatorScan;
+import rx.operators.OperatorSkip;
+import rx.operators.OperatorSubscribeOn;
+import rx.operators.OperatorTake;
+import rx.operators.OperatorTimeout;
+import rx.operators.OperatorTimeoutWithSelector;
+import rx.operators.OperatorTimestamp;
+import rx.operators.OperatorToObservableList;
+import rx.operators.OperatorToObservableSortedList;
+import rx.operators.OperatorUnsubscribeOn;
+import rx.operators.OperatorZip;
+import rx.operators.OperatorZipIterable;
 import rx.plugins.RxJavaObservableExecutionHook;
 import rx.plugins.RxJavaPlugins;
 import rx.schedulers.Schedulers;
@@ -79,7 +160,7 @@ import rx.subscriptions.Subscriptions;
  */
 public class Observable<T> {
 
-    final OnSubscribe<T> f;
+    final OnSubscribe<T> onSubscribe;
 
     /**
      * Observable with Function to execute when subscribed to.
@@ -91,10 +172,10 @@ public class Observable<T> {
      *            {@link OnSubscribe} to be executed when {@link #subscribe(Subscriber)} is called
      */
     protected Observable(OnSubscribe<T> f) {
-        this.f = hook.onCreate(f);
+        this.onSubscribe = f;
     }
 
-    private final static RxJavaObservableExecutionHook hook = RxJavaPlugins.getInstance().getObservableExecutionHook();
+    private final RxJavaObservableExecutionHook hook = RxJavaPlugins.getInstance().getObservableExecutionHook();
 
     /**
      * Returns an Observable that will execute the specified function when a {@link Subscriber} subscribes to
@@ -187,7 +268,7 @@ public class Observable<T> {
             @Override
             public void call(Subscriber<? super R> o) {
                 try {
-                    f.call(hook.onLift(lift).call(o));
+                    onSubscribe.call(hook.onLift(lift).call(o));
                 } catch (Throwable e) {
                     // localized capture of errors rather than it skipping all operators 
                     // and ending up in the try/catch of the subscribe method which then
@@ -6953,7 +7034,7 @@ public class Observable<T> {
      */
     public final Subscription subscribe(Subscriber<? super T> observer) {
         // allow the hook to intercept and/or decorate
-        OnSubscribe<T> onSubscribeFunction = hook.onSubscribeStart(this, f);
+        OnSubscribe<T> onSubscribeFunction = hook.onSubscribeStart(this, onSubscribe);
         // validate and proceed
         if (observer == null) {
             throw new IllegalArgumentException("observer can not be null");
@@ -6977,7 +7058,7 @@ public class Observable<T> {
                 observer = new SafeSubscriber<T>(observer);
                 onSubscribeFunction.call(observer);
             }
-            final Subscription returnSubscription = hook.onSubscribeReturn(this, observer);
+            final Subscription returnSubscription = hook.onSubscribeReturn(observer);
             // we return it inside a Subscription so it can't be cast back to Subscriber
             return Subscriptions.create(new Action0() {
 
@@ -6992,7 +7073,7 @@ public class Observable<T> {
             Exceptions.throwIfFatal(e);
             // if an unhandled error occurs executing the onSubscribe we will propagate it
             try {
-                observer.onError(hook.onSubscribeError(this, e));
+                observer.onError(hook.onSubscribeError(e));
             } catch (OnErrorNotImplementedException e2) {
                 // special handling when onError is not implemented ... we just rethrow
                 throw e2;
@@ -7000,7 +7081,9 @@ public class Observable<T> {
                 // if this happens it means the onError itself failed (perhaps an invalid function implementation)
                 // so we are unable to propagate the error correctly and will just throw
                 RuntimeException r = new RuntimeException("Error occurred attempting to subscribe [" + e.getMessage() + "] and then again while trying to pass to onError.", e2);
-                hook.onSubscribeError(this, r);
+                // TODO could the hook be the cause of the error in the on error handling.
+                hook.onSubscribeError(r);
+                // TODO why aren't we throwing the hook's return value.
                 throw r;
             }
             return Subscriptions.empty();

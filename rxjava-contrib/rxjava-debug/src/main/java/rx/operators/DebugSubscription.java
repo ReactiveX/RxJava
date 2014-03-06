@@ -1,33 +1,27 @@
 package rx.operators;
 
 import rx.Subscription;
-import rx.functions.Action1;
-import rx.functions.Action2;
-import rx.functions.Func1;
 import rx.plugins.DebugNotification;
+import rx.plugins.DebugNotificationListener;
 
 final class DebugSubscription<T, C> implements Subscription {
     private final DebugSubscriber<T, C> debugObserver;
-    private final Func1<DebugNotification, C> start;
-    private final Action1<C> complete;
-    private final Action2<C, Throwable> error;
+    private DebugNotificationListener<C> listener;
 
-    DebugSubscription(DebugSubscriber<T, C> debugObserver, Func1<DebugNotification, C> start, Action1<C> complete, Action2<C, Throwable> error) {
+    DebugSubscription(DebugSubscriber<T, C> debugObserver, DebugNotificationListener<C> listener) {
         this.debugObserver = debugObserver;
-        this.start = start;
-        this.complete = complete;
-        this.error = error;
+        this.listener = listener;
     }
 
     @Override
     public void unsubscribe() {
-        final DebugNotification<T, C> n = DebugNotification.<T, C> createUnsubscribe(debugObserver.getActual(), debugObserver.getFrom(), debugObserver.getTo());
-        C context = start.call(n);
+        final DebugNotification<T> n = DebugNotification.<T> createUnsubscribe(debugObserver.getActual(), debugObserver.getFrom(), debugObserver.getTo());
+        C context = listener.start(n);
         try {
             debugObserver.unsubscribe();
-            complete.call(context);
+            listener.complete(context);
         } catch (Throwable e) {
-            error.call(context, e);
+            listener.error(context, e);
         }
     }
 
