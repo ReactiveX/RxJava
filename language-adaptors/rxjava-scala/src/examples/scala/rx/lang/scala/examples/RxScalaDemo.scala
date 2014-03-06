@@ -32,6 +32,15 @@ import org.scalatest.junit.JUnitSuite
 import rx.lang.scala._
 import rx.lang.scala.schedulers._
 
+/**
+ * Demo how the different operators can be used. In Eclipse, you can right-click
+ * a test and choose "Run As" > "Scala JUnit Test".
+ * 
+ * For each operator added to Observable.java, we add a little usage demo here.
+ * It does not need to test the functionality (that's already done by the tests in
+ * RxJava core), but it should demonstrate how it can be used, to make sure that
+ * the method signature makes sense.
+ */
 @Ignore // Since this doesn't do automatic testing, don't increase build time unnecessarily
 class RxScalaDemo extends JUnitSuite {
 
@@ -78,13 +87,9 @@ class RxScalaDemo extends JUnitSuite {
     val first = Observable.from(List(10, 11, 12))
     val second = Observable.from(List(10, 11, 12))
 
-    val b1 = (first zip second) map (p => p._1 == p._2) forall (b => b)
+    val b = (first zip second) forall { case (a, b) => a == b }
 
-    val equality = (a: Any, b: Any) => a == b
-    val b2 = (first zip second) map (p => equality(p._1, p._2)) forall (b => b)
-
-    assertTrue(b1.toBlockingObservable.single)
-    assertTrue(b2.toBlockingObservable.single)
+    assertTrue(b.toBlockingObservable.single)
   }
 
   @Test def testObservableComparisonWithForComprehension() {
@@ -93,7 +98,7 @@ class RxScalaDemo extends JUnitSuite {
 
     val booleans = for ((n1, n2) <- (first zip second)) yield (n1 == n2)
 
-    val b1 = booleans.forall(_ == true) // without `== true`, b1 is assigned the forall function
+    val b1 = booleans.forall(identity)
 
     assertTrue(b1.toBlockingObservable.single)
   }
@@ -216,7 +221,6 @@ class RxScalaDemo extends JUnitSuite {
     }).flatten.toBlockingObservable.foreach(println(_))
   }
 
-  @Ignore // TODO something's bad here
   @Test def timingTest1() {
     val numbersByModulo3 = Observable.interval(1000 millis).take(9).groupBy(_ % 3)
 
@@ -224,9 +228,13 @@ class RxScalaDemo extends JUnitSuite {
 
     (for ((modulo, numbers) <- numbersByModulo3) yield {
       println("Observable for modulo" + modulo + " started at t = " + (System.currentTimeMillis - t0))
-      numbers.take(1) // <- TODO very unexpected
-      //numbers
+      numbers.map(n => s"${n} is in the modulo-$modulo group")
     }).flatten.toBlockingObservable.foreach(println(_))
+  }
+  
+  @Test def testOlympicYearTicks() {
+    Olympics.yearTicks.subscribe(println(_))
+    waitFor(Olympics.yearTicks)
   }
 
   @Test def groupByExample() {
@@ -238,8 +246,10 @@ class RxScalaDemo extends JUnitSuite {
     firstMedalOfEachCountry.subscribe(medal => {
       println(s"${medal.country} wins its first medal in ${medal.year}")
     })
+    
+    Olympics.yearTicks.subscribe(year => println(s"\nYear $year starts."))
 
-    waitFor(firstMedalOfEachCountry)
+    waitFor(Olympics.yearTicks)
   }
 
   @Test def groupByUntilExample() {
@@ -250,30 +260,36 @@ class RxScalaDemo extends JUnitSuite {
   }
 
   @Test def combineLatestExample() {
-    val first_counter = Observable.interval(250 millis)
-    val second_counter = Observable.interval(550 millis)
-    val combined_counter = first_counter.combineLatest(second_counter,
+    val firstCounter = Observable.interval(250 millis)
+    val secondCounter = Observable.interval(550 millis)
+    val combinedCounter = firstCounter.combineLatest(secondCounter,
       (x: Long, y: Long) => List(x,y)) take 10
 
-    combined_counter subscribe {x => println(s"Emitted group: $x")}
+    combinedCounter subscribe {x => println(s"Emitted group: $x")}
+    waitFor(combinedCounter)
   }
 
+  @Test def olympicsExampleWithoutPublish() {
+    val medals = Olympics.mountainBikeMedals.doOnEach(_ => println("onNext"))
+    medals.subscribe(println(_)) // triggers an execution of medals Observable
+    waitFor(medals) // triggers another execution of medals Observable
+  }
 
-  @Test def olympicsExample() {
-    val medals = Olympics.mountainBikeMedals.publish
-    medals.subscribe(println(_))
+  @Test def olympicsExampleWithPublish() {
+    val medals = Olympics.mountainBikeMedals.doOnEach(_ => println("onNext")).publish
+    medals.subscribe(println(_)) // triggers an execution of medals Observable
     medals.connect
-    //waitFor(medals)
+    waitFor(medals) // triggers another execution of medals Observable
   }
 
   @Test def exampleWithoutPublish() {
-    val unshared = List(1 to 4).toObservable
+    val unshared = Observable.from(1 to 4)
     unshared.subscribe(n => println(s"subscriber 1 gets $n"))
     unshared.subscribe(n => println(s"subscriber 2 gets $n"))
   }
 
   @Test def exampleWithPublish() {
-    val unshared = List(1 to 4).toObservable
+    val unshared = Observable.from(1 to 4)
     val shared = unshared.publish
     shared.subscribe(n => println(s"subscriber 1 gets $n"))
     shared.subscribe(n => println(s"subscriber 2 gets $n"))
@@ -402,7 +418,7 @@ class RxScalaDemo extends JUnitSuite {
   }
 
   @Test def timestampExample() {
-    val timestamped = Observable.interval(100 millis).take(3).timestamp.toBlockingObservable
+    val timestamped = Observable.interval(100 millis).take(6).timestamp.toBlockingObservable
     for ((millis, value) <- timestamped if value > 0) {
       println(value + " at t = " + millis)
     }
@@ -441,35 +457,57 @@ class RxScalaDemo extends JUnitSuite {
     val oc3: rx.Notification[_ <: Int] = oc2.asJavaNotification
     val oc4: rx.Notification[_ <: Any] = oc2.asJavaNotification
   }
-  
-  @Test def elementAtReplacement() {
-    assertEquals("b", List("a", "b", "c").toObservable.drop(1).first.toBlockingObservable.single)
-  }
-
-  @Test def elementAtOrDefaultReplacement() {
-    assertEquals("b", List("a", "b", "c").toObservable.drop(1).firstOrElse("!").toBlockingObservable.single)
-    assertEquals("!!", List("a", "b", "c").toObservable.drop(10).firstOrElse("!!").toBlockingObservable.single)
-  }
 
   @Test def takeWhileWithIndexAlternative {
     val condition = true
     List("a", "b").toObservable.zipWithIndex.takeWhile{case (elem, index) => condition}.map(_._1)
   }
   
-  @Test def createExample() {
+  def calculateElement(index: Int): String = {
+    println("omg I'm calculating so hard")
+    index match {
+      case 0 => "a"
+      case 1 => "b"
+      case _ => throw new IllegalArgumentException
+    }
+  }
+  
+  /**
+   * This is a bad way of using Observable.create, because even if the consumer unsubscribes,
+   * all elements are calculated.
+   */
+  @Test def createExampleBad() {
     val o = Observable.create[String](observer => {
-      // this is bad because you cannot unsubscribe!
-      observer.onNext("a")
-      observer.onNext("b")
+      observer.onNext(calculateElement(0))
+      observer.onNext(calculateElement(1))
       observer.onCompleted()
       Subscription {}
     })
-    o.subscribe(println(_))
+    o.take(1).subscribe(println(_))
+  }
+  
+  /**
+   * This is the good way of doing it: If the consumer unsubscribes, no more elements are 
+   * calculated.
+   */
+  @Test def createExampleGood() {
+    val o = Observable[String](subscriber => {
+      var i = 0
+      while (i < 2 && !subscriber.isUnsubscribed) {
+        subscriber.onNext(calculateElement(i))
+        i += 1
+      }
+      if (!subscriber.isUnsubscribed) subscriber.onCompleted()
+    })
+    o.take(1).subscribe(println(_))
   }
 
   def output(s: String): Unit = println(s)
 
-  // blocks until obs has completed
+  /** Subscribes to obs and waits until obs has completed. Note that if you subscribe to
+   *  obs yourself and also call waitFor(obs), all side-effects of subscribing to obs
+   *  will happen twice.
+   */
   def waitFor[T](obs: Observable[T]): Unit = {
     obs.toBlockingObservable.toIterable.last
   }
