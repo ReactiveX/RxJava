@@ -4101,7 +4101,7 @@ public class Observable<T> {
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/delay.o.png">
      * <p>
-     * <em>Note:</code> the resulting Observable will immediately propagate any {@code onError} notification
+     * <em>Note:</em> the resulting Observable will immediately propagate any {@code onError} notification
      * from the source Observable.
      * 
      * @param <U>
