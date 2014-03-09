@@ -153,6 +153,7 @@ class OperatorTimeoutBase<T> implements Operator<T, T> {
             }
             if (timeoutWins) {
                 if (other == null) {
+                    serial.unsubscribe();
                     synchronizedSubscriber.onError(new TimeoutException());
                 } else {
                     serial.set(other.subscribe(synchronizedSubscriber));
