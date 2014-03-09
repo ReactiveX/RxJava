@@ -21,17 +21,17 @@ import rx.exceptions.OnErrorThrowable;
 import rx.functions.Func2;
 
 /**
- * Returns an Observable that applies a function to the first item emitted by a source Observable,
- * then feeds the result of that function along with the second item emitted by an Observable into
- * the same function, and so on until all items have been emitted by the source Observable,
- * emitting the result of each of these iterations.
+ * Returns an Observable that applies a function to the first item emitted by a source Observable, then feeds
+ * the result of that function along with the second item emitted by an Observable into the same function, and
+ * so on until all items have been emitted by the source Observable, emitting the result of each of these
+ * iterations.
  * <p>
  * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/scan.png">
  * <p>
  * This sort of function is sometimes called an accumulator.
  * <p>
- * Note that when you pass a seed to <code>scan()</code> the resulting Observable will emit that
- * seed as its first emitted item.
+ * Note that when you pass a seed to <code>scan()</code> the resulting Observable will emit that seed as its
+ * first emitted item.
  */
 public final class OperatorScan<R, T> implements Operator<R, T> {
 
@@ -41,19 +41,14 @@ public final class OperatorScan<R, T> implements Operator<R, T> {
     private static final Object NO_INITIAL_VALUE = new Object();
 
     /**
-     * Applies an accumulator function over an observable sequence and returns each intermediate
-     * result with the specified source and accumulator.
+     * Applies an accumulator function over an observable sequence and returns each intermediate result with the
+     * specified source and accumulator.
      * 
-     * @param sequence
-     *            An observable sequence of elements to project.
      * @param initialValue
-     *            The initial (seed) accumulator value.
+     *            the initial (seed) accumulator value
      * @param accumulator
-     *            An accumulator function to be invoked on each element from the sequence.
-     * 
-     * @return An observable sequence whose elements are the result of accumulating the output from
-     *         the list of Observables.
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh212007%28v=vs.103%29.aspx">Observable.Scan(TSource, TAccumulate) Method (IObservable(TSource), TAccumulate, Func(TAccumulate, TSource,
+     *            an accumulator function to be invoked on each element from the sequence
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh212007.aspx">Observable.Scan(TSource, TAccumulate) Method (IObservable(TSource), TAccumulate, Func(TAccumulate, TSource,
      *      TAccumulate))</a>
      */
     public OperatorScan(R initialValue, Func2<R, ? super T, R> accumulator) {
@@ -62,17 +57,12 @@ public final class OperatorScan<R, T> implements Operator<R, T> {
     }
 
     /**
-     * Applies an accumulator function over an observable sequence and returns each intermediate
-     * result with the specified source and accumulator.
+     * Applies an accumulator function over an observable sequence and returns each intermediate result with the
+     * specified source and accumulator.
      * 
-     * @param sequence
-     *            An observable sequence of elements to project.
      * @param accumulator
-     *            An accumulator function to be invoked on each element from the sequence.
-     * 
-     * @return An observable sequence whose elements are the result of accumulating the output from
-     *         the list of Observables.
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh211665(v=vs.103).aspx">Observable.Scan(TSource) Method (IObservable(TSource), Func(TSource, TSource, TSource))</a>
+     *            an accumulator function to be invoked on each element from the sequence
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh211665.aspx">Observable.Scan(TSource) Method (IObservable(TSource), Func(TSource, TSource, TSource))</a>
      */
     @SuppressWarnings("unchecked")
     public OperatorScan(final Func2<R, ? super T, R> accumulator) {

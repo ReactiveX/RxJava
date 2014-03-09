@@ -259,7 +259,7 @@ public class Observable<T> {
      * observable.map(...).filter(...).take(5).lift(new ObserverA()).lift(new ObserverB(...)).subscribe()
      * }
      * 
-     * @param bind
+     * @param lift
      * @return an Observable that emits values that are the result of applying the bind function to the values
      *         of the current Observable
      */
@@ -1552,7 +1552,7 @@ public class Observable<T> {
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png">
      * 
-     * @param items
+     * @param t1
      *            the source Array
      * @param <T>
      *            the type of items in the Array and the type of items to be emitted by the resulting Observable
@@ -1680,7 +1680,7 @@ public class Observable<T> {
      *             if the source is empty
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#wiki-max">RxJava Wiki: max()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211837.aspx">MSDN: Observable.Max</a>
-     * @deprecated Use rxjava-math module instead
+     * @deprecated use rxjava-math module instead
      */
     public final static <T extends Comparable<? super T>> Observable<T> max(Observable<T> source) {
         return OperationMinMax.max(source);
@@ -2680,7 +2680,7 @@ public class Observable<T> {
      * @return an Observable that emits the items emitted by the Observable most recently emitted by the source
      *         Observable
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#wiki-switchonnext">RxJava Wiki: switchOnNext()</a>
-     * @see {@link #switchOnNext(Observable)}
+     * @see #switchOnNext(Observable)
      */
     public final static <T> Observable<T> switchLatest(Observable<? extends Observable<? extends T>> sequenceOfSequences) {
         return create(OperationSwitch.switchDo(sequenceOfSequences));
@@ -4308,7 +4308,7 @@ public class Observable<T> {
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/doOnEach.png">
      * 
-     * @param observer
+     * @param onNotification
      *            the action to invoke for each item emitted by the source Observable
      * @return the source Observable with the side-effecting behavior applied
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#wiki-dooneach">RxJava Wiki: doOnEach()</a>
@@ -4503,7 +4503,7 @@ public class Observable<T> {
      * @return an Observable that emits a Boolean that indicates whether any item emitted by the source
      *         Observable satisfies the {@code predicate}
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Conditional-and-Boolean-Operators#wiki-exists-and-isempty">RxJava Wiki: exists()</a>
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh211993.aspx">MSDN: Observable.Any</a> Note: the description in this page was wrong at the time of this writing.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh211993.aspx">MSDN: Observable.Any (Note: the description in this page was wrong at the time of this writing)</a>
      */
     public final Observable<Boolean> exists(Func1<? super T, Boolean> predicate) {
         return create(OperationAny.exists(this, predicate));
@@ -4551,7 +4551,7 @@ public class Observable<T> {
      * @return an Observable that emits only the very first item emitted by the source Observable, or raises an
      *         {@code IllegalArgumentException} if the source Observable is empty
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#wiki-first">RxJava Wiki: first()</a>
-     * @see MSDN: {@code Observable.firstAsync()}
+     * @see "MSDN: Observable.firstAsync()"
      */
     public final Observable<T> first() {
         return take(1).single();
@@ -4568,7 +4568,7 @@ public class Observable<T> {
      * @return an Observable that emits only the very first item emitted by the source Observable that satisfies
      *         the {@code predicate}, or raises an {@code IllegalArgumentException} if no such items are emitted
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#wiki-first">RxJava Wiki: first()</a>
-     * @see MSDN: {@code Observable.firstAsync()}
+     * @see "MSDN: Observable.firstAsync()"
      */
     public final Observable<T> first(Func1<? super T, Boolean> predicate) {
         return takeFirst(predicate).single();
@@ -4585,7 +4585,7 @@ public class Observable<T> {
      * @return an Observable that emits only the very first item from the source, or a default item if the
      *         source Observable completes without emitting any items
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#wiki-firstordefault">RxJava Wiki: firstOrDefault()</a>
-     * @see MSDN: {@code Observable.firstOrDefaultAsync()}
+     * @see "MSDN: Observable.firstOrDefaultAsync()"
      */
     public final Observable<T> firstOrDefault(T defaultValue) {
         return take(1).singleOrDefault(defaultValue);
@@ -4605,7 +4605,7 @@ public class Observable<T> {
      * @return an Observable that emits only the very first item emitted by the source Observable that satisfies
      *         the {@code predicate}, or a default item if the source Observable emits no such items
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#wiki-firstordefault">RxJava Wiki: firstOrDefault()</a>
-     * @see MSDN: {@code Observable.firstOrDefaultAsync()}
+     * @see "MSDN: Observable.firstOrDefaultAsync()"
      */
     public final Observable<T> firstOrDefault(T defaultValue, Func1<? super T, Boolean> predicate) {
         return takeFirst(predicate).singleOrDefault(defaultValue);
@@ -4784,7 +4784,7 @@ public class Observable<T> {
      * @return an Observable that emits the last item from the source Observable or notifies observers of an
      *         error
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observable-Operators#wiki-last">RxJava Wiki: last()</a>
-     * @see MSDN: {@code Observable.lastAsync()}
+     * @see "MSDN: Observable.lastAsync()"
      */
     public final Observable<T> last() {
         return takeLast(1).single();
@@ -4803,7 +4803,7 @@ public class Observable<T> {
      * @throws IllegalArgumentException
      *             if no items that match the predicate are emitted by the source Observable
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observable-Operators#wiki-last">RxJava Wiki: last()</a>
-     * @see MSDN: {@code Observable.lastAsync()}
+     * @see "MSDN: Observable.lastAsync()"
      */
     public final Observable<T> last(Func1<? super T, Boolean> predicate) {
         return filter(predicate).takeLast(1).single();
@@ -4820,7 +4820,7 @@ public class Observable<T> {
      * @return an Observable that emits only the last item emitted by the source Observable, or a default item
      *         if the source Observable is empty
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#wiki-lastOrDefault">RxJava Wiki: lastOrDefault()</a>
-     * @see MSDN: {@code Observable.lastOrDefaultAsync()}
+     * @see "MSDN: Observable.lastOrDefaultAsync()"
      */
     public final Observable<T> lastOrDefault(T defaultValue) {
         return takeLast(1).singleOrDefault(defaultValue);
@@ -4840,7 +4840,7 @@ public class Observable<T> {
      * @return an Observable that emits only the last item emitted by the source Observable that satisfies the
      *         given condition, or a default item if no such item is emitted by the source Observable
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#wiki-lastOrDefault">RxJava Wiki: lastOrDefault()</a>
-     * @see MSDN: {@code Observable.lastOrDefaultAsync()}
+     * @see "MSDN: Observable.lastOrDefaultAsync()"
      */
     public final Observable<T> lastOrDefault(T defaultValue, Func1<? super T, Boolean> predicate) {
         return filter(predicate).takeLast(1).singleOrDefault(defaultValue);
@@ -5355,7 +5355,7 @@ public class Observable<T> {
      * @param f
      *            a {@link Func1} that applies Observable Observers to {@code Observable<T>} in parallel and
      *            returns an {@code Observable<R>}
-     * @return an Observable that emits the results of applying {@link f} to the items emitted by the source
+     * @return an Observable that emits the results of applying {@code f} to the items emitted by the source
      *         Observable
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#wiki-parallel">RxJava Wiki: parallel()</a>
      */
@@ -5376,7 +5376,7 @@ public class Observable<T> {
      *            returns an {@code Observable<R>}
      * @param s
      *            a {@link Scheduler} to perform the work on
-     * @return an Observable that emits the results of applying {@link f} to the items emitted by the source
+     * @return an Observable that emits the results of applying {@code f} to the items emitted by the source
      *         Observable
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#wiki-parallel">RxJava Wiki: parallel()</a>
      */
@@ -5450,7 +5450,7 @@ public class Observable<T> {
      * @param initialValue
      *            the initial value of the underlying {@link BehaviorSubject}
      * @return an Observable that emits {@code initialValue} followed by the results of invoking the selector
-     *         on a {@ConnectableObservable} that shares a single subscription to the underlying Observable
+     *         on a {@link ConnectableObservable} that shares a single subscription to the underlying Observable
      */
     public final <R> Observable<R> publish(Func1<? super Observable<T>, ? extends Observable<R>> selector, final T initialValue) {
         return multicast(new Func0<Subject<T, T>>() {
@@ -6208,7 +6208,7 @@ public class Observable<T> {
      * @throws IllegalArgumentException
      *             if the source emits more than one item or no items
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#wiki-single-and-singleordefault">RxJava Wiki: single()</a>
-     * @see MSDN: {@code Observable.singleAsync()}
+     * @see "MSDN: Observable.singleAsync()"
      */
     public final Observable<T> single() {
         return create(OperationSingle.<T> single(this));
@@ -6229,7 +6229,7 @@ public class Observable<T> {
      *             if the source Observable emits either more than one item that matches the predicate or no
      *             items that match the predicate
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#wiki-single-and-singleordefault">RxJava Wiki: single()</a>
-     * @see MSDN: {@code Observable.singleAsync()}
+     * @see "MSDN: Observable.singleAsync()"
      */
     public final Observable<T> single(Func1<? super T, Boolean> predicate) {
         return filter(predicate).single();
@@ -6249,7 +6249,7 @@ public class Observable<T> {
      * @throws IllegalArgumentException
      *             if the source Observable emits more than one item
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#wiki-single-and-singleordefault">RxJava Wiki: single()</a>
-     * @see MSDN: {@code Observable.singleOrDefaultAsync()}
+     * @see "MSDN: Observable.singleOrDefaultAsync()"
      */
     public final Observable<T> singleOrDefault(T defaultValue) {
         return create(OperationSingle.<T> singleOrDefault(this, defaultValue));
@@ -6272,7 +6272,7 @@ public class Observable<T> {
      * @throws IllegalArgumentException
      *             if the source Observable emits more than one item that matches the predicate
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#wiki-single-and-singleordefault">RxJava Wiki: single()</a>
-     * @see MSDN: {@code Observable.singleOrDefaultAsync()}
+     * @see "MSDN: Observable.singleOrDefaultAsync()"
      */
     public final Observable<T> singleOrDefault(T defaultValue, Func1<? super T, Boolean> predicate) {
         return filter(predicate).singleOrDefault(defaultValue);
@@ -7140,8 +7140,7 @@ public class Observable<T> {
     }
 
     /**
-     * Asynchronously subscribes Observers to this Observable on the specified
-     * {@link Scheduler}.
+     * Asynchronously subscribes Observers to this Observable on the specified {@link Scheduler}.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/subscribeOn.png">
      * 
@@ -7150,7 +7149,6 @@ public class Observable<T> {
      * @return the source Observable modified so that its subscriptions happen on the
      *         specified {@link Scheduler}
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#wiki-subscribeon">RxJava Wiki: subscribeOn()</a>
-     * @see #subscribeOn(rx.Scheduler, int) 
      */
     public final Observable<T> subscribeOn(Scheduler scheduler) {
         return nest().lift(new OperatorSubscribeOn<T>(scheduler));
@@ -7354,7 +7352,7 @@ public class Observable<T> {
      * @return an Observable that emits only the very first item emitted by the source Observable, or an empty
      *         Observable if the source Observable completes without emitting a single item
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#wiki-first">RxJava Wiki: first()</a>
-     * @see MSDN: {@code Observable.firstAsync()}
+     * @see "MSDN: Observable.firstAsync()"
      * @deprecated use {@code take(1)} directly
      */
     @Deprecated
@@ -7374,7 +7372,7 @@ public class Observable<T> {
      *         the given condition, or that completes without emitting anything if the source Observable
      *         completes without emitting a single condition-satisfying item
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#wiki-first">RxJava Wiki: first()</a>
-     * @see MSDN: {@code Observable.firstAsync()}
+     * @see "MSDN: Observable.firstAsync()"
      */
     public final Observable<T> takeFirst(Func1<? super T, Boolean> predicate) {
         return filter(predicate).take(1);
@@ -7638,7 +7636,7 @@ public class Observable<T> {
      * 
      * @param selector
      *            selector that will be invoked for items emitted by the source Observable
-     * @return a {@link Plan} that produces the projected results, to be fed (with other Plans) to the
+     * @return a {@link Plan0} that produces the projected results, to be fed (with other Plans) to the
      *         {@link #when} Observer
      * @throws NullPointerException
      *             if {@code selector} is null
