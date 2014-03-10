@@ -369,7 +369,7 @@ Schedulers.newThread().schedule(new Action1<Inner>() {
     }
 
 });
-
+```
 
 The use of `Action1<Inner>` on both the outer and inner levels makes it so recursion that refer to `this` and it works easily. 
 
@@ -473,7 +473,7 @@ Schedulers.newThread().scheduleRecursive(new Action1<Recurse>() {
 
 
 });
-``
+```
 
 The methods on the `Inner` never return a `Subscription` because they are always a single thread/event-loop/actor/etc and controlled by the `Subscription` returned by the initial `Scheduler.schedule` method. This is part of clarifying the contract.
 
