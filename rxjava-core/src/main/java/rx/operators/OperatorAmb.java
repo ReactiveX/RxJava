@@ -21,7 +21,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import rx.Observable;
 import rx.Observable.OnSubscribe;
-import rx.Observer;
 import rx.Subscriber;
 
 /**
@@ -121,12 +120,12 @@ public final class OperatorAmb<T> implements OnSubscribe<T>{
 
         private static final int NONE = -1;
 
-        private Observer<? super T> observer;
-        private int index;
-        private AtomicInteger choice;
+        private final Subscriber<? super T> subscriber;
+        private final int index;
+        private final AtomicInteger choice;
 
-        private AmbSubscriber(Subscriber<? super T> observer, int index, AtomicInteger choice) {
-            this.observer = observer;
+        private AmbSubscriber(Subscriber<? super T> subscriber, int index, AtomicInteger choice) {
+            this.subscriber = subscriber;
             this.choice = choice;
             this.index = index;
         }
@@ -137,7 +136,7 @@ public final class OperatorAmb<T> implements OnSubscribe<T>{
                 unsubscribe();
                 return;
             }
-            observer.onNext(args);
+            subscriber.onNext(args);
         }
 
         @Override
@@ -146,7 +145,7 @@ public final class OperatorAmb<T> implements OnSubscribe<T>{
                 unsubscribe();
                 return;
             }
-            observer.onCompleted();
+            subscriber.onCompleted();
         }
 
         @Override
@@ -155,7 +154,7 @@ public final class OperatorAmb<T> implements OnSubscribe<T>{
                 unsubscribe();
                 return;
             }
-            observer.onError(e);
+            subscriber.onError(e);
         }
 
         private boolean isSelected() {
@@ -178,6 +177,10 @@ public final class OperatorAmb<T> implements OnSubscribe<T>{
         int index = 0;
         for (Observable<? extends T> source : sources) {
             if (subscriber.isUnsubscribed()) {
+                break;
+            }
+            if (choice.get() != AmbSubscriber.NONE) {
+                // Already choose someone, the rest Observables can be skipped.
                 break;
             }
             AmbSubscriber<T> ambSubscriber = new AmbSubscriber<T>(subscriber, index, choice);
