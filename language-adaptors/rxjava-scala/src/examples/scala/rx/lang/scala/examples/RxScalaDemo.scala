@@ -533,4 +533,35 @@ class RxScalaDemo extends JUnitSuite {
     println(result)
   }
 
+  @Test def ambExample(): Unit = {
+    val o1 = List(100L, 200L, 300L).toObservable.delay(4 seconds)
+    val o2 = List(1000L, 2000L, 3000L).toObservable.delay(2 seconds)
+    val result = o1.amb(o2).toBlockingObservable.toList
+    println(result)
+  }
+
+  @Test def delayExample(): Unit = {
+    val o = List(100L, 200L, 300L).toObservable.delay(2 seconds)
+    val result = o.toBlockingObservable.toList
+    println(result)
+  }
+
+  @Test def delayExample2(): Unit = {
+    val o = List(100L, 200L, 300L).toObservable.delay(2 seconds, IOScheduler())
+    val result = o.toBlockingObservable.toList
+    println(result)
+  }
+
+  @Test def delaySubscriptionExample(): Unit = {
+    val o = List(100L, 200L, 300L).toObservable.delaySubscription(2 seconds)
+    val result = o.toBlockingObservable.toList
+    println(result)
+  }
+
+  @Test def delaySubscriptionExample2(): Unit = {
+    val o = List(100L, 200L, 300L).toObservable.delaySubscription(2 seconds, IOScheduler())
+    val result = o.toBlockingObservable.toList
+    println(result)
+  }
+
 }

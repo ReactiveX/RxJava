@@ -2236,6 +2236,78 @@ trait Observable[+T]
   def doOnEach(onNext: T => Unit, onError: Throwable => Unit, onCompleted: () => Unit): Observable[T] = {
     toScalaObservable[T](asJavaObservable.doOnEach(Observer(onNext, onError,onCompleted)))
   }
+
+  /**
+   * Given two Observables, mirror the one that first emits an item.
+   *
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/amb.png">
+   *
+   * You can combine items emitted by two Observables so that they act like a single
+   * Observable by using the `merge` method.
+   *
+   * @param that
+   *            an Observable competing to react first
+   * @return an Observable that emits the same sequence of items as whichever of `this` or `that` first emitted an item.
+   */
+  def amb[U >: T](that: Observable[U]): Observable[U] = {
+    val thisJava: rx.Observable[_ <: U] = this.asJavaObservable
+    val thatJava: rx.Observable[_ <: U] = that.asJavaObservable
+    toScalaObservable[U](rx.Observable.amb(thisJava, thatJava))
+  }
+
+  /**
+   * Returns an Observable that emits the items emitted by the source Observable shifted forward in time by a
+   * specified delay. Error notifications from the source Observable are not delayed.
+   *
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/delay.png">
+   * 
+   * @param delay the delay to shift the source by
+   * @return the source Observable shifted in time by the specified delay
+   */
+  def delay(delay: Duration): Observable[T] = {
+    toScalaObservable[T](asJavaObservable.delay(delay.length, delay.unit))
+  }
+
+  /**
+   * Returns an Observable that emits the items emitted by the source Observable shifted forward in time by a
+   * specified delay. Error notifications from the source Observable are not delayed.
+   *
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/delay.s.png">
+   * 
+   * @param delay the delay to shift the source by
+   * @param scheduler the Scheduler to use for delaying
+   * @return the source Observable shifted in time by the specified delay
+   */
+  def delay(delay: Duration, scheduler: Scheduler): Observable[T] = {
+    toScalaObservable[T](asJavaObservable.delay(delay.length, delay.unit, scheduler))
+  }
+
+  /**
+   * Return an Observable that delays the subscription to the source Observable by a given amount of time.
+   *
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/delaySubscription.png">
+   * 
+   * @param delay the time to delay the subscription
+   * @return an Observable that delays the subscription to the source Observable by the given amount
+   */
+  def delaySubscription(delay: Duration): Observable[T] = {
+    toScalaObservable[T](asJavaObservable.delaySubscription(delay.length, delay.unit))
+  }
+
+  /**
+   * Return an Observable that delays the subscription to the source Observable by a given amount of time,
+   * both waiting and subscribing on a given Scheduler.
+   *
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/delaySubscription.s.png">
+   * 
+   * @param delay the time to delay the subscription
+   * @param scheduler the Scheduler on which the waiting and subscription will happen
+   * @return an Observable that delays the subscription to the source Observable by a given
+   *         amount, waiting and subscribing on the given Scheduler
+   */
+  def delaySubscription(delay: Duration, scheduler: Scheduler): Observable[T] = {
+    toScalaObservable[T](asJavaObservable.delaySubscription(delay.length, delay.unit, scheduler))
+  }
 }
 
 /**
