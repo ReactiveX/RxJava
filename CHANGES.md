@@ -3,9 +3,6 @@
 ### Version 0.17.0 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.17.0%22)) ###
 
 
-# 0.17.0 Release Notes
-
-
 Version 0.17.0 contains some significant signature changes that allow us to significantly improve handling of synchronous Observables and simplify Schedulers. Many of the changes have backwards compatible deprecated methods to ease the migration while some are breaking. 
 
 The new signatures related to `Observable` in this release are:
@@ -64,20 +61,20 @@ This release applies many lessons learned over the past year and seeks to stream
 
 As shown in the code above the changes fall into 2 major sections:
 
-#### 1) Lift/Operator/OnSubscribe/Subscriber
+##### 1) Lift/Operator/OnSubscribe/Subscriber
 
 Changes that allow unsubscribing from synchronous Observables without needing to add concurrency.
 
-#### 2) Schedulers
+##### 2) Schedulers
 
 Simplification of the `Scheduler` interface and make clearer the concept of "outer" and "inner" Schedulers for recursion.
 
 
-## Lift/Operator/OnSubscribe/Subscriber
+#### Lift/Operator/OnSubscribe/Subscriber
 
 New types `Subscriber` and `OnSubscribe` along with the new `lift` function have been added. The reasons and benefits are as follows:
 
-### 1) Synchronous Unsubscribe
+##### 1) Synchronous Unsubscribe
 
 RxJava versions up until 0.16.x are unable to unsubscribe from a synchronous Observable such as this:
 
@@ -170,7 +167,7 @@ oi.subscribe(new Subscriber<Integer>() {
 ```
 
 
-### 2) Custom Operator Chaining
+##### 2) Custom Operator Chaining
 
 Because Java doesn't support extension methods, the only approach to applying custom operators without getting them added to `rx.Observable` is using static methods. This has meant code like this:
 
@@ -208,7 +205,7 @@ All operator implementations in the `rx.operators` package will over time be mig
 NOTE: Operators that have not yet been migrated do not work with synchronous unsubscribe. 
 
 
-### 3) Simpler Operator Implementations
+##### 3) Simpler Operator Implementations
 
 The `lift` operator injects the necessary `Observer` and `Subscription` instances (via the new `Subscriber` type) and eliminates (for most use cases) the need for manual subscription management. Because the `Subscription` is available in-scope there are no awkward coding patterns needed for creating a `Subscription`, closing over it and returning and taking into account synchronous vs asynchronous.
 
@@ -273,7 +270,7 @@ public Subscriber<? super T> call(final Subscriber<? super T> child) {
 ```
 
 
-### 4) Recursion/Loop Performance with Unsubscribe
+##### 4) Recursion/Loop Performance with Unsubscribe
 
 The `fromIterable` use case is 20x faster when implemented as a loop instead of recursive scheduler (see https://github.com/Netflix/RxJava/commit/a18b8c1a572b7b9509b7a7fe1a5075ce93657771).
 
@@ -283,7 +280,7 @@ Several places we can remove recursive scheduling used originally for unsubscrib
 
 
 
-## Schedulers
+#### Schedulers
 
 
 Schedulers were greatly simplified to a design based around `Action1<Inner>`. 
@@ -500,9 +497,9 @@ s.unsubscribe();
 
 
 
-## Migration Path
+#### Migration Path
 
-#### 1) Lift/OnSubscribe/Subscriber
+##### 1) Lift/OnSubscribe/Subscriber
 
 The `lift` function will not be used by most and is additive so will not affect backwards compatibility. The `Subscriber` type is also additive and for most use cases does not need to be used directly, the `Observer` interface can continue being used.
 
@@ -615,7 +612,7 @@ Observable.create(new OnSubscribe<Integer>() {
 
 
 
-#### 2) Schedulers
+##### 2) Schedulers
 
 Custom `Scheduler` implementations will need to be re-implemented and any direct use of the `Scheduler` interface will also need to be updated.
 
@@ -630,7 +627,7 @@ It is recommended to use `Subscriptions.create` for most `Subscription` usage.
 
 
 
-# The Future...
+#### The Future...
 
 We have most if not all operators from Rx.Net that we want or intend to port. We think we have got the `create`/`subscribe` signatures as we want and the `Subscription` and `Scheduler` interfaces are now clean. There is at least one more major topic related to back pressure that may result in signature change in a future release. Beyond that no further major signature changing work is expected prior to 1.0.
 
@@ -641,6 +638,7 @@ As we get closer to 1.0 there will be a release that focused on deleting all dep
 We appreciate your usage, feedback and contributions and hope the library is creating value for you!
 
 
+#### Pull Requests
 
 
 * [Pull 767](https://github.com/Netflix/RxJava/pull/767) Zip fix for multiple onCompleted and moved unsubscribe outside the lock.
