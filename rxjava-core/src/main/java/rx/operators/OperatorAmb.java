@@ -27,7 +27,7 @@ import rx.Subscriber;
 /**
  * Propagates the observable sequence that reacts first.
  */
-public final class OperationAmb<T> implements OnSubscribe<T>{
+public final class OperatorAmb<T> implements OnSubscribe<T>{
 
     public static <T> OnSubscribe<T> amb(Observable<? extends T> o1, Observable<? extends T> o2) {
         List<Observable<? extends T>> sources = new ArrayList<Observable<? extends T>>();
@@ -114,7 +114,7 @@ public final class OperationAmb<T> implements OnSubscribe<T>{
     }
 
     public static <T> OnSubscribe<T> amb(final Iterable<? extends Observable<? extends T>> sources) {
-        return new OperationAmb<T>(sources);
+        return new OperatorAmb<T>(sources);
     }
 
     private static final class AmbSubscriber<T> extends Subscriber<T> {
@@ -168,7 +168,7 @@ public final class OperationAmb<T> implements OnSubscribe<T>{
 
     private final Iterable<? extends Observable<? extends T>> sources;
 
-    private OperationAmb(Iterable<? extends Observable<? extends T>> sources) {
+    private OperatorAmb(Iterable<? extends Observable<? extends T>> sources) {
         this.sources = sources;
     }
 

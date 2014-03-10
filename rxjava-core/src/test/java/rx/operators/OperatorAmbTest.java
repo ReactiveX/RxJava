@@ -18,7 +18,7 @@ package rx.operators;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
-import static rx.operators.OperationAmb.amb;
+import static rx.operators.OperatorAmb.amb;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -36,7 +36,7 @@ import rx.functions.Action1;
 import rx.schedulers.TestScheduler;
 import rx.subscriptions.CompositeSubscription;
 
-public class OperationAmbTest {
+public class OperatorAmbTest {
 
     private TestScheduler scheduler;
 
