@@ -1,5 +1,100 @@
 # RxJava Releases #
 
+### Version 0.17.0 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.17.0%22)) ###
+
+* [Pull 767](https://github.com/Netflix/RxJava/pull/767) Zip fix for multiple onCompleted and moved unsubscribe outside the lock.
+* [Pull 770](https://github.com/Netflix/RxJava/pull/770) Bind Operator
+* [Pull 778](https://github.com/Netflix/RxJava/pull/778) Fix zip race condition 
+* [Pull 784](https://github.com/Netflix/RxJava/pull/784) Lift and Observer+Subscription
+* [Pull 793](https://github.com/Netflix/RxJava/pull/793) Observer + Subscriber
+* [Pull 796](https://github.com/Netflix/RxJava/pull/796) Add Subscription.isUnsubscribed()
+* [Pull 797](https://github.com/Netflix/RxJava/pull/797) Scheduler Outer/Inner [Preview]
+* [Pull 805](https://github.com/Netflix/RxJava/pull/805) Fix CompositeException
+* [Pull 785](https://github.com/Netflix/RxJava/pull/785) Reimplement Zip Operator Using Lift [Preview]
+* [Pull 814](https://github.com/Netflix/RxJava/pull/814) RunAsync method for outputting multiple values
+* [Pull 812](https://github.com/Netflix/RxJava/pull/812) Fixed OperationSubscribeOn so OperationConditionalsTest works again.
+* [Pull 816](https://github.com/Netflix/RxJava/pull/816) One global onCompleted object
+* [Pull 818](https://github.com/Netflix/RxJava/pull/818) CompositeSubscription memory reduction
+* [Pull 817](https://github.com/Netflix/RxJava/pull/817) Scala Scheduler Bindings Fix
+* [Pull 819](https://github.com/Netflix/RxJava/pull/819) CompositeSubscription performance increase
+* [Pull 781](https://github.com/Netflix/RxJava/pull/781) Fixed buglet in join binding, simplified types
+* [Pull 783](https://github.com/Netflix/RxJava/pull/783) Implement some Android UI related operators
+* [Pull 821](https://github.com/Netflix/RxJava/pull/821) Update to use Subscriber/Subscriptions.create
+* [Pull 826](https://github.com/Netflix/RxJava/pull/826) Return wrapped Subscription
+* [Pull 824](https://github.com/Netflix/RxJava/pull/824) Set setDaemon on NewThreadScheduler
+* [Pull 828](https://github.com/Netflix/RxJava/pull/828) Repeat Operator
+* [Pull 827](https://github.com/Netflix/RxJava/pull/827) Fixed cut & paster error in io scheduler
+* [Pull 833](https://github.com/Netflix/RxJava/pull/833) Take operator was breaking the unsubscribe chain
+* [Pull 822](https://github.com/Netflix/RxJava/pull/822) Reimplement 'subscribeOn' using 'lift'
+* [Pull 832](https://github.com/Netflix/RxJava/pull/832) Issue #831 Fix for OperationJoin race condition
+* [Pull 834](https://github.com/Netflix/RxJava/pull/834) Update clojure for 0.17
+* [Pull 839](https://github.com/Netflix/RxJava/pull/839) Error Handling: OnErrorNotImplemented and java.lang.Error
+* [Pull 838](https://github.com/Netflix/RxJava/pull/838) Make Scala OnCompleted Notification an object
+* [Pull 837](https://github.com/Netflix/RxJava/pull/837) Perf with JMH
+* [Pull 841](https://github.com/Netflix/RxJava/pull/841) Range OnSubscribe
+* [Pull 842](https://github.com/Netflix/RxJava/pull/842) Test Unsubscribe
+* [Pull 845](https://github.com/Netflix/RxJava/pull/845) Fix problem with Subscription 
+* [Pull 847](https://github.com/Netflix/RxJava/pull/847) Various Changes While Fixing GroupBy
+* [Pull 849](https://github.com/Netflix/RxJava/pull/849) Add 'Fragment-Host' to rxjava-contrib modules for OSGi
+* [Pull 851](https://github.com/Netflix/RxJava/pull/851) Reimplement the timeout operator and fix timeout bugs
+* [Pull 846](https://github.com/Netflix/RxJava/pull/846) Added overloaded createRequest method that takes an HttpContext instance
+* [Pull 777](https://github.com/Netflix/RxJava/pull/777) Fixed testSingleSourceManyIterators
+* [Pull 852](https://github.com/Netflix/RxJava/pull/852) rxjava-debug
+* [Pull 853](https://github.com/Netflix/RxJava/pull/853) StringObservable Update
+* [Pull 763](https://github.com/Netflix/RxJava/pull/763) Added support for custom functions in combineLatest.
+* [Pull 854](https://github.com/Netflix/RxJava/pull/854) The onCreate hook disappeared
+* [Pull 857](https://github.com/Netflix/RxJava/pull/857) Change Lift to use rx.Observable.Operator 
+* [Pull 859](https://github.com/Netflix/RxJava/pull/859) Add 'Fragment-Host' to rxjava-contrib/debug module for OSGi
+* [Pull 860](https://github.com/Netflix/RxJava/pull/860) Fixing the generics for merge and lift
+* [Pull 863](https://github.com/Netflix/RxJava/pull/863) Optimize SwingMouseEventSource.fromRelativeMouseMotion
+* [Pull 862](https://github.com/Netflix/RxJava/pull/862) Update the timeout docs
+* [Pull 790](https://github.com/Netflix/RxJava/pull/790) Convert to scan to use lift
+* [Pull 866](https://github.com/Netflix/RxJava/pull/866) Update OperationScan to OperatorScan
+* [Pull 870](https://github.com/Netflix/RxJava/pull/870) Add the selector variants of timeout in RxScala
+* [Pull 874](https://github.com/Netflix/RxJava/pull/874) Update CompositeSubscriptionTest.java
+* [Pull 869](https://github.com/Netflix/RxJava/pull/869) subscribeOn + groupBy
+* [Pull 751](https://github.com/Netflix/RxJava/pull/751) Provide Observable.timestamp(Scheduler) to be used in the tests. 
+* [Pull 878](https://github.com/Netflix/RxJava/pull/878) Scheduler.scheduleRecursive
+* [Pull 877](https://github.com/Netflix/RxJava/pull/877) Correct synchronization guard in groupByUntil
+* [Pull 880](https://github.com/Netflix/RxJava/pull/880) Force ViewObservable be subscribed and unsubscribed in the UI thread
+* [Pull 887](https://github.com/Netflix/RxJava/pull/887) Remove Bad Filter Logic 
+* [Pull 890](https://github.com/Netflix/RxJava/pull/890) Split SubscribeOn into SubscribeOn/UnsubscribeOn
+* [Pull 891](https://github.com/Netflix/RxJava/pull/891) Eliminate rx.util.* dumping grounds
+* [Pull 881](https://github.com/Netflix/RxJava/pull/881) Lift Performance
+* [Pull 893](https://github.com/Netflix/RxJava/pull/893) Change Parallel to use Long instead of Int
+* [Pull 894](https://github.com/Netflix/RxJava/pull/894) Synchronized Operator Check for isTerminated
+* [Pull 885](https://github.com/Netflix/RxJava/pull/885) Fixed an issue with the from(Reader) added a bunch of unit tests.
+* [Pull 896](https://github.com/Netflix/RxJava/pull/896) removing java 7 dep
+* [Pull 883](https://github.com/Netflix/RxJava/pull/883) Make Subscriptions of SwingObservable thread-safe
+* [Pull 895](https://github.com/Netflix/RxJava/pull/895) Rewrite OperationObserveFromAndroidComponent to OperatorObserveFromAndroid
+* [Pull 892](https://github.com/Netflix/RxJava/pull/892) onErrorFlatMap + OnErrorThrowable
+* [Pull 898](https://github.com/Netflix/RxJava/pull/898) Handle illegal errors thrown from plugin
+* [Pull 901](https://github.com/Netflix/RxJava/pull/901) GroupBy Unit Test from #900
+* [Pull 902](https://github.com/Netflix/RxJava/pull/902) Fixed NullPointerException that may happen on timeout
+* [Pull 903](https://github.com/Netflix/RxJava/pull/903) Scheduler.Recurse fields should be private
+* [Pull 904](https://github.com/Netflix/RxJava/pull/904) Merge: Unsubscribe Completed Inner Observables
+* [Pull 905](https://github.com/Netflix/RxJava/pull/905) RxJavaSchedulers Plugin
+* [Pull 909](https://github.com/Netflix/RxJava/pull/909) Scheduler Plugin Refactor 
+* [Pull 910](https://github.com/Netflix/RxJava/pull/910) Remove groupBy with selector
+* [Pull 918](https://github.com/Netflix/RxJava/pull/918) Operator: doOnTerminate
+* [Pull 919](https://github.com/Netflix/RxJava/pull/919) BugFix: Zip Never Completes When Zero Observables
+* [Pull 920](https://github.com/Netflix/RxJava/pull/920) Delete Deprecated onSubscribeStart That Doesn't Work
+* [Pull 922](https://github.com/Netflix/RxJava/pull/922) Changes made while integrating it with our internal system
+* [Pull 924](https://github.com/Netflix/RxJava/pull/924) Localized Operator Error Handling
+* [Pull 925](https://github.com/Netflix/RxJava/pull/925) Rxjava clojure bindings final 
+* [Pull 926](https://github.com/Netflix/RxJava/pull/926) TestSubscriber: Default onError and Terminal Latch Behavior
+* [Pull 927](https://github.com/Netflix/RxJava/pull/927) TestSubscriber lastSeenThread 
+* [Pull 936](https://github.com/Netflix/RxJava/pull/936) Skip fixed
+* [Pull 942](https://github.com/Netflix/RxJava/pull/942) MathObservable
+* [Pull 944](https://github.com/Netflix/RxJava/pull/944) OperationRetry -> OperatorRetry
+* [Pull 945](https://github.com/Netflix/RxJava/pull/945) refactor the debug hooks before they become a breaking change.
+* [Pull 934](https://github.com/Netflix/RxJava/pull/934) add Observable.startWith(Observable) method and unit test
+* [Pull 929](https://github.com/Netflix/RxJava/pull/929) correct link to maven search
+* [Pull 923](https://github.com/Netflix/RxJava/pull/923) Observable creation from Subscriber[T]=>Unit for Scala
+* [Pull 931](https://github.com/Netflix/RxJava/pull/931) A number of improvements to OperatorObserveFromAndroidComponent 
+* [Pull 950](https://github.com/Netflix/RxJava/pull/950) Add support for Eclipse PDE
+
+
 ### Version 0.16.1 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.16.1%22)) ###
 
 * [Pull 730](https://github.com/Netflix/RxJava/pull/730) Improve Error Handling and Stacktraces When Unsubscribe Fails
