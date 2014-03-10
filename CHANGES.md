@@ -545,7 +545,7 @@ Observable.create(new OnSubscribeFunc<Integer>() {
             @Override
             public void run() {
                 int i = 0;
-                while (s.isUnsubscribed()) {
+                while (!s.isUnsubscribed()) {
                     o.onNext(i++);
                 }
             }
@@ -565,7 +565,7 @@ Observable.create(new OnSubscribe<Integer>() {
     @Override
     public void call(Subscriber<? super Integer> subscriber) {
         int i = 0;
-        while (subscriber.isUnsubscribed()) {
+        while (!subscriber.isUnsubscribed()) {
             subscriber.onNext(i++);
         }
     }
@@ -584,7 +584,7 @@ Observable.create(new OnSubscribe<Integer>() {
             @Override
             public void run() {
                 int i = 0;
-                while (subscriber.isUnsubscribed()) {
+                while (!subscriber.isUnsubscribed()) {
                     subscriber.onNext(i++);
                 }
             }
@@ -603,7 +603,7 @@ Observable.create(new OnSubscribe<Integer>() {
     @Override
     public void call(Subscriber<? super Integer> subscriber) {
         int i = 0;
-        while (subscriber.isUnsubscribed()) {
+        while (!subscriber.isUnsubscribed()) {
             subscriber.onNext(i++);
         }
     }
