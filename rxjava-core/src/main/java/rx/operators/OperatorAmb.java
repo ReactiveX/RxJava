@@ -158,10 +158,11 @@ public final class OperatorAmb<T> implements OnSubscribe<T>{
         }
 
         private boolean isSelected() {
-            if (choice.get() == NONE) {
+            int ch = choice.get();
+            if (ch == NONE) {
                 return choice.compareAndSet(NONE, index);
             }
-            return choice.get() == index;
+            return ch == index;
         }
     }
 
