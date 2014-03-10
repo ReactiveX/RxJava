@@ -2242,9 +2242,6 @@ trait Observable[+T]
    *
    * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/amb.png">
    *
-   * You can combine items emitted by two Observables so that they act like a single
-   * Observable by using the `merge` method.
-   *
    * @param that
    *            an Observable competing to react first
    * @return an Observable that emits the same sequence of items as whichever of `this` or `that` first emitted an item.
