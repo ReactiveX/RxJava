@@ -15,8 +15,10 @@
  */
 package rx.operators;
 
-import static org.mockito.Mockito.*;
-import static rx.operators.OperationAmb.*;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static rx.operators.OperationAmb.amb;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -26,10 +28,10 @@ import org.junit.Test;
 import org.mockito.InOrder;
 
 import rx.Observable;
-import rx.Observable.OnSubscribeFunc;
+import rx.Observable.OnSubscribe;
 import rx.Observer;
 import rx.Scheduler.Inner;
-import rx.Subscription;
+import rx.Subscriber;
 import rx.functions.Action1;
 import rx.schedulers.TestScheduler;
 import rx.subscriptions.CompositeSubscription;
@@ -45,17 +47,18 @@ public class OperationAmbTest {
 
     private Observable<String> createObservable(final String[] values,
             final long interval, final Throwable e) {
-        return Observable.create(new OnSubscribeFunc<String>() {
+        return Observable.create(new OnSubscribe<String>() {
 
             @Override
-            public Subscription onSubscribe(final Observer<? super String> observer) {
+            public void call(final Subscriber<? super String> subscriber) {
                 CompositeSubscription parentSubscription = new CompositeSubscription();
+                subscriber.add(parentSubscription);
                 long delay = interval;
                 for (final String value : values) {
                     parentSubscription.add(scheduler.schedule(new Action1<Inner>() {
                         @Override
                         public void call(Inner inner) {
-                            observer.onNext(value);
+                            subscriber.onNext(value);
                         }
                     }, delay, TimeUnit.MILLISECONDS));
                     delay += interval;
@@ -64,13 +67,12 @@ public class OperationAmbTest {
                     @Override
                     public void call(Inner inner) {
                         if (e == null) {
-                            observer.onCompleted();
+                            subscriber.onCompleted();
                         } else {
-                            observer.onError(e);
+                            subscriber.onError(e);
                         }
                     }
                 }, delay, TimeUnit.MILLISECONDS));
-                return parentSubscription;
             }
         });
     }
@@ -104,12 +106,12 @@ public class OperationAmbTest {
 
     @Test
     public void testAmb2() {
-        IOException needHappenedException = new IOException(
+        IOException expectedException = new IOException(
                 "fake exception");
         Observable<String> observable1 = createObservable(new String[] {},
                 2000, new IOException("fake exception"));
         Observable<String> observable2 = createObservable(new String[] {
-                "2", "22", "222", "2222" }, 1000, needHappenedException);
+                "2", "22", "222", "2222" }, 1000, expectedException);
         Observable<String> observable3 = createObservable(new String[] {},
                 3000, new IOException("fake exception"));
 
@@ -127,7 +129,7 @@ public class OperationAmbTest {
         inOrder.verify(observer, times(1)).onNext("22");
         inOrder.verify(observer, times(1)).onNext("222");
         inOrder.verify(observer, times(1)).onNext("2222");
-        inOrder.verify(observer, times(1)).onError(needHappenedException);
+        inOrder.verify(observer, times(1)).onError(expectedException);
         inOrder.verifyNoMoreInteractions();
     }
 

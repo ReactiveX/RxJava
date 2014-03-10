@@ -20,24 +20,23 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import rx.Observable;
-import rx.Observable.OnSubscribeFunc;
+import rx.Observable.OnSubscribe;
 import rx.Observer;
-import rx.Subscription;
-import rx.subscriptions.CompositeSubscription;
+import rx.Subscriber;
 
 /**
  * Propagates the observable sequence that reacts first.
  */
-public class OperationAmb {
+public final class OperationAmb<T> implements OnSubscribe<T>{
 
-    public static <T> OnSubscribeFunc<T> amb(Observable<? extends T> o1, Observable<? extends T> o2) {
+    public static <T> OnSubscribe<T> amb(Observable<? extends T> o1, Observable<? extends T> o2) {
         List<Observable<? extends T>> sources = new ArrayList<Observable<? extends T>>();
         sources.add(o1);
         sources.add(o2);
         return amb(sources);
     }
 
-    public static <T> OnSubscribeFunc<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3) {
+    public static <T> OnSubscribe<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3) {
         List<Observable<? extends T>> sources = new ArrayList<Observable<? extends T>>();
         sources.add(o1);
         sources.add(o2);
@@ -45,7 +44,7 @@ public class OperationAmb {
         return amb(sources);
     }
 
-    public static <T> OnSubscribeFunc<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4) {
+    public static <T> OnSubscribe<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4) {
         List<Observable<? extends T>> sources = new ArrayList<Observable<? extends T>>();
         sources.add(o1);
         sources.add(o2);
@@ -54,7 +53,7 @@ public class OperationAmb {
         return amb(sources);
     }
 
-    public static <T> OnSubscribeFunc<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4, Observable<? extends T> o5) {
+    public static <T> OnSubscribe<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4, Observable<? extends T> o5) {
         List<Observable<? extends T>> sources = new ArrayList<Observable<? extends T>>();
         sources.add(o1);
         sources.add(o2);
@@ -64,7 +63,7 @@ public class OperationAmb {
         return amb(sources);
     }
 
-    public static <T> OnSubscribeFunc<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4, Observable<? extends T> o5, Observable<? extends T> o6) {
+    public static <T> OnSubscribe<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4, Observable<? extends T> o5, Observable<? extends T> o6) {
         List<Observable<? extends T>> sources = new ArrayList<Observable<? extends T>>();
         sources.add(o1);
         sources.add(o2);
@@ -75,7 +74,7 @@ public class OperationAmb {
         return amb(sources);
     }
 
-    public static <T> OnSubscribeFunc<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4, Observable<? extends T> o5, Observable<? extends T> o6, Observable<? extends T> o7) {
+    public static <T> OnSubscribe<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4, Observable<? extends T> o5, Observable<? extends T> o6, Observable<? extends T> o7) {
         List<Observable<? extends T>> sources = new ArrayList<Observable<? extends T>>();
         sources.add(o1);
         sources.add(o2);
@@ -87,7 +86,7 @@ public class OperationAmb {
         return amb(sources);
     }
 
-    public static <T> OnSubscribeFunc<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4, Observable<? extends T> o5, Observable<? extends T> o6, Observable<? extends T> o7, Observable<? extends T> o8) {
+    public static <T> OnSubscribe<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4, Observable<? extends T> o5, Observable<? extends T> o6, Observable<? extends T> o7, Observable<? extends T> o8) {
         List<Observable<? extends T>> sources = new ArrayList<Observable<? extends T>>();
         sources.add(o1);
         sources.add(o2);
@@ -100,7 +99,7 @@ public class OperationAmb {
         return amb(sources);
     }
 
-    public static <T> OnSubscribeFunc<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4, Observable<? extends T> o5, Observable<? extends T> o6, Observable<? extends T> o7, Observable<? extends T> o8, Observable<? extends T> o9) {
+    public static <T> OnSubscribe<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4, Observable<? extends T> o5, Observable<? extends T> o6, Observable<? extends T> o7, Observable<? extends T> o8, Observable<? extends T> o9) {
         List<Observable<? extends T>> sources = new ArrayList<Observable<? extends T>>();
         sources.add(o1);
         sources.add(o2);
@@ -114,40 +113,19 @@ public class OperationAmb {
         return amb(sources);
     }
 
-    public static <T> OnSubscribeFunc<T> amb(
-            final Iterable<? extends Observable<? extends T>> sources) {
-        return new OnSubscribeFunc<T>() {
-
-            @Override
-            public Subscription onSubscribe(final Observer<? super T> observer) {
-                AtomicInteger choice = new AtomicInteger(AmbObserver.NONE);
-                int index = 0;
-                CompositeSubscription parentSubscription = new CompositeSubscription();
-                for (Observable<? extends T> source : sources) {
-                    SafeObservableSubscription subscription = new SafeObservableSubscription();
-                    AmbObserver<T> ambObserver = new AmbObserver<T>(
-                            subscription, observer, index, choice);
-                    parentSubscription.add(subscription.wrap(source
-                            .subscribe(ambObserver)));
-                    index++;
-                }
-                return parentSubscription;
-            }
-        };
+    public static <T> OnSubscribe<T> amb(final Iterable<? extends Observable<? extends T>> sources) {
+        return new OperationAmb<T>(sources);
     }
 
-    private static class AmbObserver<T> implements Observer<T> {
+    private static final class AmbSubscriber<T> extends Subscriber<T> {
 
         private static final int NONE = -1;
 
-        private Subscription subscription;
         private Observer<? super T> observer;
         private int index;
         private AtomicInteger choice;
 
-        private AmbObserver(Subscription subscription,
-                Observer<? super T> observer, int index, AtomicInteger choice) {
-            this.subscription = subscription;
+        private AmbSubscriber(Subscriber<? super T> observer, int index, AtomicInteger choice) {
             this.observer = observer;
             this.choice = choice;
             this.index = index;
@@ -156,7 +134,7 @@ public class OperationAmb {
         @Override
         public void onNext(T args) {
             if (!isSelected()) {
-                subscription.unsubscribe();
+                unsubscribe();
                 return;
             }
             observer.onNext(args);
@@ -165,7 +143,7 @@ public class OperationAmb {
         @Override
         public void onCompleted() {
             if (!isSelected()) {
-                subscription.unsubscribe();
+                unsubscribe();
                 return;
             }
             observer.onCompleted();
@@ -174,7 +152,7 @@ public class OperationAmb {
         @Override
         public void onError(Throwable e) {
             if (!isSelected()) {
-                subscription.unsubscribe();
+                unsubscribe();
                 return;
             }
             observer.onError(e);
@@ -185,6 +163,27 @@ public class OperationAmb {
                 return choice.compareAndSet(NONE, index);
             }
             return choice.get() == index;
+        }
+    }
+
+    private final Iterable<? extends Observable<? extends T>> sources;
+
+    private OperationAmb(Iterable<? extends Observable<? extends T>> sources) {
+        this.sources = sources;
+    }
+
+    @Override
+    public void call(Subscriber<? super T> subscriber) {
+        AtomicInteger choice = new AtomicInteger(AmbSubscriber.NONE);
+        int index = 0;
+        for (Observable<? extends T> source : sources) {
+            if (subscriber.isUnsubscribed()) {
+                break;
+            }
+            AmbSubscriber<T> ambSubscriber = new AmbSubscriber<T>(subscriber, index, choice);
+            subscriber.add(ambSubscriber);
+            source.subscribe(ambSubscriber);
+            index++;
         }
     }
 
