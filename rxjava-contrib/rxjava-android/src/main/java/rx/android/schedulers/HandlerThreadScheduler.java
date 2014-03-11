@@ -15,13 +15,14 @@
  */
 package rx.android.schedulers;
 
-import java.util.concurrent.TimeUnit;
-
+import android.os.Handler;
+import android.os.Looper;
 import rx.Scheduler;
 import rx.Subscription;
 import rx.functions.Action1;
 import rx.subscriptions.BooleanSubscription;
-import android.os.Handler;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * Schedules actions to run on an Android Handler thread.
@@ -32,7 +33,7 @@ public class HandlerThreadScheduler extends Scheduler {
 
     /**
      * Constructs a {@link HandlerThreadScheduler} using the given {@link Handler}
-     * 
+     *
      * @param handler
      *            {@link Handler} to use when scheduling actions
      */
@@ -41,22 +42,18 @@ public class HandlerThreadScheduler extends Scheduler {
     }
 
     /**
-     * Calls {@link HandlerThreadScheduler#schedule(Object, rx.functions.Func2, long, java.util.concurrent.TimeUnit)} with a delay of zero milliseconds.
-     * 
-     * See {@link #schedule(Object, rx.functions.Func2, long, java.util.concurrent.TimeUnit)}
+     * Calls {@link HandlerThreadScheduler#schedule(rx.functions.Action1, long, java.util.concurrent.TimeUnit)} with a delay of zero milliseconds.
+     *
+     * See {@link HandlerThreadScheduler#schedule(rx.functions.Action1, long, java.util.concurrent.TimeUnit)}
      */
     @Override
     public Subscription schedule(Action1<Inner> action) {
-        InnerHandlerThreadScheduler inner = new InnerHandlerThreadScheduler(handler);
-        inner.schedule(action);
-        return inner;
+        return schedule(action, 0, TimeUnit.MILLISECONDS);
     }
 
     /**
      * Calls {@link Handler#postDelayed(Runnable, long)} with a runnable that executes the given action.
-     * 
-     * @param state
-     *            State to pass into the action.
+     *
      * @param action
      *            Action to schedule.
      * @param delayTime
@@ -93,31 +90,27 @@ public class HandlerThreadScheduler extends Scheduler {
         }
 
         @Override
-        public void schedule(final Action1<Inner> action, long delayTime, TimeUnit unit) {
+        public void schedule(final Action1<Inner> action, final long delayTime, final TimeUnit unit) {
+            final long millis = unit.toMillis(delayTime);
+
+            if (millis == 0 && handler.getLooper() == Looper.myLooper()) {
+                action.call(_inner);
+                return;
+            }
+
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    if (_inner.isUnsubscribed()) {
-                        return;
+                    if (!_inner.isUnsubscribed()) {
+                        action.call(_inner);
                     }
-                    action.call(_inner);
                 }
             }, unit.toMillis(delayTime));
         }
 
         @Override
         public void schedule(final Action1<Inner> action) {
-            handler.postDelayed(new Runnable() {
-
-                @Override
-                public void run() {
-                    if (_inner.isUnsubscribed()) {
-                        return;
-                    }
-                    action.call(_inner);
-                }
-
-            }, 0L);
+            schedule(action, 0, TimeUnit.MILLISECONDS);
         }
 
     }
