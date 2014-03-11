@@ -11,9 +11,9 @@ import rx.Observer;
 public class SerializedObserver<T> implements Observer<T> {
 
     private final AtomicReference<State> state = new AtomicReference<State>(State.createNew());
-    private final Observer<T> s;
+    private final Observer<? super T> s;
 
-    public SerializedObserver(Observer<T> s) {
+    public SerializedObserver(Observer<? super T> s) {
         this.s = s;
     }
 
