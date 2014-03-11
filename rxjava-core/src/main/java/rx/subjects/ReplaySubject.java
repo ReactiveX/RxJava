@@ -84,8 +84,15 @@ public final class ReplaySubject<T> extends Subject<T, T> {
 
                     @Override
                     public void call(SubjectObserver<? super T> o) {
+                        Integer idx = state.replayState.remove(o);
                         // we will finish replaying if there is anything left
-                        replayObserverFromIndex(state.history, state.replayState.get(o), o);
+                        replayObserverFromIndex(state.history, idx, o);
+                    }
+                }, 
+                new Action1<SubjectObserver<? super T>>() {
+                    @Override
+                    public void call(SubjectObserver<? super T> o) {
+                        state.replayState.remove(o);
                     }
                 });
 
@@ -229,5 +236,10 @@ public final class ReplaySubject<T> extends Subject<T, T> {
             terminalValue.set(n);
         }
     }
-
+    /**
+     * @return Returns the number of subscribers.
+     */
+    /* Support test.*/ int subscriberCount() {
+        return state.replayState.size();
+    }
 }

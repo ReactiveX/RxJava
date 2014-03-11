@@ -39,13 +39,16 @@ import rx.subscriptions.Subscriptions;
      *            Always runs at the beginning of 'subscribe' regardless of terminal state.
      * @param onTerminated
      *            Only runs if Subject is in terminal state and the Observer ends up not being registered.
+     * @param onUnsubscribe called after the child subscription is removed from the state
      * @return
      */
-    public OnSubscribe<T> getOnSubscribeFunc(final Action1<SubjectObserver<? super T>> onSubscribe, final Action1<SubjectObserver<? super T>> onTerminated) {
+    public OnSubscribe<T> getOnSubscribeFunc(final Action1<SubjectObserver<? super T>> onSubscribe, 
+            final Action1<SubjectObserver<? super T>> onTerminated,
+            final Action1<SubjectObserver<? super T>> onUnsubscribe) {
         return new OnSubscribe<T>() {
             @Override
             public void call(Subscriber<? super T> actualOperator) {
-                SubjectObserver<T> observer = new SubjectObserver<T>(actualOperator);
+                final SubjectObserver<T> observer = new SubjectObserver<T>(actualOperator);
                 // invoke onSubscribe logic 
                 if (onSubscribe != null) {
                     onSubscribe.call(observer);
@@ -84,6 +87,9 @@ import rx.subscriptions.Subscriptions;
                                     // on unsubscribe remove it from the map of outbound observers to notify
                                     newState = current.removeObserver(subscription);
                                 } while (!state.compareAndSet(current, newState));
+                                if (onUnsubscribe != null) {
+                                    onUnsubscribe.call(observer);
+                                }
                             }
                         }));
 

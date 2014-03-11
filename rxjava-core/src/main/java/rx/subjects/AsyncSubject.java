@@ -82,7 +82,7 @@ public final class AsyncSubject<T> extends Subject<T, T> {
                         // to send onCompleted if the last value is an onNext
                         emitValueToObserver(lastNotification.get(), o);
                     }
-                });
+                }, null);
 
         return new AsyncSubject<T>(onSubscribe, subscriptionManager, lastNotification);
     }

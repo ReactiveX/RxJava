@@ -344,5 +344,16 @@ public class ReplaySubjectTest {
         assertEquals("three", lastValueForObserver2.get());
 
     }
+    @Test
+    public void testSubscriptionLeak() {
+        ReplaySubject<Object> replaySubject = ReplaySubject.create();
+        
+        Subscription s = replaySubject.subscribe();
 
+        assertEquals(1, replaySubject.subscriberCount());
+
+        s.unsubscribe();
+        
+        assertEquals(0, replaySubject.subscriberCount());
+    }
 }

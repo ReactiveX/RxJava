@@ -128,7 +128,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
                          */
                         lastNotification.get().accept(o);
                     }
-                });
+                }, null);
 
         return new BehaviorSubject<T>(onSubscribe, subscriptionManager, lastNotification);
     }
