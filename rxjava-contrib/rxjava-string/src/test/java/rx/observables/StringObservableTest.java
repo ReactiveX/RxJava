@@ -247,7 +247,9 @@ public class StringObservableTest {
 
     @Test
     public void testByLine() {
-        List<Line> lines = StringObservable.byLine(Observable.from(Arrays.asList("qwer", "\nasdf\n", "zx", "cv"))).toList().toBlockingObservable().single();
+        String newLine = System.getProperty("line.separator");
+        
+        List<Line> lines = StringObservable.byLine(Observable.from(Arrays.asList("qwer", newLine + "asdf" + newLine, "zx", "cv"))).toList().toBlockingObservable().single();
 
         assertEquals(Arrays.asList(new Line(0, "qwer"), new Line(1, "asdf"), new Line(2, "zxcv")), lines);
     }
