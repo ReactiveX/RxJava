@@ -19,6 +19,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -92,8 +93,8 @@ public class SerializedObserverTest {
         assertEquals(1, busyObserver.maxConcurrentThreads.get());
     }
 
-    @Test
-    public void testMultiThreadedWithNPE() {
+    @Test(timeout=1000)
+    public void testMultiThreadedWithNPE() throws InterruptedException {
         Subscription s = mock(Subscription.class);
         TestMultiThreadedObservable onSubscribe = new TestMultiThreadedObservable(s, "one", "two", "three", null);
         Observable<String> w = Observable.create(onSubscribe);
@@ -103,8 +104,9 @@ public class SerializedObserverTest {
 
         w.subscribe(aw);
         onSubscribe.waitToFinish();
+        busyObserver.terminalEvent.await();
 
-        System.out.println("maxConcurrentThreads: " + onSubscribe.maxConcurrentThreads.get());
+        System.out.println("OnSubscribe maxConcurrentThreads: " + onSubscribe.maxConcurrentThreads.get() + "  Observer maxConcurrentThreads: " + busyObserver.maxConcurrentThreads.get());
 
         // we can't know how many onNext calls will occur since they each run on a separate thread
         // that depends on thread scheduling so 0, 1, 2 and 3 are all valid options
@@ -286,7 +288,7 @@ public class SerializedObserverTest {
         @Override
         public void run() {
             for (int i = 0; i < numStringsToSend; i++) {
-                Observer.onNext("aString");
+                Observer.onNext(Thread.currentThread().getId() + "-" + i);
             }
         }
     }
@@ -296,12 +298,12 @@ public class SerializedObserverTest {
      */
     public static class CompletionThread implements Runnable {
 
-        private final Observer<String> Observer;
+        private final Observer<String> observer;
         private final TestConcurrencyObserverEvent event;
         private final Future<?>[] waitOnThese;
 
         CompletionThread(Observer<String> Observer, TestConcurrencyObserverEvent event, Future<?>... waitOnThese) {
-            this.Observer = Observer;
+            this.observer = Observer;
             this.event = event;
             this.waitOnThese = waitOnThese;
         }
@@ -321,9 +323,9 @@ public class SerializedObserverTest {
 
             /* send the event */
             if (event == TestConcurrencyObserverEvent.onError) {
-                Observer.onError(new RuntimeException("mocked exception"));
+                observer.onError(new RuntimeException("mocked exception"));
             } else if (event == TestConcurrencyObserverEvent.onCompleted) {
-                Observer.onCompleted();
+                observer.onCompleted();
 
             } else {
                 throw new IllegalArgumentException("Expecting either onError or onCompleted");
@@ -566,6 +568,7 @@ public class SerializedObserverTest {
         AtomicInteger onNextCount = new AtomicInteger();
         AtomicInteger threadsRunning = new AtomicInteger();
         AtomicInteger maxConcurrentThreads = new AtomicInteger();
+        final CountDownLatch terminalEvent = new CountDownLatch(1);
 
         @Override
         public void onCompleted() {
@@ -575,17 +578,20 @@ public class SerializedObserverTest {
             } finally {
                 captureMaxThreads();
                 threadsRunning.decrementAndGet();
+                terminalEvent.countDown();
             }
         }
 
         @Override
         public void onError(Throwable e) {
+            System.out.println(">>>>>>>>>>>>>>>>>>>> onError received: " + e);
             threadsRunning.incrementAndGet();
             try {
                 onError = true;
             } finally {
                 captureMaxThreads();
                 threadsRunning.decrementAndGet();
+                terminalEvent.countDown();
             }
         }
 

@@ -14,9 +14,9 @@ import rx.perf.IntegerSumObserver;
 import rx.schedulers.Schedulers;
 
 public class OperatorSynchronizePerformance extends AbstractPerformanceTester {
-    //    static int reps = Integer.MAX_VALUE / 1024;
+    static int reps = Integer.MAX_VALUE / 1024;
 
-    static int reps = 1000; // timeTwoStreamsIntervals
+    //    static int reps = 1000; // timeTwoStreamsIntervals
 
     OperatorSynchronizePerformance() {
         super(reps);
@@ -30,7 +30,7 @@ public class OperatorSynchronizePerformance extends AbstractPerformanceTester {
 
                 @Override
                 public void call() {
-                    spt.timeTwoStreamsIntervals();
+                    spt.timeTwoStreams();
                 }
             });
         } catch (Exception e) {

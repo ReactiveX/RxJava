@@ -147,7 +147,7 @@ public class OperatorSerializePerformance extends AbstractPerformanceTester {
 
         IntegerSumObserver o = new IntegerSumObserver();
         s.subscribe(o);
-        System.out.println("sum : " + o.sum);
+//        System.out.println("sum : " + o.sum);
 
         return o.sum;
     }

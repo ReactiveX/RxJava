@@ -1,5 +1,8 @@
 package rx.observers;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -14,6 +17,11 @@ public class SerializedObserver<T> implements Observer<T> {
         this.s = s;
     }
 
+    final AtomicInteger received = new AtomicInteger();
+    final AtomicInteger counter = new AtomicInteger();
+    final AtomicInteger offered = new AtomicInteger();
+    static AtomicInteger decremented = new AtomicInteger();
+
     @Override
     public void onCompleted() {
         State current = null;
@@ -26,7 +34,6 @@ public class SerializedObserver<T> implements Observer<T> {
             }
             newState = current.complete();
         } while (!state.compareAndSet(current, newState));
-        System.out.println("********** onCompleted");
         terminateIfNecessary(newState);
     }
 
@@ -42,43 +49,54 @@ public class SerializedObserver<T> implements Observer<T> {
             }
             newState = current.error(e);
         } while (!state.compareAndSet(current, newState));
-        System.out.println("********** onError");
         terminateIfNecessary(newState);
     }
+
+    AtomicInteger conc = new AtomicInteger();
+    AtomicInteger lost = new AtomicInteger();
+    Set<Object> items = Collections.synchronizedSet(new HashSet<Object>());
 
     @SuppressWarnings("unchecked")
     @Override
     public void onNext(T t) {
         State current = null;
         State newState = null;
+
+        int contention = 0;
+        State orig = null;
         do {
             current = state.get();
+            if (orig == null) {
+                orig = current;
+            }
             if (current.isTerminated()) {
                 // already received terminal state
                 return;
             }
             newState = current.offerItem(t);
+            contention++;
         } while (!state.compareAndSet(current, newState));
 
+        do {
+            current = state.get();
+            newState = current.startProcessing();
+        } while (!state.compareAndSet(current, newState));
         if (newState.shouldProcess()) {
-            // this thread wins and will emit then drain queue if it concurrently gets added to
-            s.onNext(t);
-
-            // drain queue if exists
-            // we do "if" instead of "while" so we don't starve one thread
+            // drain queue 
             Object[] items = newState.queue;
             for (int i = 0; i < items.length; i++) {
                 s.onNext((T) items[i]);
+                counter.incrementAndGet();
             }
 
             // finish processing to let this thread move on
             do {
                 current = state.get();
-                newState = current.finishProcessing(items.length + 1); // the + 1 is for the first onNext of itself
+                newState = current.finishProcessing(items.length);
             } while (!state.compareAndSet(current, newState));
-            System.out.println("********** finishProcessing");
-            terminateIfNecessary(newState);
+
         }
+        terminateIfNecessary(newState);
     }
 
     @SuppressWarnings("unchecked")
@@ -89,6 +107,7 @@ public class SerializedObserver<T> implements Observer<T> {
                 current = state.get();
                 newState = current.startTermination();
             } while (!state.compareAndSet(current, newState));
+
             if (newState.shouldProcess()) {
                 // drain any items left
                 for (int i = 0; i < newState.queue.length; i++) {
@@ -114,9 +133,9 @@ public class SerializedObserver<T> implements Observer<T> {
         final Throwable onError;
 
         private final static Object[] EMPTY = new Object[0];
+        private final static Object[] PROCESS_SELF = new Object[1];
 
         private final static State NON_TERMINATED_EMPTY = new State(false, false, 0, false, null, EMPTY);
-        private final static State NON_TERMINATED_PROCESS_SELF = new State(true, true, 1, false, null, EMPTY);
 
         public State(boolean shouldProcess, boolean isSomeoneProcessing, int queueSize, boolean onComplete, Throwable onError, Object[] queue) {
             this.shouldProcess = shouldProcess;
@@ -145,58 +164,58 @@ public class SerializedObserver<T> implements Observer<T> {
 
         public State error(Throwable e) {
             // immediately empty the queue and emit error as soon as possible
-            return new State(false, isSomeoneProcessing, queueSize, onComplete, e, EMPTY);
+            return new State(false, isSomeoneProcessing, 0, onComplete, e, EMPTY);
         }
 
         public State startTermination() {
             if (isSomeoneProcessing) {
-                System.out.println("start terminate and DO NOT process => queue size: " + (queueSize + 1));
                 return new State(false, isSomeoneProcessing, queueSize, onComplete, onError, queue);
             } else {
-                System.out.println("start terminate and process => queue size: " + (queueSize + 1));
-                return new State(true, isSomeoneProcessing, queueSize, onComplete, onError, queue);
+                return new State(true, true, queueSize, onComplete, onError, queue);
             }
         }
 
-        AtomicInteger max = new AtomicInteger();
-
         public State offerItem(Object item) {
-            if (queueSize == 0) {
-                // no concurrent requests so don't queue, we'll process immediately
-                if (isTerminated()) {
-                    // return count of 0 meaning don't emit as we are terminated
-                    return new State(false, false, 0, onComplete, onError, EMPTY);
-                } else {
-                    return NON_TERMINATED_PROCESS_SELF;
-                }
+            if (isTerminated()) {
+                // return count of 0 meaning don't emit as we are terminated
+                return new State(false, isSomeoneProcessing, 0, onComplete, onError, EMPTY);
             } else {
-                // there are items queued so we need to queue
                 int idx = queue.length;
                 Object[] newQueue = new Object[idx + 1];
                 System.arraycopy(queue, 0, newQueue, 0, idx);
                 newQueue[idx] = item;
 
-                if (isSomeoneProcessing) {
-                    // we just add to queue
-                    return new State(false, isSomeoneProcessing, queueSize + 1, onComplete, onError, newQueue);
-                } else {
-                    // we add to queue and claim work
-                    return new State(false, true, queueSize + 1, onComplete, onError, newQueue);
-                }
+                // we just add to queue
+                return new State(false, isSomeoneProcessing, queueSize + 1, onComplete, onError, newQueue);
+            }
+        }
+
+        public State startProcessing() {
+            if (isSomeoneProcessing) {
+                return new State(false, true, queueSize, onComplete, onError, queue);
+            } else {
+                return new State(true, true, queueSize, onComplete, onError, queue);
             }
         }
 
         public State finishProcessing(int numOnNextSent) {
-            int numOnNextFromQueue = numOnNextSent - 1; // we remove the "self" onNext as it doesn't affect the queue
-            int size = queueSize - numOnNextFromQueue;
-            System.out.println("finishProcessing => queue size: " + size + "   after processing: " + numOnNextSent);
-            if (size > 1 || isTerminated()) {
-                Object[] newQueue = new Object[queue.length - numOnNextFromQueue];
-                System.arraycopy(queue, numOnNextFromQueue, newQueue, 0, newQueue.length);
+            int size = queueSize - numOnNextSent;
+            if (size > 0 || isTerminated()) {
+                // if size == 0 but we are terminated then it's an empty queue
+                Object[] newQueue = EMPTY;
+                if (size > 0) {
+                    newQueue = new Object[queue.length - numOnNextSent];
+                    System.arraycopy(queue, numOnNextSent, newQueue, 0, newQueue.length);
+                }
                 return new State(false, false, size, onComplete, onError, newQueue);
             } else {
                 return NON_TERMINATED_EMPTY;
             }
+        }
+
+        @Override
+        public String toString() {
+            return "State => shouldProcess: " + shouldProcess + " processing: " + isSomeoneProcessing + " queueSize: " + queueSize + " queue: " + queue.length + " terminated: " + isTerminated();
         }
 
     }
