@@ -37,7 +37,7 @@ import rx.Observer;
 import rx.Subscriber;
 import rx.Subscription;
 
-public class SerializedObserverTest {
+public class SerializedObserverViaQueueAndCounterTest {
 
     @Mock
     Subscriber<String> observer;
@@ -53,7 +53,7 @@ public class SerializedObserverTest {
         TestSingleThreadedObservable onSubscribe = new TestSingleThreadedObservable(s, "one", "two", "three");
         Observable<String> w = Observable.create(onSubscribe);
 
-        SerializedObserver<String> aw = new SerializedObserver<String>(observer);
+        SerializedObserverViaQueueAndCounter<String> aw = new SerializedObserverViaQueueAndCounter<String>(observer);
 
         w.subscribe(aw);
         onSubscribe.waitToFinish();
@@ -75,7 +75,7 @@ public class SerializedObserverTest {
         Observable<String> w = Observable.create(onSubscribe);
 
         BusyObserver busyObserver = new BusyObserver();
-        SerializedObserver<String> aw = new SerializedObserver<String>(busyObserver);
+        SerializedObserverViaQueueAndCounter<String> aw = new SerializedObserverViaQueueAndCounter<String>(busyObserver);
 
         w.subscribe(aw);
         onSubscribe.waitToFinish();
@@ -100,7 +100,7 @@ public class SerializedObserverTest {
         Observable<String> w = Observable.create(onSubscribe);
 
         BusyObserver busyObserver = new BusyObserver();
-        SerializedObserver<String> aw = new SerializedObserver<String>(busyObserver);
+        SerializedObserverViaQueueAndCounter<String> aw = new SerializedObserverViaQueueAndCounter<String>(busyObserver);
 
         w.subscribe(aw);
         onSubscribe.waitToFinish();
@@ -132,7 +132,7 @@ public class SerializedObserverTest {
         Observable<String> w = Observable.create(onSubscribe);
 
         BusyObserver busyObserver = new BusyObserver();
-        SerializedObserver<String> aw = new SerializedObserver<String>(busyObserver);
+        SerializedObserverViaQueueAndCounter<String> aw = new SerializedObserverViaQueueAndCounter<String>(busyObserver);
 
         w.subscribe(aw);
         onSubscribe.waitToFinish();
@@ -168,7 +168,7 @@ public class SerializedObserverTest {
         try {
             TestConcurrencyObserver tw = new TestConcurrencyObserver();
             // we need Synchronized + SafeSubscriber to handle synchronization plus life-cycle
-            SerializedObserver<String> w = new SerializedObserver<String>(new SafeSubscriber<String>(tw));
+            SerializedObserverViaQueueAndCounter<String> w = new SerializedObserverViaQueueAndCounter<String>(new SafeSubscriber<String>(tw));
 
             Future<?> f1 = tp.submit(new OnNextThread(w, 12000));
             Future<?> f2 = tp.submit(new OnNextThread(w, 5000));
@@ -223,7 +223,7 @@ public class SerializedObserverTest {
         try {
             TestConcurrencyObserver tw = new TestConcurrencyObserver();
             // we need Synchronized + SafeSubscriber to handle synchronization plus life-cycle
-            SerializedObserver<String> w = new SerializedObserver<String>(new SafeSubscriber<String>(tw));
+            SerializedObserverViaQueueAndCounter<String> w = new SerializedObserverViaQueueAndCounter<String>(new SafeSubscriber<String>(tw));
 
             Future<?> f1 = tp.submit(new OnNextThread(w, 12000));
             Future<?> f2 = tp.submit(new OnNextThread(w, 5000));

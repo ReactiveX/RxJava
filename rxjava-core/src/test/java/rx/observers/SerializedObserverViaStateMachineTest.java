@@ -1,5 +1,5 @@
 package rx.observers;
 
-public class SerializedObserverViaStateMachineTest extends SerializedObserverTest {
+public class SerializedObserverViaStateMachineTest extends SerializedObserverViaQueueAndCounterTest {
 
 }
