@@ -2,13 +2,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.netflix.rxjava.android.samples.SampleFragmentActivity">
+    tools:context="com.netflix.rxjava.android.samples.RetainedFragmentActivity">
 
     <fragment
         android:tag="retained_fragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:name="com.netflix.rxjava.android.samples.RetainedFragment"
+        android:name="com.netflix.rxjava.android.samples.RetainedFragmentActivity$RetainedFragment"
         tools:layout="@layout/retained_fragment" />
 
 </RelativeLayout>
