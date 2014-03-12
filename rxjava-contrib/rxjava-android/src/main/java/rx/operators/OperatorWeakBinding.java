@@ -2,40 +2,58 @@ package rx.operators;
 
 import rx.Observable;
 import rx.Subscriber;
+import rx.functions.Func1;
+import rx.functions.Functions;
 
 import android.util.Log;
 
 import java.lang.ref.WeakReference;
 
+/**
+ * Ties a source sequence to the life-cycle of the given target object, and/or the subscriber
+ * using weak references. When either object is gone, this operator automatically unsubscribes
+ * from the source sequence.
+ * <p/>
+ * You can also pass in an optional predicate function, which whenever it evaluates to false
+ * on the target object, will also result in the operator unsubscribing from the sequence.
+ *
+ * @param <T> the type of the objects emitted to a subscriber
+ * @param <R> the type of the target object to bind to
+ */
 public final class OperatorWeakBinding<T, R> implements Observable.Operator<T, T> {
 
     private static final String LOG_TAG = "WeakBinding";
 
-    private final WeakReference<R> boundRef;
+    final WeakReference<R> boundRef;
+    private final Func1<? super R, Boolean> predicate;
+
+    public OperatorWeakBinding(R bound, Func1<? super R, Boolean> predicate) {
+        boundRef = new WeakReference<R>(bound);
+        this.predicate = predicate;
+    }
 
     public OperatorWeakBinding(R bound) {
         boundRef = new WeakReference<R>(bound);
+        this.predicate = Functions.alwaysTrue();
     }
 
     @Override
     public Subscriber<? super T> call(final Subscriber<? super T> child) {
-        return new WeakSubscriber<T, R>(child, boundRef);
+        return new WeakSubscriber(child);
     }
 
-    private static final class WeakSubscriber<T, R> extends Subscriber<T> {
+    final class WeakSubscriber extends Subscriber<T> {
 
-        private final WeakReference<Subscriber<? super T>> subscriberRef;
-        private final WeakReference<R> boundRef;
+        final WeakReference<Subscriber<? super T>> subscriberRef;
 
-        private WeakSubscriber(Subscriber<? super T> op, WeakReference<R> boundRef) {
-            subscriberRef = new WeakReference<Subscriber<? super T>>(op);
-            this.boundRef = boundRef;
+        private WeakSubscriber(Subscriber<? super T> source) {
+            subscriberRef = new WeakReference<Subscriber<? super T>>(source);
         }
 
         @Override
         public void onCompleted() {
             Subscriber<? super T> sub = subscriberRef.get();
-            if (sub != null && boundRef.get() != null) {
+            if (shouldForwardNotification(sub)) {
                 sub.onCompleted();
             } else {
                 handleLostBinding(sub, "onCompleted");
@@ -45,7 +63,7 @@ public final class OperatorWeakBinding<T, R> implements Observable.Operator<T, T
         @Override
         public void onError(Throwable e) {
             Subscriber<? super T> sub = subscriberRef.get();
-            if (sub != null && boundRef.get() != null) {
+            if (shouldForwardNotification(sub)) {
                 sub.onError(e);
             } else {
                 handleLostBinding(sub, "onError");
@@ -55,21 +73,31 @@ public final class OperatorWeakBinding<T, R> implements Observable.Operator<T, T
         @Override
         public void onNext(T t) {
             Subscriber<? super T> sub = subscriberRef.get();
-            if (sub != null && boundRef.get() != null) {
+            if (shouldForwardNotification(sub)) {
                 sub.onNext(t);
             } else {
                 handleLostBinding(sub, "onNext");
             }
         }
 
+        private boolean shouldForwardNotification(Subscriber<? super T> sub) {
+            final R target = boundRef.get();
+            return sub != null && target != null && predicate.call(target);
+        }
+
         private void handleLostBinding(Subscriber<? super T> sub, String context) {
             if (sub == null) {
                 Log.d(LOG_TAG, "subscriber gone; skipping " + context);
             } else {
-                Log.d(LOG_TAG, "bound component gone; skipping " + context);
+                final R r = boundRef.get();
+                if (r != null) { // the predicate failed to validate
+                    Log.d(LOG_TAG, "bound component has become invalid; skipping " + context);
+                } else {
+                    Log.d(LOG_TAG, "bound component gone; skipping " + context);
+                }
             }
+            Log.d(LOG_TAG, "unsubscribing...");
             unsubscribe();
         }
-
     }
 }
