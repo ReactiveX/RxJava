@@ -52,7 +52,7 @@ public final class OperatorWeakBinding<T, R> implements Observable.Operator<T, T
 
         @Override
         public void onCompleted() {
-            Subscriber<? super T> sub = subscriberRef.get();
+            final Subscriber<? super T> sub = subscriberRef.get();
             if (shouldForwardNotification(sub)) {
                 sub.onCompleted();
             } else {
@@ -62,7 +62,7 @@ public final class OperatorWeakBinding<T, R> implements Observable.Operator<T, T
 
         @Override
         public void onError(Throwable e) {
-            Subscriber<? super T> sub = subscriberRef.get();
+            final Subscriber<? super T> sub = subscriberRef.get();
             if (shouldForwardNotification(sub)) {
                 sub.onError(e);
             } else {
@@ -72,7 +72,7 @@ public final class OperatorWeakBinding<T, R> implements Observable.Operator<T, T
 
         @Override
         public void onNext(T t) {
-            Subscriber<? super T> sub = subscriberRef.get();
+            final Subscriber<? super T> sub = subscriberRef.get();
             if (shouldForwardNotification(sub)) {
                 sub.onNext(t);
             } else {
@@ -90,7 +90,8 @@ public final class OperatorWeakBinding<T, R> implements Observable.Operator<T, T
                 Log.d(LOG_TAG, "subscriber gone; skipping " + context);
             } else {
                 final R r = boundRef.get();
-                if (r != null) { // the predicate failed to validate
+                if (r != null) {
+                    // the predicate failed to validate
                     Log.d(LOG_TAG, "bound component has become invalid; skipping " + context);
                 } else {
                     Log.d(LOG_TAG, "bound component gone; skipping " + context);
