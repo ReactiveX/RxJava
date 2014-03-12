@@ -63,25 +63,24 @@ public class SerializedObserverViaStateMachine<T> implements Observer<T> {
         } while (!state.compareAndSet(current, newState));
 
         if (newState.shouldProcess()) {
-            if (newState == State.PROCESS_SELF) {
-                s.onNext(t);
-
-                // finish processing to let this thread move on
-                do {
-                    current = state.get();
-                    newState = current.finishProcessing(1);
-                } while (!state.compareAndSet(current, newState));
-            } else {
-                // drain queue 
-                Object[] items = newState.queue;
-                for (int i = 0; i < items.length; i++) {
-                    s.onNext((T) items[i]);
+            int numItemsProcessed = 0;
+            try {
+                if (newState == State.PROCESS_SELF) {
+                    s.onNext(t);
+                    numItemsProcessed++;
+                } else {
+                    // drain queue 
+                    Object[] items = newState.queue;
+                    for (int i = 0; i < items.length; i++) {
+                        s.onNext((T) items[i]);
+                        numItemsProcessed++;
+                    }
                 }
-
+            } finally {
                 // finish processing to let this thread move on
                 do {
                     current = state.get();
-                    newState = current.finishProcessing(items.length);
+                    newState = current.finishProcessing(numItemsProcessed);
                 } while (!state.compareAndSet(current, newState));
             }
         }
