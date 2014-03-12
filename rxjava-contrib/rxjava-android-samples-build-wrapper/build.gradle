@@ -1,8 +1,6 @@
-def androidHome = System.getenv("ANDROID_HOME")
 tasks.build.doLast {
-  if (androidHome.isEmpty()) {
-    println("No Android SDK detected; skipping Android samples build")
-  } else {
+  def androidHome = System.getenv("ANDROID_HOME")
+  if (project.hasProperty('buildAndroidSamples') && !androidHome.isEmpty()) {
     println("Android SDK detected at $androidHome, running samples build")
     project.exec {
       workingDir '../rxjava-android-samples'
