@@ -17,10 +17,8 @@ package rx.lang.scala
 
 import java.lang.Exception
 import java.{ lang => jlang }
-
 import scala.language.implicitConversions
 import scala.collection.Seq
-
 import rx.functions._
 import rx.lang.scala.JavaConversions._
 
@@ -56,6 +54,13 @@ object ImplicitFunctionConversions {
       }
     }
 
+  implicit def scalaAction1ToOnSubscribe[T](f: Subscriber[T] => Unit) =
+    new rx.Observable.OnSubscribe[T] {
+      def call(s: rx.Subscriber[_ >: T]): Unit = {
+        f(s)
+      }
+    }
+  
   implicit def scalaByNameParamToFunc0[B](param: => B): Func0[B] =
     new Func0[B] {
       def call(): B = param

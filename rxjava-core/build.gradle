@@ -29,6 +29,7 @@ jar {
         instruction 'Bundle-Vendor', 'Netflix'
         instruction 'Bundle-DocURL', 'https://github.com/Netflix/RxJava'
         instruction 'Import-Package', '!org.junit,!junit.framework,!org.mockito.*,*'
+        instruction 'Eclipse-ExtensibleAPI', 'true'
     }
 }
 

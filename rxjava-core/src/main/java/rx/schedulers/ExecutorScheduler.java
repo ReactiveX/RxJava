@@ -29,16 +29,17 @@ import rx.subscriptions.MultipleAssignmentSubscription;
 import rx.subscriptions.Subscriptions;
 
 /**
- * A {@link Scheduler} implementation that uses an {@link Executor} or {@link ScheduledExecutorService} implementation.
+ * A {@link Scheduler} implementation that uses an {@link Executor} or {@link ScheduledExecutorService}
+ * implementation.
  * <p>
- * Note that if an {@link Executor} implementation is used instead of {@link ScheduledExecutorService} then a system-wide Timer will be used to handle delayed events.
+ * Note that if an {@link Executor} implementation is used instead of {@link ScheduledExecutorService} then a
+ * system-wide Timer will be used to handle delayed events.
  */
 public class ExecutorScheduler extends Scheduler {
     private final Executor executor;
 
     /**
      * @deprecated Use Schedulers.executor();
-     * @return
      */
     @Deprecated
     public ExecutorScheduler(Executor executor) {
@@ -47,7 +48,6 @@ public class ExecutorScheduler extends Scheduler {
 
     /**
      * @deprecated Use Schedulers.executor();
-     * @return
      */
     @Deprecated
     public ExecutorScheduler(ScheduledExecutorService executor) {

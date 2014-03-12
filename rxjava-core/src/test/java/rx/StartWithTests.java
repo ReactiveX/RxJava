@@ -45,4 +45,17 @@ public class StartWithTests {
         assertEquals("two", values.get(3));
     }
 
+	@Test
+    public void startWithObservable() {
+        List<String> li = new ArrayList<String>();
+        li.add("alpha");
+        li.add("beta");
+        List<String> values = Observable.from("one", "two").startWith(Observable.from(li)).toList().toBlockingObservable().single();
+
+        assertEquals("alpha", values.get(0));
+        assertEquals("beta", values.get(1));
+        assertEquals("one", values.get(2));
+        assertEquals("two", values.get(3));
+    }
+
 }

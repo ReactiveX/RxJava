@@ -42,24 +42,25 @@ public final class OperationBuffer extends ChunkedOperation {
     }
 
     /**
-     * <p>This method creates a {@link Func1} object which represents the buffer operation. This operation takes
-     * values from the specified {@link Observable} source and stores them in a buffer until the {@link Observable} constructed using the {@link Func0} argument, produces a
-     * value. The buffer is then
-     * emitted, and a new buffer is created to replace it. A new {@link Observable} will be constructed using the
-     * provided {@link Func0} object, which will determine when this new buffer is emitted. When the source {@link Observable} completes or produces an error, the current buffer is emitted, and the
-     * event is propagated
-     * to all subscribed {@link Observer}s.</p>
-     * 
-     * <p>Note that this operation only produces <strong>non-overlapping chunks</strong>. At all times there is
-     * exactly one buffer actively storing values.</p>
+     * This method creates a {@link Func1} object which represents the buffer operation. This operation takes
+     * values from the specified {@link Observable} source and stores them in a buffer until the
+     * {@link Observable} constructed using the {@link Func0} argument, produces a value. The buffer is then
+     * emitted, and a new buffer is created to replace it. A new {@link Observable} will be constructed using
+     * the provided {@link Func0} object, which will determine when this new buffer is emitted. When the source
+     * {@link Observable} completes or produces an error, the current buffer is emitted, and the event is
+     * propagated to all subscribed {@link Observer}s.
+     * <p>
+     * Note that this operation only produces <strong>non-overlapping chunks</strong>. At all times there is
+     * exactly one buffer actively storing values.
+     * </p>
      * 
      * @param source
-     *            The {@link Observable} which produces values.
+     *            the {@link Observable} which produces values
      * @param bufferClosingSelector
-     *            A {@link Func0} object which produces {@link Observable}s. These {@link Observable}s determine when a buffer is emitted and replaced by simply
-     *            producing an object.
+     *            a {@link Func0} object which produces {@link Observable}s. These {@link Observable}s determine
+     *            when a buffer is emitted and replaced by simply producing an object.
      * @return
-     *         the {@link Func1} object representing the specified buffer operation.
+     *         the {@link Func1} object representing the specified buffer operation
      */
     public static <T, TClosing> OnSubscribeFunc<List<T>> buffer(final Observable<T> source, final Func0<? extends Observable<? extends TClosing>> bufferClosingSelector) {
         return new OnSubscribeFunc<List<T>>() {
@@ -76,29 +77,31 @@ public final class OperationBuffer extends ChunkedOperation {
     }
 
     /**
-     * <p>This method creates a {@link Func1} object which represents the buffer operation. This operation takes
-     * values from the specified {@link Observable} source and stores them in the currently active chunks. Initially
-     * there are no chunks active.</p>
-     * 
-     * <p>Chunks can be created by pushing a {@link rx.util.Opening} value to the "bufferOpenings" {@link Observable}.
-     * This creates a new buffer which will then start recording values which are produced by the "source" {@link Observable}. Additionally the "bufferClosingSelector" will be used to construct an
-     * {@link Observable} which can produce values. When it does so it will close this (and only this) newly created
-     * buffer. When the source {@link Observable} completes or produces an error, all chunks are emitted, and the
-     * event is propagated to all subscribed {@link Observer}s.</p>
-     * 
-     * <p>Note that when using this operation <strong>multiple overlapping chunks</strong>
-     * could be active at any one point.</p>
+     * This method creates a {@link Func1} object which represents the buffer operation. This operation takes
+     * values from the specified {@link Observable} source and stores them in the currently active chunks.
+     * Initially there are no chunks active.
+     * <p>
+     * Chunks can be created by pushing a {@link rx.util.TOpening} value to the "bufferOpenings"
+     * {@link Observable}. This creates a new buffer which will then start recording values which are produced
+     * by the "source" {@link Observable}. Additionally the "bufferClosingSelector" will be used to construct an
+     * {@link Observable} which can produce values. When it does so it will close this (and only this) newly
+     * created buffer. When the source {@link Observable} completes or produces an error, all chunks are
+     * emitted, and the event is propagated to all subscribed {@link Observer}s.
+     * </p><p>
+     * Note that when using this operation <strong>multiple overlapping chunks</strong> could be active at any
+     * one point.
+     * </p>
      * 
      * @param source
-     *            The {@link Observable} which produces values.
+     *            the {@link Observable} which produces values
      * @param bufferOpenings
-     *            An {@link Observable} which when it produces a {@link rx.util.Opening} value will
-     *            create a new buffer which instantly starts recording the "source" {@link Observable}.
+     *            an {@link Observable} which when it produces a {@link rx.util.TOpening} value will create a
+     *            new buffer which instantly starts recording the "source" {@link Observable}
      * @param bufferClosingSelector
-     *            A {@link Func0} object which produces {@link Observable}s. These {@link Observable}s determine when a buffer is emitted and replaced by simply
-     *            producing an object.
+     *            a {@link Func0} object which produces {@link Observable}s. These {@link Observable}s determine
+     *            when a buffer is emitted and replaced by simply producing an object.
      * @return
-     *         the {@link Func1} object representing the specified buffer operation.
+     *         the {@link Func1} object representing the specified buffer operation
      */
     public static <T, TOpening, TClosing> OnSubscribeFunc<List<T>> buffer(final Observable<T> source, final Observable<? extends TOpening> bufferOpenings, final Func1<? super TOpening, ? extends Observable<? extends TClosing>> bufferClosingSelector) {
         return new OnSubscribeFunc<List<T>>() {
@@ -114,48 +117,50 @@ public final class OperationBuffer extends ChunkedOperation {
     }
 
     /**
-     * <p>This method creates a {@link Func1} object which represents the buffer operation. This operation takes
+     * This method creates a {@link Func1} object which represents the buffer operation. This operation takes
      * values from the specified {@link Observable} source and stores them in a buffer until the buffer contains
      * a specified number of elements. The buffer is then emitted, and a new buffer is created to replace it.
      * When the source {@link Observable} completes or produces an error, the current buffer is emitted, and
-     * the event is propagated to all subscribed {@link Observer}s.</p>
-     * 
-     * <p>Note that this operation only produces <strong>non-overlapping chunks</strong>. At all times there is
-     * exactly one buffer actively storing values.</p>
+     * the event is propagated to all subscribed {@link Observer}s.
+     * <p>
+     * Note that this operation only produces <strong>non-overlapping chunks</strong>. At all times there is
+     * exactly one buffer actively storing values.
+     * </p>
      * 
      * @param source
-     *            The {@link Observable} which produces values.
+     *            the {@link Observable} which produces values
      * @param count
-     *            The number of elements a buffer should have before being emitted and replaced.
+     *            the number of elements a buffer should have before being emitted and replaced
      * @return
-     *         the {@link Func1} object representing the specified buffer operation.
+     *         the {@link Func1} object representing the specified buffer operation
      */
     public static <T> OnSubscribeFunc<List<T>> buffer(Observable<T> source, int count) {
         return buffer(source, count, count);
     }
 
     /**
-     * <p>This method creates a {@link Func1} object which represents the buffer operation. This operation takes
+     * This method creates a {@link Func1} object which represents the buffer operation. This operation takes
      * values from the specified {@link Observable} source and stores them in all active chunks until the buffer
      * contains a specified number of elements. The buffer is then emitted. Chunks are created after a certain
-     * amount of values have been received. When the source {@link Observable} completes or produces an error, the
-     * currently active chunks are emitted, and the event is propagated to all subscribed {@link Observer}s.</p>
-     * 
-     * <p>Note that this operation can produce <strong>non-connected, connected non-overlapping, or overlapping
-     * chunks</strong> depending on the input parameters.</p>
+     * amount of values have been received. When the source {@link Observable} completes or produces an error,
+     * the currently active chunks are emitted, and the event is propagated to all subscribed {@link Observer}s.
+     * <p>
+     * Note that this operation can produce <strong>non-connected, connected non-overlapping, or overlapping
+     * chunks</strong> depending on the input parameters.
+     * </p>
      * 
      * @param source
-     *            The {@link Observable} which produces values.
+     *            the {@link Observable} which produces values
      * @param count
-     *            The number of elements a buffer should have before being emitted.
+     *            the number of elements a buffer should have before being emitted
      * @param skip
-     *            The interval with which chunks have to be created. Note that when "skip" == "count"
-     *            that this is the same as calling {@link OperationBuffer#buffer(Observable, int)}.
-     *            If "skip" < "count", this buffer operation will produce overlapping chunks and if "skip"
-     *            > "count" non-overlapping chunks will be created and some values will not be pushed
+     *            the interval with which chunks have to be created. Note that when {@code skip == count} that
+     *            this is the same as calling {@link OperationBuffer#buffer(Observable, int)}. If
+     *            {@code skip < count}, this buffer operation will produce overlapping chunks and if
+     *            {@code skip > count} non-overlapping chunks will be created and some values will not be pushed
      *            into a buffer at all!
      * @return
-     *         the {@link Func1} object representing the specified buffer operation.
+     *         the {@link Func1} object representing the specified buffer operation
      */
     public static <T> OnSubscribeFunc<List<T>> buffer(final Observable<T> source, final int count, final int skip) {
         return new OnSubscribeFunc<List<T>>() {
@@ -171,48 +176,50 @@ public final class OperationBuffer extends ChunkedOperation {
     }
 
     /**
-     * <p>This method creates a {@link Func1} object which represents the buffer operation. This operation takes
+     * This method creates a {@link Func1} object which represents the buffer operation. This operation takes
      * values from the specified {@link Observable} source and stores them in a buffer. Periodically the buffer
      * is emitted and replaced with a new buffer. How often this is done depends on the specified timespan.
      * When the source {@link Observable} completes or produces an error, the current buffer is emitted, and
-     * the event is propagated to all subscribed {@link Observer}s.</p>
-     * 
-     * <p>Note that this operation only produces <strong>non-overlapping chunks</strong>. At all times there is
-     * exactly one buffer actively storing values.</p>
+     * the event is propagated to all subscribed {@link Observer}s.
+     * <p>
+     * Note that this operation only produces <strong>non-overlapping chunks</strong>. At all times there is
+     * exactly one buffer actively storing values.
+     * </p>
      * 
      * @param source
-     *            The {@link Observable} which produces values.
+     *            the {@link Observable} which produces values
      * @param timespan
-     *            The amount of time all chunks must be actively collect values before being emitted.
+     *            the amount of time all chunks must be actively collect values before being emitted
      * @param unit
-     *            The {@link TimeUnit} defining the unit of time for the timespan.
+     *            the {@link TimeUnit} defining the unit of time for the timespan
      * @return
-     *         the {@link Func1} object representing the specified buffer operation.
+     *         the {@link Func1} object representing the specified buffer operation
      */
     public static <T> OnSubscribeFunc<List<T>> buffer(Observable<T> source, long timespan, TimeUnit unit) {
         return buffer(source, timespan, unit, Schedulers.threadPoolForComputation());
     }
 
     /**
-     * <p>This method creates a {@link Func1} object which represents the buffer operation. This operation takes
+     * This method creates a {@link Func1} object which represents the buffer operation. This operation takes
      * values from the specified {@link Observable} source and stores them in a buffer. Periodically the buffer
      * is emitted and replaced with a new buffer. How often this is done depends on the specified timespan.
      * When the source {@link Observable} completes or produces an error, the current buffer is emitted, and
-     * the event is propagated to all subscribed {@link Observer}s.</p>
-     * 
-     * <p>Note that this operation only produces <strong>non-overlapping chunks</strong>. At all times there is
-     * exactly one buffer actively storing values.</p>
+     * the event is propagated to all subscribed {@link Observer}s.
+     * <p>
+     * Note that this operation only produces <strong>non-overlapping chunks</strong>. At all times there is
+     * exactly one buffer actively storing values.
+     * </p>
      * 
      * @param source
-     *            The {@link Observable} which produces values.
+     *            the {@link Observable} which produces values
      * @param timespan
-     *            The amount of time all chunks must be actively collect values before being emitted.
+     *            the amount of time all chunks must be actively collect values before being emitted
      * @param unit
-     *            The {@link TimeUnit} defining the unit of time for the timespan.
+     *            the {@link TimeUnit} defining the unit of time for the timespan
      * @param scheduler
-     *            The {@link Scheduler} to use for timing chunks.
+     *            the {@link Scheduler} to use for timing chunks
      * @return
-     *         the {@link Func1} object representing the specified buffer operation.
+     *         the {@link Func1} object representing the specified buffer operation
      */
     public static <T> OnSubscribeFunc<List<T>> buffer(final Observable<T> source, final long timespan, final TimeUnit unit, final Scheduler scheduler) {
         return new OnSubscribeFunc<List<T>>() {
@@ -228,54 +235,56 @@ public final class OperationBuffer extends ChunkedOperation {
     }
 
     /**
-     * <p>This method creates a {@link Func1} object which represents the buffer operation. This operation takes
+     * This method creates a {@link Func1} object which represents the buffer operation. This operation takes
      * values from the specified {@link Observable} source and stores them in a buffer. Periodically the buffer
      * is emitted and replaced with a new buffer. How often this is done depends on the specified timespan.
      * Additionally the buffer is automatically emitted once it reaches a specified number of elements.
      * When the source {@link Observable} completes or produces an error, the current buffer is emitted, and
-     * the event is propagated to all subscribed {@link Observer}s.</p>
-     * 
-     * <p>Note that this operation only produces <strong>non-overlapping chunks</strong>. At all times there is
-     * exactly one buffer actively storing values.</p>
+     * the event is propagated to all subscribed {@link Observer}s.
+     * <p>
+     * Note that this operation only produces <strong>non-overlapping chunks</strong>. At all times there is
+     * exactly one buffer actively storing values.
+     * </p>
      * 
      * @param source
-     *            The {@link Observable} which produces values.
+     *            the {@link Observable} which produces values
      * @param timespan
-     *            The amount of time all chunks must be actively collect values before being emitted.
+     *            the amount of time all chunks must be actively collect values before being emitted
      * @param unit
-     *            The {@link TimeUnit} defining the unit of time for the timespan.
+     *            the {@link TimeUnit} defining the unit of time for the timespan
      * @param count
-     *            The maximum size of the buffer. Once a buffer reaches this size, it is emitted.
+     *            the maximum size of the buffer. Once a buffer reaches this size, it is emitted
      * @return
-     *         the {@link Func1} object representing the specified buffer operation.
+     *         the {@link Func1} object representing the specified buffer operation
      */
     public static <T> OnSubscribeFunc<List<T>> buffer(Observable<T> source, long timespan, TimeUnit unit, int count) {
         return buffer(source, timespan, unit, count, Schedulers.threadPoolForComputation());
     }
 
     /**
-     * <p>This method creates a {@link Func1} object which represents the buffer operation. This operation takes
+     * This method creates a {@link Func1} object which represents the buffer operation. This operation takes
      * values from the specified {@link Observable} source and stores them in a buffer. Periodically the buffer
      * is emitted and replaced with a new buffer. How often this is done depends on the specified timespan.
      * Additionally the buffer is automatically emitted once it reaches a specified number of elements.
      * When the source {@link Observable} completes or produces an error, the current buffer is emitted, and
-     * the event is propagated to all subscribed {@link Observer}s.</p>
-     * 
-     * <p>Note that this operation only produces <strong>non-overlapping chunks</strong>. At all times there is
-     * exactly one buffer actively storing values.</p>
+     * the event is propagated to all subscribed {@link Observer}s.
+     * <p>
+     * Note that this operation only produces <strong>non-overlapping chunks</strong>. At all times there is
+     * exactly one buffer actively storing values.
+     * </p>
      * 
      * @param source
-     *            The {@link Observable} which produces values.
+     *            the {@link Observable} which produces values
      * @param timespan
-     *            The amount of time all chunks must be actively collect values before being emitted.
+     *            the amount of time all chunks must be actively collect values before being emitted
      * @param unit
-     *            The {@link TimeUnit} defining the unit of time for the timespan.
+     *            the {@link TimeUnit} defining the unit of time for the timespan
      * @param count
-     *            The maximum size of the buffer. Once a buffer reaches this size, it is emitted.
+     *            the maximum size of the buffer. Once a buffer reaches this size, it is emitted
      * @param scheduler
-     *            The {@link Scheduler} to use for timing chunks.
+     *            the {@link Scheduler} to use for timing chunks
      * @return
-     *         the {@link Func1} object representing the specified buffer operation.
+     *         the {@link Func1} object representing the specified buffer operation
      */
     public static <T> OnSubscribeFunc<List<T>> buffer(final Observable<T> source, final long timespan, final TimeUnit unit, final int count, final Scheduler scheduler) {
         return new OnSubscribeFunc<List<T>>() {
@@ -292,54 +301,56 @@ public final class OperationBuffer extends ChunkedOperation {
     }
 
     /**
-     * <p>This method creates a {@link Func1} object which represents the buffer operation. This operation takes
+     * This method creates a {@link Func1} object which represents the buffer operation. This operation takes
      * values from the specified {@link Observable} source and stores them in a buffer. Periodically the buffer
      * is emitted and replaced with a new buffer. How often this is done depends on the specified timespan.
      * The creation of chunks is also periodical. How often this is done depends on the specified timeshift.
      * When the source {@link Observable} completes or produces an error, the current buffer is emitted, and
-     * the event is propagated to all subscribed {@link Observer}s.</p>
-     * 
-     * <p>Note that this operation can produce <strong>non-connected, or overlapping chunks</strong> depending
-     * on the input parameters.</p>
+     * the event is propagated to all subscribed {@link Observer}s.
+     * <p>
+     * Note that this operation can produce <strong>non-connected, or overlapping chunks</strong> depending
+     * on the input parameters.
+     * </p>
      * 
      * @param source
-     *            The {@link Observable} which produces values.
+     *            the {@link Observable} which produces values
      * @param timespan
-     *            The amount of time all chunks must be actively collect values before being emitted.
+     *            the amount of time all chunks must be actively collect values before being emitted
      * @param timeshift
-     *            The amount of time between creating chunks.
+     *            the amount of time between creating chunks
      * @param unit
-     *            The {@link TimeUnit} defining the unit of time for the timespan.
+     *            the {@link TimeUnit} defining the unit of time for the timespan
      * @return
-     *         the {@link Func1} object representing the specified buffer operation.
+     *         the {@link Func1} object representing the specified buffer operation
      */
     public static <T> OnSubscribeFunc<List<T>> buffer(Observable<T> source, long timespan, long timeshift, TimeUnit unit) {
         return buffer(source, timespan, timeshift, unit, Schedulers.threadPoolForComputation());
     }
 
     /**
-     * <p>This method creates a {@link Func1} object which represents the buffer operation. This operation takes
+     * This method creates a {@link Func1} object which represents the buffer operation. This operation takes
      * values from the specified {@link Observable} source and stores them in a buffer. Periodically the buffer
      * is emitted and replaced with a new buffer. How often this is done depends on the specified timespan.
      * The creation of chunks is also periodical. How often this is done depends on the specified timeshift.
      * When the source {@link Observable} completes or produces an error, the current buffer is emitted, and
-     * the event is propagated to all subscribed {@link Observer}s.</p>
-     * 
-     * <p>Note that this operation can produce <strong>non-connected, or overlapping chunks</strong> depending
-     * on the input parameters.</p>
+     * the event is propagated to all subscribed {@link Observer}s.
+     * <p>
+     * Note that this operation can produce <strong>non-connected, or overlapping chunks</strong> depending
+     * on the input parameters.
+     * </p>
      * 
      * @param source
-     *            The {@link Observable} which produces values.
+     *            the {@link Observable} which produces values
      * @param timespan
-     *            The amount of time all chunks must be actively collect values before being emitted.
+     *            the amount of time all chunks must be actively collect values before being emitted
      * @param timeshift
-     *            The amount of time between creating chunks.
+     *            the amount of time between creating chunks
      * @param unit
-     *            The {@link TimeUnit} defining the unit of time for the timespan.
+     *            the {@link TimeUnit} defining the unit of time for the timespan
      * @param scheduler
-     *            The {@link Scheduler} to use for timing chunks.
+     *            the {@link Scheduler} to use for timing chunks
      * @return
-     *         the {@link Func1} object representing the specified buffer operation.
+     *         the {@link Func1} object representing the specified buffer operation
      */
     public static <T> OnSubscribeFunc<List<T>> buffer(final Observable<T> source, final long timespan, final long timeshift, final TimeUnit unit, final Scheduler scheduler) {
         return new OnSubscribeFunc<List<T>>() {
@@ -359,7 +370,7 @@ public final class OperationBuffer extends ChunkedOperation {
      * This class represents a single buffer: A sequence of recorded values.
      * 
      * @param <T>
-     *            The type of objects which this {@link Buffer} can hold.
+     *            the type of objects which this {@link Buffer} can hold
      */
     protected static class Buffer<T> extends Chunk<T, List<T>> {
         /**
@@ -402,6 +413,10 @@ public final class OperationBuffer extends ChunkedOperation {
 
     /**
      * Create a buffer operator with the given observable sequence as the buffer boundary.
+     *
+     * @param source
+     * @param boundary
+     * @return
      */
     public static <T, B> OnSubscribeFunc<List<T>> bufferWithBoundaryObservable(Observable<? extends T> source, Observable<B> boundary) {
         return new BufferWithObservableBoundary<T, B>(source, boundary, 16);
@@ -410,6 +425,11 @@ public final class OperationBuffer extends ChunkedOperation {
     /**
      * Create a buffer operator with the given observable sequence as the buffer boundary and
      * with the given initial capacity for buffers.
+     *
+     * @param source
+     * @param boundary
+     * @param initialCapacity
+     * @return
      */
     public static <T, B> OnSubscribeFunc<List<T>> bufferWithBoundaryObservable(Observable<? extends T> source, Observable<B> boundary, int initialCapacity) {
         if (initialCapacity <= 0) {

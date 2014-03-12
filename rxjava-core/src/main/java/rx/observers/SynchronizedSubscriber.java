@@ -42,7 +42,7 @@ public final class SynchronizedSubscriber<T> extends Subscriber<T> {
     /**
      * Used when synchronizing an Subscriber without access to the subscription.
      * 
-     * @param Observer
+     * @param subscriber
      */
     public SynchronizedSubscriber(Subscriber<? super T> subscriber) {
         this(subscriber, new Object());

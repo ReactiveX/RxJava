@@ -309,16 +309,17 @@ public class OperatorObserveOnTest {
     @Test
     public void testNonBlockingOuterWhileBlockingOnNext() throws InterruptedException {
 
-        final CountDownLatch latch = new CountDownLatch(1);
+        final CountDownLatch completedLatch = new CountDownLatch(1);
+        final CountDownLatch nextLatch = new CountDownLatch(1);
         final AtomicLong completeTime = new AtomicLong();
         // use subscribeOn to make async, observeOn to move
-        Observable.range(1, 1000).subscribeOn(Schedulers.newThread()).observeOn(Schedulers.newThread()).subscribe(new Observer<Integer>() {
+        Observable.range(1, 2).subscribeOn(Schedulers.newThread()).observeOn(Schedulers.newThread()).subscribe(new Observer<Integer>() {
 
             @Override
             public void onCompleted() {
                 System.out.println("onCompleted");
                 completeTime.set(System.nanoTime());
-                latch.countDown();
+                completedLatch.countDown();
             }
 
             @Override
@@ -328,19 +329,26 @@ public class OperatorObserveOnTest {
 
             @Override
             public void onNext(Integer t) {
-
+                // don't let this thing finish yet
+                try {
+                    if (!nextLatch.await(1000, TimeUnit.MILLISECONDS)) {
+                        throw new RuntimeException("it shouldn't have timed out");
+                    }
+                } catch (InterruptedException e) {
+                    throw new RuntimeException("it shouldn't have failed");
+                }
             }
 
         });
 
         long afterSubscribeTime = System.nanoTime();
-        System.out.println("After subscribe: " + latch.getCount());
-        assertEquals(1, latch.getCount());
-        latch.await();
+        System.out.println("After subscribe: " + completedLatch.getCount());
+        assertEquals(1, completedLatch.getCount());
+        nextLatch.countDown();
+        completedLatch.await(1000, TimeUnit.MILLISECONDS);
         assertTrue(completeTime.get() > afterSubscribeTime);
         System.out.println("onComplete nanos after subscribe: " + (completeTime.get() - afterSubscribeTime));
     }
-
 
     private static int randomIntFrom0to100() {
         // XORShift instead of Math.random http://javamex.com/tutorials/random_numbers/xorshift.shtml

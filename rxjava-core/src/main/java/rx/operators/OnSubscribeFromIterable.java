@@ -42,6 +42,9 @@ public final class OnSubscribeFromIterable<T> implements OnSubscribe<T> {
             }
             o.onNext(i);
         }
+        if (o.isUnsubscribed()) {
+            return;
+        }
         o.onCompleted();
     }
 

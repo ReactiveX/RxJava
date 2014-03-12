@@ -19,10 +19,7 @@ import rx.operators.DebugSubscriber;
  * @author gscampbell
  */
 public class DebugHook<C> extends RxJavaObservableExecutionHook {
-    private final Func1 onNextHook;
-    private final Func1<DebugNotification, C> start;
-    private final Action1<C> complete;
-    private final Action2<C, Throwable> error;
+    private DebugNotificationListener<C> listener;
 
     /**
      * Creates a new instance of the DebugHook RxJava plug-in that can be passed into
@@ -34,11 +31,10 @@ public class DebugHook<C> extends RxJavaObservableExecutionHook {
      * @param events
      *            This action is invoked as each notification is generated
      */
-    public DebugHook(Func1 onNextDataHook, Func1<DebugNotification, C> start, Action1<C> complete, Action2<C, Throwable> error) {
-        this.complete = complete;
-        this.error = error;
-        this.onNextHook = onNextDataHook == null ? Functions.identity() : onNextDataHook;
-        this.start = (Func1<DebugNotification, C>) (start == null ? Actions.empty() : start);
+    public DebugHook(DebugNotificationListener<C> listener) {
+        if (listener == null)
+            throw new IllegalArgumentException("The debug listener must not be null");
+        this.listener = listener;
     }
 
     @Override
@@ -46,67 +42,35 @@ public class DebugHook<C> extends RxJavaObservableExecutionHook {
         return new OnSubscribe<T>() {
             @Override
             public void call(Subscriber<? super T> o) {
-                C context = start.call(DebugNotification.createSubscribe(o, observableInstance, f));
+                final DebugNotification<T> n = DebugNotification.createSubscribe(o, observableInstance, f);
+                o = wrapOutbound(null, o);
+
+                C context = listener.start(n);
                 try {
-                    f.call(wrapOutbound(null, o));
-                    complete.call(context);
+                    f.call(o);
+                    listener.complete(context);
                 }
                 catch(Throwable e) {
-                    error.call(context, e);
+                    listener.error(context, e);
                 }
             }
         };
     }
 
     @Override
-    public <T> Subscription onSubscribeReturn(Observable<? extends T> observableInstance, Subscription subscription) {
+    public <T> Subscription onSubscribeReturn(Subscription subscription) {
         return subscription;
     }
 
     @Override
     public <T> OnSubscribe<T> onCreate(final OnSubscribe<T> f) {
-        return new OnCreateWrapper<T>(f);
+        return new DebugOnSubscribe<T>(f);
     }
-
-    @Override
-    public <T, R> Operator<? extends R, ? super T> onLift(final Operator<? extends R, ? super T> bind) {
-        return new Operator<R, T>() {
-            @Override
-            public Subscriber<? super T> call(final Subscriber<? super R> o) {
-                return wrapInbound(bind, bind.call(wrapOutbound(bind, o)));
-            }
-        };
-    }
-
-    @Override
-    public <T> Subscription onAdd(Subscriber<T> subscriber, Subscription s) {
-        return s;
-    }
-
-    @SuppressWarnings("unchecked")
-    private <R> Subscriber<? super R> wrapOutbound(Operator<? extends R, ?> bind, Subscriber<? super R> o) {
-        if (o instanceof DebugSubscriber) {
-            if (bind != null)
-                ((DebugSubscriber<R, C>) o).setFrom(bind);
-            return o;
-        }
-        return new DebugSubscriber<R, C>(onNextHook, start, complete, error, o, bind, null);
-    }
-
-    @SuppressWarnings("unchecked")
-    private <T> Subscriber<? super T> wrapInbound(Operator<?, ? super T> bind, Subscriber<? super T> o) {
-        if (o instanceof DebugSubscriber) {
-            if (bind != null)
-                ((DebugSubscriber<T, C>) o).setTo(bind);
-            return o;
-        }
-        return new DebugSubscriber<T, C>(onNextHook, start, complete, error, o, null, bind);
-    }
-
-    public final class OnCreateWrapper<T> implements OnSubscribe<T> {
+    
+    public final class DebugOnSubscribe<T> implements OnSubscribe<T> {
         private final OnSubscribe<T> f;
 
-        private OnCreateWrapper(OnSubscribe<T> f) {
+        private DebugOnSubscribe(OnSubscribe<T> f) {
             this.f = f;
         }
 
@@ -118,5 +82,36 @@ public class DebugHook<C> extends RxJavaObservableExecutionHook {
         public OnSubscribe<T> getActual() {
             return f;
         }
+    }
+
+
+    @Override
+    public <T, R> Operator<? extends R, ? super T> onLift(final Operator<? extends R, ? super T> bind) {
+        return new Operator<R, T>() {
+            @Override
+            public Subscriber<? super T> call(final Subscriber<? super R> o) {
+                return wrapInbound(bind, bind.call(wrapOutbound(bind, o)));
+            }
+        };
+    }
+
+    @SuppressWarnings("unchecked")
+    private <R> Subscriber<? super R> wrapOutbound(Operator<? extends R, ?> bind, Subscriber<? super R> o) {
+        if (o instanceof DebugSubscriber) {
+            if (bind != null)
+                ((DebugSubscriber<R, C>) o).setFrom(bind);
+            return o;
+        }
+        return new DebugSubscriber<R, C>(listener, o, bind, null);
+    }
+
+    @SuppressWarnings("unchecked")
+    private <T> Subscriber<? super T> wrapInbound(Operator<?, ? super T> bind, Subscriber<? super T> o) {
+        if (o instanceof DebugSubscriber) {
+            if (bind != null)
+                ((DebugSubscriber<T, C>) o).setTo(bind);
+            return o;
+        }
+        return new DebugSubscriber<T, C>(listener, o, null, bind);
     }
 }
