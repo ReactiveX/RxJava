@@ -15,18 +15,23 @@
  */
 package rx.operators;
 
-import static org.junit.Assert.*;
-import static rx.operators.OperationToFuture.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static rx.operators.OperationToFuture.toFuture;
 
 import java.util.List;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 
@@ -74,6 +79,34 @@ public class OperationToFutureTest {
             fail("expected exception");
         } catch (Throwable e) {
             assertEquals(TestException.class, e.getCause().getClass());
+        }
+    }
+
+    @Test(expected=CancellationException.class)
+    public void testGetAfterCancel() throws Exception {
+        Observable<String> obs = Observable.create(new OperationNeverComplete<String>());
+        Future<String> f = toFuture(obs);
+        boolean cancelled = f.cancel(true);
+        assertTrue(cancelled);  // because OperationNeverComplete never does
+        f.get();                // Future.get() docs require this to throw
+    }
+
+    @Test(expected=CancellationException.class)
+    public void testGetWithTimeoutAfterCancel() throws Exception {
+        Observable<String> obs = Observable.create(new OperationNeverComplete<String>());
+        Future<String> f = toFuture(obs);
+        boolean cancelled = f.cancel(true);
+        assertTrue(cancelled);  // because OperationNeverComplete never does
+        f.get(Long.MAX_VALUE, TimeUnit.NANOSECONDS);    // Future.get() docs require this to throw
+    }
+
+    /**
+     * Emits no observations. Used to simulate a long-running asynchronous operation.
+     */
+    private static class OperationNeverComplete<T> implements Observable.OnSubscribe<T> {
+        @Override
+        public void call(Subscriber<? super T> unused) {
+            // do nothing
         }
     }
 
