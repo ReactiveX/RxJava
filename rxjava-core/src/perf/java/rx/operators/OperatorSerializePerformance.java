@@ -14,9 +14,9 @@ import rx.perf.IntegerSumObserver;
 import rx.schedulers.Schedulers;
 
 public class OperatorSerializePerformance extends AbstractPerformanceTester {
-    static int reps = Integer.MAX_VALUE / 16384; // timeTwoStreams
+    //    static int reps = Integer.MAX_VALUE / 16384; // timeTwoStreams
 
-    //    static int reps = Integer.MAX_VALUE / 1024; // timeSingleStream
+    static int reps = Integer.MAX_VALUE / 1024; // timeSingleStream
 
     //    static int reps = 1000; // interval streams
 
@@ -32,8 +32,8 @@ public class OperatorSerializePerformance extends AbstractPerformanceTester {
 
                 @Override
                 public void call() {
-                    spt.timeTwoStreams();
-                    //                    spt.timeSingleStream();
+                    //                    spt.timeTwoStreams();
+                    spt.timeSingleStream();
                 }
             });
         } catch (Exception e) {
@@ -52,13 +52,21 @@ public class OperatorSerializePerformance extends AbstractPerformanceTester {
      * Run: 13 - 35,269,946 ops/sec
      * Run: 14 - 34,165,013 ops/sec
      * 
-     * -> using "observeOn" technique
+     * -> using queue and counter technique
      * 
      * Run: 10 - 19,548,387 ops/sec
      * Run: 11 - 19,471,069 ops/sec
      * Run: 12 - 19,480,112 ops/sec
      * Run: 13 - 18,720,550 ops/sec
      * Run: 14 - 19,070,383 ops/sec
+     * 
+     * -> using queue and lock technique
+     * 
+     * Run: 10 - 51,295,152 ops/sec
+     * Run: 11 - 50,317,937 ops/sec
+     * Run: 12 - 51,126,331 ops/sec
+     * Run: 13 - 52,418,291 ops/sec
+     * Run: 14 - 51,694,710 ops/sec
      */
     public long timeSingleStream() {
 
@@ -119,6 +127,14 @@ public class OperatorSerializePerformance extends AbstractPerformanceTester {
      * Run: 12 - 4,510,978 ops/sec
      * Run: 13 - 3,218,915 ops/sec
      * Run: 14 - 3,938,549 ops/sec
+     * 
+     * -> using queue and lock technique
+     * 
+     * Run: 10 - 5,348,090 ops/sec
+     * Run: 11 - 6,458,608 ops/sec
+     * Run: 12 - 5,430,743 ops/sec
+     * Run: 13 - 5,159,666 ops/sec
+     * Run: 14 - 6,129,682 ops/sec
      */
     public long timeTwoStreams() {
 

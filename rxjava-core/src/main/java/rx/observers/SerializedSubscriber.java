@@ -8,7 +8,7 @@ public class SerializedSubscriber<T> extends Subscriber<T> {
     private final Observer<T> s;
 
     public SerializedSubscriber(Subscriber<? super T> s) {
-        this.s = new SerializedObserverViaStateMachine<T>(s);
+        this.s = new SerializedObserverViaQueueAndLock<T>(s);
     }
 
     @Override
