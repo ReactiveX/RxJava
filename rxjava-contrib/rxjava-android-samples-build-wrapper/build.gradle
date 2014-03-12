@@ -1,0 +1,11 @@
+tasks.build.doLast {
+  def androidHome = System.getenv("ANDROID_HOME")
+  if (project.hasProperty('buildAndroidSamples') && !androidHome.isEmpty()) {
+    println("Android SDK detected at $androidHome, running samples build")
+    project.exec {
+      workingDir '../rxjava-android-samples'
+
+      commandLine "./gradlew", "clean", "packageDebug"
+    }
+  }
+}

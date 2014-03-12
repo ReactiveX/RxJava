@@ -1,0 +1,32 @@
+apply plugin: 'android'
+
+android {
+    compileSdkVersion 19
+    buildToolsVersion "19.0.0"
+
+    defaultConfig {
+        minSdkVersion 14
+        targetSdkVersion 19
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            runProguard false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+        }
+    }
+}
+
+// make sure we always compile against the latest version of RxJava
+def rootProjectProperties = new Properties()
+file("../../../gradle.properties").withReader { reader ->
+    rootProjectProperties.load(reader)
+    properties.putAll(rootProjectProperties)
+}
+
+dependencies {
+    def rxjVersion = rootProjectProperties.get("version")
+    compile "com.netflix.rxjava:rxjava-android:$rxjVersion"
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+}
