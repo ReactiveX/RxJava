@@ -14,11 +14,11 @@ import rx.perf.IntegerSumObserver;
 import rx.schedulers.Schedulers;
 
 public class OperatorSerializePerformance extends AbstractPerformanceTester {
-        static int reps = Integer.MAX_VALUE / 16384; // timeTwoStreams
+    static int reps = Integer.MAX_VALUE / 16384; // timeTwoStreams
 
     //    static int reps = Integer.MAX_VALUE / 1024; // timeSingleStream
 
-//    static int reps = 1000; // interval streams
+    //    static int reps = 1000; // interval streams
 
     OperatorSerializePerformance() {
         super(reps);
@@ -33,6 +33,7 @@ public class OperatorSerializePerformance extends AbstractPerformanceTester {
                 @Override
                 public void call() {
                     spt.timeTwoStreams();
+                    //                    spt.timeSingleStream();
                 }
             });
         } catch (Exception e) {
@@ -42,11 +43,22 @@ public class OperatorSerializePerformance extends AbstractPerformanceTester {
     }
 
     /**
-     * Run: 10 - 36,891,795 ops/sec
-     * Run: 11 - 29,854,808 ops/sec
-     * Run: 12 - 36,162,140 ops/sec
-     * Run: 13 - 35,727,201 ops/sec
-     * Run: 14 - 34,897,262 ops/sec
+     * 
+     * -> state machine technique
+     * 
+     * Run: 10 - 34,668,810 ops/sec
+     * Run: 11 - 32,874,312 ops/sec
+     * Run: 12 - 33,389,339 ops/sec
+     * Run: 13 - 35,269,946 ops/sec
+     * Run: 14 - 34,165,013 ops/sec
+     * 
+     * -> using "observeOn" technique
+     * 
+     * Run: 10 - 19,548,387 ops/sec
+     * Run: 11 - 19,471,069 ops/sec
+     * Run: 12 - 19,480,112 ops/sec
+     * Run: 13 - 18,720,550 ops/sec
+     * Run: 14 - 19,070,383 ops/sec
      */
     public long timeSingleStream() {
 
@@ -91,6 +103,23 @@ public class OperatorSerializePerformance extends AbstractPerformanceTester {
         return o.sum;
     }
 
+    /**
+     * -> state machine technique
+     * 
+     * Run: 10 - 3,432,256 ops/sec
+     * Run: 11 - 3,570,444 ops/sec
+     * Run: 12 - 3,791,137 ops/sec
+     * Run: 13 - 3,664,579 ops/sec
+     * Run: 14 - 5,211,156 ops/sec
+     * 
+     * -> using "observeOn" technique
+     * 
+     * Run: 10 - 3,995,336 ops/sec
+     * Run: 11 - 4,033,077 ops/sec
+     * Run: 12 - 4,510,978 ops/sec
+     * Run: 13 - 3,218,915 ops/sec
+     * Run: 14 - 3,938,549 ops/sec
+     */
     public long timeTwoStreams() {
 
         final Observable<Integer> s1 = Observable.range(0, reps).subscribeOn(Schedulers.newThread());
@@ -147,7 +176,7 @@ public class OperatorSerializePerformance extends AbstractPerformanceTester {
 
         IntegerSumObserver o = new IntegerSumObserver();
         s.subscribe(o);
-//        System.out.println("sum : " + o.sum);
+        //        System.out.println("sum : " + o.sum);
 
         return o.sum;
     }
