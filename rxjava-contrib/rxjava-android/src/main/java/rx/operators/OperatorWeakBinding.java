@@ -87,18 +87,24 @@ public final class OperatorWeakBinding<T, R> implements Observable.Operator<T, T
 
         private void handleLostBinding(Subscriber<? super T> sub, String context) {
             if (sub == null) {
-                Log.d(LOG_TAG, "subscriber gone; skipping " + context);
+                log("subscriber gone; skipping " + context);
             } else {
                 final R r = boundRef.get();
                 if (r != null) {
                     // the predicate failed to validate
-                    Log.d(LOG_TAG, "bound component has become invalid; skipping " + context);
+                    log("bound component has become invalid; skipping " + context);
                 } else {
-                    Log.d(LOG_TAG, "bound component gone; skipping " + context);
+                    log("bound component gone; skipping " + context);
                 }
             }
-            Log.d(LOG_TAG, "unsubscribing...");
+            log("unsubscribing...");
             unsubscribe();
+        }
+
+        private void log(String message) {
+            if (Log.isLoggable(LOG_TAG, Log.DEBUG)) {
+                Log.d(LOG_TAG, message);
+            }
         }
     }
 }
