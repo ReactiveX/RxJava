@@ -25,8 +25,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import rx.exceptions.Exceptions;
-import rx.exceptions.OnErrorThrowable;
 import rx.exceptions.OnErrorNotImplementedException;
+import rx.exceptions.OnErrorThrowable;
 import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Action2;
@@ -85,7 +85,6 @@ import rx.operators.OperationOnErrorReturn;
 import rx.operators.OperationOnExceptionResumeNextViaObservable;
 import rx.operators.OperationParallelMerge;
 import rx.operators.OperationReplay;
-import rx.operators.OperationRetry;
 import rx.operators.OperationSample;
 import rx.operators.OperationSequenceEqual;
 import rx.operators.OperationSingle;
@@ -115,11 +114,13 @@ import rx.operators.OperatorGroupBy;
 import rx.operators.OperatorMap;
 import rx.operators.OperatorMerge;
 import rx.operators.OperatorObserveOn;
-import rx.operators.OperatorOnErrorResumeNextViaFunction;
 import rx.operators.OperatorOnErrorFlatMap;
+import rx.operators.OperatorOnErrorResumeNextViaFunction;
 import rx.operators.OperatorParallel;
 import rx.operators.OperatorRepeat;
+import rx.operators.OperatorRetry;
 import rx.operators.OperatorScan;
+import rx.operators.OperatorSkip;
 import rx.operators.OperatorSubscribeOn;
 import rx.operators.OperatorTake;
 import rx.operators.OperatorTimeout;
@@ -159,7 +160,7 @@ import rx.subscriptions.Subscriptions;
  */
 public class Observable<T> {
 
-    final OnSubscribe<T> f;
+    final OnSubscribe<T> onSubscribe;
 
     /**
      * Observable with Function to execute when subscribed to.
@@ -171,10 +172,10 @@ public class Observable<T> {
      *            {@link OnSubscribe} to be executed when {@link #subscribe(Subscriber)} is called
      */
     protected Observable(OnSubscribe<T> f) {
-        this.f = hook.onCreate(f);
+        this.onSubscribe = f;
     }
 
-    private final static RxJavaObservableExecutionHook hook = RxJavaPlugins.getInstance().getObservableExecutionHook();
+    private final RxJavaObservableExecutionHook hook = RxJavaPlugins.getInstance().getObservableExecutionHook();
 
     /**
      * Returns an Observable that will execute the specified function when a {@link Subscriber} subscribes to
@@ -258,7 +259,7 @@ public class Observable<T> {
      * observable.map(...).filter(...).take(5).lift(new ObserverA()).lift(new ObserverB(...)).subscribe()
      * }
      * 
-     * @param bind
+     * @param lift
      * @return an Observable that emits values that are the result of applying the bind function to the values
      *         of the current Observable
      */
@@ -267,7 +268,7 @@ public class Observable<T> {
             @Override
             public void call(Subscriber<? super R> o) {
                 try {
-                    f.call(hook.onLift(lift).call(o));
+                    onSubscribe.call(hook.onLift(lift).call(o));
                 } catch (Throwable e) {
                     // localized capture of errors rather than it skipping all operators 
                     // and ending up in the try/catch of the subscribe method which then
@@ -521,6 +522,7 @@ public class Observable<T> {
      *         Observable
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#wiki-averageinteger-averagelong-averagefloat-and-averagedouble">RxJava Wiki: averageDouble()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.average.aspx">MSDN: Observable.Average</a>
+     * @deprecated Use rxjava-math module instead
      */
     public final static Observable<Double> averageDouble(Observable<Double> source) {
         return OperationAverage.averageDoubles(source);
@@ -537,6 +539,7 @@ public class Observable<T> {
      *         Observable
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#wiki-averageinteger-averagelong-averagefloat-and-averagedouble">RxJava Wiki: averageFloat()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.average.aspx">MSDN: Observable.Average</a>
+     * @deprecated Use rxjava-math module instead
      */
     public final static Observable<Float> averageFloat(Observable<Float> source) {
         return OperationAverage.averageFloats(source);
@@ -555,6 +558,7 @@ public class Observable<T> {
      *             if the source Observable emits no items
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#wiki-averageinteger-averagelong-averagefloat-and-averagedouble">RxJava Wiki: averageInteger()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.average.aspx">MSDN: Observable.Average</a>
+     * @deprecated Use rxjava-math module instead
      */
     public final static Observable<Integer> averageInteger(Observable<Integer> source) {
         return OperationAverage.average(source);
@@ -571,6 +575,7 @@ public class Observable<T> {
      *         Observable
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#wiki-averageinteger-averagelong-averagefloat-and-averagedouble">RxJava Wiki: averageLong()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.average.aspx">MSDN: Observable.Average</a>
+     * @deprecated Use rxjava-math module instead
      */
     public final static Observable<Long> averageLong(Observable<Long> source) {
         return OperationAverage.averageLongs(source);
@@ -1547,7 +1552,7 @@ public class Observable<T> {
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png">
      * 
-     * @param items
+     * @param t1
      *            the source Array
      * @param <T>
      *            the type of items in the Array and the type of items to be emitted by the resulting Observable
@@ -1675,6 +1680,7 @@ public class Observable<T> {
      *             if the source is empty
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#wiki-max">RxJava Wiki: max()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211837.aspx">MSDN: Observable.Max</a>
+     * @deprecated use rxjava-math module instead
      */
     public final static <T extends Comparable<? super T>> Observable<T> max(Observable<T> source) {
         return OperationMinMax.max(source);
@@ -2389,6 +2395,7 @@ public class Observable<T> {
      * @throws IllegalArgumentException
      *             if the source is empty
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229715.aspx">MSDN: Observable.Min</a>
+     * @deprecated Use rxjava-math module instead
      */
     public final static <T extends Comparable<? super T>> Observable<T> min(Observable<T> source) {
         return OperationMinMax.min(source);
@@ -2565,7 +2572,7 @@ public class Observable<T> {
     public final static <T> Observable<Boolean> sequenceEqual(Observable<? extends T> first, Observable<? extends T> second, Func2<? super T, ? super T, Boolean> equality) {
         return OperationSequenceEqual.sequenceEqual(first, second, equality);
     }
-
+    
     /**
      * Returns an Observable that emits the sum of all the Doubles emitted by the source Observable.
      * <p>
@@ -2577,6 +2584,7 @@ public class Observable<T> {
      *         Observable
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#wiki-suminteger-sumlong-sumfloat-and-sumdouble">RxJava Wiki: sumDouble()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum.aspx">MSDN: Observable.Sum</a>
+     * @deprecated Use rxjava-math module instead
      */
     public final static Observable<Double> sumDouble(Observable<Double> source) {
         return OperationSum.sumDoubles(source);
@@ -2593,6 +2601,7 @@ public class Observable<T> {
      *         Observable
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#wiki-suminteger-sumlong-sumfloat-and-sumdouble">RxJava Wiki: sumFloat()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum.aspx">MSDN: Observable.Sum</a>
+     * @deprecated Use rxjava-math module instead
      */
     public final static Observable<Float> sumFloat(Observable<Float> source) {
         return OperationSum.sumFloats(source);
@@ -2609,6 +2618,7 @@ public class Observable<T> {
      *         Observable
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#wiki-suminteger-sumlong-sumfloat-and-sumdouble">RxJava Wiki: sumInteger()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum.aspx">MSDN: Observable.Sum</a>
+     * @deprecated Use rxjava-math module instead
      */
     public final static Observable<Integer> sumInteger(Observable<Integer> source) {
         return OperationSum.sumIntegers(source);
@@ -2625,6 +2635,7 @@ public class Observable<T> {
      *         source Observable
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#wiki-suminteger-sumlong-sumfloat-and-sumdouble">RxJava Wiki: sumLong()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum.aspx">MSDN: Observable.Sum</a>
+     * @deprecated Use rxjava-math module instead
      */
     public final static Observable<Long> sumLong(Observable<Long> source) {
         return OperationSum.sumLongs(source);
@@ -2669,7 +2680,7 @@ public class Observable<T> {
      * @return an Observable that emits the items emitted by the Observable most recently emitted by the source
      *         Observable
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#wiki-switchonnext">RxJava Wiki: switchOnNext()</a>
-     * @see {@link #switchOnNext(Observable)}
+     * @see #switchOnNext(Observable)
      */
     public final static <T> Observable<T> switchLatest(Observable<? extends Observable<? extends T>> sequenceOfSequences) {
         return create(OperationSwitch.switchDo(sequenceOfSequences));
@@ -3493,6 +3504,7 @@ public class Observable<T> {
      *         emitted by the source Observable when transformed into Doubles by the specified function
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#wiki-averageinteger-averagelong-averagefloat-and-averagedouble">RxJava Wiki: averageDouble()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.average.aspx">MSDN: Observable.Average</a>
+     * @deprecated Use rxjava-math module instead
      */
     public final Observable<Double> averageDouble(Func1<? super T, Double> valueExtractor) {
         return create(new OperationAverage.AverageDoubleExtractor<T>(this, valueExtractor));
@@ -3510,6 +3522,7 @@ public class Observable<T> {
      *         emitted by the source Observable when transformed into Floats by the specified function
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#wiki-averageinteger-averagelong-averagefloat-and-averagedouble">RxJava Wiki: averageFloat()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.average.aspx">MSDN: Observable.Average</a>
+     * @deprecated Use rxjava-math module instead
      */
     public final Observable<Float> averageFloat(Func1<? super T, Float> valueExtractor) {
         return create(new OperationAverage.AverageFloatExtractor<T>(this, valueExtractor));
@@ -3527,6 +3540,7 @@ public class Observable<T> {
      *         emitted by the source Observable when transformed into Integers by the specified function
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#wiki-averageinteger-averagelong-averagefloat-and-averagedouble">RxJava Wiki: averageInteger()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.average.aspx">MSDN: Observable.Average</a>
+     * @deprecated Use rxjava-math module instead
      */
     public final Observable<Integer> averageInteger(Func1<? super T, Integer> valueExtractor) {
         return create(new OperationAverage.AverageIntegerExtractor<T>(this, valueExtractor));
@@ -3544,6 +3558,7 @@ public class Observable<T> {
      *         emitted by the source Observable when transformed into Longs by the specified function
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#wiki-averageinteger-averagelong-averagefloat-and-averagedouble">RxJava Wiki: averageLong()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.average.aspx">MSDN: Observable.Average</a>
+     * @deprecated Use rxjava-math module instead
      */
     public final Observable<Long> averageLong(Func1<? super T, Long> valueExtractor) {
         return create(new OperationAverage.AverageLongExtractor<T>(this, valueExtractor));
@@ -4086,7 +4101,7 @@ public class Observable<T> {
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/delay.o.png">
      * <p>
-     * <em>Note:</code> the resulting Observable will immediately propagate any {@code onError} notification
+     * <em>Note:</em> the resulting Observable will immediately propagate any {@code onError} notification
      * from the source Observable.
      * 
      * @param <U>
@@ -4293,7 +4308,7 @@ public class Observable<T> {
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/doOnEach.png">
      * 
-     * @param observer
+     * @param onNotification
      *            the action to invoke for each item emitted by the source Observable
      * @return the source Observable with the side-effecting behavior applied
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#wiki-dooneach">RxJava Wiki: doOnEach()</a>
@@ -4488,7 +4503,7 @@ public class Observable<T> {
      * @return an Observable that emits a Boolean that indicates whether any item emitted by the source
      *         Observable satisfies the {@code predicate}
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Conditional-and-Boolean-Operators#wiki-exists-and-isempty">RxJava Wiki: exists()</a>
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh211993.aspx">MSDN: Observable.Any</a> Note: the description in this page was wrong at the time of this writing.
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh211993.aspx">MSDN: Observable.Any (Note: the description in this page was wrong at the time of this writing)</a>
      */
     public final Observable<Boolean> exists(Func1<? super T, Boolean> predicate) {
         return create(OperationAny.exists(this, predicate));
@@ -4536,7 +4551,7 @@ public class Observable<T> {
      * @return an Observable that emits only the very first item emitted by the source Observable, or raises an
      *         {@code IllegalArgumentException} if the source Observable is empty
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#wiki-first">RxJava Wiki: first()</a>
-     * @see MSDN: {@code Observable.firstAsync()}
+     * @see "MSDN: Observable.firstAsync()"
      */
     public final Observable<T> first() {
         return take(1).single();
@@ -4553,7 +4568,7 @@ public class Observable<T> {
      * @return an Observable that emits only the very first item emitted by the source Observable that satisfies
      *         the {@code predicate}, or raises an {@code IllegalArgumentException} if no such items are emitted
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#wiki-first">RxJava Wiki: first()</a>
-     * @see MSDN: {@code Observable.firstAsync()}
+     * @see "MSDN: Observable.firstAsync()"
      */
     public final Observable<T> first(Func1<? super T, Boolean> predicate) {
         return takeFirst(predicate).single();
@@ -4570,7 +4585,7 @@ public class Observable<T> {
      * @return an Observable that emits only the very first item from the source, or a default item if the
      *         source Observable completes without emitting any items
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#wiki-firstordefault">RxJava Wiki: firstOrDefault()</a>
-     * @see MSDN: {@code Observable.firstOrDefaultAsync()}
+     * @see "MSDN: Observable.firstOrDefaultAsync()"
      */
     public final Observable<T> firstOrDefault(T defaultValue) {
         return take(1).singleOrDefault(defaultValue);
@@ -4590,7 +4605,7 @@ public class Observable<T> {
      * @return an Observable that emits only the very first item emitted by the source Observable that satisfies
      *         the {@code predicate}, or a default item if the source Observable emits no such items
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#wiki-firstordefault">RxJava Wiki: firstOrDefault()</a>
-     * @see MSDN: {@code Observable.firstOrDefaultAsync()}
+     * @see "MSDN: Observable.firstOrDefaultAsync()"
      */
     public final Observable<T> firstOrDefault(T defaultValue, Func1<? super T, Boolean> predicate) {
         return takeFirst(predicate).singleOrDefault(defaultValue);
@@ -4769,7 +4784,7 @@ public class Observable<T> {
      * @return an Observable that emits the last item from the source Observable or notifies observers of an
      *         error
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observable-Operators#wiki-last">RxJava Wiki: last()</a>
-     * @see MSDN: {@code Observable.lastAsync()}
+     * @see "MSDN: Observable.lastAsync()"
      */
     public final Observable<T> last() {
         return takeLast(1).single();
@@ -4788,7 +4803,7 @@ public class Observable<T> {
      * @throws IllegalArgumentException
      *             if no items that match the predicate are emitted by the source Observable
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observable-Operators#wiki-last">RxJava Wiki: last()</a>
-     * @see MSDN: {@code Observable.lastAsync()}
+     * @see "MSDN: Observable.lastAsync()"
      */
     public final Observable<T> last(Func1<? super T, Boolean> predicate) {
         return filter(predicate).takeLast(1).single();
@@ -4805,7 +4820,7 @@ public class Observable<T> {
      * @return an Observable that emits only the last item emitted by the source Observable, or a default item
      *         if the source Observable is empty
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#wiki-lastOrDefault">RxJava Wiki: lastOrDefault()</a>
-     * @see MSDN: {@code Observable.lastOrDefaultAsync()}
+     * @see "MSDN: Observable.lastOrDefaultAsync()"
      */
     public final Observable<T> lastOrDefault(T defaultValue) {
         return takeLast(1).singleOrDefault(defaultValue);
@@ -4825,7 +4840,7 @@ public class Observable<T> {
      * @return an Observable that emits only the last item emitted by the source Observable that satisfies the
      *         given condition, or a default item if no such item is emitted by the source Observable
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#wiki-lastOrDefault">RxJava Wiki: lastOrDefault()</a>
-     * @see MSDN: {@code Observable.lastOrDefaultAsync()}
+     * @see "MSDN: Observable.lastOrDefaultAsync()"
      */
     public final Observable<T> lastOrDefault(T defaultValue, Func1<? super T, Boolean> predicate) {
         return filter(predicate).takeLast(1).singleOrDefault(defaultValue);
@@ -4923,6 +4938,7 @@ public class Observable<T> {
      *             if the source is empty
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#wiki-max">RxJava Wiki: max()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211635.aspx">MSDN: Observable.Max</a>
+     * @deprecated Use rxjava-math module instead
      */
     public final Observable<T> max(Comparator<? super T> comparator) {
         return OperationMinMax.max(this, comparator);
@@ -5091,6 +5107,7 @@ public class Observable<T> {
      *             if the source is empty
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#wiki-min">RxJava Wiki: min()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229095.aspx">MSDN: Observable.Min</a>
+     * @deprecated Use rxjava-math module instead
      */
     public final Observable<T> min(Comparator<? super T> comparator) {
         return OperationMinMax.min(this, comparator);
@@ -5338,7 +5355,7 @@ public class Observable<T> {
      * @param f
      *            a {@link Func1} that applies Observable Observers to {@code Observable<T>} in parallel and
      *            returns an {@code Observable<R>}
-     * @return an Observable that emits the results of applying {@link f} to the items emitted by the source
+     * @return an Observable that emits the results of applying {@code f} to the items emitted by the source
      *         Observable
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#wiki-parallel">RxJava Wiki: parallel()</a>
      */
@@ -5359,7 +5376,7 @@ public class Observable<T> {
      *            returns an {@code Observable<R>}
      * @param s
      *            a {@link Scheduler} to perform the work on
-     * @return an Observable that emits the results of applying {@link f} to the items emitted by the source
+     * @return an Observable that emits the results of applying {@code f} to the items emitted by the source
      *         Observable
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#wiki-parallel">RxJava Wiki: parallel()</a>
      */
@@ -5433,7 +5450,7 @@ public class Observable<T> {
      * @param initialValue
      *            the initial value of the underlying {@link BehaviorSubject}
      * @return an Observable that emits {@code initialValue} followed by the results of invoking the selector
-     *         on a {@ConnectableObservable} that shares a single subscription to the underlying Observable
+     *         on a {@link ConnectableObservable} that shares a single subscription to the underlying Observable
      */
     public final <R> Observable<R> publish(Func1<? super Observable<T>, ? extends Observable<R>> selector, final T initialValue) {
         return multicast(new Func0<Subject<T, T>>() {
@@ -6049,7 +6066,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Error-Handling-Operators#wiki-retry">RxJava Wiki: retry()</a>
      */
     public final Observable<T> retry() {
-        return create(OperationRetry.retry(this));
+        return nest().lift(new OperatorRetry<T>());
     }
 
     /**
@@ -6073,7 +6090,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Error-Handling-Operators#wiki-retry">RxJava Wiki: retry()</a>
      */
     public final Observable<T> retry(int retryCount) {
-        return create(OperationRetry.retry(this, retryCount));
+        return nest().lift(new OperatorRetry<T>(retryCount));
     }
 
     /**
@@ -6191,7 +6208,7 @@ public class Observable<T> {
      * @throws IllegalArgumentException
      *             if the source emits more than one item or no items
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#wiki-single-and-singleordefault">RxJava Wiki: single()</a>
-     * @see MSDN: {@code Observable.singleAsync()}
+     * @see "MSDN: Observable.singleAsync()"
      */
     public final Observable<T> single() {
         return create(OperationSingle.<T> single(this));
@@ -6212,7 +6229,7 @@ public class Observable<T> {
      *             if the source Observable emits either more than one item that matches the predicate or no
      *             items that match the predicate
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#wiki-single-and-singleordefault">RxJava Wiki: single()</a>
-     * @see MSDN: {@code Observable.singleAsync()}
+     * @see "MSDN: Observable.singleAsync()"
      */
     public final Observable<T> single(Func1<? super T, Boolean> predicate) {
         return filter(predicate).single();
@@ -6232,7 +6249,7 @@ public class Observable<T> {
      * @throws IllegalArgumentException
      *             if the source Observable emits more than one item
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#wiki-single-and-singleordefault">RxJava Wiki: single()</a>
-     * @see MSDN: {@code Observable.singleOrDefaultAsync()}
+     * @see "MSDN: Observable.singleOrDefaultAsync()"
      */
     public final Observable<T> singleOrDefault(T defaultValue) {
         return create(OperationSingle.<T> singleOrDefault(this, defaultValue));
@@ -6255,7 +6272,7 @@ public class Observable<T> {
      * @throws IllegalArgumentException
      *             if the source Observable emits more than one item that matches the predicate
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#wiki-single-and-singleordefault">RxJava Wiki: single()</a>
-     * @see MSDN: {@code Observable.singleOrDefaultAsync()}
+     * @see "MSDN: Observable.singleOrDefaultAsync()"
      */
     public final Observable<T> singleOrDefault(T defaultValue, Func1<? super T, Boolean> predicate) {
         return filter(predicate).singleOrDefault(defaultValue);
@@ -6274,7 +6291,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#wiki-skip">RxJava Wiki: skip()</a>
      */
     public final Observable<T> skip(int num) {
-        return create(OperationSkip.skip(this, num));
+        return lift(new OperatorSkip<T>(num));
     }
 
     /**
@@ -6429,6 +6446,22 @@ public class Observable<T> {
      */
     public final Observable<T> skipWhileWithIndex(Func2<? super T, Integer, Boolean> predicate) {
         return create(OperationSkipWhile.skipWhileWithIndex(this, predicate));
+    }
+
+    /**
+     * Returns an Observable that emits the items in a specified {@link Observable} before it begins to emit
+     * items emitted by the source Observable. 
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.o.png">
+     * 
+     * @param values
+     *            an Observable that contains the items you want the modified Observable to emit first
+     * @return an Observable that emits the items in the specified {@link Observable} and then emits the items
+     *         emitted by the source Observable
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#wiki-startwith">RxJava Wiki: startWith()</a>
+     */
+    public final Observable<T> startWith(Observable<T> values) {
+        return concat(values, this);
     }
 
     /**
@@ -7017,7 +7050,7 @@ public class Observable<T> {
      */
     public final Subscription subscribe(Subscriber<? super T> observer) {
         // allow the hook to intercept and/or decorate
-        OnSubscribe<T> onSubscribeFunction = hook.onSubscribeStart(this, f);
+        OnSubscribe<T> onSubscribeFunction = hook.onSubscribeStart(this, onSubscribe);
         // validate and proceed
         if (observer == null) {
             throw new IllegalArgumentException("observer can not be null");
@@ -7041,7 +7074,7 @@ public class Observable<T> {
                 observer = new SafeSubscriber<T>(observer);
                 onSubscribeFunction.call(observer);
             }
-            final Subscription returnSubscription = hook.onSubscribeReturn(this, observer);
+            final Subscription returnSubscription = hook.onSubscribeReturn(observer);
             // we return it inside a Subscription so it can't be cast back to Subscriber
             return Subscriptions.create(new Action0() {
 
@@ -7056,7 +7089,7 @@ public class Observable<T> {
             Exceptions.throwIfFatal(e);
             // if an unhandled error occurs executing the onSubscribe we will propagate it
             try {
-                observer.onError(hook.onSubscribeError(this, e));
+                observer.onError(hook.onSubscribeError(e));
             } catch (OnErrorNotImplementedException e2) {
                 // special handling when onError is not implemented ... we just rethrow
                 throw e2;
@@ -7064,7 +7097,9 @@ public class Observable<T> {
                 // if this happens it means the onError itself failed (perhaps an invalid function implementation)
                 // so we are unable to propagate the error correctly and will just throw
                 RuntimeException r = new RuntimeException("Error occurred attempting to subscribe [" + e.getMessage() + "] and then again while trying to pass to onError.", e2);
-                hook.onSubscribeError(this, r);
+                // TODO could the hook be the cause of the error in the on error handling.
+                hook.onSubscribeError(r);
+                // TODO why aren't we throwing the hook's return value.
                 throw r;
             }
             return Subscriptions.empty();
@@ -7105,8 +7140,7 @@ public class Observable<T> {
     }
 
     /**
-     * Asynchronously subscribes Observers to this Observable on the specified
-     * {@link Scheduler}.
+     * Asynchronously subscribes Observers to this Observable on the specified {@link Scheduler}.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/subscribeOn.png">
      * 
@@ -7115,7 +7149,6 @@ public class Observable<T> {
      * @return the source Observable modified so that its subscriptions happen on the
      *         specified {@link Scheduler}
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#wiki-subscribeon">RxJava Wiki: subscribeOn()</a>
-     * @see #subscribeOn(rx.Scheduler, int) 
      */
     public final Observable<T> subscribeOn(Scheduler scheduler) {
         return nest().lift(new OperatorSubscribeOn<T>(scheduler));
@@ -7133,6 +7166,7 @@ public class Observable<T> {
      *         by the source Observable as transformed by the provided function
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#wiki-suminteger-sumlong-sumfloat-and-sumdouble">RxJava Wiki: sumDouble()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum.aspx">MSDN: Observable.Sum</a>
+     * @deprecated Use rxjava-math module instead
      */
     public final Observable<Double> sumDouble(Func1<? super T, Double> valueExtractor) {
         return OperationSum.sumAtLeastOneDoubles(map(valueExtractor));
@@ -7150,6 +7184,7 @@ public class Observable<T> {
      *         the source Observable as transformed by the provided function
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#wiki-suminteger-sumlong-sumfloat-and-sumdouble">RxJava Wiki: sumFloat()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum.aspx">MSDN: Observable.Sum</a>
+     * @deprecated Use rxjava-math module instead
      */
     public final Observable<Float> sumFloat(Func1<? super T, Float> valueExtractor) {
         return OperationSum.sumAtLeastOneFloats(map(valueExtractor));
@@ -7167,6 +7202,7 @@ public class Observable<T> {
      *         by the source Observable as transformed by the provided function
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#wiki-suminteger-sumlong-sumfloat-and-sumdouble">RxJava Wiki: sumInteger()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum.aspx">MSDN: Observable.Sum</a>
+     * @deprecated Use rxjava-math module instead
      */
     public final Observable<Integer> sumInteger(Func1<? super T, Integer> valueExtractor) {
         return OperationSum.sumAtLeastOneIntegers(map(valueExtractor));
@@ -7184,6 +7220,7 @@ public class Observable<T> {
      *         the source Observable as transformed by the provided function
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#wiki-suminteger-sumlong-sumfloat-and-sumdouble">RxJava Wiki: sumLong()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum.aspx">MSDN: Observable.Sum</a>
+     * @deprecated Use rxjava-math module instead
      */
     public final Observable<Long> sumLong(Func1<? super T, Long> valueExtractor) {
         return OperationSum.sumAtLeastOneLongs(map(valueExtractor));
@@ -7315,7 +7352,7 @@ public class Observable<T> {
      * @return an Observable that emits only the very first item emitted by the source Observable, or an empty
      *         Observable if the source Observable completes without emitting a single item
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#wiki-first">RxJava Wiki: first()</a>
-     * @see MSDN: {@code Observable.firstAsync()}
+     * @see "MSDN: Observable.firstAsync()"
      * @deprecated use {@code take(1)} directly
      */
     @Deprecated
@@ -7335,7 +7372,7 @@ public class Observable<T> {
      *         the given condition, or that completes without emitting anything if the source Observable
      *         completes without emitting a single condition-satisfying item
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#wiki-first">RxJava Wiki: first()</a>
-     * @see MSDN: {@code Observable.firstAsync()}
+     * @see "MSDN: Observable.firstAsync()"
      */
     public final Observable<T> takeFirst(Func1<? super T, Boolean> predicate) {
         return filter(predicate).take(1);
@@ -7599,7 +7636,7 @@ public class Observable<T> {
      * 
      * @param selector
      *            selector that will be invoked for items emitted by the source Observable
-     * @return a {@link Plan} that produces the projected results, to be fed (with other Plans) to the
+     * @return a {@link Plan0} that produces the projected results, to be fed (with other Plans) to the
      *         {@link #when} Observer
      * @throws NullPointerException
      *             if {@code selector} is null

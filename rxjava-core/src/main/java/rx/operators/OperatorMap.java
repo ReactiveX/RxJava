@@ -61,3 +61,4 @@ public final class OperatorMap<T, R> implements Operator<R, T> {
     }
 
 }
+

@@ -15,9 +15,10 @@
  */
 package rx.operators;
 
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
-import static rx.operators.OperationRetry.*;
+import static rx.operators.OperatorRetry.*;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -27,9 +28,11 @@ import org.mockito.InOrder;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
+import rx.functions.Action1;
+import rx.subjects.PublishSubject;
 import rx.subscriptions.Subscriptions;
 
-public class OperationRetryTest {
+public class OperatorRetryTest {
 
     @Test
     public void testOriginFails() {
@@ -52,7 +55,7 @@ public class OperationRetryTest {
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
         Observable<String> origin = Observable.create(new FuncWithErrors(NUM_FAILURES));
-        Observable.create(retry(origin, NUM_RETRIES)).subscribe(observer);
+        origin.nest().lift(new OperatorRetry<String>(NUM_RETRIES)).subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
         // should show 2 attempts (first time fail, second time (1st retry) fail)
@@ -72,7 +75,7 @@ public class OperationRetryTest {
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
         Observable<String> origin = Observable.create(new FuncWithErrors(NUM_FAILURES));
-        Observable.create(retry(origin, NUM_RETRIES)).subscribe(observer);
+        origin.nest().lift(new OperatorRetry<String>(NUM_RETRIES)).subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
         // should show 3 attempts
@@ -92,7 +95,7 @@ public class OperationRetryTest {
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
         Observable<String> origin = Observable.create(new FuncWithErrors(NUM_FAILURES));
-        Observable.create(retry(origin)).subscribe(observer);
+        origin.nest().lift(new OperatorRetry<String>()).subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
         // should show 3 attempts
@@ -126,5 +129,20 @@ public class OperationRetryTest {
             }
             return Subscriptions.empty();
         }
+    }
+    
+    @Test
+    public void testUnsubscribeFromRetry() {
+        PublishSubject<Integer> subject = PublishSubject.create();
+        final AtomicInteger count = new AtomicInteger(0);
+        Subscription sub = subject.retry().subscribe(new Action1<Integer>() {
+            @Override
+            public void call(Integer n) {
+                count.incrementAndGet();
+            }});
+        subject.onNext(1);
+        sub.unsubscribe();
+        subject.onNext(2);
+        assertEquals(1,count.get());
     }
 }

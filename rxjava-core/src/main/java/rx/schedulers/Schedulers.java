@@ -73,7 +73,7 @@ public class Schedulers {
      * {@link Scheduler} that queues work on the current thread to be executed after the current work completes.
      * 
      * @return {@link TrampolineScheduler} instance
-     * @deprecated Use trampoline() instead
+     * @deprecated use {@link #trampoline()} instead
      */
     @Deprecated
     public static Scheduler currentThread() {
@@ -121,14 +121,15 @@ public class Schedulers {
     /**
      * {@link Scheduler} intended for computational work.
      * <p>
-     * The implementation is backed by a {@link ScheduledExecutorService} thread-pool sized to the number of CPU cores.
+     * The implementation is backed by a {@link ScheduledExecutorService} thread-pool sized to the number of CPU
+     * cores.
      * <p>
      * This can be used for event-loops, processing callbacks and other computational work.
      * <p>
      * Do not perform IO-bound work on this scheduler. Use {@link #io()} instead.
      * 
-     * @return {@link ExecutorScheduler} for computation-bound work.
-     * @Deprecated Use {@link #computation()}
+     * @return {@link ExecutorScheduler} for computation-bound work
+     * @deprecated use {@link #computation()}
      */
     @Deprecated
     public static Scheduler threadPoolForComputation() {
@@ -142,7 +143,7 @@ public class Schedulers {
      * <p>
      * Do not perform IO-bound work on this scheduler. Use {@link #io()} instead.
      * 
-     * @return {@link Scheduler} for computation-bound work.
+     * @return {@link Scheduler} for computation-bound work
      */
     public static Scheduler computation() {
         return INSTANCE.computationScheduler;
@@ -157,8 +158,8 @@ public class Schedulers {
      * <p>
      * Do not perform computational work on this scheduler. Use {@link #computation()} instead.
      * 
-     * @return {@link ExecutorScheduler} for IO-bound work.
-     * @deprecated Use {@link #io()} instead.
+     * @return {@link ExecutorScheduler} for IO-bound work
+     * @deprecated use {@link #io()} instead
      */
     @Deprecated
     public static Scheduler threadPoolForIO() {
@@ -174,7 +175,7 @@ public class Schedulers {
      * <p>
      * Do not perform computational work on this scheduler. Use {@link #computation()} instead.
      * 
-     * @return {@link ExecutorScheduler} for IO-bound work.
+     * @return {@link ExecutorScheduler} for IO-bound work
      */
     public static Scheduler io() {
         return INSTANCE.ioScheduler;

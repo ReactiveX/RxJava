@@ -64,6 +64,7 @@ public final class AndroidObservable {
      */
     @Deprecated
     public static <T> Observable<T> fromActivity(Activity activity, Observable<T> sourceObservable) {
+        Assertions.assertUiThread();
         return OperatorObserveFromAndroidComponent.observeFromAndroidComponent(sourceObservable, activity);
     }
 
@@ -93,6 +94,7 @@ public final class AndroidObservable {
      */
     @Deprecated
     public static <T> Observable<T> fromFragment(Object fragment, Observable<T> sourceObservable) {
+        Assertions.assertUiThread();
         if (USES_SUPPORT_FRAGMENTS && fragment instanceof android.support.v4.app.Fragment) {
             return OperatorObserveFromAndroidComponent.observeFromAndroidComponent(sourceObservable, (android.support.v4.app.Fragment) fragment);
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB && fragment instanceof Fragment) {
