@@ -60,6 +60,16 @@ public class Schedulers {
 
     }
 
+    private static ThreadLocal<Scheduler.Inner> currentScheduler = new ThreadLocal<Scheduler.Inner>();
+
+    /* package */static void setCurrentScheduler(Scheduler.Inner scheduler) {
+        currentScheduler.set(scheduler);
+    }
+
+    public static Scheduler.Inner current() {
+        return currentScheduler.get();
+    }
+
     /**
      * {@link Scheduler} that executes work immediately on the current thread.
      * 
