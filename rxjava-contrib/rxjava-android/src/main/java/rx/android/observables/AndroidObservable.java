@@ -141,6 +141,7 @@ public final class AndroidObservable {
      * @param source   the source sequence
      */
     public static <T> Observable<T> bindActivity(Activity activity, Observable<T> source) {
+        Assertions.assertUiThread();
         return source.observeOn(mainThread()).lift(new OperatorWeakBinding<T, Activity>(activity, ACTIVITY_VALIDATOR));
     }
 
@@ -155,7 +156,8 @@ public final class AndroidObservable {
      * @param source   the source sequence
      */
     public static <T> Observable<T> bindFragment(Object fragment, Observable<T> cachedSequence) {
-        Observable<T> source = cachedSequence.observeOn(mainThread());
+        Assertions.assertUiThread();
+        final Observable<T> source = cachedSequence.observeOn(mainThread());
         if (USES_SUPPORT_FRAGMENTS && fragment instanceof android.support.v4.app.Fragment) {
             android.support.v4.app.Fragment f = (android.support.v4.app.Fragment) fragment;
             return source.lift(new OperatorWeakBinding<T, android.support.v4.app.Fragment>(f, FRAGMENTV4_VALIDATOR));

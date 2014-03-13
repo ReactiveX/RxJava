@@ -69,21 +69,21 @@ public class AndroidObservableTest {
 
     @Test
     public void itSupportsFragmentsFromTheSupportV4Library() {
-        AndroidObservable.fromFragment(supportFragment, Observable.just("success")).subscribe(new TestObserver<String>(observer));
+        AndroidObservable.bindFragment(supportFragment, Observable.just("success")).subscribe(new TestObserver<String>(observer));
         verify(observer).onNext("success");
         verify(observer).onCompleted();
     }
 
     @Test
     public void itSupportsNativeFragments() {
-        AndroidObservable.fromFragment(fragment, Observable.just("success")).subscribe(new TestObserver<String>(observer));
+        AndroidObservable.bindFragment(fragment, Observable.just("success")).subscribe(new TestObserver<String>(observer));
         verify(observer).onNext("success");
         verify(observer).onCompleted();
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void itThrowsIfObjectPassedIsNotAFragment() {
-        AndroidObservable.fromFragment("not a fragment", Observable.never());
+        AndroidObservable.bindFragment("not a fragment", Observable.never());
     }
 
     @Test(expected = IllegalStateException.class)
@@ -91,7 +91,7 @@ public class AndroidObservableTest {
         final Future<Object> future = Executors.newSingleThreadExecutor().submit(new Callable<Object>() {
             @Override
             public Object call() throws Exception {
-                AndroidObservable.fromFragment(fragment, Observable.empty());
+                AndroidObservable.bindFragment(fragment, Observable.empty());
                 return null;
             }
         });
@@ -107,7 +107,7 @@ public class AndroidObservableTest {
         final Future<Object> future = Executors.newSingleThreadExecutor().submit(new Callable<Object>() {
             @Override
             public Object call() throws Exception {
-                AndroidObservable.fromActivity(activity, Observable.empty());
+                AndroidObservable.bindActivity(activity, Observable.empty());
                 return null;
             }
         });
