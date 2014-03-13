@@ -9,8 +9,20 @@ apply from: file('gradle/release.gradle')
 buildscript {
     repositories {
         mavenLocal()
-        mavenCentral() // maven { url 'http://jcenter.bintray.com' }
+        mavenCentral()
+        maven {
+            //FIXME: waiting for https://github.com/johnrengelman/shadow/pull/38 to merge
+            name 'Shadow'
+            url 'http://dl.bintray.com/content/gvsmirnov/gradle-plugins'
+        }
+        jcenter()
     }
+
+    dependencies {
+        // Required for benchmarks
+        classpath 'com.github.jengelman.gradle.plugins:shadow:0.8.1'
+    }
+
     apply from: file('gradle/buildscript.gradle'), to: buildscript 
 }
 
@@ -19,7 +31,7 @@ allprojects {
     apply plugin: 'idea'
     repositories { 
         mavenLocal()
-        mavenCentral() // maven { url: 'http://jcenter.bintray.com' }
+        mavenCentral()
     }
 }
 
@@ -31,8 +43,6 @@ subprojects {
     configurations { 
         examplesCompile.extendsFrom compile
         examplesRuntime.extendsFrom runtime
-	    perfCompile.extendsFrom compile
-	    perfRuntime.extendsFrom runtime
     }
 
 
@@ -40,48 +50,60 @@ subprojects {
         it.classpath = sourceSets.main.compileClasspath
     }
 
-    sourceSets { 
-		//include /src/examples folder
+    sourceSets {
         examples
-		//include /src/perf folder
-        perf {
-            java {
-                srcDir 'src/perf/java'
-                compileClasspath += main.output
-                runtimeClasspath += main.output
-            }
-        }
-    }
-
-    dependencies {
-        perfCompile 'org.openjdk.jmh:jmh-core:0.2'
+        perf
     }
 
     tasks.build { 
-		//include 'examples' in build task
+        //include 'examples' in build task
         dependsOn(examplesClasses)
-		//include 'perf' in build task
-        // dependsOn(perfClasses)  //-> Not working so commented out
+    }
+
+    dependencies {
+        perfCompile 'org.openjdk.jmh:jmh-core:0.5.3'
+        perfCompile 'org.openjdk.jmh:jmh-generator-annprocess:0.5.3'
+
+        perfCompile project
     }
     
     eclipse {  
-        classpath {  
-            // include 'provided' dependencies on the classpath
-            plusConfigurations += configurations.provided
+        classpath {
             plusConfigurations += configurations.perfCompile
             
             downloadSources = true
             downloadJavadoc = true
         }
     }
-    
+
     idea {
         module {
-            // include 'provided' dependencies on the classpath
-            scopes.PROVIDED.plus += configurations.provided
-            // TODO not sure what to add it to
-            //scopes.PROVIDED.plus += configurations.perfCompile
+            scopes.PROVIDED.plus  += configurations.perfCompile
+            scopes.PROVIDED.minus += configurations.compile
         }
+    }
+
+    task perfJar(type: Jar, dependsOn: perfClasses) {
+        from sourceSets.perf.output + sourceSets.main.output
+    }
+
+    task benchmarks(dependsOn: perfJar) {
+
+        apply plugin: "shadow"
+
+        shadow {
+            classifier = "benchmarks"
+            includeDependenciesFor = ["runtime", "perfRuntime"]
+
+            transformer(com.github.jengelman.gradle.plugins.shadow.transformers.ManifestResourceTransformer) {
+                mainClass = "org.openjdk.jmh.Main"
+            }
+        }
+
+        doLast {
+            shadowJar.execute()
+        }
+
     }
 }
 

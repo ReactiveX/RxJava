@@ -1,6 +1,5 @@
 apply plugin: 'maven'
 apply plugin: 'osgi'
-apply plugin:'application'
 
 sourceCompatibility = JavaVersion.VERSION_1_6
 targetCompatibility = JavaVersion.VERSION_1_6
@@ -13,7 +12,7 @@ dependencies {
 javadoc {
     // we do not want the org.rx.operations package include
     exclude '**/operations/**'
-	
+
     options {
         doclet = "org.benjchristensen.doclet.DocletExclude"
         docletpath = [rootProject.file('./gradle/doclet-exclude.jar')]
@@ -31,11 +30,4 @@ jar {
         instruction 'Import-Package', '!org.junit,!junit.framework,!org.mockito.*,*'
         instruction 'Eclipse-ExtensibleAPI', 'true'
     }
-}
-
-task time(type:JavaExec) {
-    classpath = sourceSets.perf.runtimeClasspath
-    group 'Application'
-    description 'Execute the calipser benchmark timing of Rx'
-    main 'rx.operators.ObservableBenchmark'
 }
