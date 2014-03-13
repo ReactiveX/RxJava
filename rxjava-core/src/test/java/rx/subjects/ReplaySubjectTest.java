@@ -16,7 +16,6 @@
 package rx.subjects;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.concurrent.CountDownLatch;
@@ -25,10 +24,12 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
+import rx.Observable;
 
 import rx.Observer;
 import rx.Subscriber;
 import rx.Subscription;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 public class ReplaySubjectTest {
@@ -356,4 +357,44 @@ public class ReplaySubjectTest {
         
         assertEquals(0, replaySubject.subscriberCount());
     }
-}
+    @Test(timeout = 1000)
+    public void testUnsubscriptionCase() {
+        ReplaySubject<String> src = ReplaySubject.create();
+        
+        for (int i = 0; i < 10; i++) {
+            @SuppressWarnings("unchecked")
+            final Observer<Object> o = mock(Observer.class);
+            InOrder inOrder = inOrder(o);
+            String v = "" + i;
+            src.onNext(v);
+            System.out.printf("Turn: %d%n", i);
+            src.first()
+                .flatMap(new Func1<String, Observable<String>>() {
+
+                    @Override
+                    public Observable<String> call(String t1) {
+                        return Observable.from(t1 + ", " + t1);
+                    }
+                })
+                .subscribe(new Observer<String>() {
+                    @Override
+                    public void onNext(String t) {
+                        System.out.println(t);
+                        o.onNext(t);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        o.onError(e);
+                    }
+
+                    @Override
+                    public void onCompleted() {
+                        o.onCompleted();
+                    }
+                });
+            inOrder.verify(o).onNext("0, 0");
+            inOrder.verify(o).onCompleted();
+            verify(o, never()).onError(any(Throwable.class));
+        }
+    }}
