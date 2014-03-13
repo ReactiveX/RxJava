@@ -399,5 +399,18 @@ public class OperatorSubscribeOnBoundedTest {
         ts.assertReceivedOnNext(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
         assertEquals(10, count.get());
     }
-
+    @Test(timeout = 2000)
+    public void testNoDeadlock() {
+        List<Integer> data = Arrays.asList(1, 2, 3, 4, 5);
+        Observable<Integer> source = Observable.from(data);
+        
+        Observable<Integer> result = source.nest().lift(new OperatorSubscribeOnBounded<Integer>(Schedulers.newThread(), 1));
+        
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        
+        result.subscribe(ts);
+        
+        ts.awaitTerminalEvent();
+        ts.assertReceivedOnNext(data);
+    }
 }
