@@ -25,6 +25,7 @@ import rx.subscriptions.Subscriptions;
 import android.app.Activity;
 import android.util.Log;
 
+@Deprecated
 public class OperatorObserveFromAndroidComponent {
 
     public static <T> Observable<T> observeFromAndroidComponent(Observable<T> source, android.app.Fragment fragment) {
