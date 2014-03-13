@@ -25,7 +25,7 @@ import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Func2;
 import rx.functions.Func3;
-import rx.observers.SynchronizedSubscriber;
+import rx.observers.SerializedSubscriber;
 import rx.subscriptions.SerialSubscription;
 
 class OperatorTimeoutBase<T> implements Operator<T, T> {
@@ -67,8 +67,7 @@ class OperatorTimeoutBase<T> implements Operator<T, T> {
         // Use SynchronizedSubscriber for safe memory access
         // as the subscriber will be accessed in the current thread or the
         // scheduler or other Observables.
-        final SynchronizedSubscriber<T> synchronizedSubscriber = new SynchronizedSubscriber<T>(
-                subscriber);
+        final SerializedSubscriber<T> synchronizedSubscriber = new SerializedSubscriber<T>(subscriber);
 
         TimeoutSubscriber<T> timeoutSubscriber = new TimeoutSubscriber<T>(
                 synchronizedSubscriber, timeoutStub, serial, other);
@@ -84,17 +83,17 @@ class OperatorTimeoutBase<T> implements Operator<T, T> {
         private final SerialSubscription serial;
         private final Object gate = new Object();
 
-        private final SynchronizedSubscriber<T> synchronizedSubscriber;
+        private final SerializedSubscriber<T> serializedSubscriber;
 
         private final TimeoutStub<T> timeoutStub;
 
         private final Observable<? extends T> other;
 
         private TimeoutSubscriber(
-                SynchronizedSubscriber<T> synchronizedSubscriber,
+                SerializedSubscriber<T> serializedSubscriber,
                 TimeoutStub<T> timeoutStub, SerialSubscription serial,
                 Observable<? extends T> other) {
-            this.synchronizedSubscriber = synchronizedSubscriber;
+            this.serializedSubscriber = serializedSubscriber;
             this.timeoutStub = timeoutStub;
             this.serial = serial;
             this.other = other;
@@ -110,7 +109,7 @@ class OperatorTimeoutBase<T> implements Operator<T, T> {
                 }
             }
             if (onNextWins) {
-                synchronizedSubscriber.onNext(value);
+                serializedSubscriber.onNext(value);
                 serial.set(timeoutStub.call(this, actual.get(), value));
             }
         }
@@ -125,7 +124,7 @@ class OperatorTimeoutBase<T> implements Operator<T, T> {
             }
             if (onErrorWins) {
                 serial.unsubscribe();
-                synchronizedSubscriber.onError(error);
+                serializedSubscriber.onError(error);
             }
         }
 
@@ -139,7 +138,7 @@ class OperatorTimeoutBase<T> implements Operator<T, T> {
             }
             if (onCompletedWins) {
                 serial.unsubscribe();
-                synchronizedSubscriber.onCompleted();
+                serializedSubscriber.onCompleted();
             }
         }
 
@@ -153,9 +152,9 @@ class OperatorTimeoutBase<T> implements Operator<T, T> {
             }
             if (timeoutWins) {
                 if (other == null) {
-                    synchronizedSubscriber.onError(new TimeoutException());
+                    serializedSubscriber.onError(new TimeoutException());
                 } else {
-                    serial.set(other.subscribe(synchronizedSubscriber));
+                    serial.set(other.subscribe(serializedSubscriber));
                 }
             }
         }

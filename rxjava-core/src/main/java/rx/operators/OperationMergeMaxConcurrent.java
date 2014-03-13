@@ -21,7 +21,7 @@ import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
-import rx.observers.SynchronizedObserver;
+import rx.observers.SerializedObserver;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -85,9 +85,8 @@ public final class OperationMergeMaxConcurrent {
              * Bug report: https://github.com/Netflix/RxJava/issues/200
              */
             SafeObservableSubscription subscription = new SafeObservableSubscription(ourSubscription);
-            SynchronizedObserver<T> synchronizedObserver = new SynchronizedObserver<T>(
-                    new SafeObserver<T>(subscription, actualObserver), // Create a SafeObserver as SynchronizedObserver does not automatically unsubscribe
-                    subscription);
+            SerializedObserver<T> synchronizedObserver = new SerializedObserver<T>(
+                    new SafeObserver<T>(subscription, actualObserver)); // Create a SafeObserver as SynchronizedObserver does not automatically unsubscribe
 
             /**
              * Subscribe to the parent Observable to get to the children Observables
@@ -103,10 +102,10 @@ public final class OperationMergeMaxConcurrent {
          * @param <T>
          */
         private class ParentObserver implements Observer<Observable<? extends T>> {
-            private final SynchronizedObserver<T> synchronizedObserver;
+            private final SerializedObserver<T> serializedObserver;
 
-            public ParentObserver(SynchronizedObserver<T> synchronizedObserver) {
-                this.synchronizedObserver = synchronizedObserver;
+            public ParentObserver(SerializedObserver<T> serializedObserver) {
+                this.serializedObserver = serializedObserver;
             }
 
             @Override
@@ -119,13 +118,13 @@ public final class OperationMergeMaxConcurrent {
                 // but will let the child worry about it
                 // if however this completes and there are no children processing, then we will send onCompleted
                 if (isStopped()) {
-                    synchronizedObserver.onCompleted();
+                    serializedObserver.onCompleted();
                 }
             }
 
             @Override
             public void onError(Throwable e) {
-                synchronizedObserver.onError(e);
+                serializedObserver.onError(e);
             }
 
             @Override
@@ -151,7 +150,7 @@ public final class OperationMergeMaxConcurrent {
                 }
                 if (observable != null) {
                     ourSubscription.add(observable.subscribe(new ChildObserver(
-                            synchronizedObserver)));
+                            serializedObserver)));
                 }
             }
         }
@@ -162,10 +161,10 @@ public final class OperationMergeMaxConcurrent {
          */
         private class ChildObserver implements Observer<T> {
 
-            private final SynchronizedObserver<T> synchronizedObserver;
+            private final SerializedObserver<T> serializedObserver;
 
-            public ChildObserver(SynchronizedObserver<T> synchronizedObserver) {
-                this.synchronizedObserver = synchronizedObserver;
+            public ChildObserver(SerializedObserver<T> serializedObserver) {
+                this.serializedObserver = serializedObserver;
             }
 
             @Override
@@ -192,19 +191,19 @@ public final class OperationMergeMaxConcurrent {
                 } else {
                     // No pending observable. Need to check if it's necessary to emit an onCompleted
                     if (isStopped()) {
-                        synchronizedObserver.onCompleted();
+                        serializedObserver.onCompleted();
                     }
                 }
             }
 
             @Override
             public void onError(Throwable e) {
-                synchronizedObserver.onError(e);
+                serializedObserver.onError(e);
             }
 
             @Override
             public void onNext(T args) {
-                synchronizedObserver.onNext(args);
+                serializedObserver.onNext(args);
             }
 
         }

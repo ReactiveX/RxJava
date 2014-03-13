@@ -52,7 +52,7 @@ import rx.plugins.RxJavaPlugins;
  * <li>When onError or onComplete occur it will unsubscribe from the Observable (if executing asynchronously).</li>
  * </ul>
  * <p>
- * It will not synchronize onNext execution. Use the {@link SynchronizedObserver} to do that.
+ * It will not synchronize onNext execution. Use the {@link SerializedSubscriber} to do that.
  * 
  * @param <T>
  */

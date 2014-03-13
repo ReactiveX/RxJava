@@ -52,7 +52,6 @@ import rx.observers.SafeSubscriber;
 import rx.operators.OnSubscribeFromIterable;
 import rx.operators.OnSubscribeRange;
 import rx.operators.OperationAll;
-import rx.operators.OperatorAmb;
 import rx.operators.OperationAny;
 import rx.operators.OperationAsObservable;
 import rx.operators.OperationAverage;
@@ -91,10 +90,8 @@ import rx.operators.OperationSingle;
 import rx.operators.OperationSkip;
 import rx.operators.OperationSkipLast;
 import rx.operators.OperationSkipUntil;
-import rx.operators.OperatorSkipWhile;
 import rx.operators.OperationSum;
 import rx.operators.OperationSwitch;
-import rx.operators.OperationSynchronize;
 import rx.operators.OperationTakeLast;
 import rx.operators.OperationTakeTimed;
 import rx.operators.OperationTakeUntil;
@@ -107,6 +104,7 @@ import rx.operators.OperationToMultimap;
 import rx.operators.OperationToObservableFuture;
 import rx.operators.OperationUsing;
 import rx.operators.OperationWindow;
+import rx.operators.OperatorAmb;
 import rx.operators.OperatorCast;
 import rx.operators.OperatorDoOnEach;
 import rx.operators.OperatorFilter;
@@ -120,8 +118,11 @@ import rx.operators.OperatorParallel;
 import rx.operators.OperatorRepeat;
 import rx.operators.OperatorRetry;
 import rx.operators.OperatorScan;
+import rx.operators.OperatorSerialize;
 import rx.operators.OperatorSkip;
+import rx.operators.OperatorSkipWhile;
 import rx.operators.OperatorSubscribeOn;
+import rx.operators.OperatorSynchronize;
 import rx.operators.OperatorTake;
 import rx.operators.OperatorTimeout;
 import rx.operators.OperatorTimeoutWithSelector;
@@ -2712,7 +2713,7 @@ public class Observable<T> {
      */
     @Deprecated
     public final static <T> Observable<T> synchronize(Observable<T> source) {
-        return create(OperationSynchronize.synchronize(source));
+        return source.synchronize();
     }
 
     /**
@@ -6197,6 +6198,10 @@ public class Observable<T> {
         return lift(new OperatorScan<R, T>(initialValue, accumulator));
     }
 
+    public final Observable<T> serialize() {
+        return lift(new OperatorSerialize<T>());
+    }
+    
     /**
      * If the source Observable completes after emitting a single item, return an Observable that emits that
      * item. If the source Observable emits more than one item or no items, throw an
@@ -7259,9 +7264,10 @@ public class Observable<T> {
      * @return an Observable that is a chronologically well-behaved version of the source Observable, and that
      *         synchronously notifies its {@link Observer}s
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#wiki-synchronize">RxJava Wiki: synchronize()</a>
+     * @deprecated Use {@link #serialize()} instead as it doesn't block threads while emitting notification.
      */
     public final Observable<T> synchronize() {
-        return create(OperationSynchronize.synchronize(this));
+        return lift(new OperatorSynchronize<T>());
     }
 
     /**
@@ -7283,9 +7289,10 @@ public class Observable<T> {
      * @return an Observable that is a chronologically well-behaved version of the source Observable, and that
      *         synchronously notifies its {@link Observer}s
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#wiki-synchronize">RxJava Wiki: synchronize()</a>
+     * @deprecated Use {@link #serialize()} instead as it doesn't block threads while emitting notification.
      */
     public final Observable<T> synchronize(Object lock) {
-        return create(OperationSynchronize.synchronize(this, lock));
+        return lift(new OperatorSynchronize<T>(lock));
     }
 
     /**

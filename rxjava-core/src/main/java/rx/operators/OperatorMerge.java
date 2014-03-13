@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import rx.Observable;
 import rx.Observable.Operator;
 import rx.Subscriber;
-import rx.observers.SynchronizedSubscriber;
+import rx.observers.SerializedSubscriber;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -36,7 +36,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
     @Override
     public Subscriber<Observable<? extends T>> call(final Subscriber<? super T> outerOperation) {
 
-        final Subscriber<T> o = new SynchronizedSubscriber<T>(outerOperation);
+        final Subscriber<T> o = new SerializedSubscriber<T>(outerOperation);
         final CompositeSubscription childrenSubscriptions = new CompositeSubscription();
         outerOperation.add(childrenSubscriptions);
 
