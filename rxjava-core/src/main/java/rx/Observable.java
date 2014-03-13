@@ -7264,6 +7264,7 @@ public class Observable<T> {
      * @return an Observable that is a chronologically well-behaved version of the source Observable, and that
      *         synchronously notifies its {@link Observer}s
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#wiki-synchronize">RxJava Wiki: synchronize()</a>
+     * @deprecated Use {@link #serialize()} instead as it doesn't block threads while emitting notification.
      */
     public final Observable<T> synchronize() {
         return lift(new OperatorSynchronize<T>());
@@ -7288,6 +7289,7 @@ public class Observable<T> {
      * @return an Observable that is a chronologically well-behaved version of the source Observable, and that
      *         synchronously notifies its {@link Observer}s
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#wiki-synchronize">RxJava Wiki: synchronize()</a>
+     * @deprecated Use {@link #serialize()} instead as it doesn't block threads while emitting notification.
      */
     public final Observable<T> synchronize(Object lock) {
         return lift(new OperatorSynchronize<T>(lock));

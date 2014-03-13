@@ -14,10 +14,9 @@ import rx.perf.IntegerSumObserver;
 import rx.schedulers.Schedulers;
 
 public class OperatorSerializePerformance extends AbstractPerformanceTester {
-    //    static int reps = Integer.MAX_VALUE / 16384; // timeTwoStreams
+    static int reps = Integer.MAX_VALUE / 16384; // timeTwoStreams
 
-    static int reps = Integer.MAX_VALUE / 1024; // timeSingleStream
-
+    //    static int reps = Integer.MAX_VALUE / 1024; // timeSingleStream
     //    static int reps = 1000; // interval streams
 
     OperatorSerializePerformance() {
@@ -32,8 +31,9 @@ public class OperatorSerializePerformance extends AbstractPerformanceTester {
 
                 @Override
                 public void call() {
-                    //                    spt.timeTwoStreams();
-                    spt.timeSingleStream();
+                    spt.timeTwoStreams();
+                    //                    spt.timeSingleStream();
+                    //                    spt.timeTwoStreamsIntervals();
                 }
             });
         } catch (Exception e) {
@@ -43,8 +43,17 @@ public class OperatorSerializePerformance extends AbstractPerformanceTester {
     }
 
     /**
+     * 1 streams emitting in a tight loop. Testing for single-threaded overhead.
      * 
-     * -> state machine technique
+     * -> blocking synchronization (SynchronizedObserver)
+     * 
+     * Run: 10 - 58,186,310 ops/sec
+     * Run: 11 - 60,592,037 ops/sec
+     * Run: 12 - 58,099,263 ops/sec
+     * Run: 13 - 59,034,765 ops/sec
+     * Run: 14 - 58,231,548 ops/sec
+     * 
+     * -> state machine technique (SerializedObserverViaStateMachine)
      * 
      * Run: 10 - 34,668,810 ops/sec
      * Run: 11 - 32,874,312 ops/sec
@@ -52,7 +61,7 @@ public class OperatorSerializePerformance extends AbstractPerformanceTester {
      * Run: 13 - 35,269,946 ops/sec
      * Run: 14 - 34,165,013 ops/sec
      * 
-     * -> using queue and counter technique
+     * -> using queue and counter technique (SerializedObserverViaQueueAndCounter)
      * 
      * Run: 10 - 19,548,387 ops/sec
      * Run: 11 - 19,471,069 ops/sec
@@ -60,7 +69,7 @@ public class OperatorSerializePerformance extends AbstractPerformanceTester {
      * Run: 13 - 18,720,550 ops/sec
      * Run: 14 - 19,070,383 ops/sec
      * 
-     * -> using queue and lock technique
+     * -> using queue and lock technique (SerializedObserverViaQueueAndLock)
      * 
      * Run: 10 - 51,295,152 ops/sec
      * Run: 11 - 50,317,937 ops/sec
@@ -112,29 +121,41 @@ public class OperatorSerializePerformance extends AbstractPerformanceTester {
     }
 
     /**
-     * -> state machine technique
+     * 2 streams emitting in tight loops so very high contention.
      * 
-     * Run: 10 - 3,432,256 ops/sec
-     * Run: 11 - 3,570,444 ops/sec
-     * Run: 12 - 3,791,137 ops/sec
-     * Run: 13 - 3,664,579 ops/sec
-     * Run: 14 - 5,211,156 ops/sec
+     * -> blocking synchronization (SynchronizedObserver)
      * 
-     * -> using "observeOn" technique
+     * Run: 10 - 8,361,252 ops/sec
+     * Run: 11 - 7,184,728 ops/sec
+     * Run: 12 - 8,249,685 ops/sec
+     * Run: 13 - 6,831,595 ops/sec
+     * Run: 14 - 8,003,358 ops/sec
      * 
-     * Run: 10 - 3,995,336 ops/sec
-     * Run: 11 - 4,033,077 ops/sec
-     * Run: 12 - 4,510,978 ops/sec
-     * Run: 13 - 3,218,915 ops/sec
-     * Run: 14 - 3,938,549 ops/sec
+     * (faster because it allows each thread to be "single threaded" while blocking the other)
      * 
-     * -> using queue and lock technique
+     * -> state machine technique (SerializedObserverViaStateMachine)
      * 
-     * Run: 10 - 5,348,090 ops/sec
-     * Run: 11 - 6,458,608 ops/sec
-     * Run: 12 - 5,430,743 ops/sec
-     * Run: 13 - 5,159,666 ops/sec
-     * Run: 14 - 6,129,682 ops/sec
+     * Run: 10 - 4,060,062 ops/sec
+     * Run: 11 - 3,561,131 ops/sec
+     * Run: 12 - 3,721,387 ops/sec
+     * Run: 13 - 3,693,909 ops/sec
+     * Run: 14 - 3,516,324 ops/sec
+     * 
+     * -> using queue and counter technique (SerializedObserverViaQueueAndCounter)
+     * 
+     * Run: 10 - 4,300,229 ops/sec
+     * Run: 11 - 4,395,995 ops/sec
+     * Run: 12 - 4,551,550 ops/sec
+     * Run: 13 - 4,443,235 ops/sec
+     * Run: 14 - 4,158,475 ops/sec
+     * 
+     * -> using queue and lock technique (SerializedObserverViaQueueAndLock)
+     * 
+     * Run: 10 - 6,369,781 ops/sec
+     * Run: 11 - 6,933,872 ops/sec
+     * Run: 12 - 5,652,535 ops/sec
+     * Run: 13 - 5,503,716 ops/sec
+     * Run: 14 - 6,219,264 ops/sec
      */
     public long timeTwoStreams() {
 
@@ -198,11 +219,39 @@ public class OperatorSerializePerformance extends AbstractPerformanceTester {
     }
 
     /**
+     * 2 streams emitting once a millisecond. Slow emission so little to no contention.
+     * 
+     * -> blocking synchronization (SynchronizedObserver)
+     * 
+     * Run: 10 - 1,996 ops/sec
+     * Run: 11 - 1,996 ops/sec
+     * Run: 12 - 1,995 ops/sec
+     * Run: 13 - 1,997 ops/sec
+     * Run: 14 - 1,996 ops/sec
+     * 
+     * -> state machine technique (SerializedObserverViaStateMachine)
+     * 
      * Run: 10 - 1,996 ops/sec
      * Run: 11 - 1,996 ops/sec
      * Run: 12 - 1,996 ops/sec
      * Run: 13 - 1,996 ops/sec
      * Run: 14 - 1,996 ops/sec
+     * 
+     * -> using queue and counter technique (SerializedObserverViaQueueAndCounter)
+     * 
+     * Run: 10 - 1,996 ops/sec
+     * Run: 11 - 1,996 ops/sec
+     * Run: 12 - 1,996 ops/sec
+     * Run: 13 - 1,996 ops/sec
+     * Run: 14 - 1,995 ops/sec
+     * 
+     * -> using queue and lock technique (SerializedObserverViaQueueAndLock)
+     * 
+     * Run: 10 - 1,996 ops/sec
+     * Run: 11 - 1,996 ops/sec
+     * Run: 12 - 1,997 ops/sec
+     * Run: 13 - 1,996 ops/sec
+     * Run: 14 - 1,995 ops/sec
      */
     public long timeTwoStreamsIntervals() {
 

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import rx.Observer;
 
-public class SerializedObserverViaQueueAndLock<T> implements Observer<T> {
+/* package */ class SerializedObserverViaQueueAndLock<T> implements Observer<T> {
     private final Observer<? super T> actual;
 
     private boolean emitting = false;

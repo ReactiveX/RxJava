@@ -23,7 +23,9 @@ import rx.Observer;
  * This ONLY does synchronization. It does not involve itself in safety or subscriptions. See SafeSubscriber for that.
  * 
  * @param <T>
+ * @deprecated Use SerializedObserver instead as it doesn't block threads during event notification.
  */
+@Deprecated
 public final class SynchronizedObserver<T> implements Observer<T> {
 
     /**

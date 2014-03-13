@@ -1,7 +1,6 @@
 package rx.observers;
 
 import rx.Observer;
-import rx.Subscriber;
 
 /**
  * Enforce single-threaded, serialized, ordered execution of onNext, onCompleted, onError.
@@ -15,26 +14,29 @@ import rx.Subscriber;
  * 
  * @param <T>
  */
-public class SerializedSubscriber<T> extends Subscriber<T> {
+public class SerializedObserver<T> implements Observer<T> {
+    /*
+     * Facade to actual implementation until final decision is made
+     * on the implementation.
+     */
+    private final SerializedObserverViaQueueAndLock<T> actual;
 
-    private final Observer<T> s;
-
-    public SerializedSubscriber(Subscriber<? super T> s) {
-        this.s = new SerializedObserver<T>(s);
+    public SerializedObserver(Observer<? super T> observer) {
+        this.actual = new SerializedObserverViaQueueAndLock<T>(observer);
     }
 
     @Override
     public void onCompleted() {
-        s.onCompleted();
+        actual.onCompleted();
     }
 
     @Override
     public void onError(Throwable e) {
-        s.onError(e);
+        actual.onError(e);
     }
 
     @Override
     public void onNext(T t) {
-        s.onNext(t);
+        actual.onNext(t);
     }
 }

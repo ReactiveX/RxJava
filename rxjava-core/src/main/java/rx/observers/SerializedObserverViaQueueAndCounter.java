@@ -5,7 +5,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import rx.Observer;
 
-public class SerializedObserverViaQueueAndCounter<T> implements Observer<T> {
+/* package */class SerializedObserverViaQueueAndCounter<T> implements Observer<T> {
     private final Observer<? super T> actual;
     private final AtomicInteger count = new AtomicInteger();
     private final ConcurrentLinkedQueue<Object> queue = new ConcurrentLinkedQueue<Object>();

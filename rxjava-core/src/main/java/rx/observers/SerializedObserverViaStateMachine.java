@@ -4,7 +4,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Observer;
 
-public class SerializedObserverViaStateMachine<T> implements Observer<T> {
+/* package */class SerializedObserverViaStateMachine<T> implements Observer<T> {
 
     private final AtomicReference<State> state = new AtomicReference<State>(State.createNew());
     private final Observer<? super T> s;
