@@ -47,6 +47,7 @@ public final class OperatorWeakBinding<T, R> implements Observable.Operator<T, T
         final WeakReference<Subscriber<? super T>> subscriberRef;
 
         private WeakSubscriber(Subscriber<? super T> source) {
+            super(source);
             subscriberRef = new WeakReference<Subscriber<? super T>>(source);
         }
 

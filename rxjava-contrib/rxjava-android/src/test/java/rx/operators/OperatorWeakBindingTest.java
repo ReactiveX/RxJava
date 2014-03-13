@@ -1,24 +1,21 @@
 package rx.operators;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.RobolectricTestRunner;
-import rx.Subscriber;
 import rx.functions.Functions;
+import rx.observers.TestSubscriber;
+
+import java.util.Arrays;
 
 @RunWith(RobolectricTestRunner.class)
 public class OperatorWeakBindingTest {
 
-    @Mock
-    private Subscriber<String> subscriber;
+    private TestSubscriber<String> subscriber = new TestSubscriber<String>();
 
     @Before
     public void setUp() throws Exception {
@@ -34,10 +31,9 @@ public class OperatorWeakBindingTest {
         weakSub.onCompleted();
         weakSub.onError(new Exception());
 
-        verify(subscriber).onNext("one");
-        verify(subscriber).onNext("two");
-        verify(subscriber).onCompleted();
-        verify(subscriber).onError(any(Exception.class));
+        subscriber.assertReceivedOnNext(Arrays.asList("one", "two"));
+        assertEquals(1, subscriber.getOnCompletedEvents().size());
+        assertEquals(1, subscriber.getOnErrorEvents().size());
     }
 
     @Test
@@ -51,8 +47,9 @@ public class OperatorWeakBindingTest {
         weakSub.onCompleted();
         weakSub.onError(new Exception());
 
-        verify(subscriber).onNext("one");
-        verifyNoMoreInteractions(subscriber);
+        subscriber.assertReceivedOnNext(Arrays.asList("one"));
+        assertEquals(0, subscriber.getOnCompletedEvents().size());
+        assertEquals(0, subscriber.getOnErrorEvents().size());
     }
 
     @Test
@@ -66,8 +63,9 @@ public class OperatorWeakBindingTest {
         weakSub.onCompleted();
         weakSub.onError(new Exception());
 
-        verify(subscriber).onNext("one");
-        verifyNoMoreInteractions(subscriber);
+        subscriber.assertReceivedOnNext(Arrays.asList("one"));
+        assertEquals(0, subscriber.getOnCompletedEvents().size());
+        assertEquals(0, subscriber.getOnErrorEvents().size());
     }
 
     @Test
@@ -81,6 +79,16 @@ public class OperatorWeakBindingTest {
         weakSub.onCompleted();
         weakSub.onError(new Exception());
 
-        verifyZeroInteractions(subscriber);
+        assertEquals(0, subscriber.getOnNextEvents().size());
+        assertEquals(0, subscriber.getOnCompletedEvents().size());
+        assertEquals(0, subscriber.getOnErrorEvents().size());
+    }
+
+    @Test
+    public void unsubscribeWillUnsubscribeFromWrappedSubscriber() {
+        OperatorWeakBinding<String, Object> op = new OperatorWeakBinding<String, Object>(new Object());
+
+        op.call(subscriber).unsubscribe();
+        subscriber.assertUnsubscribed();
     }
 }
