@@ -1,5 +1,20 @@
 # RxJava Releases #
 
+### Version 0.17.1 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.17.1%22)) ###
+
+* [Pull 953](https://github.com/Netflix/RxJava/pull/953) Make ObserveOnTest.testNonBlockingOuterWhileBlockingOnNext deterministic
+* [Pull 930](https://github.com/Netflix/RxJava/pull/930) Initial commit of the Android samples module
+* [Pull 938](https://github.com/Netflix/RxJava/pull/938) OperatorWeakBinding (deprecates OperatorObserveFromAndroidComponent)
+* [Pull 952](https://github.com/Netflix/RxJava/pull/952) rxjava-scala improvements and reimplemented the `amb` operator
+* [Pull 955](https://github.com/Netflix/RxJava/pull/955) Fixed ReplaySubject leak
+* [Pull 956](https://github.com/Netflix/RxJava/pull/956) Fixed byLine test to use line.separator system property instead of \n.
+* [Pull 958](https://github.com/Netflix/RxJava/pull/958) OperatorSkipWhile
+* [Pull 959](https://github.com/Netflix/RxJava/pull/959) OperationToFuture must throw CancellationException on get() if cancelled
+* [Pull 928](https://github.com/Netflix/RxJava/pull/928) Fix deadlock in SubscribeOnBounded
+* [Pull 960](https://github.com/Netflix/RxJava/pull/960) Unit test for "Cannot subscribe to a Retry observable once all subscribers unsubscribed"
+* [Pull 962](https://github.com/Netflix/RxJava/pull/962) Migrate from SynchronizedObserver to SerializedObserver
+
+
 ### Version 0.17.0 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.17.0%22)) ###
 
 
