@@ -1,14 +1,12 @@
 package rx.operators;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicInteger;
 
-import org.openjdk.jmh.annotations.GenerateMicroBenchmark;
-import org.openjdk.jmh.runner.Runner;
-import org.openjdk.jmh.runner.RunnerException;
-import org.openjdk.jmh.runner.options.Options;
-import org.openjdk.jmh.runner.options.OptionsBuilder;
+import org.openjdk.jmh.annotations.*;
 
+import org.openjdk.jmh.logic.BlackHole;
 import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Observable.Operator;
@@ -19,107 +17,84 @@ import rx.functions.Func1;
 public class ObservableBenchmark {
 
     @GenerateMicroBenchmark
-    public void timeBaseline() {
-        observableOfInts.subscribe(newObserver());
-        awaitAllObservers();
+    public void measureBaseline(BlackHole bh, Input input) {
+        for (Integer value : input.values) {
+            bh.consume(IDENTITY_FUNCTION.call(value));
+        }
     }
 
     @GenerateMicroBenchmark
-    public int timeMapIterate() {
-        int x = 0;
-        for (int j = 0; j < intValues.length; j++) {
-            // use hash code to make sure the JIT doesn't optimize too much and remove all of
-            // our code.
-            x |= ident.call(intValues[j]).hashCode();
-        }
-        return x;
+    public void measureMap(Input input) throws InterruptedException {
+        input.observable.lift(MAP_OPERATOR).subscribe(input.observer);
+
+        input.awaitCompletion();
     }
 
-    @GenerateMicroBenchmark
-    public void timeMap() {
-        timeOperator(new OperatorMap<Integer, Object>(ident));
-    }
-
-    /**************************************************************************
-     * Below is internal stuff to avoid object allocation and time overhead of anything that isn't
-     * being tested.
-     * 
-     * @throws RunnerException
-     **************************************************************************/
-
-    public static void main(String[] args) throws RunnerException {
-        Options opt = new OptionsBuilder()
-                .include(ObservableBenchmark.class.getName()+".*")
-                .forks(1)
-                .build();
-
-        new Runner(opt).run();
-    }
-
-    private void timeOperator(Operator<Object, Integer> op) {
-        observableOfInts.lift(op).subscribe(newObserver());
-        awaitAllObservers();
-    }
-
-    private final static AtomicInteger outstanding = new AtomicInteger(0);
-    private final static CountDownLatch latch = new CountDownLatch(1);
-
-    private static <T> Observer<T> newObserver() {
-        outstanding.incrementAndGet();
-        return new Observer<T>() {
-            @Override
-            public void onCompleted() {
-                int left = outstanding.decrementAndGet();
-                if (left == 0) {
-                    latch.countDown();
-                }
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                int left = outstanding.decrementAndGet();
-                if (left == 0) {
-                    latch.countDown();
-                }
-            }
-
-            @Override
-            public void onNext(T t) {
-                // do nothing
-            }
-        };
-    }
-
-    private static void awaitAllObservers() {
-        try {
-            latch.await();
-        } catch (InterruptedException e) {
-            return;
-        }
-    }
-
-    private static final Integer[] intValues = new Integer[1000];
-    static {
-        for (int i = 0; i < intValues.length; i++) {
-            intValues[i] = i;
-        }
-    }
-
-    private static final Observable<Integer> observableOfInts = Observable.create(new OnSubscribe<Integer>() {
+    private static final Func1<Integer, Integer> IDENTITY_FUNCTION = new Func1<Integer, Integer>() {
         @Override
-        public void call(Subscriber<? super Integer> o) {
-            for (int i = 0; i < intValues.length; i++) {
-                if (o.isUnsubscribed())
-                    return;
-                o.onNext(intValues[i]);
-            }
-            o.onCompleted();
-        }
-    });
-    private static final Func1<Integer, Object> ident = new Func1<Integer, Object>() {
-        @Override
-        public Object call(Integer t) {
-            return t;
+        public Integer call(Integer value) {
+            return value;
         }
     };
+
+    private static final Operator<Integer, Integer> MAP_OPERATOR = new OperatorMap<Integer, Integer>(IDENTITY_FUNCTION);
+
+    @State(Scope.Thread)
+    public static class Input {
+
+        @Param({"1", "1024", "1048576"})
+        public int size;
+
+        public Collection<Integer> values;
+        public Observable<Integer> observable;
+        public Observer<Integer> observer;
+
+        private CountDownLatch latch;
+
+        @Setup
+        public void setup() {
+            values = new ArrayList<Integer>();
+            for(int i = 0; i < size; i ++) {
+                values.add(i);
+            }
+
+            observable = Observable.create(new OnSubscribe<Integer>() {
+                @Override
+                public void call(Subscriber<? super Integer> o) {
+                    for (Integer value : values) {
+                        if (o.isUnsubscribed())
+                            return;
+                        o.onNext(value);
+                    }
+                    o.onCompleted();
+                }
+            });
+
+            final BlackHole bh = new BlackHole();
+            latch = new CountDownLatch(1);
+
+            observer = new Observer<Integer>() {
+                @Override
+                public void onCompleted() {
+                    latch.countDown();
+                }
+
+                @Override
+                public void onError(Throwable e) {
+                    throw new RuntimeException(e);
+                }
+
+                @Override
+                public void onNext(Integer value) {
+                    bh.consume(value);
+                }
+            };
+
+        }
+
+        public void awaitCompletion() throws InterruptedException {
+            latch.await();
+        }
+    }
+
 }
