@@ -79,7 +79,7 @@ public final class PublishSubject<T> extends Subject<T, T> {
                          */
                         lastNotification.get().accept(o);
                     }
-                });
+                }, null);
 
         return new PublishSubject<T>(onSubscribe, subscriptionManager, lastNotification);
     }
