@@ -37,7 +37,7 @@ import rx.Observer;
 import rx.Subscriber;
 import rx.Subscription;
 
-public abstract class SerializedObserverTest {
+public class SerializedObserverTest {
 
     @Mock
     Subscriber<String> observer;
@@ -47,7 +47,9 @@ public abstract class SerializedObserverTest {
         MockitoAnnotations.initMocks(this);
     }
 
-    protected abstract Observer<String> serializedObserver(Observer<String> o);
+    private Observer<String> serializedObserver(Observer<String> o) {
+        return new SerializedObserver<String>(o);
+    }
 
     @Test
     public void testSingleThreadedBasic() {

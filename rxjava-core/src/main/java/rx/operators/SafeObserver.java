@@ -22,7 +22,7 @@ import rx.Observer;
 import rx.Subscription;
 import rx.exceptions.CompositeException;
 import rx.exceptions.OnErrorNotImplementedException;
-import rx.observers.SynchronizedObserver;
+import rx.observers.SerializedObserver;
 import rx.plugins.RxJavaPlugins;
 import rx.subscriptions.Subscriptions;
 
@@ -55,7 +55,7 @@ import rx.subscriptions.Subscriptions;
  * <li>When onError or onComplete occur it will unsubscribe from the Observable (if executing asynchronously).</li>
  * </ul>
  * <p>
- * It will not synchronize onNext execution. Use the {@link SynchronizedObserver} to do that.
+ * It will not synchronize onNext execution. Use the {@link SerializedObserver} to do that.
  * 
  * @param <T>
  * @deprecated replaced by SafeSubscriber
