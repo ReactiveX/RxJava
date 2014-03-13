@@ -91,7 +91,7 @@ import rx.operators.OperationSingle;
 import rx.operators.OperationSkip;
 import rx.operators.OperationSkipLast;
 import rx.operators.OperationSkipUntil;
-import rx.operators.OperationSkipWhile;
+import rx.operators.OperatorSkipWhile;
 import rx.operators.OperationSum;
 import rx.operators.OperationSwitch;
 import rx.operators.OperationSynchronize;
@@ -6427,7 +6427,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229685.aspx">MSDN: Observable.SkipWhile</a>
      */
     public final Observable<T> skipWhile(Func1<? super T, Boolean> predicate) {
-        return create(OperationSkipWhile.skipWhile(this, predicate));
+        return lift(new OperatorSkipWhile<T>(OperatorSkipWhile.toPredicate2(predicate)));
     }
 
     /**
@@ -6445,7 +6445,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211631.aspx">MSDN: Observable.SkipWhile</a>
      */
     public final Observable<T> skipWhileWithIndex(Func2<? super T, Integer, Boolean> predicate) {
-        return create(OperationSkipWhile.skipWhileWithIndex(this, predicate));
+        return lift(new OperatorSkipWhile<T>(predicate));
     }
 
     /**
