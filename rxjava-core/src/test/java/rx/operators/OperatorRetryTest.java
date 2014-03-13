@@ -18,7 +18,6 @@ package rx.operators;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
-import static rx.operators.OperatorRetry.*;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -26,6 +25,7 @@ import org.junit.Test;
 import org.mockito.InOrder;
 
 import rx.Observable;
+import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.functions.Action1;
@@ -130,7 +130,7 @@ public class OperatorRetryTest {
             return Subscriptions.empty();
         }
     }
-    
+
     @Test
     public void testUnsubscribeFromRetry() {
         PublishSubject<Integer> subject = PublishSubject.create();
@@ -139,10 +139,44 @@ public class OperatorRetryTest {
             @Override
             public void call(Integer n) {
                 count.incrementAndGet();
-            }});
+            }
+        });
         subject.onNext(1);
         sub.unsubscribe();
         subject.onNext(2);
-        assertEquals(1,count.get());
+        assertEquals(1, count.get());
+    }
+
+    @Test
+    public void testRetryAllowsSubscriptionAfterAllSubscriptionsUnsubsribed() throws InterruptedException {
+        final AtomicInteger subsCount = new AtomicInteger(0);
+        OnSubscribeFunc<String> onSubscribe = new OnSubscribeFunc<String>() {
+            @Override
+            public Subscription onSubscribe(Observer<? super String> observer) {
+                subsCount.incrementAndGet();
+                return new Subscription() {
+                    boolean unsubscribed = false;
+
+                    @Override
+                    public void unsubscribe() {
+                        subsCount.decrementAndGet();
+                        unsubscribed = true;
+                    }
+
+                    @Override
+                    public boolean isUnsubscribed() {
+                        return unsubscribed;
+                    }
+                };
+            }
+        };
+        Observable<String> stream = Observable.create(onSubscribe);
+        Observable<String> streamWithRetry = stream.retry();
+        Subscription sub = streamWithRetry.subscribe();
+        assertEquals(1, subsCount.get());
+        sub.unsubscribe();
+        assertEquals(0, subsCount.get());
+        streamWithRetry.subscribe();
+        assertEquals(1, subsCount.get());
     }
 }
