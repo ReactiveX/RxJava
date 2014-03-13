@@ -52,7 +52,7 @@ import rx.observers.SafeSubscriber;
 import rx.operators.OnSubscribeFromIterable;
 import rx.operators.OnSubscribeRange;
 import rx.operators.OperationAll;
-import rx.operators.OperationAmb;
+import rx.operators.OperatorAmb;
 import rx.operators.OperationAny;
 import rx.operators.OperationAsObservable;
 import rx.operators.OperationAverage;
@@ -300,7 +300,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229115.aspx">MSDN: Observable.Amb</a>
      */
     public final static <T> Observable<T> amb(Iterable<? extends Observable<? extends T>> sources) {
-        return create(OperationAmb.amb(sources));
+        return create(OperatorAmb.amb(sources));
     }
 
     /**
@@ -318,7 +318,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229733.aspx">MSDN: Observable.Amb</a>
      */
     public final static <T> Observable<T> amb(Observable<? extends T> o1, Observable<? extends T> o2) {
-        return create(OperationAmb.amb(o1, o2));
+        return create(OperatorAmb.amb(o1, o2));
     }
 
     /**
@@ -338,7 +338,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229733.aspx">MSDN: Observable.Amb</a>
      */
     public final static <T> Observable<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3) {
-        return create(OperationAmb.amb(o1, o2, o3));
+        return create(OperatorAmb.amb(o1, o2, o3));
     }
 
     /**
@@ -360,7 +360,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229733.aspx">MSDN: Observable.Amb</a>
      */
     public final static <T> Observable<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4) {
-        return create(OperationAmb.amb(o1, o2, o3, o4));
+        return create(OperatorAmb.amb(o1, o2, o3, o4));
     }
 
     /**
@@ -384,7 +384,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229733.aspx">MSDN: Observable.Amb</a>
      */
     public final static <T> Observable<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4, Observable<? extends T> o5) {
-        return create(OperationAmb.amb(o1, o2, o3, o4, o5));
+        return create(OperatorAmb.amb(o1, o2, o3, o4, o5));
     }
 
     /**
@@ -410,7 +410,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229733.aspx">MSDN: Observable.Amb</a>
      */
     public final static <T> Observable<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4, Observable<? extends T> o5, Observable<? extends T> o6) {
-        return create(OperationAmb.amb(o1, o2, o3, o4, o5, o6));
+        return create(OperatorAmb.amb(o1, o2, o3, o4, o5, o6));
     }
 
     /**
@@ -438,7 +438,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229733.aspx">MSDN: Observable.Amb</a>
      */
     public final static <T> Observable<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4, Observable<? extends T> o5, Observable<? extends T> o6, Observable<? extends T> o7) {
-        return create(OperationAmb.amb(o1, o2, o3, o4, o5, o6, o7));
+        return create(OperatorAmb.amb(o1, o2, o3, o4, o5, o6, o7));
     }
 
     /**
@@ -468,7 +468,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229733.aspx">MSDN: Observable.Amb</a>
      */
     public final static <T> Observable<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4, Observable<? extends T> o5, Observable<? extends T> o6, Observable<? extends T> o7, Observable<? extends T> o8) {
-        return create(OperationAmb.amb(o1, o2, o3, o4, o5, o6, o7, o8));
+        return create(OperatorAmb.amb(o1, o2, o3, o4, o5, o6, o7, o8));
     }
 
     /**
@@ -500,7 +500,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229733.aspx">MSDN: Observable.Amb</a>
      */
     public final static <T> Observable<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4, Observable<? extends T> o5, Observable<? extends T> o6, Observable<? extends T> o7, Observable<? extends T> o8, Observable<? extends T> o9) {
-        return create(OperationAmb.amb(o1, o2, o3, o4, o5, o6, o7, o8, o9));
+        return create(OperatorAmb.amb(o1, o2, o3, o4, o5, o6, o7, o8, o9));
     }
 
     /**
