@@ -564,4 +564,13 @@ class RxScalaDemo extends JUnitSuite {
     println(result)
   }
 
+  @Test def elementAtExample(): Unit = {
+    val o = List("red", "green", "blue").toObservable
+    println(o(2).toBlockingObservable.single)
+  }
+
+  @Test def elementAtOrDefaultExample(): Unit = {
+    val o : Observable[Seq[Char]] = List("red".toList, "green".toList, "blue".toList).toObservable.elementAtOrDefault(3, "black".toSeq)
+    println(o.toBlockingObservable.single)
+  }
 }

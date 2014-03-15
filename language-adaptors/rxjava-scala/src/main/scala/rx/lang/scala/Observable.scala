@@ -2305,6 +2305,65 @@ trait Observable[+T]
   def delaySubscription(delay: Duration, scheduler: Scheduler): Observable[T] = {
     toScalaObservable[T](asJavaObservable.delaySubscription(delay.length, delay.unit, scheduler))
   }
+
+  /**
+   * Returns an Observable that emits the single item at a specified index in a sequence of emissions from a
+   * source Observbable.
+   * 
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/elementAt.png">
+   * 
+   * @param index
+   *            the zero-based index of the item to retrieve
+   * @return an Observable that emits a single item: the item at the specified position in the sequence of
+   *         those emitted by the source Observable
+   * @throws IndexOutOfBoundsException
+   *             if index is greater than or equal to the number of items emitted by the source
+   *             Observable
+   * @throws IndexOutOfBoundsException
+   *             if index is less than 0
+   * @see `Observable.elementAt`
+   */
+  def apply(index: Int): Observable[T] = elementAt(index)
+
+  /**
+   * Returns an Observable that emits the single item at a specified index in a sequence of emissions from a
+   * source Observbable.
+   * 
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/elementAt.png">
+   * 
+   * @param index
+   *            the zero-based index of the item to retrieve
+   * @return an Observable that emits a single item: the item at the specified position in the sequence of
+   *         those emitted by the source Observable
+   * @throws IndexOutOfBoundsException
+   *             if index is greater than or equal to the number of items emitted by the source
+   *             Observable
+   * @throws IndexOutOfBoundsException
+   *             if index is less than 0
+   */
+  def elementAt(index: Int): Observable[T] = {
+    toScalaObservable[T](asJavaObservable.elementAt(index))
+  }
+
+  /**
+   * Returns an Observable that emits the item found at a specified index in a sequence of emissions from a
+   * source Observable, or a default item if that index is out of range.
+   * 
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/elementAtOrDefault.png">
+   * 
+   * @param index
+   *            the zero-based index of the item to retrieve
+   * @param defaultValue
+   *            the default item
+   * @return an Observable that emits the item at the specified position in the sequence emitted by the source
+   *         Observable, or the default item if that index is outside the bounds of the source sequence
+   * @throws IndexOutOfBoundsException
+   *             if {@code index} is less than 0
+   */
+  def elementAtOrDefault[U >: T](index: Int, default: U): Observable[U] = {
+    val thisJava = asJavaObservable.asInstanceOf[rx.Observable[U]]
+    toScalaObservable[U](thisJava.elementAtOrDefault(index, default))
+  }
 }
 
 /**
