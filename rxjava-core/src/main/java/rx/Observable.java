@@ -66,7 +66,7 @@ import rx.operators.OperationDelay;
 import rx.operators.OperationDematerialize;
 import rx.operators.OperationDistinct;
 import rx.operators.OperationDistinctUntilChanged;
-import rx.operators.OperationElementAt;
+import rx.operators.OperatorElementAt;
 import rx.operators.OperationFinally;
 import rx.operators.OperationFlatMap;
 import rx.operators.OperationGroupByUntil;
@@ -4466,7 +4466,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#wiki-elementat">RxJava Wiki: elementAt()</a>
      */
     public final Observable<T> elementAt(int index) {
-        return create(OperationElementAt.elementAt(this, index));
+        return create(new OperatorElementAt<T>(this, index));
     }
 
     /**
@@ -4486,7 +4486,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#wiki-elementatordefault">RxJava Wiki: elementAtOrDefault()</a>
      */
     public final Observable<T> elementAtOrDefault(int index, T defaultValue) {
-        return create(OperationElementAt.elementAtOrDefault(this, index, defaultValue));
+        return create(new OperatorElementAt<T>(this, index, defaultValue));
     }
 
     /**
