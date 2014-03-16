@@ -86,7 +86,7 @@ import rx.operators.OperationParallelMerge;
 import rx.operators.OperationReplay;
 import rx.operators.OperationSample;
 import rx.operators.OperationSequenceEqual;
-import rx.operators.OperationSingle;
+import rx.operators.OperatorSingle;
 import rx.operators.OperationSkip;
 import rx.operators.OperationSkipLast;
 import rx.operators.OperationSkipUntil;
@@ -6216,7 +6216,7 @@ public class Observable<T> {
      * @see "MSDN: Observable.singleAsync()"
      */
     public final Observable<T> single() {
-        return create(OperationSingle.<T> single(this));
+        return lift(new OperatorSingle<T>());
     }
 
     /**
@@ -6257,7 +6257,7 @@ public class Observable<T> {
      * @see "MSDN: Observable.singleOrDefaultAsync()"
      */
     public final Observable<T> singleOrDefault(T defaultValue) {
-        return create(OperationSingle.<T> singleOrDefault(this, defaultValue));
+        return lift(new OperatorSingle<T>(defaultValue));
     }
 
     /**

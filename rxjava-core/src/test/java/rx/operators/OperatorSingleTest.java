@@ -25,7 +25,7 @@ import rx.Observable;
 import rx.Observer;
 import rx.functions.Func1;
 
-public class OperationSingleTest {
+public class OperatorSingleTest {
 
     @Test
     public void testSingle() {
