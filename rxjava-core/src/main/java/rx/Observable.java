@@ -4466,7 +4466,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#wiki-elementat">RxJava Wiki: elementAt()</a>
      */
     public final Observable<T> elementAt(int index) {
-        return create(new OperatorElementAt<T>(this, index));
+        return lift(new OperatorElementAt<T>(index));
     }
 
     /**
@@ -4486,7 +4486,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#wiki-elementatordefault">RxJava Wiki: elementAtOrDefault()</a>
      */
     public final Observable<T> elementAtOrDefault(int index, T defaultValue) {
-        return create(new OperatorElementAt<T>(this, index, defaultValue));
+        return lift(new OperatorElementAt<T>(index, defaultValue));
     }
 
     /**

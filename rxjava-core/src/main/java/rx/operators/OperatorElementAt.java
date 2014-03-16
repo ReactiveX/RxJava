@@ -15,41 +15,38 @@
  */
 package rx.operators;
 
-import rx.Observable;
-import rx.Observable.OnSubscribe;
+import rx.Observable.Operator;
 import rx.Subscriber;
 
 /**
  * Returns the element at a specified index in a sequence.
  */
-public final class OperatorElementAt<T> implements OnSubscribe<T> {
+public final class OperatorElementAt<T> implements Operator<T, T> {
 
-    private final Observable<? extends T> source;
     private final int index;
     private final boolean hasDefault;
     private final T defaultValue;
 
-    public OperatorElementAt(Observable<? extends T> source, int index) {
-        this(source, index, null, false);
+    public OperatorElementAt(int index) {
+        this(index, null, false);
     }
 
-    public OperatorElementAt(Observable<? extends T> source, int index, T defaultValue) {
-        this(source, index, defaultValue, true);
+    public OperatorElementAt(int index, T defaultValue) {
+        this(index, defaultValue, true);
     }
 
-    private OperatorElementAt(Observable<? extends T> source, int index, T defaultValue, boolean hasDefault) {
+    private OperatorElementAt(int index, T defaultValue, boolean hasDefault) {
         if (index < 0) {
             throw new IndexOutOfBoundsException(index + " is out of bounds");
         }
-        this.source = source;
         this.index = index;
         this.defaultValue = defaultValue;
         this.hasDefault = hasDefault;
     }
 
     @Override
-    public void call(final Subscriber<? super T> subscriber) {
-        source.subscribe(new Subscriber<T>(subscriber) {
+    public Subscriber<? super T> call(final Subscriber<? super T> subscriber) {
+        return new Subscriber<T>(subscriber) {
 
             private int currentIndex = 0;
 
@@ -79,6 +76,7 @@ public final class OperatorElementAt<T> implements OnSubscribe<T> {
                     }
                 }
             }
-        });
+        };
     }
+
 }
