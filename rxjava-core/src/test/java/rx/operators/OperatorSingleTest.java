@@ -18,6 +18,8 @@ package rx.operators;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
+import java.util.NoSuchElementException;
+
 import org.junit.Test;
 import org.mockito.InOrder;
 
@@ -65,7 +67,7 @@ public class OperatorSingleTest {
 
         InOrder inOrder = inOrder(observer);
         inOrder.verify(observer, times(1)).onError(
-                isA(IllegalArgumentException.class));
+                isA(NoSuchElementException.class));
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -127,7 +129,7 @@ public class OperatorSingleTest {
 
         InOrder inOrder = inOrder(observer);
         inOrder.verify(observer, times(1)).onError(
-                isA(IllegalArgumentException.class));
+                isA(NoSuchElementException.class));
         inOrder.verifyNoMoreInteractions();
     }
 

@@ -15,9 +15,13 @@
  */
 package rx.operators;
 
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.isA;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+
+import java.util.NoSuchElementException;
 
 import org.junit.Test;
 import org.mockito.InOrder;
@@ -34,7 +38,7 @@ public class OperationLastTest {
         assertEquals(3, last.toBlockingObservable().single().intValue());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NoSuchElementException.class)
     public void testLastWithNoElements() {
         Observable<?> last = Observable.empty().last();
         last.toBlockingObservable().single();
@@ -90,7 +94,7 @@ public class OperationLastTest {
 
         InOrder inOrder = inOrder(observer);
         inOrder.verify(observer, times(1)).onError(
-                isA(IllegalArgumentException.class));
+                isA(NoSuchElementException.class));
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -152,7 +156,7 @@ public class OperationLastTest {
 
         InOrder inOrder = inOrder(observer);
         inOrder.verify(observer, times(1)).onError(
-                isA(IllegalArgumentException.class));
+                isA(NoSuchElementException.class));
         inOrder.verifyNoMoreInteractions();
     }
 

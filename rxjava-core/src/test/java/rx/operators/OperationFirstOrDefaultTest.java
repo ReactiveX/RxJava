@@ -19,6 +19,8 @@ import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.*;
 
+import java.util.NoSuchElementException;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InOrder;
@@ -127,7 +129,7 @@ public class OperationFirstOrDefaultTest {
 
         InOrder inOrder = inOrder(observer);
         inOrder.verify(observer, times(1)).onError(
-                isA(IllegalArgumentException.class));
+                isA(NoSuchElementException.class));
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -189,7 +191,7 @@ public class OperationFirstOrDefaultTest {
 
         InOrder inOrder = inOrder(observer);
         inOrder.verify(observer, times(1)).onError(
-                isA(IllegalArgumentException.class));
+                isA(NoSuchElementException.class));
         inOrder.verifyNoMoreInteractions();
     }
 

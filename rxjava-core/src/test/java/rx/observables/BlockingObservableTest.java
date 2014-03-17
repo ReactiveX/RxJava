@@ -52,7 +52,7 @@ public class BlockingObservableTest {
         assertEquals("three", obs.last());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NoSuchElementException.class)
     public void testLastEmptyObservable() {
         BlockingObservable<Object> obs = BlockingObservable.from(Observable.empty());
         obs.last();
@@ -175,7 +175,7 @@ public class BlockingObservableTest {
         observable.single();
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NoSuchElementException.class)
     public void testSingleWrongPredicate() {
         BlockingObservable<Integer> observable = BlockingObservable.from(Observable.from(-1));
         observable.single(new Func1<Integer, Boolean>() {
@@ -319,7 +319,7 @@ public class BlockingObservableTest {
         assertEquals("one", observable.first());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NoSuchElementException.class)
     public void testFirstWithEmpty() {
         BlockingObservable.from(Observable.<String> empty()).first();
     }
@@ -336,7 +336,7 @@ public class BlockingObservableTest {
         assertEquals("three", first);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NoSuchElementException.class)
     public void testFirstWithPredicateAndEmpty() {
         BlockingObservable<String> observable = BlockingObservable.from(Observable.from("one", "two", "three"));
         observable.first(new Func1<String, Boolean>() {

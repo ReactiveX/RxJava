@@ -4545,12 +4545,12 @@ public class Observable<T> {
 
     /**
      * Returns an Observable that emits only the very first item emitted by the source Observable, or raises an
-     * {@code IllegalArgumentException} if the source Observable is empty.
+     * {@code NoSuchElementException} if the source Observable is empty.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/first.png">
      * 
      * @return an Observable that emits only the very first item emitted by the source Observable, or raises an
-     *         {@code IllegalArgumentException} if the source Observable is empty
+     *         {@code NoSuchElementException} if the source Observable is empty
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#wiki-first">RxJava Wiki: first()</a>
      * @see "MSDN: Observable.firstAsync()"
      */
@@ -4560,14 +4560,14 @@ public class Observable<T> {
 
     /**
      * Returns an Observable that emits only the very first item emitted by the source Observable that satisfies
-     * a specified condition, or raises an {@code IllegalArgumentException} if no such items are emitted.
+     * a specified condition, or raises an {@code NoSuchElementException} if no such items are emitted.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/firstN.png">
      * 
      * @param predicate
      *            the condition that an item emitted by the source Observable has to satisfy
      * @return an Observable that emits only the very first item emitted by the source Observable that satisfies
-     *         the {@code predicate}, or raises an {@code IllegalArgumentException} if no such items are emitted
+     *         the {@code predicate}, or raises an {@code NoSuchElementException} if no such items are emitted
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#wiki-first">RxJava Wiki: first()</a>
      * @see "MSDN: Observable.firstAsync()"
      */
@@ -4778,7 +4778,7 @@ public class Observable<T> {
 
     /**
      * Returns an Observable that emits the last item emitted by the source Observable or notifies observers of
-     * an {@code IllegalArgumentException} if the source Observable is empty.
+     * an {@code NoSuchElementException} if the source Observable is empty.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/last.png">
      * 
@@ -4793,14 +4793,14 @@ public class Observable<T> {
 
     /**
      * Returns an Observable that emits only the last item emitted by the source Observable that satisfies a
-     * given condition, or an {@code IllegalArgumentException} if no such items are emitted.
+     * given condition, or an {@code NoSuchElementException} if no such items are emitted.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/last.p.png">
      * 
      * @param predicate
      *            the condition any source emitted item has to satisfy
      * @return an Observable that emits only the last item satisfying the given condition from the source, or an
-     *         {@code IllegalArgumentException} if no such items are emitted
+     *         {@code NoSuchElementException} if no such items are emitted
      * @throws IllegalArgumentException
      *             if no items that match the predicate are emitted by the source Observable
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observable-Operators#wiki-last">RxJava Wiki: last()</a>
@@ -6205,13 +6205,15 @@ public class Observable<T> {
     /**
      * If the source Observable completes after emitting a single item, return an Observable that emits that
      * item. If the source Observable emits more than one item or no items, throw an
-     * {@code IllegalArgumentException}.
+     * {@code NoSuchElementException}.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/single.png">
      * 
      * @return an Observable that emits the single item emitted by the source Observable
      * @throws IllegalArgumentException
-     *             if the source emits more than one item or no items
+     *             if the source emits more than one item
+     * @throws NoSuchElementException
+     *             if the source emits no items
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#wiki-single-and-singleordefault">RxJava Wiki: single()</a>
      * @see "MSDN: Observable.singleAsync()"
      */
@@ -6222,7 +6224,7 @@ public class Observable<T> {
     /**
      * If the Observable completes after emitting a single item that matches a specified predicate, return an
      * Observable that emits that item. If the source Observable emits more than one such item or no such items,
-     * throw an {@code IllegalArgumentException}.
+     * throw an {@code NoSuchElementException}.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/single.p.png">
      * 
@@ -6231,8 +6233,9 @@ public class Observable<T> {
      * @return an Observable that emits the single item emitted by the source Observable that matches the
      *         predicate
      * @throws IllegalArgumentException
-     *             if the source Observable emits either more than one item that matches the predicate or no
-     *             items that match the predicate
+     *             if the source Observable emits more than one item that matches the predicate
+     * @throws NoSuchElementException
+     *             if the source Observable emits no item that matches the predicate
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#wiki-single-and-singleordefault">RxJava Wiki: single()</a>
      * @see "MSDN: Observable.singleAsync()"
      */

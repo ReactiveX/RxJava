@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 import org.junit.Test;
 
@@ -100,9 +101,9 @@ public class ZipTests {
      * Occasionally zip may be invoked with 0 observables. Test that we don't block indefinitely instead
      * of immediately invoking zip with 0 argument.
      * 
-     * We now expect an IllegalArgumentException since last() requires at least one value and nothing will be emitted.
+     * We now expect an NoSuchElementException since last() requires at least one value and nothing will be emitted.
      */
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NoSuchElementException.class)
     public void nonBlockingObservable() {
 
         final Object invoked = new Object();

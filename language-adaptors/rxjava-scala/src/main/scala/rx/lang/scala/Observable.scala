@@ -1950,12 +1950,12 @@ trait Observable[+T]
 
   /**
    * Returns an Observable that emits only the very first item emitted by the source Observable, or raises an
-   * `IllegalArgumentException` if the source Observable is empty.
+   * `NoSuchElementException` if the source Observable is empty.
    * <p>
    * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/first.png">
    * 
    * @return an Observable that emits only the very first item emitted by the source Observable, or raises an
-   *         `IllegalArgumentException` if the source Observable is empty
+   *         `NoSuchElementException` if the source Observable is empty
    * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#wiki-first">RxJava Wiki: first()</a>
    * @see "MSDN: Observable.firstAsync()"
    */
@@ -1965,12 +1965,12 @@ trait Observable[+T]
 
   /**
    * Returns an Observable that emits only the very first item emitted by the source Observable, or raises an
-   * `IllegalArgumentException` if the source Observable is empty.
+   * `NoSuchElementException` if the source Observable is empty.
    * <p>
    * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/first.png">
    * 
    * @return an Observable that emits only the very first item emitted by the source Observable, or raises an
-   *         `IllegalArgumentException` if the source Observable is empty
+   *         `NoSuchElementException` if the source Observable is empty
    * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#wiki-first">RxJava Wiki: first()</a>
    * @see "MSDN: Observable.firstAsync()"
    * @see [[Observable.first]]
@@ -1979,7 +1979,7 @@ trait Observable[+T]
   
   /**
    * Returns an Observable that emits the last item emitted by the source Observable or notifies observers of
-   * an `IllegalArgumentException` if the source Observable is empty.
+   * an `NoSuchElementException` if the source Observable is empty.
    * 
    * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/last.png">
    * 
@@ -1994,12 +1994,12 @@ trait Observable[+T]
 
   /**
    * If the source Observable completes after emitting a single item, return an Observable that emits that
-   * item. If the source Observable emits more than one item or no items, throw an `IllegalArgumentException`.
+   * item. If the source Observable emits more than one item or no items, throw an `NoSuchElementException`.
    * 
    * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/single.png">
    * 
    * @return an Observable that emits the single item emitted by the source Observable
-   * @throws IllegalArgumentException
+   * @throws NoSuchElementException
    *             if the source emits more than one item or no items
    * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#wiki-single-and-singleordefault">RxJava Wiki: single()</a>
    * @see "MSDN: Observable.singleAsync()"

@@ -55,12 +55,12 @@ class BlockingObservable[+T] private[scala] (val asJava: rx.observables.Blocking
 
   /**
    * Returns the last item emitted by a specified [[Observable]], or
-   * throws `IllegalArgumentException` if it emits no items.
+   * throws `NoSuchElementException` if it emits no items.
    * 
    * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.last.png">
    * 
    * @return the last item emitted by the source [[Observable]]
-   * @throws IllegalArgumentException
+   * @throws NoSuchElementException
    *             if source contains no elements
    * @see <a href="https://github.com/Netflix/RxJava/wiki/Blocking-Observable-Operators#last-and-lastordefault">RxJava Wiki: last()</a>
    * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.last.aspx">MSDN: Observable.Last</a>
@@ -71,10 +71,10 @@ class BlockingObservable[+T] private[scala] (val asJava: rx.observables.Blocking
 
   /**
    * Returns the first item emitted by a specified [[Observable]], or
-   * `IllegalArgumentException` if source contains no elements.
+   * `NoSuchElementException` if source contains no elements.
    * 
    * @return the first item emitted by the source [[Observable]]
-   * @throws IllegalArgumentException
+   * @throws NoSuchElementException
    *             if source contains no elements
    * @see <a href="https://github.com/Netflix/RxJava/wiki/Blocking-Observable-Operators#first-and-firstordefault">RxJava Wiki: first()</a>
    * @see <a href="http://msdn.microsoft.com/en-us/library/hh229177.aspx">MSDN: Observable.First</a>
@@ -85,10 +85,10 @@ class BlockingObservable[+T] private[scala] (val asJava: rx.observables.Blocking
 
   /**
    * Returns the first item emitted by a specified [[Observable]], or
-   * `IllegalArgumentException` if source contains no elements.
+   * `NoSuchElementException` if source contains no elements.
    * 
    * @return the first item emitted by the source [[Observable]]
-   * @throws IllegalArgumentException
+   * @throws NoSuchElementException
    *             if source contains no elements
    * @see <a href="https://github.com/Netflix/RxJava/wiki/Blocking-Observable-Operators#first-and-firstordefault">RxJava Wiki: first()</a>
    * @see <a href="http://msdn.microsoft.com/en-us/library/hh229177.aspx">MSDN: Observable.First</a>

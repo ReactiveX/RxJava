@@ -15,6 +15,8 @@
  */
 package rx.operators;
 
+import java.util.NoSuchElementException;
+
 import rx.Observable.Operator;
 import rx.Subscriber;
 
@@ -73,7 +75,7 @@ public final class OperatorSingle<T> implements Operator<T, T> {
                             subscriber.onNext(defaultValue);
                             subscriber.onCompleted();
                         } else {
-                            subscriber.onError(new IllegalArgumentException("Sequence contains no elements"));
+                            subscriber.onError(new NoSuchElementException("Sequence contains no elements"));
                         }
                     }
                 }
