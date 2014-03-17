@@ -30,7 +30,7 @@ import rx.Observable;
 import rx.Observer;
 import rx.functions.Func1;
 
-public class OperationFirstOrDefaultTest {
+public class OperatorFirstTest {
 
     @Mock
     Observer<String> w;

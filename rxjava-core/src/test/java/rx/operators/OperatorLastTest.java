@@ -30,7 +30,7 @@ import rx.Observable;
 import rx.Observer;
 import rx.functions.Func1;
 
-public class OperationLastTest {
+public class OperatorLastTest {
 
     @Test
     public void testLastWithElements() {
