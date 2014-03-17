@@ -36,7 +36,7 @@
   (testing "returns one element"
     (is (= 1 (b/single (rx/return 1)))))
   (testing "throw if empty"
-    (is (thrown? java.lang.IllegalArgumentException (b/single (rx/empty)))))
+    (is (thrown? java.util.NoSuchElementException (b/single (rx/empty)))))
   (testing "throw if many"
     (is (thrown? java.lang.IllegalArgumentException (b/single (rx/seq->o [1 2])))))
   (testing "rethrows errors"
