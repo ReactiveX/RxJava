@@ -17,6 +17,7 @@ package rx.operators;
 
 import java.util.LinkedList;
 import java.util.Queue;
+
 import rx.Subscriber;
 import rx.subscriptions.CompositeSubscription;
 
@@ -36,21 +37,8 @@ public class BufferUntilSubscriber<T> extends Subscriber<T> {
     private final Queue<Object> queue = new LinkedList<Object>();
     /** The queue capacity. */
     private final int capacity;
-    /** Null sentinel (in case queue type is changed). */
-    private static final Object NULL_SENTINEL = new Object();
-    /** Complete sentinel. */
-    private static final Object COMPLETE_SENTINEL = new Object();
-    /**
-     * Container for an onError event.
-     */
-    private static final class ErrorSentinel {
-        final Throwable t;
+    private final NotificationLite<T> on = NotificationLite.instance();
 
-        public ErrorSentinel(Throwable t) {
-            this.t = t;
-        }
-        
-    }
     /**
      * Constructor that wraps the actual subscriber and shares its subscription.
      * @param capacity the queue capacity to accept before blocking, negative value indicates an unbounded queue
@@ -85,22 +73,7 @@ public class BufferUntilSubscriber<T> extends Subscriber<T> {
                     while (!queue.isEmpty()) {
                         Object o = queue.poll();
                         if (!actual.isUnsubscribed()) {
-                            if (o == NULL_SENTINEL) {
-                                actual.onNext(null);
-                            } else
-                            if (o == COMPLETE_SENTINEL) {
-                                actual.onCompleted();
-                            } else
-                            if (o instanceof ErrorSentinel) {
-                                actual.onError(((ErrorSentinel)o).t);
-                            } else
-                            if (o != null) {
-                                @SuppressWarnings("unchecked")
-                                T v = (T)o;
-                                actual.onNext(v);
-                            } else {
-                                throw new NullPointerException();
-                            }
+                            on.accept(actual, o);
                         }
                     }
                     passthroughMode = true;
@@ -115,7 +88,7 @@ public class BufferUntilSubscriber<T> extends Subscriber<T> {
             synchronized (gate) {
                 if (!passthroughMode) {
                     if (capacity < 0 || queue.size() < capacity) {
-                        queue.offer(t != null ? t : NULL_SENTINEL);
+                        queue.offer(on.next(t));
                         return;
                     }
                     try {
@@ -142,7 +115,7 @@ public class BufferUntilSubscriber<T> extends Subscriber<T> {
             synchronized (gate) {
                 if (!passthroughMode) {
                     if (capacity < 0 || queue.size() < capacity) {
-                        queue.offer(new ErrorSentinel(e));
+                        queue.offer(on.error(e));
                         return;
                     }
                     try {
@@ -169,7 +142,7 @@ public class BufferUntilSubscriber<T> extends Subscriber<T> {
             synchronized (gate) {
                 if (!passthroughMode) {
                     if (capacity < 0 || queue.size() < capacity) {
-                        queue.offer(COMPLETE_SENTINEL);
+                        queue.offer(on.completed());
                         return;
                     }
                     try {

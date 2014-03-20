@@ -2,7 +2,11 @@ package rx.observers;
 
 import java.util.ArrayList;
 
+import javax.management.NotificationListener;
+
+import rx.Notification;
 import rx.Observer;
+import rx.operators.NotificationLite;
 
 /**
  * Enforce single-threaded, serialized, ordered execution of onNext, onCompleted, onError.
@@ -22,21 +26,7 @@ public class SerializedObserver<T> implements Observer<T> {
     private boolean emitting = false;
     private boolean terminated = false;
     private ArrayList<Object> queue = new ArrayList<Object>();
-
-    private static Sentinel NULL_SENTINEL = new Sentinel();
-    private static Sentinel COMPLETE_SENTINEL = new Sentinel();
-
-    private static class Sentinel {
-
-    }
-
-    private static class ErrorSentinel extends Sentinel {
-        final Throwable e;
-
-        ErrorSentinel(Throwable e) {
-            this.e = e;
-        }
-    }
+    private NotificationLite<T> on = NotificationLite.instance();
 
     public SerializedObserver(Observer<? super T> s) {
         this.actual = s;
@@ -61,7 +51,7 @@ public class SerializedObserver<T> implements Observer<T> {
                 }
             } else {
                 // someone else is already emitting so just queue it
-                queue.add(COMPLETE_SENTINEL);
+                queue.add(on.completed());
             }
         }
         if (canEmit) {
@@ -97,7 +87,7 @@ public class SerializedObserver<T> implements Observer<T> {
             } else {
                 // someone else is already emitting so just queue it ... after eliminating the queue to shortcut
                 queue.clear();
-                queue.add(new ErrorSentinel(e));
+                queue.add(on.error(e));
             }
         }
         if (canEmit) {
@@ -131,11 +121,7 @@ public class SerializedObserver<T> implements Observer<T> {
                 }
             } else {
                 // someone else is already emitting so just queue it
-                if (t == null) {
-                    queue.add(NULL_SENTINEL);
-                } else {
-                    queue.add(t);
-                }
+                queue.add(on.next(t));
             }
         }
         if (canEmit) {
@@ -168,19 +154,7 @@ public class SerializedObserver<T> implements Observer<T> {
             return;
         }
         for (Object v : list) {
-            if (v != null) {
-                if (v instanceof Sentinel) {
-                    if (v == NULL_SENTINEL) {
-                        actual.onNext(null);
-                    } else if (v == COMPLETE_SENTINEL) {
-                        actual.onCompleted();
-                    } else if (v instanceof ErrorSentinel) {
-                        actual.onError(((ErrorSentinel) v).e);
-                    }
-                } else {
-                    actual.onNext((T) v);
-                }
-            }
+            on.accept(actual, v);
         }
     }
 }

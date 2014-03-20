@@ -32,17 +32,18 @@ import rx.subscriptions.Subscriptions;
 /**
  * Delivers events on the specified Scheduler.
  * <p>
- * This provides backpressure by blocking the incoming onNext when there is already one in the queue.
+ * This provides backpressure by blocking the incoming onNext when there is already one in the
+ * queue.
  * <p>
- * This means that at any given time the max number of "onNext" in flight is 3:
- * -> 1 being delivered on the Scheduler
- * -> 1 in the queue waiting for the Scheduler
- * -> 1 blocking on the queue waiting to deliver it
+ * This means that at any given time the max number of "onNext" in flight is 3: -> 1 being delivered
+ * on the Scheduler -> 1 in the queue waiting for the Scheduler -> 1 blocking on the queue waiting
+ * to deliver it
  * 
- * I have chosen to allow 1 in the queue rather than using an Exchanger style process so that the Scheduler
- * can loop and have something to do each time around to optimize for avoiding rescheduling when it
- * can instead just loop. I'm avoiding having the Scheduler thread ever block as it could be an event-loop
- * thus if the queue is empty it exits and next time something is added it will reschedule.
+ * I have chosen to allow 1 in the queue rather than using an Exchanger style process so that the
+ * Scheduler can loop and have something to do each time around to optimize for avoiding
+ * rescheduling when it can instead just loop. I'm avoiding having the Scheduler thread ever block
+ * as it could be an event-loop thus if the queue is empty it exits and next time something is added
+ * it will reschedule.
  * 
  * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/observeOn.png">
  */
@@ -97,16 +98,7 @@ public class OperatorObserveOnBounded<T> implements Operator<T, T> {
         }
     }
 
-    private static Object NULL_SENTINEL = new Object();
-    private static Object COMPLETE_SENTINEL = new Object();
-
-    private static class ErrorSentinel {
-        final Throwable e;
-
-        ErrorSentinel(Throwable e) {
-            this.e = e;
-        }
-    }
+    private final NotificationLite<T> on = NotificationLite.instance();
 
     /** Observe through individual queue per observer. */
     private class ObserveOnSubscriber extends Subscriber<T> {
@@ -126,11 +118,7 @@ public class OperatorObserveOnBounded<T> implements Operator<T, T> {
             try {
                 // we want to block for natural back-pressure
                 // so that the producer waits for each value to be consumed
-                if (t == null) {
-                    queue.addBlocking(NULL_SENTINEL);
-                } else {
-                    queue.addBlocking(t);
-                }
+                queue.addBlocking(on.next(t));
                 schedule();
             } catch (InterruptedException e) {
                 if (!isUnsubscribed()) {
@@ -144,7 +132,7 @@ public class OperatorObserveOnBounded<T> implements Operator<T, T> {
             try {
                 // we want to block for natural back-pressure
                 // so that the producer waits for each value to be consumed
-                queue.addBlocking(COMPLETE_SENTINEL);
+                queue.addBlocking(on.completed());
                 schedule();
             } catch (InterruptedException e) {
                 onError(e);
@@ -156,7 +144,7 @@ public class OperatorObserveOnBounded<T> implements Operator<T, T> {
             try {
                 // we want to block for natural back-pressure
                 // so that the producer waits for each value to be consumed
-                queue.addBlocking(new ErrorSentinel(e));
+                queue.addBlocking(on.error(e));
                 schedule();
             } catch (InterruptedException e2) {
                 // call directly if we can't schedule
@@ -205,26 +193,18 @@ public class OperatorObserveOnBounded<T> implements Operator<T, T> {
         private void pollQueue() {
             do {
                 Object v = queue.poll();
-                if (v != null) {
-                    if (v == NULL_SENTINEL) {
-                        observer.onNext(null);
-                    } else if (v == COMPLETE_SENTINEL) {
-                        observer.onCompleted();
-                    } else if (v instanceof ErrorSentinel) {
-                        observer.onError(((ErrorSentinel) v).e);
-                    } else {
-                        observer.onNext((T) v);
-                    }
-                }
+                on.accept(observer, v);
             } while (counter.decrementAndGet() > 0);
         }
 
     }
 
     /**
-     * Single-producer-single-consumer queue (only thread-safe for 1 producer thread with 1 consumer thread).
+     * Single-producer-single-consumer queue (only thread-safe for 1 producer thread with 1 consumer
+     * thread).
      * 
-     * This supports an interrupt() being called externally rather than needing to interrupt the thread. This allows
+     * This supports an interrupt() being called externally rather than needing to interrupt the
+     * thread. This allows
      * unsubscribe behavior when this queue is being used.
      * 
      * @param <E>
