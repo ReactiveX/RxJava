@@ -83,7 +83,7 @@ public final class TestSubject<T> extends Subject<T, T> {
                          */
                         lastNotification.get().accept(o);
                     }
-                });
+                }, null);
 
         return new TestSubject<T>(onSubscribe, subscriptionManager, lastNotification, scheduler);
     }
