@@ -15,152 +15,175 @@
  */
 package rx.operators;
 
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicReference;
 
+import rx.Observable;
+import rx.Observer;
 import rx.Subscriber;
-import rx.subscriptions.CompositeSubscription;
 
 /**
- * Buffers the incoming events until notified, then replays the
- * buffered events and continues as a simple pass-through subscriber.
- * @param <T> the streamed value type
+ * A solution to the "time gap" problem that occurs with `groupBy` and `pivot` => https://github.com/Netflix/RxJava/issues/844
+ * 
+ * This currently has temporary unbounded buffers. It needs to become bounded and then do one of two things:
+ * 
+ * 1) blow up and make the user do something about it
+ * 2) work with the backpressure solution ... still to be implemented (such as co-routines)
+ * 
+ * Generally the buffer should be very short lived (milliseconds) and then stops being involved.
+ * It can become a memory leak though if a GroupedObservable backed by this class is emitted but never subscribed to (such as filtered out).
+ * In that case, either a time-bomb to throw away the buffer, or just blowing up and making the user do something about it is needed.
+ * 
+ * For example, to filter out GroupedObservables, perhaps they need a silent `subscribe()` on them to just blackhole the data.
+ * 
+ * This is an initial start at solving this problem and solves the immediate problem of `groupBy` and `pivot` and trades off the possibility of memory leak for deterministic functionality.
+ *
+ * @param <T>
  */
-public class BufferUntilSubscriber<T> extends Subscriber<T> {
-    /** The actual subscriber. */
-    private final Subscriber<? super T> actual;
-    /** Indicate the pass-through mode. */
-    private volatile boolean passthroughMode;
-    /** Protect mode transition. */
-    private final Object gate = new Object();
-    /** The buffered items. */
-    private final Queue<Object> queue = new LinkedList<Object>();
-    /** The queue capacity. */
-    private final int capacity;
-    private final NotificationLite<T> on = NotificationLite.instance();
+public class BufferUntilSubscriber<T> extends Observable<T> implements Observer<T> {
 
-    /**
-     * Constructor that wraps the actual subscriber and shares its subscription.
-     * @param capacity the queue capacity to accept before blocking, negative value indicates an unbounded queue
-     * @param actual
-     */
-    public BufferUntilSubscriber(int capacity, Subscriber<? super T> actual) {
-        super(actual);
-        this.actual = actual;
-        this.capacity = capacity;
-    }
-    /**
-     * Constructor that wraps the actual subscriber and uses the given composite
-     * subscription.
-     * @param capacity the queue capacity to accept before blocking, negative value indicates an unbounded queue
-     * @param actual
-     * @param cs 
-     */
-    public BufferUntilSubscriber(int capacity, Subscriber<? super T> actual, CompositeSubscription cs) {
-        super(cs);
-        this.actual = actual;
-        this.capacity = capacity;
-    }
-    
-    /**
-     * Call this method to replay the buffered events and continue as a pass-through subscriber.
-     * If already in pass-through mode, this method is a no-op.
-     */
-    public void enterPassthroughMode() {
-        if (!passthroughMode) {
-            synchronized (gate) {
-                if (!passthroughMode) {
-                    while (!queue.isEmpty()) {
-                        Object o = queue.poll();
-                        if (!actual.isUnsubscribed()) {
-                            on.accept(actual, o);
-                        }
-                    }
-                    passthroughMode = true;
-                    gate.notifyAll();
-                }
-            }
-        }
-    }
-    @Override
-    public void onNext(T t) {
-        if (!passthroughMode) {
-            synchronized (gate) {
-                if (!passthroughMode) {
-                    if (capacity < 0 || queue.size() < capacity) {
-                        queue.offer(on.next(t));
-                        return;
-                    }
-                    try {
-                        while (!passthroughMode) {
-                            gate.wait();
-                        }
-                        if (actual.isUnsubscribed()) {
-                            return;
-                        }
-                    } catch (InterruptedException ex) {
-                        Thread.currentThread().interrupt();
-                        actual.onError(ex);
-                        return;
-                    }
-                }
-            }
-        }
-        actual.onNext(t);
+    public static <T> BufferUntilSubscriber<T> create() {
+        return new BufferUntilSubscriber<T>(new AtomicReference<Observer<? super T>>(new BufferedObserver<T>()));
     }
 
-    @Override
-    public void onError(Throwable e) {
-        if (!passthroughMode) {
-            synchronized (gate) {
-                if (!passthroughMode) {
-                    if (capacity < 0 || queue.size() < capacity) {
-                        queue.offer(on.error(e));
-                        return;
-                    }
-                    try {
-                        while (!passthroughMode) {
-                            gate.wait();
-                        }
-                        if (actual.isUnsubscribed()) {
-                            return;
-                        }
-                    } catch (InterruptedException ex) {
-                        Thread.currentThread().interrupt();
-                        actual.onError(ex);
-                        return;
-                    }
+    private final AtomicReference<Observer<? super T>> observerRef;
+
+    private BufferUntilSubscriber(final AtomicReference<Observer<? super T>> observerRef) {
+        super(new OnSubscribe<T>() {
+
+            @Override
+            public void call(Subscriber<? super T> s) {
+                // drain queued notifications before subscription
+                // we do this here before PassThruObserver so the consuming thread can do this before putting itself in the line of the producer
+                BufferedObserver<T> buffered = (BufferedObserver<T>) observerRef.get();
+                Object o = null;
+                while ((o = buffered.buffer.poll()) != null) {
+                    emit(s, o);
                 }
+                // register real observer for pass-thru ... and drain any further events received on first notification
+                observerRef.set(new PassThruObserver<T>(s, buffered.buffer, observerRef));
             }
-        }
-        actual.onError(e);
+
+        });
+        this.observerRef = observerRef;
     }
 
     @Override
     public void onCompleted() {
-        if (!passthroughMode) {
-            synchronized (gate) {
-                if (!passthroughMode) {
-                    if (capacity < 0 || queue.size() < capacity) {
-                        queue.offer(on.completed());
-                        return;
-                    }
-                    try {
-                        while (!passthroughMode) {
-                            gate.wait();
-                        }
-                        if (actual.isUnsubscribed()) {
-                            return;
-                        }
-                    } catch (InterruptedException ex) {
-                        Thread.currentThread().interrupt();
-                        actual.onError(ex);
-                        return;
-                    }
-                }
+        observerRef.get().onCompleted();
+    }
+
+    @Override
+    public void onError(Throwable e) {
+        observerRef.get().onError(e);
+    }
+
+    @Override
+    public void onNext(T t) {
+        observerRef.get().onNext(t);
+    }
+
+    /**
+     * This is a temporary observer between buffering and the actual that gets into the line of notifications
+     * from the producer and will drain the queue of any items received during the race of the initial drain and
+     * switching this.
+     * 
+     * It will then immediately swap itself out for the actual (after a single notification), but since this is now
+     * being done on the same producer thread no further buffering will occur.
+     */
+    private static class PassThruObserver<T> implements Observer<T> {
+
+        private final Observer<? super T> actual;
+        // this assumes single threaded synchronous notifications (the Rx contract for a single Observer)
+        private final ConcurrentLinkedQueue<Object> buffer;
+        private final AtomicReference<Observer<? super T>> observerRef;
+
+        PassThruObserver(Observer<? super T> actual, ConcurrentLinkedQueue<Object> buffer, AtomicReference<Observer<? super T>> observerRef) {
+            this.actual = actual;
+            this.buffer = buffer;
+            this.observerRef = observerRef;
+        }
+
+        @Override
+        public void onCompleted() {
+            drainIfNeededAndSwitchToActual();
+            actual.onCompleted();
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            drainIfNeededAndSwitchToActual();
+            actual.onError(e);
+        }
+
+        @Override
+        public void onNext(T t) {
+            drainIfNeededAndSwitchToActual();
+            actual.onNext(t);
+        }
+
+        private void drainIfNeededAndSwitchToActual() {
+            Object o = null;
+            while ((o = buffer.poll()) != null) {
+                emit(this, o);
+            }
+            // now we can safely change over to the actual and get rid of the pass-thru
+            observerRef.set(actual);
+        }
+
+    }
+
+    private static class BufferedObserver<T> implements Observer<T> {
+        private final ConcurrentLinkedQueue<Object> buffer = new ConcurrentLinkedQueue<Object>();
+
+        @Override
+        public void onCompleted() {
+            buffer.add(COMPLETE_SENTINEL);
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            buffer.add(new ErrorSentinel(e));
+        }
+
+        @Override
+        public void onNext(T t) {
+            if (t == null) {
+                buffer.add(NULL_SENTINEL);
+            } else {
+                buffer.add(t);
             }
         }
-        actual.onCompleted();
+
+    }
+
+    private final static <T> void emit(Observer<T> s, Object v) {
+        if (v instanceof Sentinel) {
+            if (v == NULL_SENTINEL) {
+                s.onNext(null);
+            } else if (v == COMPLETE_SENTINEL) {
+                s.onCompleted();
+            } else if (v instanceof ErrorSentinel) {
+                s.onError(((ErrorSentinel) v).e);
+            }
+        } else {
+            s.onNext((T) v);
+        }
+    }
+
+    private static class Sentinel {
+
+    }
+
+    private static Sentinel NULL_SENTINEL = new Sentinel();
+    private static Sentinel COMPLETE_SENTINEL = new Sentinel();
+
+    private static class ErrorSentinel extends Sentinel {
+        final Throwable e;
+
+        ErrorSentinel(Throwable e) {
+            this.e = e;
+        }
     }
 
 }
