@@ -15,7 +15,8 @@
  */
 package rx.operators;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -79,7 +80,7 @@ public class OperationParallelMergeTest {
                     }
                 });
 
-        assertEquals(3, threads.keySet().size());
+        assertTrue(threads.keySet().size() <= 3); // can be less than since merge doesn't block threads and may not use all of them
     }
 
     @Test
@@ -98,7 +99,7 @@ public class OperationParallelMergeTest {
                     }
                 });
 
-        assertEquals(3, threads.keySet().size());
+        assertTrue(threads.keySet().size() <= 3); // can be less than since merge doesn't block threads and may not use all of them
     }
 
     private static Observable<Observable<String>> getStreams() {

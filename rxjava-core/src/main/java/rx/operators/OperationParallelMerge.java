@@ -26,7 +26,7 @@ import rx.schedulers.Schedulers;
 public class OperationParallelMerge {
 
     public static <T> Observable<Observable<T>> parallelMerge(final Observable<Observable<T>> source, final int parallelObservables) {
-        return parallelMerge(source, parallelObservables, Schedulers.currentThread());
+        return parallelMerge(source, parallelObservables, Schedulers.immediate());
     }
 
     public static <T> Observable<Observable<T>> parallelMerge(final Observable<Observable<T>> source, final int parallelObservables, final Scheduler scheduler) {
