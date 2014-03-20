@@ -144,31 +144,36 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
 
     @Override
     public void onCompleted() {
+        Collection<SubjectObserver<? super T>> observers =
         subscriptionManager.terminate(new Action1<Collection<SubjectObserver<? super T>>>() {
 
             @Override
             public void call(Collection<SubjectObserver<? super T>> observers) {
-                lastNotification.set(new Notification<T>());
-                for (Observer<? super T> o : observers) {
-                    o.onCompleted();
-                }
+                lastNotification.set(Notification.<T>createOnCompleted());
             }
         });
+        if (observers != null) {
+            for (Observer<? super T> o : observers) {
+                o.onCompleted();
+            }
+        }
     }
 
     @Override
     public void onError(final Throwable e) {
+        Collection<SubjectObserver<? super T>> observers =
         subscriptionManager.terminate(new Action1<Collection<SubjectObserver<? super T>>>() {
 
             @Override
             public void call(Collection<SubjectObserver<? super T>> observers) {
-                lastNotification.set(new Notification<T>(e));
-                for (Observer<? super T> o : observers) {
-                    o.onError(e);
-                }
+                lastNotification.set(Notification.<T>createOnError(e));
             }
         });
-
+        if (observers != null) {
+            for (Observer<? super T> o : observers) {
+                o.onError(e);
+            }
+        }
     }
 
     @Override
@@ -176,7 +181,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
         // do not overwrite a terminal notification
         // so new subscribers can get them
         if (lastNotification.get().isOnNext()) {
-            lastNotification.set(new Notification<T>(v));
+            lastNotification.set(Notification.createOnNext(v));
             for (Observer<? super T> o : subscriptionManager.rawSnapshot()) {
                 o.onNext(v);
             }

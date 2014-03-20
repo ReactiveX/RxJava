@@ -18,10 +18,13 @@ package rx.operators;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import rx.Observable;
+import rx.Observable.OnSubscribe;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.subjects.ReplaySubject;
+import rx.subjects.Subject;
 
 /**
  * This method has similar behavior to {@link Observable#replay()} except that this auto-subscribes
@@ -35,30 +38,35 @@ import rx.subjects.ReplaySubject;
  * NOTE: You sacrifice the ability to unsubscribe from the origin when you use this operator, so be
  * careful not to use this operator on Observables that emit infinite or very large numbers of
  * items, as this will use up memory.
+ * 
+ * @param <T> the cached value type
  */
-public class OperationCache {
+public final class OperatorCache<T> implements OnSubscribe<T> {
+    protected final Observable<? extends T> source;
+    protected final Subject<? super T, ? extends T> cache;
+    protected final AtomicBoolean sourceSubscribed;
 
-    public static <T> OnSubscribeFunc<T> cache(final Observable<? extends T> source) {
-        return new OnSubscribeFunc<T>() {
+    public OperatorCache(Observable<? extends T> source) {
+        this(source, ReplaySubject.<T>create());
+    }
+    
+    /** Test support. */
+    public OperatorCache(Observable<? extends T> source, Subject<? super T, ? extends T> cache) {
+        this.source = source;
+        this.cache = cache;
+        this.sourceSubscribed = new AtomicBoolean();
+    }
 
-            final AtomicBoolean subscribed = new AtomicBoolean(false);
-            private final ReplaySubject<T> cache = ReplaySubject.create();
-
-            @Override
-            public Subscription onSubscribe(Observer<? super T> observer) {
-                if (subscribed.compareAndSet(false, true)) {
-                    // subscribe to the source once
-                    source.subscribe(cache);
-                    /*
-                     * Note that we will never unsubscribe from 'source' as we want to receive and cache all of its values.
-                     * 
-                     * This means this should never be used on an infinite or very large sequence, similar to toList().
-                     */
-                }
-
-                return cache.subscribe(observer);
-            }
-
-        };
+    @Override
+    public void call(Subscriber<? super T> t1) {
+        if (sourceSubscribed.compareAndSet(false, true)) {
+            source.subscribe(cache);
+            /*
+             * Note that we will never unsubscribe from 'source' as we want to receive and cache all of its values.
+             * 
+             * This means this should never be used on an infinite or very large sequence, similar to toList().
+             */
+        }
+        cache.subscribe(t1);
     }
 }
