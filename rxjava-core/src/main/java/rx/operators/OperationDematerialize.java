@@ -57,10 +57,12 @@ public final class OperationDematerialize {
             return sequence.subscribe(new Observer<Notification<? extends T>>() {
                 @Override
                 public void onCompleted() {
+                    observer.onCompleted();
                 }
 
                 @Override
                 public void onError(Throwable e) {
+                    observer.onError(e);
                 }
 
                 @Override
