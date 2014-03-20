@@ -66,7 +66,7 @@ public class TestObserverTest {
         oi.subscribe(o);
 
         thrown.expect(AssertionError.class);
-        thrown.expectMessage("Value at index: 1 expected to be [3] but was: [2]");
+        thrown.expectMessage("Value at index: 1 expected to be [3] (Integer) but was: [2] (Integer)");
 
         o.assertReceivedOnNext(Arrays.asList(1, 3));
         assertEquals(2, o.getOnNextEvents().size());
