@@ -27,7 +27,6 @@ import rx.Observer;
  */
 public class TestObserver<T> implements Observer<T> {
 
-
     private final Observer<T> delegate;
     private final ArrayList<T> onNextEvents = new ArrayList<T>();
     private final ArrayList<Throwable> onErrorEvents = new ArrayList<Throwable>();
@@ -91,7 +90,8 @@ public class TestObserver<T> implements Observer<T> {
                     throw new AssertionError("Value at index: " + i + " expected to be [null] but was: [" + onNextEvents.get(i) + "]");
                 }
             } else if (!items.get(i).equals(onNextEvents.get(i))) {
-                throw new AssertionError("Value at index: " + i + " expected to be [" + items.get(i) + "] but was: [" + onNextEvents.get(i) + "]");
+                throw new AssertionError("Value at index: " + i + " expected to be [" + items.get(i) + "] (" + items.get(i).getClass().getSimpleName() + ") but was: [" + onNextEvents.get(i) + "] (" + onNextEvents.get(i).getClass().getSimpleName() + ")");
+
             }
         }
 

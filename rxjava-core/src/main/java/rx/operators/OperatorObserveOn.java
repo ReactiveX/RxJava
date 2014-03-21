@@ -55,20 +55,7 @@ public class OperatorObserveOn<T> implements Operator<T, T> {
         }
     }
 
-    private static class Sentinel {
-
-    }
-
-    private static Sentinel NULL_SENTINEL = new Sentinel();
-    private static Sentinel COMPLETE_SENTINEL = new Sentinel();
-
-    private static class ErrorSentinel extends Sentinel {
-        final Throwable e;
-
-        ErrorSentinel(Throwable e) {
-            this.e = e;
-        }
-    }
+    private final NotificationLite<T> on = NotificationLite.instance();
 
     /** Observe through individual queue per observer. */
     private class ObserveOnSubscriber extends Subscriber<T> {
@@ -85,23 +72,19 @@ public class OperatorObserveOn<T> implements Operator<T, T> {
 
         @Override
         public void onNext(final T t) {
-            if (t == null) {
-                queue.offer(NULL_SENTINEL);
-            } else {
-                queue.offer(t);
-            }
+            queue.offer(on.next(t));
             schedule();
         }
 
         @Override
         public void onCompleted() {
-            queue.offer(COMPLETE_SENTINEL);
+            queue.offer(on.completed());
             schedule();
         }
 
         @Override
         public void onError(final Throwable e) {
-            queue.offer(new ErrorSentinel(e));
+            queue.offer(on.error(e));
             schedule();
         }
 
@@ -134,19 +117,7 @@ public class OperatorObserveOn<T> implements Operator<T, T> {
         private void pollQueue() {
             do {
                 Object v = queue.poll();
-                if (v != null) {
-                    if (v instanceof Sentinel) {
-                        if (v == NULL_SENTINEL) {
-                            observer.onNext(null);
-                        } else if (v == COMPLETE_SENTINEL) {
-                            observer.onCompleted();
-                        } else if (v instanceof ErrorSentinel) {
-                            observer.onError(((ErrorSentinel) v).e);
-                        }
-                    } else {
-                        observer.onNext((T) v);
-                    }
-                }
+                on.accept(observer, v);
             } while (counter.decrementAndGet() > 0);
         }
 

@@ -15,8 +15,14 @@
  */
 package rx.operators;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,6 +38,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.Test;
 import org.mockito.Matchers;
 
+import rx.Notification;
 import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Observer;
@@ -650,6 +657,7 @@ public class OperatorGroupByTest {
 
     @Test
     public void testFirstGroupsCompleteAndParentSlowToThenEmitFinalGroupsWhichThenSubscribesOnAndDelaysAndThenCompletes() throws InterruptedException {
+        System.err.println("----------------------------------------------------------------------------------------------");
         final CountDownLatch first = new CountDownLatch(2); // there are two groups to first complete
         final ArrayList<String> results = new ArrayList<String>();
         Observable.create(new OnSubscribe<Integer>() {
@@ -701,15 +709,29 @@ public class OperatorGroupByTest {
 
                             });
                 } else {
-                    return group.nest().lift(new OperatorSubscribeOnBounded<Integer>(Schedulers.newThread(), 1)).delay(400, TimeUnit.MILLISECONDS).map(new Func1<Integer, String>() {
+                    return group.subscribeOn(Schedulers.newThread()).delay(400, TimeUnit.MILLISECONDS).map(new Func1<Integer, String>() {
 
                         @Override
                         public String call(Integer t1) {
                             return "last group: " + t1;
                         }
 
+                    }).doOnEach(new Action1<Notification<? super String>>() {
+
+                        @Override
+                        public void call(Notification<? super String> t1) {
+                            System.err.println("subscribeOn notification => " + t1);
+                        }
+
                     });
                 }
+            }
+
+        }).doOnEach(new Action1<Notification<? super String>>() {
+
+            @Override
+            public void call(Notification<? super String> t1) {
+                System.err.println("outer notification => " + t1);
             }
 
         }).toBlockingObservable().forEach(new Action1<String>() {
@@ -827,7 +849,7 @@ public class OperatorGroupByTest {
 
             @Override
             public Observable<String> call(final GroupedObservable<Integer, Integer> group) {
-                return group.nest().lift(new OperatorSubscribeOnBounded<Integer>(Schedulers.newThread(), 0)).map(new Func1<Integer, String>() {
+                return group.subscribeOn(Schedulers.newThread()).map(new Func1<Integer, String>() {
 
                     @Override
                     public String call(Integer t1) {
@@ -836,6 +858,13 @@ public class OperatorGroupByTest {
                     }
 
                 });
+            }
+
+        }).doOnEach(new Action1<Notification<? super String>>() {
+
+            @Override
+            public void call(Notification<? super String> t1) {
+                System.out.println("notification => " + t1);
             }
 
         }).toBlockingObservable().forEach(new Action1<String>() {

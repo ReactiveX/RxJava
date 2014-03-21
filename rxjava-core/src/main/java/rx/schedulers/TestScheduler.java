@@ -97,9 +97,13 @@ public class TestScheduler extends Scheduler {
         time = targetTimeInNanos;
     }
 
+    public Inner createInnerScheduler() {
+        return new InnerTestScheduler();
+    }
+
     @Override
     public Subscription schedule(Action1<Inner> action, long delayTime, TimeUnit unit) {
-        InnerTestScheduler inner = new InnerTestScheduler();
+        Inner inner = createInnerScheduler();
         final TimedAction timedAction = new TimedAction(inner, time + unit.toNanos(delayTime), action);
         queue.add(timedAction);
         return inner;
@@ -107,7 +111,7 @@ public class TestScheduler extends Scheduler {
 
     @Override
     public Subscription schedule(Action1<Inner> action) {
-        InnerTestScheduler inner = new InnerTestScheduler();
+        Inner inner = createInnerScheduler();
         final TimedAction timedAction = new TimedAction(inner, 0, action);
         queue.add(timedAction);
         return inner;
