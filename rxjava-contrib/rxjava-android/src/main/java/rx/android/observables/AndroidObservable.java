@@ -21,11 +21,11 @@ import rx.Observable;
 import rx.functions.Func1;
 import rx.operators.OperatorObserveFromAndroidComponent;
 import rx.operators.OperatorWeakBinding;
+import rx.operators.OperatorWeakBinding.BoundPayload;
 
 import android.app.Activity;
 import android.app.Fragment;
 import android.os.Build;
-
 
 public final class AndroidObservable {
 
@@ -116,7 +116,8 @@ public final class AndroidObservable {
      * @param sourceObservable the observable sequence to observe from the given fragment
      * @param <T>
      * @return a new observable sequence that will emit notifications on the main UI thread
-     * @deprecated Use {@link #bindFragment(Object, rx.Observable)} instead
+     * @deprecated Use {@link #bindFragment(Fragment, rx.Observable)} or
+     *             {@link #bindFragment(android.support.v4.app.Fragment, rx.Observable)} instead
      */
     @Deprecated
     public static <T> Observable<T> fromFragment(Object fragment, Observable<T> sourceObservable) {
@@ -137,35 +138,42 @@ public final class AndroidObservable {
      * that no notifications will be forwarded to the activity in case it gets destroyed by the Android runtime
      * or garbage collected by the VM.
      *
-     * @param activity the activity to bind the source sequence to
-     * @param source   the source sequence
+     * @param activity         the activity to bind the source sequence to
+     * @param sourceObservable the source sequence
      */
-    public static <T> Observable<T> bindActivity(Activity activity, Observable<T> source) {
+    public static <A extends  Activity, T> Observable<BoundPayload<A, T>> bindActivity(A activity, Observable<T> sourceObservable) {
         Assertions.assertUiThread();
-        return source.observeOn(mainThread()).lift(new OperatorWeakBinding<T, Activity>(activity, ACTIVITY_VALIDATOR));
+        return sourceObservable.observeOn(mainThread()).lift(new OperatorWeakBinding<T, A>(activity, ACTIVITY_VALIDATOR));
     }
 
     /**
-     * Binds the given source sequence to the life-cycle of a fragment (native or support-v4).
+     * Binds the given source sequence to the life-cycle of a fragment (native).
      * <p/>
      * This helper will schedule the given sequence to be observed on the main UI thread and ensure
      * that no notifications will be forwarded to the fragment in case it gets detached from its
      * activity or garbage collected by the VM.
      *
-     * @param fragment the fragment to bind the source sequence to
-     * @param source   the source sequence
+     * @param fragment         the fragment to bind the source sequence to
+     * @param sourceObservable the source sequence
      */
-    public static <T> Observable<T> bindFragment(Object fragment, Observable<T> cachedSequence) {
+    public static <F extends Fragment, T> Observable<BoundPayload<F, T>> bindFragment(F fragment, Observable<T> sourceObservable) {
         Assertions.assertUiThread();
-        final Observable<T> source = cachedSequence.observeOn(mainThread());
-        if (USES_SUPPORT_FRAGMENTS && fragment instanceof android.support.v4.app.Fragment) {
-            android.support.v4.app.Fragment f = (android.support.v4.app.Fragment) fragment;
-            return source.lift(new OperatorWeakBinding<T, android.support.v4.app.Fragment>(f, FRAGMENTV4_VALIDATOR));
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB && fragment instanceof Fragment) {
-            Fragment f = (Fragment) fragment;
-            return source.lift(new OperatorWeakBinding<T, Fragment>(f, FRAGMENT_VALIDATOR));
-        } else {
-            throw new IllegalArgumentException("Target fragment is neither a native nor support library Fragment");
-        }
+        return sourceObservable.lift(new OperatorWeakBinding<T, F>(fragment, FRAGMENT_VALIDATOR));
     }
+
+    /**
+     * Binds the given source sequence to the life-cycle of a fragment (support-v4).
+     * <p/>
+     * This helper will schedule the given sequence to be observed on the main UI thread and ensure
+     * that no notifications will be forwarded to the fragment in case it gets detached from its
+     * activity or garbage collected by the VM.
+     *
+     * @param fragment         the fragment to bind the source sequence to
+     * @param sourceObservable the source sequence
+     */
+    public static <F extends android.support.v4.app.Fragment, T> Observable<BoundPayload<F, T>> bindFragment(F fragment, Observable<T> sourceObservable) {
+        Assertions.assertUiThread();
+        return sourceObservable.lift(new OperatorWeakBinding<T, F>(fragment, FRAGMENTV4_VALIDATOR));
+    }
+
 }

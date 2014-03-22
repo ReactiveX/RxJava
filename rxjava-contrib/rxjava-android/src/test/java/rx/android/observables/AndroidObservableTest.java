@@ -28,6 +28,7 @@ import org.robolectric.annotation.Config;
 import rx.Observable;
 import rx.Observer;
 import rx.observers.TestObserver;
+import rx.operators.OperatorWeakBinding.BoundPayload;
 
 import android.app.Activity;
 import android.app.Fragment;
@@ -53,7 +54,10 @@ public class AndroidObservableTest {
     private Fragment fragment;
 
     @Mock
-    private Observer<String> observer;
+    private Observer<BoundPayload<android.support.v4.app.Fragment, String>> fragmentV4Observer;
+
+    @Mock
+    private Observer<BoundPayload<Fragment, String>> fragmentObserver;
 
     @Before
     public void setup() {
@@ -69,21 +73,16 @@ public class AndroidObservableTest {
 
     @Test
     public void itSupportsFragmentsFromTheSupportV4Library() {
-        AndroidObservable.bindFragment(supportFragment, Observable.just("success")).subscribe(new TestObserver<String>(observer));
-        verify(observer).onNext("success");
-        verify(observer).onCompleted();
+        AndroidObservable.bindFragment(supportFragment, Observable.just("success")).subscribe(new TestObserver<BoundPayload<android.support.v4.app.Fragment, String>>(fragmentV4Observer));
+        verify(fragmentV4Observer).onNext(BoundPayload.of(supportFragment, "success"));
+        verify(fragmentV4Observer).onCompleted();
     }
 
     @Test
     public void itSupportsNativeFragments() {
-        AndroidObservable.bindFragment(fragment, Observable.just("success")).subscribe(new TestObserver<String>(observer));
-        verify(observer).onNext("success");
-        verify(observer).onCompleted();
-    }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void itThrowsIfObjectPassedIsNotAFragment() {
-        AndroidObservable.bindFragment("not a fragment", Observable.never());
+        AndroidObservable.bindFragment(fragment, Observable.just("success")).subscribe(new TestObserver<BoundPayload<Fragment, String>>(fragmentObserver));
+        verify(fragmentObserver).onNext(BoundPayload.of(fragment, "success"));
+        verify(fragmentObserver).onCompleted();
     }
 
     @Test(expected = IllegalStateException.class)
