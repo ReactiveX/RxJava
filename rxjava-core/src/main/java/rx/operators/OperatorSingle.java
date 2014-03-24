@@ -49,12 +49,12 @@ public final class OperatorSingle<T> implements Operator<T, T> {
 
             private T value;
             private boolean isNonEmpty = false;
-            private boolean hasTooManyElemenets = false;
+            private boolean hasTooManyElements = false;
 
             @Override
             public void onNext(T value) {
                 if (isNonEmpty) {
-                    hasTooManyElemenets = true;
+                    hasTooManyElements = true;
                     subscriber.onError(new IllegalArgumentException("Sequence contains too many elements"));
                 } else {
                     this.value = value;
@@ -64,8 +64,8 @@ public final class OperatorSingle<T> implements Operator<T, T> {
 
             @Override
             public void onCompleted() {
-                if (hasTooManyElemenets) {
-                    // We has already sent an onError message
+                if (hasTooManyElements) {
+                    // We have already sent an onError message
                 } else {
                     if (isNonEmpty) {
                         subscriber.onNext(value);
