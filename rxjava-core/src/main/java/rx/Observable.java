@@ -2489,7 +2489,25 @@ public class Observable<T> {
     }
 
     /**
-     * Pivot GroupedObservable streams without serializing/synchronizing to a single stream first. 
+     * Pivot GroupedObservable streams without serializing/synchronizing to a single stream first.
+     *
+     * For example an Observable such as this =>
+     * 
+     * Observable<GroupedObservable<String, GroupedObservable<Boolean, Integer>>>:
+     * 
+     * o1.odd: 1, 3, 5, 7, 9 on Thread 1
+     * o1.even: 2, 4, 6, 8, 10 on Thread 1
+     * o2.odd: 11, 13, 15, 17, 19 on Thread 2
+     * o2.even: 12, 14, 16, 18, 20 on Thread 2
+     * 
+     * is pivoted to become this =>
+     * 
+     * Observable<GroupedObservable<Boolean, GroupedObservable<String, Integer>>>:
+     * 
+     * odd.o1: 1, 3, 5, 7, 9 on Thread 1
+     * odd.o2: 11, 13, 15, 17, 19 on Thread 2
+     * even.o1: 2, 4, 6, 8, 10 on Thread 1
+     * even.o2: 12, 14, 16, 18, 20 on Thread 2
      * 
      * @param groups
      * @return
