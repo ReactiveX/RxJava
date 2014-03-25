@@ -12,7 +12,7 @@
  */
 package rx;
 
-import static rx.functions.Functions.*;
+import static rx.functions.Functions.alwaysFalse;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -115,6 +115,7 @@ import rx.operators.OperatorObserveOn;
 import rx.operators.OperatorOnErrorFlatMap;
 import rx.operators.OperatorOnErrorResumeNextViaFunction;
 import rx.operators.OperatorParallel;
+import rx.operators.OperatorPivot;
 import rx.operators.OperatorRepeat;
 import rx.operators.OperatorRetry;
 import rx.operators.OperatorScan;
@@ -1640,8 +1641,18 @@ public class Observable<T> {
      * @return an Observable that emits {@code value} as a single item and then completes
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#wiki-just">RxJava Wiki: just()</a>
      */
-    public final static <T> Observable<T> just(T value) {
-        return from(Arrays.asList(value));
+    public final static <T> Observable<T> just(final T value) {
+        return Observable.create(new OnSubscribe<T>() {
+
+            @Override
+            public void call(Subscriber<? super T> s) {
+                if (!s.isUnsubscribed()) {
+                    s.onNext(value);
+                    s.onCompleted();
+                }
+            }
+
+        });
     }
     
     /**
@@ -1664,7 +1675,7 @@ public class Observable<T> {
      */
     @Deprecated
     public final static <T> Observable<T> just(T value, Scheduler scheduler) {
-        return from(Arrays.asList((value)), scheduler);
+        return just(value).subscribeOn(scheduler);
     }
 
     /**
@@ -2410,7 +2421,7 @@ public class Observable<T> {
      * @return an Observable that emits a single item: the source Observable
      */
     public final Observable<Observable<T>> nest() {
-        return from(this);
+        return just(this);
     }
     
     /**
@@ -2477,6 +2488,16 @@ public class Observable<T> {
         return OperationParallelMerge.parallelMerge(source, parallelObservables, scheduler);
     }
 
+    /**
+     * Pivot GroupedObservable streams without serializing/synchronizing to a single stream first. 
+     * 
+     * @param groups
+     * @return
+     */
+    public static final <K1, K2, T> Observable<GroupedObservable<K2, GroupedObservable<K1, T>>> pivot(Observable<GroupedObservable<K1, GroupedObservable<K2, T>>> groups) {
+        return groups.lift(new OperatorPivot<K1, K2, T>());        
+    }
+    
     /**
      * Returns an Observable that emits a sequence of Integers within a specified range.
      * <p>

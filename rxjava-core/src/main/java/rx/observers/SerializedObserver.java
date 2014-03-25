@@ -2,9 +2,6 @@ package rx.observers;
 
 import java.util.ArrayList;
 
-import javax.management.NotificationListener;
-
-import rx.Notification;
 import rx.Observer;
 import rx.operators.NotificationLite;
 
@@ -54,6 +51,7 @@ public class SerializedObserver<T> implements Observer<T> {
                 queue.add(on.completed());
             }
         }
+
         if (canEmit) {
             // we won the right to emit
             try {
