@@ -93,6 +93,7 @@ class OperatorTimeoutBase<T> implements Operator<T, T> {
                 SerializedSubscriber<T> serializedSubscriber,
                 TimeoutStub<T> timeoutStub, SerialSubscription serial,
                 Observable<? extends T> other) {
+            super(serializedSubscriber);
             this.serializedSubscriber = serializedSubscriber;
             this.timeoutStub = timeoutStub;
             this.serial = serial;
