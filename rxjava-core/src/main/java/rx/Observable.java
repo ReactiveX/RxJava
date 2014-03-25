@@ -2490,24 +2490,29 @@ public class Observable<T> {
 
     /**
      * Pivot GroupedObservable streams without serializing/synchronizing to a single stream first.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/pivot.png">
      *
-     * For example an Observable such as this =>
+     * For example an Observable such as this =&gt;
      * 
-     * Observable<GroupedObservable<String, GroupedObservable<Boolean, Integer>>>:
+     * {@code Observable<GroupedObservable<String, GroupedObservable<Boolean, Integer>>>}:
+     * <ul>
+     * <li>o1.odd: 1, 3, 5, 7, 9 on Thread 1</li>
+     * <li>o1.even: 2, 4, 6, 8, 10 on Thread 1</li>
+     * <li>o2.odd: 11, 13, 15, 17, 19 on Thread 2</li>
+     * <li>o2.even: 12, 14, 16, 18, 20 on Thread 2</li>
+     * </ul>
+     * is pivoted to become this =&gt;
      * 
-     * o1.odd: 1, 3, 5, 7, 9 on Thread 1
-     * o1.even: 2, 4, 6, 8, 10 on Thread 1
-     * o2.odd: 11, 13, 15, 17, 19 on Thread 2
-     * o2.even: 12, 14, 16, 18, 20 on Thread 2
-     * 
-     * is pivoted to become this =>
-     * 
-     * Observable<GroupedObservable<Boolean, GroupedObservable<String, Integer>>>:
-     * 
-     * odd.o1: 1, 3, 5, 7, 9 on Thread 1
-     * odd.o2: 11, 13, 15, 17, 19 on Thread 2
-     * even.o1: 2, 4, 6, 8, 10 on Thread 1
-     * even.o2: 12, 14, 16, 18, 20 on Thread 2
+     * {@code Observable<GroupedObservable<Boolean, GroupedObservable<String, Integer>>>}:
+     * <ul>
+     * <li>odd.o1: 1, 3, 5, 7, 9 on Thread 1</li>
+     * <li>odd.o2: 11, 13, 15, 17, 19 on Thread 2</li>
+     * <li>even.o1: 2, 4, 6, 8, 10 on Thread 1</li>
+     * <li>even.o2: 12, 14, 16, 18, 20 on Thread 2</li>
+     * </ul>
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/pivot.ex.png">
      * 
      * @param groups
      * @return
