@@ -102,6 +102,7 @@ import rx.operators.OperationTimer;
 import rx.operators.OperationToMap;
 import rx.operators.OperationToMultimap;
 import rx.operators.OperationToObservableFuture;
+import rx.operators.OperationToOperator;
 import rx.operators.OperationUsing;
 import rx.operators.OperationWindow;
 import rx.operators.OperatorAmb;
@@ -281,6 +282,24 @@ public class Observable<T> {
                 }
             }
         });
+    }
+    
+    /**
+     * Lift a function to the current Observable and return a new Observable that when subscribed to will pass
+     * the values of the current Observable through the function.
+     * <p>
+     * In other words, this allows chaining Observers together on an Observable for acting on the values within
+     * the Observable.
+     * <p> {@code
+     * observable.map(...).filter(...).take(5).lift(new ObserverA()).lift(new ObserverB(...)).subscribe()
+     * }
+     * 
+     * @param function transforms an Observable into another Observable.
+     * @return an Observable that emits values that are the result of applying the bind function to the values
+     *         of the current Observable
+     */
+    public <R> Observable<R> lift(Func1<? super Observable<T>,? extends Observable<R>> function) {
+        return lift(OperationToOperator.toOperator(function));
     }
 
     /* *********************************************************************************************************
