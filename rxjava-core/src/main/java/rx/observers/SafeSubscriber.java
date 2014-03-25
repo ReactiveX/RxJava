@@ -21,6 +21,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import rx.Subscriber;
 import rx.exceptions.CompositeException;
 import rx.exceptions.Exceptions;
+import rx.exceptions.OnErrorFailedException;
 import rx.exceptions.OnErrorNotImplementedException;
 import rx.plugins.RxJavaPlugins;
 
@@ -165,10 +166,10 @@ public class SafeSubscriber<T> extends Subscriber<T> {
                     } catch (Throwable pluginException) {
                         handlePluginException(pluginException);
                     }
-                    throw new RuntimeException("Error occurred when trying to propagate error to Observer.onError and during unsubscription.", new CompositeException(Arrays.asList(e, e2, unsubscribeException)));
+                    throw new OnErrorFailedException("Error occurred when trying to propagate error to Observer.onError and during unsubscription.", new CompositeException(Arrays.asList(e, e2, unsubscribeException)));
                 }
 
-                throw new RuntimeException("Error occurred when trying to propagate error to Observer.onError", new CompositeException(Arrays.asList(e, e2)));
+                throw new OnErrorFailedException("Error occurred when trying to propagate error to Observer.onError", new CompositeException(Arrays.asList(e, e2)));
             }
         }
         // if we did not throw above we will unsubscribe here, if onError failed then unsubscribe happens in the catch
@@ -180,7 +181,7 @@ public class SafeSubscriber<T> extends Subscriber<T> {
             } catch (Throwable pluginException) {
                 handlePluginException(pluginException);
             }
-            throw unsubscribeException;
+            throw new OnErrorFailedException(unsubscribeException);
         }
     }
 
