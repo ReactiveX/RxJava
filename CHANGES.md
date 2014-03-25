@@ -1,5 +1,24 @@
 # RxJava Releases #
 
+### Version 0.17.2 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.17.2%22)) ###
+
+* [Pull 963](https://github.com/Netflix/RxJava/pull/963) A more robust JMH benchmarking set-up 
+* [Pull 964](https://github.com/Netflix/RxJava/pull/964) SubjectSubscriptionManager fix.
+* [Pull 970](https://github.com/Netflix/RxJava/pull/970) Notifications for the allocation averse.
+* [Pull 973](https://github.com/Netflix/RxJava/pull/973) Merge - Handle Bad Observables
+* [Pull 974](https://github.com/Netflix/RxJava/pull/974) TestSubject, TestObserver and TestScheduler Improvements
+* [Pull 975](https://github.com/Netflix/RxJava/pull/975) GroupBy & Time Gap Fixes
+* [Pull 976](https://github.com/Netflix/RxJava/pull/976) parallel-merge unit test assertions
+* [Pull 977](https://github.com/Netflix/RxJava/pull/977) Dematerialize - handle non-materialized terminal events
+* [Pull 982](https://github.com/Netflix/RxJava/pull/982) Pivot Operator
+* [Pull 984](https://github.com/Netflix/RxJava/pull/984) Tests and Javadoc for Pivot
+* [Pull 966](https://github.com/Netflix/RxJava/pull/966) Reimplement the ElementAt operator and add it to rxjava-scala
+* [Pull 965](https://github.com/Netflix/RxJava/pull/965) BugFix: Chain Subscription in TimeoutSubscriber and SerializedSubscriber
+* [Pull 986](https://github.com/Netflix/RxJava/pull/986) Fix SynchronizedObserver.runConcurrencyTest
+* [Pull 987](https://github.com/Netflix/RxJava/pull/987) Fix Non-Deterministic Pivot Test
+* [Pull 988](https://github.com/Netflix/RxJava/pull/988) OnErrorFailedException
+
+
 ### Version 0.17.1 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.17.1%22)) ###
 
 * [Pull 953](https://github.com/Netflix/RxJava/pull/953) Make ObserveOnTest.testNonBlockingOuterWhileBlockingOnNext deterministic
