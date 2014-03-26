@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rx.performance;
+package rx.archive.performance;
 
 import java.util.ArrayList;
 import java.util.concurrent.Callable;

@@ -1,4 +1,4 @@
-package rx.perf;
+package rx.archive.perf;
 
 import rx.Subscriber;
 

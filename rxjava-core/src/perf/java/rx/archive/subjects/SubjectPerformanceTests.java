@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rx.subjects;
+package rx.archive.subjects;
 
 import rx.Subscriber;
 import rx.functions.Action0;
+import rx.subjects.ReplaySubject;
 
 public class SubjectPerformanceTests {
 

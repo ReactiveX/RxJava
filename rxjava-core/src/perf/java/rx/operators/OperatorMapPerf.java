@@ -4,9 +4,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.CountDownLatch;
 
-import org.openjdk.jmh.annotations.*;
-
+import org.openjdk.jmh.annotations.GenerateMicroBenchmark;
+import org.openjdk.jmh.annotations.Param;
+import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.Setup;
+import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.logic.BlackHole;
+
 import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Observable.Operator;
@@ -14,7 +18,7 @@ import rx.Observer;
 import rx.Subscriber;
 import rx.functions.Func1;
 
-public class ObservableBenchmark {
+public class OperatorMapPerf {
 
     @GenerateMicroBenchmark
     public void measureBaseline(BlackHole bh, Input input) {

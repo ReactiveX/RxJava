@@ -1,10 +1,10 @@
-package rx.operators;
+package rx.archive.operators;
 
 import rx.Observable;
+import rx.archive.perf.AbstractPerformanceTester;
+import rx.archive.perf.IntegerSumObserver;
+import rx.archive.perf.LongSumObserver;
 import rx.functions.Action0;
-import rx.perf.AbstractPerformanceTester;
-import rx.perf.IntegerSumObserver;
-import rx.perf.LongSumObserver;
 import rx.schedulers.Schedulers;
 
 public class OperatorMergePerformance extends AbstractPerformanceTester {

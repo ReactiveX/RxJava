@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rx.schedulers;
+package rx.archive.schedulers;
 
 import java.util.Arrays;
 
@@ -21,6 +21,7 @@ import rx.Observable;
 import rx.Scheduler;
 import rx.Subscriber;
 import rx.functions.Action0;
+import rx.schedulers.Schedulers;
 
 public class SchedulerPerformanceTests {
 
