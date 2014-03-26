@@ -10,17 +10,7 @@ buildscript {
     repositories {
         mavenLocal()
         mavenCentral()
-        maven {
-            //FIXME: waiting for https://github.com/johnrengelman/shadow/pull/38 to merge
-            name 'Shadow'
-            url 'http://dl.bintray.com/content/gvsmirnov/gradle-plugins'
-        }
         jcenter()
-    }
-
-    dependencies {
-        // Required for benchmarks
-        classpath 'com.github.jengelman.gradle.plugins:shadow:0.8.1'
     }
 
     apply from: file('gradle/buildscript.gradle'), to: buildscript 
@@ -43,6 +33,8 @@ subprojects {
     configurations { 
         examplesCompile.extendsFrom compile
         examplesRuntime.extendsFrom runtime
+        perfCompile.extendsFrom compile
+        perfRuntime.extendsFrom runtime
     }
 
 
@@ -52,19 +44,22 @@ subprojects {
 
     sourceSets {
         examples
-        perf
+        perf {
+		    compileClasspath += sourceSets.main.output
+		}
     }
 
     tasks.build { 
         //include 'examples' in build task
         dependsOn(examplesClasses)
+		dependsOn(perfClasses)
     }
 
     dependencies {
         perfCompile 'org.openjdk.jmh:jmh-core:0.5.3'
         perfCompile 'org.openjdk.jmh:jmh-generator-annprocess:0.5.3'
 
-        perfCompile project
+        //perfCompile project
     }
     
     eclipse {  
@@ -83,28 +78,11 @@ subprojects {
         }
     }
 
-    task perfJar(type: Jar, dependsOn: perfClasses) {
-        from sourceSets.perf.output + sourceSets.main.output
-    }
-
-    task benchmarks(dependsOn: perfJar) {
-
-        apply plugin: "shadow"
-
-        shadow {
-            classifier = "benchmarks"
-            includeDependenciesFor = ["runtime", "perfRuntime"]
-
-            transformer(com.github.jengelman.gradle.plugins.shadow.transformers.ManifestResourceTransformer) {
-                mainClass = "org.openjdk.jmh.Main"
-            }
-        }
-
-        doLast {
-            shadowJar.execute()
-        }
-
-    }
+	task benchmarks(type: JavaExec) {
+		main = 'org.openjdk.jmh.Main'
+		classpath = sourceSets.perf.runtimeClasspath + sourceSets.main.output
+	}
+	
 }
 
 project(':rxjava-core') {
