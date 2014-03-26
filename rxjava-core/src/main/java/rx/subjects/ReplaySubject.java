@@ -122,34 +122,40 @@ public final class ReplaySubject<T> extends Subject<T, T> {
 
     @Override
     public void onCompleted() {
+        Collection<SubjectObserver<? super T>> observers =
         subscriptionManager.terminate(new Action1<Collection<SubjectObserver<? super T>>>() {
 
             @Override
             public void call(Collection<SubjectObserver<? super T>> observers) {
                 state.history.complete(Notification.<T>createOnCompleted());
-                for (SubjectObserver<? super T> o : observers) {
-                    if (caughtUp(o)) {
-                        o.onCompleted();
-                    }
-                }
             }
         });
+        if (observers != null) {
+            for (SubjectObserver<? super T> o : observers) {
+                if (caughtUp(o)) {
+                    o.onCompleted();
+                }
+            }
+        }
     }
 
     @Override
     public void onError(final Throwable e) {
+        Collection<SubjectObserver<? super T>> observers =
         subscriptionManager.terminate(new Action1<Collection<SubjectObserver<? super T>>>() {
 
             @Override
             public void call(Collection<SubjectObserver<? super T>> observers) {
                 state.history.complete(Notification.<T>createOnError(e));
-                for (SubjectObserver<? super T> o : observers) {
-                    if (caughtUp(o)) {
-                        o.onError(e);
-                    }
-                }
             }
         });
+        if (observers != null) {
+            for (SubjectObserver<? super T> o : observers) {
+                if (caughtUp(o)) {
+                    o.onError(e);
+                }
+            }
+        }
     }
 
     @Override
