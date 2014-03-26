@@ -10,13 +10,13 @@ configurations {
 repositories {
     mavenLocal()
     mavenCentral()
-    maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
+    // maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
 }
 
 dependencies {
     compile project(':rxjava-core')
-    compile 'co.paralleluniverse:quasar-core:0.5.0-SNAPSHOT'
-    quasar  'co.paralleluniverse:quasar-core:0.5.0-SNAPSHOT'
+    compile 'co.paralleluniverse:quasar-core:0.5.0'
+    quasar  'co.paralleluniverse:quasar-core:0.5.0'
     testCompile project(":rxjava-core").sourceSets.test.output 
     provided 'junit:junit-dep:4.10'
     provided 'org.mockito:mockito-core:1.8.5'
