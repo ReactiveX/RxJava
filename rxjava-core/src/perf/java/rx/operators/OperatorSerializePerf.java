@@ -11,37 +11,35 @@ import org.openjdk.jmh.logic.BlackHole;
 
 import rx.Observable;
 import rx.Observable.OnSubscribe;
-import rx.Observable.Operator;
 import rx.Observer;
 import rx.Subscriber;
-import rx.functions.Func1;
+import rx.observers.TestSubscriber;
 
-public class OperatorMapPerf {
+public class OperatorSerializePerf {
 
     @GenerateMicroBenchmark
-    public void mapIdentityFunction(Input input) throws InterruptedException {
-        input.observable.lift(MAP_OPERATOR).subscribe(input.observer);
-
-        input.awaitCompletion();
+    public void noSerializationSingleThreaded(Input input) {
+        input.observable.subscribe(input.subscriber);
     }
 
-    private static final Func1<Integer, Integer> IDENTITY_FUNCTION = new Func1<Integer, Integer>() {
-        @Override
-        public Integer call(Integer value) {
-            return value;
-        }
-    };
+    @GenerateMicroBenchmark
+    public void serializedSingleStream(Input input) {
+        input.observable.serialize().subscribe(input.subscriber);
+    }
 
-    private static final Operator<Integer, Integer> MAP_OPERATOR = new OperatorMap<Integer, Integer>(IDENTITY_FUNCTION);
+    @GenerateMicroBenchmark
+    public void synchronizedSingleStream(Input input) {
+        input.observable.synchronize().subscribe(input.subscriber);
+    }
 
     @State(Scope.Thread)
     public static class Input {
 
-        @Param({ "1", "1024", "1048576" })
+        @Param({ "1024", "1048576" })
         public int size;
 
         public Observable<Integer> observable;
-        public Observer<Integer> observer;
+        public TestSubscriber<Integer> subscriber;
 
         private CountDownLatch latch;
 
@@ -62,7 +60,7 @@ public class OperatorMapPerf {
             final BlackHole bh = new BlackHole();
             latch = new CountDownLatch(1);
 
-            observer = new Observer<Integer>() {
+            subscriber = new TestSubscriber<Integer>(new Observer<Integer>() {
                 @Override
                 public void onCompleted() {
                     latch.countDown();
@@ -77,7 +75,7 @@ public class OperatorMapPerf {
                 public void onNext(Integer value) {
                     bh.consume(value);
                 }
-            };
+            });
 
         }
 
@@ -85,5 +83,4 @@ public class OperatorMapPerf {
             latch.await();
         }
     }
-
 }
