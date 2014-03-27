@@ -3,14 +3,18 @@ package rx.archive.operators;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import org.openjdk.jmh.logic.BlackHole;
+
 import rx.Observable;
 import rx.Observable.OnSubscribe;
+import rx.Observer;
 import rx.Subscriber;
 import rx.archive.perf.AbstractPerformanceTester;
 import rx.archive.perf.IntegerSumObserver;
 import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Func1;
+import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 
 public class OperatorSerializePerformance extends AbstractPerformanceTester {
@@ -26,12 +30,17 @@ public class OperatorSerializePerformance extends AbstractPerformanceTester {
     public static void main(String args[]) {
 
         final OperatorSerializePerformance spt = new OperatorSerializePerformance();
+        final Input input = new Input();
+        input.setup();
         try {
             spt.runTest(new Action0() {
 
                 @Override
                 public void call() {
-                    spt.timeTwoStreams();
+                    //                    spt.noSerializationSingleThreaded(input);
+                    spt.serializedSingleStream(input);
+                    //                    spt.synchronizedSingleStream(input);
+                    //                    spt.timeTwoStreams();
                     //                    spt.timeSingleStream();
                     //                    spt.timeTwoStreamsIntervals();
                 }
@@ -40,6 +49,61 @@ public class OperatorSerializePerformance extends AbstractPerformanceTester {
             e.printStackTrace();
         }
 
+    }
+
+    /**
+     * Run: 10 - 12,186,982 ops/sec
+     * Run: 11 - 10,236,722 ops/sec
+     * Run: 12 - 11,377,690 ops/sec
+     * Run: 13 - 10,876,358 ops/sec
+     * Run: 14 - 11,383,619 ops/sec
+     * 
+     * @param input
+     */
+    public void noSerializationSingleThreaded(Input input) {
+        for (int i = 0; i < reps; i++) {
+            input.observable.subscribe(input.subscriber);
+        }
+    }
+
+    /**
+     * 0.17.3:
+     * 
+     * Run: 10 - 9,746,505 ops/sec
+     * Run: 11 - 9,956,019 ops/sec
+     * Run: 12 - 10,053,770 ops/sec
+     * Run: 13 - 10,076,958 ops/sec
+     * Run: 14 - 9,983,319 ops/sec
+     * 
+     * 0.17.2:
+     * 
+     * Run: 10 - 9,851,999 ops/sec
+     * Run: 11 - 9,726,975 ops/sec
+     * Run: 12 - 9,719,762 ops/sec
+     * Run: 13 - 9,668,141 ops/sec
+     * Run: 14 - 9,799,700 ops/sec
+     * 
+     * @param input
+     */
+    public void serializedSingleStream(Input input) {
+        for (int i = 0; i < reps; i++) {
+            input.observable.serialize().subscribe(input.subscriber);
+        }
+    }
+
+    /**
+     * Run: 10 - 9,475,925 ops/sec
+     * Run: 11 - 9,501,341 ops/sec
+     * Run: 12 - 9,550,495 ops/sec
+     * Run: 13 - 9,510,303 ops/sec
+     * Run: 14 - 9,690,300 ops/sec
+     * 
+     * @param input
+     */
+    public void synchronizedSingleStream(Input input) {
+        for (int i = 0; i < reps; i++) {
+            input.observable.synchronize().subscribe(input.subscriber);
+        }
     }
 
     /**
@@ -321,4 +385,52 @@ public class OperatorSerializePerformance extends AbstractPerformanceTester {
         return o.sum;
     }
 
+    public static class Input {
+
+        public int size = 1048576;
+
+        public Observable<Integer> observable;
+        public TestSubscriber<Integer> subscriber;
+
+        private CountDownLatch latch;
+
+        public void setup() {
+            observable = Observable.create(new OnSubscribe<Integer>() {
+                @Override
+                public void call(Subscriber<? super Integer> o) {
+                    for (int value = 0; value < size; value++) {
+                        if (o.isUnsubscribed())
+                            return;
+                        o.onNext(value);
+                    }
+                    o.onCompleted();
+                }
+            });
+
+            final BlackHole bh = new BlackHole();
+            latch = new CountDownLatch(1);
+
+            subscriber = new TestSubscriber<Integer>(new Observer<Integer>() {
+                @Override
+                public void onCompleted() {
+                    latch.countDown();
+                }
+
+                @Override
+                public void onError(Throwable e) {
+                    throw new RuntimeException(e);
+                }
+
+                @Override
+                public void onNext(Integer value) {
+                    bh.consume(value);
+                }
+            });
+
+        }
+
+        public void awaitCompletion() throws InterruptedException {
+            latch.await();
+        }
+    }
 }
