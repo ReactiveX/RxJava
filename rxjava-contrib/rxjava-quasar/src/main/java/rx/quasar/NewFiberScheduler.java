@@ -26,7 +26,7 @@ import rx.Scheduler;
 import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.Subscriptions;
-import rx.util.functions.Action1;
+import rx.functions.Action1;
 
 /**
  * Schedules work on a new fiber.
@@ -58,7 +58,7 @@ public class NewFiberScheduler extends Scheduler {
         innerScheduler.schedule(action);
         return innerScheduler.innerSubscription;
     }
-
+    
     @Override
     public Subscription schedule(Action1<Scheduler.Inner> action, long delayTime, TimeUnit unit) {
         EventLoopScheduler innerScheduler = new EventLoopScheduler();

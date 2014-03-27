@@ -34,10 +34,10 @@ import rx.Observable;
 import rx.Observer;
 import rx.Subscriber;
 import rx.Subscription;
+import rx.exceptions.Exceptions;
+import rx.functions.Action1;
+import rx.functions.Func1;
 import rx.observers.SafeSubscriber;
-import rx.util.Exceptions;
-import rx.util.functions.Action1;
-import rx.util.functions.Func1;
 
 /**
  * An extension of {@link Observable} that provides blocking operators, compatible with both threads and fibers.

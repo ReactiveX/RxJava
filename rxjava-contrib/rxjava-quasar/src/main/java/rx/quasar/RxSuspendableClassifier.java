@@ -25,12 +25,13 @@ import java.util.Set;
 public class RxSuspendableClassifier implements SuspendableClassifier {
     private static final Set<String> CORE_PACKAGES = new HashSet<String>(Arrays.asList(new String[]{
         "rx", "rx.joins", "rx.observables", "rx.observers", "rx.operators", "rx.plugins", "rx.schedulers",
-        "rx.subjects", "rx.subscriptions", "rx.util", "rx.util.functions"
+        "rx.subjects", "rx.subscriptions", "rx.functions", "rx.util", "rx.util.functions"
     }));
 
     private static final Set<String> EXCEPTIONS = new HashSet<String>(Arrays.asList(new String[]{
         "rx/observers/SynchronizedObserver",
-        "rx/schedulers/AbstractSchedulerTests$ConcurrentObserverValidator",}));
+        "rx/schedulers/AbstractSchedulerTests$ConcurrentObserverValidator",
+    }));
 
     private static final Set<String> OBSERVER_METHODS = new HashSet<String>(Arrays.asList(new String[]{
         "onNext(Ljava/lang/Object;)V", "onCompleted()V", "onError(Ljava/lang/Throwable;)V"
@@ -47,6 +48,12 @@ public class RxSuspendableClassifier implements SuspendableClassifier {
             else if (isUtilFunction(db, className, superClassName, interfaces, methodName, methodDesc))
                 s = MethodDatabase.SuspendableType.SUSPENDABLE;
         }
+        if (s == null 
+                && methodName.equals("call")
+                && (className.startsWith("rx/functions/Func") || className.startsWith("rx/functions/Action")
+                || className.startsWith("rx/util/functions/Func") || className.startsWith("rx/util/functions/Action"))) {
+            s = MethodDatabase.SuspendableType.SUSPENDABLE_SUPER;
+        }
         // System.out.println("-- " + className + "." + methodName + ": " + s);
         return s;
     }
@@ -62,9 +69,12 @@ public class RxSuspendableClassifier implements SuspendableClassifier {
     }
 
     private static boolean isUtilFunction(MethodDatabase db, String className, String superClassName, String[] interfaces, String methodName, String methodDesc) {
-        return (className.startsWith("rx/util/functions/Functions") || className.startsWith("rx/util/functions/Actions"))
+        return (className.startsWith("rx/functions/Functions") || className.startsWith("rx/functions/Actions")
+                || className.startsWith("rx/util/functions/Functions") || className.startsWith("rx/util/functions/Actions"))
                 && methodName.equals(FUNCTION_METHOD)
-                && (SimpleSuspendableClassifier.extendsOrImplements("rx/util/functions/Function", db, className, superClassName, interfaces)
+                && (SimpleSuspendableClassifier.extendsOrImplements("rx/functions/Function", db, className, superClassName, interfaces)
+                || SimpleSuspendableClassifier.extendsOrImplements("rx/functions/Action", db, className, superClassName, interfaces)
+                || SimpleSuspendableClassifier.extendsOrImplements("rx/util/functions/Function", db, className, superClassName, interfaces)
                 || SimpleSuspendableClassifier.extendsOrImplements("rx/util/functions/Action", db, className, superClassName, interfaces));
     }
 
