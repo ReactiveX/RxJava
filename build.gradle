@@ -78,31 +78,47 @@ subprojects {
         }
     }
 
+	/**
+	 * By default: Run without arguments this will execute all benchmarks that are found (can take a long time).
+	 *
+	 * Optionally pass arguments for custom execution. Example:
+	 *
+	 *  ../gradlew benchmarks '-Pjmh=-f 1 -tu ns -bm avgt -wi 5 -i 5 -r 1 .*OperatorSerializePerf.*'
+	 *
+	 * To see all options:
+	 *
+	 *  ../gradlew benchmarks '-Pjmh=-h'
+	 */ 
 	task benchmarks(type: JavaExec) {
 		main = 'org.openjdk.jmh.Main'
 		classpath = sourceSets.perf.runtimeClasspath + sourceSets.main.output
 		maxHeapSize = "512m"
-//		args '-h' // help output
-		args '-f' // fork
-		args '1' 
-		args '-tu' // time unit
-		args 'ns'
-		args '-bm' // benchmark mode
-		args 'avgt'
-		args '-wi' // warmup iterations
-		args '5' 
-		args '-i' // test iterations
-		args '5' 
-		args '-r' // time per execution in seconds
-		args '1'
-//		args '-prof' // profilers
-//		args 'HS_GC' // HotSpot (tm) memory manager (GC) profiling via implementation-specific MBeans
-//		args 'HS_RT' // HotSpot (tm) runtime profiling via implementation-specific MBeans
-//		args 'HS_THR' // HotSpot (tm) threading subsystem via implementation-specific MBeans
-//		args 'HS_COMP' // HotSpot (tm) JIT compiler profiling via implementation-specific MBeans
-//		args 'HS_CL' // HotSpot (tm) classloader profiling via implementation-specific MBeans
-//		args 'STACK' // Simple and naive Java stack profiler
-//		args '.*OperatorSerializePerf.*' // for running only a specific test
+		
+		if (project.hasProperty('jmh')) {
+		      args(jmh.split(' '))
+		} else {
+	 		//args '-h' // help output
+	 		args '-f' // fork
+	 		args '1' 
+	 		args '-tu' // time unit
+	 		args 'ns'
+	 		args '-bm' // benchmark mode
+	 		args 'avgt'
+	 		args '-wi' // warmup iterations
+	 		args '5' 
+	 		args '-i' // test iterations
+	 		args '5' 
+	 		args '-r' // time per execution in seconds
+	 		args '5'
+	 		//args '-prof' // profilers
+	 		//args 'HS_GC' // HotSpot (tm) memory manager (GC) profiling via implementation-specific MBeans
+	 		//args 'HS_RT' // HotSpot (tm) runtime profiling via implementation-specific MBeans
+	 		//args 'HS_THR' // HotSpot (tm) threading subsystem via implementation-specific MBeans
+	 		//args 'HS_COMP' // HotSpot (tm) JIT compiler profiling via implementation-specific MBeans
+	 		//args 'HS_CL' // HotSpot (tm) classloader profiling via implementation-specific MBeans
+	 		//args 'STACK' // Simple and naive Java stack profiler
+	 		args '.*OperatorSerializePerf.*' // for running only a specific test
+		}
 	}
 	
 }
