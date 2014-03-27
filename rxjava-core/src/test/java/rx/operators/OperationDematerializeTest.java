@@ -15,15 +15,19 @@
  */
 package rx.operators;
 
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
-import static rx.operators.OperationDematerialize.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static rx.operators.OperationDematerialize.dematerialize;
 
 import org.junit.Test;
 
 import rx.Notification;
 import rx.Observable;
 import rx.Observer;
+import rx.observers.TestSubscriber;
 
 public class OperationDematerializeTest {
 
@@ -71,4 +75,35 @@ public class OperationDematerializeTest {
         verify(observer, times(0)).onCompleted();
         verify(observer, times(0)).onNext(any(Integer.class));
     }
+
+    @Test
+    public void testErrorPassThru() {
+        Exception exception = new Exception("test");
+        Observable<Integer> observable = Observable.error(exception);
+        Observable<Integer> dematerialize = observable.dematerialize();
+
+        Observer<Integer> observer = mock(Observer.class);
+        dematerialize.subscribe(observer);
+
+        verify(observer, times(1)).onError(exception);
+        verify(observer, times(0)).onCompleted();
+        verify(observer, times(0)).onNext(any(Integer.class));
+    }
+
+    @Test
+    public void testCompletePassThru() {
+        Observable<Integer> observable = Observable.empty();
+        Observable<Integer> dematerialize = observable.dematerialize();
+
+        Observer<Integer> observer = mock(Observer.class);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(observer);
+        dematerialize.subscribe(ts);
+
+        System.out.println(ts.getOnErrorEvents());
+
+        verify(observer, never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onCompleted();
+        verify(observer, times(0)).onNext(any(Integer.class));
+    }
+
 }

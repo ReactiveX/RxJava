@@ -21,8 +21,8 @@ import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
-import rx.util.functions.Func1;
-import rx.util.functions.Func2;
+import rx.functions.Func1;
+import rx.functions.Func2;
 
 /**
  * Returns an Observable that emits items emitted by the source Observable as long as a specified

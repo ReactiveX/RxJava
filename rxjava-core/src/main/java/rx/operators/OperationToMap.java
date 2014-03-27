@@ -23,10 +23,10 @@ import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
+import rx.functions.Func0;
+import rx.functions.Func1;
+import rx.functions.Functions;
 import rx.subscriptions.Subscriptions;
-import rx.util.functions.Func0;
-import rx.util.functions.Func1;
-import rx.util.functions.Functions;
 
 /**
  * Maps the elements of the source observable into a java.util.Map instance and

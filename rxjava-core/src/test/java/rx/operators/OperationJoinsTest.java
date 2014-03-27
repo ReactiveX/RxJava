@@ -28,13 +28,13 @@ import org.mockito.MockitoAnnotations;
 
 import rx.Observable;
 import rx.Observer;
+import rx.functions.Func1;
+import rx.functions.Func2;
+import rx.functions.Func3;
+import rx.functions.Functions;
 import rx.joins.Plan0;
 import rx.observers.TestSubscriber;
 import rx.subjects.PublishSubject;
-import rx.util.functions.Func1;
-import rx.util.functions.Func2;
-import rx.util.functions.Func3;
-import rx.util.functions.Functions;
 
 public class OperationJoinsTest {
     @Mock

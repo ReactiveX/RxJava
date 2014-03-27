@@ -15,13 +15,14 @@
  */
 package rx.android.observables;
 
-import android.view.View;
-import android.widget.CompoundButton;
-import android.widget.EditText;
 import rx.Observable;
 import rx.operators.OperatorCompoundButtonInput;
 import rx.operators.OperatorEditTextInput;
 import rx.operators.OperatorViewClick;
+
+import android.view.View;
+import android.widget.CompoundButton;
+import android.widget.EditText;
 
 public class ViewObservable {
 

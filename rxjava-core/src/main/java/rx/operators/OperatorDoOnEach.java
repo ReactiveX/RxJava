@@ -15,8 +15,10 @@
  */
 package rx.operators;
 
+import rx.Observable.Operator;
 import rx.Observer;
 import rx.Subscriber;
+import rx.exceptions.OnErrorThrowable;
 
 /**
  * Converts the elements of an observable sequence to the specified type.
@@ -58,7 +60,7 @@ public class OperatorDoOnEach<T> implements Operator<T, T> {
                 try {
                     doOnEachObserver.onNext(value);
                 } catch (Throwable e) {
-                    onError(e);
+                    onError(OnErrorThrowable.addValueAsLastCause(e, value));
                     return;
                 }
                 observer.onNext(value);

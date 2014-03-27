@@ -16,7 +16,6 @@
 package rx.subjects;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
@@ -29,8 +28,8 @@ import org.mockito.Mockito;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
-import rx.util.functions.Action1;
-import rx.util.functions.Func1;
+import rx.functions.Action1;
+import rx.functions.Func1;
 
 public class PublishSubjectTest {
 
@@ -299,4 +298,45 @@ public class PublishSubjectTest {
 
     private final Throwable testException = new Throwable();
 
+    @Test(timeout = 1000)
+    public void testUnsubscriptionCase() {
+        PublishSubject<String> src = PublishSubject.create();
+
+        for (int i = 0; i < 10; i++) {
+            @SuppressWarnings("unchecked")
+            final Observer<Object> o = mock(Observer.class);
+            InOrder inOrder = inOrder(o);
+            String v = "" + i;
+            System.out.printf("Turn: %d%n", i);
+            src.first()
+                .flatMap(new rx.util.functions.Func1<String, Observable<String>>() {
+
+                    @Override
+                    public Observable<String> call(String t1) {
+                        return Observable.from(t1 + ", " + t1);
+                    }
+                })
+                .subscribe(new Observer<String>() {
+                    @Override
+                    public void onNext(String t) {
+                        o.onNext(t);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        o.onError(e);
+                    }
+
+                    @Override
+                    public void onCompleted() {
+                        o.onCompleted();
+                    }
+                });
+            src.onNext(v);
+            
+            inOrder.verify(o).onNext(v + ", " + v);
+            inOrder.verify(o).onCompleted();
+            verify(o, never()).onError(any(Throwable.class));
+        }
+    }
 }

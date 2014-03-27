@@ -19,7 +19,7 @@ import java.util.Map;
 
 import rx.Observable;
 import rx.Observer;
-import rx.util.functions.Action1;
+import rx.functions.Action1;
 
 /**
  * Represents an execution plan for join patterns.

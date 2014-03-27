@@ -29,10 +29,11 @@ import org.mockito.MockitoAnnotations;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscriber;
+import rx.exceptions.OnErrorNotImplementedException;
+import rx.functions.Action1;
+import rx.functions.Func1;
+import rx.functions.Func2;
 import rx.schedulers.Schedulers;
-import rx.util.functions.Action1;
-import rx.util.functions.Func1;
-import rx.util.functions.Func2;
 
 public class OperatorMapTest {
 
@@ -165,7 +166,14 @@ public class OperatorMapTest {
                 }
                 return s;
             }
-        }));
+        })).doOnError(new Action1<Throwable>() {
+
+            @Override
+            public void call(Throwable t1) {
+                t1.printStackTrace();
+            }
+
+        });
 
         m.subscribe(stringObserver);
         verify(stringObserver, times(1)).onNext("one");
@@ -248,7 +256,7 @@ public class OperatorMapTest {
         }).toBlockingObservable().single();
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test(expected = OnErrorNotImplementedException.class)
     public void verifyExceptionIsThrownIfThereIsNoExceptionHandler() {
 
         Observable.OnSubscribe<Object> creator = new Observable.OnSubscribe<Object>() {
@@ -266,7 +274,6 @@ public class OperatorMapTest {
 
             @Override
             public Observable<Object> call(Object object) {
-
                 return Observable.from(object);
             }
         };
@@ -292,7 +299,12 @@ public class OperatorMapTest {
             }
         };
 
-        Observable.create(creator).flatMap(manyMapper).map(mapper).subscribe(onNext);
+        try {
+            Observable.create(creator).flatMap(manyMapper).map(mapper).subscribe(onNext);
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            throw e;
+        }
     }
 
     private static Map<String, String> getMap(String prefix) {

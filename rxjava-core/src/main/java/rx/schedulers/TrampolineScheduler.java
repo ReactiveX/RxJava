@@ -21,8 +21,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import rx.Scheduler;
 import rx.Subscription;
+import rx.functions.Action1;
 import rx.subscriptions.BooleanSubscription;
-import rx.util.functions.Action1;
 
 /**
  * Schedules work on the current thread but does not execute immediately. Work is put in a queue and executed after the current unit of work is completed.
@@ -30,7 +30,16 @@ import rx.util.functions.Action1;
 public class TrampolineScheduler extends Scheduler {
     private static final TrampolineScheduler INSTANCE = new TrampolineScheduler();
 
+    /**
+     * @deprecated Use Schedulers.trampoline();
+     * @return
+     */
+    @Deprecated
     public static TrampolineScheduler getInstance() {
+        return INSTANCE;
+    }
+    
+    /* package */ static TrampolineScheduler instance() {
         return INSTANCE;
     }
 

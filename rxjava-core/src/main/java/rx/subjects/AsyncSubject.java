@@ -20,8 +20,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Notification;
 import rx.Observer;
+import rx.functions.Action1;
 import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
-import rx.util.functions.Action1;
 
 /**
  * Subject that publishes only the last event to each {@link Observer} that has subscribed when the
@@ -82,7 +82,7 @@ public final class AsyncSubject<T> extends Subject<T, T> {
                         // to send onCompleted if the last value is an onNext
                         emitValueToObserver(lastNotification.get(), o);
                     }
-                });
+                }, null);
 
         return new AsyncSubject<T>(onSubscribe, subscriptionManager, lastNotification);
     }

@@ -9,8 +9,10 @@ apply from: file('gradle/release.gradle')
 buildscript {
     repositories {
         mavenLocal()
-        mavenCentral() // maven { url 'http://jcenter.bintray.com' }
+        mavenCentral()
+        jcenter()
     }
+
     apply from: file('gradle/buildscript.gradle'), to: buildscript 
 }
 
@@ -19,7 +21,7 @@ allprojects {
     apply plugin: 'idea'
     repositories { 
         mavenLocal()
-        mavenCentral() // maven { url: 'http://jcenter.bintray.com' }
+        mavenCentral()
     }
 }
 
@@ -31,8 +33,8 @@ subprojects {
     configurations { 
         examplesCompile.extendsFrom compile
         examplesRuntime.extendsFrom runtime
-	    perfCompile.extendsFrom compile
-	    perfRuntime.extendsFrom runtime
+        perfCompile.extendsFrom compile
+        perfRuntime.extendsFrom runtime
     }
 
 
@@ -40,49 +42,47 @@ subprojects {
         it.classpath = sourceSets.main.compileClasspath
     }
 
-    sourceSets { 
-		//include /src/examples folder
+    sourceSets {
         examples
-		//include /src/perf folder
         perf {
-            java {
-                srcDir 'src/perf/java'
-                compileClasspath += main.output
-                runtimeClasspath += main.output
-            }
-        }
-    }
-
-    dependencies {
-        perfCompile 'org.openjdk.jmh:jmh-core:0.2'
+		    compileClasspath += sourceSets.main.output
+		}
     }
 
     tasks.build { 
-		//include 'examples' in build task
+        //include 'examples' in build task
         dependsOn(examplesClasses)
-		//include 'perf' in build task
-        // dependsOn(perfClasses)  //-> Not working so commented out
+		dependsOn(perfClasses)
+    }
+
+    dependencies {
+        perfCompile 'org.openjdk.jmh:jmh-core:0.5.3'
+        perfCompile 'org.openjdk.jmh:jmh-generator-annprocess:0.5.3'
+
+        //perfCompile project
     }
     
     eclipse {  
-        classpath {  
-            // include 'provided' dependencies on the classpath
-            plusConfigurations += configurations.provided
+        classpath {
             plusConfigurations += configurations.perfCompile
             
             downloadSources = true
             downloadJavadoc = true
         }
     }
-    
+
     idea {
         module {
-            // include 'provided' dependencies on the classpath
-            scopes.PROVIDED.plus += configurations.provided
-            // TODO not sure what to add it to
-            //scopes.PROVIDED.plus += configurations.perfCompile
+            scopes.PROVIDED.plus  += configurations.perfCompile
+            scopes.PROVIDED.minus += configurations.compile
         }
     }
+
+	task benchmarks(type: JavaExec) {
+		main = 'org.openjdk.jmh.Main'
+		classpath = sourceSets.perf.runtimeClasspath + sourceSets.main.output
+	}
+	
 }
 
 project(':rxjava-core') {

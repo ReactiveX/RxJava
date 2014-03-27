@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import rx.Notification;
 import rx.Observable;
 import rx.Observer;
-import rx.util.Exceptions;
+import rx.exceptions.Exceptions;
 
 /**
  * Returns an Iterable that blocks until the Observable emits another item, then returns that item.
@@ -48,7 +48,8 @@ public final class OperationNext {
 
     }
 
-    private static class NextIterator<T> implements Iterator<T> {
+    // test needs to access the observer.waiting flag non-blockingly.
+    /* private */static final class NextIterator<T> implements Iterator<T> {
 
         private final NextObserver<? extends T> observer;
         private T next;
@@ -60,6 +61,12 @@ public final class OperationNext {
             this.observer = observer;
         }
 
+        // in tests, set the waiting flag without blocking for the next value to 
+        // allow lockstepping instead of multi-threading
+        void setWaiting(boolean value) {
+            observer.waiting.set(value);
+        }
+        
         @Override
         public boolean hasNext() {
             if (error != null) {

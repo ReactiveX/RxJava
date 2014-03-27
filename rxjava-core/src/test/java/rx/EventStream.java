@@ -21,8 +21,8 @@ import java.util.Map;
 
 import rx.Observable.OnSubscribeFunc;
 import rx.Scheduler.Inner;
+import rx.functions.Action1;
 import rx.schedulers.Schedulers;
-import rx.util.functions.Action1;
 
 /**
  * Utility for retrieving a mock eventstream for testing.

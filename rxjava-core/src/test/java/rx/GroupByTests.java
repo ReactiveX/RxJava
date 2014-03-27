@@ -18,9 +18,9 @@ package rx;
 import org.junit.Test;
 
 import rx.EventStream.Event;
+import rx.functions.Action1;
+import rx.functions.Func1;
 import rx.observables.GroupedObservable;
-import rx.util.functions.Action1;
-import rx.util.functions.Func1;
 
 public class GroupByTests {
 

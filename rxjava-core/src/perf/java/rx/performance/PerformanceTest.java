@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import rx.Observable;
 import rx.Subscriber;
-import rx.util.functions.Func1;
+import rx.functions.Func1;
 
 public class PerformanceTest {
 

@@ -21,8 +21,8 @@ import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
+import rx.functions.Action0;
 import rx.subscriptions.Subscriptions;
-import rx.util.functions.Action0;
 
 /**
  * Instruct an Observable to pass control to another Observable rather than invoking

@@ -23,8 +23,8 @@ import org.junit.Test;
 
 import rx.Observable;
 import rx.Observer;
+import rx.functions.Func1;
 import rx.operators.OperationReduceTest.CustomException;
-import rx.util.functions.Func1;
 
 public class OperationAverageTest {
 

@@ -15,17 +15,15 @@
  */
 package rx.operators;
 
-import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
-import static rx.operators.OperationSkipWhile.*;
 
 import org.junit.Test;
 import org.mockito.InOrder;
 
 import rx.Observable;
 import rx.Observer;
-import rx.util.functions.Func1;
-import rx.util.functions.Func2;
+import rx.functions.Func1;
+import rx.functions.Func2;
 
 public class OperationSkipWhileTest {
 
@@ -51,7 +49,7 @@ public class OperationSkipWhileTest {
     @Test
     public void testSkipWithIndex() {
         Observable<Integer> src = Observable.from(1, 2, 3, 4, 5);
-        Observable.create(skipWhileWithIndex(src, INDEX_LESS_THAN_THREE)).subscribe(w);
+        src.skipWhileWithIndex(INDEX_LESS_THAN_THREE).subscribe(w);
 
         InOrder inOrder = inOrder(w);
         inOrder.verify(w, times(1)).onNext(4);
@@ -63,7 +61,7 @@ public class OperationSkipWhileTest {
     @Test
     public void testSkipEmpty() {
         Observable<Integer> src = Observable.empty();
-        Observable.create(skipWhile(src, LESS_THAN_FIVE)).subscribe(w);
+        src.skipWhile(LESS_THAN_FIVE).subscribe(w);
         verify(w, never()).onNext(anyInt());
         verify(w, never()).onError(any(Throwable.class));
         verify(w, times(1)).onCompleted();
@@ -72,7 +70,7 @@ public class OperationSkipWhileTest {
     @Test
     public void testSkipEverything() {
         Observable<Integer> src = Observable.from(1, 2, 3, 4, 3, 2, 1);
-        Observable.create(skipWhile(src, LESS_THAN_FIVE)).subscribe(w);
+        src.skipWhile(LESS_THAN_FIVE).subscribe(w);
         verify(w, never()).onNext(anyInt());
         verify(w, never()).onError(any(Throwable.class));
         verify(w, times(1)).onCompleted();
@@ -81,7 +79,7 @@ public class OperationSkipWhileTest {
     @Test
     public void testSkipNothing() {
         Observable<Integer> src = Observable.from(5, 3, 1);
-        Observable.create(skipWhile(src, LESS_THAN_FIVE)).subscribe(w);
+        src.skipWhile(LESS_THAN_FIVE).subscribe(w);
 
         InOrder inOrder = inOrder(w);
         inOrder.verify(w, times(1)).onNext(5);
@@ -94,7 +92,7 @@ public class OperationSkipWhileTest {
     @Test
     public void testSkipSome() {
         Observable<Integer> src = Observable.from(1, 2, 3, 4, 5, 3, 1, 5);
-        Observable.create(skipWhile(src, LESS_THAN_FIVE)).subscribe(w);
+        src.skipWhile(LESS_THAN_FIVE).subscribe(w);
 
         InOrder inOrder = inOrder(w);
         inOrder.verify(w, times(1)).onNext(5);
@@ -108,11 +106,30 @@ public class OperationSkipWhileTest {
     @Test
     public void testSkipError() {
         Observable<Integer> src = Observable.from(1, 2, 42, 5, 3, 1);
-        Observable.create(skipWhile(src, LESS_THAN_FIVE)).subscribe(w);
+        src.skipWhile(LESS_THAN_FIVE).subscribe(w);
 
         InOrder inOrder = inOrder(w);
         inOrder.verify(w, never()).onNext(anyInt());
         inOrder.verify(w, never()).onCompleted();
         inOrder.verify(w, times(1)).onError(any(RuntimeException.class));
+    }
+    
+    @Test
+    public void testSkipManySubscribers() {
+        Observable<Integer> src = Observable.range(1, 10).skipWhile(LESS_THAN_FIVE);
+        int n = 5;
+        for (int i = 0; i < n; i++) {
+            @SuppressWarnings("unchecked")
+            Observer<Object> o = mock(Observer.class);
+            InOrder inOrder = inOrder(o);
+            
+            src.subscribe(o);
+            
+            for (int j = 5; j < 10; j++) {
+                inOrder.verify(o).onNext(j);
+            } 
+            inOrder.verify(o).onCompleted();
+            verify(o, never()).onError(any(Throwable.class));
+        }
     }
 }

@@ -24,7 +24,7 @@ import org.junit.Test;
 
 import rx.Observable;
 import rx.Observer;
-import rx.util.functions.Action1;
+import rx.functions.Action1;
 
 public class OnSubscribeRangeTest {
 

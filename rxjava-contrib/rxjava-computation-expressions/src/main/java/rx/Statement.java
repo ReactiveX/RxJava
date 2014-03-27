@@ -17,8 +17,8 @@ package rx;
 
 import java.util.Map;
 
+import rx.functions.Func0;
 import rx.operators.OperationConditionals;
-import rx.util.functions.Func0;
 
 /**
  * Imperative statements expressed as Observable operators.

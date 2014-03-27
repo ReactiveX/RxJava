@@ -25,14 +25,14 @@ import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
+import rx.functions.Action1;
+import rx.functions.Func1;
 import rx.joins.ActivePlan0;
 import rx.joins.JoinObserver;
 import rx.joins.Pattern1;
 import rx.joins.Pattern2;
 import rx.joins.Plan0;
 import rx.subscriptions.CompositeSubscription;
-import rx.util.functions.Action1;
-import rx.util.functions.Func1;
 
 /**
  * Join patterns: And, Then, When.

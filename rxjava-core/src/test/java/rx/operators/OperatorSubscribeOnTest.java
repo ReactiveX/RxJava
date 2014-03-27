@@ -15,119 +15,51 @@
  */
 package rx.operators;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
 import rx.Observable;
 import rx.Observable.OnSubscribe;
+import rx.Scheduler;
 import rx.Subscriber;
 import rx.Subscription;
+import rx.functions.Action1;
 import rx.observers.TestObserver;
+import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
-import rx.subscriptions.Subscriptions;
-import rx.util.functions.Action0;
 
 public class OperatorSubscribeOnTest {
 
-    private class ThreadSubscription implements Subscription {
-        private volatile Thread thread;
-
-        private final CountDownLatch latch = new CountDownLatch(1);
-
-        private final Subscription s = Subscriptions.create(new Action0() {
-
-            @Override
-            public void call() {
-                thread = Thread.currentThread();
-                latch.countDown();
-            }
-
-        });
-
-        @Override
-        public void unsubscribe() {
-            s.unsubscribe();
-        }
-
-        @Override
-        public boolean isUnsubscribed() {
-            return s.isUnsubscribed();
-        }
-
-        public Thread getThread() throws InterruptedException {
-            latch.await();
-            return thread;
-        }
-    }
-
-    @Test
-    public void testSubscribeOnAndVerifySubscribeAndUnsubscribeThreads()
-            throws InterruptedException {
-        final ThreadSubscription subscription = new ThreadSubscription();
-        final AtomicReference<Thread> subscribeThread = new AtomicReference<Thread>();
-        Observable<Integer> w = Observable.create(new OnSubscribe<Integer>() {
-
-            @Override
-            public void call(Subscriber<? super Integer> t1) {
-                subscribeThread.set(Thread.currentThread());
-                t1.add(subscription);
-                t1.onNext(1);
-                t1.onNext(2);
-                t1.onCompleted();
-            }
-        });
-
-        TestObserver<Integer> observer = new TestObserver<Integer>();
-        w.subscribeOn(Schedulers.newThread()).subscribe(observer);
-
-        Thread unsubscribeThread = subscription.getThread();
-
-        assertNotNull(unsubscribeThread);
-        assertNotSame(Thread.currentThread(), unsubscribeThread);
-
-        assertNotNull(subscribeThread.get());
-        assertNotSame(Thread.currentThread(), subscribeThread.get());
-        // True for Schedulers.newThread()
-        assertTrue(unsubscribeThread == subscribeThread.get());
-
-        observer.assertReceivedOnNext(Arrays.asList(1, 2));
-        observer.assertTerminalEvent();
-    }
-
-    @Test
+    @Test(timeout = 2000)
     public void testIssue813() throws InterruptedException {
         // https://github.com/Netflix/RxJava/issues/813
+        final CountDownLatch scheduled = new CountDownLatch(1);
         final CountDownLatch latch = new CountDownLatch(1);
         final CountDownLatch doneLatch = new CountDownLatch(1);
 
         TestObserver<Integer> observer = new TestObserver<Integer>();
-        final ThreadSubscription s = new ThreadSubscription();
 
         final Subscription subscription = Observable
                 .create(new Observable.OnSubscribe<Integer>() {
                     @Override
                     public void call(
                             final Subscriber<? super Integer> subscriber) {
-                        subscriber.add(s);
+                        scheduled.countDown();
                         try {
-                            latch.await();
-                            // Already called "unsubscribe", "isUnsubscribed"
-                            // shouble be true
-                            if (!subscriber.isUnsubscribed()) {
-                                throw new IllegalStateException(
-                                        "subscriber.isUnsubscribed should be true");
+                            try {
+                                latch.await();
+                            } catch (InterruptedException e) {
+                                // this means we were unsubscribed (Scheduler shut down and interrupts)
+                                // ... but we'll pretend we are like many Observables that ignore interrupts
                             }
+
                             subscriber.onCompleted();
-                        } catch (InterruptedException e) {
-                            Thread.currentThread().interrupt();
                         } catch (Throwable e) {
                             subscriber.onError(e);
                         } finally {
@@ -136,12 +68,64 @@ public class OperatorSubscribeOnTest {
                     }
                 }).subscribeOn(Schedulers.computation()).subscribe(observer);
 
+        // wait for scheduling
+        scheduled.await();
+        // trigger unsubscribe
         subscription.unsubscribe();
-        // As unsubscribe is called in other thread, we need to wait for it.
-        s.getThread();
         latch.countDown();
         doneLatch.await();
         assertEquals(0, observer.getOnErrorEvents().size());
         assertEquals(1, observer.getOnCompletedEvents().size());
     }
+
+    public static class SlowScheduler extends Scheduler {
+        final Scheduler actual;
+        final long delay;
+        final TimeUnit unit;
+
+        public SlowScheduler() {
+            this(Schedulers.computation(), 2, TimeUnit.SECONDS);
+        }
+
+        public SlowScheduler(Scheduler actual, long delay, TimeUnit unit) {
+            this.actual = actual;
+            this.delay = delay;
+            this.unit = unit;
+        }
+
+        @Override
+        public Subscription schedule(final Action1<Scheduler.Inner> action) {
+            return actual.schedule(action, delay, unit);
+        }
+
+        @Override
+        public Subscription schedule(final Action1<Scheduler.Inner> action, final long delayTime, final TimeUnit delayUnit) {
+            TimeUnit common = delayUnit.compareTo(unit) < 0 ? delayUnit : unit;
+            long t = common.convert(delayTime, delayUnit) + common.convert(delay, unit);
+            return actual.schedule(action, t, common);
+        }
+    }
+
+    @Test(timeout = 5000)
+    public void testUnsubscribeInfiniteStream() throws InterruptedException {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        final AtomicInteger count = new AtomicInteger();
+        Observable.create(new OnSubscribe<Integer>() {
+
+            @Override
+            public void call(Subscriber<? super Integer> sub) {
+                for (int i = 1; !sub.isUnsubscribed(); i++) {
+                    count.incrementAndGet();
+                    sub.onNext(i);
+                }
+            }
+
+        }).subscribeOn(Schedulers.newThread()).take(10).subscribe(ts);
+
+        ts.awaitTerminalEventAndUnsubscribeOnTimeout(1000, TimeUnit.MILLISECONDS);
+        Thread.sleep(200); // give time for the loop to continue
+        ts.assertReceivedOnNext(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+        assertEquals(10, count.get());
+    }
+
 }

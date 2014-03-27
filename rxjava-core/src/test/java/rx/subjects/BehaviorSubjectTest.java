@@ -21,9 +21,11 @@ import static org.mockito.Mockito.*;
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
+import rx.Observable;
 
 import rx.Observer;
 import rx.Subscription;
+import rx.util.functions.Func1;
 
 public class BehaviorSubjectTest {
 
@@ -236,5 +238,45 @@ public class BehaviorSubjectTest {
         verify(o2, times(1)).onCompleted();
         verify(o2, never()).onNext(any());
         verify(observer, never()).onError(any(Throwable.class));
+    }
+    @Test(timeout = 1000)
+    public void testUnsubscriptionCase() {
+        BehaviorSubject<String> src = BehaviorSubject.create((String)null);
+        
+        for (int i = 0; i < 10; i++) {
+            @SuppressWarnings("unchecked")
+            final Observer<Object> o = mock(Observer.class);
+            InOrder inOrder = inOrder(o);
+            String v = "" + i;
+            src.onNext(v);
+            System.out.printf("Turn: %d%n", i);
+            src.first()
+                .flatMap(new Func1<String, Observable<String>>() {
+
+                    @Override
+                    public Observable<String> call(String t1) {
+                        return Observable.from(t1 + ", " + t1);
+                    }
+                })
+                .subscribe(new Observer<String>() {
+                    @Override
+                    public void onNext(String t) {
+                        o.onNext(t);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        o.onError(e);
+                    }
+
+                    @Override
+                    public void onCompleted() {
+                        o.onCompleted();
+                    }
+                });
+            inOrder.verify(o).onNext(v + ", " + v);
+            inOrder.verify(o).onCompleted();
+            verify(o, never()).onError(any(Throwable.class));
+        }
     }
 }

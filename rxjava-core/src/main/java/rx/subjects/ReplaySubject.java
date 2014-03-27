@@ -23,8 +23,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Notification;
 import rx.Observer;
+import rx.functions.Action1;
 import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
-import rx.util.functions.Action1;
 
 /**
  * Subject that retains all events and will replay them to an {@link Observer} that subscribes.
@@ -84,8 +84,15 @@ public final class ReplaySubject<T> extends Subject<T, T> {
 
                     @Override
                     public void call(SubjectObserver<? super T> o) {
+                        Integer idx = state.replayState.remove(o);
                         // we will finish replaying if there is anything left
-                        replayObserverFromIndex(state.history, state.replayState.get(o), o);
+                        replayObserverFromIndex(state.history, idx, o);
+                    }
+                }, 
+                new Action1<SubjectObserver<? super T>>() {
+                    @Override
+                    public void call(SubjectObserver<? super T> o) {
+                        state.replayState.remove(o);
                     }
                 });
 
@@ -119,7 +126,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
 
             @Override
             public void call(Collection<SubjectObserver<? super T>> observers) {
-                state.history.complete(new Notification<T>());
+                state.history.complete(Notification.<T>createOnCompleted());
                 for (SubjectObserver<? super T> o : observers) {
                     if (caughtUp(o)) {
                         o.onCompleted();
@@ -135,7 +142,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
 
             @Override
             public void call(Collection<SubjectObserver<? super T>> observers) {
-                state.history.complete(new Notification<T>(e));
+                state.history.complete(Notification.<T>createOnError(e));
                 for (SubjectObserver<? super T> o : observers) {
                     if (caughtUp(o)) {
                         o.onError(e);
@@ -229,5 +236,10 @@ public final class ReplaySubject<T> extends Subject<T, T> {
             terminalValue.set(n);
         }
     }
-
+    /**
+     * @return Returns the number of subscribers.
+     */
+    /* Support test.*/ int subscriberCount() {
+        return state.replayState.size();
+    }
 }

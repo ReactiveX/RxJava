@@ -17,7 +17,7 @@ package rx.schedulers;
 
 import rx.Scheduler;
 import rx.Scheduler.Inner;
-import rx.util.functions.Action1;
+import rx.functions.Action1;
 
 /* package */class SleepingAction implements Action1<Scheduler.Inner> {
     private final Action1<Scheduler.Inner> underlying;

@@ -20,9 +20,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Notification;
 import rx.Observer;
-import rx.Subscriber;
+import rx.functions.Action1;
 import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
-import rx.util.functions.Action1;
 
 /**
  * Subject that, once and {@link Observer} has subscribed, publishes all subsequent events to the subscriber.
@@ -80,7 +79,7 @@ public final class PublishSubject<T> extends Subject<T, T> {
                          */
                         lastNotification.get().accept(o);
                     }
-                });
+                }, null);
 
         return new PublishSubject<T>(onSubscribe, subscriptionManager, lastNotification);
     }
@@ -100,7 +99,7 @@ public final class PublishSubject<T> extends Subject<T, T> {
 
             @Override
             public void call(Collection<SubjectObserver<? super T>> observers) {
-                lastNotification.set(new Notification<T>());
+                lastNotification.set(Notification.<T> createOnCompleted());
                 for (Observer<? super T> o : observers) {
                     o.onCompleted();
                 }
@@ -114,7 +113,7 @@ public final class PublishSubject<T> extends Subject<T, T> {
 
             @Override
             public void call(Collection<SubjectObserver<? super T>> observers) {
-                lastNotification.set(new Notification<T>(e));
+                lastNotification.set(Notification.<T>createOnError(e));
                 for (Observer<? super T> o : observers) {
                     o.onError(e);
                 }

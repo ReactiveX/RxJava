@@ -15,6 +15,10 @@
  */
 package rx.util.functions;
 
+/**
+ * @deprecated
+ */
+@Deprecated
 public interface FuncN<R> extends Function {
     public R call(Object... args);
 }

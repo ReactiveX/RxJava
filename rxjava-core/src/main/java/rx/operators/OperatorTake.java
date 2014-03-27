@@ -15,6 +15,7 @@
  */
 package rx.operators;
 
+import rx.Observable.Operator;
 import rx.Subscriber;
 import rx.subscriptions.CompositeSubscription;
 

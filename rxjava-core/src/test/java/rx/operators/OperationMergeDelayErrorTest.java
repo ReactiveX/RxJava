@@ -31,8 +31,8 @@ import org.mockito.MockitoAnnotations;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
+import rx.exceptions.CompositeException;
 import rx.subscriptions.Subscriptions;
-import rx.util.CompositeException;
 
 public class OperationMergeDelayErrorTest {
 

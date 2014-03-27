@@ -23,7 +23,9 @@ import rx.Observer;
  * This ONLY does synchronization. It does not involve itself in safety or subscriptions. See SafeSubscriber for that.
  * 
  * @param <T>
+ * @deprecated Use SerializedObserver instead as it doesn't block threads during event notification.
  */
+@Deprecated
 public final class SynchronizedObserver<T> implements Observer<T> {
 
     /**
@@ -41,7 +43,8 @@ public final class SynchronizedObserver<T> implements Observer<T> {
      */
 
     private final Observer<? super T> observer;
-    private volatile Object lock;
+    private final Object lock;
+    private boolean isTerminated = false;
 
     public SynchronizedObserver(Observer<? super T> subscriber) {
         this.observer = subscriber;
@@ -55,19 +58,27 @@ public final class SynchronizedObserver<T> implements Observer<T> {
 
     public void onNext(T arg) {
         synchronized (lock) {
-            observer.onNext(arg);
+            if (!isTerminated) {
+                observer.onNext(arg);
+            }
         }
     }
 
     public void onError(Throwable e) {
         synchronized (lock) {
-            observer.onError(e);
+            if (!isTerminated) {
+                isTerminated = true;
+                observer.onError(e);
+            }
         }
     }
 
     public void onCompleted() {
         synchronized (lock) {
-            observer.onCompleted();
+            if (!isTerminated) {
+                isTerminated = true;
+                observer.onCompleted();
+            }
         }
     }
 }

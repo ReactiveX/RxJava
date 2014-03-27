@@ -18,7 +18,7 @@ package rx.performance;
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
 
-import rx.util.functions.Func1;
+import rx.functions.Func1;
 
 public class TestChainPerformance {
 

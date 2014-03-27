@@ -29,7 +29,7 @@ import org.mockito.InOrder;
 
 import rx.Observable;
 import rx.Observer;
-import rx.util.functions.Func1;
+import rx.functions.Func1;
 
 public class OperationMinMaxTest {
     @Test

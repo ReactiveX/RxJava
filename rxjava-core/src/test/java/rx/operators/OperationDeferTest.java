@@ -21,7 +21,7 @@ import org.junit.Test;
 
 import rx.Observable;
 import rx.Observer;
-import rx.util.functions.Func0;
+import rx.functions.Func0;
 
 public class OperationDeferTest {
 

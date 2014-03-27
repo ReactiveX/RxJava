@@ -20,14 +20,14 @@ import java.util.Collection;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
 
+import rx.Observable.OnSubscribe;
 import rx.Observer;
 import rx.Subscriber;
 import rx.Subscription;
-import rx.Observable.OnSubscribe;
+import rx.functions.Action0;
+import rx.functions.Action1;
 import rx.operators.SafeObservableSubscription;
 import rx.subscriptions.Subscriptions;
-import rx.util.functions.Action0;
-import rx.util.functions.Action1;
 
 /* package */class SubjectSubscriptionManager<T> {
 
@@ -39,13 +39,16 @@ import rx.util.functions.Action1;
      *            Always runs at the beginning of 'subscribe' regardless of terminal state.
      * @param onTerminated
      *            Only runs if Subject is in terminal state and the Observer ends up not being registered.
+     * @param onUnsubscribe called after the child subscription is removed from the state
      * @return
      */
-    public OnSubscribe<T> getOnSubscribeFunc(final Action1<SubjectObserver<? super T>> onSubscribe, final Action1<SubjectObserver<? super T>> onTerminated) {
+    public OnSubscribe<T> getOnSubscribeFunc(final Action1<SubjectObserver<? super T>> onSubscribe, 
+            final Action1<SubjectObserver<? super T>> onTerminated,
+            final Action1<SubjectObserver<? super T>> onUnsubscribe) {
         return new OnSubscribe<T>() {
             @Override
             public void call(Subscriber<? super T> actualOperator) {
-                SubjectObserver<T> observer = new SubjectObserver<T>(actualOperator);
+                final SubjectObserver<T> observer = new SubjectObserver<T>(actualOperator);
                 // invoke onSubscribe logic 
                 if (onSubscribe != null) {
                     onSubscribe.call(observer);
@@ -84,9 +87,15 @@ import rx.util.functions.Action1;
                                     // on unsubscribe remove it from the map of outbound observers to notify
                                     newState = current.removeObserver(subscription);
                                 } while (!state.compareAndSet(current, newState));
+                                if (onUnsubscribe != null) {
+                                    onUnsubscribe.call(observer);
+                                }
                             }
                         }));
-
+                        if (subscription.isUnsubscribed()) {
+                            addedObserver = false;
+                            break;
+                        }
                         // on subscribe add it to the map of outbound observers to notify
                         newState = current.addObserver(subscription, observer);
                     }
@@ -196,15 +205,21 @@ import rx.util.functions.Action1;
             // we are empty, nothing to remove
             if (this.observers.length == 0) {
                 return this;
+            } else
+            if (this.observers.length == 1) {
+                if (this.subscriptions[0].equals(s)) {
+                    return createNewWith(EMPTY_S, EMPTY_O);
+                }
+                return this;
             }
-            int n = Math.max(this.observers.length - 1, 1);
+            int n = this.observers.length - 1;
             int copied = 0;
-            Subscription[] newsubscriptions = Arrays.copyOf(this.subscriptions, n);
-            SubjectObserver[] newobservers = Arrays.copyOf(this.observers, n);
+            Subscription[] newsubscriptions = new Subscription[n];
+            SubjectObserver[] newobservers = new SubjectObserver[n];
 
             for (int i = 0; i < this.subscriptions.length; i++) {
                 Subscription s0 = this.subscriptions[i];
-                if (s0 != s) {
+                if (!s0.equals(s)) {
                     if (copied == n) {
                         // if s was not found till the end of the iteration
                         // we return ourselves since no modification should
@@ -223,7 +238,13 @@ import rx.util.functions.Action1;
             // if somehow copied less than expected, truncate the arrays
             // if s is unique, this should never happen
             if (copied < n) {
-                return createNewWith(Arrays.copyOf(newsubscriptions, copied), Arrays.copyOf(newobservers, copied));
+                Subscription[] newsubscriptions2 = new Subscription[copied];
+                System.arraycopy(newsubscriptions, 0, newsubscriptions2, 0, copied);
+                
+                SubjectObserver[] newobservers2 = new SubjectObserver[copied];
+                System.arraycopy(newobservers, 0, newobservers2, 0, copied);
+
+                return createNewWith(newsubscriptions2, newobservers2);
             }
             return createNewWith(newsubscriptions, newobservers);
         }

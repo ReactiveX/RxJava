@@ -22,8 +22,8 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import rx.util.functions.Action0;
-import rx.util.functions.Action1;
+import rx.functions.Action0;
+import rx.functions.Action1;
 
 @Ignore
 // since this doesn't do any automatic testing

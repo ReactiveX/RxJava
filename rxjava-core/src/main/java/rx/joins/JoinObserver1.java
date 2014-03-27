@@ -24,9 +24,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import rx.Notification;
 import rx.Observable;
 import rx.Subscriber;
+import rx.functions.Action1;
 import rx.observers.SafeSubscriber;
-import rx.operators.SafeObservableSubscription;
-import rx.util.functions.Action1;
 
 /**
  * Default implementation of a join observer.

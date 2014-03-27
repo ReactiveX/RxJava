@@ -16,6 +16,8 @@
 package rx.observers;
 
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import rx.Notification;
 import rx.Observer;
@@ -27,22 +29,46 @@ import rx.Subscriber;
 public class TestSubscriber<T> extends Subscriber<T> {
 
     private final TestObserver<T> testObserver;
+    private final CountDownLatch latch = new CountDownLatch(1);
+    private volatile Thread lastSeenThread;
 
     public TestSubscriber(Subscriber<T> delegate) {
         this.testObserver = new TestObserver<T>(delegate);
     }
-    
+
     public TestSubscriber(Observer<T> delegate) {
         this.testObserver = new TestObserver<T>(delegate);
     }
 
     public TestSubscriber() {
-        this.testObserver = new TestObserver<T>(Subscribers.<T>empty());
+        this.testObserver = new TestObserver<T>(new Observer<T>() {
+
+            @Override
+            public void onCompleted() {
+                // do nothing
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                // do nothing
+            }
+
+            @Override
+            public void onNext(T t) {
+                // do nothing
+            }
+
+        });
     }
 
     @Override
     public void onCompleted() {
-        testObserver.onCompleted();
+        try {
+            lastSeenThread = Thread.currentThread();
+            testObserver.onCompleted();
+        } finally {
+            latch.countDown();
+        }
     }
 
     public List<Notification<T>> getOnCompletedEvents() {
@@ -51,7 +77,12 @@ public class TestSubscriber<T> extends Subscriber<T> {
 
     @Override
     public void onError(Throwable e) {
-        testObserver.onError(e);
+        try {
+            lastSeenThread = Thread.currentThread();
+            testObserver.onError(e);
+        } finally {
+            latch.countDown();
+        }
     }
 
     public List<Throwable> getOnErrorEvents() {
@@ -60,6 +91,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
 
     @Override
     public void onNext(T t) {
+        lastSeenThread = Thread.currentThread();
         testObserver.onNext(t);
     }
 
@@ -78,4 +110,37 @@ public class TestSubscriber<T> extends Subscriber<T> {
         testObserver.assertTerminalEvent();
     }
 
+    public void assertUnsubscribed() {
+        if (!isUnsubscribed()) {
+            throw new AssertionError("Not unsubscribed.");
+        }
+    }
+
+    public void awaitTerminalEvent() {
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            throw new RuntimeException("Interrupted", e);
+        }
+    }
+
+    public void awaitTerminalEvent(long timeout, TimeUnit unit) {
+        try {
+            latch.await(timeout, unit);
+        } catch (InterruptedException e) {
+            throw new RuntimeException("Interrupted", e);
+        }
+    }
+
+    public void awaitTerminalEventAndUnsubscribeOnTimeout(long timeout, TimeUnit unit) {
+        try {
+            awaitTerminalEvent(timeout, unit);
+        } catch (RuntimeException e) {
+            unsubscribe();
+        }
+    }
+
+    public Thread getLastSeenThread() {
+        return lastSeenThread;
+    }
 }

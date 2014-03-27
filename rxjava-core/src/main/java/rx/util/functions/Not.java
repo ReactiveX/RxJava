@@ -16,11 +16,9 @@
 package rx.util.functions;
 
 /**
- * Implements the negation of a predicate.
- * 
- * @param <T>
- *            The type of the single input parameter.
+ * @deprecated
  */
+@Deprecated
 public class Not<T> implements Func1<T, Boolean> {
     private final Func1<? super T, Boolean> predicate;
 

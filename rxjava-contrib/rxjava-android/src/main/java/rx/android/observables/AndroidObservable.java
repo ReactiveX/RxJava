@@ -15,8 +15,13 @@
  */
 package rx.android.observables;
 
+import static rx.android.schedulers.AndroidSchedulers.mainThread;
+
 import rx.Observable;
-import rx.operators.OperationObserveFromAndroidComponent;
+import rx.functions.Func1;
+import rx.operators.OperatorObserveFromAndroidComponent;
+import rx.operators.OperatorWeakBinding;
+
 import android.app.Activity;
 import android.app.Fragment;
 import android.os.Build;
@@ -36,7 +41,30 @@ public final class AndroidObservable {
         USES_SUPPORT_FRAGMENTS = supportFragmentsAvailable;
     }
 
-    private AndroidObservable() {}
+    private static final Func1<Activity, Boolean> ACTIVITY_VALIDATOR = new Func1<Activity, Boolean>() {
+        @Override
+        public Boolean call(Activity activity) {
+            return !activity.isFinishing();
+        }
+    };
+
+    private static final Func1<Fragment, Boolean> FRAGMENT_VALIDATOR = new Func1<Fragment, Boolean>() {
+        @Override
+        public Boolean call(Fragment fragment) {
+            return fragment.isAdded();
+        }
+    };
+
+    private static final Func1<android.support.v4.app.Fragment, Boolean> FRAGMENTV4_VALIDATOR =
+            new Func1<android.support.v4.app.Fragment, Boolean>() {
+                @Override
+                public Boolean call(android.support.v4.app.Fragment fragment) {
+                    return fragment.isAdded();
+                }
+            };
+
+    private AndroidObservable() {
+    }
 
     /**
      * Transforms a source observable to be attached to the given Activity, in such a way that notifications will always
@@ -57,9 +85,12 @@ public final class AndroidObservable {
      * @param sourceObservable the observable sequence to observe from the given Activity
      * @param <T>
      * @return a new observable sequence that will emit notifications on the main UI thread
+     * @deprecated Use {@link #bindActivity(android.app.Activity, rx.Observable)} instead
      */
+    @Deprecated
     public static <T> Observable<T> fromActivity(Activity activity, Observable<T> sourceObservable) {
-        return OperationObserveFromAndroidComponent.observeFromAndroidComponent(sourceObservable, activity);
+        Assertions.assertUiThread();
+        return OperatorObserveFromAndroidComponent.observeFromAndroidComponent(sourceObservable, activity);
     }
 
     /**
@@ -85,12 +116,54 @@ public final class AndroidObservable {
      * @param sourceObservable the observable sequence to observe from the given fragment
      * @param <T>
      * @return a new observable sequence that will emit notifications on the main UI thread
+     * @deprecated Use {@link #bindFragment(Object, rx.Observable)} instead
      */
+    @Deprecated
     public static <T> Observable<T> fromFragment(Object fragment, Observable<T> sourceObservable) {
+        Assertions.assertUiThread();
         if (USES_SUPPORT_FRAGMENTS && fragment instanceof android.support.v4.app.Fragment) {
-            return OperationObserveFromAndroidComponent.observeFromAndroidComponent(sourceObservable, (android.support.v4.app.Fragment) fragment);
+            return OperatorObserveFromAndroidComponent.observeFromAndroidComponent(sourceObservable, (android.support.v4.app.Fragment) fragment);
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB && fragment instanceof Fragment) {
-            return OperationObserveFromAndroidComponent.observeFromAndroidComponent(sourceObservable, (Fragment) fragment);
+            return OperatorObserveFromAndroidComponent.observeFromAndroidComponent(sourceObservable, (Fragment) fragment);
+        } else {
+            throw new IllegalArgumentException("Target fragment is neither a native nor support library Fragment");
+        }
+    }
+
+    /**
+     * Binds the given source sequence to the life-cycle of an activity.
+     * <p/>
+     * This helper will schedule the given sequence to be observed on the main UI thread and ensure
+     * that no notifications will be forwarded to the activity in case it gets destroyed by the Android runtime
+     * or garbage collected by the VM.
+     *
+     * @param activity the activity to bind the source sequence to
+     * @param source   the source sequence
+     */
+    public static <T> Observable<T> bindActivity(Activity activity, Observable<T> source) {
+        Assertions.assertUiThread();
+        return source.observeOn(mainThread()).lift(new OperatorWeakBinding<T, Activity>(activity, ACTIVITY_VALIDATOR));
+    }
+
+    /**
+     * Binds the given source sequence to the life-cycle of a fragment (native or support-v4).
+     * <p/>
+     * This helper will schedule the given sequence to be observed on the main UI thread and ensure
+     * that no notifications will be forwarded to the fragment in case it gets detached from its
+     * activity or garbage collected by the VM.
+     *
+     * @param fragment the fragment to bind the source sequence to
+     * @param source   the source sequence
+     */
+    public static <T> Observable<T> bindFragment(Object fragment, Observable<T> cachedSequence) {
+        Assertions.assertUiThread();
+        final Observable<T> source = cachedSequence.observeOn(mainThread());
+        if (USES_SUPPORT_FRAGMENTS && fragment instanceof android.support.v4.app.Fragment) {
+            android.support.v4.app.Fragment f = (android.support.v4.app.Fragment) fragment;
+            return source.lift(new OperatorWeakBinding<T, android.support.v4.app.Fragment>(f, FRAGMENTV4_VALIDATOR));
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB && fragment instanceof Fragment) {
+            Fragment f = (Fragment) fragment;
+            return source.lift(new OperatorWeakBinding<T, Fragment>(f, FRAGMENT_VALIDATOR));
         } else {
             throw new IllegalArgumentException("Target fragment is neither a native nor support library Fragment");
         }

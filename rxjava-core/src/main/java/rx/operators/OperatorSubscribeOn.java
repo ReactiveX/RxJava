@@ -16,16 +16,14 @@
 package rx.operators;
 
 import rx.Observable;
+import rx.Observable.Operator;
 import rx.Scheduler;
 import rx.Scheduler.Inner;
 import rx.Subscriber;
-import rx.subscriptions.CompositeSubscription;
-import rx.subscriptions.Subscriptions;
-import rx.util.functions.Action0;
-import rx.util.functions.Action1;
+import rx.functions.Action1;
 
 /**
- * Asynchronously subscribes and unsubscribes Observers on the specified Scheduler.
+ * Subscribes Observers on the specified Scheduler.
  * <p>
  * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/subscribeOn.png">
  */
@@ -39,11 +37,11 @@ public class OperatorSubscribeOn<T> implements Operator<T, Observable<T>> {
 
     @Override
     public Subscriber<? super Observable<T>> call(final Subscriber<? super T> subscriber) {
-        return new Subscriber<Observable<T>>() {
+        return new Subscriber<Observable<T>>(subscriber) {
 
             @Override
             public void onCompleted() {
-                // ignore
+                // ignore because this is a nested Observable and we expect only 1 Observable<T> emitted to onNext
             }
 
             @Override
@@ -53,46 +51,13 @@ public class OperatorSubscribeOn<T> implements Operator<T, Observable<T>> {
 
             @Override
             public void onNext(final Observable<T> o) {
-                scheduler.schedule(new Action1<Inner>() {
+                subscriber.add(scheduler.schedule(new Action1<Inner>() {
 
                     @Override
                     public void call(final Inner inner) {
-                        final CompositeSubscription cs = new CompositeSubscription();
-                        subscriber.add(Subscriptions.create(new Action0() {
-
-                            @Override
-                            public void call() {
-                                inner.schedule(new Action1<Inner>() {
-
-                                    @Override
-                                    public void call(final Inner inner) {
-                                        cs.unsubscribe();
-                                    }
-
-                                });
-                            }
-
-                        }));
-                        cs.add(subscriber);
-                        o.subscribe(new Subscriber<T>(cs) {
-
-                            @Override
-                            public void onCompleted() {
-                                subscriber.onCompleted();
-                            }
-
-                            @Override
-                            public void onError(Throwable e) {
-                                subscriber.onError(e);
-                            }
-
-                            @Override
-                            public void onNext(T t) {
-                                subscriber.onNext(t);
-                            }
-                        });
+                        o.subscribe(subscriber);
                     }
-                });
+                }));
             }
 
         };

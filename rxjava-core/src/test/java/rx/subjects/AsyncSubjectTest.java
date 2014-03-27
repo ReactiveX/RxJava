@@ -28,7 +28,7 @@ import org.mockito.Mockito;
 
 import rx.Observer;
 import rx.Subscription;
-import rx.util.functions.Action1;
+import rx.functions.Action1;
 
 public class AsyncSubjectTest {
 

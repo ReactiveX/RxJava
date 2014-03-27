@@ -32,10 +32,10 @@ import org.mockito.Mock;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
+import rx.functions.Func0;
+import rx.functions.Func1;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
-import rx.util.functions.Func0;
-import rx.util.functions.Func1;
 
 public class OperationDelayTest {
     @Mock

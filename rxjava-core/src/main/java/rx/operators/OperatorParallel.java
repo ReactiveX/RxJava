@@ -16,10 +16,11 @@
 package rx.operators;
 
 import rx.Observable;
+import rx.Observable.Operator;
 import rx.Scheduler;
 import rx.Subscriber;
+import rx.functions.Func1;
 import rx.observables.GroupedObservable;
-import rx.util.functions.Func1;
 
 /**
  * Identifies unit of work that can be executed in parallel on a given Scheduler.
@@ -28,33 +29,38 @@ public final class OperatorParallel<T, R> implements Operator<R, T> {
 
     private final Scheduler scheduler;
     private final Func1<Observable<T>, Observable<R>> f;
+    private final int degreeOfParallelism;
 
     public OperatorParallel(Func1<Observable<T>, Observable<R>> f, Scheduler scheduler) {
         this.scheduler = scheduler;
         this.f = f;
+        this.degreeOfParallelism = scheduler.degreeOfParallelism();
     }
 
     @Override
     public Subscriber<? super T> call(Subscriber<? super R> op) {
 
-        Func1<Subscriber<? super GroupedObservable<Integer, T>>, Subscriber<? super T>> groupBy =
-                new OperatorGroupBy<Integer, T>(new Func1<T, Integer>() {
+        Func1<Subscriber<? super GroupedObservable<Long, T>>, Subscriber<? super T>> groupBy =
+                new OperatorGroupBy<Long, T>(new Func1<T, Long>() {
 
-                    int i = 0;
+                    long i = 0;
 
                     @Override
-                    public Integer call(T t) {
-                        return i++ % scheduler.degreeOfParallelism();
+                    public Long call(T t) {
+                        return i++ % degreeOfParallelism;
                     }
 
                 });
 
-        Func1<Subscriber<? super Observable<R>>, Subscriber<? super GroupedObservable<Integer, T>>> map =
-                new OperatorMap<GroupedObservable<Integer, T>, Observable<R>>(
-                        new Func1<GroupedObservable<Integer, T>, Observable<R>>() {
+        Func1<Subscriber<? super Observable<R>>, Subscriber<? super GroupedObservable<Long, T>>> map =
+                new OperatorMap<GroupedObservable<Long, T>, Observable<R>>(
+                        new Func1<GroupedObservable<Long, T>, Observable<R>>() {
 
                             @Override
-                            public Observable<R> call(GroupedObservable<Integer, T> g) {
+                            public Observable<R> call(GroupedObservable<Long, T> g) {
+                                // Must use observeOn not subscribeOn because we have a single source behind groupBy.
+                                // The origin is already subscribed to, we are moving each group on to a new thread
+                                // but the origin itself can only be on a single thread.
                                 return f.call(g.observeOn(scheduler));
                             }
                         });

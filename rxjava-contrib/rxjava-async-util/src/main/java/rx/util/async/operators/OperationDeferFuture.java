@@ -19,7 +19,7 @@ import java.util.concurrent.Future;
 
 import rx.Observable;
 import rx.Scheduler;
-import rx.util.functions.Func0;
+import rx.functions.Func0;
 
 /**
  * Defer the execution of a factory method which produces an observable sequence.

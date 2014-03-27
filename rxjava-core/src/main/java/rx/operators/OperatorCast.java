@@ -15,8 +15,10 @@
  */
 package rx.operators;
 
+import rx.Observable.Operator;
 import rx.Subscriber;
-
+import rx.exceptions.Exceptions;
+import rx.exceptions.OnErrorThrowable;
 
 /**
  * Converts the elements of an observable sequence to the specified type.
@@ -45,7 +47,11 @@ public class OperatorCast<T, R> implements Operator<R, T> {
 
             @Override
             public void onNext(T t) {
-                o.onNext(castClass.cast(t));
+                try {
+                    o.onNext(castClass.cast(t));
+                } catch (Throwable e) {
+                    onError(OnErrorThrowable.addValueAsLastCause(e, t));
+                }
             }
         };
     }

@@ -24,13 +24,13 @@ import rx.Observer;
 import rx.Scheduler;
 import rx.Scheduler.Inner;
 import rx.Subscription;
+import rx.functions.Action1;
+import rx.functions.Func1;
+import rx.observers.SerializedObserver;
 import rx.observers.SynchronizedObserver;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.SerialSubscription;
-import rx.util.functions.Action0;
-import rx.util.functions.Action1;
-import rx.util.functions.Func1;
 
 /**
  * This operation is used to filter out bursts of events. This is done by ignoring the events from an observable which are too
@@ -112,7 +112,7 @@ public final class OperationDebounce {
         public DebounceObserver(Observer<? super T> observer, long timeout, TimeUnit unit, Scheduler scheduler) {
             // we need to synchronize the observer since the on* events can be coming from different
             // threads and are thus non-deterministic and could be interleaved
-            this.observer = new SynchronizedObserver<T>(observer);
+            this.observer = new SerializedObserver<T>(observer);
             this.timeout = timeout;
             this.unit = unit;
             this.scheduler = scheduler;

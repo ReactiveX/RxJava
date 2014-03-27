@@ -26,12 +26,12 @@ import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscriber;
 import rx.Subscription;
+import rx.functions.Func1;
 import rx.observables.GroupedObservable;
 import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.SerialSubscription;
-import rx.util.functions.Func1;
 
 /**
  * Groups the elements of an observable sequence according to a specified key selector, value selector and duration selector function.
@@ -102,7 +102,7 @@ public class OperationGroupByUntil<TSource, TKey, TResult, TDuration> implements
 
             GroupSubject<TKey, TResult> g;
             boolean newGroup = false;
-            synchronized (key) {
+            synchronized (gate) {
                 g = map.get(key);
                 if (g == null) {
                     g = create(key);

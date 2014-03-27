@@ -20,9 +20,9 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import rx.Observer;
-import rx.util.functions.Action0;
-import rx.util.functions.Action1;
-import rx.util.functions.Action2;
+import rx.functions.Action0;
+import rx.functions.Action1;
+import rx.functions.Action2;
 
 /**
  * An observer implementation that calls a CountDownLatch in case

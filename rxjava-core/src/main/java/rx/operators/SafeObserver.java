@@ -20,15 +20,17 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import rx.Observer;
 import rx.Subscription;
+import rx.exceptions.CompositeException;
+import rx.exceptions.OnErrorNotImplementedException;
+import rx.observers.SerializedObserver;
 import rx.plugins.RxJavaPlugins;
 import rx.subscriptions.Subscriptions;
-import rx.util.CompositeException;
-import rx.util.OnErrorNotImplementedException;
 
 /**
  * Wrapper around Observer to ensure compliance with Rx contract.
  * <p>
- * The following is taken from the Rx Design Guidelines document: http://go.microsoft.com/fwlink/?LinkID=205219
+ * The following is taken from <a href="http://go.microsoft.com/fwlink/?LinkID=205219">the Rx Design Guidelines
+ * document</a>:
  * <pre>
  * Messages sent to instances of the IObserver interface follow the following grammar:
  * 
@@ -37,8 +39,8 @@ import rx.util.OnErrorNotImplementedException;
  * This grammar allows observable sequences to send any amount (0 or more) of OnNext messages to the subscribed
  * observer instance, optionally followed by a single success (OnCompleted) or failure (OnError) message.
  * 
- * The single message indicating that an observable sequence has finished ensures that consumers of the observable
- * sequence can deterministically establish that it is safe to perform cleanup operations.
+ * The single message indicating that an observable sequence has finished ensures that consumers of the
+ * observable sequence can deterministically establish that it is safe to perform cleanup operations.
  * 
  * A single failure further ensures that abort semantics can be maintained for operators that work on
  * multiple observable sequences (see paragraph 6.6).
@@ -53,10 +55,10 @@ import rx.util.OnErrorNotImplementedException;
  * <li>When onError or onComplete occur it will unsubscribe from the Observable (if executing asynchronously).</li>
  * </ul>
  * <p>
- * It will not synchronize onNext execution. Use the {@link SynchronizedObserver} to do that.
+ * It will not synchronize onNext execution. Use the {@link SerializedObserver} to do that.
  * 
  * @param <T>
- * @Deprecated Replaced by SafeSubscriber
+ * @deprecated replaced by SafeSubscriber
  */
 @Deprecated
 public class SafeObserver<T> implements Observer<T> {

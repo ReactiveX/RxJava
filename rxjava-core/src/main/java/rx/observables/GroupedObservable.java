@@ -16,7 +16,8 @@
 package rx.observables;
 
 import rx.Observable;
-import rx.util.functions.Func1;
+import rx.Subscriber;
+import rx.functions.Func1;
 
 /**
  * An {@link Observable} that has been grouped by a key whose value can be obtained using {@link #getKey()} <p>
@@ -30,6 +31,16 @@ import rx.util.functions.Func1;
  */
 public class GroupedObservable<K, T> extends Observable<T> {
     private final K key;
+
+    public static <K, T> GroupedObservable<K, T> from(K key, final Observable<T> o) {
+        return new GroupedObservable<K, T>(key, new OnSubscribe<T>() {
+
+            @Override
+            public void call(Subscriber<? super T> s) {
+                o.subscribe(s);
+            }
+        });
+    }
 
     public GroupedObservable(K key, OnSubscribe<T> onSubscribe) {
         super(onSubscribe);

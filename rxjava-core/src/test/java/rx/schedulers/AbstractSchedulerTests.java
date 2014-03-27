@@ -20,7 +20,6 @@ import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -39,11 +38,10 @@ import rx.Scheduler;
 import rx.Scheduler.Inner;
 import rx.Subscriber;
 import rx.Subscription;
-import rx.subscriptions.BooleanSubscription;
+import rx.functions.Action0;
+import rx.functions.Action1;
+import rx.functions.Func1;
 import rx.subscriptions.Subscriptions;
-import rx.util.functions.Action0;
-import rx.util.functions.Action1;
-import rx.util.functions.Func1;
 
 /**
  * Base tests for all schedulers including Immediate/Current.

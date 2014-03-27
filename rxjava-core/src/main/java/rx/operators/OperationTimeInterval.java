@@ -21,7 +21,7 @@ import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
 import rx.schedulers.Schedulers;
-import rx.util.TimeInterval;
+import rx.schedulers.TimeInterval;
 
 /**
  * Records the time interval between consecutive elements in an observable sequence.

@@ -1,9 +1,9 @@
 package rx;
 
 import rx.Observable.OnSubscribe;
+import rx.functions.Action0;
 import rx.perf.AbstractPerformanceTester;
 import rx.perf.LongSumObserver;
-import rx.util.functions.Action0;
 
 public class ObservableCreatePerformance extends AbstractPerformanceTester {
 

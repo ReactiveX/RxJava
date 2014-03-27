@@ -21,8 +21,7 @@ import org.junit.Test;
 
 import rx.CovarianceTest.HorrorMovie;
 import rx.CovarianceTest.Movie;
-import rx.operators.OperationScan;
-import rx.util.functions.Func2;
+import rx.functions.Func2;
 
 public class ReduceTests {
 
@@ -52,7 +51,7 @@ public class ReduceTests {
                     }
                 };
 
-        Observable<Movie> reduceResult = Observable.create(OperationScan.scan(horrorMovies, chooseSecondMovie)).takeLast(1);
+        Observable<Movie> reduceResult = horrorMovies.scan(chooseSecondMovie).takeLast(1);
 
         Observable<Movie> reduceResult2 = horrorMovies.reduce(chooseSecondMovie);
     }

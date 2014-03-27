@@ -23,7 +23,7 @@ import org.mockito.InOrder;
 
 import rx.Observable;
 import rx.Observer;
-import rx.util.functions.Func2;
+import rx.functions.Func2;
 
 public class OperationSequenceEqualTests {
 

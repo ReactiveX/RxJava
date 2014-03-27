@@ -29,7 +29,9 @@ import rx.Subscriber;
  * </ul>
  * 
  * @param <T>
+ * @deprecated Use SerializedSubscriber instead as it doesn't block threads during event notification.
  */
+@Deprecated
 public final class SynchronizedSubscriber<T> extends Subscriber<T> {
 
     private final Observer<? super T> observer;
@@ -42,7 +44,7 @@ public final class SynchronizedSubscriber<T> extends Subscriber<T> {
     /**
      * Used when synchronizing an Subscriber without access to the subscription.
      * 
-     * @param Observer
+     * @param subscriber
      */
     public SynchronizedSubscriber(Subscriber<? super T> subscriber) {
         this(subscriber, new Object());

@@ -23,8 +23,9 @@ import java.util.WeakHashMap;
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
-import rx.subscriptions.Subscriptions;
-import rx.util.functions.Action0;
+import rx.android.observables.Assertions;
+import rx.android.subscriptions.AndroidSubscriptions;
+import rx.functions.Action0;
 import android.view.View;
 import android.widget.CompoundButton;
 
@@ -39,6 +40,7 @@ public class OperatorCompoundButtonInput implements Observable.OnSubscribe<Boole
 
     @Override
     public void call(final Subscriber<? super Boolean> observer) {
+        Assertions.assertUiThread();
         final CompositeOnCheckedChangeListener composite = CachedListeners.getFromViewOrCreate(button);
 
         final CompoundButton.OnCheckedChangeListener listener = new CompoundButton.OnCheckedChangeListener() {
@@ -48,7 +50,7 @@ public class OperatorCompoundButtonInput implements Observable.OnSubscribe<Boole
             }
         };
 
-        final Subscription subscription = Subscriptions.create(new Action0() {
+        final Subscription subscription = AndroidSubscriptions.unsubscribeInUiThread(new Action0() {
             @Override
             public void call() {
                 composite.removeOnCheckedChangeListener(listener);

@@ -22,8 +22,8 @@ import java.util.concurrent.TimeUnit;
 
 import rx.Scheduler;
 import rx.Subscription;
+import rx.functions.Action1;
 import rx.subscriptions.BooleanSubscription;
-import rx.util.functions.Action1;
 
 public class TestScheduler extends Scheduler {
     private final Queue<TimedAction> queue = new PriorityQueue<TimedAction>(11, new CompareActionsByTime());
@@ -97,9 +97,13 @@ public class TestScheduler extends Scheduler {
         time = targetTimeInNanos;
     }
 
+    public Inner createInnerScheduler() {
+        return new InnerTestScheduler();
+    }
+
     @Override
     public Subscription schedule(Action1<Inner> action, long delayTime, TimeUnit unit) {
-        InnerTestScheduler inner = new InnerTestScheduler();
+        Inner inner = createInnerScheduler();
         final TimedAction timedAction = new TimedAction(inner, time + unit.toNanos(delayTime), action);
         queue.add(timedAction);
         return inner;
@@ -107,7 +111,7 @@ public class TestScheduler extends Scheduler {
 
     @Override
     public Subscription schedule(Action1<Inner> action) {
-        InnerTestScheduler inner = new InnerTestScheduler();
+        Inner inner = createInnerScheduler();
         final TimedAction timedAction = new TimedAction(inner, 0, action);
         queue.add(timedAction);
         return inner;

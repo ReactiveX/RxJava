@@ -16,7 +16,7 @@
 package rx.joins;
 
 import rx.Observable;
-import rx.util.functions.Func2;
+import rx.functions.Func2;
 
 /**
  * Represents a join pattern over observable sequences.

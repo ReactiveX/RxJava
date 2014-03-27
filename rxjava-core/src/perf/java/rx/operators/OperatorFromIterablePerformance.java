@@ -4,10 +4,10 @@ import java.util.Arrays;
 import java.util.Iterator;
 
 import rx.Observable;
+import rx.functions.Action0;
 import rx.perf.AbstractPerformanceTester;
 import rx.perf.IntegerSumObserver;
 import rx.perf.LongSumObserver;
-import rx.util.functions.Action0;
 
 public class OperatorFromIterablePerformance extends AbstractPerformanceTester {
 

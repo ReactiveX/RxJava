@@ -16,7 +16,7 @@
 
 package rx.lang.scala
 
-import rx.util.functions.FuncN
+import rx.functions.FuncN
 import rx.Observable.OnSubscribeFunc
 import rx.lang.scala.observables.ConnectableObservable
 import scala.concurrent.duration
@@ -77,7 +77,7 @@ trait Observable[+T]
 {
   import scala.collection.Seq
   import scala.concurrent.duration.{Duration, TimeUnit}
-  import rx.util.functions._
+  import rx.functions._
   import rx.lang.scala.observables.BlockingObservable
   import ImplicitFunctionConversions._
   import JavaConversions._
@@ -278,8 +278,23 @@ trait Observable[+T]
    * @return an Observable that emits timestamped items from the source Observable
    */
   def timestamp: Observable[(Long, T)] = {
-    toScalaObservable[rx.util.Timestamped[_ <: T]](asJavaObservable.timestamp())
-      .map((t: rx.util.Timestamped[_ <: T]) => (t.getTimestampMillis, t.getValue))
+    toScalaObservable[rx.schedulers.Timestamped[_ <: T]](asJavaObservable.timestamp())
+      .map((t: rx.schedulers.Timestamped[_ <: T]) => (t.getTimestampMillis, t.getValue))
+  }
+
+  /**
+   * Wraps each item emitted by a source Observable in a timestamped tuple
+   * with timestamps provided by the given Scheduler.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timestamp.s.png">
+   * 
+   * @param scheduler [[rx.lang.scala.Scheduler]] to use as a time source.
+   * @return an Observable that emits timestamped items from the source
+   *         Observable with timestamps provided by the given Scheduler
+   */
+  def timestamp(scheduler: Scheduler): Observable[(Long, T)] = {
+    toScalaObservable[rx.schedulers.Timestamped[_ <: T]](asJavaObservable.timestamp(scheduler))
+      .map((t: rx.schedulers.Timestamped[_ <: T]) => (t.getTimestampMillis, t.getValue))
   }
 
   /**
@@ -1118,6 +1133,21 @@ trait Observable[+T]
   }
 
   /**
+   * Return an Observable that emits the results of sampling the items emitted by the source Observable
+   * whenever the specified sampler Observable emits an item or completes.
+   *
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/sample.o.png">
+   *
+   * @param sampler
+   *            the Observable to use for sampling the source Observable
+   * @return an Observable that emits the results of sampling the items emitted by this Observable whenever
+   *         the sampler Observable emits an item or completes
+   */
+  def sample(sampler: Observable[Any]): Observable[T] = {
+    toScalaObservable[T](asJavaObservable.sample(sampler))
+  }
+
+  /**
    * Returns an Observable that applies a function of your choosing to the first item emitted by a
    * source Observable, then feeds the result of that function along with the second item emitted
    * by an Observable into the same function, and so on until all items have been emitted by the
@@ -1528,6 +1558,22 @@ trait Observable[+T]
     toScalaObservable[(T, U)](rx.Observable.combineLatest[T, U, (T, U)](this.asJavaObservable, that.asJavaObservable, f))
   }
 
+
+  /**
+   * Combines two observables, emitting some type `R` specified in the function f,
+   * each time an event is received from one of the source observables, where the aggregation
+   * is defined by the given function.
+   *
+   *@param that
+   *           The second source observable.
+   *@param f
+               The function that is used combine the emissions of the two observables.
+   *@return An Observable that combines the source Observables according to the function f.
+   */
+  def combineLatest[U,R](that: Observable[U], f: (T, U) => R): Observable[R] = {
+    toScalaObservable[R](rx.Observable.combineLatest[T, U, R](this.asJavaObservable, that.asJavaObservable, f))
+  }
+
   /**
    * Debounces by dropping all values that are followed by newer values before the timeout value expires. The timer resets on each `onNext` call.
    *
@@ -1740,6 +1786,102 @@ trait Observable[+T]
     toScalaObservable[U](thisJava.timeout(timeout.length, timeout.unit, otherJava, scheduler.asJavaScheduler))
   }
 
+  /**
+   * Returns an Observable that mirrors the source Observable, but emits a TimeoutException if an item emitted by
+   * the source Observable doesn't arrive within a window of time after the emission of the
+   * previous item, where that period of time is measured by an Observable that is a function
+   * of the previous item.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timeout3.png">
+   * </p>
+   * Note: The arrival of the first source item is never timed out.
+   *
+   * @param timeoutSelector
+   *            a function that returns an observable for each item emitted by the source
+   *            Observable and that determines the timeout window for the subsequent item
+   * @return an Observable that mirrors the source Observable, but emits a TimeoutException if a item emitted by
+   *         the source Observable takes longer to arrive than the time window defined by the
+   *         selector for the previously emitted item
+   */
+  def timeout[V](timeoutSelector: T => Observable[V]): Observable[T] = {
+    toScalaObservable[T](asJavaObservable.timeout({ t: T => timeoutSelector(t).asJavaObservable.asInstanceOf[rx.Observable[V]] }))
+  }
+
+  /**
+   * Returns an Observable that mirrors the source Observable, but that switches to a fallback
+   * Observable if an item emitted by the source Observable doesn't arrive within a window of time
+   * after the emission of the previous item, where that period of time is measured by an
+   * Observable that is a function of the previous item.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timeout4.png">
+   * </p>
+   * Note: The arrival of the first source item is never timed out.
+   * 
+   * @param timeoutSelector
+   *            a function that returns an observable for each item emitted by the source
+   *            Observable and that determines the timeout window for the subsequent item
+   * @param other
+   *            the fallback Observable to switch to if the source Observable times out
+   * @return an Observable that mirrors the source Observable, but switches to mirroring a
+   *         fallback Observable if a item emitted by the source Observable takes longer to arrive
+   *         than the time window defined by the selector for the previously emitted item
+   */
+  def timeout[V, O >: T](timeoutSelector: T => Observable[V], other: Observable[O]): Observable[O] = {
+    val thisJava = this.asJavaObservable.asInstanceOf[rx.Observable[O]]
+    toScalaObservable[O](thisJava.timeout(
+      { t: O => timeoutSelector(t.asInstanceOf[T]).asJavaObservable.asInstanceOf[rx.Observable[V]] },
+      other.asJavaObservable))
+  }
+
+  /**
+   * Returns an Observable that mirrors the source Observable, but emits a TimeoutException
+   * if either the first item emitted by the source Observable or any subsequent item
+   * don't arrive within time windows defined by other Observables.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timeout5.png">
+   * </p>
+   * @param firstTimeoutSelector
+   *            a function that returns an Observable that determines the timeout window for the
+   *            first source item
+   * @param timeoutSelector
+   *            a function that returns an Observable for each item emitted by the source
+   *            Observable and that determines the timeout window in which the subsequent source
+   *            item must arrive in order to continue the sequence
+   * @return an Observable that mirrors the source Observable, but emits a TimeoutException if either the first item or any subsequent item doesn't
+   *         arrive within the time windows specified by the timeout selectors
+   */
+  def timeout[U, V](firstTimeoutSelector: () => Observable[U], timeoutSelector: T => Observable[V]): Observable[T] = {
+    toScalaObservable[T](asJavaObservable.timeout(
+      { firstTimeoutSelector().asJavaObservable.asInstanceOf[rx.Observable[U]] },
+      { t: T => timeoutSelector(t).asJavaObservable.asInstanceOf[rx.Observable[V]] }))
+  }
+
+  /**
+   * Returns an Observable that mirrors the source Observable, but switches to a fallback
+   * Observable if either the first item emitted by the source Observable or any subsequent item
+   * don't arrive within time windows defined by other Observables.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timeout6.png">
+   * </p>
+   * @param firstTimeoutSelector
+   *            a function that returns an Observable which determines the timeout window for the
+   *            first source item
+   * @param timeoutSelector
+   *            a function that returns an Observable for each item emitted by the source
+   *            Observable and that determines the timeout window in which the subsequent source
+   *            item must arrive in order to continue the sequence
+   * @param other
+   *            the fallback Observable to switch to if the source Observable times out
+   * @return an Observable that mirrors the source Observable, but switches to the {@code other} Observable if either the first item emitted by the source Observable or any
+   *         subsequent item don't arrive within time windows defined by the timeout selectors
+   */
+  def timeout[U, V, O >: T](firstTimeoutSelector: () => Observable[U], timeoutSelector: T => Observable[V], other: Observable[O]): Observable[O] = {
+    val thisJava = this.asJavaObservable.asInstanceOf[rx.Observable[O]]
+    toScalaObservable[O](thisJava.timeout(
+      { firstTimeoutSelector().asJavaObservable.asInstanceOf[rx.Observable[U]] },
+      { t: O => timeoutSelector(t.asInstanceOf[T]).asJavaObservable.asInstanceOf[rx.Observable[V]] },
+      other.asJavaObservable))
+  }
 
   /**
    * Returns an Observable that sums up the elements of this Observable.
@@ -2094,6 +2236,134 @@ trait Observable[+T]
   def doOnEach(onNext: T => Unit, onError: Throwable => Unit, onCompleted: () => Unit): Observable[T] = {
     toScalaObservable[T](asJavaObservable.doOnEach(Observer(onNext, onError,onCompleted)))
   }
+
+  /**
+   * Given two Observables, mirror the one that first emits an item.
+   *
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/amb.png">
+   *
+   * @param that
+   *            an Observable competing to react first
+   * @return an Observable that emits the same sequence of items as whichever of `this` or `that` first emitted an item.
+   */
+  def amb[U >: T](that: Observable[U]): Observable[U] = {
+    val thisJava: rx.Observable[_ <: U] = this.asJavaObservable
+    val thatJava: rx.Observable[_ <: U] = that.asJavaObservable
+    toScalaObservable[U](rx.Observable.amb(thisJava, thatJava))
+  }
+
+  /**
+   * Returns an Observable that emits the items emitted by the source Observable shifted forward in time by a
+   * specified delay. Error notifications from the source Observable are not delayed.
+   *
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/delay.png">
+   * 
+   * @param delay the delay to shift the source by
+   * @return the source Observable shifted in time by the specified delay
+   */
+  def delay(delay: Duration): Observable[T] = {
+    toScalaObservable[T](asJavaObservable.delay(delay.length, delay.unit))
+  }
+
+  /**
+   * Returns an Observable that emits the items emitted by the source Observable shifted forward in time by a
+   * specified delay. Error notifications from the source Observable are not delayed.
+   *
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/delay.s.png">
+   * 
+   * @param delay the delay to shift the source by
+   * @param scheduler the Scheduler to use for delaying
+   * @return the source Observable shifted in time by the specified delay
+   */
+  def delay(delay: Duration, scheduler: Scheduler): Observable[T] = {
+    toScalaObservable[T](asJavaObservable.delay(delay.length, delay.unit, scheduler))
+  }
+
+  /**
+   * Return an Observable that delays the subscription to the source Observable by a given amount of time.
+   *
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/delaySubscription.png">
+   * 
+   * @param delay the time to delay the subscription
+   * @return an Observable that delays the subscription to the source Observable by the given amount
+   */
+  def delaySubscription(delay: Duration): Observable[T] = {
+    toScalaObservable[T](asJavaObservable.delaySubscription(delay.length, delay.unit))
+  }
+
+  /**
+   * Return an Observable that delays the subscription to the source Observable by a given amount of time,
+   * both waiting and subscribing on a given Scheduler.
+   *
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/delaySubscription.s.png">
+   * 
+   * @param delay the time to delay the subscription
+   * @param scheduler the Scheduler on which the waiting and subscription will happen
+   * @return an Observable that delays the subscription to the source Observable by a given
+   *         amount, waiting and subscribing on the given Scheduler
+   */
+  def delaySubscription(delay: Duration, scheduler: Scheduler): Observable[T] = {
+    toScalaObservable[T](asJavaObservable.delaySubscription(delay.length, delay.unit, scheduler))
+  }
+
+  /**
+   * Returns an Observable that emits the single item at a specified index in a sequence of emissions from a
+   * source Observbable.
+   * 
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/elementAt.png">
+   * 
+   * @param index
+   *            the zero-based index of the item to retrieve
+   * @return an Observable that emits a single item: the item at the specified position in the sequence of
+   *         those emitted by the source Observable
+   * @throws IndexOutOfBoundsException
+   *             if index is greater than or equal to the number of items emitted by the source
+   *             Observable
+   * @throws IndexOutOfBoundsException
+   *             if index is less than 0
+   * @see `Observable.elementAt`
+   */
+  def apply(index: Int): Observable[T] = elementAt(index)
+
+  /**
+   * Returns an Observable that emits the single item at a specified index in a sequence of emissions from a
+   * source Observbable.
+   * 
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/elementAt.png">
+   * 
+   * @param index
+   *            the zero-based index of the item to retrieve
+   * @return an Observable that emits a single item: the item at the specified position in the sequence of
+   *         those emitted by the source Observable
+   * @throws IndexOutOfBoundsException
+   *             if index is greater than or equal to the number of items emitted by the source
+   *             Observable
+   * @throws IndexOutOfBoundsException
+   *             if index is less than 0
+   */
+  def elementAt(index: Int): Observable[T] = {
+    toScalaObservable[T](asJavaObservable.elementAt(index))
+  }
+
+  /**
+   * Returns an Observable that emits the item found at a specified index in a sequence of emissions from a
+   * source Observable, or a default item if that index is out of range.
+   * 
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/elementAtOrDefault.png">
+   * 
+   * @param index
+   *            the zero-based index of the item to retrieve
+   * @param defaultValue
+   *            the default item
+   * @return an Observable that emits the item at the specified position in the sequence emitted by the source
+   *         Observable, or the default item if that index is outside the bounds of the source sequence
+   * @throws IndexOutOfBoundsException
+   *             if {@code index} is less than 0
+   */
+  def elementAtOrDefault[U >: T](index: Int, default: U): Observable[U] = {
+    val thisJava = asJavaObservable.asInstanceOf[rx.Observable[U]]
+    toScalaObservable[U](thisJava.elementAtOrDefault(index, default))
+  }
 }
 
 /**
@@ -2130,9 +2400,6 @@ object Observable {
    * should invoke the Observer's [[rx.lang.scala.Observer.onNext onNext]], [[rx.lang.scala.Observer.onError onError]], and [[rx.lang.scala.Observer.onCompleted onCompleted]] methods
    * appropriately.
    *
-   * A well-formed Observable must invoke either the Observer's `onCompleted` method
-   * exactly once or its `onError` method exactly once.
-   *
    * See <a href="http://go.microsoft.com/fwlink/?LinkID=205219">Rx Design Guidelines (PDF)</a>
    * for detailed information.
    *
@@ -2146,6 +2413,7 @@ object Observable {
    * @return
    *         an Observable that, when an [[rx.lang.scala.Observer]] subscribes to it, will execute the given function.
    */
+  @deprecated("Use `apply[T](Subscriber[T] => Unit)` instead", "0.17.0")
   def create[T](func: Observer[T] => Subscription): Observable[T] = {
     toScalaObservable[T](rx.Observable.create(new OnSubscribeFunc[T] {
       def onSubscribe(t1: rx.Observer[_ >: T]): rx.Subscription = {
@@ -2154,6 +2422,41 @@ object Observable {
     }))
   }
 
+  /*
+  Note: It's dangerous to have two overloads where one takes an `Observer[T] => Subscription`
+  function and the other takes a `Subscriber[T] => Unit` function, because expressions like
+  `o => Subscription{}` have both of these types.
+  So we call the old create method "create", and the new create method "apply".
+  Try it out yourself here:
+  def foo[T]: Unit = { 
+    val fMeant: Observer[T] => Subscription = o => Subscription{}
+    val fWrong: Subscriber[T] => Unit = o => Subscription{}
+  }
+  */
+
+  /**
+   * Returns an Observable that will execute the specified function when a someone subscribes to it.
+   *
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/create.png">
+   *
+   * Write the function you pass so that it behaves as an Observable: It should invoke the
+   * Subscriber's `onNext`, `onError`, and `onCompleted` methods appropriately.
+   *
+   * See <a href="http://go.microsoft.com/fwlink/?LinkID=205219">Rx Design Guidelines (PDF)</a> for detailed
+   * information.
+   *
+   * @tparam T
+   *            the type of the items that this Observable emits
+   * @param f
+   *            a function that accepts a `Subscriber[T]`, and invokes its `onNext`,
+   *            `onError`, and `onCompleted` methods as appropriate
+   * @return an Observable that, when someone subscribes to it, will execute the specified
+   *         function
+   */
+  def apply[T](f: Subscriber[T] => Unit): Observable[T] = {
+    toScalaObservable(rx.Observable.create(f))
+  }
+  
   /**
    * Returns an Observable that invokes an [[rx.lang.scala.Observer]]'s [[rx.lang.scala.Observer.onError onError]]
    * method when the Observer subscribes to it.

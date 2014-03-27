@@ -19,14 +19,14 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import rx.Observable;
 import rx.Scheduler;
+import rx.functions.Func1;
 import rx.observables.GroupedObservable;
 import rx.schedulers.Schedulers;
-import rx.util.functions.Func1;
 
 public class OperationParallelMerge {
 
     public static <T> Observable<Observable<T>> parallelMerge(final Observable<Observable<T>> source, final int parallelObservables) {
-        return parallelMerge(source, parallelObservables, Schedulers.currentThread());
+        return parallelMerge(source, parallelObservables, Schedulers.immediate());
     }
 
     public static <T> Observable<Observable<T>> parallelMerge(final Observable<Observable<T>> source, final int parallelObservables, final Scheduler scheduler) {

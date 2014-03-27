@@ -24,13 +24,13 @@ import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
+import rx.functions.Func1;
+import rx.functions.Func2;
 import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.RefCountSubscription;
 import rx.subscriptions.SerialSubscription;
-import rx.util.functions.Func1;
-import rx.util.functions.Func2;
 
 /**
  * Corrrelates two sequences when they overlap and groups the results.

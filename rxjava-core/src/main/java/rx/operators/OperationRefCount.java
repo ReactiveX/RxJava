@@ -18,9 +18,9 @@ package rx.operators;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
+import rx.functions.Action0;
 import rx.observables.ConnectableObservable;
 import rx.subscriptions.Subscriptions;
-import rx.util.functions.Action0;
 
 /**
  * Returns an observable sequence that stays connected to the source as long

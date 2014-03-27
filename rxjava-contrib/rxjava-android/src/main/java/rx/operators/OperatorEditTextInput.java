@@ -18,8 +18,9 @@ package rx.operators;
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
-import rx.subscriptions.Subscriptions;
-import rx.util.functions.Action0;
+import rx.android.observables.Assertions;
+import rx.android.subscriptions.AndroidSubscriptions;
+import rx.functions.Action0;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.EditText;
@@ -35,6 +36,7 @@ public class OperatorEditTextInput implements Observable.OnSubscribe<String> {
 
     @Override
     public void call(final Subscriber<? super String> observer) {
+        Assertions.assertUiThread();
         final TextWatcher watcher = new SimpleTextWatcher() {
             @Override
             public void afterTextChanged(final Editable editable) {
@@ -42,7 +44,7 @@ public class OperatorEditTextInput implements Observable.OnSubscribe<String> {
             }
         };
         
-        final Subscription subscription = Subscriptions.create(new Action0() {
+        final Subscription subscription = AndroidSubscriptions.unsubscribeInUiThread(new Action0() {
             @Override
             public void call() {
                 input.removeTextChangedListener(watcher);

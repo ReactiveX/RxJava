@@ -20,8 +20,8 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Notification;
 import rx.Observer;
+import rx.functions.Action1;
 import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
-import rx.util.functions.Action1;
 
 /**
  * Subject that publishes the most recent and all subsequent events to each subscribed {@link Observer}.
@@ -67,23 +67,27 @@ import rx.util.functions.Action1;
 public final class BehaviorSubject<T> extends Subject<T, T> {
 
     /**
-     * Creates a {@link BehaviorSubject} which publishes the last and all subsequent events to each {@link Observer} that subscribes to it.
+     * Creates a {@link BehaviorSubject} which publishes the last and all subsequent events to each
+     * {@link Observer} that subscribes to it.
      * 
      * @param defaultValue
-     *            The value which will be published to any {@link Observer} as long as the {@link BehaviorSubject} has not yet received any events.
-     * @return the constructed {@link BehaviorSubject}.
-     * @deprecated Use {@link create()} instead.
+     *            the value which will be published to any {@link Observer} as long as the
+     *            {@link BehaviorSubject} has not yet received any events
+     * @return the constructed {@link BehaviorSubject}
+     * @deprecated use {@link #create(T)} instead
      */
     public static <T> BehaviorSubject<T> createWithDefaultValue(T defaultValue) {
         return create(defaultValue);
     }
 
     /**
-     * Creates a {@link BehaviorSubject} which publishes the last and all subsequent events to each {@link Observer} that subscribes to it.
+     * Creates a {@link BehaviorSubject} which publishes the last and all subsequent events to each
+     * {@link Observer} that subscribes to it.
      * 
      * @param defaultValue
-     *            The value which will be published to any {@link Observer} as long as the {@link BehaviorSubject} has not yet received any events.
-     * @return the constructed {@link BehaviorSubject}.
+     *            the value which will be published to any {@link Observer} as long as the
+     *            {@link BehaviorSubject} has not yet received any events
+     * @return the constructed {@link BehaviorSubject}
      */
     public static <T> BehaviorSubject<T> create(T defaultValue) {
         final SubjectSubscriptionManager<T> subscriptionManager = new SubjectSubscriptionManager<T>();
@@ -124,7 +128,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
                          */
                         lastNotification.get().accept(o);
                     }
-                });
+                }, null);
 
         return new BehaviorSubject<T>(onSubscribe, subscriptionManager, lastNotification);
     }

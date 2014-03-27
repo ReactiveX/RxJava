@@ -25,13 +25,14 @@ import java.awt.event.MouseEvent;
 import java.util.Set;
 
 import javax.swing.AbstractButton;
+import javax.swing.SwingUtilities;
 
 import rx.Observable;
+import rx.functions.Func1;
 import rx.swing.sources.AbstractButtonSource;
 import rx.swing.sources.ComponentEventSource;
 import rx.swing.sources.KeyEventSource;
 import rx.swing.sources.MouseEventSource;
-import rx.util.functions.Func1;
 
 /**
  * Allows creating observables from various sources specific to Swing. 
@@ -139,5 +140,16 @@ public enum SwingObservable { ; // no instances
      */
     public static Observable<Dimension> fromResizing(Component component) {
         return ComponentEventSource.fromResizing(component);
+    }
+
+    /**
+     * Check if the current thead is the event dispatch thread.
+     * 
+     * @throws IllegalStateException if the current thread is not the event dispatch thread.
+     */
+    public static void assertEventDispatchThread() {
+        if (!SwingUtilities.isEventDispatchThread()) {
+            throw new IllegalStateException("Need to run in the event dispatch thread, but was " + Thread.currentThread());
+        }
     }
 }

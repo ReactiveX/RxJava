@@ -19,8 +19,8 @@ import java.util.concurrent.TimeUnit;
 
 import rx.Scheduler;
 import rx.Subscription;
+import rx.functions.Action1;
 import rx.subscriptions.BooleanSubscription;
-import rx.util.functions.Action1;
 
 /**
  * Executes work immediately on the current thread.
@@ -28,7 +28,16 @@ import rx.util.functions.Action1;
 public final class ImmediateScheduler extends Scheduler {
     private static final ImmediateScheduler INSTANCE = new ImmediateScheduler();
 
+    /**
+     * @deprecated Use Schedulers.immediate();
+     * @return
+     */
+    @Deprecated
     public static ImmediateScheduler getInstance() {
+        return INSTANCE;
+    }
+
+    /* package */static ImmediateScheduler instance() {
         return INSTANCE;
     }
 
@@ -49,7 +58,6 @@ public final class ImmediateScheduler extends Scheduler {
         return inner.innerSubscription;
     }
 
-    
     private class InnerImmediateScheduler extends Scheduler.Inner implements Subscription {
 
         final BooleanSubscription innerSubscription = new BooleanSubscription();

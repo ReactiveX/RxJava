@@ -23,7 +23,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import rx.Notification;
 import rx.Observable;
 import rx.Observer;
-import rx.util.Exceptions;
+import rx.exceptions.Exceptions;
 
 /**
  * Returns an Iterator that iterates over all items emitted by a specified Observable.

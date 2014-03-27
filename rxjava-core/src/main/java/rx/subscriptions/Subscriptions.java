@@ -18,8 +18,8 @@ package rx.subscriptions;
 import java.util.concurrent.Future;
 
 import rx.Subscription;
+import rx.functions.Action0;
 import rx.operators.SafeObservableSubscription;
-import rx.util.functions.Action0;
 
 /**
  * Helper methods and utilities for creating and working with {@link Subscription} objects

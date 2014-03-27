@@ -16,7 +16,6 @@
 package rx.observers;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -27,7 +26,6 @@ import rx.Observer;
  * Observer usable for unit testing to perform assertions, inspect received events or wrap a mocked Observer.
  */
 public class TestObserver<T> implements Observer<T> {
-
 
     private final Observer<T> delegate;
     private final ArrayList<T> onNextEvents = new ArrayList<T>();
@@ -92,7 +90,8 @@ public class TestObserver<T> implements Observer<T> {
                     throw new AssertionError("Value at index: " + i + " expected to be [null] but was: [" + onNextEvents.get(i) + "]");
                 }
             } else if (!items.get(i).equals(onNextEvents.get(i))) {
-                throw new AssertionError("Value at index: " + i + " expected to be [" + items.get(i) + "] but was: [" + onNextEvents.get(i) + "]");
+                throw new AssertionError("Value at index: " + i + " expected to be [" + items.get(i) + "] (" + items.get(i).getClass().getSimpleName() + ") but was: [" + onNextEvents.get(i) + "] (" + onNextEvents.get(i).getClass().getSimpleName() + ")");
+
             }
         }
 

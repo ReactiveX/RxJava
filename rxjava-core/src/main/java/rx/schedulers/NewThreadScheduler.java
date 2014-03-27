@@ -25,9 +25,9 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Scheduler;
 import rx.Subscription;
+import rx.functions.Action1;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.Subscriptions;
-import rx.util.functions.Action1;
 
 /**
  * Schedules work on a new thread.
@@ -46,7 +46,16 @@ public class NewThreadScheduler extends Scheduler {
         }
     };
 
+    /**
+     * @deprecated Use Schedulers.newThread();
+     * @return
+     */
+    @Deprecated
     public static NewThreadScheduler getInstance() {
+        return INSTANCE;
+    }
+
+    /* package */static NewThreadScheduler instance() {
         return INSTANCE;
     }
 

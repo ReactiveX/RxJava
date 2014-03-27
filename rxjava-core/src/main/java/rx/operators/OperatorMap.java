@@ -15,8 +15,10 @@
  */
 package rx.operators;
 
+import rx.Observable.Operator;
 import rx.Subscriber;
-import rx.util.functions.Func1;
+import rx.exceptions.OnErrorThrowable;
+import rx.functions.Func1;
 
 /**
  * Applies a function of your choosing to every item emitted by an Observable, and returns this
@@ -51,7 +53,7 @@ public final class OperatorMap<T, R> implements Operator<R, T> {
                 try {
                     o.onNext(transformer.call(t));
                 } catch (Throwable e) {
-                    onError(e);
+                    onError(OnErrorThrowable.addValueAsLastCause(e, t));
                 }
             }
 
@@ -59,3 +61,4 @@ public final class OperatorMap<T, R> implements Operator<R, T> {
     }
 
 }
+

@@ -16,7 +16,7 @@
 package rx.lang.scala
 
 import scala.concurrent.duration.Duration
-import rx.util.functions.Action1
+import rx.functions.Action1
 import rx.lang.scala.schedulers._
 import scala.concurrent.duration
 import rx.lang.scala.JavaConversions._

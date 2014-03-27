@@ -23,15 +23,40 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 import rx.Scheduler;
+import rx.plugins.RxJavaPlugins;
 
 /**
  * Static factory methods for creating Schedulers.
  */
 public class Schedulers {
-    private static final ScheduledExecutorService COMPUTATION_EXECUTOR = createComputationExecutor();
-    private static final Executor IO_EXECUTOR = createIOExecutor();
+
+    private final Scheduler computationScheduler;
+    private final Scheduler ioScheduler;
+    private final Scheduler newThreadScheduler;
+
+    private static final Schedulers INSTANCE = new Schedulers();
 
     private Schedulers() {
+        Scheduler c = RxJavaPlugins.getInstance().getDefaultSchedulers().getComputationScheduler();
+        if (c != null) {
+            computationScheduler = c;
+        } else {
+            computationScheduler = executor(createComputationExecutor());
+        }
+
+        Scheduler io = RxJavaPlugins.getInstance().getDefaultSchedulers().getIOScheduler();
+        if (io != null) {
+            ioScheduler = io;
+        } else {
+            ioScheduler = executor(createIOExecutor());
+        }
+
+        Scheduler nt = RxJavaPlugins.getInstance().getDefaultSchedulers().getNewThreadScheduler();
+        if (nt != null) {
+            newThreadScheduler = nt;
+        } else {
+            newThreadScheduler = NewThreadScheduler.instance();
+        }
 
     }
 
@@ -41,18 +66,18 @@ public class Schedulers {
      * @return {@link ImmediateScheduler} instance
      */
     public static Scheduler immediate() {
-        return ImmediateScheduler.getInstance();
+        return ImmediateScheduler.instance();
     }
 
     /**
      * {@link Scheduler} that queues work on the current thread to be executed after the current work completes.
      * 
      * @return {@link TrampolineScheduler} instance
-     * @deprecated Use trampoline() instead
+     * @deprecated use {@link #trampoline()} instead
      */
     @Deprecated
     public static Scheduler currentThread() {
-        return TrampolineScheduler.getInstance();
+        return TrampolineScheduler.instance();
     }
 
     /**
@@ -61,16 +86,16 @@ public class Schedulers {
      * @return {@link TrampolineScheduler} instance
      */
     public static Scheduler trampoline() {
-        return TrampolineScheduler.getInstance();
+        return TrampolineScheduler.instance();
     }
-    
+
     /**
      * {@link Scheduler} that creates a new {@link Thread} for each unit of work.
      * 
      * @return {@link NewThreadScheduler} instance
      */
     public static Scheduler newThread() {
-        return NewThreadScheduler.getInstance();
+        return INSTANCE.newThreadScheduler;
     }
 
     /**
@@ -96,18 +121,19 @@ public class Schedulers {
     /**
      * {@link Scheduler} intended for computational work.
      * <p>
-     * The implementation is backed by a {@link ScheduledExecutorService} thread-pool sized to the number of CPU cores.
+     * The implementation is backed by a {@link ScheduledExecutorService} thread-pool sized to the number of CPU
+     * cores.
      * <p>
      * This can be used for event-loops, processing callbacks and other computational work.
      * <p>
      * Do not perform IO-bound work on this scheduler. Use {@link #io()} instead.
      * 
-     * @return {@link ExecutorScheduler} for computation-bound work.
-     * @Deprecated Use {@link #computation()}
+     * @return {@link ExecutorScheduler} for computation-bound work
+     * @deprecated use {@link #computation()}
      */
     @Deprecated
     public static Scheduler threadPoolForComputation() {
-        return executor(COMPUTATION_EXECUTOR);
+        return computation();
     }
 
     /**
@@ -117,10 +143,10 @@ public class Schedulers {
      * <p>
      * Do not perform IO-bound work on this scheduler. Use {@link #io()} instead.
      * 
-     * @return {@link Scheduler} for computation-bound work.
+     * @return {@link Scheduler} for computation-bound work
      */
     public static Scheduler computation() {
-        return executor(COMPUTATION_EXECUTOR);
+        return INSTANCE.computationScheduler;
     }
 
     /**
@@ -132,12 +158,12 @@ public class Schedulers {
      * <p>
      * Do not perform computational work on this scheduler. Use {@link #computation()} instead.
      * 
-     * @return {@link ExecutorScheduler} for IO-bound work.
-     * @deprecated Use {@link #io()} instead.
+     * @return {@link ExecutorScheduler} for IO-bound work
+     * @deprecated use {@link #io()} instead
      */
     @Deprecated
     public static Scheduler threadPoolForIO() {
-        return executor(IO_EXECUTOR);
+        return io();
     }
 
     /**
@@ -149,10 +175,10 @@ public class Schedulers {
      * <p>
      * Do not perform computational work on this scheduler. Use {@link #computation()} instead.
      * 
-     * @return {@link ExecutorScheduler} for IO-bound work.
+     * @return {@link ExecutorScheduler} for IO-bound work
      */
     public static Scheduler io() {
-        return executor(IO_EXECUTOR);
+        return INSTANCE.ioScheduler;
     }
 
     private static ScheduledExecutorService createComputationExecutor() {
