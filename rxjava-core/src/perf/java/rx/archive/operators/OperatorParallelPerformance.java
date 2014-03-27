@@ -1,10 +1,10 @@
-package rx.operators;
+package rx.archive.operators;
 
 import rx.Observable;
+import rx.archive.perf.AbstractPerformanceTester;
+import rx.archive.perf.IntegerSumObserver;
 import rx.functions.Action0;
 import rx.functions.Func1;
-import rx.perf.AbstractPerformanceTester;
-import rx.perf.IntegerSumObserver;
 
 public class OperatorParallelPerformance extends AbstractPerformanceTester {
 

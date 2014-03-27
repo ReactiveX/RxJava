@@ -1,13 +1,13 @@
-package rx.operators;
+package rx.archive.operators;
 
 import java.util.Arrays;
 import java.util.Iterator;
 
 import rx.Observable;
+import rx.archive.perf.AbstractPerformanceTester;
+import rx.archive.perf.IntegerSumObserver;
+import rx.archive.perf.LongSumObserver;
 import rx.functions.Action0;
-import rx.perf.AbstractPerformanceTester;
-import rx.perf.IntegerSumObserver;
-import rx.perf.LongSumObserver;
 
 public class OperatorFromIterablePerformance extends AbstractPerformanceTester {
 

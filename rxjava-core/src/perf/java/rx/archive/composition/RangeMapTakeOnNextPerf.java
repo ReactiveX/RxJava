@@ -1,8 +1,8 @@
-package rx.composition;
+package rx.archive.composition;
 
 import rx.Observable;
-import rx.perf.AbstractPerformanceTester;
-import rx.perf.IntegerSumObserver;
+import rx.archive.perf.AbstractPerformanceTester;
+import rx.archive.perf.IntegerSumObserver;
 import rx.util.functions.Action0;
 import rx.util.functions.Func1;
 
