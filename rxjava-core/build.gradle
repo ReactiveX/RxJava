@@ -1,8 +1,8 @@
 apply plugin: 'maven'
 apply plugin: 'osgi'
 
-sourceCompatibility = JavaVersion.VERSION_1_6
-targetCompatibility = JavaVersion.VERSION_1_6
+sourceCompatibility = JavaVersion.VERSION_1_7
+targetCompatibility = JavaVersion.VERSION_1_7
 
 dependencies {
     testCompile 'junit:junit-dep:4.10'
