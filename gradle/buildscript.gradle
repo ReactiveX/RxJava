@@ -2,10 +2,16 @@
 repositories {
     // Repo in addition to maven central
     repositories { maven { url 'http://dl.bintray.com/content/netflixoss/external-gradle-plugins/' } } // For gradle-release
+    maven {
+        //FIXME: waiting for https://github.com/johnrengelman/shadow/pull/38 to merge
+        name 'Shadow'
+        url 'http://dl.bintray.com/content/gvsmirnov/gradle-plugins'
+    }
 }
 dependencies {
     classpath 'nl.javadude.gradle.plugins:license-gradle-plugin:0.6.1'
     classpath 'com.mapvine:gradle-cobertura-plugin:0.1'
     classpath 'gradle-release:gradle-release:1.1.5'
     classpath 'org.ajoberstar:gradle-git:0.5.0'
+    classpath 'com.github.jengelman.gradle.plugins:shadow:0.8.1'
 }
