@@ -13,7 +13,7 @@ buildscript {
         jcenter()
     }
 	
-    apply from: file('gradle/buildscript.gradle'), to: buildscript 
+    apply from: file('gradle/buildscript.gradle'), to: buildscript
 }
 
 allprojects {
@@ -27,6 +27,7 @@ allprojects {
 
 subprojects {
     apply plugin: 'java'
+    apply plugin: 'shadow'
     group = "com.netflix.rxjava"
 
     // make 'examples' use the same classpath
@@ -55,11 +56,18 @@ subprojects {
 		dependsOn(perfClasses)
     }
 
+    task perfJar(type: Jar, dependsOn: perfClasses) {
+        from sourceSets.perf.output + sourceSets.main.output
+    }
+
     dependencies {
         perfCompile 'org.openjdk.jmh:jmh-core:0.5.3'
         perfCompile 'org.openjdk.jmh:jmh-generator-annprocess:0.5.3'
-
         //perfCompile project
+    }
+
+    artifacts {
+        perfRuntime perfJar
     }
     
     eclipse {  
@@ -120,7 +128,17 @@ subprojects {
 	 		args '.*OperatorSerializePerf.*' // for running only a specific test
 		}
 	}
-	
+
+    shadow {
+        classifier = "benchmarks"
+        includeDependenciesFor = ["runtime", "perfRuntime"]
+
+        transformer(com.github.jengelman.gradle.plugins.shadow.transformers.ManifestResourceTransformer) {
+            mainClass = "org.openjdk.jmh.Main"
+        }
+    }
+
+    shadowJar.dependsOn perfJar
 }
 
 project(':rxjava-core') {
