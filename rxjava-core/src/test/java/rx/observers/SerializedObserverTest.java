@@ -15,9 +15,15 @@
  */
 package rx.observers;
 
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
@@ -28,14 +34,17 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import rx.Observable;
+import rx.Observable.OnSubscribe;
 import rx.Observer;
 import rx.Subscriber;
 import rx.Subscription;
+import rx.schedulers.Schedulers;
 
 public class SerializedObserverTest {
 
@@ -265,6 +274,111 @@ public class SerializedObserverTest {
         }
     }
 
+    @Test
+    public void testNotificationDelay() {
+        ExecutorService tp = Executors.newFixedThreadPool(2);
+
+        TestSubscriber<String> to = new TestSubscriber<String>(new Observer<String>() {
+
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(String t) {
+                // force it to take time when delivering
+                // so the second thread will asynchronously enqueue
+                try {
+                    Thread.sleep(50);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        });
+        Observer<String> o = serializedObserver(to);
+
+        Future<?> f1 = tp.submit(new OnNextThread(o, 1));
+        Future<?> f2 = tp.submit(new OnNextThread(o, 1));
+
+        waitOnThreads(f1, f2);
+        // not completed yet
+
+        assertEquals(2, to.getOnNextEvents().size());
+        System.out.println(to.getOnNextEvents());
+        o.onCompleted();
+        System.out.println(to.getOnNextEvents());
+    }
+
+    /**
+     * Demonstrates thread starvation problem.
+     * 
+     * No solution on this for now. Trade-off in this direction as per https://github.com/Netflix/RxJava/issues/998#issuecomment-38959474
+     * Probably need backpressure for this to work
+     * 
+     * When using SynchronizedObserver we get this output:
+     * 
+     * p1: 18 p2: 68 => should be close to each other unless we have thread starvation
+     * 
+     * When using SerializedObserver we get:
+     * 
+     * p1: 1 p2: 2445261 => should be close to each other unless we have thread starvation
+     * 
+     * This demonstrates how SynchronizedObserver balances back and forth better, and blocks emission.
+     * The real issue in this example is the async buffer-bloat, so we need backpressure.
+     * 
+     * 
+     * @throws InterruptedException
+     */
+    @Ignore
+    @Test
+    public void testThreadStarvation() throws InterruptedException {
+
+        TestSubscriber<String> to = new TestSubscriber<String>(new Observer<String>() {
+
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(String t) {
+                // force it to take time when delivering
+                try {
+                    Thread.sleep(1);
+                } catch (InterruptedException e) {
+                }
+            }
+
+        });
+        Observer<String> o = serializedObserver(to);
+
+        AtomicInteger p1 = new AtomicInteger();
+        AtomicInteger p2 = new AtomicInteger();
+
+        Subscription s1 = infinite(p1).subscribe(o);
+        Subscription s2 = infinite(p2).subscribe(o);
+
+        Thread.sleep(100);
+
+        System.out.println("p1: " + p1.get() + " p2: " + p2.get() + " => should be close to each other unless we have thread starvation");
+        assertEquals(p1.get(), p2.get(), 10000); // fairly distributed within 10000 of each other
+
+        s1.unsubscribe();
+        s2.unsubscribe();
+    }
+
     private static void waitOnThreads(Future<?>... futures) {
         for (Future<?> f : futures) {
             try {
@@ -276,23 +390,44 @@ public class SerializedObserverTest {
         }
     }
 
+    private static Observable<String> infinite(final AtomicInteger produced) {
+        return Observable.create(new OnSubscribe<String>() {
+
+            @Override
+            public void call(Subscriber<? super String> s) {
+                while (!s.isUnsubscribed()) {
+                    s.onNext("onNext");
+                    produced.incrementAndGet();
+                }
+            }
+
+        }).subscribeOn(Schedulers.newThread());
+    }
+
     /**
      * A thread that will pass data to onNext
      */
     public static class OnNextThread implements Runnable {
 
-        private final Observer<String> Observer;
+        private final Observer<String> observer;
         private final int numStringsToSend;
+        final AtomicInteger produced;
 
-        OnNextThread(Observer<String> Observer, int numStringsToSend) {
-            this.Observer = Observer;
+        OnNextThread(Observer<String> observer, int numStringsToSend, AtomicInteger produced) {
+            this.observer = observer;
             this.numStringsToSend = numStringsToSend;
+            this.produced = produced;
+        }
+
+        OnNextThread(Observer<String> observer, int numStringsToSend) {
+            this(observer, numStringsToSend, new AtomicInteger());
         }
 
         @Override
         public void run() {
             for (int i = 0; i < numStringsToSend; i++) {
-                Observer.onNext(Thread.currentThread().getId() + "-" + i);
+                observer.onNext(Thread.currentThread().getId() + "-" + i);
+                produced.incrementAndGet();
             }
         }
     }

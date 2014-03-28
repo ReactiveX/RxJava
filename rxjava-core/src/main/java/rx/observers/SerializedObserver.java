@@ -21,7 +21,7 @@ public class SerializedObserver<T> implements Observer<T> {
     private boolean terminated = false;
     private FastList queue;
 
-    private static final int MAX_DRAIN_ITERATION = 1;
+    private static final int MAX_DRAIN_ITERATION = Integer.MAX_VALUE;
     private static final Object NULL_SENTINEL = new Object();
     private static final Object COMPLETE_SENTINEL = new Object();
 
