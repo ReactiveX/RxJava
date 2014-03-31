@@ -110,6 +110,13 @@ public class OperationFromFunctionalsTest {
         
         testRunShouldThrow(source, RuntimeException.class);
     }
+
+    /**
+     * @deprecated  {@link Func0} now extends {@link Callable}, so
+     *              {@link Async#fromFunc0(Func0)} is unnecessary. Once it's
+     *              removed, this test can be removed as well.
+     */
+    @Deprecated
     @Test
     public void testFromFunc0() {
         Func0<Integer> func = new Func0<Integer>() {
@@ -139,7 +146,14 @@ public class OperationFromFunctionalsTest {
             verify(observer, never()).onError(any(Throwable.class));
         }
     }
-    
+
+    /**
+     * @deprecated  {@link Func0} now extends {@link Callable}, so
+     *              {@link Async#fromFunc0(Func0, rx.Scheduler)} is
+     *              unnecessary. Once it's removed, this test can be removed
+     *              as well.
+     */
+    @Deprecated
     @Test
     public void testFromFunc0Throws() {
         Func0<Integer> func = new Func0<Integer>() {

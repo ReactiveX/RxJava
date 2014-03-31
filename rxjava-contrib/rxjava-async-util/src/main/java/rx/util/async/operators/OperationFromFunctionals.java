@@ -38,10 +38,16 @@ public final class OperationFromFunctionals {
     public static <R> OnSubscribeFunc<R> fromAction(Action0 action, R result) {
         return new InvokeAsync<R>(Actions.toFunc(action, result));
     }
-    
-    /** Subscriber function that invokes a function and returns its value. */
+
+    /**
+     * Subscriber function that invokes a function and returns its value.
+     *
+     * @deprecated  Unnecessary now that Func0 extends Callable. Just call
+     *              {@link #fromCallable(Callable)} instead.
+     */
+    @Deprecated
     public static <R> OnSubscribeFunc<R> fromFunc0(Func0<? extends R> function) {
-        return new InvokeAsync<R>(function);
+        return fromCallable(function);
     }
     
     /** 
@@ -49,11 +55,11 @@ public final class OperationFromFunctionals {
      * propagates its checked exception.
      */
     public static <R> OnSubscribeFunc<R> fromCallable(Callable<? extends R> callable) {
-        return new InvokeAsyncCallable<R>(callable);
+        return new InvokeAsync<R>(callable);
     }
     /** Subscriber function that invokes a runnable and returns the given result. */
     public static <R> OnSubscribeFunc<R> fromRunnable(final Runnable run, final R result) {
-        return new InvokeAsync(new Func0<R>() {
+        return new InvokeAsync<R>(new Func0<R>() {
             @Override
             public R call() {
                 run.run();
@@ -63,37 +69,12 @@ public final class OperationFromFunctionals {
     }
     
     /**
-     * Invokes a function when an observer subscribes.
-     * @param <R> the return type
-     */
-    static final class InvokeAsync<R> implements OnSubscribeFunc<R> {
-        final Func0<? extends R> function;
-        public InvokeAsync(Func0<? extends R> function) {
-            if (function == null) {
-                throw new NullPointerException("function");
-            }
-            this.function = function;
-        }
-        @Override
-        public Subscription onSubscribe(Observer<? super R> t1) {
-            Subscription s = Subscriptions.empty();
-            try {
-                t1.onNext(function.call());
-            } catch (Throwable t) {
-                t1.onError(t);
-                return s;
-            }
-            t1.onCompleted();
-            return s;
-        }
-    }
-    /**
      * Invokes a java.util.concurrent.Callable when an observer subscribes.
      * @param <R> the return type
      */
-    static final class InvokeAsyncCallable<R> implements OnSubscribeFunc<R> {
+    static final class InvokeAsync<R> implements OnSubscribeFunc<R> {
         final Callable<? extends R> callable;
-        public InvokeAsyncCallable(Callable<? extends R> callable) {
+        public InvokeAsync(Callable<? extends R> callable) {
             if (callable == null) {
                 throw new NullPointerException("function");
             }
