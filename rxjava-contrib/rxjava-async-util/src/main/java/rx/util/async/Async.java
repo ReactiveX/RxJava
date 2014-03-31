@@ -1596,9 +1596,13 @@ public final class Async {
      * @see #start(rx.functions.Func0) 
      * @see #fromCallable(java.util.concurrent.Callable) 
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Async-Operators#fromfunc0">RxJava Wiki: fromFunc0()</a>
+     *
+     * @deprecated  Unnecessary now that Func0 extends Callable. Just call
+     *              {@link #fromCallable(Callable)} instead.
      */
+    @Deprecated
     public static <R> Observable<R> fromFunc0(Func0<? extends R> function) {
-        return fromFunc0(function, Schedulers.computation());
+        return fromCallable(function);
     }
 
     /**
@@ -1674,9 +1678,13 @@ public final class Async {
      * @see #start(rx.functions.Func0) 
      * @see #fromCallable(java.util.concurrent.Callable) 
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Async-Operators#fromfunc0">RxJava Wiki: fromFunc0()</a>
+     *
+     * @deprecated  Unnecessary now that Func0 extends Callable. Just call
+     *              {@link #fromCallable(Callable, Scheduler)} instead.
      */
+    @Deprecated
     public static <R> Observable<R> fromFunc0(Func0<? extends R> function, Scheduler scheduler) {
-        return Observable.create(OperationFromFunctionals.fromFunc0(function)).subscribeOn(scheduler);
+        return fromCallable(function, scheduler);
     }
 
     /**
