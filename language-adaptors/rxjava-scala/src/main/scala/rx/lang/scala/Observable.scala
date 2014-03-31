@@ -2353,7 +2353,7 @@ trait Observable[+T]
    * 
    * @param index
    *            the zero-based index of the item to retrieve
-   * @param defaultValue
+   * @param default
    *            the default item
    * @return an Observable that emits the item at the specified position in the sequence emitted by the source
    *         Observable, or the default item if that index is outside the bounds of the source sequence
@@ -2364,6 +2364,65 @@ trait Observable[+T]
     val thisJava = asJavaObservable.asInstanceOf[rx.Observable[U]]
     toScalaObservable[U](thisJava.elementAtOrDefault(index, default))
   }
+
+  /**
+   * Return an Observable that emits a single Map containing all items emitted by the source Observable,
+   * mapped by the keys returned by a specified {@code keySelector} function.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toMap.png">
+   * <p>
+   * If more than one source item maps to the same key, the Map will contain the latest of those items.
+   *
+   * @param keySelector
+     * the function that extracts the key from a source item to be used in the Map
+   * @return an Observable that emits a single item: a Map containing the mapped items from the source
+   *         Observable
+   */
+
+  def toMap[K] (keySelector: T => K): Observable[Map[K, T]]= {
+    toScalaObservable[Map[K,T]](asJavaObservable.toMap(keySelector))
+  }
+
+  /**
+   * Return an Observable that emits a single Map containing values corresponding to items emitted by the
+   * source Observable, mapped by the keys returned by a specified {@code keySelector} function.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toMap.png">
+   * <p>
+   * If more than one source item maps to the same key, the Map will contain a single entry that
+   * corresponds to the latest of those items.
+   *
+   * @param keySelector
+     *            the function that extracts the key from a source item to be used in the Map
+   * @param valueSelector
+     *            the function that extracts the value from a source item to be used in the Map
+   * @return an Observable that emits a single item: a HashMap containing the mapped items from the source
+   *         Observable
+   */
+
+  def toMap[K, V] (keySelector: T => K, valueSelector: T => V) : Observable[Map[K, V]] = {
+    toScalaObservable[Map[K,V]](asJavaObservable.toMap(keySelector, valueSelector))
+  }
+
+  /**
+   * Return an Observable that emits a single Map, returned by a specified {@code mapFactory} function, that
+   * contains keys and values extracted from the items emitted by the source Observable.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toMap.png">
+   *
+   * @param keySelector
+     *            the function that extracts the key from a source item to be used in the Map
+   * @param valueSelector
+     *            the function that extracts the value from the source items to be used as value in the Map
+   * @param mapFactory
+     *            the function that returns a Map instance to be used
+   * @return an Observable that emits a single item: a Map that contains the mapped items emitted by the
+   *         source Observable
+   */
+  def toMap[K, V] (keySelector: T => K, valueSelector: T => V, mapFactory: () => Observable[Map[K,V]]): Observable[Map[K,V]] = {
+    toScalaObservable[Map[K,V]](asJavaObservable.toMap(keySelector, valueSelector, mapFactory))
+  }
+
 }
 
 /**
