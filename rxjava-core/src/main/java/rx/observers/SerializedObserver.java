@@ -117,18 +117,23 @@ public class SerializedObserver<T> implements Observer<T> {
                     queue = new FastList();
                 }
                 queue.add(t != null ? t : NULL_SENTINEL);
+                // another thread is emitting so we add to the queue and return
                 return;
             }
+            // we can emit
             emitting = true;
+            // reference to the list to drain before emitting our value
             list = queue;
             queue = null;
         }
 
+        // we only get here if we won the right to emit, otherwise we returned in the if(emitting) block above
         try {
             int iter = MAX_DRAIN_ITERATION;
             do {
                 drainQueue(list);
                 if (iter == MAX_DRAIN_ITERATION) {
+                    // after the first draining we emit our own value
                     actual.onNext(t);
                 }
                 --iter;
@@ -152,6 +157,7 @@ public class SerializedObserver<T> implements Observer<T> {
                     list = null;
                 }
             }
+            // this will only drain if terminated (done here outside of synchronized block)
             drainQueue(list);
         }
     }
