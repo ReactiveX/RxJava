@@ -284,7 +284,8 @@ public class SerializedObserverTest {
     public void testNotificationDelay() throws InterruptedException {
         ExecutorService tp = Executors.newFixedThreadPool(2);
 
-        final CountDownLatch onNextCount = new CountDownLatch(1);
+        final CountDownLatch firstOnNext = new CountDownLatch(1);
+        final CountDownLatch onNextCount = new CountDownLatch(2);
         final CountDownLatch latch = new CountDownLatch(1);
 
         TestSubscriber<String> to = new TestSubscriber<String>(new Observer<String>() {
@@ -301,8 +302,7 @@ public class SerializedObserverTest {
 
             @Override
             public void onNext(String t) {
-                // know when the first thread gets in
-                onNextCount.countDown();
+                firstOnNext.countDown();
                 // force it to take time when delivering so the second one is enqueued
                 try {
                     latch.await();
@@ -313,10 +313,10 @@ public class SerializedObserverTest {
         });
         Observer<String> o = serializedObserver(to);
 
-        Future<?> f1 = tp.submit(new OnNextThread(o, 1));
-        Future<?> f2 = tp.submit(new OnNextThread(o, 1));
+        Future<?> f1 = tp.submit(new OnNextThread(o, 1, onNextCount));
+        Future<?> f2 = tp.submit(new OnNextThread(o, 1, onNextCount));
 
-        onNextCount.await();
+        firstOnNext.await();
 
         Thread t1 = to.getLastSeenThread();
         System.out.println("first onNext on thread: " + t1);
@@ -431,14 +431,24 @@ public class SerializedObserverTest {
      */
     public static class OnNextThread implements Runnable {
 
+        private final CountDownLatch latch;
         private final Observer<String> observer;
         private final int numStringsToSend;
         final AtomicInteger produced;
 
+        OnNextThread(Observer<String> observer, int numStringsToSend, CountDownLatch latch) {
+            this(observer, numStringsToSend, new AtomicInteger(), latch);
+        }
+
         OnNextThread(Observer<String> observer, int numStringsToSend, AtomicInteger produced) {
+            this(observer, numStringsToSend, produced, null);
+        }
+
+        OnNextThread(Observer<String> observer, int numStringsToSend, AtomicInteger produced, CountDownLatch latch) {
             this.observer = observer;
             this.numStringsToSend = numStringsToSend;
             this.produced = produced;
+            this.latch = latch;
         }
 
         OnNextThread(Observer<String> observer, int numStringsToSend) {
@@ -449,6 +459,9 @@ public class SerializedObserverTest {
         public void run() {
             for (int i = 0; i < numStringsToSend; i++) {
                 observer.onNext(Thread.currentThread().getId() + "-" + i);
+                if (latch != null) {
+                    latch.countDown();
+                }
                 produced.incrementAndGet();
             }
         }
