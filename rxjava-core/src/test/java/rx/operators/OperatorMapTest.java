@@ -20,6 +20,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -211,9 +212,9 @@ public class OperatorMapTest {
     }
 
     /**
-     * While mapping over range(1,1).last() we expect IllegalArgumentException since the sequence is empty.
+     * While mapping over range(1,0).last() we expect NoSuchElementException since the sequence is empty.
      */
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NoSuchElementException.class)
     public void testErrorPassesThruMap() {
         Observable.range(1, 0).last().map(new Func1<Integer, Integer>() {
 

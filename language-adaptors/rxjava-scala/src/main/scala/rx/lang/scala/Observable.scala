@@ -1949,36 +1949,64 @@ trait Observable[+T]
   def headOrElse[U >: T](default: => U): Observable[U] = firstOrElse(default)
 
   /**
-   * Returns an Observable that emits only the very first item emitted by the source Observable.
-   * This is just a shorthand for `take(1)`.
-   *
+   * Returns an Observable that emits only the very first item emitted by the source Observable, or raises an
+   * `NoSuchElementException` if the source Observable is empty.
+   * <p>
    * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/first.png">
-   *
-   * @return an Observable that emits only the very first item from the source, or none if the
-   *         source Observable completes without emitting a single item.
+   * 
+   * @return an Observable that emits only the very first item emitted by the source Observable, or raises an
+   *         `NoSuchElementException` if the source Observable is empty
+   * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#wiki-first">RxJava Wiki: first()</a>
+   * @see "MSDN: Observable.firstAsync()"
    */
-  def first: Observable[T] = take(1)
-
-  /*
-  
-  TODO once https://github.com/Netflix/RxJava/issues/417 is fixed, we can add head and tail methods
-  
-  /**
-   * emits NoSuchElementException("head of empty Observable") if empty
-   */
-  def head: Observable[T] = {
-    this.take(1).fold[Option[T]](None)((v: Option[T], e: T) => Some(e)).map({
-      case Some(element) => element
-      case None => throw new NoSuchElementException("head of empty Observable")
-    })
+  def first: Observable[T] = {
+    toScalaObservable[T](asJavaObservable.first)
   }
+
+  /**
+   * Returns an Observable that emits only the very first item emitted by the source Observable, or raises an
+   * `NoSuchElementException` if the source Observable is empty.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/first.png">
+   * 
+   * @return an Observable that emits only the very first item emitted by the source Observable, or raises an
+   *         `NoSuchElementException` if the source Observable is empty
+   * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#wiki-first">RxJava Wiki: first()</a>
+   * @see "MSDN: Observable.firstAsync()"
+   * @see [[Observable.first]]
+   */
+  def head: Observable[T] = first
   
   /**
-   * emits an UnsupportedOperationException("tail of empty list") if empty
+   * Returns an Observable that emits the last item emitted by the source Observable or notifies observers of
+   * an `NoSuchElementException` if the source Observable is empty.
+   * 
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/last.png">
+   * 
+   * @return an Observable that emits the last item from the source Observable or notifies observers of an
+   *         error
+   * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observable-Operators#wiki-last">RxJava Wiki: last()</a>
+   * @see "MSDN: Observable.lastAsync()"
    */
-  def tail: Observable[T] = ???
-  
-  */
+  def last: Observable[T] = {
+    toScalaObservable[T](asJavaObservable.last)
+  }
+
+  /**
+   * If the source Observable completes after emitting a single item, return an Observable that emits that
+   * item. If the source Observable emits more than one item or no items, throw an `NoSuchElementException`.
+   * 
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/single.png">
+   * 
+   * @return an Observable that emits the single item emitted by the source Observable
+   * @throws NoSuchElementException
+   *             if the source emits more than one item or no items
+   * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#wiki-single-and-singleordefault">RxJava Wiki: single()</a>
+   * @see "MSDN: Observable.singleAsync()"
+   */
+  def single: Observable[T] = {
+    toScalaObservable[T](asJavaObservable.single)
+  }
 
   /**
    * Returns an Observable that forwards all sequentially distinct items emitted from the source Observable.

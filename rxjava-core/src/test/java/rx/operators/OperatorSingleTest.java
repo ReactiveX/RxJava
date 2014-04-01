@@ -17,81 +17,21 @@ package rx.operators;
 
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
-import static org.mockito.MockitoAnnotations.*;
 
-import org.junit.Before;
+import java.util.NoSuchElementException;
+
 import org.junit.Test;
 import org.mockito.InOrder;
-import org.mockito.Mock;
 
 import rx.Observable;
 import rx.Observer;
 import rx.functions.Func1;
 
-public class OperationFirstOrDefaultTest {
-
-    @Mock
-    Observer<String> w;
-
-    private static final Func1<String, Boolean> IS_D = new Func1<String, Boolean>() {
-        @Override
-        public Boolean call(String value) {
-            return "d".equals(value);
-        }
-    };
-
-    @Before
-    public void before() {
-        initMocks(this);
-    }
+public class OperatorSingleTest {
 
     @Test
-    public void testFirstOrElseOfNone() {
-        Observable<String> src = Observable.empty();
-        src.firstOrDefault("default").subscribe(w);
-
-        verify(w, times(1)).onNext(anyString());
-        verify(w, times(1)).onNext("default");
-        verify(w, never()).onError(any(Throwable.class));
-        verify(w, times(1)).onCompleted();
-    }
-
-    @Test
-    public void testFirstOrElseOfSome() {
-        Observable<String> src = Observable.from("a", "b", "c");
-        src.firstOrDefault("default").subscribe(w);
-
-        verify(w, times(1)).onNext(anyString());
-        verify(w, times(1)).onNext("a");
-        verify(w, never()).onError(any(Throwable.class));
-        verify(w, times(1)).onCompleted();
-    }
-
-    @Test
-    public void testFirstOrElseWithPredicateOfNoneMatchingThePredicate() {
-        Observable<String> src = Observable.from("a", "b", "c");
-        src.firstOrDefault("default", IS_D).subscribe(w);
-
-        verify(w, times(1)).onNext(anyString());
-        verify(w, times(1)).onNext("default");
-        verify(w, never()).onError(any(Throwable.class));
-        verify(w, times(1)).onCompleted();
-    }
-
-    @Test
-    public void testFirstOrElseWithPredicateOfSome() {
-        Observable<String> src = Observable.from("a", "b", "c", "d", "e", "f");
-        src.firstOrDefault("default", IS_D).subscribe(w);
-
-        verify(w, times(1)).onNext(anyString());
-        verify(w, times(1)).onNext("d");
-        verify(w, never()).onError(any(Throwable.class));
-        verify(w, times(1)).onCompleted();
-    }
-
-    @Test
-    public void testFirst() {
-        Observable<Integer> observable = Observable.from(1, 2, 3).first();
+    public void testSingle() {
+        Observable<Integer> observable = Observable.from(1).single();
 
         @SuppressWarnings("unchecked")
         Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
@@ -104,22 +44,8 @@ public class OperationFirstOrDefaultTest {
     }
 
     @Test
-    public void testFirstWithOneElement() {
-        Observable<Integer> observable = Observable.from(1).first();
-
-        @SuppressWarnings("unchecked")
-        Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
-        observable.subscribe(observer);
-
-        InOrder inOrder = inOrder(observer);
-        inOrder.verify(observer, times(1)).onNext(1);
-        inOrder.verify(observer, times(1)).onCompleted();
-        inOrder.verifyNoMoreInteractions();
-    }
-
-    @Test
-    public void testFirstWithEmpty() {
-        Observable<Integer> observable = Observable.<Integer> empty().first();
+    public void testSingleWithTooManyElements() {
+        Observable<Integer> observable = Observable.from(1, 2).single();
 
         @SuppressWarnings("unchecked")
         Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
@@ -132,29 +58,22 @@ public class OperationFirstOrDefaultTest {
     }
 
     @Test
-    public void testFirstWithPredicate() {
-        Observable<Integer> observable = Observable.from(1, 2, 3, 4, 5, 6)
-                .first(new Func1<Integer, Boolean>() {
-
-                    @Override
-                    public Boolean call(Integer t1) {
-                        return t1 % 2 == 0;
-                    }
-                });
+    public void testSingleWithEmpty() {
+        Observable<Integer> observable = Observable.<Integer> empty().single();
 
         @SuppressWarnings("unchecked")
         Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
         observable.subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
-        inOrder.verify(observer, times(1)).onNext(2);
-        inOrder.verify(observer, times(1)).onCompleted();
+        inOrder.verify(observer, times(1)).onError(
+                isA(NoSuchElementException.class));
         inOrder.verifyNoMoreInteractions();
     }
 
     @Test
-    public void testFirstWithPredicateAndOneElement() {
-        Observable<Integer> observable = Observable.from(1, 2).first(
+    public void testSingleWithPredicate() {
+        Observable<Integer> observable = Observable.from(1, 2).single(
                 new Func1<Integer, Boolean>() {
 
                     @Override
@@ -174,8 +93,29 @@ public class OperationFirstOrDefaultTest {
     }
 
     @Test
-    public void testFirstWithPredicateAndEmpty() {
-        Observable<Integer> observable = Observable.from(1).first(
+    public void testSingleWithPredicateAndTooManyElements() {
+        Observable<Integer> observable = Observable.from(1, 2, 3, 4).single(
+                new Func1<Integer, Boolean>() {
+
+                    @Override
+                    public Boolean call(Integer t1) {
+                        return t1 % 2 == 0;
+                    }
+                });
+
+        @SuppressWarnings("unchecked")
+        Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
+        observable.subscribe(observer);
+
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer, times(1)).onError(
+                isA(IllegalArgumentException.class));
+        inOrder.verifyNoMoreInteractions();
+    }
+
+    @Test
+    public void testSingleWithPredicateAndEmpty() {
+        Observable<Integer> observable = Observable.from(1).single(
                 new Func1<Integer, Boolean>() {
 
                     @Override
@@ -189,43 +129,43 @@ public class OperationFirstOrDefaultTest {
 
         InOrder inOrder = inOrder(observer);
         inOrder.verify(observer, times(1)).onError(
+                isA(NoSuchElementException.class));
+        inOrder.verifyNoMoreInteractions();
+    }
+
+    @Test
+    public void testSingleOrDefault() {
+        Observable<Integer> observable = Observable.from(1).singleOrDefault(2);
+
+        @SuppressWarnings("unchecked")
+        Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
+        observable.subscribe(observer);
+
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer, times(1)).onNext(1);
+        inOrder.verify(observer, times(1)).onCompleted();
+        inOrder.verifyNoMoreInteractions();
+    }
+
+    @Test
+    public void testSingleOrDefaultWithTooManyElements() {
+        Observable<Integer> observable = Observable.from(1, 2).singleOrDefault(
+                3);
+
+        @SuppressWarnings("unchecked")
+        Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
+        observable.subscribe(observer);
+
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer, times(1)).onError(
                 isA(IllegalArgumentException.class));
         inOrder.verifyNoMoreInteractions();
     }
 
     @Test
-    public void testFirstOrDefault() {
-        Observable<Integer> observable = Observable.from(1, 2, 3)
-                .firstOrDefault(4);
-
-        @SuppressWarnings("unchecked")
-        Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
-        observable.subscribe(observer);
-
-        InOrder inOrder = inOrder(observer);
-        inOrder.verify(observer, times(1)).onNext(1);
-        inOrder.verify(observer, times(1)).onCompleted();
-        inOrder.verifyNoMoreInteractions();
-    }
-
-    @Test
-    public void testFirstOrDefaultWithOneElement() {
-        Observable<Integer> observable = Observable.from(1).firstOrDefault(2);
-
-        @SuppressWarnings("unchecked")
-        Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
-        observable.subscribe(observer);
-
-        InOrder inOrder = inOrder(observer);
-        inOrder.verify(observer, times(1)).onNext(1);
-        inOrder.verify(observer, times(1)).onCompleted();
-        inOrder.verifyNoMoreInteractions();
-    }
-
-    @Test
-    public void testFirstOrDefaultWithEmpty() {
+    public void testSingleOrDefaultWithEmpty() {
         Observable<Integer> observable = Observable.<Integer> empty()
-                .firstOrDefault(1);
+                .singleOrDefault(1);
 
         @SuppressWarnings("unchecked")
         Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
@@ -238,29 +178,8 @@ public class OperationFirstOrDefaultTest {
     }
 
     @Test
-    public void testFirstOrDefaultWithPredicate() {
-        Observable<Integer> observable = Observable.from(1, 2, 3, 4, 5, 6)
-                .firstOrDefault(8, new Func1<Integer, Boolean>() {
-
-                    @Override
-                    public Boolean call(Integer t1) {
-                        return t1 % 2 == 0;
-                    }
-                });
-
-        @SuppressWarnings("unchecked")
-        Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
-        observable.subscribe(observer);
-
-        InOrder inOrder = inOrder(observer);
-        inOrder.verify(observer, times(1)).onNext(2);
-        inOrder.verify(observer, times(1)).onCompleted();
-        inOrder.verifyNoMoreInteractions();
-    }
-
-    @Test
-    public void testFirstOrDefaultWithPredicateAndOneElement() {
-        Observable<Integer> observable = Observable.from(1, 2).firstOrDefault(
+    public void testSingleOrDefaultWithPredicate() {
+        Observable<Integer> observable = Observable.from(1, 2).singleOrDefault(
                 4, new Func1<Integer, Boolean>() {
 
                     @Override
@@ -280,8 +199,29 @@ public class OperationFirstOrDefaultTest {
     }
 
     @Test
-    public void testFirstOrDefaultWithPredicateAndEmpty() {
-        Observable<Integer> observable = Observable.from(1).firstOrDefault(2,
+    public void testSingleOrDefaultWithPredicateAndTooManyElements() {
+        Observable<Integer> observable = Observable.from(1, 2, 3, 4)
+                .singleOrDefault(6, new Func1<Integer, Boolean>() {
+
+                    @Override
+                    public Boolean call(Integer t1) {
+                        return t1 % 2 == 0;
+                    }
+                });
+
+        @SuppressWarnings("unchecked")
+        Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
+        observable.subscribe(observer);
+
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer, times(1)).onError(
+                isA(IllegalArgumentException.class));
+        inOrder.verifyNoMoreInteractions();
+    }
+
+    @Test
+    public void testSingleOrDefaultWithPredicateAndEmpty() {
+        Observable<Integer> observable = Observable.from(1).singleOrDefault(2,
                 new Func1<Integer, Boolean>() {
 
                     @Override

@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -1034,10 +1035,10 @@ public class OperatorZipTest {
     }
 
     /**
-     * Expect IllegalArgumentException instead of blocking forever as zip should emit onCompleted and no onNext
+     * Expect NoSuchElementException instead of blocking forever as zip should emit onCompleted and no onNext
      * and last() expects at least a single response.
      */
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NoSuchElementException.class)
     public void testZipEmptyListBlocking() {
 
         final Object invoked = new Object();

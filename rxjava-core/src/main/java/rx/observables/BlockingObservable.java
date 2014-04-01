@@ -163,10 +163,10 @@ public class BlockingObservable<T> {
 
     /**
      * Returns the first item emitted by a specified {@link Observable}, or
-     * <code>IllegalArgumentException</code> if source contains no elements.
+     * <code>NoSuchElementException</code> if source contains no elements.
      * 
      * @return the first item emitted by the source {@link Observable}
-     * @throws IllegalArgumentException
+     * @throws NoSuchElementException
      *             if source contains no elements
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Blocking-Observable-Operators#first-and-firstordefault">RxJava Wiki: first()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229177.aspx">MSDN: Observable.First</a>
@@ -177,14 +177,14 @@ public class BlockingObservable<T> {
 
     /**
      * Returns the first item emitted by a specified {@link Observable} that
-     * matches a predicate, or <code>IllegalArgumentException</code> if no such
+     * matches a predicate, or <code>NoSuchElementException</code> if no such
      * item is emitted.
      * 
      * @param predicate
      *            a predicate function to evaluate items emitted by the {@link Observable}
      * @return the first item emitted by the {@link Observable} that matches the
      *         predicate
-     * @throws IllegalArgumentException
+     * @throws NoSuchElementException
      *             if no such items are emitted
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Blocking-Observable-Operators#first-and-firstordefault">RxJava Wiki: first()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229739.aspx">MSDN: Observable.First</a>
@@ -227,12 +227,12 @@ public class BlockingObservable<T> {
 
     /**
      * Returns the last item emitted by a specified {@link Observable}, or
-     * throws <code>IllegalArgumentException</code> if it emits no items.
+     * throws <code>NoSuchElementException</code> if it emits no items.
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.last.png">
      * 
      * @return the last item emitted by the source {@link Observable}
-     * @throws IllegalArgumentException
+     * @throws NoSuchElementException
      *             if source contains no elements
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Blocking-Observable-Operators#last-and-lastordefault">RxJava Wiki: last()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.last.aspx">MSDN: Observable.Last</a>
@@ -243,7 +243,7 @@ public class BlockingObservable<T> {
 
     /**
      * Returns the last item emitted by a specified {@link Observable} that
-     * matches a predicate, or throws <code>IllegalArgumentException</code> if
+     * matches a predicate, or throws <code>NoSuchElementException</code> if
      * it emits no such items.
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.last.p.png">
@@ -252,7 +252,7 @@ public class BlockingObservable<T> {
      *            a predicate function to evaluate items emitted by the {@link Observable}
      * @return the last item emitted by the {@link Observable} that matches the
      *         predicate
-     * @throws IllegalArgumentException
+     * @throws NoSuchElementException
      *             if no such items are emitted
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Blocking-Observable-Operators#last-and-lastordefault">RxJava Wiki: last()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.last.aspx">MSDN: Observable.Last</a>
@@ -349,7 +349,7 @@ public class BlockingObservable<T> {
 
     /**
      * If the {@link Observable} completes after emitting a single item, return
-     * that item, otherwise throw an <code>IllegalArgumentException</code>.
+     * that item, otherwise throw an <code>NoSuchElementException</code>.
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.single.png">
      * 
@@ -364,7 +364,7 @@ public class BlockingObservable<T> {
     /**
      * If the {@link Observable} completes after emitting a single item that
      * matches a given predicate, return that item, otherwise throw an
-     * <code>IllegalArgumentException</code>.
+     * <code>NoSuchElementException</code>.
      * <p>
      * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.single.p.png">
      * 
