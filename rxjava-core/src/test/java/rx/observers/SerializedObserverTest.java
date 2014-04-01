@@ -17,6 +17,7 @@ package rx.observers;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
@@ -274,9 +275,17 @@ public class SerializedObserverTest {
         }
     }
 
+    /**
+     * Test that a notification does not get delayed in the queue waiting for the next event to push it through.
+     * 
+     * @throws InterruptedException
+     */
     @Test
-    public void testNotificationDelay() {
+    public void testNotificationDelay() throws InterruptedException {
         ExecutorService tp = Executors.newFixedThreadPool(2);
+
+        final CountDownLatch onNextCount = new CountDownLatch(1);
+        final CountDownLatch latch = new CountDownLatch(1);
 
         TestSubscriber<String> to = new TestSubscriber<String>(new Observer<String>() {
 
@@ -292,12 +301,12 @@ public class SerializedObserverTest {
 
             @Override
             public void onNext(String t) {
-                // force it to take time when delivering
-                // so the second thread will asynchronously enqueue
+                // know when the first thread gets in
+                onNextCount.countDown();
+                // force it to take time when delivering so the second one is enqueued
                 try {
-                    Thread.sleep(50);
+                    latch.await();
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
                 }
             }
 
@@ -307,10 +316,23 @@ public class SerializedObserverTest {
         Future<?> f1 = tp.submit(new OnNextThread(o, 1));
         Future<?> f2 = tp.submit(new OnNextThread(o, 1));
 
+        onNextCount.await();
+
+        Thread t1 = to.getLastSeenThread();
+        System.out.println("first onNext on thread: " + t1);
+
+        latch.countDown();
+
         waitOnThreads(f1, f2);
         // not completed yet
 
         assertEquals(2, to.getOnNextEvents().size());
+
+        Thread t2 = to.getLastSeenThread();
+        System.out.println("second onNext on thread: " + t2);
+
+        assertSame(t1, t2);
+
         System.out.println(to.getOnNextEvents());
         o.onCompleted();
         System.out.println(to.getOnNextEvents());
