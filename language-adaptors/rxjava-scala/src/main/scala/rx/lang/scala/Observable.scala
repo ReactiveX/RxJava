@@ -20,6 +20,8 @@ import rx.functions.FuncN
 import rx.Observable.OnSubscribeFunc
 import rx.lang.scala.observables.ConnectableObservable
 import scala.concurrent.duration
+import java.util
+import collection.JavaConversions._
 
 
 /**
@@ -2379,7 +2381,9 @@ trait Observable[+T]
    *         Observable
    */
   def toMap[K] (keySelector: T => K): Observable[Map[K, T]]= {
-    toScalaObservable[Map[K,T]](asJavaObservable.toMap(keySelector))
+    val thisJava = asJavaObservable.asInstanceOf[rx.Observable[T]]
+    val o: rx.Observable[util.Map[K, T]] = thisJava.toMap[K](keySelector)
+    toScalaObservable[util.Map[K,T]](o).map(m => m.toMap)
   }
 
   /**
@@ -2399,7 +2403,9 @@ trait Observable[+T]
    *         Observable
    */
   def toMap[K, V] (keySelector: T => K, valueSelector: T => V) : Observable[Map[K, V]] = {
-    toScalaObservable[Map[K,V]](asJavaObservable.toMap(keySelector, valueSelector))
+    val thisJava = asJavaObservable.asInstanceOf[rx.Observable[T]]
+    val o: rx.Observable[util.Map[K, V]] = thisJava.toMap[K, V](keySelector, valueSelector)
+    toScalaObservable[util.Map[K, V]](o).map(m => m.toMap)
   }
 
   /**
@@ -2417,8 +2423,10 @@ trait Observable[+T]
    * @return an Observable that emits a single item: a Map that contains the mapped items emitted by the
    *         source Observable
    */
-  def toMap[K, V] (keySelector: T => K, valueSelector: T => V, mapFactory: () => Map[K,V]): Observable[Map[K,V]] = {
-    toScalaObservable[Map[K,V]](asJavaObservable.toMap(keySelector, valueSelector, mapFactory))
+  def toMap[K, V] (keySelector: T => K, valueSelector: T => V, mapFactory: () => Map[K, V]): Observable[Map[K, V]] = {
+    val thisJava = asJavaObservable.asInstanceOf[rx.Observable[T]]
+    val o: rx.Observable[util.Map[K, V]] = thisJava.toMap[K, V](keySelector, valueSelector)
+    toScalaObservable[util.Map[K, V]](o).map(m => mapFactory() ++ m.toMap)
   }
 
 }

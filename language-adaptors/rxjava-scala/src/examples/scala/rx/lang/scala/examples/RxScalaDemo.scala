@@ -593,7 +593,7 @@ class RxScalaDemo extends JUnitSuite {
     val o : Observable[String] = List("alice", "bob", "carol").toObservable
     val keySelector = (s: String) => s.head
     val valueSelector = (s: String) => s.tail
-    val mapFactory = () => Map('s'->"tart")
+    val mapFactory = () => Map(('s',"tart"))
     val m = o.toMap(keySelector, valueSelector, mapFactory)
     println(m.toBlockingObservable.single)
   }
