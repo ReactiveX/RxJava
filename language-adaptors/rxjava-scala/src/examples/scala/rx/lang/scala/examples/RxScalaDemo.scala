@@ -573,4 +573,28 @@ class RxScalaDemo extends JUnitSuite {
     val o : Observable[Seq[Char]] = List("red".toList, "green".toList, "blue".toList).toObservable.elementAtOrDefault(3, "black".toSeq)
     println(o.toBlockingObservable.single)
   }
+
+  @Test def toMapExample1(): Unit = {
+    val o : Observable[String] = List("alice", "bob", "carol").toObservable
+    val keySelector = (s: String) => s.head
+    val m = o.toMap(keySelector)
+    println(m.toBlockingObservable.single)
+  }
+
+  @Test def toMapExample2(): Unit = {
+    val o : Observable[String] = List("alice", "bob", "carol").toObservable
+    val keySelector = (s: String) => s.head
+    val valueSelector = (s: String) => s.tail
+    val m = o.toMap(keySelector, valueSelector)
+    println(m.toBlockingObservable.single)
+  }
+
+  @Test def toMapExample3(): Unit = {
+    val o : Observable[String] = List("alice", "bob", "carol").toObservable
+    val keySelector = (s: String) => s.head
+    val valueSelector = (s: String) => s.tail
+    val mapFactory = () => Map('s'->"tart")
+    val m = o.toMap(keySelector, valueSelector, mapFactory)
+    println(m.toBlockingObservable.single)
+  }
 }

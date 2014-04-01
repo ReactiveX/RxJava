@@ -2378,7 +2378,6 @@ trait Observable[+T]
    * @return an Observable that emits a single item: a Map containing the mapped items from the source
    *         Observable
    */
-
   def toMap[K] (keySelector: T => K): Observable[Map[K, T]]= {
     toScalaObservable[Map[K,T]](asJavaObservable.toMap(keySelector))
   }
@@ -2399,7 +2398,6 @@ trait Observable[+T]
    * @return an Observable that emits a single item: a HashMap containing the mapped items from the source
    *         Observable
    */
-
   def toMap[K, V] (keySelector: T => K, valueSelector: T => V) : Observable[Map[K, V]] = {
     toScalaObservable[Map[K,V]](asJavaObservable.toMap(keySelector, valueSelector))
   }
@@ -2419,7 +2417,7 @@ trait Observable[+T]
    * @return an Observable that emits a single item: a Map that contains the mapped items emitted by the
    *         source Observable
    */
-  def toMap[K, V] (keySelector: T => K, valueSelector: T => V, mapFactory: () => Observable[Map[K,V]]): Observable[Map[K,V]] = {
+  def toMap[K, V] (keySelector: T => K, valueSelector: T => V, mapFactory: () => Map[K,V]): Observable[Map[K,V]] = {
     toScalaObservable[Map[K,V]](asJavaObservable.toMap(keySelector, valueSelector, mapFactory))
   }
 
