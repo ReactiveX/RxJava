@@ -1,0 +1,3 @@
+rx.Observer.onNext
+rx.Observer.onError
+rx.Observer.onCompleted

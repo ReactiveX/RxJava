@@ -63,6 +63,9 @@ bin/
 
 # NetBeans specific files/directories
 .nbattrs
+/.nb-gradle/profiles/private/
+.nb-gradle-properties
 
 # Scala build
 *.cache
+/.nb-gradle/private/
