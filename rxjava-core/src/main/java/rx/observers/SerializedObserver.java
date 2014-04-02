@@ -128,6 +128,7 @@ public class SerializedObserver<T> implements Observer<T> {
         }
 
         // we only get here if we won the right to emit, otherwise we returned in the if(emitting) block above
+        boolean skipFinal = false;
         try {
             int iter = MAX_DRAIN_ITERATION;
             do {
@@ -141,27 +142,32 @@ public class SerializedObserver<T> implements Observer<T> {
                     synchronized (this) {
                         list = queue;
                         queue = null;
-                    }
-                    if (list == null) {
-                        break;
+                        if (list == null) {
+                            emitting = false;
+                            skipFinal = true;
+                            return;
+                        }
                     }
                 }
             } while (iter > 0);
         } finally {
-            synchronized (this) {
-                if (terminated) {
-                    list = queue;
-                    queue = null;
-                } else {
-                    emitting = false;
-                    list = null;
+            if (!skipFinal) {
+                synchronized (this) {
+                    if (terminated) {
+                        list = queue;
+                        queue = null;
+                    } else {
+                        emitting = false;
+                        list = null;
+                    }
                 }
             }
-            // this will only drain if terminated (done here outside of synchronized block)
-            drainQueue(list);
         }
+        
+        // this will only drain if terminated (done here outside of synchronized block)
+        drainQueue(list);
     }
-
+    
     void drainQueue(FastList list) {
         if (list == null || list.size == 0) {
             return;
