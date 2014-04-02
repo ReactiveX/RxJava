@@ -186,7 +186,7 @@ public final class OperatorAmb<T> implements OnSubscribe<T>{
             }
             AmbSubscriber<T> ambSubscriber = new AmbSubscriber<T>(subscriber, index, choice);
             subscriber.add(ambSubscriber);
-            source.subscribe(ambSubscriber);
+            source.unsafeSubscribe(ambSubscriber);
             index++;
         }
     }

@@ -23,11 +23,11 @@ import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Scheduler.Inner;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.observers.SerializedObserver;
-import rx.observers.SynchronizedObserver;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.SerialSubscription;
@@ -96,11 +96,11 @@ public final class OperationDebounce {
 
         @Override
         public Subscription onSubscribe(Observer<? super T> observer) {
-            return items.subscribe(new DebounceObserver<T>(observer, timeout, unit, scheduler));
+            return items.unsafeSubscribe(new DebounceObserver<T>(observer, timeout, unit, scheduler));
         }
     }
 
-    private static class DebounceObserver<T> implements Observer<T> {
+    private static class DebounceObserver<T> extends Subscriber<T> {
 
         private final Observer<? super T> observer;
         private final long timeout;
@@ -183,13 +183,13 @@ public final class OperationDebounce {
         public Subscription onSubscribe(Observer<? super T> t1) {
             CompositeSubscription csub = new CompositeSubscription();
 
-            csub.add(source.subscribe(new SourceObserver<T, U>(t1, debounceSelector, csub)));
+            csub.add(source.unsafeSubscribe(new SourceObserver<T, U>(t1, debounceSelector, csub)));
 
             return csub;
         }
 
         /** Observe the source. */
-        private static final class SourceObserver<T, U> implements Observer<T> {
+        private static final class SourceObserver<T, U> extends Subscriber<T> {
             final Observer<? super T> observer;
             final Func1<? super T, ? extends Observable<U>> debounceSelector;
             final CompositeSubscription cancel;
@@ -232,7 +232,7 @@ public final class OperationDebounce {
                 SerialSubscription osub = new SerialSubscription();
                 ssub.set(osub);
 
-                osub.set(o.subscribe(new DebounceObserver<T, U>(this, osub, args, currentIndex)));
+                osub.set(o.unsafeSubscribe(new DebounceObserver<T, U>(this, osub, args, currentIndex)));
             }
 
             @Override
@@ -277,7 +277,7 @@ public final class OperationDebounce {
         /**
          * The debounce observer.
          */
-        private static final class DebounceObserver<T, U> implements Observer<U> {
+        private static final class DebounceObserver<T, U> extends Subscriber<U> {
             final SourceObserver<T, U> parent;
             final Subscription cancel;
             final T value;

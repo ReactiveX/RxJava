@@ -61,7 +61,7 @@ public final class JoinObserver1<T> extends Subscriber<Notification<T>> implemen
     public void subscribe(Object gate) {
         if (subscribed.compareAndSet(false, true)) {
             this.gate = gate;
-            source.materialize().subscribe(this);
+            source.materialize().unsafeSubscribe(this);
         } else {
             throw new IllegalStateException("Can only be subscribed to once.");
         }

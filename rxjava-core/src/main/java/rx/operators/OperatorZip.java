@@ -162,7 +162,7 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
         @SuppressWarnings("unchecked")
         public void zip() {
             for (int i = 0; i < os.length; i++) {
-                os[i].subscribe((InnerObserver) observers[i]);
+                os[i].unsafeSubscribe((InnerObserver) observers[i]);
             }
         }
 

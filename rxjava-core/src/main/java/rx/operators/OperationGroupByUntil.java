@@ -64,7 +64,7 @@ public class OperationGroupByUntil<TSource, TKey, TResult, TDuration> implements
     }
 
     /** The source value sink and group manager. */
-    class ResultSink implements Observer<TSource> {
+    class ResultSink extends Subscriber<TSource> {
         /** Guarded by gate. */
         protected final Observer<? super GroupedObservable<TKey, TResult>> observer;
         protected final Subscription cancel;
@@ -83,7 +83,7 @@ public class OperationGroupByUntil<TSource, TKey, TResult, TDuration> implements
             SerialSubscription toSource = new SerialSubscription();
             group.add(toSource);
 
-            toSource.set(source.subscribe(this));
+            toSource.set(source.unsafeSubscribe(this));
 
             return group;
         }
@@ -128,7 +128,7 @@ public class OperationGroupByUntil<TSource, TKey, TResult, TDuration> implements
                 group.add(durationHandle);
 
                 DurationObserver durationObserver = new DurationObserver(key, durationHandle);
-                durationHandle.set(duration.subscribe(durationObserver));
+                durationHandle.set(duration.unsafeSubscribe(durationObserver));
 
             }
 
@@ -181,7 +181,7 @@ public class OperationGroupByUntil<TSource, TKey, TResult, TDuration> implements
         }
 
         /** Observe the completion of a group. */
-        class DurationObserver implements Observer<TDuration> {
+        class DurationObserver extends Subscriber<TDuration> {
             final TKey key;
             final Subscription handle;
 
@@ -209,7 +209,7 @@ public class OperationGroupByUntil<TSource, TKey, TResult, TDuration> implements
     }
 
     /** A grouped observable with subject-like behavior. */
-    public static class GroupSubject<K, V> implements Observer<V> {
+    public static class GroupSubject<K, V> extends Subscriber<V> {
         protected final Subject<V, V> publish;
         private final K key;
 
@@ -222,7 +222,7 @@ public class OperationGroupByUntil<TSource, TKey, TResult, TDuration> implements
             return new GroupedObservable<K, V>(key, new OnSubscribe<V>() {
                 @Override
                 public void call(Subscriber<? super V> o) {
-                    publish.subscribe(o);
+                    publish.unsafeSubscribe(o);
                 }
             });
         }

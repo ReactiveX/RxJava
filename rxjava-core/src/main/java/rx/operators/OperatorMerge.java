@@ -63,7 +63,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
                 runningCount.incrementAndGet();
                 Subscriber<T> i = new InnerObserver();
                 childrenSubscriptions.add(i);
-                innerObservable.subscribe(i);
+                innerObservable.unsafeSubscribe(i);
             }
 
             final class InnerObserver extends Subscriber<T> {

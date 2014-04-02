@@ -15,7 +15,9 @@
  */
 package rx.operators;
 
-import static rx.Observable.*;
+import static rx.Observable.concat;
+import static rx.Observable.from;
+import static rx.Observable.zip;
 import rx.Notification;
 import rx.Observable;
 import rx.functions.Func1;

@@ -72,7 +72,7 @@ public class BlockingObservable<T> {
      * "Guideline 6.4: Protect calls to user code from within an operator"
      */
     private Subscription protectivelyWrapAndSubscribe(Subscriber<? super T> observer) {
-        return o.subscribe(new SafeSubscriber<T>(observer));
+        return o.unsafeSubscribe(new SafeSubscriber<T>(observer));
     }
 
     /**

@@ -20,6 +20,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Func1;
 
@@ -39,8 +40,6 @@ public class OperationAll {
         private final Observable<? extends T> sequence;
         private final Func1<? super T, Boolean> predicate;
 
-        private final SafeObservableSubscription subscription = new SafeObservableSubscription();
-
         private AllObservable(Observable<? extends T> sequence, Func1<? super T, Boolean> predicate) {
             this.sequence = sequence;
             this.predicate = predicate;
@@ -48,11 +47,11 @@ public class OperationAll {
 
         @Override
         public Subscription onSubscribe(final Observer<? super Boolean> observer) {
-            return subscription.wrap(sequence.subscribe(new AllObserver(observer)));
+            return sequence.unsafeSubscribe(new AllObserver(observer));
 
         }
 
-        private class AllObserver implements Observer<T> {
+        private class AllObserver extends Subscriber<T> {
             private final Observer<? super Boolean> underlying;
 
             private final AtomicBoolean status = new AtomicBoolean(true);
@@ -82,7 +81,7 @@ public class OperationAll {
                 if (changed && !result) {
                     underlying.onNext(false);
                     underlying.onCompleted();
-                    subscription.unsubscribe();
+                    unsubscribe();
                 }
             }
         }

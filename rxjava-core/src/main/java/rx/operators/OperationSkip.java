@@ -17,13 +17,13 @@ package rx.operators;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Scheduler.Inner;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Action1;
 import rx.subscriptions.CompositeSubscription;
@@ -67,7 +67,7 @@ public final class OperationSkip {
             CompositeSubscription csub = new CompositeSubscription(timer, data);
 
             final SourceObserver<T> so = new SourceObserver<T>(t1, csub);
-            data.wrap(source.subscribe(so));
+            data.wrap(source.unsafeSubscribe(so));
             if (!data.isUnsubscribed()) {
                 timer.wrap(scheduler.schedule(so, time, unit));
             }
@@ -81,7 +81,7 @@ public final class OperationSkip {
          * @param <T>
          *            the observed value type
          */
-        private static final class SourceObserver<T> implements Observer<T>, Action1<Inner> {
+        private static final class SourceObserver<T> extends Subscriber<T> implements Action1<Inner> {
             final AtomicBoolean gate;
             final Observer<? super T> observer;
             final Subscription cancel;

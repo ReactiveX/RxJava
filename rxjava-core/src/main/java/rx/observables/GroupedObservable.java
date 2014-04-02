@@ -37,7 +37,7 @@ public class GroupedObservable<K, T> extends Observable<T> {
 
             @Override
             public void call(Subscriber<? super T> s) {
-                o.subscribe(s);
+                o.unsafeSubscribe(s);
             }
         });
     }

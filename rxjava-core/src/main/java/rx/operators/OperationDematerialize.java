@@ -19,6 +19,7 @@ import rx.Notification;
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 
 /**
@@ -54,7 +55,7 @@ public final class OperationDematerialize {
 
         @Override
         public Subscription onSubscribe(final Observer<? super T> observer) {
-            return sequence.subscribe(new Observer<Notification<? extends T>>() {
+            return sequence.unsafeSubscribe(new Subscriber<Notification<? extends T>>() {
                 @Override
                 public void onCompleted() {
                     observer.onCompleted();

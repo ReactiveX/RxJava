@@ -51,7 +51,7 @@ public class OperatorTimeoutWithSelector<T, U, V> extends
                         timeoutSubscriber.onError(t);
                         return Subscriptions.empty();
                     }
-                    return o.subscribe(new Subscriber<U>() {
+                    return o.unsafeSubscribe(new Subscriber<U>() {
 
                         @Override
                         public void onCompleted() {
@@ -87,7 +87,7 @@ public class OperatorTimeoutWithSelector<T, U, V> extends
                     timeoutSubscriber.onError(t);
                     return Subscriptions.empty();
                 }
-                return o.subscribe(new Subscriber<V>() {
+                return o.unsafeSubscribe(new Subscriber<V>() {
 
                     @Override
                     public void onCompleted() {

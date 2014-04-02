@@ -21,6 +21,7 @@ import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
+import rx.observers.Subscribers;
 import rx.subjects.ReplaySubject;
 
 /**
@@ -48,7 +49,7 @@ public class OperationCache {
             public Subscription onSubscribe(Observer<? super T> observer) {
                 if (subscribed.compareAndSet(false, true)) {
                     // subscribe to the source once
-                    source.subscribe(cache);
+                    source.unsafeSubscribe(Subscribers.from(cache));
                     /*
                      * Note that we will never unsubscribe from 'source' as we want to receive and cache all of its values.
                      * 
@@ -56,7 +57,7 @@ public class OperationCache {
                      */
                 }
 
-                return cache.subscribe(observer);
+                return cache.unsafeSubscribe(Subscribers.from(observer));
             }
 
         };

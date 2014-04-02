@@ -23,6 +23,7 @@ import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Scheduler.Inner;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Action1;
 import rx.subscriptions.CompositeSubscription;
@@ -86,7 +87,7 @@ public final class OperationTakeTimed {
         @Override
         public Subscription onSubscribe(Observer<? super T> observer) {
             if (num < 1) {
-                items.subscribe(new Observer<T>()
+                items.unsafeSubscribe(new Subscriber<T>()
                 {
                     @Override
                     public void onCompleted()
@@ -107,10 +108,10 @@ public final class OperationTakeTimed {
                 return Subscriptions.empty();
             }
 
-            return subscription.wrap(items.subscribe(new ItemObserver(observer)));
+            return subscription.wrap(items.unsafeSubscribe(new ItemObserver(observer)));
         }
 
-        private class ItemObserver implements Observer<T> {
+        private class ItemObserver extends Subscriber<T> {
             private final Observer<? super T> observer;
 
             private final AtomicInteger counter = new AtomicInteger();
@@ -197,7 +198,7 @@ public final class OperationTakeTimed {
             CompositeSubscription csub = new CompositeSubscription(timer, data);
 
             final SourceObserver<T> so = new SourceObserver<T>(t1, csub);
-            data.wrap(source.subscribe(so));
+            data.wrap(source.unsafeSubscribe(so));
             if (!data.isUnsubscribed()) {
                 timer.wrap(scheduler.schedule(so, time, unit));
             }
@@ -211,7 +212,7 @@ public final class OperationTakeTimed {
          * @param <T>
          *            the observed value type
          */
-        private static final class SourceObserver<T> implements Observer<T>, Action1<Inner> {
+        private static final class SourceObserver<T> extends Subscriber<T> implements Action1<Inner> {
             final Observer<? super T> observer;
             final Subscription cancel;
             final AtomicInteger state = new AtomicInteger();

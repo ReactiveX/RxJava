@@ -108,7 +108,7 @@ public final class OperatorGroupBy<K, T> implements Operator<GroupedObservable<K
                                     }
 
                                 }));
-                                _gps.subscribe(new Subscriber<T>(o) {
+                                _gps.unsafeSubscribe(new Subscriber<T>(o) {
 
                                     @Override
                                     public void onCompleted() {

@@ -24,6 +24,7 @@ import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.schedulers.Timestamped;
 
@@ -61,10 +62,10 @@ public final class OperationTakeLast {
                 throw new IndexOutOfBoundsException(
                         "count could not be negative");
             }
-            return subscription.wrap(items.subscribe(new ItemObserver(observer)));
+            return subscription.wrap(items.unsafeSubscribe(new ItemObserver(observer)));
         }
 
-        private class ItemObserver implements Observer<T> {
+        private class ItemObserver extends Subscriber<T> {
 
             /**
              * Store the last count elements until now.
@@ -156,13 +157,13 @@ public final class OperationTakeLast {
         @Override
         public Subscription onSubscribe(Observer<? super T> t1) {
             SafeObservableSubscription sas = new SafeObservableSubscription();
-            sas.wrap(source.subscribe(new TakeLastTimedObserver<T>(t1, sas, count, ageMillis, scheduler)));
+            sas.wrap(source.unsafeSubscribe(new TakeLastTimedObserver<T>(t1, sas, count, ageMillis, scheduler)));
             return sas;
         }
     }
 
     /** Observes source values and keeps the most recent items. */
-    static final class TakeLastTimedObserver<T> implements Observer<T> {
+    static final class TakeLastTimedObserver<T> extends Subscriber<T> {
         final Observer<? super T> observer;
         final Subscription cancel;
         final long ageMillis;

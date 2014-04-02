@@ -21,6 +21,7 @@ import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Func0;
 import rx.functions.Func1;
@@ -69,7 +70,7 @@ public final class OperationWindow extends ChunkedOperation {
             public Subscription onSubscribe(final Observer<? super Observable<T>> observer) {
                 NonOverlappingChunks<T, Observable<T>> windows = new NonOverlappingChunks<T, Observable<T>>(observer, OperationWindow.<T> windowMaker());
                 ChunkCreator creator = new ObservableBasedSingleChunkCreator<T, Observable<T>, TClosing>(windows, windowClosingSelector);
-                return source.subscribe(new ChunkObserver<T, Observable<T>>(windows, observer, creator));
+                return source.unsafeSubscribe(new ChunkObserver<T, Observable<T>>(windows, observer, creator));
             }
 
         };
@@ -110,7 +111,7 @@ public final class OperationWindow extends ChunkedOperation {
             public Subscription onSubscribe(final Observer<? super Observable<T>> observer) {
                 OverlappingChunks<T, Observable<T>> windows = new OverlappingChunks<T, Observable<T>>(observer, OperationWindow.<T> windowMaker());
                 ChunkCreator creator = new ObservableBasedMultiChunkCreator<T, Observable<T>, TOpening, TClosing>(windows, windowOpenings, windowClosingSelector);
-                return source.subscribe(new ChunkObserver<T, Observable<T>>(windows, observer, creator));
+                return source.unsafeSubscribe(new ChunkObserver<T, Observable<T>>(windows, observer, creator));
             }
         };
     }
@@ -168,7 +169,7 @@ public final class OperationWindow extends ChunkedOperation {
             public Subscription onSubscribe(final Observer<? super Observable<T>> observer) {
                 Chunks<T, Observable<T>> chunks = new SizeBasedChunks<T, Observable<T>>(observer, OperationWindow.<T> windowMaker(), count);
                 ChunkCreator creator = new SkippingChunkCreator<T, Observable<T>>(chunks, skip);
-                return source.subscribe(new ChunkObserver<T, Observable<T>>(chunks, observer, creator));
+                return source.unsafeSubscribe(new ChunkObserver<T, Observable<T>>(chunks, observer, creator));
             }
         };
     }
@@ -225,7 +226,7 @@ public final class OperationWindow extends ChunkedOperation {
             public Subscription onSubscribe(final Observer<? super Observable<T>> observer) {
                 NonOverlappingChunks<T, Observable<T>> windows = new NonOverlappingChunks<T, Observable<T>>(observer, OperationWindow.<T> windowMaker());
                 ChunkCreator creator = new TimeBasedChunkCreator<T, Observable<T>>(windows, timespan, unit, scheduler);
-                return source.subscribe(new ChunkObserver<T, Observable<T>>(windows, observer, creator));
+                return source.unsafeSubscribe(new ChunkObserver<T, Observable<T>>(windows, observer, creator));
             }
         };
     }
@@ -288,7 +289,7 @@ public final class OperationWindow extends ChunkedOperation {
             public Subscription onSubscribe(final Observer<? super Observable<T>> observer) {
                 Chunks<T, Observable<T>> chunks = new TimeAndSizeBasedChunks<T, Observable<T>>(observer, OperationWindow.<T> windowMaker(), count, timespan, unit, scheduler);
                 ChunkCreator creator = new SingleChunkCreator<T, Observable<T>>(chunks);
-                return source.subscribe(new ChunkObserver<T, Observable<T>>(chunks, observer, creator));
+                return source.unsafeSubscribe(new ChunkObserver<T, Observable<T>>(chunks, observer, creator));
             }
         };
     }
@@ -351,7 +352,7 @@ public final class OperationWindow extends ChunkedOperation {
             public Subscription onSubscribe(final Observer<? super Observable<T>> observer) {
                 OverlappingChunks<T, Observable<T>> windows = new TimeBasedChunks<T, Observable<T>>(observer, OperationWindow.<T> windowMaker(), timespan, unit, scheduler);
                 ChunkCreator creator = new TimeBasedChunkCreator<T, Observable<T>>(windows, timeshift, unit, scheduler);
-                return source.subscribe(new ChunkObserver<T, Observable<T>>(windows, observer, creator));
+                return source.unsafeSubscribe(new ChunkObserver<T, Observable<T>>(windows, observer, creator));
             }
         };
     }
@@ -410,10 +411,10 @@ public final class OperationWindow extends ChunkedOperation {
                 t1.onError(t);
                 return Subscriptions.empty();
             }
-            csub.add(source.subscribe(so));
+            csub.add(source.unsafeSubscribe(so));
 
             if (!csub.isUnsubscribed()) {
-                csub.add(boundary.subscribe(new BoundaryObserver<T, U>(so)));
+                csub.add(boundary.unsafeSubscribe(new BoundaryObserver<T, U>(so)));
             }
 
             return csub;
@@ -422,7 +423,7 @@ public final class OperationWindow extends ChunkedOperation {
         /**
          * Observe the source and emit the values into the current window.
          */
-        private static final class SourceObserver<T> implements Observer<T> {
+        private static final class SourceObserver<T> extends Subscriber<T> {
             final Observer<? super Observable<T>> observer;
             final Subscription cancel;
             final Object guard;
@@ -500,7 +501,7 @@ public final class OperationWindow extends ChunkedOperation {
         /**
          * Observe the boundary and replace the window on each item.
          */
-        private static final class BoundaryObserver<T, U> implements Observer<U> {
+        private static final class BoundaryObserver<T, U> extends Subscriber<U> {
             final SourceObserver<T> so;
 
             public BoundaryObserver(SourceObserver<T> so) {

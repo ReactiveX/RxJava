@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Observable;
-import rx.Observer;
+import rx.Subscriber;
 import rx.exceptions.Exceptions;
 
 /**
@@ -39,7 +39,7 @@ public final class OperationMostRecent {
                 MostRecentObserver<T> mostRecentObserver = new MostRecentObserver<T>(initialValue);
                 final MostRecentIterator<T> nextIterator = new MostRecentIterator<T>(mostRecentObserver);
 
-                source.subscribe(mostRecentObserver);
+                source.unsafeSubscribe(mostRecentObserver);
 
                 return nextIterator;
             }
@@ -74,7 +74,7 @@ public final class OperationMostRecent {
         }
     }
 
-    private static class MostRecentObserver<T> implements Observer<T> {
+    private static class MostRecentObserver<T> extends Subscriber<T> {
         private final AtomicBoolean completed = new AtomicBoolean(false);
         private final AtomicReference<T> value;
         private final AtomicReference<Throwable> exception = new AtomicReference<Throwable>();

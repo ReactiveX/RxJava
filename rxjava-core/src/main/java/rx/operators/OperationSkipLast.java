@@ -27,6 +27,7 @@ import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.schedulers.Timestamped;
 
@@ -75,7 +76,7 @@ public class OperationSkipLast {
                         "count could not be negative");
             }
             final SafeObservableSubscription subscription = new SafeObservableSubscription();
-            return subscription.wrap(source.subscribe(new Observer<T>() {
+            return subscription.wrap(source.unsafeSubscribe(new Subscriber<T>() {
 
                 private final ReentrantLock lock = new ReentrantLock();
 
@@ -149,11 +150,11 @@ public class OperationSkipLast {
 
         @Override
         public Subscription onSubscribe(Observer<? super T> t1) {
-            return source.subscribe(new SourceObserver<T>(t1, timeInMillis, scheduler));
+            return source.unsafeSubscribe(new SourceObserver<T>(t1, timeInMillis, scheduler));
         }
 
         /** Observes the source. */
-        private static final class SourceObserver<T> implements Observer<T> {
+        private static final class SourceObserver<T> extends Subscriber<T> {
             final Observer<? super T> observer;
             final long timeInMillis;
             final Scheduler scheduler;

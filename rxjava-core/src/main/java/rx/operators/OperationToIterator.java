@@ -22,7 +22,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import rx.Notification;
 import rx.Observable;
-import rx.Observer;
+import rx.Subscriber;
 import rx.exceptions.Exceptions;
 
 /**
@@ -45,7 +45,7 @@ public class OperationToIterator {
     public static <T> Iterator<T> toIterator(Observable<? extends T> source) {
         final BlockingQueue<Notification<? extends T>> notifications = new LinkedBlockingQueue<Notification<? extends T>>();
 
-        source.materialize().subscribe(new Observer<Notification<? extends T>>() {
+        source.materialize().unsafeSubscribe(new Subscriber<Notification<? extends T>>() {
             @Override
             public void onCompleted() {
                 // ignore

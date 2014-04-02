@@ -20,6 +20,7 @@ import java.util.LinkedList;
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.observers.SerializedObserver;
 import rx.subscriptions.CompositeSubscription;
@@ -91,7 +92,7 @@ public final class OperationMergeMaxConcurrent {
             /**
              * Subscribe to the parent Observable to get to the children Observables
              */
-            ourSubscription.add(sequences.subscribe(new ParentObserver(synchronizedObserver)));
+            ourSubscription.add(sequences.unsafeSubscribe(new ParentObserver(synchronizedObserver)));
 
             return subscription;
         }
@@ -101,7 +102,7 @@ public final class OperationMergeMaxConcurrent {
          * 
          * @param <T>
          */
-        private class ParentObserver implements Observer<Observable<? extends T>> {
+        private class ParentObserver extends Subscriber<Observable<? extends T>> {
             private final SerializedObserver<T> serializedObserver;
 
             public ParentObserver(SerializedObserver<T> serializedObserver) {
@@ -149,7 +150,7 @@ public final class OperationMergeMaxConcurrent {
                     }
                 }
                 if (observable != null) {
-                    ourSubscription.add(observable.subscribe(new ChildObserver(
+                    ourSubscription.add(observable.unsafeSubscribe(new ChildObserver(
                             serializedObserver)));
                 }
             }
@@ -159,7 +160,7 @@ public final class OperationMergeMaxConcurrent {
          * Subscribe to each child Observable<T> and forward their sequence of data to the actualObserver
          * 
          */
-        private class ChildObserver implements Observer<T> {
+        private class ChildObserver extends Subscriber<T> {
 
             private final SerializedObserver<T> serializedObserver;
 
@@ -187,7 +188,7 @@ public final class OperationMergeMaxConcurrent {
                     }
                 }
                 if (childObservable != null) {
-                    ourSubscription.add(childObservable.subscribe(this));
+                    ourSubscription.add(childObservable.unsafeSubscribe(this));
                 } else {
                     // No pending observable. Need to check if it's necessary to emit an onCompleted
                     if (isStopped()) {

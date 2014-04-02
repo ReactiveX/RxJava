@@ -24,6 +24,7 @@ import rx.Observer;
 import rx.Scheduler;
 import rx.Subscription;
 import rx.functions.Func1;
+import rx.observers.Subscribers;
 import rx.schedulers.Schedulers;
 
 /**
@@ -80,7 +81,7 @@ public final class OperationThrottleFirst {
                         }
                     }
 
-                }).subscribe(observer);
+                }).unsafeSubscribe(Subscribers.from(observer));
             }
         };
     }

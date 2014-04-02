@@ -72,6 +72,7 @@ public class RxJavaPluginsTest {
 
         @Override
         public void handleError(Throwable e) {
+            e.printStackTrace();
             this.e = e;
             count++;
         }
@@ -138,6 +139,7 @@ public class RxJavaPluginsTest {
         RuntimeException re = new RuntimeException("test onError");
         try {
             Observable.error(re).subscribe();
+            fail("should fail");
         } catch (Throwable e) {
             // ignore as we expect it to throw
         }

@@ -47,7 +47,7 @@ public final class OperatorOnErrorFlatMap<T> implements Operator<T, T> {
             public void onError(Throwable e) {
                 try {
                     Observable<? extends T> resume = resumeFunction.call(OnErrorThrowable.from(e));
-                    resume.subscribe(new Subscriber<T>() {
+                    resume.unsafeSubscribe(new Subscriber<T>() {
 
                         @Override
                         public void onCompleted() {

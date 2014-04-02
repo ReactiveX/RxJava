@@ -102,7 +102,7 @@ public class OperatorPivot<K1, K2, T> implements Operator<GroupedObservable<K2, 
         @Override
         public void onNext(final GroupedObservable<K1, GroupedObservable<K2, T>> k1Group) {
             groups.startK1Group(state, k1Group.getKey());
-            k1Group.subscribe(new Subscriber<GroupedObservable<K2, T>>(parentSubscription) {
+            k1Group.unsafeSubscribe(new Subscriber<GroupedObservable<K2, T>>(parentSubscription) {
 
                 @Override
                 public void onCompleted() {
@@ -124,7 +124,7 @@ public class OperatorPivot<K1, K2, T> implements Operator<GroupedObservable<K2, 
                         // we have been unsubscribed
                         return;
                     }
-                    k2Group.subscribe(new Subscriber<T>(parentSubscription) {
+                    k2Group.unsafeSubscribe(new Subscriber<T>(parentSubscription) {
 
                         @Override
                         public void onCompleted() {
@@ -308,7 +308,7 @@ public class OperatorPivot<K1, K2, T> implements Operator<GroupedObservable<K2, 
                         }
 
                     }));
-                    subject.subscribe(new Subscriber<T>(o) {
+                    subject.unsafeSubscribe(new Subscriber<T>(o) {
 
                         @Override
                         public void onCompleted() {
@@ -352,7 +352,7 @@ public class OperatorPivot<K1, K2, T> implements Operator<GroupedObservable<K2, 
 
                 @Override
                 public void call(final Subscriber<? super GroupedObservable<K1, T>> o) {
-                    subject.subscribe(new Subscriber<GroupedObservable<K1, T>>(o) {
+                    subject.unsafeSubscribe(new Subscriber<GroupedObservable<K1, T>>(o) {
 
                         @Override
                         public void onCompleted() {

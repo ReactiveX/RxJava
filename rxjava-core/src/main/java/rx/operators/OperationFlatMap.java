@@ -20,6 +20,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Func0;
 import rx.functions.Func1;
@@ -102,13 +103,13 @@ public final class OperationFlatMap {
         public Subscription onSubscribe(Observer<? super R> t1) {
             CompositeSubscription csub = new CompositeSubscription();
 
-            csub.add(source.subscribe(new SourceObserver<T, U, R>(t1, collectionSelector, resultSelector, csub)));
+            csub.add(source.unsafeSubscribe(new SourceObserver<T, U, R>(t1, collectionSelector, resultSelector, csub)));
 
             return csub;
         }
 
         /** Observes the source, starts the collections and projects the result. */
-        private static final class SourceObserver<T, U, R> implements Observer<T> {
+        private static final class SourceObserver<T, U, R> extends Subscriber<T> {
             final Observer<? super R> observer;
             final Func1<? super T, ? extends Observable<? extends U>> collectionSelector;
             final Func2<? super T, ? super U, ? extends R> resultSelector;
@@ -141,7 +142,7 @@ public final class OperationFlatMap {
                 csub.add(ssub);
                 wip.incrementAndGet();
 
-                ssub.set(coll.subscribe(new CollectionObserver<T, U, R>(this, args, ssub)));
+                ssub.set(coll.unsafeSubscribe(new CollectionObserver<T, U, R>(this, args, ssub)));
             }
 
             @Override
@@ -193,7 +194,7 @@ public final class OperationFlatMap {
         }
 
         /** Observe a collection and call emit with the pair of the key and the value. */
-        private static final class CollectionObserver<T, U, R> implements Observer<U> {
+        private static final class CollectionObserver<T, U, R> extends Subscriber<U> {
             final SourceObserver<T, U, R> so;
             final Subscription cancel;
             final T value;
@@ -258,7 +259,7 @@ public final class OperationFlatMap {
         public Subscription onSubscribe(Observer<? super R> t1) {
             CompositeSubscription csub = new CompositeSubscription();
 
-            csub.add(source.subscribe(new SourceObserver<T, R>(t1, onNext, onError, onCompleted, csub)));
+            csub.add(source.unsafeSubscribe(new SourceObserver<T, R>(t1, onNext, onError, onCompleted, csub)));
 
             return csub;
         }
@@ -271,7 +272,7 @@ public final class OperationFlatMap {
          * @param <R>
          *            the result value type
          */
-        private static final class SourceObserver<T, R> implements Observer<T> {
+        private static final class SourceObserver<T, R> extends Subscriber<T> {
             final Observer<? super R> observer;
             final Func1<? super T, ? extends Observable<? extends R>> onNext;
             final Func1<? super Throwable, ? extends Observable<? extends R>> onError;
@@ -345,7 +346,7 @@ public final class OperationFlatMap {
                 wip.incrementAndGet();
                 csub.add(ssub);
 
-                ssub.set(o.subscribe(new CollectionObserver<T, R>(this, ssub)));
+                ssub.set(o.unsafeSubscribe(new CollectionObserver<T, R>(this, ssub)));
             }
 
             void finish() {
@@ -359,7 +360,7 @@ public final class OperationFlatMap {
         }
 
         /** Observes the collections. */
-        private static final class CollectionObserver<T, R> implements Observer<R> {
+        private static final class CollectionObserver<T, R> extends Subscriber<R> {
             final SourceObserver<T, R> parent;
             final Subscription cancel;
 

@@ -21,6 +21,7 @@ import java.util.Map;
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Func1;
 import rx.functions.Func2;
@@ -83,14 +84,14 @@ public class OperationJoin<TLeft, TRight, TLeftDuration, TRightDuration, R> impl
             group.add(leftCancel);
             group.add(rightCancel);
 
-            leftCancel.setSubscription(left.subscribe(new LeftObserver(leftCancel)));
-            rightCancel.setSubscription(right.subscribe(new RightObserver(rightCancel)));
+            leftCancel.setSubscription(left.unsafeSubscribe(new LeftObserver(leftCancel)));
+            rightCancel.setSubscription(right.unsafeSubscribe(new RightObserver(rightCancel)));
 
             return group;
         }
 
         /** Observes the left values. */
-        class LeftObserver implements Observer<TLeft> {
+        class LeftObserver extends Subscriber<TLeft> {
             final Subscription self;
 
             public LeftObserver(Subscription self) {
@@ -128,7 +129,7 @@ public class OperationJoin<TLeft, TRight, TLeftDuration, TRightDuration, R> impl
                     return;
                 }
 
-                md.setSubscription(duration.subscribe(new LeftDurationObserver(id, md)));
+                md.setSubscription(duration.unsafeSubscribe(new LeftDurationObserver(id, md)));
 
                 synchronized (gate) {
                     for (Map.Entry<Integer, TRight> entry : rightMap.entrySet()) {
@@ -170,7 +171,7 @@ public class OperationJoin<TLeft, TRight, TLeftDuration, TRightDuration, R> impl
             }
 
             /** Observes the left duration. */
-            class LeftDurationObserver implements Observer<TLeftDuration> {
+            class LeftDurationObserver extends Subscriber<TLeftDuration> {
                 final int id;
                 final Subscription handle;
 
@@ -198,7 +199,7 @@ public class OperationJoin<TLeft, TRight, TLeftDuration, TRightDuration, R> impl
         }
 
         /** Observes the right values. */
-        class RightObserver implements Observer<TRight> {
+        class RightObserver extends Subscriber<TRight> {
             final Subscription self;
 
             public RightObserver(Subscription self) {
@@ -235,7 +236,7 @@ public class OperationJoin<TLeft, TRight, TLeftDuration, TRightDuration, R> impl
                     return;
                 }
 
-                md.setSubscription(duration.subscribe(new RightDurationObserver(id, md)));
+                md.setSubscription(duration.unsafeSubscribe(new RightDurationObserver(id, md)));
 
                 synchronized (gate) {
                     for (Map.Entry<Integer, TLeft> entry : leftMap.entrySet()) {
@@ -277,7 +278,7 @@ public class OperationJoin<TLeft, TRight, TLeftDuration, TRightDuration, R> impl
             }
 
             /** Observe the right duration. */
-            class RightDurationObserver implements Observer<TRightDuration> {
+            class RightDurationObserver extends Subscriber<TRightDuration> {
                 final int id;
                 final Subscription handle;
 

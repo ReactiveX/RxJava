@@ -20,8 +20,10 @@ import java.util.concurrent.atomic.AtomicReference;
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Action0;
+import rx.observers.Subscribers;
 import rx.subscriptions.Subscriptions;
 
 /**
@@ -66,7 +68,7 @@ public final class OperationOnErrorResumeNextViaObservable<T> {
             final AtomicReference<SafeObservableSubscription> subscriptionRef = new AtomicReference<SafeObservableSubscription>(subscription);
 
             // subscribe to the original Observable and remember the subscription
-            subscription.wrap(originalSequence.subscribe(new Observer<T>() {
+            subscription.wrap(originalSequence.unsafeSubscribe(new Subscriber<T>() {
                 public void onNext(T value) {
                     // forward the successful calls unless resumed
                     if (subscriptionRef.get() == subscription)
@@ -82,7 +84,7 @@ public final class OperationOnErrorResumeNextViaObservable<T> {
                     // check that we have not been unsubscribed and not already resumed before we can process the error
                     if (currentSubscription == subscription) {
                         /* error occurred, so switch subscription to the 'resumeSequence' */
-                        SafeObservableSubscription innerSubscription = new SafeObservableSubscription(resumeSequence.subscribe(observer));
+                        SafeObservableSubscription innerSubscription = new SafeObservableSubscription(resumeSequence.unsafeSubscribe(Subscribers.from(observer)));
                         /* we changed the sequence, so also change the subscription to the one of the 'resumeSequence' instead */
                         if (!subscriptionRef.compareAndSet(currentSubscription, innerSubscription)) {
                             // we failed to set which means 'subscriptionRef' was set to NULL via the unsubscribe below

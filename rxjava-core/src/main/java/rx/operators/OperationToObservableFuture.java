@@ -32,7 +32,7 @@ import rx.subscriptions.Subscriptions;
  * return value of the get() method of that object, by using the from operation.
  * <p>
  * This is blocking so the Subscription returned when calling
- * <code>Observable.subscribe(Observer)</code> does nothing.
+ * <code>Observable.unsafeSubscribe(Observer)</code> does nothing.
  */
 public class OperationToObservableFuture {
     /* package accessible for unit tests */static class ToObservableFuture<T> implements OnSubscribeFunc<T> {
