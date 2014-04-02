@@ -35,6 +35,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Matchers;
 
@@ -431,6 +432,7 @@ public class OperatorGroupByTest {
         assertEquals(37, sentEventCounter.get());
     }
 
+    @Ignore // ignore until https://github.com/Netflix/RxJava/issues/1011 is fixed
     @Test
     public void testStaggeredCompletion() throws InterruptedException {
         final AtomicInteger eventCounter = new AtomicInteger();
