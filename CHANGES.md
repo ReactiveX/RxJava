@@ -1,5 +1,11 @@
 # RxJava Releases #
 
+### Version 0.17.4 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.17.4%22)) ###
+
+* [Pull 990] (https://github.com/Netflix/RxJava/pull/990) Quasar Lightweight Threads/Fibers Contrib Module
+* [Pull 1012] (https://github.com/Netflix/RxJava/pull/1012) SerializedObserver: Removed window between the two synchronized blocks
+
+
 ### Version 0.17.3 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.17.3%22)) ###
 
 * [Pull 991] (https://github.com/Netflix/RxJava/pull/991) JMH Benchmark Build Config
