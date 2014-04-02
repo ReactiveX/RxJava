@@ -1,5 +1,14 @@
 # RxJava Releases #
 
+### Version 0.17.3 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.17.3%22)) ###
+
+* [Pull 991] (https://github.com/Netflix/RxJava/pull/991) JMH Benchmark Build Config
+* [Pull 993] (https://github.com/Netflix/RxJava/pull/993) JMH Perf Tests
+* [Pull 995] (https://github.com/Netflix/RxJava/pull/995) Support Custom JMH Args
+* [Pull 996] (https://github.com/Netflix/RxJava/pull/996) JMH Perfshadowjar
+* [Pull 1003] (https://github.com/Netflix/RxJava/pull/1003) Func0 can transparently implement java.util.concurrent.Callable
+* [Pull 999] (https://github.com/Netflix/RxJava/pull/999) New Implementation of SerializedObserver
+
 ### Version 0.17.2 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.17.2%22)) ###
 
 * [Pull 963](https://github.com/Netflix/RxJava/pull/963) A more robust JMH benchmarking set-up 
