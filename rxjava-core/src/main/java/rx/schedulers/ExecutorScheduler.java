@@ -29,8 +29,7 @@ import rx.subscriptions.MultipleAssignmentSubscription;
 import rx.subscriptions.Subscriptions;
 
 /**
- * A {@link Scheduler} implementation that uses an {@link Executor} or {@link ScheduledExecutorService}
- * implementation.
+ * A {@link Scheduler} implementation that uses an {@link Executor} or {@link ScheduledExecutorService} implementation.
  * <p>
  * Note that if an {@link Executor} implementation is used instead of {@link ScheduledExecutorService} then a
  * system-wide Timer will be used to handle delayed events.
@@ -55,21 +54,12 @@ public class ExecutorScheduler extends Scheduler {
     }
 
     @Override
-    public Subscription schedule(Action1<Scheduler.Inner> action) {
-        InnerExecutorScheduler inner = new InnerExecutorScheduler();
-        inner.schedule(action);
-        return inner.innerSubscription;
+    public Inner createInner() {
+        return new InnerExecutorScheduler();
     }
 
     @Override
-    public Subscription schedule(Action1<Inner> action, long delayTime, TimeUnit unit) {
-        InnerExecutorScheduler inner = new InnerExecutorScheduler();
-        inner.schedule(action, delayTime, unit);
-        return inner.innerSubscription;
-    }
-
-    @Override
-    public Subscription schedulePeriodically(final Action1<Scheduler.Inner> action, long initialDelay, long period, TimeUnit unit) {
+    public Subscription schedulePeriodically(final Action1<Recurse> action, long initialDelay, long period, TimeUnit unit) {
         if (executor instanceof ScheduledExecutorService) {
             final InnerExecutorScheduler inner = new InnerExecutorScheduler();
             ScheduledFuture<?> f = ((ScheduledExecutorService) executor).scheduleAtFixedRate(new Runnable() {
@@ -79,7 +69,7 @@ public class ExecutorScheduler extends Scheduler {
                         // don't execute if unsubscribed
                         return;
                     }
-                    action.call(inner);
+                    action.call(Recurse.create(inner, action));
                 }
             }, initialDelay, period, unit);
 
@@ -95,7 +85,7 @@ public class ExecutorScheduler extends Scheduler {
         private final MultipleAssignmentSubscription innerSubscription = new MultipleAssignmentSubscription();
 
         @Override
-        public void schedule(final Action1<Scheduler.Inner> action, long delayTime, TimeUnit unit) {
+        public void schedule(final Action1<Recurse> action, long delayTime, TimeUnit unit) {
             if (innerSubscription.isUnsubscribed()) {
                 // don't schedule, we are unsubscribed
                 return;
@@ -112,7 +102,7 @@ public class ExecutorScheduler extends Scheduler {
                             return;
                         }
                         // when the delay has passed we now do the work on the actual scheduler
-                        action.call(_inner);
+                        action.call(Recurse.create(_inner, action));
                     }
                 }, delayTime, unit);
                 // add the ScheduledFuture as a subscription so we can cancel the scheduled action if an unsubscribe happens
@@ -144,7 +134,7 @@ public class ExecutorScheduler extends Scheduler {
         }
 
         @Override
-        public void schedule(final Action1<Scheduler.Inner> action) {
+        public void schedule(final Action1<Recurse> action) {
             if (innerSubscription.isUnsubscribed()) {
                 // don't schedule, we are unsubscribed
                 return;
@@ -159,7 +149,7 @@ public class ExecutorScheduler extends Scheduler {
                         // don't execute if unsubscribed
                         return;
                     }
-                    action.call(_inner);
+                    action.call(Recurse.create(_inner, action));
                 }
             };
 

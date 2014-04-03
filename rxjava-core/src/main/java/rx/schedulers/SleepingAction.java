@@ -16,22 +16,22 @@
 package rx.schedulers;
 
 import rx.Scheduler;
-import rx.Scheduler.Inner;
+import rx.Scheduler.Recurse;
 import rx.functions.Action1;
 
-/* package */class SleepingAction implements Action1<Scheduler.Inner> {
-    private final Action1<Scheduler.Inner> underlying;
+/* package */class SleepingAction implements Action1<Recurse> {
+    private final Action1<Recurse> underlying;
     private final Scheduler scheduler;
     private final long execTime;
 
-    public SleepingAction(Action1<Scheduler.Inner> underlying, Scheduler scheduler, long execTime) {
+    public SleepingAction(Action1<Recurse> underlying, Scheduler scheduler, long execTime) {
         this.underlying = underlying;
         this.scheduler = scheduler;
         this.execTime = execTime;
     }
 
     @Override
-    public void call(Inner s) {
+    public void call(Recurse s) {
         if (s.isUnsubscribed()) {
             return;
         }

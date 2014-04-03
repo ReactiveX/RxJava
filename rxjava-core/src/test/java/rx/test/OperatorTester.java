@@ -18,7 +18,6 @@ package rx.test;
 import java.util.concurrent.TimeUnit;
 
 import rx.Scheduler;
-import rx.Subscription;
 import rx.functions.Action1;
 
 /**
@@ -56,13 +55,38 @@ public class OperatorTester {
         }
 
         @Override
-        public Subscription schedule(Action1<Inner> action) {
-            return underlying.schedule(action);
+        public Inner createInner() {
+            return new InnerScheduler(underlying.createInner());
         }
 
-        @Override
-        public Subscription schedule(Action1<Inner> action, long delayTime, TimeUnit unit) {
-            return underlying.schedule(action, delayTime, unit);
+        public static class InnerScheduler extends Scheduler.Inner {
+
+            private final Inner actualInner;
+
+            public InnerScheduler(Inner inner) {
+                this.actualInner = inner;
+            }
+
+            @Override
+            public void schedule(Action1<Recurse> action) {
+                actualInner.schedule(action);
+            }
+
+            @Override
+            public void schedule(Action1<Recurse> action, long delayTime, TimeUnit unit) {
+                actualInner.schedule(action, delayTime, unit);
+            }
+
+            @Override
+            public void unsubscribe() {
+                actualInner.unsubscribe();
+            }
+
+            @Override
+            public boolean isUnsubscribed() {
+                return actualInner.isUnsubscribed();
+            }
+
         }
 
     }

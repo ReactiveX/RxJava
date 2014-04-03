@@ -20,6 +20,7 @@ import rx.Observable;
 import rx.Observable.Operator;
 import rx.Scheduler;
 import rx.Scheduler.Inner;
+import rx.Scheduler.Recurse;
 import rx.Subscriber;
 import rx.functions.Action1;
 import rx.observers.Subscribers;
@@ -53,6 +54,7 @@ public class OperatorRepeat<T> implements Operator<T, Observable<T>> {
             child.onCompleted();
             return Subscribers.empty();
         }
+        final Inner innerScheduler = scheduler.createInner();
         return new Subscriber<Observable<T>>(child) {
 
             int executionCount = 0;
@@ -70,19 +72,17 @@ public class OperatorRepeat<T> implements Operator<T, Observable<T>> {
 
             @Override
             public void onNext(final Observable<T> t) {
-                scheduler.schedule(new Action1<Inner>() {
-
-                    final Action1<Inner> self = this;
+                innerScheduler.schedule(new Action1<Recurse>() {
 
                     @Override
-                    public void call(final Inner inner) {
+                    public void call(final Recurse re) {
                         executionCount++;
                         t.unsafeSubscribe(new Subscriber<T>(child) {
 
                             @Override
                             public void onCompleted() {
                                 if (count == -1 || executionCount < count) {
-                                    inner.schedule(self);
+                                    re.schedule();
                                 } else {
                                     child.onCompleted();
                                 }

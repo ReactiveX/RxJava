@@ -53,19 +53,10 @@ public class NewFiberScheduler extends Scheduler {
     }
 
     @Override
-    public Subscription schedule(Action1<Scheduler.Inner> action) {
-        EventLoopScheduler innerScheduler = new EventLoopScheduler();
-        innerScheduler.schedule(action);
-        return innerScheduler.innerSubscription;
+    public Inner createInner() {
+        return new EventLoopScheduler();
     }
     
-    @Override
-    public Subscription schedule(Action1<Scheduler.Inner> action, long delayTime, TimeUnit unit) {
-        EventLoopScheduler innerScheduler = new EventLoopScheduler();
-        innerScheduler.schedule(action, delayTime, unit);
-        return innerScheduler.innerSubscription;
-    }
-
     private class EventLoopScheduler extends Scheduler.Inner implements Subscription {
         private final CompositeSubscription innerSubscription = new CompositeSubscription();
 
@@ -73,7 +64,7 @@ public class NewFiberScheduler extends Scheduler {
         }
 
         @Override
-        public void schedule(final Action1<Scheduler.Inner> action) {
+        public void schedule(final Action1<Recurse> action) {
             if (innerSubscription.isUnsubscribed()) {
                 // don't schedule, we are unsubscribed
                 return;
@@ -88,7 +79,7 @@ public class NewFiberScheduler extends Scheduler {
                         if (innerSubscription.isUnsubscribed()) {
                             return;
                         }
-                        action.call(EventLoopScheduler.this);
+                        action.call(Recurse.create(EventLoopScheduler.this, action));
                     } finally {
                         // remove the subscription now that we're completed
                         Subscription s = sf.get();
@@ -104,7 +95,7 @@ public class NewFiberScheduler extends Scheduler {
         }
 
         @Override
-        public void schedule(final Action1<Scheduler.Inner> action, final long delayTime, final TimeUnit unit) {
+        public void schedule(final Action1<Recurse> action, final long delayTime, final TimeUnit unit) {
             final AtomicReference<Subscription> sf = new AtomicReference<Subscription>();
 
             Subscription s = Subscriptions.from(new Fiber(fiberScheduler, new SuspendableRunnable() {
@@ -117,7 +108,7 @@ public class NewFiberScheduler extends Scheduler {
                             return;
                         }
                         // now that the delay is past schedule the work to be done for real on the UI thread
-                        action.call(EventLoopScheduler.this);
+                        action.call(Recurse.create(EventLoopScheduler.this, action));
                     } finally {
                         // remove the subscription now that we're completed
                         Subscription s = sf.get();

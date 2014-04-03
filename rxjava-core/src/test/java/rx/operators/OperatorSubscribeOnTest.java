@@ -15,7 +15,7 @@
  */
 package rx.operators;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
@@ -94,16 +94,42 @@ public class OperatorSubscribeOnTest {
         }
 
         @Override
-        public Subscription schedule(final Action1<Scheduler.Inner> action) {
-            return actual.schedule(action, delay, unit);
+        public Inner createInner() {
+            return new SlowInnerScheduler(actual.createInner());
         }
 
-        @Override
-        public Subscription schedule(final Action1<Scheduler.Inner> action, final long delayTime, final TimeUnit delayUnit) {
-            TimeUnit common = delayUnit.compareTo(unit) < 0 ? delayUnit : unit;
-            long t = common.convert(delayTime, delayUnit) + common.convert(delay, unit);
-            return actual.schedule(action, t, common);
+        private class SlowInnerScheduler extends Scheduler.Inner {
+
+            private final Inner actualInner;
+
+            public SlowInnerScheduler(Inner actualInner) {
+                this.actualInner = actualInner;
+            }
+
+            @Override
+            public void unsubscribe() {
+                actualInner.unsubscribe();
+            }
+
+            @Override
+            public boolean isUnsubscribed() {
+                return actualInner.isUnsubscribed();
+            }
+
+            @Override
+            public void schedule(final Action1<Scheduler.Recurse> action) {
+                actualInner.schedule(action, delay, unit);
+            }
+
+            @Override
+            public void schedule(final Action1<Scheduler.Recurse> action, final long delayTime, final TimeUnit delayUnit) {
+                TimeUnit common = delayUnit.compareTo(unit) < 0 ? delayUnit : unit;
+                long t = common.convert(delayTime, delayUnit) + common.convert(delay, unit);
+                actualInner.schedule(action, t, common);
+            }
+
         }
+
     }
 
     @Test(timeout = 5000)

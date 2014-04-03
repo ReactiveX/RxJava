@@ -22,7 +22,7 @@ import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
-import rx.Scheduler.Inner;
+import rx.Scheduler.Recurse;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Action1;
@@ -81,7 +81,7 @@ public final class OperationSkip {
          * @param <T>
          *            the observed value type
          */
-        private static final class SourceObserver<T> extends Subscriber<T> implements Action1<Inner> {
+        private static final class SourceObserver<T> extends Subscriber<T> implements Action1<Recurse> {
             final AtomicBoolean gate;
             final Observer<? super T> observer;
             final Subscription cancel;
@@ -119,7 +119,7 @@ public final class OperationSkip {
             }
 
             @Override
-            public void call(Inner inner) {
+            public void call(Recurse inner) {
                 gate.set(true);
             }
 

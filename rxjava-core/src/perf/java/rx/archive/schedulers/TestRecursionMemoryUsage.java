@@ -18,7 +18,7 @@ package rx.archive.schedulers;
 import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Scheduler;
-import rx.Scheduler.Inner;
+import rx.Scheduler.Recurse;
 import rx.Subscriber;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
@@ -29,78 +29,78 @@ import rx.schedulers.Schedulers;
  */
 public class TestRecursionMemoryUsage {
 
-	public static void main(String args[]) {
-		usingFunc2(Schedulers.newThread());
-		usingAction0(Schedulers.newThread());
+    public static void main(String args[]) {
+        usingFunc2(Schedulers.newThread());
+        usingAction0(Schedulers.newThread());
 
-		usingFunc2(Schedulers.currentThread());
-		usingAction0(Schedulers.currentThread());
+        usingFunc2(Schedulers.currentThread());
+        usingAction0(Schedulers.currentThread());
 
-		usingFunc2(Schedulers.computation());
-		usingAction0(Schedulers.computation());
+        usingFunc2(Schedulers.computation());
+        usingAction0(Schedulers.computation());
 
-		System.exit(0);
-	}
+        System.exit(0);
+    }
 
-	protected static void usingFunc2(final Scheduler scheduler) {
-		System.out.println("************ usingFunc2: " + scheduler);
-		Observable.create(new OnSubscribe<Long>() {
+    protected static void usingFunc2(final Scheduler scheduler) {
+        System.out.println("************ usingFunc2: " + scheduler);
+        Observable.create(new OnSubscribe<Long>() {
 
-			@Override
-			public void call(final Subscriber<? super Long> o) {
-				o.add(scheduler.schedule(new Action1<Inner>() {
-					long i = 0;
+            @Override
+            public void call(final Subscriber<? super Long> o) {
+                o.add(scheduler.schedule(new Action1<Recurse>() {
+                    long i = 0;
 
-					@Override
-					public void call(Inner inner) {
-						i++;
-						if (i % 500000 == 0) {
-							System.out.println(i + "  Total Memory: "
-									+ Runtime.getRuntime().totalMemory()
-									+ "  Free: "
-									+ Runtime.getRuntime().freeMemory());
-							o.onNext(i);
-						}
-						if (i == 100000000L) {
-							o.onCompleted();
-							return;
-						}
+                    @Override
+                    public void call(Recurse inner) {
+                        i++;
+                        if (i % 500000 == 0) {
+                            System.out.println(i + "  Total Memory: "
+                                    + Runtime.getRuntime().totalMemory()
+                                    + "  Free: "
+                                    + Runtime.getRuntime().freeMemory());
+                            o.onNext(i);
+                        }
+                        if (i == 100000000L) {
+                            o.onCompleted();
+                            return;
+                        }
 
-						inner.schedule(this);
-					}
-				}));
-			}
-		}).toBlockingObservable().last();
-	}
+                        inner.schedule();
+                    }
+                }));
+            }
+        }).toBlockingObservable().last();
+    }
 
-	protected static void usingAction0(final Scheduler scheduler) {
-		System.out.println("************ usingAction0: " + scheduler);
-		Observable.create(new OnSubscribe<Long>() {
+    protected static void usingAction0(final Scheduler scheduler) {
+        System.out.println("************ usingAction0: " + scheduler);
+        Observable.create(new OnSubscribe<Long>() {
 
-			@Override
-			public void call(final Subscriber<? super Long> o) {
-				o.add(scheduler.schedule(new Action1<Inner>() {
+            @Override
+            public void call(final Subscriber<? super Long> o) {
+                o.add(scheduler.schedule(new Action1<Recurse>() {
 
-					private long i = 0;
+                    private long i = 0;
 
-					@Override
-					public void call(Inner inner) {
-						i++;
-						if (i % 500000 == 0) {
-							System.out.println(i + "  Total Memory: "
-									+ Runtime.getRuntime().totalMemory()
-									+ "  Free: "
-									+ Runtime.getRuntime().freeMemory());
-							o.onNext(i);
-						}
-						if (i == 100000000L) {
-							o.onCompleted();
-							return;
-						}
-						inner.schedule(this);
-					}
-				}));
-			}
-		}).toBlockingObservable().last();
-	}
+                    @Override
+                    public void call(Recurse inner) {
+                        i++;
+                        if (i % 500000 == 0) {
+                            System.out.println(i + "  Total Memory: "
+                                    + Runtime.getRuntime().totalMemory()
+                                    + "  Free: "
+                                    + Runtime.getRuntime().freeMemory());
+                            o.onNext(i);
+                        }
+                        if (i == 100000000L) {
+                            o.onCompleted();
+                            return;
+                        }
+                        inner.schedule();
+                    }
+                }));
+            }
+        }).toBlockingObservable().last();
+    }
 }

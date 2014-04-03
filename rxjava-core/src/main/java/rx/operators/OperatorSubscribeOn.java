@@ -18,7 +18,7 @@ package rx.operators;
 import rx.Observable;
 import rx.Observable.Operator;
 import rx.Scheduler;
-import rx.Scheduler.Inner;
+import rx.Scheduler.Recurse;
 import rx.Subscriber;
 import rx.functions.Action1;
 
@@ -51,10 +51,10 @@ public class OperatorSubscribeOn<T> implements Operator<T, Observable<T>> {
 
             @Override
             public void onNext(final Observable<T> o) {
-                subscriber.add(scheduler.schedule(new Action1<Inner>() {
+                subscriber.add(scheduler.schedule(new Action1<Recurse>() {
 
                     @Override
-                    public void call(final Inner inner) {
+                    public void call(final Recurse inner) {
                         o.unsafeSubscribe(subscriber);
                     }
                 }));
