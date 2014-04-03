@@ -1,10 +1,11 @@
 package rx.operators;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
@@ -138,22 +139,20 @@ public class OperatorUnsubscribeOnTest {
 
     public static class UIEventLoopScheduler extends Scheduler {
 
-        private final Scheduler.Inner eventLoop;
-        private final Subscription s;
         private volatile Thread t;
+        private final Inner inner;
 
         public UIEventLoopScheduler() {
+            inner = Schedulers.newThread().createInner();
             /*
              * DON'T DO THIS IN PRODUCTION CODE
              */
-            final AtomicReference<Scheduler.Inner> innerScheduler = new AtomicReference<Scheduler.Inner>();
             final CountDownLatch latch = new CountDownLatch(1);
-            s = Schedulers.newThread().schedule(new Action1<Inner>() {
+            inner.schedule(new Action1<Recurse>() {
 
                 @Override
-                public void call(Inner inner) {
+                public void call(Recurse inner) {
                     t = Thread.currentThread();
-                    innerScheduler.set(inner);
                     latch.countDown();
                 }
 
@@ -161,29 +160,22 @@ public class OperatorUnsubscribeOnTest {
             try {
                 latch.await();
             } catch (InterruptedException e) {
-                throw new RuntimeException("failed to initialize and get inner scheduler");
+                throw new RuntimeException("failed to initialize thread");
             }
-            eventLoop = innerScheduler.get();
-        }
-
-        @Override
-        public Subscription schedule(Action1<Inner> action) {
-            eventLoop.schedule(action);
-            return Subscriptions.empty();
-        }
-
-        @Override
-        public Subscription schedule(Action1<Inner> action, long delayTime, TimeUnit unit) {
-            eventLoop.schedule(action);
-            return Subscriptions.empty();
         }
 
         public void shutdown() {
-            s.unsubscribe();
+            inner.unsubscribe();
         }
 
         public Thread getThread() {
             return t;
+        }
+
+        @Override
+        public Inner createInner() {
+            // same one every time
+            return inner;
         }
 
     }

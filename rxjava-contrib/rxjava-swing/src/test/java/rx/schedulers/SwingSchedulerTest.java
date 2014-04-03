@@ -15,9 +15,13 @@
  */
 package rx.schedulers;
 
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import java.awt.EventQueue;
 import java.util.concurrent.CountDownLatch;
@@ -30,7 +34,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.InOrder;
 
-import rx.Scheduler.Inner;
+import rx.Scheduler.Recurse;
 import rx.Subscription;
 import rx.functions.Action1;
 
@@ -46,7 +50,7 @@ public final class SwingSchedulerTest {
     @Test
     public void testInvalidDelayValues() {
         final SwingScheduler scheduler = new SwingScheduler();
-        final Action1<Inner> action = mock(Action1.class);
+        final Action1<Recurse> action = mock(Action1.class);
 
         exception.expect(IllegalArgumentException.class);
         scheduler.schedulePeriodically(action, -1L, 100L, TimeUnit.SECONDS);
@@ -67,10 +71,10 @@ public final class SwingSchedulerTest {
 
         final CountDownLatch latch = new CountDownLatch(4);
 
-        final Action1<Inner> innerAction = mock(Action1.class);
-        final Action1<Inner> action = new Action1<Inner>() {
+        final Action1<Recurse> innerAction = mock(Action1.class);
+        final Action1<Recurse> action = new Action1<Recurse>() {
             @Override
-            public void call(Inner inner) {
+            public void call(Recurse inner) {
                 try {
                     innerAction.call(inner);
                     assertTrue(SwingUtilities.isEventDispatchThread());
@@ -88,42 +92,42 @@ public final class SwingSchedulerTest {
 
         sub.unsubscribe();
         waitForEmptyEventQueue();
-        verify(innerAction, times(4)).call(any(Inner.class));
+        verify(innerAction, times(4)).call(any(Recurse.class));
     }
 
     @Test
     public void testNestedActions() throws Exception {
         final SwingScheduler scheduler = new SwingScheduler();
 
-        final Action1<Inner> firstStepStart = mock(Action1.class);
-        final Action1<Inner> firstStepEnd = mock(Action1.class);
+        final Action1<Recurse> firstStepStart = mock(Action1.class);
+        final Action1<Recurse> firstStepEnd = mock(Action1.class);
 
-        final Action1<Inner> secondStepStart = mock(Action1.class);
-        final Action1<Inner> secondStepEnd = mock(Action1.class);
+        final Action1<Recurse> secondStepStart = mock(Action1.class);
+        final Action1<Recurse> secondStepEnd = mock(Action1.class);
 
-        final Action1<Inner> thirdStepStart = mock(Action1.class);
-        final Action1<Inner> thirdStepEnd = mock(Action1.class);
+        final Action1<Recurse> thirdStepStart = mock(Action1.class);
+        final Action1<Recurse> thirdStepEnd = mock(Action1.class);
 
-        final Action1<Inner> firstAction = new Action1<Inner>() {
+        final Action1<Recurse> firstAction = new Action1<Recurse>() {
             @Override
-            public void call(Inner inner) {
+            public void call(Recurse inner) {
                 assertTrue(SwingUtilities.isEventDispatchThread());
                 firstStepStart.call(inner);
                 firstStepEnd.call(inner);
             }
         };
-        final Action1<Inner> secondAction = new Action1<Inner>() {
+        final Action1<Recurse> secondAction = new Action1<Recurse>() {
             @Override
-            public void call(Inner inner) {
+            public void call(Recurse inner) {
                 assertTrue(SwingUtilities.isEventDispatchThread());
                 secondStepStart.call(inner);
                 scheduler.schedule(firstAction);
                 secondStepEnd.call(inner);
             }
         };
-        final Action1<Inner> thirdAction = new Action1<Inner>() {
+        final Action1<Recurse> thirdAction = new Action1<Recurse>() {
             @Override
-            public void call(Inner inner) {
+            public void call(Recurse inner) {
                 assertTrue(SwingUtilities.isEventDispatchThread());
                 thirdStepStart.call(inner);
                 scheduler.schedule(secondAction);
@@ -136,12 +140,12 @@ public final class SwingSchedulerTest {
         scheduler.schedule(thirdAction);
         waitForEmptyEventQueue();
 
-        inOrder.verify(thirdStepStart, times(1)).call(any(Inner.class));
-        inOrder.verify(thirdStepEnd, times(1)).call(any(Inner.class));
-        inOrder.verify(secondStepStart, times(1)).call(any(Inner.class));
-        inOrder.verify(secondStepEnd, times(1)).call(any(Inner.class));
-        inOrder.verify(firstStepStart, times(1)).call(any(Inner.class));
-        inOrder.verify(firstStepEnd, times(1)).call(any(Inner.class));
+        inOrder.verify(thirdStepStart, times(1)).call(any(Recurse.class));
+        inOrder.verify(thirdStepEnd, times(1)).call(any(Recurse.class));
+        inOrder.verify(secondStepStart, times(1)).call(any(Recurse.class));
+        inOrder.verify(secondStepEnd, times(1)).call(any(Recurse.class));
+        inOrder.verify(firstStepStart, times(1)).call(any(Recurse.class));
+        inOrder.verify(firstStepEnd, times(1)).call(any(Recurse.class));
     }
 
     private static void waitForEmptyEventQueue() throws Exception {

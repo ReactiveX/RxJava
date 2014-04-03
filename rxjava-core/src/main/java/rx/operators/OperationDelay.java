@@ -21,7 +21,7 @@ import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
-import rx.Scheduler.Inner;
+import rx.Scheduler.Recurse;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Action1;
@@ -77,9 +77,9 @@ public final class OperationDelay {
         public Subscription onSubscribe(final Observer<? super T> t1) {
             final SerialSubscription ssub = new SerialSubscription();
 
-            ssub.set(scheduler.schedule(new Action1<Inner>() {
+            ssub.set(scheduler.schedule(new Action1<Recurse>() {
                 @Override
-                public void call(Inner inner) {
+                public void call(Recurse inner) {
                     if (!ssub.isUnsubscribed()) {
                         ssub.set(source.unsafeSubscribe(Subscribers.from(t1)));
                     }

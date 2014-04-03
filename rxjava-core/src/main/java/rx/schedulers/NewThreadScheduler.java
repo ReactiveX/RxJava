@@ -64,30 +64,20 @@ public class NewThreadScheduler extends Scheduler {
     }
 
     @Override
-    public Subscription schedule(Action1<Scheduler.Inner> action) {
-        EventLoopScheduler innerScheduler = new EventLoopScheduler();
-        innerScheduler.schedule(action);
-        return innerScheduler.innerSubscription;
-    }
-
-    @Override
-    public Subscription schedule(Action1<Inner> action, long delayTime, TimeUnit unit) {
-        EventLoopScheduler innerScheduler = new EventLoopScheduler();
-        innerScheduler.schedule(action, delayTime, unit);
-        return innerScheduler.innerSubscription;
+    public Inner createInner() {
+        return new EventLoopScheduler();
     }
 
     private class EventLoopScheduler extends Scheduler.Inner implements Subscription {
         private final CompositeSubscription innerSubscription = new CompositeSubscription();
         private final ExecutorService executor;
-        private final Inner _inner = this;
 
         private EventLoopScheduler() {
             executor = Executors.newSingleThreadExecutor(THREAD_FACTORY);
         }
 
         @Override
-        public void schedule(final Action1<Scheduler.Inner> action) {
+        public void schedule(final Action1<Recurse> action) {
             if (innerSubscription.isUnsubscribed()) {
                 // don't schedule, we are unsubscribed
                 return;
@@ -102,7 +92,7 @@ public class NewThreadScheduler extends Scheduler {
                         if (innerSubscription.isUnsubscribed()) {
                             return;
                         }
-                        action.call(_inner);
+                        action.call(Recurse.create(EventLoopScheduler.this, action));
                     } finally {
                         // remove the subscription now that we're completed
                         Subscription s = sf.get();
@@ -118,7 +108,7 @@ public class NewThreadScheduler extends Scheduler {
         }
 
         @Override
-        public void schedule(final Action1<Inner> action, long delayTime, TimeUnit unit) {
+        public void schedule(final Action1<Recurse> action, long delayTime, TimeUnit unit) {
             final AtomicReference<Subscription> sf = new AtomicReference<Subscription>();
             // we will use the system scheduler since it doesn't make sense to launch a new Thread and then sleep
             // we will instead schedule the event then launch the thread after the delay has passed

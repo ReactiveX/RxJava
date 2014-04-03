@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import rx.Observable.Operator;
 import rx.Scheduler;
-import rx.Scheduler.Inner;
+import rx.Scheduler.Recurse;
 import rx.Subscriber;
 import rx.functions.Action0;
 import rx.functions.Action1;
@@ -167,25 +167,18 @@ public class OperatorObserveOnBounded<T> implements Operator<T, T> {
                         }
 
                     }));
-                    add(scheduler.schedule(new Action1<Inner>() {
-
-                        @Override
-                        public void call(Inner inner) {
-                            recursiveScheduler = inner;
-                            pollQueue();
-                        }
-
-                    }));
-                } else {
-                    recursiveScheduler.schedule(new Action1<Inner>() {
-
-                        @Override
-                        public void call(Inner inner) {
-                            pollQueue();
-                        }
-
-                    });
+                    recursiveScheduler = scheduler.createInner();
+                    add(recursiveScheduler);
                 }
+
+                recursiveScheduler.schedule(new Action1<Recurse>() {
+
+                    @Override
+                    public void call(Recurse inner) {
+                        pollQueue();
+                    }
+
+                });
             }
         }
 

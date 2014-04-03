@@ -28,6 +28,7 @@ import rx.Observable;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Scheduler.Inner;
+import rx.Scheduler.Recurse;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Action1;
@@ -171,9 +172,9 @@ public class ChunkedOperation {
         @Override
         public Chunk<T, C> createChunk() {
             final Chunk<T, C> chunk = super.createChunk();
-            subscriptions.put(chunk, scheduler.schedule(new Action1<Inner>() {
+            subscriptions.put(chunk, scheduler.schedule(new Action1<Recurse>() {
                 @Override
-                public void call(Inner inner) {
+                public void call(Recurse inner) {
                     emitChunk(chunk);
                 }
             }, maxTime, unit));
@@ -253,9 +254,9 @@ public class ChunkedOperation {
         @Override
         public Chunk<T, C> createChunk() {
             final Chunk<T, C> chunk = super.createChunk();
-            subscriptions.put(chunk, scheduler.schedule(new Action1<Inner>() {
+            subscriptions.put(chunk, scheduler.schedule(new Action1<Recurse>() {
                 @Override
-                public void call(Inner inner) {
+                public void call(Recurse inner) {
                     emitChunk(chunk);
                 }
             }, time, unit));
@@ -605,18 +606,18 @@ public class ChunkedOperation {
         private final SafeObservableSubscription subscription = new SafeObservableSubscription();
 
         public TimeBasedChunkCreator(final NonOverlappingChunks<T, C> chunks, long time, TimeUnit unit, Scheduler scheduler) {
-            this.subscription.wrap(scheduler.schedulePeriodically(new Action1<Inner>() {
+            this.subscription.wrap(scheduler.schedulePeriodically(new Action1<Recurse>() {
                 @Override
-                public void call(Inner inner) {
+                public void call(Recurse inner) {
                     chunks.emitAndReplaceChunk();
                 }
             }, 0, time, unit));
         }
 
         public TimeBasedChunkCreator(final OverlappingChunks<T, C> chunks, long time, TimeUnit unit, Scheduler scheduler) {
-            this.subscription.wrap(scheduler.schedulePeriodically(new Action1<Inner>() {
+            this.subscription.wrap(scheduler.schedulePeriodically(new Action1<Recurse>() {
                 @Override
-                public void call(Inner inner) {
+                public void call(Recurse inner) {
                     chunks.createChunk();
                 }
             }, 0, time, unit));

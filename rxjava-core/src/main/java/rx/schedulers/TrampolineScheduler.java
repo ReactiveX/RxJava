@@ -38,23 +38,14 @@ public class TrampolineScheduler extends Scheduler {
     public static TrampolineScheduler getInstance() {
         return INSTANCE;
     }
-    
-    /* package */ static TrampolineScheduler instance() {
+
+    /* package */static TrampolineScheduler instance() {
         return INSTANCE;
     }
 
     @Override
-    public Subscription schedule(Action1<Scheduler.Inner> action) {
-        InnerCurrentThreadScheduler inner = new InnerCurrentThreadScheduler();
-        inner.schedule(action);
-        return inner.innerSubscription;
-    }
-
-    @Override
-    public Subscription schedule(Action1<Inner> action, long delayTime, TimeUnit unit) {
-        InnerCurrentThreadScheduler inner = new InnerCurrentThreadScheduler();
-        inner.schedule(action, delayTime, unit);
-        return inner.innerSubscription;
+    public Inner createInner() {
+        return new InnerCurrentThreadScheduler();
     }
 
     /* package accessible for unit tests */TrampolineScheduler() {
@@ -69,18 +60,18 @@ public class TrampolineScheduler extends Scheduler {
         private final BooleanSubscription innerSubscription = new BooleanSubscription();
 
         @Override
-        public void schedule(Action1<Scheduler.Inner> action) {
+        public void schedule(Action1<Recurse> action) {
             enqueue(action, now());
         }
 
         @Override
-        public void schedule(Action1<Scheduler.Inner> action, long delayTime, TimeUnit unit) {
+        public void schedule(Action1<Recurse> action, long delayTime, TimeUnit unit) {
             long execTime = now() + unit.toMillis(delayTime);
 
             enqueue(new SleepingAction(action, TrampolineScheduler.this, execTime), execTime);
         }
 
-        private void enqueue(Action1<Scheduler.Inner> action, long execTime) {
+        private void enqueue(Action1<Recurse> action, long execTime) {
             if (innerSubscription.isUnsubscribed()) {
                 return;
             }
@@ -99,7 +90,7 @@ public class TrampolineScheduler extends Scheduler {
                     if (innerSubscription.isUnsubscribed()) {
                         return;
                     }
-                    queue.poll().action.call(this);
+                    queue.poll().action.call(Recurse.create(InnerCurrentThreadScheduler.this, action));
                 }
 
                 QUEUE.set(null);
@@ -120,11 +111,11 @@ public class TrampolineScheduler extends Scheduler {
     }
 
     private static class TimedAction implements Comparable<TimedAction> {
-        final Action1<Scheduler.Inner> action;
+        final Action1<Recurse> action;
         final Long execTime;
         final Integer count; // In case if time between enqueueing took less than 1ms
 
-        private TimedAction(Action1<Scheduler.Inner> action, Long execTime, Integer count) {
+        private TimedAction(Action1<Recurse> action, Long execTime, Integer count) {
             this.action = action;
             this.execTime = execTime;
             this.count = count;

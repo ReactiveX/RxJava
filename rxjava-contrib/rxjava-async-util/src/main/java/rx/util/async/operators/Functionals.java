@@ -16,7 +16,7 @@
 
 package rx.util.async.operators;
 
-import rx.Scheduler.Inner;
+import rx.Scheduler.Recurse;
 import rx.functions.Action0;
 import rx.functions.Action1;
 
@@ -66,14 +66,14 @@ public final class Functionals {
      * @param run the Runnable to run when the Action0 is called
      * @return the Action0 wrapping the Runnable
      */
-    public static Action1<Inner> fromRunnable(Runnable run) {
+    public static Action1<Recurse> fromRunnable(Runnable run) {
         if (run == null) {
             throw new NullPointerException("run");
         }
         return new ActionWrappingRunnable(run);
     }
     /** An Action1 which wraps and calls a Runnable. */
-    private static final class ActionWrappingRunnable implements Action1<Inner> {
+    private static final class ActionWrappingRunnable implements Action1<Recurse> {
         final Runnable run;
 
         public ActionWrappingRunnable(Runnable run) {
@@ -81,7 +81,7 @@ public final class Functionals {
         }
 
         @Override
-        public void call(Inner inner) {
+        public void call(Recurse inner) {
             run.run();
         }
         

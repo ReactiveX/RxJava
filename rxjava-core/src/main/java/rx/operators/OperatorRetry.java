@@ -36,6 +36,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import rx.Observable;
 import rx.Observable.Operator;
 import rx.Scheduler.Inner;
+import rx.Scheduler.Recurse;
 import rx.Subscriber;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
@@ -56,9 +57,10 @@ public class OperatorRetry<T> implements Operator<T, Observable<T>> {
 
     @Override
     public Subscriber<? super Observable<T>> call(final Subscriber<? super T> s) {
+        final Inner innerScheduler = Schedulers.trampoline().createInner();
         return new Subscriber<Observable<T>>(s) {
             final AtomicInteger attempts = new AtomicInteger(0);
-            
+
             @Override
             public void onCompleted() {
                 // ignore as we expect a single nested Observable<T>
@@ -71,11 +73,10 @@ public class OperatorRetry<T> implements Operator<T, Observable<T>> {
 
             @Override
             public void onNext(final Observable<T> o) {
-                Schedulers.trampoline().schedule(new Action1<Inner>() {
+                innerScheduler.schedule(new Action1<Recurse>() {
 
                     @Override
-                    public void call(final Inner inner) {
-                        final Action1<Inner> _self = this;
+                    public void call(final Recurse re) {
                         attempts.incrementAndGet();
                         o.unsafeSubscribe(new Subscriber<T>(s) {
 
@@ -86,9 +87,9 @@ public class OperatorRetry<T> implements Operator<T, Observable<T>> {
 
                             @Override
                             public void onError(Throwable e) {
-                                if ((retryCount == INFINITE_RETRY || attempts.get() <= retryCount) && !inner.isUnsubscribed()) {
+                                if ((retryCount == INFINITE_RETRY || attempts.get() <= retryCount) && !re.isUnsubscribed()) {
                                     // retry again
-                                    inner.schedule(_self);
+                                    re.schedule();
                                 } else {
                                     // give up and pass the failure
                                     s.onError(e);
