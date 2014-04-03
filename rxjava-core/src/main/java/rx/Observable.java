@@ -5368,17 +5368,6 @@ public class Observable<T> {
     }
 
     /**
-     * Protects against errors being thrown from Observer implementations and ensures
-     * onNext/onError/onCompleted contract compliance.
-     * <p>
-     * See https://github.com/Netflix/RxJava/issues/216 for a discussion on "Guideline 6.4: Protect calls to
-     * user code from within an Observer"
-     */
-    private Subscription protectivelyWrapAndSubscribe(Subscriber<? super T> o) {
-        return subscribe(new SafeSubscriber<T>(o));
-    }
-
-    /**
      * Returns a {@link ConnectableObservable}, which waits until its {@link ConnectableObservable#connect connect} method is called before it begins emitting items to those {@link Observer}s that
      * have subscribed to it.
      * <p>
@@ -6704,7 +6693,7 @@ public class Observable<T> {
      *             if the Observable tries to call {@code onError}
      */
     public final Subscription subscribe() {
-        return protectivelyWrapAndSubscribe(new Subscriber<T>() {
+        return subscribe(new Subscriber<T>() {
 
             @Override
             public final void onCompleted() {
@@ -6743,13 +6732,7 @@ public class Observable<T> {
             throw new IllegalArgumentException("onNext can not be null");
         }
 
-        /**
-         * Wrapping since raw functions provided by the user are being invoked.
-         * 
-         * See https://github.com/Netflix/RxJava/issues/216 for discussion on "Guideline 6.4: Protect calls to
-         * user code from within an Observer"
-         */
-        return protectivelyWrapAndSubscribe(new Subscriber<T>() {
+        return subscribe(new Subscriber<T>() {
 
             @Override
             public final void onCompleted() {
@@ -6793,13 +6776,7 @@ public class Observable<T> {
             throw new IllegalArgumentException("onError can not be null");
         }
 
-        /**
-         * Wrapping since raw functions provided by the user are being invoked.
-         * 
-         * See https://github.com/Netflix/RxJava/issues/216 for discussion on
-         * "Guideline 6.4: Protect calls to user code from within an Observer"
-         */
-        return protectivelyWrapAndSubscribe(new Subscriber<T>() {
+        return subscribe(new Subscriber<T>() {
 
             @Override
             public final void onCompleted() {
@@ -6850,12 +6827,7 @@ public class Observable<T> {
             throw new IllegalArgumentException("onComplete can not be null");
         }
 
-        /**
-         * Wrapping since raw functions provided by the user are being invoked.
-         * 
-         * See https://github.com/Netflix/RxJava/issues/216 for discussion on "Guideline 6.4: Protect calls to user code from within an Observer"
-         */
-        return protectivelyWrapAndSubscribe(new Subscriber<T>() {
+        return subscribe(new Subscriber<T>() {
 
             @Override
             public final void onCompleted() {
@@ -7011,7 +6983,7 @@ public class Observable<T> {
      * For more information see the
      * <a href="https://github.com/Netflix/RxJava/wiki/Observable">RxJava Wiki</a>
      * 
-     * @param observer
+     * @param subscriber
      *            the {@link Subscriber}
      * @return a {@link Subscription} reference with which Subscribers that are {@link Observer}s can
      *         unsubscribe from the Observable
@@ -7024,11 +6996,11 @@ public class Observable<T> {
      * @throws RuntimeException
      *             if the {@link Subscriber}'s {@code onError} method itself threw a {@code Throwable}
      */
-    public final Subscription subscribe(Subscriber<? super T> observer) {
+    public final Subscription subscribe(Subscriber<? super T> subscriber) {
         // allow the hook to intercept and/or decorate
         OnSubscribe<T> onSubscribeFunction = hook.onSubscribeStart(this, onSubscribe);
         // validate and proceed
-        if (observer == null) {
+        if (subscriber == null) {
             throw new IllegalArgumentException("observer can not be null");
         }
         if (onSubscribeFunction == null) {
@@ -7044,12 +7016,12 @@ public class Observable<T> {
              * to user code from within an Observer"
              */
             // if not already wrapped
-            if (!(observer instanceof SafeSubscriber)) {
+            if (!(subscriber instanceof SafeSubscriber)) {
                 // assign to `observer` so we return the protected version
-                observer = new SafeSubscriber<T>(observer);
+                subscriber = new SafeSubscriber<T>(subscriber);
             }
-            onSubscribeFunction.call(observer);
-            final Subscription returnSubscription = hook.onSubscribeReturn(observer);
+            onSubscribeFunction.call(subscriber);
+            final Subscription returnSubscription = hook.onSubscribeReturn(subscriber);
             // we return it inside a Subscription so it can't be cast back to Subscriber
             return Subscriptions.create(new Action0() {
 
@@ -7064,7 +7036,7 @@ public class Observable<T> {
             Exceptions.throwIfFatal(e);
             // if an unhandled error occurs executing the onSubscribe we will propagate it
             try {
-                observer.onError(hook.onSubscribeError(e));
+                subscriber.onError(hook.onSubscribeError(e));
             } catch (OnErrorNotImplementedException e2) {
                 // special handling when onError is not implemented ... we just rethrow
                 throw e2;
