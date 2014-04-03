@@ -16,7 +16,7 @@
 package rx.operators;
 
 import static org.junit.Assert.*;
-import static rx.operators.OperationNext.*;
+import static rx.operators.BlockingOperatorNext.*;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -37,7 +37,7 @@ import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
 import rx.subscriptions.Subscriptions;
 
-public class OperationNextTest {
+public class BlockingOperatorNextTest {
 
     private void fireOnNextInNewThread(final Subject<String, String> o, final String value) {
         new Thread() {
@@ -304,7 +304,7 @@ public class OperationNextTest {
         Iterable<Long> iter = source.next();
 
         for (int j = 0; j < 3; j++) {
-            OperationNext.NextIterator<Long> it = (OperationNext.NextIterator<Long>)iter.iterator();
+            BlockingOperatorNext.NextIterator<Long> it = (BlockingOperatorNext.NextIterator<Long>)iter.iterator();
 
             for (long i = 0; i < 9; i++) {
                 // hasNext has to set the waiting to true, otherwise, all onNext will be skipped

@@ -29,7 +29,7 @@ import rx.exceptions.Exceptions;
  * <p>
  * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.mostRecent.png">
  */
-public final class OperationMostRecent {
+public final class BlockingOperatorMostRecent {
 
     public static <T> Iterable<T> mostRecent(final Observable<? extends T> source, final T initialValue) {
 
@@ -39,7 +39,11 @@ public final class OperationMostRecent {
                 MostRecentObserver<T> mostRecentObserver = new MostRecentObserver<T>(initialValue);
                 final MostRecentIterator<T> nextIterator = new MostRecentIterator<T>(mostRecentObserver);
 
-                source.unsafeSubscribe(mostRecentObserver);
+                /**
+                 * Subscribe instead of unsafeSubscribe since this is the final subscribe in the chain
+                 * since it is for BlockingObservable.
+                 */
+                source.subscribe(mostRecentObserver);
 
                 return nextIterator;
             }

@@ -16,7 +16,7 @@
 package rx.operators;
 
 import static org.junit.Assert.*;
-import static rx.operators.OperationMostRecent.*;
+import static rx.operators.BlockingOperatorMostRecent.*;
 
 import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
@@ -30,7 +30,7 @@ import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
 
-public class OperationMostRecentTest {
+public class BlockingOperatorMostRecentTest {
 
     @Test
     public void testMostRecent() {

@@ -16,7 +16,7 @@
 package rx.operators;
 
 import static org.junit.Assert.*;
-import static rx.operators.OperationToIterator.*;
+import static rx.operators.BlockingOperatorToIterator.*;
 
 import java.util.Iterator;
 
@@ -28,7 +28,7 @@ import rx.Observer;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 
-public class OperationToIteratorTest {
+public class BlockingOperatorToIteratorTest {
 
     @Test
     public void testToIterator() {

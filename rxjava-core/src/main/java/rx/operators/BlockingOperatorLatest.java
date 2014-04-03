@@ -30,9 +30,9 @@ import rx.exceptions.Exceptions;
  * If the source works faster than the iterator, values may be skipped, but
  * not the onError or onCompleted events.
  */
-public final class OperationLatest {
+public final class BlockingOperatorLatest {
     /** Utility class. */
-    private OperationLatest() {
+    private BlockingOperatorLatest() {
         throw new IllegalStateException("No instances!");
     }
 
@@ -41,7 +41,7 @@ public final class OperationLatest {
             @Override
             public Iterator<T> iterator() {
                 LatestObserverIterator<T> lio = new LatestObserverIterator<T>();
-                source.materialize().unsafeSubscribe(lio);
+                source.materialize().subscribe(lio);
                 return lio;
             }
         };

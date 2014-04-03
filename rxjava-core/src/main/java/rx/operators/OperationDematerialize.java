@@ -23,7 +23,7 @@ import rx.Subscriber;
 import rx.Subscription;
 
 /**
- * Reverses the effect of {@link OperationMaterialize} by transforming the Notification objects
+ * Reverses the effect of {@link OperatorMaterialize} by transforming the Notification objects
  * emitted by a source Observable into the items or notifications they represent.
  * <p>
  * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/dematerialize.png">

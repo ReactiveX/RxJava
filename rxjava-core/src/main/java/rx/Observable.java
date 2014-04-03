@@ -74,7 +74,7 @@ import rx.operators.OperationGroupJoin;
 import rx.operators.OperationInterval;
 import rx.operators.OperationJoin;
 import rx.operators.OperationJoinPatterns;
-import rx.operators.OperationMaterialize;
+import rx.operators.OperatorMaterialize;
 import rx.operators.OperationMergeDelayError;
 import rx.operators.OperationMergeMaxConcurrent;
 import rx.operators.OperationMinMax;
@@ -4915,7 +4915,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229453.aspx">MSDN: Observable.materialize</a>
      */
     public final Observable<Notification<T>> materialize() {
-        return create(OperationMaterialize.materialize(this));
+        return lift(new OperatorMaterialize<T>());
     }
 
     /**

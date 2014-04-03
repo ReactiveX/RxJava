@@ -31,7 +31,7 @@ import rx.exceptions.Exceptions;
  * <p>
  * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.next.png">
  */
-public final class OperationNext {
+public final class BlockingOperatorNext {
 
     public static <T> Iterable<T> next(final Observable<? extends T> items) {
         return new Iterable<T>() {
@@ -40,7 +40,7 @@ public final class OperationNext {
                 NextObserver<T> nextObserver = new NextObserver<T>();
                 final NextIterator<T> nextIterator = new NextIterator<T>(nextObserver);
 
-                items.materialize().unsafeSubscribe(nextObserver);
+                items.materialize().subscribe(nextObserver);
 
                 return nextIterator;
             }

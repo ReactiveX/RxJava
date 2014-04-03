@@ -18,7 +18,7 @@ package rx.operators;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static rx.operators.OperationToFuture.toFuture;
+import static rx.operators.BlockingOperatorToFuture.toFuture;
 
 import java.util.List;
 import java.util.concurrent.CancellationException;
@@ -35,7 +35,7 @@ import rx.Subscriber;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 
-public class OperationToFutureTest {
+public class BlockingOperatorToFutureTest {
 
     @Test
     public void testToFuture() throws InterruptedException, ExecutionException {

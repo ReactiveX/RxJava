@@ -35,7 +35,7 @@ import rx.Subscription;
  * The toFuture operation throws an exception if the Observable emits more than one item. If the
  * Observable may emit more than item, use <code>toList().toFuture()</code>.
  */
-public class OperationToFuture {
+public class BlockingOperatorToFuture {
 
     /**
      * Returns a Future that expects a single item from the observable.
@@ -52,7 +52,7 @@ public class OperationToFuture {
         final AtomicReference<T> value = new AtomicReference<T>();
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
 
-        final Subscription s = that.unsafeSubscribe(new Subscriber<T>() {
+        final Subscription s = that.subscribe(new Subscriber<T>() {
 
             @Override
             public void onCompleted() {
