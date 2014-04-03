@@ -22,7 +22,7 @@ import java.util.concurrent.FutureTask;
 import rx.Observable;
 import rx.Observer;
 import rx.Scheduler;
-import rx.Scheduler.Inner;
+import rx.Scheduler.Recurse;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Action0;
@@ -599,9 +599,9 @@ public final class Async {
             @Override
             public Observable<R> call() {
                 final AsyncSubject<R> subject = AsyncSubject.create();
-                scheduler.schedule(new Action1<Inner>() {
+                scheduler.schedule(new Action1<Recurse>() {
                     @Override
-                    public void call(Inner inner) {
+                    public void call(Recurse inner) {
                         R result;
                         try {
                             result = func.call();
@@ -656,9 +656,9 @@ public final class Async {
             @Override
             public Observable<R> call(final T1 t1) {
                 final AsyncSubject<R> subject = AsyncSubject.create();
-                scheduler.schedule(new Action1<Inner>() {
+                scheduler.schedule(new Action1<Recurse>() {
                     @Override
-                    public void call(Inner inner) {
+                    public void call(Recurse inner) {
                         R result;
                         try {
                             result = func.call(t1);
@@ -715,9 +715,9 @@ public final class Async {
             @Override
             public Observable<R> call(final T1 t1, final T2 t2) {
                 final AsyncSubject<R> subject = AsyncSubject.create();
-                scheduler.schedule(new Action1<Inner>() {
+                scheduler.schedule(new Action1<Recurse>() {
                     @Override
-                    public void call(Inner inner) {
+                    public void call(Recurse inner) {
                         R result;
                         try {
                             result = func.call(t1, t2);
@@ -776,9 +776,9 @@ public final class Async {
             @Override
             public Observable<R> call(final T1 t1, final T2 t2, final T3 t3) {
                 final AsyncSubject<R> subject = AsyncSubject.create();
-                scheduler.schedule(new Action1<Inner>() {
+                scheduler.schedule(new Action1<Recurse>() {
                     @Override
-                    public void call(Inner inner) {
+                    public void call(Recurse inner) {
                         R result;
                         try {
                             result = func.call(t1, t2, t3);
@@ -839,9 +839,9 @@ public final class Async {
             @Override
             public Observable<R> call(final T1 t1, final T2 t2, final T3 t3, final T4 t4) {
                 final AsyncSubject<R> subject = AsyncSubject.create();
-                scheduler.schedule(new Action1<Inner>() {
+                scheduler.schedule(new Action1<Recurse>() {
                     @Override
-                    public void call(Inner inner) {
+                    public void call(Recurse inner) {
                         R result;
                         try {
                             result = func.call(t1, t2, t3, t4);
@@ -904,9 +904,9 @@ public final class Async {
             @Override
             public Observable<R> call(final T1 t1, final T2 t2, final T3 t3, final T4 t4, final T5 t5) {
                 final AsyncSubject<R> subject = AsyncSubject.create();
-                scheduler.schedule(new Action1<Inner>() {
+                scheduler.schedule(new Action1<Recurse>() {
                     @Override
-                    public void call(Inner inner) {
+                    public void call(Recurse inner) {
                         R result;
                         try {
                             result = func.call(t1, t2, t3, t4, t5);
@@ -971,9 +971,9 @@ public final class Async {
             @Override
             public Observable<R> call(final T1 t1, final T2 t2, final T3 t3, final T4 t4, final T5 t5, final T6 t6) {
                 final AsyncSubject<R> subject = AsyncSubject.create();
-                scheduler.schedule(new Action1<Inner>() {
+                scheduler.schedule(new Action1<Recurse>() {
                     @Override
-                    public void call(Inner inner) {
+                    public void call(Recurse inner) {
                         R result;
                         try {
                             result = func.call(t1, t2, t3, t4, t5, t6);
@@ -1040,9 +1040,9 @@ public final class Async {
             @Override
             public Observable<R> call(final T1 t1, final T2 t2, final T3 t3, final T4 t4, final T5 t5, final T6 t6, final T7 t7) {
                 final AsyncSubject<R> subject = AsyncSubject.create();
-                scheduler.schedule(new Action1<Inner>() {
+                scheduler.schedule(new Action1<Recurse>() {
                     @Override
-                    public void call(Inner inner) {
+                    public void call(Recurse inner) {
                         R result;
                         try {
                             result = func.call(t1, t2, t3, t4, t5, t6, t7);
@@ -1111,9 +1111,9 @@ public final class Async {
             @Override
             public Observable<R> call(final T1 t1, final T2 t2, final T3 t3, final T4 t4, final T5 t5, final T6 t6, final T7 t7, final T8 t8) {
                 final AsyncSubject<R> subject = AsyncSubject.create();
-                scheduler.schedule(new Action1<Inner>() {
+                scheduler.schedule(new Action1<Recurse>() {
                     @Override
-                    public void call(Inner inner) {
+                    public void call(Recurse inner) {
                         R result;
                         try {
                             result = func.call(t1, t2, t3, t4, t5, t6, t7, t8);
@@ -1184,9 +1184,9 @@ public final class Async {
             @Override
             public Observable<R> call(final T1 t1, final T2 t2, final T3 t3, final T4 t4, final T5 t5, final T6 t6, final T7 t7, final T8 t8, final T9 t9) {
                 final AsyncSubject<R> subject = AsyncSubject.create();
-                scheduler.schedule(new Action1<Inner>() {
+                scheduler.schedule(new Action1<Recurse>() {
                     @Override
-                    public void call(Inner inner) {
+                    public void call(Recurse inner) {
                         R result;
                         try {
                             result = func.call(t1, t2, t3, t4, t5, t6, t7, t8, t9);
@@ -1237,9 +1237,9 @@ public final class Async {
             @Override
             public Observable<R> call(final Object... args) {
                 final AsyncSubject<R> subject = AsyncSubject.create();
-                scheduler.schedule(new Action1<Inner>() {
+                scheduler.schedule(new Action1<Recurse>() {
                     @Override
-                    public void call(Inner inner) {
+                    public void call(Recurse inner) {
                         R result;
                         try {
                             result = func.call(args);
@@ -1764,9 +1764,9 @@ public final class Async {
             }
         }, csub);
         
-        csub.set(scheduler.schedule(new Action1<Inner>() {
+        csub.set(scheduler.schedule(new Action1<Recurse>() {
             @Override
-            public void call(Inner t1) {
+            public void call(Recurse t1) {
                 if (!csub.isUnsubscribed()) {
                     action.call(subject, csub);
                 }

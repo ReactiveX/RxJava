@@ -17,7 +17,7 @@ package rx.operators;
 
 import rx.Observable.Operator;
 import rx.Scheduler;
-import rx.Scheduler.Inner;
+import rx.Scheduler.Schedulable;
 import rx.Subscriber;
 import rx.functions.Action0;
 import rx.functions.Action1;
@@ -45,10 +45,10 @@ public class OperatorUnsubscribeOn<T> implements Operator<T, T> {
             @Override
             public void call() {
                 final MultipleAssignmentSubscription mas = new MultipleAssignmentSubscription();
-                mas.set(scheduler.schedule(new Action1<Inner>() {
+                mas.set(scheduler.schedule(new Action1<Schedulable>() {
 
                     @Override
-                    public void call(final Inner inner) {
+                    public void call(final Schedulable inner) {
                         parentSubscription.unsubscribe();
                         mas.unsubscribe();
                     }

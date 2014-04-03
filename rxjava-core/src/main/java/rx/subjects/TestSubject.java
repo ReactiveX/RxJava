@@ -22,7 +22,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import rx.Notification;
 import rx.Observer;
 import rx.Scheduler;
-import rx.Scheduler.Inner;
+import rx.Scheduler.EventLoop;
+import rx.Scheduler.Schedulable;
 import rx.functions.Action1;
 import rx.schedulers.TestScheduler;
 import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
@@ -90,13 +91,13 @@ public final class TestSubject<T> extends Subject<T, T> {
 
     private final SubjectSubscriptionManager<T> subscriptionManager;
     private final AtomicReference<Notification<T>> lastNotification;
-    private final Scheduler.Inner innerScheduler;
+    private final Scheduler.EventLoop innerScheduler;
 
     protected TestSubject(OnSubscribe<T> onSubscribe, SubjectSubscriptionManager<T> subscriptionManager, AtomicReference<Notification<T>> lastNotification, TestScheduler scheduler) {
         super(onSubscribe);
         this.subscriptionManager = subscriptionManager;
         this.lastNotification = lastNotification;
-        this.innerScheduler = scheduler.createInnerScheduler();
+        this.innerScheduler = scheduler.createEventLoop();
     }
 
     @Override
@@ -118,10 +119,10 @@ public final class TestSubject<T> extends Subject<T, T> {
     }
 
     public void onCompleted(long timeInMilliseconds) {
-        innerScheduler.schedule(new Action1<Inner>() {
+        innerScheduler.schedule(new Action1<Schedulable>() {
 
             @Override
-            public void call(Inner t1) {
+            public void call(Schedulable t1) {
                 _onCompleted();
             }
 
@@ -148,10 +149,10 @@ public final class TestSubject<T> extends Subject<T, T> {
     }
 
     public void onError(final Throwable e, long timeInMilliseconds) {
-        innerScheduler.schedule(new Action1<Inner>() {
+        innerScheduler.schedule(new Action1<Schedulable>() {
 
             @Override
-            public void call(Inner t1) {
+            public void call(Schedulable t1) {
                 _onError(e);
             }
 
@@ -170,10 +171,10 @@ public final class TestSubject<T> extends Subject<T, T> {
     }
 
     public void onNext(final T v, long timeInMilliseconds) {
-        innerScheduler.schedule(new Action1<Inner>() {
+        innerScheduler.schedule(new Action1<Schedulable>() {
 
             @Override
-            public void call(Inner t1) {
+            public void call(Schedulable t1) {
                 _onNext(v);
             }
 

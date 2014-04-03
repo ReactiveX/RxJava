@@ -15,7 +15,9 @@
  */
 package rx.schedulers;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
 import java.util.concurrent.CountDownLatch;
@@ -24,7 +26,7 @@ import org.junit.Test;
 
 import rx.Observable;
 import rx.Scheduler;
-import rx.Scheduler.Inner;
+import rx.Scheduler.Schedulable;
 import rx.functions.Action1;
 import rx.functions.Func1;
 
@@ -43,13 +45,13 @@ public class ExecutorSchedulerTests extends AbstractSchedulerConcurrencyTests {
         final CountDownLatch latch = new CountDownLatch(1);
         final HashMap<String, Integer> map = new HashMap<String, Integer>();
         
-        Schedulers.computation().schedule(new Action1<Inner>() {
+        Schedulers.computation().schedule(new Action1<Schedulable>() {
 
             private HashMap<String, Integer> statefulMap = map;
             int nonThreadSafeCounter = 0;
 
             @Override
-            public void call(Inner inner) {
+            public void call(Schedulable inner) {
                 Integer i = statefulMap.get("a");
                 if (i == null) {
                     i = 1;

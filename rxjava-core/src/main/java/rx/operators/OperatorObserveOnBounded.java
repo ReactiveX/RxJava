@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import rx.Observable.Operator;
 import rx.Scheduler;
-import rx.Scheduler.Inner;
+import rx.Scheduler.Schedulable;
 import rx.Subscriber;
 import rx.functions.Action0;
 import rx.functions.Action1;
@@ -103,7 +103,7 @@ public class OperatorObserveOnBounded<T> implements Operator<T, T> {
     /** Observe through individual queue per observer. */
     private class ObserveOnSubscriber extends Subscriber<T> {
         final Subscriber<? super T> observer;
-        private volatile Scheduler.Inner recursiveScheduler;
+        private volatile Scheduler.EventLoop recursiveScheduler;
 
         private final InterruptibleBlockingQueue<Object> queue = new InterruptibleBlockingQueue<Object>(bufferSize);
         final AtomicLong counter = new AtomicLong(0);
@@ -167,25 +167,18 @@ public class OperatorObserveOnBounded<T> implements Operator<T, T> {
                         }
 
                     }));
-                    add(scheduler.schedule(new Action1<Inner>() {
-
-                        @Override
-                        public void call(Inner inner) {
-                            recursiveScheduler = inner;
-                            pollQueue();
-                        }
-
-                    }));
-                } else {
-                    recursiveScheduler.schedule(new Action1<Inner>() {
-
-                        @Override
-                        public void call(Inner inner) {
-                            pollQueue();
-                        }
-
-                    });
+                    recursiveScheduler = scheduler.createEventLoop();
+                    add(recursiveScheduler);
                 }
+
+                recursiveScheduler.schedule(new Action1<Schedulable>() {
+
+                    @Override
+                    public void call(Schedulable inner) {
+                        pollQueue();
+                    }
+
+                });
             }
         }
 

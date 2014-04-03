@@ -45,24 +45,12 @@ public final class SwingScheduler extends Scheduler {
     }
 
     @Override
-    public Subscription schedule(Action1<Inner> action) {
-        InnerSwingScheduler inner = new InnerSwingScheduler();
-        inner.schedule(action);
-        return inner;
+    public EventLoop createEventLoop() {
+        return new InnerSwingScheduler();
     }
+    
+    private static class InnerSwingScheduler extends EventLoop {
 
-    @Override
-    public Subscription schedule(Action1<Inner> action, long delayTime, TimeUnit unit) {
-        long delay = unit.toMillis(delayTime);
-        assertThatTheDelayIsValidForTheSwingTimer(delay);
-        InnerSwingScheduler inner = new InnerSwingScheduler();
-        inner.schedule(action, delayTime, unit);
-        return inner;
-    }
-
-    private static class InnerSwingScheduler extends Inner {
-
-        private final Inner _inner = this;
         private final CompositeSubscription innerSubscription = new CompositeSubscription();
 
         @Override
@@ -76,7 +64,7 @@ public final class SwingScheduler extends Scheduler {
         }
 
         @Override
-        public void schedule(final Action1<Inner> action, long delayTime, TimeUnit unit) {
+        public void schedule(final Action1<Schedulable> action, long delayTime, TimeUnit unit) {
             final AtomicReference<Subscription> sub = new AtomicReference<Subscription>();
             long delay = unit.toMillis(delayTime);
             assertThatTheDelayIsValidForTheSwingTimer(delay);
@@ -95,7 +83,7 @@ public final class SwingScheduler extends Scheduler {
                     if (innerSubscription.isUnsubscribed()) {
                         return;
                     }
-                    action.call(_inner);
+                    action.call(Schedulable.create(InnerSwingScheduler.this, action));
                     Subscription s = sf.get();
                     if (s != null) {
                         innerSubscription.remove(s);
@@ -125,7 +113,7 @@ public final class SwingScheduler extends Scheduler {
         }
 
         @Override
-        public void schedule(final Action1<Inner> action) {
+        public void schedule(final Action1<Schedulable> action) {
             final AtomicReference<Subscription> sub = new AtomicReference<Subscription>();
 
             final AtomicReference<Subscription> sf = new AtomicReference<Subscription>();
@@ -135,7 +123,7 @@ public final class SwingScheduler extends Scheduler {
                     if (innerSubscription.isUnsubscribed()) {
                         return;
                     }
-                    action.call(_inner);
+                    action.call(Schedulable.create(InnerSwingScheduler.this, action));
                     Subscription s = sf.get();
                     if (s != null) {
                         innerSubscription.remove(s);

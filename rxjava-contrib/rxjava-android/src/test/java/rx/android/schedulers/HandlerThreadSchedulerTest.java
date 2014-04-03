@@ -29,7 +29,7 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import rx.Scheduler;
-import rx.Scheduler.Inner;
+import rx.Scheduler.Recurse;
 import rx.functions.Action1;
 import android.os.Handler;
 
@@ -41,7 +41,7 @@ public class HandlerThreadSchedulerTest {
     public void shouldScheduleImmediateActionOnHandlerThread() {
         final Handler handler = mock(Handler.class);
         @SuppressWarnings("unchecked")
-        final Action1<Inner> action = mock(Action1.class);
+        final Action1<Recurse> action = mock(Action1.class);
 
         Scheduler scheduler = new HandlerThreadScheduler(handler);
         scheduler.schedule(action);
@@ -52,14 +52,14 @@ public class HandlerThreadSchedulerTest {
 
         // verify that the given handler delegates to our action
         runnable.getValue().run();
-        verify(action).call(any(Inner.class));
+        verify(action).call(any(Recurse.class));
     }
 
     @Test
     public void shouldScheduleDelayedActionOnHandlerThread() {
         final Handler handler = mock(Handler.class);
         @SuppressWarnings("unchecked")
-        final Action1<Inner> action = mock(Action1.class);
+        final Action1<Recurse> action = mock(Action1.class);
 
         Scheduler scheduler = new HandlerThreadScheduler(handler);
         scheduler.schedule(action, 1L, TimeUnit.SECONDS);
@@ -70,6 +70,6 @@ public class HandlerThreadSchedulerTest {
 
         // verify that the given handler delegates to our action
         runnable.getValue().run();
-        verify(action).call(any(Inner.class));
+        verify(action).call(any(Recurse.class));
     }
 }

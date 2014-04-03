@@ -21,7 +21,6 @@ import java.util.Queue;
 import java.util.concurrent.TimeUnit;
 
 import rx.Scheduler;
-import rx.Subscription;
 import rx.functions.Action1;
 import rx.subscriptions.BooleanSubscription;
 
@@ -32,11 +31,11 @@ public class TestScheduler extends Scheduler {
     private static class TimedAction {
 
         private final long time;
-        private final Action1<Inner> action;
-        private final Inner scheduler;
+        private final Action1<Schedulable> action;
+        private final EventLoop scheduler;
         private final long count = counter++; // for differentiating tasks at same time
 
-        private TimedAction(Inner scheduler, long time, Action1<Inner> action) {
+        private TimedAction(EventLoop scheduler, long time, Action1<Schedulable> action) {
             this.time = time;
             this.action = action;
             this.scheduler = scheduler;
@@ -91,33 +90,18 @@ public class TestScheduler extends Scheduler {
 
             // Only execute if not unsubscribed
             if (!current.scheduler.isUnsubscribed()) {
-                current.action.call(current.scheduler);
+                current.action.call(Schedulable.create(current.scheduler, current.action));
             }
         }
         time = targetTimeInNanos;
     }
 
-    public Inner createInnerScheduler() {
+    @Override
+    public EventLoop createEventLoop() {
         return new InnerTestScheduler();
     }
 
-    @Override
-    public Subscription schedule(Action1<Inner> action, long delayTime, TimeUnit unit) {
-        Inner inner = createInnerScheduler();
-        final TimedAction timedAction = new TimedAction(inner, time + unit.toNanos(delayTime), action);
-        queue.add(timedAction);
-        return inner;
-    }
-
-    @Override
-    public Subscription schedule(Action1<Inner> action) {
-        Inner inner = createInnerScheduler();
-        final TimedAction timedAction = new TimedAction(inner, 0, action);
-        queue.add(timedAction);
-        return inner;
-    }
-
-    private final class InnerTestScheduler extends Inner {
+    private final class InnerTestScheduler extends EventLoop {
 
         private BooleanSubscription s = new BooleanSubscription();
 
@@ -132,13 +116,13 @@ public class TestScheduler extends Scheduler {
         }
 
         @Override
-        public void schedule(Action1<Inner> action, long delayTime, TimeUnit unit) {
+        public void schedule(Action1<Schedulable> action, long delayTime, TimeUnit unit) {
             final TimedAction timedAction = new TimedAction(this, time + unit.toNanos(delayTime), action);
             queue.add(timedAction);
         }
 
         @Override
-        public void schedule(Action1<Inner> action) {
+        public void schedule(Action1<Schedulable> action) {
             final TimedAction timedAction = new TimedAction(this, 0, action);
             queue.add(timedAction);
         }
