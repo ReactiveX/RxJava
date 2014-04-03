@@ -16,7 +16,7 @@
 package rx.operators;
 
 import static org.junit.Assert.*;
-import static rx.operators.OperationMaterialize.*;
+import static rx.operators.OperatorMaterialize.*;
 
 import java.util.List;
 import java.util.Vector;
@@ -31,7 +31,7 @@ import rx.Subscriber;
 import rx.Subscription;
 import rx.subscriptions.Subscriptions;
 
-public class OperationMaterializeTest {
+public class OperatorMaterializeTest {
 
     @Test
     public void testMaterialize1() {
@@ -39,7 +39,7 @@ public class OperationMaterializeTest {
         final TestAsyncErrorObservable o1 = new TestAsyncErrorObservable("one", "two", null, "three");
 
         TestObserver Observer = new TestObserver();
-        Observable<Notification<String>> m = Observable.create(materialize(Observable.create(o1)));
+        Observable<Notification<String>> m = Observable.create(o1).materialize();
         m.subscribe(Observer);
 
         try {
@@ -64,7 +64,7 @@ public class OperationMaterializeTest {
         final TestAsyncErrorObservable o1 = new TestAsyncErrorObservable("one", "two", "three");
 
         TestObserver Observer = new TestObserver();
-        Observable<Notification<String>> m = Observable.create(materialize(Observable.create(o1)));
+        Observable<Notification<String>> m = Observable.create(o1).materialize();
         m.subscribe(Observer);
 
         try {
@@ -89,7 +89,7 @@ public class OperationMaterializeTest {
     public void testMultipleSubscribes() throws InterruptedException, ExecutionException {
         final TestAsyncErrorObservable o = new TestAsyncErrorObservable("one", "two", null, "three");
 
-        Observable<Notification<String>> m = Observable.create(materialize(Observable.create(o)));
+        Observable<Notification<String>> m = Observable.create(o).materialize();
 
         assertEquals(3, m.toList().toBlockingObservable().toFuture().get().size());
         assertEquals(3, m.toList().toBlockingObservable().toFuture().get().size());

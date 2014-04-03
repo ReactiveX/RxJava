@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Notification;
 import rx.Observable;
-import rx.Observer;
+import rx.Subscriber;
 import rx.exceptions.Exceptions;
 
 /**
@@ -30,9 +30,9 @@ import rx.exceptions.Exceptions;
  * If the source works faster than the iterator, values may be skipped, but
  * not the onError or onCompleted events.
  */
-public final class OperationLatest {
+public final class BlockingOperatorLatest {
     /** Utility class. */
-    private OperationLatest() {
+    private BlockingOperatorLatest() {
         throw new IllegalStateException("No instances!");
     }
 
@@ -48,7 +48,7 @@ public final class OperationLatest {
     }
 
     /** Observer of source, iterator for output. */
-    static final class LatestObserverIterator<T> implements Observer<Notification<? extends T>>, Iterator<T> {
+    static final class LatestObserverIterator<T> extends Subscriber<Notification<? extends T>> implements Iterator<T> {
         final Semaphore notify = new Semaphore(0);
         // observer's notification
         final AtomicReference<Notification<? extends T>> reference = new AtomicReference<Notification<? extends T>>();

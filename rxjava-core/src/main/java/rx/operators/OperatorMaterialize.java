@@ -15,43 +15,42 @@
  */
 package rx.operators;
 
+import rx.Notification;
 import rx.Observable.Operator;
 import rx.Subscriber;
-import rx.exceptions.OnErrorThrowable;
 
 /**
- * Converts the elements of an observable sequence to the specified type.
+ * Turns all of the notifications from an Observable into <code>onNext</code> emissions, and marks
+ * them with their original notification types within {@link Notification} objects.
+ * <p>
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/materialize.png">
+ * <p>
+ * See <a href="http://msdn.microsoft.com/en-us/library/hh229453(v=VS.103).aspx">here</a> for the
+ * Microsoft Rx equivalent.
  */
-public class OperatorCast<T, R> implements Operator<R, T> {
-
-    private final Class<R> castClass;
-
-    public OperatorCast(Class<R> castClass) {
-        this.castClass = castClass;
-    }
+public final class OperatorMaterialize<T> implements Operator<Notification<T>, T> {
 
     @Override
-    public Subscriber<? super T> call(final Subscriber<? super R> o) {
-        return new Subscriber<T>(o) {
+    public Subscriber<? super T> call(final Subscriber<? super Notification<T>> child) {
+        return new Subscriber<T>(child) {
 
             @Override
             public void onCompleted() {
-                o.onCompleted();
+                child.onNext(Notification.<T> createOnCompleted());
+                child.onCompleted();
             }
 
             @Override
             public void onError(Throwable e) {
-                o.onError(e);
+                child.onNext(Notification.<T> createOnError(e));
+                child.onCompleted();
             }
 
             @Override
             public void onNext(T t) {
-                try {
-                    o.onNext(castClass.cast(t));
-                } catch (Throwable e) {
-                    onError(OnErrorThrowable.addValueAsLastCause(e, t));
-                }
+                child.onNext(Notification.<T> createOnNext(t));
             }
+
         };
     }
 }

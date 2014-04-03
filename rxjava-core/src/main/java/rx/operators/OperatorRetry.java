@@ -77,7 +77,7 @@ public class OperatorRetry<T> implements Operator<T, Observable<T>> {
                     public void call(final Inner inner) {
                         final Action1<Inner> _self = this;
                         attempts.incrementAndGet();
-                        o.subscribe(new Subscriber<T>(s) {
+                        o.unsafeSubscribe(new Subscriber<T>(s) {
 
                             @Override
                             public void onCompleted() {

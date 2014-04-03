@@ -22,6 +22,7 @@ import java.util.Map;
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Func0;
 import rx.functions.Func1;
@@ -116,7 +117,7 @@ public class OperationToMap {
                 t1.onError(t);
                 return Subscriptions.empty();
             }
-            return source.subscribe(new ToMapObserver<K, V, T>(
+            return source.unsafeSubscribe(new ToMapObserver<K, V, T>(
                     t1, keySelector, valueSelector, map));
         }
 
@@ -124,7 +125,7 @@ public class OperationToMap {
          * Observer that collects the source values of T into
          * a map.
          */
-        public static class ToMapObserver<K, V, T> implements Observer<T> {
+        public static class ToMapObserver<K, V, T> extends Subscriber<T> {
             /** The map. */
             Map<K, V> map;
             /** Key extractor. */

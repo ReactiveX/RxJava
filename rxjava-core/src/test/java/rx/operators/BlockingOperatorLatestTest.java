@@ -28,7 +28,7 @@ import rx.observables.BlockingObservable;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
 
-public class OperationLatestTest {
+public class BlockingOperatorLatestTest {
     @Test(timeout = 1000)
     public void testSimple() {
         TestScheduler scheduler = new TestScheduler();

@@ -18,6 +18,7 @@ package rx.operators;
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Func1;
 import rx.subscriptions.CompositeSubscription;
@@ -64,13 +65,13 @@ public final class OperationSwitch {
 
             SerialSubscription child = new SerialSubscription();
 
-            parent.wrap(sequences.subscribe(new SwitchObserver<T>(observer, parent, child)));
+            parent.wrap(sequences.unsafeSubscribe(new SwitchObserver<T>(observer, parent, child)));
 
             return new CompositeSubscription(parent, child);
         }
     }
 
-    private static class SwitchObserver<T> implements Observer<Observable<? extends T>> {
+    private static class SwitchObserver<T> extends Subscriber<Observable<? extends T>> {
 
         private final Object gate;
         private final Observer<? super T> observer;
@@ -97,7 +98,7 @@ public final class OperationSwitch {
             }
 
             final SafeObservableSubscription sub = new SafeObservableSubscription();
-            sub.wrap(args.subscribe(new Observer<T>() {
+            sub.wrap(args.unsafeSubscribe(new Subscriber<T>() {
                 @Override
                 public void onNext(T args) {
                     synchronized (gate) {

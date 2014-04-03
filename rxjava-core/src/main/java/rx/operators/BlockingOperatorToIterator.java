@@ -22,7 +22,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import rx.Notification;
 import rx.Observable;
-import rx.Observer;
+import rx.Subscriber;
 import rx.exceptions.Exceptions;
 
 /**
@@ -33,7 +33,7 @@ import rx.exceptions.Exceptions;
  * 
  * @see <a href="https://github.com/Netflix/RxJava/issues/50">Issue #50</a>
  */
-public class OperationToIterator {
+public class BlockingOperatorToIterator {
 
     /**
      * Returns an iterator that iterates all values of the observable.
@@ -45,7 +45,8 @@ public class OperationToIterator {
     public static <T> Iterator<T> toIterator(Observable<? extends T> source) {
         final BlockingQueue<Notification<? extends T>> notifications = new LinkedBlockingQueue<Notification<? extends T>>();
 
-        source.materialize().subscribe(new Observer<Notification<? extends T>>() {
+        // using subscribe instead of unsafeSubscribe since this is a BlockingObservable "final subscribe"
+        source.materialize().subscribe(new Subscriber<Notification<? extends T>>() {
             @Override
             public void onCompleted() {
                 // ignore

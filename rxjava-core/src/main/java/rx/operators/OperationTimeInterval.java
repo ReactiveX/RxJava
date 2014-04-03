@@ -19,6 +19,7 @@ import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.schedulers.Schedulers;
 import rx.schedulers.TimeInterval;
@@ -39,13 +40,13 @@ public class OperationTimeInterval {
             @Override
             public Subscription onSubscribe(
                     Observer<? super TimeInterval<T>> observer) {
-                return source.subscribe(new TimeIntervalObserver<T>(observer,
+                return source.unsafeSubscribe(new TimeIntervalObserver<T>(observer,
                         scheduler));
             }
         };
     }
 
-    private static class TimeIntervalObserver<T> implements Observer<T> {
+    private static class TimeIntervalObserver<T> extends Subscriber<T> {
 
         private final Observer<? super TimeInterval<T>> observer;
         /**

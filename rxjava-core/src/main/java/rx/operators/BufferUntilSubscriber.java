@@ -91,7 +91,7 @@ public class BufferUntilSubscriber<T> extends Observable<T> implements Observer<
      * It will then immediately swap itself out for the actual (after a single notification), but since this is now
      * being done on the same producer thread no further buffering will occur.
      */
-    private static class PassThruObserver<T> implements Observer<T> {
+    private static class PassThruObserver<T> extends Subscriber<T> {
 
         private final Observer<? super T> actual;
         // this assumes single threaded synchronous notifications (the Rx contract for a single Observer)
@@ -133,7 +133,7 @@ public class BufferUntilSubscriber<T> extends Observable<T> implements Observer<
 
     }
 
-    private static class BufferedObserver<T> implements Observer<T> {
+    private static class BufferedObserver<T> extends Subscriber<T> {
         private final ConcurrentLinkedQueue<Object> buffer = new ConcurrentLinkedQueue<Object>();
 
         @Override

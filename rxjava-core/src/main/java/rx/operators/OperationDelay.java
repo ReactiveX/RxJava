@@ -22,11 +22,13 @@ import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Scheduler.Inner;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Action1;
 import rx.functions.Func0;
 import rx.functions.Func1;
 import rx.observables.ConnectableObservable;
+import rx.observers.Subscribers;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.SerialSubscription;
 import rx.subscriptions.Subscriptions;
@@ -79,7 +81,7 @@ public final class OperationDelay {
                 @Override
                 public void call(Inner inner) {
                     if (!ssub.isUnsubscribed()) {
-                        ssub.set(source.subscribe(t1));
+                        ssub.set(source.unsafeSubscribe(Subscribers.from(t1)));
                     }
                 }
             }, time, unit));
@@ -129,7 +131,7 @@ public final class OperationDelay {
             csub.add(sosub);
             SourceObserver<T, V> so = new SourceObserver<T, V>(t1, itemDelay, csub, sosub);
             if (subscriptionDelay == null) {
-                sosub.set(source.subscribe(so));
+                sosub.set(source.unsafeSubscribe(so));
             } else {
                 Observable<U> subscriptionSource;
                 try {
@@ -140,14 +142,14 @@ public final class OperationDelay {
                 }
                 SerialSubscription ssub = new SerialSubscription();
                 csub.add(ssub);
-                ssub.set(subscriptionSource.subscribe(new SubscribeDelay<T, U, V>(source, so, csub, ssub)));
+                ssub.set(subscriptionSource.unsafeSubscribe(new SubscribeDelay<T, U, V>(source, so, csub, ssub)));
             }
 
             return csub;
         }
 
         /** Subscribe delay observer. */
-        private static final class SubscribeDelay<T, U, V> implements Observer<U> {
+        private static final class SubscribeDelay<T, U, V> extends Subscriber<U> {
             final Observable<? extends T> source;
             final SourceObserver<T, V> so;
             final CompositeSubscription csub;
@@ -182,12 +184,12 @@ public final class OperationDelay {
             public void onCompleted() {
                 subscribed = true;
                 csub.remove(self);
-                so.self.set(source.subscribe(so));
+                so.self.set(source.unsafeSubscribe(so));
             }
         }
 
         /** The source observer. */
-        private static final class SourceObserver<T, U> implements Observer<T> {
+        private static final class SourceObserver<T, U> extends Subscriber<T> {
             final Observer<? super T> observer;
             final Func1<? super T, ? extends Observable<U>> itemDelay;
             final CompositeSubscription csub;
@@ -224,7 +226,7 @@ public final class OperationDelay {
 
                 SerialSubscription ssub = new SerialSubscription();
                 csub.add(ssub);
-                ssub.set(delayer.subscribe(new DelayObserver<T, U>(args, this, ssub)));
+                ssub.set(delayer.unsafeSubscribe(new DelayObserver<T, U>(args, this, ssub)));
             }
 
             @Override
@@ -275,7 +277,7 @@ public final class OperationDelay {
         /**
          * Delay observer.
          */
-        private static final class DelayObserver<T, U> implements Observer<U> {
+        private static final class DelayObserver<T, U> extends Subscriber<U> {
             final T value;
             final SourceObserver<T, U> parent;
             final Subscription token;

@@ -20,6 +20,7 @@ import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
 import rx.functions.Func0;
+import rx.observers.Subscribers;
 
 /**
  * Do not create the Observable until an Observer subscribes; create a fresh Observable on each
@@ -39,7 +40,7 @@ public final class OperationDefer {
             @Override
             public Subscription onSubscribe(Observer<? super T> observer) {
                 Observable<? extends T> obs = observableFactory.call();
-                return obs.subscribe(observer);
+                return obs.unsafeSubscribe(Subscribers.from(observer));
             }
         };
 

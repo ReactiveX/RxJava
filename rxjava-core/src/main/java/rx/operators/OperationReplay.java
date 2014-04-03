@@ -35,6 +35,7 @@ import rx.Subscription;
 import rx.functions.Action0;
 import rx.functions.Func1;
 import rx.functions.Functions;
+import rx.observers.Subscribers;
 import rx.schedulers.Timestamped;
 import rx.subjects.Subject;
 import rx.subscriptions.Subscriptions;
@@ -151,7 +152,7 @@ public final class OperationReplay {
         return new OnSubscribeFunc<T>() {
             @Override
             public Subscription onSubscribe(Observer<? super T> t1) {
-                return target.subscribe(t1);
+                return target.unsafeSubscribe(Subscribers.from(t1));
             }
         };
     }

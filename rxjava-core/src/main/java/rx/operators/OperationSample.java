@@ -23,6 +23,7 @@ import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Action0;
 import rx.schedulers.Schedulers;
@@ -70,7 +71,7 @@ public final class OperationSample {
         @Override
         public Subscription onSubscribe(final Observer<? super T> observer) {
             Observable<Long> clock = Observable.create(OperationInterval.interval(period, unit, scheduler));
-            final Subscription clockSubscription = clock.subscribe(new Observer<Long>() {
+            final Subscription clockSubscription = clock.unsafeSubscribe(new Subscriber<Long>() {
                 @Override
                 public void onCompleted() { /* the clock never completes */
                 }
@@ -87,7 +88,7 @@ public final class OperationSample {
                 }
             });
 
-            final Subscription sourceSubscription = source.subscribe(new Observer<T>() {
+            final Subscription sourceSubscription = source.unsafeSubscribe(new Subscriber<T>() {
                 @Override
                 public void onCompleted() {
                     clockSubscription.unsubscribe();
@@ -137,7 +138,7 @@ public final class OperationSample {
         }
 
         /** Observe source values. */
-        class ResultManager implements Observer<T> {
+        class ResultManager extends Subscriber<T> {
             final Observer<? super T> observer;
             final CompositeSubscription cancel;
             T value;
@@ -152,8 +153,8 @@ public final class OperationSample {
             }
 
             public Subscription init() {
-                cancel.add(source.subscribe(this));
-                cancel.add(sampler.subscribe(new Sampler()));
+                cancel.add(source.unsafeSubscribe(this));
+                cancel.add(sampler.unsafeSubscribe(new Sampler()));
 
                 return cancel;
             }
@@ -189,7 +190,7 @@ public final class OperationSample {
             }
 
             /** Take the latest value, but only once. */
-            class Sampler implements Observer<U> {
+            class Sampler extends Subscriber<U> {
                 @Override
                 public void onNext(U args) {
                     synchronized (guard) {

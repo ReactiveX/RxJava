@@ -23,6 +23,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.exceptions.CompositeException;
 import rx.observers.SerializedObserver;
@@ -146,7 +147,7 @@ public final class OperationMergeDelayError {
             /**
              * Subscribe to the parent Observable to get to the children Observables
              */
-            completeSubscription.add(sequences.subscribe(new ParentObserver(synchronizedObserver)));
+            completeSubscription.add(sequences.unsafeSubscribe(new ParentObserver(synchronizedObserver)));
 
             /* return our subscription to allow unsubscribing */
             return completeSubscription;
@@ -190,7 +191,7 @@ public final class OperationMergeDelayError {
          * 
          * @param <T>
          */
-        private class ParentObserver implements Observer<Observable<? extends T>> {
+        private class ParentObserver extends Subscriber<Observable<? extends T>> {
             private final Observer<? super T> actualObserver;
 
             public ParentObserver(Observer<? super T> actualObserver) {
@@ -246,7 +247,7 @@ public final class OperationMergeDelayError {
                  */
                 ChildObserver _w = new ChildObserver(actualObserver);
                 childObservers.put(_w, _w);
-                Subscription _subscription = childObservable.subscribe(_w);
+                Subscription _subscription = childObservable.unsafeSubscribe(_w);
                 // remember this Observer and the subscription from it
                 childSubscriptions.put(_w, _subscription);
             }
@@ -256,7 +257,7 @@ public final class OperationMergeDelayError {
          * Subscribe to each child Observable<T> and forward their sequence of data to the actualObserver
          * 
          */
-        private class ChildObserver implements Observer<T> {
+        private class ChildObserver extends Subscriber<T> {
 
             private final Observer<? super T> actualObserver;
             private volatile boolean finished = false;

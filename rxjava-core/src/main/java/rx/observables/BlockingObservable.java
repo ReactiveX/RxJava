@@ -22,15 +22,13 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Observable;
 import rx.Subscriber;
-import rx.Subscription;
 import rx.functions.Action1;
 import rx.functions.Func1;
-import rx.observers.SafeSubscriber;
-import rx.operators.OperationLatest;
-import rx.operators.OperationMostRecent;
-import rx.operators.OperationNext;
-import rx.operators.OperationToFuture;
-import rx.operators.OperationToIterator;
+import rx.operators.BlockingOperatorLatest;
+import rx.operators.BlockingOperatorMostRecent;
+import rx.operators.BlockingOperatorNext;
+import rx.operators.BlockingOperatorToFuture;
+import rx.operators.BlockingOperatorToIterator;
 
 /**
  * An extension of {@link Observable} that provides blocking operators.
@@ -65,17 +63,6 @@ public class BlockingObservable<T> {
     }
 
     /**
-     * Used for protecting against errors being thrown from {@link Subscriber} implementations and ensuring onNext/onError/onCompleted contract
-     * compliance.
-     * <p>
-     * See https://github.com/Netflix/RxJava/issues/216 for discussion on
-     * "Guideline 6.4: Protect calls to user code from within an operator"
-     */
-    private Subscription protectivelyWrapAndSubscribe(Subscriber<? super T> observer) {
-        return o.subscribe(new SafeSubscriber<T>(observer));
-    }
-
-    /**
      * Invoke a method on each item emitted by the {@link Observable}; block
      * until the Observable completes.
      * <p>
@@ -97,12 +84,10 @@ public class BlockingObservable<T> {
         final AtomicReference<Throwable> exceptionFromOnError = new AtomicReference<Throwable>();
 
         /**
-         * Wrapping since raw functions provided by the user are being invoked.
-         * 
-         * See https://github.com/Netflix/RxJava/issues/216 for discussion on
-         * "Guideline 6.4: Protect calls to user code from within an operator"
+         * Use 'subscribe' instead of 'unsafeSubscribe' for Rx contract behavior
+         * as this is the final subscribe in the chain.
          */
-        protectivelyWrapAndSubscribe(new Subscriber<T>() {
+        o.subscribe(new Subscriber<T>() {
             @Override
             public void onCompleted() {
                 latch.countDown();
@@ -158,7 +143,7 @@ public class BlockingObservable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Blocking-Observable-Operators#transformations-tofuture-toiterable-and-toiteratorgetiterator">RxJava Wiki: getIterator()</a>
      */
     public Iterator<T> getIterator() {
-        return OperationToIterator.toIterator(o);
+        return BlockingOperatorToIterator.toIterator(o);
     }
 
     /**
@@ -311,7 +296,7 @@ public class BlockingObservable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229751.aspx">MSDN: Observable.MostRecent</a>
      */
     public Iterable<T> mostRecent(T initialValue) {
-        return OperationMostRecent.mostRecent(o, initialValue);
+        return BlockingOperatorMostRecent.mostRecent(o, initialValue);
     }
 
     /**
@@ -324,7 +309,7 @@ public class BlockingObservable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211897.aspx">MSDN: Observable.Next</a>
      */
     public Iterable<T> next() {
-        return OperationNext.next(o);
+        return BlockingOperatorNext.next(o);
     }
 
     /**
@@ -344,7 +329,7 @@ public class BlockingObservable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh212115.aspx">MSDN: Observable.Latest</a>
      */
     public Iterable<T> latest() {
-        return OperationLatest.latest(o);
+        return BlockingOperatorLatest.latest(o);
     }
 
     /**
@@ -441,7 +426,7 @@ public class BlockingObservable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Blocking-Observable-Operators#transformations-tofuture-toiterable-and-toiteratorgetiterator">RxJava Wiki: toFuture()</a>
      */
     public Future<T> toFuture() {
-        return OperationToFuture.toFuture(o);
+        return BlockingOperatorToFuture.toFuture(o);
     }
 
     /**

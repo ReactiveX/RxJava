@@ -21,6 +21,7 @@ import rx.Observer;
 import rx.Subscription;
 import rx.functions.Func0;
 import rx.functions.Func1;
+import rx.observers.Subscribers;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.Subscriptions;
 
@@ -46,12 +47,12 @@ public class OperationUsing {
                     // Use SafeObserver to guarantee resourceSubscription will
                     // be unsubscribed.
                     return subscription.wrap(new CompositeSubscription(
-                            observable.subscribe(new SafeObserver<T>(
+                            observable.unsafeSubscribe(new SafeObserver<T>(
                                     subscription, observer)),
                             resourceSubscription));
                 } catch (Throwable e) {
                     resourceSubscription.unsubscribe();
-                    return Observable.<T> error(e).subscribe(observer);
+                    return Observable.<T> error(e).unsafeSubscribe(Subscribers.from(observer));
                 }
             }
         };

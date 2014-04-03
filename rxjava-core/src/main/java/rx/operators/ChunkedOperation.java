@@ -28,10 +28,12 @@ import rx.Observable;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Scheduler.Inner;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Action1;
 import rx.functions.Func0;
 import rx.functions.Func1;
+import rx.subscriptions.CompositeSubscription;
 
 /**
  * The base class for operations that break observables into "chunks". Currently buffers and windows.
@@ -408,7 +410,7 @@ public class ChunkedOperation {
      *            The type of object all internal {@link rx.operators.ChunkedOperation.Chunk} objects record.
      *            <C> The type of object being tracked by the {@link Chunk}
      */
-    protected static class ChunkObserver<T, C> implements Observer<T> {
+    protected static class ChunkObserver<T, C> extends Subscriber<T> {
 
         private final Chunks<T, C> chunks;
         private final Observer<? super C> observer;
@@ -492,12 +494,24 @@ public class ChunkedOperation {
 
         private void listenForChunkEnd() {
             Observable<? extends TClosing> closingObservable = chunkClosingSelector.call();
-            closingObservable.subscribe(new Action1<TClosing>() {
+            closingObservable.unsafeSubscribe(new Subscriber<TClosing>() {
+
                 @Override
-                public void call(TClosing closing) {
-                    chunks.emitAndReplaceChunk();
-                    listenForChunkEnd();
+                public void onCompleted() {
+                    
                 }
+
+                @Override
+                public void onError(Throwable e) {
+                    
+                }
+
+                @Override
+                public void onNext(TClosing t) {
+                    chunks.emitAndReplaceChunk();
+                    listenForChunkEnd();                    
+                }
+                
             });
         }
 
@@ -524,23 +538,47 @@ public class ChunkedOperation {
      */
     protected static class ObservableBasedMultiChunkCreator<T, C, TOpening, TClosing> implements ChunkCreator {
 
-        private final SafeObservableSubscription subscription = new SafeObservableSubscription();
+        private final CompositeSubscription subscription = new CompositeSubscription();
 
         public ObservableBasedMultiChunkCreator(final OverlappingChunks<T, C> chunks, Observable<? extends TOpening> openings, final Func1<? super TOpening, ? extends Observable<? extends TClosing>> chunkClosingSelector) {
-            subscription.wrap(openings.subscribe(new Action1<TOpening>() {
+            openings.unsafeSubscribe(new Subscriber<TOpening>(subscription) {
+
                 @Override
-                public void call(TOpening opening) {
+                public void onCompleted() {
+                    
+                }
+
+                @Override
+                public void onError(Throwable e) {
+                    
+                }
+
+                @Override
+                public void onNext(TOpening opening) {
                     final Chunk<T, C> chunk = chunks.createChunk();
                     Observable<? extends TClosing> closingObservable = chunkClosingSelector.call(opening);
 
-                    closingObservable.subscribe(new Action1<TClosing>() {
+                    closingObservable.unsafeSubscribe(new Subscriber<TClosing>() {
+
                         @Override
-                        public void call(TClosing closing) {
-                            chunks.emitChunk(chunk);
+                        public void onCompleted() {
+                            
                         }
-                    });
+
+                        @Override
+                        public void onError(Throwable e) {
+                            
+                        }
+
+                        @Override
+                        public void onNext(TClosing t) {
+                            chunks.emitChunk(chunk);                            
+                        }
+                        
+                    });                    
                 }
-            }));
+                
+            });
         }
 
         @Override

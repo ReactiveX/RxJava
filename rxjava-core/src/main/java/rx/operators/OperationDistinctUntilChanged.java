@@ -20,6 +20,7 @@ import java.util.Comparator;
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Action0;
 import rx.functions.Func1;
@@ -108,7 +109,7 @@ public final class OperationDistinctUntilChanged {
 
         @Override
         public Subscription onSubscribe(final Observer<? super T> observer) {
-            final Subscription sourceSub = source.subscribe(new Observer<T>() {
+            final Subscription sourceSub = source.unsafeSubscribe(new Subscriber<T>() {
                 private U lastEmittedKey;
                 private boolean hasEmitted;
 

@@ -18,6 +18,7 @@ package rx.operators;
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Action0;
 
@@ -68,10 +69,10 @@ public final class OperationFinally {
         }
 
         public Subscription onSubscribe(Observer<? super T> observer) {
-            return sequence.subscribe(new FinallyObserver(observer));
+            return sequence.unsafeSubscribe(new FinallyObserver(observer));
         }
 
-        private class FinallyObserver implements Observer<T> {
+        private class FinallyObserver extends Subscriber<T> {
             private final Observer<? super T> observer;
 
             FinallyObserver(Observer<? super T> observer) {

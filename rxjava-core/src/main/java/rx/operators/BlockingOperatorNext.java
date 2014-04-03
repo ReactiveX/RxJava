@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import rx.Notification;
 import rx.Observable;
-import rx.Observer;
+import rx.Subscriber;
 import rx.exceptions.Exceptions;
 
 /**
@@ -31,7 +31,7 @@ import rx.exceptions.Exceptions;
  * <p>
  * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.next.png">
  */
-public final class OperationNext {
+public final class BlockingOperatorNext {
 
     public static <T> Iterable<T> next(final Observable<? extends T> items) {
         return new Iterable<T>() {
@@ -133,7 +133,7 @@ public final class OperationNext {
         }
     }
 
-    private static class NextObserver<T> implements Observer<Notification<? extends T>> {
+    private static class NextObserver<T> extends Subscriber<Notification<? extends T>> {
         private final BlockingQueue<Notification<? extends T>> buf = new ArrayBlockingQueue<Notification<? extends T>>(1);
         private final AtomicBoolean waiting = new AtomicBoolean(false);
 

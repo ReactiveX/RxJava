@@ -55,7 +55,7 @@ public class OperatorSubscribeOn<T> implements Operator<T, Observable<T>> {
 
                     @Override
                     public void call(final Inner inner) {
-                        o.subscribe(subscriber);
+                        o.unsafeSubscribe(subscriber);
                     }
                 }));
             }

@@ -19,6 +19,7 @@ import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscription;
+import rx.observers.Subscribers;
 
 /**
  * Hides the identity of another observable.
@@ -34,7 +35,7 @@ public final class OperationAsObservable<T> implements OnSubscribeFunc<T> {
     }
 
     @Override
-    public Subscription onSubscribe(Observer<? super T> t1) {
-        return source.subscribe(t1);
+    public Subscription onSubscribe(final Observer<? super T> t1) {
+        return source.unsafeSubscribe(Subscribers.from(t1));
     }
 }

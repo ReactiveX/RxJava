@@ -19,10 +19,11 @@ import rx.Notification;
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 
 /**
- * Reverses the effect of {@link OperationMaterialize} by transforming the Notification objects
+ * Reverses the effect of {@link OperatorMaterialize} by transforming the Notification objects
  * emitted by a source Observable into the items or notifications they represent.
  * <p>
  * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/dematerialize.png">
@@ -54,7 +55,7 @@ public final class OperationDematerialize {
 
         @Override
         public Subscription onSubscribe(final Observer<? super T> observer) {
-            return sequence.subscribe(new Observer<Notification<? extends T>>() {
+            return sequence.unsafeSubscribe(new Subscriber<Notification<? extends T>>() {
                 @Override
                 public void onCompleted() {
                     observer.onCompleted();

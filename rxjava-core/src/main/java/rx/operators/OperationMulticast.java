@@ -45,7 +45,7 @@ public class OperationMulticast {
             super(new OnSubscribe<R>() {
                 @Override
                 public void call(Subscriber<? super R> observer) {
-                    subject.subscribe(observer);
+                    subject.unsafeSubscribe(observer);
                 }
             });
             this.source = source;
@@ -55,7 +55,7 @@ public class OperationMulticast {
         public Subscription connect() {
             synchronized (lock) {
                 if (subscription == null) {
-                    subscription = source.subscribe(new Observer<T>() {
+                    subscription = source.unsafeSubscribe(new Subscriber<T>() {
                         @Override
                         public void onCompleted() {
                             subject.onCompleted();
@@ -138,7 +138,7 @@ public class OperationMulticast {
 
             CompositeSubscription csub = new CompositeSubscription();
 
-            csub.add(observable.subscribe(new SafeObserver<TResult>(
+            csub.add(observable.unsafeSubscribe(new SafeObserver<TResult>(
                     new SafeObservableSubscription(csub), t1)));
             csub.add(connectable.connect());
 

@@ -1,6 +1,5 @@
 package rx.operators;
 
-import java.io.ObjectStreamException;
 import java.io.Serializable;
 
 import rx.Notification;

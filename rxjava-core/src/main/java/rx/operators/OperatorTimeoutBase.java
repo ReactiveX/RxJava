@@ -155,7 +155,8 @@ class OperatorTimeoutBase<T> implements Operator<T, T> {
                 if (other == null) {
                     serializedSubscriber.onError(new TimeoutException());
                 } else {
-                    serial.set(other.subscribe(serializedSubscriber));
+                    other.unsafeSubscribe(serializedSubscriber);
+                    serial.set(serializedSubscriber);
                 }
             }
         }

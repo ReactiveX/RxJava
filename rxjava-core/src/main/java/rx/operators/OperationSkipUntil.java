@@ -20,7 +20,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
+import rx.observers.Subscribers;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.SerialSubscription;
 
@@ -64,8 +66,8 @@ public class OperationSkipUntil<T, U> implements OnSubscribeFunc<T> {
             cancel.add(toSource);
             cancel.add(toOther);
 
-            toSource.setSubscription(source.subscribe(this));
-            toOther.setSubscription(other.subscribe(new OtherObserver(toOther)));
+            toSource.setSubscription(source.unsafeSubscribe(Subscribers.from(this)));
+            toOther.setSubscription(other.unsafeSubscribe(new OtherObserver(toOther)));
 
             return this;
         }
@@ -104,7 +106,7 @@ public class OperationSkipUntil<T, U> implements OnSubscribeFunc<T> {
         }
 
         /** Observe the other stream. */
-        private class OtherObserver implements Observer<U> {
+        private class OtherObserver extends Subscriber<U> {
             final Subscription self;
 
             public OtherObserver(Subscription self) {

@@ -24,6 +24,7 @@ import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Func0;
 import rx.functions.Func1;
@@ -71,7 +72,7 @@ public final class OperationBuffer extends ChunkedOperation {
                 ChunkCreator creator = new ObservableBasedSingleChunkCreator<T, List<T>, TClosing>(buffers, bufferClosingSelector);
                 return new CompositeSubscription(
                         new ChunkToSubscription(creator),
-                        source.subscribe(new ChunkObserver<T, List<T>>(buffers, observer, creator)));
+                        source.unsafeSubscribe(new ChunkObserver<T, List<T>>(buffers, observer, creator)));
             }
         };
     }
@@ -111,7 +112,7 @@ public final class OperationBuffer extends ChunkedOperation {
                 ChunkCreator creator = new ObservableBasedMultiChunkCreator<T, List<T>, TOpening, TClosing>(buffers, bufferOpenings, bufferClosingSelector);
                 return new CompositeSubscription(
                         new ChunkToSubscription(creator),
-                        source.subscribe(new ChunkObserver<T, List<T>>(buffers, observer, creator)));
+                        source.unsafeSubscribe(new ChunkObserver<T, List<T>>(buffers, observer, creator)));
             }
         };
     }
@@ -170,7 +171,7 @@ public final class OperationBuffer extends ChunkedOperation {
                 ChunkCreator creator = new SkippingChunkCreator<T, List<T>>(chunks, skip);
                 return new CompositeSubscription(
                         new ChunkToSubscription(creator),
-                        source.subscribe(new ChunkObserver<T, List<T>>(chunks, observer, creator)));
+                        source.unsafeSubscribe(new ChunkObserver<T, List<T>>(chunks, observer, creator)));
             }
         };
     }
@@ -229,7 +230,7 @@ public final class OperationBuffer extends ChunkedOperation {
                 ChunkCreator creator = new TimeBasedChunkCreator<T, List<T>>(buffers, timespan, unit, scheduler);
                 return new CompositeSubscription(
                         new ChunkToSubscription(creator),
-                        source.subscribe(new ChunkObserver<T, List<T>>(buffers, observer, creator)));
+                        source.unsafeSubscribe(new ChunkObserver<T, List<T>>(buffers, observer, creator)));
             }
         };
     }
@@ -295,7 +296,7 @@ public final class OperationBuffer extends ChunkedOperation {
                 return new CompositeSubscription(
                         chunks,
                         new ChunkToSubscription(creator),
-                        source.subscribe(new ChunkObserver<T, List<T>>(chunks, observer, creator)));
+                        source.unsafeSubscribe(new ChunkObserver<T, List<T>>(chunks, observer, creator)));
             }
         };
     }
@@ -361,7 +362,7 @@ public final class OperationBuffer extends ChunkedOperation {
                 return new CompositeSubscription(
                         buffers,
                         new ChunkToSubscription(creator),
-                        source.subscribe(new ChunkObserver<T, List<T>>(buffers, observer, creator)));
+                        source.unsafeSubscribe(new ChunkObserver<T, List<T>>(buffers, observer, creator)));
             }
         };
     }
@@ -460,8 +461,8 @@ public final class OperationBuffer extends ChunkedOperation {
             CompositeSubscription csub = new CompositeSubscription();
 
             SourceObserver<T> so = new SourceObserver<T>(t1, initialCapacity, csub);
-            csub.add(source.subscribe(so));
-            csub.add(boundary.subscribe(new BoundaryObserver<B>(so)));
+            csub.add(source.unsafeSubscribe(so));
+            csub.add(boundary.unsafeSubscribe(new BoundaryObserver<B>(so)));
 
             return csub;
         }
@@ -469,7 +470,7 @@ public final class OperationBuffer extends ChunkedOperation {
         /**
          * Observes the source.
          */
-        private static final class SourceObserver<T> implements Observer<T> {
+        private static final class SourceObserver<T> extends Subscriber<T> {
             final Observer<? super List<T>> observer;
             /** The buffer, if null, that indicates a terminal state. */
             List<T> buffer;
@@ -539,7 +540,7 @@ public final class OperationBuffer extends ChunkedOperation {
         /**
          * Observes the boundary.
          */
-        private static final class BoundaryObserver<T> implements Observer<T> {
+        private static final class BoundaryObserver<T> extends Subscriber<T> {
             final SourceObserver so;
 
             public BoundaryObserver(SourceObserver so) {

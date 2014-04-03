@@ -32,6 +32,7 @@ import rx.joins.JoinObserver;
 import rx.joins.Pattern1;
 import rx.joins.Pattern2;
 import rx.joins.Plan0;
+import rx.observers.Subscribers;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -121,7 +122,7 @@ public class OperationJoinPatterns {
                         }));
                     }
                 } catch (Throwable t) {
-                    return Observable.<R> error(t).subscribe(t1);
+                    return Observable.<R> error(t).unsafeSubscribe(Subscribers.from(t1));
                 }
                 CompositeSubscription group = new CompositeSubscription();
                 for (JoinObserver jo : externalSubscriptions.values()) {

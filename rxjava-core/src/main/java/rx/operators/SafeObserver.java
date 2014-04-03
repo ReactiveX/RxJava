@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.exceptions.CompositeException;
 import rx.exceptions.OnErrorNotImplementedException;
@@ -61,7 +62,7 @@ import rx.subscriptions.Subscriptions;
  * @deprecated replaced by SafeSubscriber
  */
 @Deprecated
-public class SafeObserver<T> implements Observer<T> {
+public class SafeObserver<T> extends Subscriber<T> {
 
     private final Observer<? super T> actual;
     private final AtomicBoolean isFinished = new AtomicBoolean(false);

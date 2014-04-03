@@ -77,7 +77,7 @@ public class OperatorRepeat<T> implements Operator<T, Observable<T>> {
                     @Override
                     public void call(final Inner inner) {
                         executionCount++;
-                        t.subscribe(new Subscriber<T>(child) {
+                        t.unsafeSubscribe(new Subscriber<T>(child) {
 
                             @Override
                             public void onCompleted() {

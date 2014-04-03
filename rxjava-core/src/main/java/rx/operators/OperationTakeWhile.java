@@ -20,6 +20,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Func1;
 import rx.functions.Func2;
@@ -96,10 +97,10 @@ public final class OperationTakeWhile {
 
         @Override
         public Subscription onSubscribe(Observer<? super T> observer) {
-            return subscription.wrap(items.subscribe(new ItemObserver(observer)));
+            return subscription.wrap(items.unsafeSubscribe(new ItemObserver(observer)));
         }
 
-        private class ItemObserver implements Observer<T> {
+        private class ItemObserver extends Subscriber<T> {
             private final Observer<? super T> observer;
 
             private final AtomicInteger counter = new AtomicInteger();

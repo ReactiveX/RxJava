@@ -18,6 +18,7 @@ package rx.operators;
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Func1;
 import rx.functions.Func2;
@@ -124,11 +125,11 @@ public final class OperationAverage {
 
         @Override
         public Subscription onSubscribe(Observer<? super Integer> t1) {
-            return source.subscribe(new AverageObserver(t1));
+            return source.unsafeSubscribe(new AverageObserver(t1));
         }
 
         /** Computes the average. */
-        private final class AverageObserver implements Observer<T> {
+        private final class AverageObserver extends Subscriber<T> {
             final Observer<? super Integer> observer;
             int sum;
             int count;
@@ -184,11 +185,11 @@ public final class OperationAverage {
 
         @Override
         public Subscription onSubscribe(Observer<? super Long> t1) {
-            return source.subscribe(new AverageObserver(t1));
+            return source.unsafeSubscribe(new AverageObserver(t1));
         }
 
         /** Computes the average. */
-        private final class AverageObserver implements Observer<T> {
+        private final class AverageObserver extends Subscriber<T> {
             final Observer<? super Long> observer;
             long sum;
             int count;
@@ -244,11 +245,11 @@ public final class OperationAverage {
 
         @Override
         public Subscription onSubscribe(Observer<? super Float> t1) {
-            return source.subscribe(new AverageObserver(t1));
+            return source.unsafeSubscribe(new AverageObserver(t1));
         }
 
         /** Computes the average. */
-        private final class AverageObserver implements Observer<T> {
+        private final class AverageObserver extends Subscriber<T> {
             final Observer<? super Float> observer;
             float sum;
             int count;
@@ -304,11 +305,11 @@ public final class OperationAverage {
 
         @Override
         public Subscription onSubscribe(Observer<? super Double> t1) {
-            return source.subscribe(new AverageObserver(t1));
+            return source.unsafeSubscribe(new AverageObserver(t1));
         }
 
         /** Computes the average. */
-        private final class AverageObserver implements Observer<T> {
+        private final class AverageObserver extends Subscriber<T> {
             final Observer<? super Double> observer;
             double sum;
             int count;

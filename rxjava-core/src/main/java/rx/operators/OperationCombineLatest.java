@@ -25,6 +25,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Func2;
 import rx.functions.Func3;
@@ -36,6 +37,7 @@ import rx.functions.Func8;
 import rx.functions.Func9;
 import rx.functions.FuncN;
 import rx.functions.Functions;
+import rx.observers.Subscribers;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -275,7 +277,7 @@ public class OperationCombineLatest {
         /**
          * Observes a specific source and communicates with the collector.
          */
-        final class SourceObserver implements Observer<T> {
+        final class SourceObserver extends Subscriber<T> {
             final SafeObservableSubscription self;
             final Collector collector;
             final int index;
@@ -308,7 +310,7 @@ public class OperationCombineLatest {
 
             /** Connect to the source. */
             void connect() {
-                self.wrap(source.subscribe(this));
+                self.wrap(source.unsafeSubscribe(Subscribers.from(this)));
                 source = null;
             }
         }

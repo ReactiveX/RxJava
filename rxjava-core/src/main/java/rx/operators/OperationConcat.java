@@ -22,8 +22,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Action0;
+import rx.observers.Subscribers;
 import rx.subscriptions.Subscriptions;
 
 /**
@@ -104,20 +106,20 @@ public final class OperationConcat {
                         } else {
                             // Continue on to the next sequence
                             innerSubscription = new SafeObservableSubscription();
-                            innerSubscription.wrap(nextSequences.poll().subscribe(this));
+                            innerSubscription.wrap(nextSequences.poll().unsafeSubscribe(Subscribers.from(this)));
                         }
                     }
                 }
             };
 
-            outerSubscription.wrap(sequences.subscribe(new Observer<Observable<? extends T>>() {
+            outerSubscription.wrap(sequences.unsafeSubscribe(new Subscriber<Observable<? extends T>>() {
                 @Override
                 public void onNext(Observable<? extends T> nextSequence) {
                     synchronized (nextSequences) {
                         if (innerSubscription == null) {
                             // We are currently not subscribed to any sequence
                             innerSubscription = new SafeObservableSubscription();
-                            innerSubscription.wrap(nextSequence.subscribe(reusableObserver));
+                            innerSubscription.wrap(nextSequence.unsafeSubscribe(Subscribers.from(reusableObserver)));
                         } else {
                             // Put this sequence at the end of the queue
                             nextSequences.add(nextSequence);
