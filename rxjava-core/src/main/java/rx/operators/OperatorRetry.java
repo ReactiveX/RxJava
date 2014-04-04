@@ -39,6 +39,7 @@ import rx.Scheduler.Inner;
 import rx.Subscriber;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
+import rx.subscriptions.SerialSubscription;
 
 public class OperatorRetry<T> implements Operator<T, Observable<T>> {
 
@@ -55,10 +56,13 @@ public class OperatorRetry<T> implements Operator<T, Observable<T>> {
     }
 
     @Override
-    public Subscriber<? super Observable<T>> call(final Subscriber<? super T> s) {
-        return new Subscriber<Observable<T>>(s) {
+    public Subscriber<? super Observable<T>> call(final Subscriber<? super T> child) {
+        final SerialSubscription serialSubscription = new SerialSubscription();
+        // add serialSubscription so it gets unsubscribed if child is unsubscribed
+        child.add(serialSubscription);
+        return new Subscriber<Observable<T>>(child) {
             final AtomicInteger attempts = new AtomicInteger(0);
-            
+
             @Override
             public void onCompleted() {
                 // ignore as we expect a single nested Observable<T>
@@ -66,7 +70,7 @@ public class OperatorRetry<T> implements Operator<T, Observable<T>> {
 
             @Override
             public void onError(Throwable e) {
-                s.onError(e);
+                child.onError(e);
             }
 
             @Override
@@ -77,11 +81,12 @@ public class OperatorRetry<T> implements Operator<T, Observable<T>> {
                     public void call(final Inner inner) {
                         final Action1<Inner> _self = this;
                         attempts.incrementAndGet();
-                        o.unsafeSubscribe(new Subscriber<T>(s) {
+
+                        Subscriber<T> subscriber = new Subscriber<T>(child) {
 
                             @Override
                             public void onCompleted() {
-                                s.onCompleted();
+                                child.onCompleted();
                             }
 
                             @Override
@@ -91,16 +96,19 @@ public class OperatorRetry<T> implements Operator<T, Observable<T>> {
                                     inner.schedule(_self);
                                 } else {
                                     // give up and pass the failure
-                                    s.onError(e);
+                                    child.onError(e);
                                 }
                             }
 
                             @Override
                             public void onNext(T v) {
-                                s.onNext(v);
+                                child.onNext(v);
                             }
 
-                        });
+                        };
+                        // register this Subscription (and unsubscribe previous if exists) 
+                        serialSubscription.set(subscriber);
+                        o.unsafeSubscribe(subscriber);
                     }
                 });
             }

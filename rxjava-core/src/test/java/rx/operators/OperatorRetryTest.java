@@ -19,6 +19,8 @@ import static org.junit.Assert.*;
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
@@ -27,6 +29,7 @@ import org.mockito.InOrder;
 import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Action1;
 import rx.subjects.PublishSubject;
@@ -145,6 +148,93 @@ public class OperatorRetryTest {
         sub.unsubscribe();
         subject.onNext(2);
         assertEquals(1, count.get());
+    }
+
+    public static class SlowFuncAlwaysFails implements Observable.OnSubscribe<String> {
+
+        final AtomicInteger nextSeq=new AtomicInteger();
+        final AtomicInteger activeSubs=new AtomicInteger();
+        final AtomicInteger concurrentSubs=new AtomicInteger();
+
+        public void call(final Subscriber<? super String> s)
+        {
+            final int seq=nextSeq.incrementAndGet();
+
+            int cur=activeSubs.incrementAndGet();
+            // Track concurrent subscriptions
+            concurrentSubs.set(Math.max(cur,concurrentSubs.get()));
+
+            // Use async error
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        // ignore
+                    }
+                    s.onError(new RuntimeException("Subscriber #"+seq+" fails"));
+                }
+            }).start();
+
+            // Track unsubscribes
+            s.add(new Subscription()
+            {
+                private boolean active=true;
+
+                public void unsubscribe()
+                {
+                    if (active) {
+                        activeSubs.decrementAndGet();
+                        active=false;
+                    }
+                }
+
+                public boolean isUnsubscribed()
+                {
+                    return !active;
+                }
+            });
+        }
+    }
+
+    @Test
+    public void testUnsubscribeAfterError() {
+
+        final CountDownLatch check=new CountDownLatch(1);
+        final SlowFuncAlwaysFails sf=new SlowFuncAlwaysFails();
+
+        Observable
+            .create(sf)
+            .retry(4)
+            .subscribe(
+                new Action1<String>()
+                {
+                    @Override
+                    public void call(String v)
+                    {
+                        fail("Should never happen");
+                    }
+                },
+                new Action1<Throwable>()
+                {
+                    public void call(Throwable throwable)
+                    {
+                        check.countDown();
+                    }
+                }
+            );
+
+        try
+        {
+            check.await(1, TimeUnit.SECONDS);
+        } catch (InterruptedException e)
+        {
+            fail("interrupted");
+        }
+
+        assertEquals("5 Subscribers created", 5, sf.nextSeq.get());
+        assertEquals("1 Active Subscriber", 1, sf.concurrentSubs.get());
     }
 
     @Test
