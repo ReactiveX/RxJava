@@ -1,5 +1,11 @@
 # RxJava Releases #
 
+### Version 0.17.5 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.17.5%22)) ###
+
+* [Pull 1010] (https://github.com/Netflix/RxJava/pull/1010) Observable.unsafeSubscribe
+* [Pull 1015] (https://github.com/Netflix/RxJava/pull/1015) Remove Redundant protectivelyWrap Method
+* [Pull 1019] (https://github.com/Netflix/RxJava/pull/1019) Fix: retry() never unsubscribes from source until operator completes 
+
 ### Version 0.17.4 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.17.4%22)) ###
 
 * [Pull 990] (https://github.com/Netflix/RxJava/pull/990) Quasar Lightweight Threads/Fibers Contrib Module
