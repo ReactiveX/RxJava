@@ -32,11 +32,14 @@ package rx.operators;
  */
 
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Observable;
 import rx.Observable.Operator;
+import rx.Scheduler;
 import rx.Scheduler.Inner;
 import rx.Subscriber;
+import rx.Subscription;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 
@@ -71,13 +74,16 @@ public class OperatorRetry<T> implements Operator<T, Observable<T>> {
 
             @Override
             public void onNext(final Observable<T> o) {
+
+                final AtomicReference<Subscription> retrySub=new AtomicReference<Subscription>();
+
                 Schedulers.trampoline().schedule(new Action1<Inner>() {
 
                     @Override
                     public void call(final Inner inner) {
                         final Action1<Inner> _self = this;
                         attempts.incrementAndGet();
-                        o.unsafeSubscribe(new Subscriber<T>(s) {
+                        retrySub.set(o.unsafeSubscribe(new Subscriber<T>(s) {
 
                             @Override
                             public void onCompleted() {
@@ -88,7 +94,15 @@ public class OperatorRetry<T> implements Operator<T, Observable<T>> {
                             public void onError(Throwable e) {
                                 if ((retryCount == INFINITE_RETRY || attempts.get() <= retryCount) && !inner.isUnsubscribed()) {
                                     // retry again
-                                    inner.schedule(_self);
+                                    inner.schedule(new Action1<Inner>() {
+                                        @Override
+                                        public void call(Inner inner)
+                                        {
+                                            // Remove the failed subscription first
+                                            retrySub.get().unsubscribe();
+                                            _self.call(inner);
+                                        }
+                                    });
                                 } else {
                                     // give up and pass the failure
                                     s.onError(e);
@@ -100,7 +114,7 @@ public class OperatorRetry<T> implements Operator<T, Observable<T>> {
                                 s.onNext(v);
                             }
 
-                        });
+                        }));
                     }
                 });
             }
