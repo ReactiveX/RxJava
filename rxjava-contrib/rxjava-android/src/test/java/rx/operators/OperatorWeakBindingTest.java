@@ -7,15 +7,17 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.RobolectricTestRunner;
+import rx.Subscriber;
 import rx.functions.Functions;
 import rx.observers.TestSubscriber;
+import rx.operators.OperatorWeakBinding.BoundPayload;
 
 import java.util.Arrays;
 
 @RunWith(RobolectricTestRunner.class)
 public class OperatorWeakBindingTest {
 
-    private TestSubscriber<String> subscriber = new TestSubscriber<String>();
+    private TestSubscriber<BoundPayload<Object, String>> subscriber = new TestSubscriber<BoundPayload<Object, String>>();
 
     @Before
     public void setUp() throws Exception {
@@ -23,47 +25,34 @@ public class OperatorWeakBindingTest {
     }
 
     @Test
-    public void shouldForwardAllNotificationsWhenSubscriberAndTargetAlive() {
-        OperatorWeakBinding<String, Object> op = new OperatorWeakBinding<String, Object>(new Object());
-        OperatorWeakBinding.WeakSubscriber weakSub = (OperatorWeakBinding.WeakSubscriber) op.call(subscriber);
-        weakSub.onNext("one");
-        weakSub.onNext("two");
-        weakSub.onCompleted();
-        weakSub.onError(new Exception());
+    public void shouldForwardAllNotificationsWhenTargetAlive() {
+        final Object target = new Object();
+        OperatorWeakBinding<String, Object> op = new OperatorWeakBinding<String, Object>(target);
 
-        subscriber.assertReceivedOnNext(Arrays.asList("one", "two"));
+        final Subscriber<? super String> extendedSub = op.call(subscriber);
+        extendedSub.onNext("one");
+        extendedSub.onNext("two");
+        subscriber.onCompleted();
+        subscriber.onError(new Exception());
+
+        subscriber.assertReceivedOnNext(Arrays.asList(BoundPayload.of(target, "one"), BoundPayload.of(target, "two")));
         assertEquals(1, subscriber.getOnCompletedEvents().size());
         assertEquals(1, subscriber.getOnErrorEvents().size());
     }
 
     @Test
-    public void shouldUnsubscribeFromSourceSequenceWhenSubscriberReleased() {
-        OperatorWeakBinding<String, Object> op = new OperatorWeakBinding<String, Object>(new Object());
-
-        OperatorWeakBinding.WeakSubscriber weakSub = (OperatorWeakBinding.WeakSubscriber) op.call(subscriber);
-        weakSub.onNext("one");
-        weakSub.subscriberRef.clear();
-        weakSub.onNext("two");
-        weakSub.onCompleted();
-        weakSub.onError(new Exception());
-
-        subscriber.assertReceivedOnNext(Arrays.asList("one"));
-        assertEquals(0, subscriber.getOnCompletedEvents().size());
-        assertEquals(0, subscriber.getOnErrorEvents().size());
-    }
-
-    @Test
     public void shouldUnsubscribeFromSourceSequenceWhenTargetObjectReleased() {
-        OperatorWeakBinding<String, Object> op = new OperatorWeakBinding<String, Object>(new Object());
+        final Object target = new Object();
+        OperatorWeakBinding<String, Object> op = new OperatorWeakBinding<String, Object>(target);
 
-        OperatorWeakBinding.WeakSubscriber weakSub = (OperatorWeakBinding.WeakSubscriber) op.call(subscriber);
-        weakSub.onNext("one");
+        final Subscriber<? super String> extendedSub = op.call(subscriber);
+        extendedSub.onNext("one");
         op.boundRef.clear();
-        weakSub.onNext("two");
-        weakSub.onCompleted();
-        weakSub.onError(new Exception());
+        extendedSub.onNext("two");
+        extendedSub.onCompleted();
+        extendedSub.onError(new Exception());
 
-        subscriber.assertReceivedOnNext(Arrays.asList("one"));
+        subscriber.assertReceivedOnNext(Arrays.asList(BoundPayload.of(target, "one")));
         assertEquals(0, subscriber.getOnCompletedEvents().size());
         assertEquals(0, subscriber.getOnErrorEvents().size());
     }
@@ -73,11 +62,11 @@ public class OperatorWeakBindingTest {
         OperatorWeakBinding<String, Object> op = new OperatorWeakBinding<String, Object>(
                 new Object(), Functions.alwaysFalse());
 
-        OperatorWeakBinding.WeakSubscriber weakSub = (OperatorWeakBinding.WeakSubscriber) op.call(subscriber);
-        weakSub.onNext("one");
-        weakSub.onNext("two");
-        weakSub.onCompleted();
-        weakSub.onError(new Exception());
+        final Subscriber<? super String> extendedSub = op.call(subscriber);
+        extendedSub.onNext("one");
+        extendedSub.onNext("two");
+        extendedSub.onCompleted();
+        extendedSub.onError(new Exception());
 
         assertEquals(0, subscriber.getOnNextEvents().size());
         assertEquals(0, subscriber.getOnCompletedEvents().size());
