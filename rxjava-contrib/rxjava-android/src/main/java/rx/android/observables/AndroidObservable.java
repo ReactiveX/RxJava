@@ -51,7 +51,7 @@ public final class AndroidObservable {
     private static final Func1<Fragment, Boolean> FRAGMENT_VALIDATOR = new Func1<Fragment, Boolean>() {
         @Override
         public Boolean call(Fragment fragment) {
-            return fragment.isAdded();
+            return fragment.isAdded() && !fragment.getActivity().isFinishing();
         }
     };
 
@@ -59,7 +59,7 @@ public final class AndroidObservable {
             new Func1<android.support.v4.app.Fragment, Boolean>() {
                 @Override
                 public Boolean call(android.support.v4.app.Fragment fragment) {
-                    return fragment.isAdded();
+                    return fragment.isAdded() && !fragment.getActivity().isFinishing();
                 }
             };
 
@@ -131,11 +131,15 @@ public final class AndroidObservable {
     }
 
     /**
-     * Binds the given source sequence to the life-cycle of an activity.
+     * Binds the given source sequence to an activity.
      * <p/>
      * This helper will schedule the given sequence to be observed on the main UI thread and ensure
-     * that no notifications will be forwarded to the activity in case it gets destroyed by the Android runtime
-     * or garbage collected by the VM.
+     * that no notifications will be forwarded to the activity in case it is scheduled to finish.
+     * <p/>
+     * You should unsubscribe from the returned Observable in onDestroy at the latest, in order to not
+     * leak the activity or an inner subscriber. Conversely, when the source sequence can outlive the activity,
+     * make sure to bind to new instances of the activity again, e.g. after going through configuration changes.
+     * Refer to the samples project for actual examples.
      *
      * @param activity the activity to bind the source sequence to
      * @param source   the source sequence
@@ -146,24 +150,28 @@ public final class AndroidObservable {
     }
 
     /**
-     * Binds the given source sequence to the life-cycle of a fragment (native or support-v4).
+     * Binds the given source sequence to a fragment (native or support-v4).
      * <p/>
      * This helper will schedule the given sequence to be observed on the main UI thread and ensure
      * that no notifications will be forwarded to the fragment in case it gets detached from its
-     * activity or garbage collected by the VM.
+     * activity or the activity is scheduled to finish.
+     * <p/>
+     * You should unsubscribe from the returned Observable in onDestroy for normal fragments, or in onDestroyView
+     * for retained fragments, in order to not leak any references to the host activity or the fragment.
+     * Refer to the samples project for actual examples.
      *
      * @param fragment the fragment to bind the source sequence to
      * @param source   the source sequence
      */
-    public static <T> Observable<T> bindFragment(Object fragment, Observable<T> cachedSequence) {
+    public static <T> Observable<T> bindFragment(Object fragment, Observable<T> source) {
         Assertions.assertUiThread();
-        final Observable<T> source = cachedSequence.observeOn(mainThread());
+        final Observable<T> o = source.observeOn(mainThread());
         if (USES_SUPPORT_FRAGMENTS && fragment instanceof android.support.v4.app.Fragment) {
             android.support.v4.app.Fragment f = (android.support.v4.app.Fragment) fragment;
-            return source.lift(new OperatorWeakBinding<T, android.support.v4.app.Fragment>(f, FRAGMENTV4_VALIDATOR));
+            return o.lift(new OperatorWeakBinding<T, android.support.v4.app.Fragment>(f, FRAGMENTV4_VALIDATOR));
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB && fragment instanceof Fragment) {
             Fragment f = (Fragment) fragment;
-            return source.lift(new OperatorWeakBinding<T, Fragment>(f, FRAGMENT_VALIDATOR));
+            return o.lift(new OperatorWeakBinding<T, Fragment>(f, FRAGMENT_VALIDATOR));
         } else {
             throw new IllegalArgumentException("Target fragment is neither a native nor support library Fragment");
         }

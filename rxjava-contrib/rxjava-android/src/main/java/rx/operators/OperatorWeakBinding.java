@@ -7,12 +7,9 @@ import rx.functions.Functions;
 
 import android.util.Log;
 
-import java.lang.ref.WeakReference;
-
 /**
- * Ties a source sequence to the life-cycle of the given target object, and/or the subscriber
- * using weak references. When either object is gone, this operator automatically unsubscribes
- * from the source sequence.
+ * Ties a source sequence to the given target object using a predicate. If the predicate fails
+ * to validate, the sequence unsubscribes itself and releases the bound reference.
  * <p/>
  * You can also pass in an optional predicate function, which whenever it evaluates to false
  * on the target object, will also result in the operator unsubscribing from the sequence.
@@ -24,88 +21,71 @@ public final class OperatorWeakBinding<T, R> implements Observable.Operator<T, T
 
     private static final String LOG_TAG = "WeakBinding";
 
-    final WeakReference<R> boundRef;
+    private R boundRef;
     private final Func1<? super R, Boolean> predicate;
 
     public OperatorWeakBinding(R bound, Func1<? super R, Boolean> predicate) {
-        boundRef = new WeakReference<R>(bound);
+        boundRef = bound;
         this.predicate = predicate;
     }
 
     public OperatorWeakBinding(R bound) {
-        boundRef = new WeakReference<R>(bound);
+        boundRef = bound;
         this.predicate = Functions.alwaysTrue();
     }
 
     @Override
     public Subscriber<? super T> call(final Subscriber<? super T> child) {
-        return new WeakSubscriber(child);
-    }
+        return new  Subscriber<T>(child) {
 
-    final class WeakSubscriber extends Subscriber<T> {
-
-        final WeakReference<Subscriber<? super T>> subscriberRef;
-
-        private WeakSubscriber(Subscriber<? super T> source) {
-            super(source);
-            subscriberRef = new WeakReference<Subscriber<? super T>>(source);
-        }
-
-        @Override
-        public void onCompleted() {
-            final Subscriber<? super T> sub = subscriberRef.get();
-            if (shouldForwardNotification(sub)) {
-                sub.onCompleted();
-            } else {
-                handleLostBinding(sub, "onCompleted");
-            }
-        }
-
-        @Override
-        public void onError(Throwable e) {
-            final Subscriber<? super T> sub = subscriberRef.get();
-            if (shouldForwardNotification(sub)) {
-                sub.onError(e);
-            } else {
-                handleLostBinding(sub, "onError");
-            }
-        }
-
-        @Override
-        public void onNext(T t) {
-            final Subscriber<? super T> sub = subscriberRef.get();
-            if (shouldForwardNotification(sub)) {
-                sub.onNext(t);
-            } else {
-                handleLostBinding(sub, "onNext");
-            }
-        }
-
-        private boolean shouldForwardNotification(Subscriber<? super T> sub) {
-            final R target = boundRef.get();
-            return sub != null && target != null && predicate.call(target);
-        }
-
-        private void handleLostBinding(Subscriber<? super T> sub, String context) {
-            if (sub == null) {
-                log("subscriber gone; skipping " + context);
-            } else {
-                final R r = boundRef.get();
-                if (r != null) {
-                    // the predicate failed to validate
-                    log("bound component has become invalid; skipping " + context);
+            @Override
+            public void onCompleted() {
+                if (shouldForwardNotification()) {
+                    child.onCompleted();
                 } else {
-                    log("bound component gone; skipping " + context);
+                    handleLostBinding("onCompleted");
                 }
             }
-            log("unsubscribing...");
-            unsubscribe();
-        }
 
-        private void log(String message) {
-            if (Log.isLoggable(LOG_TAG, Log.DEBUG)) {
-                Log.d(LOG_TAG, message);
+            @Override
+            public void onError(Throwable e) {
+                if (shouldForwardNotification()) {
+                    child.onError(e);
+                } else {
+                    handleLostBinding("onError");
+                }
             }
-        }
+
+            @Override
+            public void onNext(T t) {
+                if (shouldForwardNotification()) {
+                    child.onNext(t);
+                } else {
+                    handleLostBinding("onNext");
+                }
+            }
+
+            private boolean shouldForwardNotification() {
+                return boundRef != null && predicate.call(boundRef);
+            }
+
+            private void handleLostBinding(String context) {
+                log("bound object has become invalid; skipping " + context);
+                log("unsubscribing...");
+                boundRef = null;
+                unsubscribe();
+            }
+
+            private void log(String message) {
+                if (Log.isLoggable(LOG_TAG, Log.DEBUG)) {
+                    Log.d(LOG_TAG, message);
+                }
+            }
+        };
+    }
+
+    /* Visible for testing */
+    R getBoundRef() {
+        return boundRef;
     }
 }

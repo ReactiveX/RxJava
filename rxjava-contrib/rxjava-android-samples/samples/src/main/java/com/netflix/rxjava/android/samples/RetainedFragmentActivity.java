@@ -14,10 +14,11 @@ import org.json.JSONObject;
 
 import rx.Observable;
 import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.subscriptions.Subscriptions;
+
+import static rx.android.observables.AndroidObservable.bindFragment;
 
 /**
  * Problem:
@@ -68,9 +69,7 @@ public class RetainedFragmentActivity extends Activity {
             super.onCreate(savedInstanceState);
 
             // simulate fetching a JSON document with a latency of 2 seconds
-            strings = SampleObservables.fakeApiCall(2000).map(PARSE_JSON)
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .cache();
+            strings = SampleObservables.fakeApiCall(2000).map(PARSE_JSON).cache();
         }
 
         @Override
@@ -93,7 +92,7 @@ public class RetainedFragmentActivity extends Activity {
 
             // (re-)subscribe to the sequence, which either emits the cached result or simply re-
             // attaches the subscriber to wait for it to arrive
-            subscription = strings.subscribe(new Action1<String>() {
+            subscription = bindFragment(this, strings).subscribe(new Action1<String>() {
                 @Override
                 public void call(String result) {
                     textView.setText(result);
