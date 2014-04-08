@@ -82,7 +82,7 @@ public class OperatorRetry<T> implements Operator<T, Observable<T>> {
                         final Action1<Inner> _self = this;
                         attempts.incrementAndGet();
 
-                        Subscriber<T> subscriber = new Subscriber<T>(child) {
+                        Subscriber<T> subscriber = new Subscriber<T>() {
 
                             @Override
                             public void onCompleted() {
