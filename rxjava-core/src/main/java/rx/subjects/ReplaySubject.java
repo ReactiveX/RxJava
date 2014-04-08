@@ -211,9 +211,9 @@ public final class ReplaySubject<T> extends Subject<T, T> {
      * 
      * @param <T>
      */
-    private static class History<T> {
-        private final AtomicInteger index;
-        private final ArrayList<T> list;
+    static class History<T> {
+        final AtomicInteger index;
+        final ArrayList<T> list;
         private final AtomicReference<Notification<T>> terminalValue;
 
         public History(int initialCapacity) {
