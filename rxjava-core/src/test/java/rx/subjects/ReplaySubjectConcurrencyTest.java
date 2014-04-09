@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
@@ -302,6 +303,31 @@ public class ReplaySubjectConcurrencyTest {
             assertEquals("value", t5.value.get());
         }
 
+    }
+    
+    @Test
+    public void testHistory() {
+        final ReplaySubject.History<Object> h = new ReplaySubject.History<Object>(10000);
+        final AtomicBoolean done = new AtomicBoolean();
+        final Object n = new Object();
+        
+        new Thread() {
+            public void run() {
+                while(!done.get()) {
+                    h.next(n);
+                }
+            };
+        }.start();
+        
+        for(int i=0; i<100000; i++) {
+            int size = h.list.size();
+            int index = h.index.get();
+            if (size < index) {
+                done.set(true);
+                fail("The size of list "+ size +" has fallen behind the atomic index "+ index +" making readers suspetable to ArrayIndexOutOfBoundsExceptions");
+            }
+        }
+        done.set(true);
     }
 
     private static class SubjectObserverThread extends Thread {
