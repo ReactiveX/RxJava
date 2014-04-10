@@ -19,32 +19,32 @@ import rx.functions.Func1;
 import rx.subscriptions.Subscriptions;
 
 /**
- * A retained fragment whose goals are below
- *
- * 1) gracefully handle rotation - not losing any data
- * 2) gracefully handle the user moving in and out of the app
- * 3) use a button or trigger of some sort to start the observable, something more in line with typical use
- * 4) ensure that the callbacks are not called if the user moves away from the fragment
+ * Problem:
+ * You have a data source (where that data is potentially expensive to obtain), and you want to
+ * emit this data into a fragment. However, you want to gracefully deal with rotation changes and
+ * not lose any data already emitted.
+ * <p/>
+ * You also want your UI to update accordingly to the data being emitted.
  *
  * @author zsiegel (zsiegel87@gmail.com)
  */
-public class RetainedFragmentActivityV2 extends Activity {
+public class UIBindingActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
-        setTitle("Fake API call V2");
-        setContentView(R.layout.retained_fragment_activity_v2);
+        setTitle("UIBinding");
+        setContentView(R.layout.ui_binding_activity);
     }
 
     @SuppressWarnings("ConstantConditions")
-    public static class RetainedFragmentV2 extends Fragment {
+    public static class RetainedBindingFragment extends Fragment {
 
-        private Observable<String> observable;
-        private Subscription subscription = Subscriptions.empty();
         private Button startButton;
-        private boolean progressVisiblity;
+
+        private Observable<String> request;
+        private Subscription requestSubscription = Subscriptions.empty();
 
         // in a production app, you don't want to have JSON parser code in your fragment,
         // but we'll simplify a little here
@@ -60,7 +60,7 @@ public class RetainedFragmentActivityV2 extends Activity {
             }
         };
 
-        public RetainedFragmentV2() {
+        public RetainedBindingFragment() {
             setRetainInstance(true);
         }
 
@@ -69,7 +69,7 @@ public class RetainedFragmentActivityV2 extends Activity {
          */
         @Override
         public void onPause() {
-            subscription.unsubscribe();
+            requestSubscription.unsubscribe();
             super.onPause();
         }
 
@@ -91,7 +91,7 @@ public class RetainedFragmentActivityV2 extends Activity {
         public void onViewCreated(final View view, Bundle savedInstanceState) {
             super.onViewCreated(view, savedInstanceState);
 
-            final TextView textView = (TextView)getView().findViewById(android.R.id.text1);
+            final TextView textView = (TextView) getView().findViewById(android.R.id.text1);
 
             startButton = (Button) view.findViewById(R.id.button);
             startButton.setOnClickListener(new View.OnClickListener() {
@@ -99,16 +99,13 @@ public class RetainedFragmentActivityV2 extends Activity {
                 public void onClick(View v) {
                     textView.setText("");
                     start();
-                    startButton.setEnabled(false);
                 }
             });
         }
 
         private void start() {
 
-            progressVisiblity = true;
-
-            observable = SampleObservables
+            request = SampleObservables
                     .fakeApiCall(5000)
                     .map(PARSE_JSON)
                     .observeOn(AndroidSchedulers.mainThread())
@@ -121,22 +118,33 @@ public class RetainedFragmentActivityV2 extends Activity {
          * We subscribe/re-subscribe here
          */
         private void subscribe() {
-            if (observable != null) {
+            if (request != null) {
 
-                getActivity().setProgressBarIndeterminateVisibility(progressVisiblity);
+                final TextView textView = (TextView) getView().findViewById(android.R.id.text1);
 
-                final TextView textView = (TextView)getView().findViewById(android.R.id.text1);
+                requestSubscription = request.map(new Func1<String, Boolean>() {
 
-                subscription = observable.subscribe(new Action1<String>() {
+                    //Consume the data that comes back and then signal that we are done
                     @Override
-                    public void call(String result) {
-                        textView.setText(result);
-                        progressVisiblity = false;
-                        getActivity().setProgressBarIndeterminateVisibility(progressVisiblity);
-                        startButton.setEnabled(true);
+                    public Boolean call(String s) {
+                        textView.setText(s);
+                        return true;
+                    }
+                }).startWith(false) //Before we receive data our request is not complete
+                  .subscribe(new Action1<Boolean>() {
+
+                    //We update the UI based on the state of the request
+                    @Override
+                    public void call(Boolean completed) {
+                        setRequestInProgress(completed);
                     }
                 });
             }
+        }
+
+        private void setRequestInProgress(boolean completed) {
+            getActivity().setProgressBarIndeterminateVisibility(!completed);
+            startButton.setEnabled(completed);
         }
     }
 }

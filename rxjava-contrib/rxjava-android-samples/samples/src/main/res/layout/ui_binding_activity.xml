@@ -8,7 +8,7 @@
             android:tag="retained_fragment_v2"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:name="com.netflix.rxjava.android.samples.RetainedFragmentActivityV2$RetainedFragmentV2"
+            android:name="com.netflix.rxjava.android.samples.UIBindingActivity$RetainedBindingFragment"
             tools:layout="@layout/retained_fragment" />
 
 </RelativeLayout>
