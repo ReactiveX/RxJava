@@ -21,6 +21,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
@@ -31,6 +32,7 @@ import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Subscriber;
 import rx.Subscription;
+import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.Subscriptions;
@@ -150,93 +152,6 @@ public class OperatorRetryTest {
         assertEquals(1, count.get());
     }
 
-    public static class SlowFuncAlwaysFails implements Observable.OnSubscribe<String> {
-
-        final AtomicInteger nextSeq=new AtomicInteger();
-        final AtomicInteger activeSubs=new AtomicInteger();
-        final AtomicInteger concurrentSubs=new AtomicInteger();
-
-        public void call(final Subscriber<? super String> s)
-        {
-            final int seq=nextSeq.incrementAndGet();
-
-            int cur=activeSubs.incrementAndGet();
-            // Track concurrent subscriptions
-            concurrentSubs.set(Math.max(cur,concurrentSubs.get()));
-
-            // Use async error
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        // ignore
-                    }
-                    s.onError(new RuntimeException("Subscriber #"+seq+" fails"));
-                }
-            }).start();
-
-            // Track unsubscribes
-            s.add(new Subscription()
-            {
-                private boolean active=true;
-
-                public void unsubscribe()
-                {
-                    if (active) {
-                        activeSubs.decrementAndGet();
-                        active=false;
-                    }
-                }
-
-                public boolean isUnsubscribed()
-                {
-                    return !active;
-                }
-            });
-        }
-    }
-
-    @Test
-    public void testUnsubscribeAfterError() {
-
-        final CountDownLatch check=new CountDownLatch(1);
-        final SlowFuncAlwaysFails sf=new SlowFuncAlwaysFails();
-
-        Observable
-            .create(sf)
-            .retry(4)
-            .subscribe(
-                new Action1<String>()
-                {
-                    @Override
-                    public void call(String v)
-                    {
-                        fail("Should never happen");
-                    }
-                },
-                new Action1<Throwable>()
-                {
-                    public void call(Throwable throwable)
-                    {
-                        check.countDown();
-                    }
-                }
-            );
-
-        try
-        {
-            check.await(1, TimeUnit.SECONDS);
-        } catch (InterruptedException e)
-        {
-            fail("interrupted");
-        }
-
-        assertEquals("5 Subscribers created", 5, sf.nextSeq.get());
-        assertEquals("1 Active Subscriber", 1, sf.concurrentSubs.get());
-    }
-
     @Test
     public void testRetryAllowsSubscriptionAfterAllSubscriptionsUnsubsribed() throws InterruptedException {
         final AtomicInteger subsCount = new AtomicInteger(0);
@@ -268,5 +183,148 @@ public class OperatorRetryTest {
         assertEquals(0, subsCount.get());
         streamWithRetry.subscribe();
         assertEquals(1, subsCount.get());
+    }
+
+    class SlowObservable implements Observable.OnSubscribe<Long> {
+
+        private AtomicInteger efforts=new AtomicInteger(0);
+        private AtomicInteger active=new AtomicInteger(0),maxActive=new AtomicInteger(0);
+        private AtomicInteger nextBeforeFailure;
+
+        private final int emitDelay;
+
+        public SlowObservable(int emitDelay,int countNext) {
+            this.emitDelay=emitDelay;
+            this.nextBeforeFailure=new AtomicInteger(countNext);
+        }
+
+        public void call(final Subscriber<? super Long> subscriber) {
+            final AtomicBoolean terminate=new AtomicBoolean(false);
+            efforts.getAndIncrement();
+            active.getAndIncrement();
+            maxActive.set(Math.max(active.get(),maxActive.get()));
+            final Thread thread = new Thread() {
+                @Override
+                public void run() {
+                    long nr = 0;
+                    try {
+                        while (!terminate.get()) {
+                            Thread.sleep(emitDelay);
+                            if (nextBeforeFailure.getAndDecrement()>0) {
+                                subscriber.onNext(nr++);
+                            }
+                            else {
+                                subscriber.onError(new RuntimeException("expected-failed"));
+                            }
+                        }
+                    }
+                    catch(InterruptedException t) {
+                    }
+                }
+            };
+            thread.start();
+            subscriber.add(Subscriptions.create(new Action0() {
+                @Override
+                public void call() {
+                    terminate.set(true);
+                    active.decrementAndGet();
+                }
+            }));
+        }
+    }
+
+    /** Observer for listener on seperate thread */
+    class AsyncObserver<T> implements Observer<T> {
+
+        protected CountDownLatch latch=new CountDownLatch(1);
+
+        protected Observer<T> target;
+
+        /** Wrap existing Observer */
+        public AsyncObserver(Observer<T> target) {
+            this.target=target;
+        }
+
+        /** Wait */
+        public void await() {
+            try {
+                latch.await();
+            } catch (InterruptedException e) {
+                fail("Test interrupted");
+            }
+        }
+
+        // Observer implementation
+
+        @Override
+        public void onCompleted() {
+            target.onCompleted();
+            latch.countDown();
+        }
+
+        @Override
+        public void onError(Throwable t) {
+            target.onError(t);
+            latch.countDown();
+        }
+
+        @Override
+        public void onNext(T v) {
+            target.onNext(v);
+        }
+    }
+
+    @Test
+    public void testUnsubscribeAfterError() {
+
+        @SuppressWarnings("unchecked")
+        Observer<Long> observer=mock(Observer.class);
+
+        // Observable that always fails after 100ms
+        SlowObservable so=new SlowObservable(100,0);
+        Observable<Long> o=Observable
+            .create(so)
+            .retry(5);
+
+        AsyncObserver<Long> async=new AsyncObserver<Long>(observer);
+
+        o.subscribe(async);
+
+        async.await();
+
+        InOrder inOrder = inOrder(observer);
+        // Should fail once
+        inOrder.verify(observer, times(1)).onError(any(Throwable.class));
+        inOrder.verify(observer, never()).onCompleted();
+
+        assertEquals("Start 6 threads, retry 5 then fail on 6",6,so.efforts.get());
+        assertEquals("Only 1 active subscription",1,so.maxActive.get());
+    }
+
+    @Test
+    public void testTimeoutWithRetry() {
+
+        @SuppressWarnings("unchecked")
+        Observer<Long> observer=mock(Observer.class);
+
+        // Observable that sends every 100ms (timeout fails instead)
+        SlowObservable so=new SlowObservable(100,10);
+        Observable<Long> o=Observable
+            .create(so)
+            .timeout(80, TimeUnit.MILLISECONDS)
+            .retry(5);
+
+        AsyncObserver<Long> async=new AsyncObserver<Long>(observer);
+
+        o.subscribe(async);
+
+        async.await();
+
+        InOrder inOrder = inOrder(observer);
+        // Should fail once
+        inOrder.verify(observer, times(1)).onError(any(Throwable.class));
+        inOrder.verify(observer, never()).onCompleted();
+
+        assertEquals("Start 6 threads, retry 5 then fail on 6",6,so.efforts.get());
     }
 }
