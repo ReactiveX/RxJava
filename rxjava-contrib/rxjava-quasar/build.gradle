@@ -41,5 +41,5 @@ tasks.withType(JavaExec) {
 
 test {
     // excluding out all tests until they stop hanging CloudBees
-    excludes = '**/*'
+    excludes = ['**/**']
 }
