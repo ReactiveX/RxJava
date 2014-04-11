@@ -94,7 +94,7 @@ import rx.subscriptions.Subscriptions;
                         }));
                         if (subscription.isUnsubscribed()) {
                             addedObserver = false;
-                            break;
+                            return;
                         }
                         // on subscribe add it to the map of outbound observers to notify
                         newState = current.addObserver(subscription, observer);
