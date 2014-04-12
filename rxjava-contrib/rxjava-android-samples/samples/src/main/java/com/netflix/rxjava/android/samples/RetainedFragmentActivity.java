@@ -69,7 +69,10 @@ public class RetainedFragmentActivity extends Activity {
             super.onCreate(savedInstanceState);
 
             // simulate fetching a JSON document with a latency of 2 seconds
-            strings = SampleObservables.fakeApiCall(2000).map(PARSE_JSON).cache();
+            // in retained fragments, it's sufficient to bind the fragment in onCreate, since
+            // Android takes care of detaching the Activity for us, and holding a reference for
+            // the duration of the observable does not harm.
+            strings = bindFragment(this, SampleObservables.fakeApiCall(2000).map(PARSE_JSON).cache());
         }
 
         @Override
@@ -92,7 +95,7 @@ public class RetainedFragmentActivity extends Activity {
 
             // (re-)subscribe to the sequence, which either emits the cached result or simply re-
             // attaches the subscriber to wait for it to arrive
-            subscription = bindFragment(this, strings).subscribe(new Action1<String>() {
+            subscription = strings.subscribe(new Action1<String>() {
                 @Override
                 public void call(String result) {
                     textView.setText(result);
