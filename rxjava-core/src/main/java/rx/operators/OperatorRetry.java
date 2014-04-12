@@ -37,9 +37,11 @@ import rx.Observable;
 import rx.Observable.Operator;
 import rx.Scheduler.Inner;
 import rx.Subscriber;
+import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.SerialSubscription;
+import rx.subscriptions.Subscriptions;
 
 public class OperatorRetry<T> implements Operator<T, Observable<T>> {
 
@@ -82,7 +84,9 @@ public class OperatorRetry<T> implements Operator<T, Observable<T>> {
                         final Action1<Inner> _self = this;
                         attempts.incrementAndGet();
 
-                        Subscriber<T> subscriber = new Subscriber<T>(child) {
+                        // new subscription each time so if it unsubscribes itself it does not prevent retries
+                        // by unsubscribing the child subscription
+                        Subscriber<T> subscriber = new Subscriber<T>() {
 
                             @Override
                             public void onCompleted() {
