@@ -16,7 +16,7 @@ import rx.observers.TestSubscriber;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @RunWith(RobolectricTestRunner.class)
-public class OperatorWeakBindingTest {
+public class OperatorConditionalBindingTest {
 
     private TestSubscriber<String> subscriber = new TestSubscriber<String>();
 
@@ -28,7 +28,7 @@ public class OperatorWeakBindingTest {
     @Test
     public void shouldReleaseBoundReferenceIfPredicateFailsToPass() {
         final AtomicBoolean toggle = new AtomicBoolean(true);
-        OperatorWeakBinding<String, Object> op = new OperatorWeakBinding<String, Object>(
+        OperatorConditionalBinding<String, Object> op = new OperatorConditionalBinding<String, Object>(
                 new Object(), new Func1<Object, Boolean>() {
             @Override
             public Boolean call(Object o) {
@@ -51,7 +51,7 @@ public class OperatorWeakBindingTest {
 
     @Test
     public void shouldUnsubscribeFromSourceSequenceWhenPredicateFailsToPass() {
-        OperatorWeakBinding<String, Object> op = new OperatorWeakBinding<String, Object>(
+        OperatorConditionalBinding<String, Object> op = new OperatorConditionalBinding<String, Object>(
                 new Object(), Functions.alwaysFalse());
 
         Subscriber<? super String> sub = op.call(subscriber);
@@ -67,7 +67,7 @@ public class OperatorWeakBindingTest {
 
     @Test
     public void unsubscribeWillUnsubscribeFromWrappedSubscriber() {
-        OperatorWeakBinding<String, Object> op = new OperatorWeakBinding<String, Object>(new Object());
+        OperatorConditionalBinding<String, Object> op = new OperatorConditionalBinding<String, Object>(new Object());
 
         op.call(subscriber).unsubscribe();
         subscriber.assertUnsubscribed();

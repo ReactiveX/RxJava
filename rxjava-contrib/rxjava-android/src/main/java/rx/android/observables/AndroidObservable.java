@@ -20,7 +20,7 @@ import static rx.android.schedulers.AndroidSchedulers.mainThread;
 import rx.Observable;
 import rx.functions.Func1;
 import rx.operators.OperatorObserveFromAndroidComponent;
-import rx.operators.OperatorWeakBinding;
+import rx.operators.OperatorConditionalBinding;
 
 import android.app.Activity;
 import android.app.Fragment;
@@ -146,7 +146,7 @@ public final class AndroidObservable {
      */
     public static <T> Observable<T> bindActivity(Activity activity, Observable<T> source) {
         Assertions.assertUiThread();
-        return source.observeOn(mainThread()).lift(new OperatorWeakBinding<T, Activity>(activity, ACTIVITY_VALIDATOR));
+        return source.observeOn(mainThread()).lift(new OperatorConditionalBinding<T, Activity>(activity, ACTIVITY_VALIDATOR));
     }
 
     /**
@@ -168,10 +168,10 @@ public final class AndroidObservable {
         final Observable<T> o = source.observeOn(mainThread());
         if (USES_SUPPORT_FRAGMENTS && fragment instanceof android.support.v4.app.Fragment) {
             android.support.v4.app.Fragment f = (android.support.v4.app.Fragment) fragment;
-            return o.lift(new OperatorWeakBinding<T, android.support.v4.app.Fragment>(f, FRAGMENTV4_VALIDATOR));
+            return o.lift(new OperatorConditionalBinding<T, android.support.v4.app.Fragment>(f, FRAGMENTV4_VALIDATOR));
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB && fragment instanceof Fragment) {
             Fragment f = (Fragment) fragment;
-            return o.lift(new OperatorWeakBinding<T, Fragment>(f, FRAGMENT_VALIDATOR));
+            return o.lift(new OperatorConditionalBinding<T, Fragment>(f, FRAGMENT_VALIDATOR));
         } else {
             throw new IllegalArgumentException("Target fragment is neither a native nor support library Fragment");
         }

@@ -17,19 +17,19 @@ import android.util.Log;
  * @param <T> the type of the objects emitted to a subscriber
  * @param <R> the type of the target object to bind to
  */
-public final class OperatorWeakBinding<T, R> implements Observable.Operator<T, T> {
+public final class OperatorConditionalBinding<T, R> implements Observable.Operator<T, T> {
 
-    private static final String LOG_TAG = "WeakBinding";
+    private static final String LOG_TAG = "ConditionalBinding";
 
     private R boundRef;
     private final Func1<? super R, Boolean> predicate;
 
-    public OperatorWeakBinding(R bound, Func1<? super R, Boolean> predicate) {
+    public OperatorConditionalBinding(R bound, Func1<? super R, Boolean> predicate) {
         boundRef = bound;
         this.predicate = predicate;
     }
 
-    public OperatorWeakBinding(R bound) {
+    public OperatorConditionalBinding(R bound) {
         boundRef = bound;
         this.predicate = Functions.alwaysTrue();
     }
