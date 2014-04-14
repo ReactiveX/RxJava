@@ -345,9 +345,9 @@ trait Observable[+T]
    *         An [[rx.lang.scala.Observable]] which produces connected non-overlapping buffers, which are emitted
    *         when the current [[rx.lang.scala.Observable]] created with the function argument produces an object.
    */
-  def buffer[Closing](closings: () => Observable[_ <: Closing]) : Observable[Seq[T]] = {
-    val f: Func0[_ <: rx.Observable[_ <: Closing]] = closings().asJavaObservable
-    val jObs: rx.Observable[_ <: java.util.List[_]] = asJavaObservable.buffer[Closing](f)
+  def buffer(closings: () => Observable[Any]) : Observable[Seq[T]] = {
+    val f: Func0[_ <: rx.Observable[_ <: Any]] = closings().asJavaObservable
+    val jObs: rx.Observable[_ <: java.util.List[_]] = asJavaObservable.buffer[Any](f)
     Observable.jObsOfListToScObsOfSeq(jObs.asInstanceOf[rx.Observable[_ <: java.util.List[T]]])
   }
   /**
