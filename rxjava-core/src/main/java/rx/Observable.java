@@ -5277,7 +5277,8 @@ public class Observable<T> {
      * By default, when an Observable encounters an error that prevents it from emitting the expected item to
      * its {@link Observer}, the Observable invokes its Observer's {@code onError} method, and then quits
      * without invoking any more of its Observer's methods. The {@code onErrorReturn} method changes this
-     * behavior. If you pass a function ({@code resumeFunction}) to an Observable's {@code onErrorReturn} method, if the original Observable encounters an error, instead of invoking its Observer's
+     * behavior. If you pass a function ({@code resumeFunction}) to an Observable's {@code onErrorReturn}
+     * method, if the original Observable encounters an error, instead of invoking its Observer's
      * {@code onError} method, it will instead emit the return value of {@code resumeFunction}.
      * <p>
      * You can use this to prevent errors from propagating or to supply fallback data should errors be
@@ -5294,26 +5295,38 @@ public class Observable<T> {
     }
 
     /**
-     * Allows inserting onNext events into a stream when onError events are received
-     * and continuing the original sequence instead of terminating. Thus it allows a sequence
-     * with multiple onError events.
+     * Allows inserting onNext events into a stream when onError events are received and continuing the original
+     * sequence instead of terminating. Thus it allows a sequence with multiple onError events.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/onErrorFlatMap.png">
+     *
+     * @param resumeFunction
+     *            a function that accepts an {@link OnErrorThrowable} representing the Throwable issued by the
+     *            source Observable, and returns an Observable that issues items that will be emitted in place
+     *            of the error
+     * @return the original Observable, with appropriately modified behavior
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Error-Handling-Operators#onerrorflatmap">RxJava Wiki: onErrorFlatMap()</a>
      */
     public final Observable<T> onErrorFlatMap(final Func1<OnErrorThrowable, ? extends Observable<? extends T>> resumeFunction) {
         return lift(new OperatorOnErrorFlatMap<T>(resumeFunction));
     }
 
     /**
-     * Instruct an Observable to pass control to another Observable rather than invoking {@link Observer#onError onError} if it encounters an {@link java.lang.Exception}.
+     * Instruct an Observable to pass control to another Observable rather than invoking
+     * {@link Observer#onError onError} if it encounters an {@link java.lang.Exception}.
      * <p>
-     * This differs from {@link #onErrorResumeNext} in that this one does not handle {@link java.lang.Throwable} or {@link java.lang.Error} but lets those continue through.
+     * This differs from {@link #onErrorResumeNext} in that this one does not handle {@link java.lang.Throwable}
+     * or {@link java.lang.Error} but lets those continue through.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/onExceptionResumeNextViaObservable.png">
      * <p>
      * By default, when an Observable encounters an exception that prevents it from emitting the expected item
      * to its {@link Observer}, the Observable invokes its Observer's {@code onError} method, and then quits
      * without invoking any more of its Observer's methods. The {@code onExceptionResumeNext} method changes
-     * this behavior. If you pass another Observable ({@code resumeSequence}) to an Observable's {@code onExceptionResumeNext} method, if the original Observable encounters an exception, instead of
-     * invoking its Observer's {@code onError} method, it will instead relinquish control to {@code resumeSequence} which will invoke the Observer's {@link Observer#onNext onNext} method if it is
+     * this behavior. If you pass another Observable ({@code resumeSequence}) to an Observable's
+     * {@code onExceptionResumeNext} method, if the original Observable encounters an exception, instead of
+     * invoking its Observer's {@code onError} method, it will instead relinquish control to
+     * {@code resumeSequence} which will invoke the Observer's {@link Observer#onNext onNext} method if it is
      * able to do so. In such a case, because no Observable necessarily invokes {@code onError}, the Observer
      * may never know that an exception happened.
      * <p>
