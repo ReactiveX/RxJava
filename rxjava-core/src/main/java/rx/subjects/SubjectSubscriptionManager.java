@@ -113,19 +113,20 @@ import rx.subscriptions.Subscriptions;
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    protected void terminate(Action1<Collection<SubjectObserver<? super T>>> onTerminate) {
+    protected Collection<SubjectObserver<? super T>> terminate(Action1<Collection<SubjectObserver<? super T>>> onTerminate) {
         State<T> current;
         State<T> newState = null;
         do {
             current = state.get();
             if (current.terminated) {
                 // already terminated so do nothing
-                return;
+                return null;
             } else {
                 newState = current.terminate();
             }
         } while (!state.compareAndSet(current, newState));
 
+        Collection<SubjectObserver<? super T>> observerCollection = (Collection)Arrays.asList(newState.observers);
         /*
          * if we get here then we won setting the state to terminated
          * and have a deterministic set of Observers to emit to (concurrent subscribes
@@ -134,11 +135,12 @@ import rx.subscriptions.Subscriptions;
          */
         try {
             // had to circumvent type check, we know what the array contains
-            onTerminate.call((Collection) Arrays.asList(newState.observers));
+            onTerminate.call(observerCollection);
         } finally {
             // mark that termination is completed
             newState.terminationLatch.countDown();
         }
+        return observerCollection;
     }
 
     /**

@@ -56,7 +56,6 @@ import rx.operators.OperationAny;
 import rx.operators.OperationAsObservable;
 import rx.operators.OperationAverage;
 import rx.operators.OperationBuffer;
-import rx.operators.OperationCache;
 import rx.operators.OperationCombineLatest;
 import rx.operators.OperationConcat;
 import rx.operators.OperationDebounce;
@@ -105,6 +104,7 @@ import rx.operators.OperationToObservableFuture;
 import rx.operators.OperationUsing;
 import rx.operators.OperationWindow;
 import rx.operators.OperatorAmb;
+import rx.operators.OperatorCache;
 import rx.operators.OperatorCast;
 import rx.operators.OperatorDoOnEach;
 import rx.operators.OperatorFilter;
@@ -3864,7 +3864,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#wiki-cache">RxJava Wiki: cache()</a>
      */
     public final Observable<T> cache() {
-        return create(OperationCache.cache(this));
+        return create(new OperatorCache<T>(this));
     }
 
     /**

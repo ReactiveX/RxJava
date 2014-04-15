@@ -105,35 +105,40 @@ public final class AsyncSubject<T> extends Subject<T, T> {
 
     @Override
     public void onCompleted() {
+        Collection<SubjectObserver<? super T>> observers =
         subscriptionManager.terminate(new Action1<Collection<SubjectObserver<? super T>>>() {
 
             @Override
             public void call(Collection<SubjectObserver<? super T>> observers) {
-                for (Observer<? super T> o : observers) {
-                    emitValueToObserver(lastNotification.get(), o);
-                }
             }
         });
+        if (observers != null) {
+            for (Observer<? super T> o : observers) {
+                emitValueToObserver(lastNotification.get(), o);
+            }
+        }
     }
 
     @Override
     public void onError(final Throwable e) {
+        Collection<SubjectObserver<? super T>> observers =
         subscriptionManager.terminate(new Action1<Collection<SubjectObserver<? super T>>>() {
-
             @Override
             public void call(Collection<SubjectObserver<? super T>> observers) {
-                lastNotification.set(new Notification<T>(e));
-                for (Observer<? super T> o : observers) {
-                    emitValueToObserver(lastNotification.get(), o);
-                }
+                lastNotification.set(Notification.<T>createOnError(e));
             }
         });
+        if (observers != null) {
+            for (Observer<? super T> o : observers) {
+                emitValueToObserver(lastNotification.get(), o);
+            }
+        }
 
     }
 
     @Override
     public void onNext(T v) {
-        lastNotification.set(new Notification<T>(v));
+        lastNotification.set(Notification.createOnNext(v));
     }
 
 }
