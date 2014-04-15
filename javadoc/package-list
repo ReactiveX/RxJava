@@ -1,10 +1,9 @@
 rx
-rx.joins
+rx.exceptions
+rx.functions
 rx.observables
 rx.observers
 rx.plugins
 rx.schedulers
 rx.subjects
 rx.subscriptions
-rx.util
-rx.util.functions
