@@ -14,7 +14,7 @@ import rx.Subscription;
 import rx.observables.ConnectableObservable;
 import rx.subscriptions.Subscriptions;
 
-import static rx.android.schedulers.AndroidSchedulers.mainThread;
+import static rx.android.observables.AndroidObservable.bindFragment;
 
 /**
  * Problem:
@@ -52,7 +52,7 @@ public class ListeningFragmentActivity extends Activity {
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
 
-            strings = SampleObservables.numberStrings(1, 50, 250).observeOn(mainThread()).publish();
+            strings = SampleObservables.numberStrings(1, 50, 250).publish();
             strings.connect(); // trigger the sequence
         }
 
@@ -74,7 +74,7 @@ public class ListeningFragmentActivity extends Activity {
             final TextView textView = (TextView) view.findViewById(android.R.id.text1);
 
             // re-connect to sequence
-            subscription = strings.subscribe(new Subscriber<String>() {
+            subscription = bindFragment(this, strings).subscribe(new Subscriber<String>() {
 
                 @Override
                 public void onCompleted() {
