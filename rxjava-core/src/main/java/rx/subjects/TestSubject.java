@@ -23,6 +23,7 @@ import rx.Notification;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Scheduler.Inner;
+import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.schedulers.TestScheduler;
 import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
@@ -105,16 +106,18 @@ public final class TestSubject<T> extends Subject<T, T> {
     }
 
     private void _onCompleted() {
-        subscriptionManager.terminate(new Action1<Collection<SubjectObserver<? super T>>>() {
+        Collection<SubjectObserver<? super T>> observers = subscriptionManager.terminate(new Action0() {
 
             @Override
-            public void call(Collection<SubjectObserver<? super T>> observers) {
+            public void call() {
                 lastNotification.set(Notification.<T> createOnCompleted());
-                for (Observer<? super T> o : observers) {
-                    o.onCompleted();
-                }
             }
         });
+        if (observers != null) {
+            for (Observer<? super T> o : observers) {
+                o.onCompleted();
+            }
+        }
     }
 
     public void onCompleted(long timeInMilliseconds) {
@@ -134,16 +137,18 @@ public final class TestSubject<T> extends Subject<T, T> {
     }
 
     private void _onError(final Throwable e) {
-        subscriptionManager.terminate(new Action1<Collection<SubjectObserver<? super T>>>() {
+        Collection<SubjectObserver<? super T>> observers = subscriptionManager.terminate(new Action0() {
 
             @Override
-            public void call(Collection<SubjectObserver<? super T>> observers) {
+            public void call() {
                 lastNotification.set(Notification.<T> createOnError(e));
-                for (Observer<? super T> o : observers) {
-                    o.onError(e);
-                }
             }
         });
+        if (observers != null) {
+            for (Observer<? super T> o : observers) {
+                o.onError(e);
+            }
+        }
 
     }
 

@@ -111,7 +111,7 @@ import rx.subscriptions.Subscriptions;
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    protected Collection<SubjectObserver<? super T>> terminate(Action1<Collection<SubjectObserver<? super T>>> onTerminate) {
+    protected Collection<SubjectObserver<? super T>> terminate(Action0 onTerminate) {
         State<T> current;
         State<T> newState = null;
         do {
@@ -128,12 +128,11 @@ import rx.subscriptions.Subscriptions;
         /*
          * if we get here then we won setting the state to terminated
          * and have a deterministic set of Observers to emit to (concurrent subscribes
-         * will have failed and will try again and see we are term
-         * inated)
+         * will have failed and will try again and see we are terminated)
          */
         try {
             // had to circumvent type check, we know what the array contains
-            onTerminate.call(observerCollection);
+            onTerminate.call();
         } finally {
             // mark that termination is completed
             newState.terminationLatch.countDown();

@@ -20,6 +20,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Notification;
 import rx.Observer;
+import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
 
@@ -105,11 +106,10 @@ public final class AsyncSubject<T> extends Subject<T, T> {
 
     @Override
     public void onCompleted() {
-        Collection<SubjectObserver<? super T>> observers =
-        subscriptionManager.terminate(new Action1<Collection<SubjectObserver<? super T>>>() {
+        Collection<SubjectObserver<? super T>> observers = subscriptionManager.terminate(new Action0() {
 
             @Override
-            public void call(Collection<SubjectObserver<? super T>> observers) {
+            public void call() {
             }
         });
         if (observers != null) {
@@ -121,11 +121,10 @@ public final class AsyncSubject<T> extends Subject<T, T> {
 
     @Override
     public void onError(final Throwable e) {
-        Collection<SubjectObserver<? super T>> observers =
-        subscriptionManager.terminate(new Action1<Collection<SubjectObserver<? super T>>>() {
+        Collection<SubjectObserver<? super T>> observers = subscriptionManager.terminate(new Action0() {
             @Override
-            public void call(Collection<SubjectObserver<? super T>> observers) {
-                lastNotification.set(Notification.<T>createOnError(e));
+            public void call() {
+                lastNotification.set(Notification.<T> createOnError(e));
             }
         });
         if (observers != null) {
