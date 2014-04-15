@@ -40,43 +40,15 @@ public class HandlerThreadScheduler extends Scheduler {
         this.handler = handler;
     }
 
-    /**
-     * Calls {@link HandlerThreadScheduler#schedule(Object, rx.functions.Func2, long, java.util.concurrent.TimeUnit)} with a delay of zero milliseconds.
-     * 
-     * See {@link #schedule(Object, rx.functions.Func2, long, java.util.concurrent.TimeUnit)}
-     */
     @Override
-    public Subscription schedule(Action1<Inner> action) {
-        InnerHandlerThreadScheduler inner = new InnerHandlerThreadScheduler(handler);
-        inner.schedule(action);
-        return inner;
+    public Inner createInner() {
+        return new InnerHandlerThreadScheduler(handler);
     }
-
-    /**
-     * Calls {@link Handler#postDelayed(Runnable, long)} with a runnable that executes the given action.
-     * 
-     * @param state
-     *            State to pass into the action.
-     * @param action
-     *            Action to schedule.
-     * @param delayTime
-     *            Time the action is to be delayed before executing.
-     * @param unit
-     *            Time unit of the delay time.
-     * @return A Subscription from which one can unsubscribe from.
-     */
-    @Override
-    public Subscription schedule(Action1<Inner> action, long delayTime, TimeUnit unit) {
-        InnerHandlerThreadScheduler inner = new InnerHandlerThreadScheduler(handler);
-        inner.schedule(action, delayTime, unit);
-        return inner;
-    }
-
+    
     private static class InnerHandlerThreadScheduler extends Inner {
 
         private final Handler handler;
         private BooleanSubscription innerSubscription = new BooleanSubscription();
-        private Inner _inner = this;
 
         public InnerHandlerThreadScheduler(Handler handler) {
             this.handler = handler;
@@ -93,28 +65,28 @@ public class HandlerThreadScheduler extends Scheduler {
         }
 
         @Override
-        public void schedule(final Action1<Inner> action, long delayTime, TimeUnit unit) {
+        public void schedule(final Action1<Recurse> action, long delayTime, TimeUnit unit) {
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    if (_inner.isUnsubscribed()) {
+                    if (isUnsubscribed()) {
                         return;
                     }
-                    action.call(_inner);
+                    action.call(Recurse.create(InnerHandlerThreadScheduler.this, action));
                 }
             }, unit.toMillis(delayTime));
         }
 
         @Override
-        public void schedule(final Action1<Inner> action) {
+        public void schedule(final Action1<Recurse> action) {
             handler.postDelayed(new Runnable() {
 
                 @Override
                 public void run() {
-                    if (_inner.isUnsubscribed()) {
+                    if (isUnsubscribed()) {
                         return;
                     }
-                    action.call(_inner);
+                    action.call(Recurse.create(InnerHandlerThreadScheduler.this, action));
                 }
 
             }, 0L);

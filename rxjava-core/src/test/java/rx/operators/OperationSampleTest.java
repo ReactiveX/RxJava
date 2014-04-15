@@ -15,8 +15,12 @@
  */
 package rx.operators;
 
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import java.util.concurrent.TimeUnit;
 
@@ -26,7 +30,7 @@ import org.mockito.InOrder;
 
 import rx.Observable;
 import rx.Observer;
-import rx.Scheduler.Inner;
+import rx.Scheduler.Schedulable;
 import rx.Subscription;
 import rx.functions.Action1;
 import rx.schedulers.TestScheduler;
@@ -52,21 +56,21 @@ public class OperationSampleTest {
         Observable<Long> source = Observable.create(new Observable.OnSubscribeFunc<Long>() {
             @Override
             public Subscription onSubscribe(final Observer<? super Long> observer1) {
-                scheduler.schedule(new Action1<Inner>() {
+                scheduler.schedule(new Action1<Schedulable>() {
                     @Override
-                    public void call(Inner inner) {
+                    public void call(Schedulable inner) {
                         observer1.onNext(1L);
                     }
                 }, 1, TimeUnit.SECONDS);
-                scheduler.schedule(new Action1<Inner>() {
+                scheduler.schedule(new Action1<Schedulable>() {
                     @Override
-                    public void call(Inner inner) {
+                    public void call(Schedulable inner) {
                         observer1.onNext(2L);
                     }
                 }, 2, TimeUnit.SECONDS);
-                scheduler.schedule(new Action1<Inner>() {
+                scheduler.schedule(new Action1<Schedulable>() {
                     @Override
-                    public void call(Inner inner) {
+                    public void call(Schedulable inner) {
                         observer1.onCompleted();
                     }
                 }, 3, TimeUnit.SECONDS);

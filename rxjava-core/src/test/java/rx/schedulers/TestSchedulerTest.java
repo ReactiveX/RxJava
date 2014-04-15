@@ -15,9 +15,12 @@
  */
 package rx.schedulers;
 
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -26,7 +29,7 @@ import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 
-import rx.Scheduler.Inner;
+import rx.Scheduler.Schedulable;
 import rx.Subscription;
 import rx.functions.Action1;
 import rx.functions.Func1;
@@ -40,9 +43,9 @@ public class TestSchedulerTest {
         final Func1<Long, Void> calledOp = mock(Func1.class);
 
         final TestScheduler scheduler = new TestScheduler();
-        Subscription subscription = scheduler.schedulePeriodically(new Action1<Inner>() {
+        Subscription subscription = scheduler.schedulePeriodically(new Action1<Schedulable>() {
             @Override
-            public void call(Inner inner) {
+            public void call(Schedulable inner) {
                 System.out.println(scheduler.now());
                 calledOp.call(scheduler.now());
             }
@@ -79,10 +82,10 @@ public class TestSchedulerTest {
 
         final AtomicInteger counter = new AtomicInteger(0);
 
-        Subscription subscription = s.schedule(new Action1<Inner>() {
+        Subscription subscription = s.schedule(new Action1<Schedulable>() {
 
             @Override
-            public void call(Inner inner) {
+            public void call(Schedulable inner) {
                 counter.incrementAndGet();
                 System.out.println("counter: " + counter.get());
                 inner.schedule(this);

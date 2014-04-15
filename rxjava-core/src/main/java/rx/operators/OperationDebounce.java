@@ -22,7 +22,7 @@ import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
-import rx.Scheduler.Inner;
+import rx.Scheduler.Schedulable;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Action1;
@@ -142,10 +142,11 @@ public final class OperationDebounce {
 
         @Override
         public void onNext(final T v) {
-            Subscription previousSubscription = lastScheduledNotification.getAndSet(scheduler.schedule(new Action1<Inner>() {
+            // TODO fix ... this is creating a new Scheduler.Inner each time, it needs to get a single Inner and reuse it
+            Subscription previousSubscription = lastScheduledNotification.getAndSet(scheduler.schedule(new Action1<Schedulable>() {
 
                 @Override
-                public void call(Inner inner) {
+                public void call(Schedulable inner) {
                     observer.onNext(v);
                 }
 

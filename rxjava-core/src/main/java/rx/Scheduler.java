@@ -32,17 +32,19 @@ import rx.functions.Action1;
  * <p>
  * <ol>
  * <li>Java doesn't support extension methods and there are many overload methods needing default
- *     implementations.</li>
+ * implementations.</li>
  * <li>Virtual extension methods aren't available until Java8 which RxJava will not set as a minimum target for
- *     a long time.</li>
+ * a long time.</li>
  * <li>If only an interface were used Scheduler implementations would then need to extend from an
- *     AbstractScheduler pair that gives all of the functionality unless they intend on copy/pasting the
- *     functionality.</li>
+ * AbstractScheduler pair that gives all of the functionality unless they intend on copy/pasting the
+ * functionality.</li>
  * <li>Without virtual extension methods even additive changes are breaking and thus severely impede library
- *     maintenance.</li>
+ * maintenance.</li>
  * </ol>
  */
 public abstract class Scheduler {
+
+    public abstract EventLoop createEventLoop();
 
     /**
      * Schedules an Action on a new Scheduler instance (typically another thread) for execution.
@@ -52,7 +54,11 @@ public abstract class Scheduler {
      * @return a subscription to be able to unsubscribe from action
      */
 
-    public abstract Subscription schedule(Action1<Scheduler.Inner> action);
+    public final Subscription schedule(Action1<Schedulable> action) {
+        EventLoop inner = createEventLoop();
+        inner.schedule(action);
+        return inner;
+    }
 
     /**
      * Schedules an Action on a new Scheduler instance (typically another thread) for execution at some point
@@ -66,7 +72,11 @@ public abstract class Scheduler {
      *            the time unit the delay time is given in
      * @return a subscription to be able to unsubscribe from action
      */
-    public abstract Subscription schedule(final Action1<Scheduler.Inner> action, final long delayTime, final TimeUnit unit);
+    public final Subscription schedule(final Action1<Schedulable> action, final long delay, final TimeUnit unit) {
+        EventLoop inner = createEventLoop();
+        inner.schedule(action, delay, unit);
+        return inner;
+    }
 
     /**
      * Schedules a cancelable action to be executed periodically. This default implementation schedules
@@ -83,98 +93,21 @@ public abstract class Scheduler {
      *            the time unit the interval above is given in
      * @return a subscription to be able to unsubscribe from action
      */
-    public Subscription schedulePeriodically(final Action1<Scheduler.Inner> action, long initialDelay, long period, TimeUnit unit) {
+    public Subscription schedulePeriodically(final Action1<Schedulable> action, long initialDelay, long period, TimeUnit unit) {
         final long periodInNanos = unit.toNanos(period);
 
-        final Action1<Scheduler.Inner> recursiveAction = new Action1<Scheduler.Inner>() {
+        final Action1<Schedulable> recursiveAction = new Action1<Schedulable>() {
             @Override
-            public void call(Inner inner) {
-                if (!inner.isUnsubscribed()) {
+            public void call(Schedulable re) {
+                if (!re.isUnsubscribed()) {
                     long startedAt = now();
-                    action.call(inner);
+                    action.call(re);
                     long timeTakenByActionInNanos = TimeUnit.MILLISECONDS.toNanos(now() - startedAt);
-                    inner.schedule(this, periodInNanos - timeTakenByActionInNanos, TimeUnit.NANOSECONDS);
+                    re.schedule(this, periodInNanos - timeTakenByActionInNanos, TimeUnit.NANOSECONDS);
                 }
             }
         };
         return schedule(recursiveAction, initialDelay, unit);
-    }
-
-    public final Subscription scheduleRecursive(final Action1<Recurse> action) {
-        return schedule(new Action1<Inner>() {
-
-            @Override
-            public void call(Inner inner) {
-                action.call(new Recurse(inner, action));
-            }
-
-        });
-    }
-
-    public static final class Recurse {
-        private final Action1<Recurse> action;
-        private final Inner inner;
-
-        private Recurse(Inner inner, Action1<Recurse> action) {
-            this.inner = inner;
-            this.action = action;
-        }
-
-        /**
-         * Schedule the current function for execution immediately.
-         */
-        public final void schedule() {
-            final Recurse self = this;
-            inner.schedule(new Action1<Inner>() {
-
-                @Override
-                public void call(Inner _inner) {
-                    action.call(self);
-                }
-
-            });
-        }
-
-        /**
-         * Schedule the current function for execution in the future.
-         */
-        public final void schedule(long delay, TimeUnit unit) {
-            final Recurse self = this;
-            inner.schedule(new Action1<Inner>() {
-
-                @Override
-                public void call(Inner _inner) {
-                    action.call(self);
-                }
-
-            }, delay, unit);
-        }
-    }
-
-    public abstract static class Inner implements Subscription {
-
-        /**
-         * Schedules an action to be executed in delayTime.
-         * 
-         * @param delayTime
-         *            time the action is to be delayed before executing
-         * @param unit
-         *            time unit of the delay time
-         */
-        public abstract void schedule(Action1<Scheduler.Inner> action, long delayTime, TimeUnit unit);
-
-        /**
-         * Schedules a cancelable action to be executed in delayTime.
-         * 
-         */
-        public abstract void schedule(Action1<Scheduler.Inner> action);
-
-        /**
-         * @return the scheduler's notion of current absolute time in milliseconds.
-         */
-        public long now() {
-            return System.currentTimeMillis();
-        }
     }
 
     /**
@@ -194,6 +127,124 @@ public abstract class Scheduler {
      */
     public long now() {
         return System.currentTimeMillis();
+    }
+
+    public static final class Schedulable implements Subscription {
+        private final Action1<Schedulable> action;
+        private final EventLoop inner;
+
+        private Schedulable(EventLoop inner, Action1<Schedulable> action) {
+            this.inner = inner;
+            this.action = action;
+        }
+
+        /**
+         * @param inner
+         *            The Inner this should schedule on.
+         * @param action
+         *            The action to invoke recursively with {@lnk #schedule()} and {@link #schedule(long, TimeUnit)}.
+         * @return new instance of Recurse
+         */
+        public static Schedulable create(EventLoop inner, Action1<Schedulable> action) {
+            return new Schedulable(inner, action);
+        }
+
+        /**
+         * Schedule the current function for execution immediately.
+         */
+        public final void schedule() {
+            final Schedulable self = this;
+            inner.schedule(new Action1<Schedulable>() {
+
+                @Override
+                public void call(Schedulable _re) {
+                    action.call(self);
+                }
+
+            });
+        }
+
+        /**
+         * Schedule the current function for execution in the future.
+         */
+        public final void schedule(long delay, TimeUnit unit) {
+            final Schedulable self = this;
+            inner.schedule(new Action1<Schedulable>() {
+
+                @Override
+                public void call(Schedulable _re) {
+                    action.call(self);
+                }
+
+            }, delay, unit);
+        }
+
+        public final void schedule(final Action1<Schedulable> action) {
+            final Schedulable self = this;
+            inner.schedule(new Action1<Schedulable>() {
+
+                @Override
+                public void call(Schedulable _re) {
+                    action.call(self);
+                }
+
+            });
+        }
+
+        public final void schedule(final Action1<Schedulable> action, final long delay, final TimeUnit unit) {
+            final Schedulable self = this;
+            inner.schedule(new Action1<Schedulable>() {
+
+                @Override
+                public void call(Schedulable _re) {
+                    action.call(self);
+                }
+
+            }, delay, unit);
+        }
+
+        @Override
+        public final void unsubscribe() {
+            inner.unsubscribe();
+        }
+
+        @Override
+        public final boolean isUnsubscribed() {
+            return inner.isUnsubscribed();
+        }
+
+        /**
+         * @return the scheduler's notion of current absolute time in milliseconds.
+         */
+        public final long now() {
+            return inner.now();
+        }
+    }
+
+    public abstract static class EventLoop implements Subscription {
+
+        /**
+         * Schedules an action to be executed in delayTime.
+         * 
+         * @param delayTime
+         *            time the action is to be delayed before executing
+         * @param unit
+         *            time unit of the delay time
+         */
+        public abstract void schedule(Action1<Schedulable> action, long delayTime, TimeUnit unit);
+
+        /**
+         * Schedules a cancelable action to be executed in delayTime.
+         * 
+         */
+        public abstract void schedule(Action1<Schedulable> action);
+
+        /**
+         * @return the scheduler's notion of current absolute time in milliseconds.
+         */
+        public long now() {
+            return System.currentTimeMillis();
+        }
     }
 
 }

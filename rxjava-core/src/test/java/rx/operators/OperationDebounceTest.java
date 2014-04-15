@@ -15,8 +15,13 @@
  */
 package rx.operators;
 
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import java.util.concurrent.TimeUnit;
 
@@ -26,7 +31,8 @@ import org.mockito.InOrder;
 
 import rx.Observable;
 import rx.Observer;
-import rx.Scheduler.Inner;
+import rx.Scheduler.EventLoop;
+import rx.Scheduler.Schedulable;
 import rx.Subscription;
 import rx.functions.Action1;
 import rx.functions.Func1;
@@ -132,27 +138,27 @@ public class OperationDebounceTest {
     }
 
     private <T> void publishCompleted(final Observer<T> observer, long delay) {
-        scheduler.schedule(new Action1<Inner>() {
+        scheduler.schedule(new Action1<Schedulable>() {
             @Override
-            public void call(Inner inner) {
+            public void call(Schedulable inner) {
                 observer.onCompleted();
             }
         }, delay, TimeUnit.MILLISECONDS);
     }
 
     private <T> void publishError(final Observer<T> observer, long delay, final Exception error) {
-        scheduler.schedule(new Action1<Inner>() {
+        scheduler.schedule(new Action1<Schedulable>() {
             @Override
-            public void call(Inner inner) {
+            public void call(Schedulable inner) {
                 observer.onError(error);
             }
         }, delay, TimeUnit.MILLISECONDS);
     }
 
     private <T> void publishNext(final Observer<T> observer, final long delay, final T value) {
-        scheduler.schedule(new Action1<Inner>() {
+        scheduler.schedule(new Action1<Schedulable>() {
             @Override
-            public void call(Inner inner) {
+            public void call(Schedulable inner) {
                 observer.onNext(value);
             }
         }, delay, TimeUnit.MILLISECONDS);

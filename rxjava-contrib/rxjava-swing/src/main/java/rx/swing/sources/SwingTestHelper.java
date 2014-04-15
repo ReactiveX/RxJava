@@ -18,10 +18,10 @@ package rx.swing.sources;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import rx.Scheduler.Inner;
-import rx.schedulers.SwingScheduler;
+import rx.Scheduler.Schedulable;
 import rx.functions.Action0;
 import rx.functions.Action1;
+import rx.schedulers.SwingScheduler;
 
 /* package-private */ final class SwingTestHelper { // only for test
 
@@ -36,10 +36,10 @@ import rx.functions.Action1;
     }
 
     public SwingTestHelper runInEventDispatchThread(final Action0 action) {
-        SwingScheduler.getInstance().schedule(new Action1<Inner>() {
+        SwingScheduler.getInstance().schedule(new Action1<Schedulable>() {
 
             @Override
-            public void call(Inner inner) {
+            public void call(Schedulable inner) {
                 try {
                     action.call();
                 } catch (Throwable e) {

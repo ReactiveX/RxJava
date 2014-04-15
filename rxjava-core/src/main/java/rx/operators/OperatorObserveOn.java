@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import rx.Observable.Operator;
 import rx.Scheduler;
-import rx.Scheduler.Inner;
+import rx.Scheduler.Schedulable;
 import rx.Subscriber;
 import rx.functions.Action1;
 import rx.schedulers.ImmediateScheduler;
@@ -60,7 +60,7 @@ public class OperatorObserveOn<T> implements Operator<T, T> {
     /** Observe through individual queue per observer. */
     private class ObserveOnSubscriber extends Subscriber<T> {
         final Subscriber<? super T> observer;
-        private volatile Scheduler.Inner recursiveScheduler;
+        private volatile Scheduler.EventLoop recursiveScheduler;
 
         private final ConcurrentLinkedQueue<Object> queue = new ConcurrentLinkedQueue<Object>();
         final AtomicLong counter = new AtomicLong(0);
@@ -91,29 +91,20 @@ public class OperatorObserveOn<T> implements Operator<T, T> {
         protected void schedule() {
             if (counter.getAndIncrement() == 0) {
                 if (recursiveScheduler == null) {
-                    add(scheduler.schedule(new Action1<Inner>() {
-
-                        @Override
-                        public void call(Inner inner) {
-                            recursiveScheduler = inner;
-                            pollQueue();
-                        }
-
-                    }));
-                } else {
-                    recursiveScheduler.schedule(new Action1<Inner>() {
-
-                        @Override
-                        public void call(Inner inner) {
-                            pollQueue();
-                        }
-
-                    });
+                    recursiveScheduler = scheduler.createEventLoop();
+                    add(recursiveScheduler);
                 }
+                recursiveScheduler.schedule(new Action1<Schedulable>() {
+
+                    @Override
+                    public void call(Schedulable inner) {
+                        pollQueue();
+                    }
+
+                });
             }
         }
 
-        @SuppressWarnings("unchecked")
         private void pollQueue() {
             do {
                 Object v = queue.poll();

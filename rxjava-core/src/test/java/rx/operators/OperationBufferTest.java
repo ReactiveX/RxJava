@@ -15,10 +15,13 @@
  */
 package rx.operators;
 
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
-import static rx.operators.OperationBuffer.*;
+import static org.junit.Assert.assertFalse;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static rx.operators.OperationBuffer.buffer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,7 +36,8 @@ import org.mockito.Mockito;
 
 import rx.Observable;
 import rx.Observer;
-import rx.Scheduler.Inner;
+import rx.Scheduler.EventLoop;
+import rx.Scheduler.Schedulable;
 import rx.Subscription;
 import rx.functions.Action1;
 import rx.functions.Func0;
@@ -347,18 +351,18 @@ public class OperationBufferTest {
     }
 
     private <T> void push(final Observer<T> observer, final T value, int delay) {
-        scheduler.schedule(new Action1<Inner>() {
+        scheduler.schedule(new Action1<Schedulable>() {
             @Override
-            public void call(Inner inner) {
+            public void call(Schedulable inner) {
                 observer.onNext(value);
             }
         }, delay, TimeUnit.MILLISECONDS);
     }
 
     private void complete(final Observer<?> observer, int delay) {
-        scheduler.schedule(new Action1<Inner>() {
+        scheduler.schedule(new Action1<Schedulable>() {
             @Override
-            public void call(Inner inner) {
+            public void call(Schedulable inner) {
                 observer.onCompleted();
             }
         }, delay, TimeUnit.MILLISECONDS);

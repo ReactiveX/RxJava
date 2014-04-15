@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 
 import rx.Observable;
 import rx.Scheduler;
-import rx.Scheduler.Inner;
+import rx.Scheduler.Schedulable;
 import rx.Subscription;
 import rx.functions.Action1;
 
@@ -40,9 +40,9 @@ public final class OperatorTimeout<T> extends OperatorTimeoutBase<T> {
             public Subscription call(
                     final TimeoutSubscriber<T> timeoutSubscriber,
                     final Long seqId) {
-                return scheduler.schedule(new Action1<Inner>() {
+                return scheduler.schedule(new Action1<Schedulable>() {
                     @Override
-                    public void call(Inner inner) {
+                    public void call(Schedulable inner) {
                         timeoutSubscriber.onTimeout(seqId);
                     }
                 }, timeout, timeUnit);
@@ -53,9 +53,9 @@ public final class OperatorTimeout<T> extends OperatorTimeoutBase<T> {
             public Subscription call(
                     final TimeoutSubscriber<T> timeoutSubscriber,
                     final Long seqId, T value) {
-                return scheduler.schedule(new Action1<Inner>() {
+                return scheduler.schedule(new Action1<Schedulable>() {
                     @Override
-                    public void call(Inner inner) {
+                    public void call(Schedulable inner) {
                         timeoutSubscriber.onTimeout(seqId);
                     }
                 }, timeout, timeUnit);
