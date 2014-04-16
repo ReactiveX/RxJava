@@ -16,10 +16,7 @@
 
 package rx.lang.kotlin
 
-import org.mockito.Mock
 import rx.Observable
-import org.junit.Before
-import org.mockito.MockitoAnnotations
 import org.junit.Test
 import rx.subscriptions.Subscriptions
 import org.mockito.Mockito.*
@@ -29,6 +26,7 @@ import org.junit.Assert.*
 import rx.Notification
 import rx.Subscription
 import kotlin.concurrent.thread
+import rx.Subscriber
 
 /**
  * This class contains tests using the extension functions provided by the language adaptor.
@@ -39,11 +37,10 @@ public class ExtensionTests : KotlinTests() {
     [Test]
     public fun testCreate() {
 
-        {(observer: Observer<in String>) ->
-            observer.onNext("Hello")
-            observer.onCompleted()
-            Subscriptions.empty()!!
-        }.asObservableFunc().subscribe { result ->
+        {(subscriber: Subscriber<in String>) ->
+            subscriber.onNext("Hello")
+            subscriber.onCompleted()
+        }.asObservable().subscribe { result ->
             a!!.received(result)
         }
 
@@ -283,7 +280,7 @@ public class ExtensionTests : KotlinTests() {
         return {(p2: P2) -> this(p1, p2) }
     }
 
-    inner public class TestFactory(){
+    inner public class TestFactory() {
         var counter = 1
 
         val numbers: Observable<Int>
