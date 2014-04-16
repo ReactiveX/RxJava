@@ -26,7 +26,7 @@ import android.widget.EditText;
 
 public class ViewObservable {
 
-    public static Observable<View> clicks(final View view, final boolean emitInitialValue) {
+    public static <T extends View> Observable<T> clicks(final T view, final boolean emitInitialValue) {
         return Observable.create(new OperatorViewClick(view, emitInitialValue));
     }
 

@@ -28,17 +28,17 @@ import rx.android.subscriptions.AndroidSubscriptions;
 import rx.functions.Action0;
 import android.view.View;
 
-public final class OperatorViewClick implements Observable.OnSubscribe<View> {
+public final class OperatorViewClick<T extends View> implements Observable.OnSubscribe<T> {
     private final boolean emitInitialValue;
-    private final View view;
+    private final T view;
 
-    public OperatorViewClick(final View view, final boolean emitInitialValue) {
+    public OperatorViewClick(final T view, final boolean emitInitialValue) {
         this.emitInitialValue = emitInitialValue;
         this.view = view;
     }
 
     @Override
-    public void call(final Subscriber<? super View> observer) {
+    public void call(final Subscriber<? super T> observer) {
         Assertions.assertUiThread();
         final CompositeOnClickListener composite = CachedListeners.getFromViewOrCreate(view);
 
