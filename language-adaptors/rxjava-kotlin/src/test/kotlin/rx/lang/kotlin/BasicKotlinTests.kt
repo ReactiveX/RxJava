@@ -16,10 +16,7 @@
 
 package rx.lang.kotlin
 
-import org.mockito.Mock
 import rx.Observable
-import org.junit.Before
-import org.mockito.MockitoAnnotations
 import org.junit.Test
 import rx.subscriptions.Subscriptions
 import org.mockito.Mockito.*
@@ -31,21 +28,23 @@ import rx.Subscription
 import kotlin.concurrent.thread
 import rx.Observable.OnSubscribeFunc
 import rx.lang.kotlin.BasicKotlinTests.AsyncObservable
+import rx.Observable.OnSubscribe
+import rx.Subscriber
 
 /**
  * This class use plain Kotlin without extensions from the language adaptor
  */
-public class BasicKotlinTests:KotlinTests() {
-
+public class BasicKotlinTests : KotlinTests() {
 
 
     [Test]
     public fun testCreate() {
 
-        Observable.create(OnSubscribeFunc<String> {
-            it!!.onNext("Hello")
-            it.onCompleted()
-            Subscriptions.empty()
+        Observable.create(object:OnSubscribe<String> {
+            override fun call(subscriber: Subscriber<in String>?) {
+                subscriber!!.onNext("Hello")
+                subscriber.onCompleted()
+            }
         })!!.subscribe { result ->
             a!!.received(result)
         }
@@ -310,7 +309,7 @@ public class BasicKotlinTests:KotlinTests() {
 
 
 
-    public class TestFactory(){
+    public class TestFactory() {
         var counter = 1
 
         val numbers: Observable<Int>
@@ -330,8 +329,8 @@ public class BasicKotlinTests:KotlinTests() {
 
     }
 
-    class AsyncObservable : OnSubscribeFunc<Int>{
-        override fun onSubscribe(op: Observer<in Int>?): Subscription? {
+    class AsyncObservable : OnSubscribe<Int> {
+        override fun call(op: Subscriber<in Int>?) {
             thread {
                 Thread.sleep(50)
                 op!!.onNext(1)
@@ -339,15 +338,14 @@ public class BasicKotlinTests:KotlinTests() {
                 op.onNext(3)
                 op.onCompleted()
             }
-            return Subscriptions.empty()
+
         }
     }
 
-    class TestOnSubscribe(val count: Int) : OnSubscribeFunc<String>{
-        override fun onSubscribe(op: Observer<in String>?): Subscription? {
+    class TestOnSubscribe(val count: Int) : OnSubscribe<String> {
+        override fun call(op: Subscriber<in String>?)  {
             op!!.onNext("hello_$count")
             op.onCompleted()
-            return Subscriptions.empty()!!
         }
 
     }
