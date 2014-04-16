@@ -23,6 +23,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Notification;
 import rx.Observer;
+import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
 
@@ -88,7 +89,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                         // we will finish replaying if there is anything left
                         replayObserverFromIndex(state.history, idx, o);
                     }
-                }, 
+                },
                 new Action1<SubjectObserver<? super T>>() {
                     @Override
                     public void call(SubjectObserver<? super T> o) {
@@ -122,34 +123,38 @@ public final class ReplaySubject<T> extends Subject<T, T> {
 
     @Override
     public void onCompleted() {
-        subscriptionManager.terminate(new Action1<Collection<SubjectObserver<? super T>>>() {
+        Collection<SubjectObserver<? super T>> observers = subscriptionManager.terminate(new Action0() {
 
             @Override
-            public void call(Collection<SubjectObserver<? super T>> observers) {
-                state.history.complete(Notification.<T>createOnCompleted());
-                for (SubjectObserver<? super T> o : observers) {
-                    if (caughtUp(o)) {
-                        o.onCompleted();
-                    }
-                }
+            public void call() {
+                state.history.complete(Notification.<T> createOnCompleted());
             }
         });
+        if (observers != null) {
+            for (SubjectObserver<? super T> o : observers) {
+                if (caughtUp(o)) {
+                    o.onCompleted();
+                }
+            }
+        }
     }
 
     @Override
     public void onError(final Throwable e) {
-        subscriptionManager.terminate(new Action1<Collection<SubjectObserver<? super T>>>() {
+        Collection<SubjectObserver<? super T>> observers = subscriptionManager.terminate(new Action0() {
 
             @Override
-            public void call(Collection<SubjectObserver<? super T>> observers) {
-                state.history.complete(Notification.<T>createOnError(e));
-                for (SubjectObserver<? super T> o : observers) {
-                    if (caughtUp(o)) {
-                        o.onError(e);
-                    }
-                }
+            public void call() {
+                state.history.complete(Notification.<T> createOnError(e));
             }
         });
+        if (observers != null) {
+            for (SubjectObserver<? super T> o : observers) {
+                if (caughtUp(o)) {
+                    o.onError(e);
+                }
+            }
+        }
     }
 
     @Override
@@ -236,10 +241,11 @@ public final class ReplaySubject<T> extends Subject<T, T> {
             terminalValue.set(n);
         }
     }
+
     /**
      * @return Returns the number of subscribers.
      */
-    /* Support test.*/ int subscriberCount() {
+    /* Support test. */int subscriberCount() {
         return state.replayState.size();
     }
 }
