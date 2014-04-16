@@ -329,8 +329,8 @@ public class BasicKotlinTests : KotlinTests() {
 
     }
 
-    class AsyncObservable : OnSubscribeFunc<Int> {
-        override fun onSubscribe(op: Observer<in Int>?): Subscription? {
+    class AsyncObservable : OnSubscribe<Int> {
+        override fun call(op: Subscriber<in Int>?) {
             thread {
                 Thread.sleep(50)
                 op!!.onNext(1)
@@ -338,15 +338,14 @@ public class BasicKotlinTests : KotlinTests() {
                 op.onNext(3)
                 op.onCompleted()
             }
-            return Subscriptions.empty()
+
         }
     }
 
-    class TestOnSubscribe(val count: Int) : OnSubscribeFunc<String> {
-        override fun onSubscribe(op: Observer<in String>?): Subscription? {
+    class TestOnSubscribe(val count: Int) : OnSubscribe<String> {
+        override fun call(op: Subscriber<in String>?)  {
             op!!.onNext("hello_$count")
             op.onCompleted()
-            return Subscriptions.empty()!!
         }
 
     }
