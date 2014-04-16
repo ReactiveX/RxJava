@@ -354,9 +354,8 @@ trait Observable[+T]
    * Creates an Observable which produces buffers of collected values.
    *
    * This Observable produces buffers. Buffers are created when the specified `openings`
-   * Observable produces an object. Additionally the function argument
-   * is used to create an Observable which produces [[rx.lang.scala.util.Closing]] objects. When this
-   * Observable produces such an object, the associated buffer is emitted.
+   * Observable produces an object. That object is used to construct an Observable to emit buffers, feeding it into `closings` function.
+   * Buffers are emitted when the created Observable produces an object.
    *
    * @param openings
    *            The [[rx.lang.scala.Observable]] which, when it produces an object, will cause
@@ -566,10 +565,9 @@ trait Observable[+T]
   }
 
   /**
-   * Creates an Observable which produces windows of collected values. This Observable produces windows.
-   * Chunks are created when the specified `openings` Observable produces an object.
-   * Additionally the `closings` argument is used to create an Observable which produces [[rx.lang.scala.util.Closing]] objects. 
-   * When this Observable produces such an object, the associated window is emitted.
+   * Creates an Observable which produces windows of collected values. Chunks are created when the specified `openings`
+   * Observable produces an object. That object is used to construct an Observable to emit windows, feeding it into `closings` function.
+   * Windows are emitted when the created Observable produces an object.
    *
    * @param openings
    *            The [[rx.lang.scala.Observable]] which when it produces an object, will cause
