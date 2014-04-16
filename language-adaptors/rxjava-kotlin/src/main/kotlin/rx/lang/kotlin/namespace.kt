@@ -25,15 +25,15 @@ import rx.Subscriber
 
 
 public fun<T> Function1<Subscriber<in T>, Unit>.asObservable(): Observable<T> {
-    val v = this
     return Observable.create(object:OnSubscribe<T> {
         override fun call(t1: Subscriber<in T>?) {
-            v(t1!!)
+            this@asObservable(t1!!)
         }
 
     })!!
 }
 
+[deprecated("Use Function1<Subscriber<in T>, Unit>.asObservable()")]
 public fun<T> Function1<Observer<in T>, Subscription>.asObservableFunc(): Observable<T> {
     return Observable.create(OnSubscribeFunc<T>{ op ->
         this(op!!)
