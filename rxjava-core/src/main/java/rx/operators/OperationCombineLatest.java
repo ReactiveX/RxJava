@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -175,99 +177,89 @@ public class OperationCombineLatest {
             final Observer<? super R> observer;
             final Subscription cancel;
             final Lock lock;
-            final Object[] values;
-            /** Bitmap to keep track who produced a value already. */
-            final BitSet hasValue;
-            /** Bitmap to keep track who has completed. */
-            final BitSet completed;
-            /** Number of source observers who have produced a value. */
-            int hasCount;
-            /** Number of completed source observers. */
-            int completedCount;
+            Object[] values;
+            /** Keep track who produced a value already. */
+            final AtomicBoolean[] hasValue;
+            /** Keep track who has completed. */
+            final AtomicBoolean[] completed;
+            /** Number of source observables who have produced a value. */
+            final AtomicInteger hasCount;
+            /** Number of completed source observables. */
+            final AtomicInteger completedCount;
 
             public Collector(Observer<? super R> observer, Subscription cancel, int count) {
                 this.observer = observer;
                 this.cancel = cancel;
                 this.values = new Object[count];
-                this.hasValue = new BitSet(count);
-                this.completed = new BitSet(count);
+                this.hasValue = new AtomicBoolean[count];
+                this.completed = new AtomicBoolean[count];
+                for (int i = 0; i < count; ++i) {
+                    this.hasValue[i] = new AtomicBoolean(false);
+                    this.completed[i] = new AtomicBoolean(false);
+                }
+                this.hasCount = new AtomicInteger(0);
+                this.completedCount = new AtomicInteger(0);
                 this.lock = new ReentrantLock();
             }
 
             public void next(int index, T value) {
                 Throwable err = null;
-                lock.lock();
-                try {
-                    if (!isTerminated()) {
+                if (!isTerminated()) {
+                    int count;
+                    if (!hasValue[index].getAndSet(true)) {
+                        count = hasCount.incrementAndGet();
+                    } else {
+                        count = hasCount.get();
+                    }
+
+                    lock.lock();
+                    try {
                         values[index] = value;
-                        if (!hasValue.get(index)) {
-                            hasValue.set(index);
-                            hasCount++;
-                        }
-                        if (hasCount == values.length) {
-                            // clone: defensive copy due to varargs
+                        if (count == values.length) {
                             try {
-                                observer.onNext(combiner.call(values.clone()));
+                                observer.onNext(combiner.call(values));
                             } catch (Throwable t) {
                                 terminate();
                                 err = t;
                             }
                         }
+                    } finally {
+                        lock.unlock();
                     }
-                } finally {
-                    lock.unlock();
                 }
                 if (err != null) {
-                    // no need to lock here
                     observer.onError(err);
                     cancel.unsubscribe();
                 }
             }
 
             public void error(int index, Throwable e) {
-                boolean unsub = false;
-                lock.lock();
-                try {
-                    if (!isTerminated()) {
-                        terminate();
-                        unsub = true;
-                    }
-                } finally {
-                    lock.unlock();
-                }
-                if (unsub) {
+                if (!isTerminated()) {
+                    terminate();
                     observer.onError(e);
                     cancel.unsubscribe();
                 }
             }
 
             boolean isTerminated() {
-                return completedCount == values.length + 1;
+                return completedCount.get() > values.length;
             }
 
             void terminate() {
-                completedCount = values.length + 1;
-                Arrays.fill(values, null);
+                completedCount.set(values.length + 1);
+                values = new Object[values.length];
             }
 
             public void completed(int index) {
-                boolean unsub = false;
-                lock.lock();
-                try {
-                    if (!completed.get(index)) {
-                        completed.set(index);
-                        completedCount++;
-                    }
-                    if ((!hasValue.get(index) || completedCount == values.length)
-                            && !isTerminated()) {
-                        terminate();
-                        unsub = true;
-                    }
-                } finally {
-                    lock.unlock();
+                int count;
+                if (!completed[index].getAndSet(true)) {
+                    count = completedCount.incrementAndGet();
+                } else {
+                    count = completedCount.get();
                 }
-                if (unsub) {
-                    // no need to hold a lock at this point
+                if ((!hasValue[index].get() || count == values.length)
+                        && !isTerminated()) {
+                    terminate();
                     observer.onCompleted();
                     cancel.unsubscribe();
                 }
