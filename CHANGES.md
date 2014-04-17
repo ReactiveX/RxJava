@@ -1,5 +1,19 @@
 # RxJava Releases #
 
+### Version 0.17.6 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.17.6%22)) ###
+
+* [Pull 1031] (https://github.com/Netflix/RxJava/pull/1031) Fix NPE in SubjectSubscriptionManager
+* [Pull 1030] (https://github.com/Netflix/RxJava/pull/1030) Benchmarking: Add JMH benchmark for ReplaySubject
+* [Pull 1033] (https://github.com/Netflix/RxJava/pull/1033) isolate subscriber used for retries, cleanup tests
+* [Pull 1021] (https://github.com/Netflix/RxJava/pull/1021) OperatorWeakBinding to not use WeakReferences anymore
+* [Pull 1005] (https://github.com/Netflix/RxJava/pull/1005) add toMap from Java Observable
+* [Pull 1040] (https://github.com/Netflix/RxJava/pull/1040) Fixed deadlock in Subjects + OperatorCache
+* [Pull 1042] (https://github.com/Netflix/RxJava/pull/1042) Kotlin M7 and full compatibility with 0.17.0
+* [Pull 1035] (https://github.com/Netflix/RxJava/pull/1035) Scala cleanup
+* [Pull 1009] (https://github.com/Netflix/RxJava/pull/1009) Android - Adding a new RetainedFragment example
+* [Pull 1020] (https://github.com/Netflix/RxJava/pull/1020) Upgrade Gradle wrapper for Android samples to Gradle 1.11
+* [Pull 1038] (https://github.com/Netflix/RxJava/pull/1038) rxjava-android: parameterize OperatorViewClick by concrete view type
+
 ### Version 0.17.5 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.17.5%22)) ###
 
 * [Pull 1010] (https://github.com/Netflix/RxJava/pull/1010) Observable.unsafeSubscribe
