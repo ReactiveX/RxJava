@@ -6058,8 +6058,8 @@ public class Observable<T> {
     }
 
     /**
-     * Returns an Observable that emits the results of sampling the items emitted by the source Observable at a
-     * specified time interval.
+     * Returns an Observable that emits the most recently emitted item (if any) emitted by the source Observable
+     * within periodic time intervals.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/sample.png">
      * 
@@ -6076,8 +6076,8 @@ public class Observable<T> {
     }
 
     /**
-     * Returns an Observable that emits the results of sampling the items emitted by the source Observable at a
-     * specified time interval.
+     * Returns an Observable that emits the most recently emitted item (if any) emitted by the source Observable
+     * within periodic time intervals, where the intervals are defined on a particular Scheduler.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/sample.s.png">
      * 
@@ -6096,8 +6096,9 @@ public class Observable<T> {
     }
 
     /**
-     * Return an Observable that emits the results of sampling the items emitted by the source Observable
-     * whenever the specified {@code sampler} Observable emits an item or completes.
+     * Returns an Observable that, when the specified {@code sampler} Observable emits an item or completes,
+     * emits the most recently emitted item (if any) emitted by the source Observable since the previous
+     * emission from the {@code sampler} Observable.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/sample.o.png">
      * 
