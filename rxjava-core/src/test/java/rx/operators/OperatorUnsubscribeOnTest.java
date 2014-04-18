@@ -1,6 +1,8 @@
 package rx.operators;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
@@ -15,7 +17,6 @@ import rx.Scheduler;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Action0;
-import rx.functions.Action1;
 import rx.observers.TestObserver;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.Subscriptions;
@@ -143,17 +144,19 @@ public class OperatorUnsubscribeOnTest {
         private volatile Thread t;
 
         public UIEventLoopScheduler() {
+
+            eventLoop = Schedulers.newThread().inner();
+            s = eventLoop;
+
             /*
              * DON'T DO THIS IN PRODUCTION CODE
              */
-            final AtomicReference<Scheduler.Inner> innerScheduler = new AtomicReference<Scheduler.Inner>();
             final CountDownLatch latch = new CountDownLatch(1);
-            s = Schedulers.newThread().schedule(new Action1<Inner>() {
+            eventLoop.schedule(new Action0() {
 
                 @Override
-                public void call(Inner inner) {
+                public void call() {
                     t = Thread.currentThread();
-                    innerScheduler.set(inner);
                     latch.countDown();
                 }
 
@@ -161,21 +164,13 @@ public class OperatorUnsubscribeOnTest {
             try {
                 latch.await();
             } catch (InterruptedException e) {
-                throw new RuntimeException("failed to initialize and get inner scheduler");
+                throw new RuntimeException("failed to initialize and get inner thread");
             }
-            eventLoop = innerScheduler.get();
         }
-
+        
         @Override
-        public Subscription schedule(Action1<Inner> action) {
-            eventLoop.schedule(action);
-            return Subscriptions.empty();
-        }
-
-        @Override
-        public Subscription schedule(Action1<Inner> action, long delayTime, TimeUnit unit) {
-            eventLoop.schedule(action);
-            return Subscriptions.empty();
+        public Inner inner() {
+            return eventLoop;
         }
 
         public void shutdown() {

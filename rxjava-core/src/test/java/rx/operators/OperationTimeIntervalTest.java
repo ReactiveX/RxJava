@@ -15,7 +15,8 @@
  */
 package rx.operators;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.times;
 
 import java.util.concurrent.TimeUnit;
 

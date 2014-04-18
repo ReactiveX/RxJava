@@ -21,8 +21,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import rx.Scheduler;
 import rx.Subscription;
-import rx.functions.Action1;
+import rx.functions.Action0;
 import rx.subscriptions.BooleanSubscription;
+import rx.subscriptions.Subscriptions;
 
 /**
  * Schedules work on the current thread but does not execute immediately. Work is put in a queue and executed after the current unit of work is completed.
@@ -38,23 +39,14 @@ public class TrampolineScheduler extends Scheduler {
     public static TrampolineScheduler getInstance() {
         return INSTANCE;
     }
-    
-    /* package */ static TrampolineScheduler instance() {
+
+    /* package */static TrampolineScheduler instance() {
         return INSTANCE;
     }
 
     @Override
-    public Subscription schedule(Action1<Scheduler.Inner> action) {
-        InnerCurrentThreadScheduler inner = new InnerCurrentThreadScheduler();
-        inner.schedule(action);
-        return inner.innerSubscription;
-    }
-
-    @Override
-    public Subscription schedule(Action1<Inner> action, long delayTime, TimeUnit unit) {
-        InnerCurrentThreadScheduler inner = new InnerCurrentThreadScheduler();
-        inner.schedule(action, delayTime, unit);
-        return inner.innerSubscription;
+    public Inner inner() {
+        return new InnerCurrentThreadScheduler();
     }
 
     /* package accessible for unit tests */TrampolineScheduler() {
@@ -69,20 +61,20 @@ public class TrampolineScheduler extends Scheduler {
         private final BooleanSubscription innerSubscription = new BooleanSubscription();
 
         @Override
-        public void schedule(Action1<Scheduler.Inner> action) {
-            enqueue(action, now());
+        public Subscription schedule(Action0 action) {
+            return enqueue(action, now());
         }
 
         @Override
-        public void schedule(Action1<Scheduler.Inner> action, long delayTime, TimeUnit unit) {
+        public Subscription schedule(Action0 action, long delayTime, TimeUnit unit) {
             long execTime = now() + unit.toMillis(delayTime);
 
-            enqueue(new SleepingAction(action, TrampolineScheduler.this, execTime), execTime);
+            return enqueue(new SleepingAction(action, this, execTime), execTime);
         }
 
-        private void enqueue(Action1<Scheduler.Inner> action, long execTime) {
+        private Subscription enqueue(Action0 action, long execTime) {
             if (innerSubscription.isUnsubscribed()) {
-                return;
+                return Subscriptions.empty();
             }
             PriorityQueue<TimedAction> queue = QUEUE.get();
             boolean exec = queue == null;
@@ -92,17 +84,31 @@ public class TrampolineScheduler extends Scheduler {
                 QUEUE.set(queue);
             }
 
-            queue.add(new TimedAction(action, execTime, counter.incrementAndGet()));
+            final TimedAction timedAction = new TimedAction(action, execTime, counter.incrementAndGet());
+            queue.add(timedAction);
 
             if (exec) {
                 while (!queue.isEmpty()) {
                     if (innerSubscription.isUnsubscribed()) {
-                        return;
+                        return Subscriptions.empty();
                     }
-                    queue.poll().action.call(this);
+                    queue.poll().action.call();
                 }
 
                 QUEUE.set(null);
+                return Subscriptions.empty();
+            } else {
+                return Subscriptions.create(new Action0() {
+
+                    @Override
+                    public void call() {
+                        PriorityQueue<TimedAction> _q = QUEUE.get();
+                        if (_q != null) {
+                            _q.remove(timedAction);
+                        }
+                    }
+
+                });
             }
         }
 
@@ -120,11 +126,11 @@ public class TrampolineScheduler extends Scheduler {
     }
 
     private static class TimedAction implements Comparable<TimedAction> {
-        final Action1<Scheduler.Inner> action;
+        final Action0 action;
         final Long execTime;
         final Integer count; // In case if time between enqueueing took less than 1ms
 
-        private TimedAction(Action1<Scheduler.Inner> action, Long execTime, Integer count) {
+        private TimedAction(Action0 action, Long execTime, Integer count) {
             this.action = action;
             this.execTime = execTime;
             this.count = count;

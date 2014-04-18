@@ -15,10 +15,13 @@
  */
 package rx.operators;
 
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
-import static rx.operators.OperationWindow.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static rx.operators.OperationWindow.window;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,8 +32,9 @@ import org.junit.Test;
 
 import rx.Observable;
 import rx.Observer;
-import rx.Scheduler.Inner;
+import rx.Scheduler;
 import rx.Subscription;
+import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Func0;
 import rx.functions.Func1;
@@ -42,10 +46,12 @@ import rx.subscriptions.Subscriptions;
 public class OperationWindowTest {
 
     private TestScheduler scheduler;
+    private Scheduler.Inner innerScheduler;
 
     @Before
     public void before() {
         scheduler = new TestScheduler();
+        innerScheduler = scheduler.inner();
     }
 
     private static <T> List<List<T>> toLists(Observable<Observable<T>> observables) {
@@ -80,7 +86,7 @@ public class OperationWindowTest {
     }
 
     @Test
-    public void testSkipAndCountGaplessEindows() {
+    public void testSkipAndCountGaplessWindows() {
         Observable<String> subject = Observable.from("one", "two", "three", "four", "five");
         Observable<Observable<String>> windowed = Observable.create(window(subject, 3, 3));
 
@@ -285,18 +291,18 @@ public class OperationWindowTest {
     }
 
     private <T> void push(final Observer<T> observer, final T value, int delay) {
-        scheduler.schedule(new Action1<Inner>() {
+        innerScheduler.schedule(new Action0() {
             @Override
-            public void call(Inner inner) {
+            public void call() {
                 observer.onNext(value);
             }
         }, delay, TimeUnit.MILLISECONDS);
     }
 
     private void complete(final Observer<?> observer, int delay) {
-        scheduler.schedule(new Action1<Inner>() {
+        innerScheduler.schedule(new Action0() {
             @Override
-            public void call(Inner inner) {
+            public void call() {
                 observer.onCompleted();
             }
         }, delay, TimeUnit.MILLISECONDS);

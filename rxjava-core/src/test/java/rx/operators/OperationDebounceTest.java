@@ -15,8 +15,13 @@
  */
 package rx.operators;
 
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import java.util.concurrent.TimeUnit;
 
@@ -26,9 +31,9 @@ import org.mockito.InOrder;
 
 import rx.Observable;
 import rx.Observer;
-import rx.Scheduler.Inner;
+import rx.Scheduler;
 import rx.Subscription;
-import rx.functions.Action1;
+import rx.functions.Action0;
 import rx.functions.Func1;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
@@ -38,12 +43,14 @@ public class OperationDebounceTest {
 
     private TestScheduler scheduler;
     private Observer<String> observer;
+    private Scheduler.Inner innerScheduler;
 
     @Before
     @SuppressWarnings("unchecked")
     public void before() {
         scheduler = new TestScheduler();
         observer = mock(Observer.class);
+        innerScheduler = scheduler.inner();
     }
 
     @Test
@@ -132,27 +139,27 @@ public class OperationDebounceTest {
     }
 
     private <T> void publishCompleted(final Observer<T> observer, long delay) {
-        scheduler.schedule(new Action1<Inner>() {
+        innerScheduler.schedule(new Action0() {
             @Override
-            public void call(Inner inner) {
+            public void call() {
                 observer.onCompleted();
             }
         }, delay, TimeUnit.MILLISECONDS);
     }
 
     private <T> void publishError(final Observer<T> observer, long delay, final Exception error) {
-        scheduler.schedule(new Action1<Inner>() {
+        innerScheduler.schedule(new Action0() {
             @Override
-            public void call(Inner inner) {
+            public void call() {
                 observer.onError(error);
             }
         }, delay, TimeUnit.MILLISECONDS);
     }
 
     private <T> void publishNext(final Observer<T> observer, final long delay, final T value) {
-        scheduler.schedule(new Action1<Inner>() {
+        innerScheduler.schedule(new Action0() {
             @Override
-            public void call(Inner inner) {
+            public void call() {
                 observer.onNext(value);
             }
         }, delay, TimeUnit.MILLISECONDS);

@@ -25,7 +25,7 @@ import rx.Scheduler;
 import rx.Scheduler.Inner;
 import rx.Subscriber;
 import rx.Subscription;
-import rx.functions.Action1;
+import rx.functions.Action0;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -60,16 +60,13 @@ public final class OperationSkip {
 
         @Override
         public Subscription onSubscribe(Observer<? super T> t1) {
-
-            SafeObservableSubscription timer = new SafeObservableSubscription();
-            SafeObservableSubscription data = new SafeObservableSubscription();
-
-            CompositeSubscription csub = new CompositeSubscription(timer, data);
-
+            Inner inner = scheduler.inner();
+            CompositeSubscription csub = new CompositeSubscription(inner);
             final SourceObserver<T> so = new SourceObserver<T>(t1, csub);
-            data.wrap(source.unsafeSubscribe(so));
-            if (!data.isUnsubscribed()) {
-                timer.wrap(scheduler.schedule(so, time, unit));
+            csub.add(so);
+            source.unsafeSubscribe(so);
+            if (!so.isUnsubscribed()) {
+                inner.schedule(so, time, unit);
             }
 
             return csub;
@@ -81,7 +78,7 @@ public final class OperationSkip {
          * @param <T>
          *            the observed value type
          */
-        private static final class SourceObserver<T> extends Subscriber<T> implements Action1<Inner> {
+        private static final class SourceObserver<T> extends Subscriber<T> implements Action0 {
             final AtomicBoolean gate;
             final Observer<? super T> observer;
             final Subscription cancel;
@@ -119,7 +116,7 @@ public final class OperationSkip {
             }
 
             @Override
-            public void call(Inner inner) {
+            public void call() {
                 gate.set(true);
             }
 

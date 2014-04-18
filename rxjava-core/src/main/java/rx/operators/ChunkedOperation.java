@@ -30,10 +30,11 @@ import rx.Scheduler;
 import rx.Scheduler.Inner;
 import rx.Subscriber;
 import rx.Subscription;
-import rx.functions.Action1;
+import rx.functions.Action0;
 import rx.functions.Func0;
 import rx.functions.Func1;
 import rx.subscriptions.CompositeSubscription;
+import rx.subscriptions.MultipleAssignmentSubscription;
 
 /**
  * The base class for operations that break observables into "chunks". Currently buffers and windows.
@@ -154,7 +155,7 @@ public class ChunkedOperation {
 
         private final ConcurrentMap<Chunk<T, C>, Subscription> subscriptions = new ConcurrentHashMap<Chunk<T, C>, Subscription>();
 
-        private final Scheduler scheduler;
+        private final Scheduler.Inner scheduler;
         private final long maxTime;
         private final TimeUnit unit;
         private final int maxSize;
@@ -165,15 +166,15 @@ public class ChunkedOperation {
             this.maxSize = maxSize;
             this.maxTime = maxTime;
             this.unit = unit;
-            this.scheduler = scheduler;
+            this.scheduler = scheduler.inner();
         }
 
         @Override
         public Chunk<T, C> createChunk() {
             final Chunk<T, C> chunk = super.createChunk();
-            subscriptions.put(chunk, scheduler.schedule(new Action1<Inner>() {
+            subscriptions.put(chunk, scheduler.schedule(new Action0() {
                 @Override
-                public void call(Inner inner) {
+                public void call() {
                     emitChunk(chunk);
                 }
             }, maxTime, unit));
@@ -217,6 +218,7 @@ public class ChunkedOperation {
             for (Subscription s : subscriptions.values()) {
                 s.unsubscribe();
             }
+            scheduler.unsubscribe();
         }
 
         @Override
@@ -238,7 +240,7 @@ public class ChunkedOperation {
 
         private final ConcurrentMap<Chunk<T, C>, Subscription> subscriptions = new ConcurrentHashMap<Chunk<T, C>, Subscription>();
 
-        private final Scheduler scheduler;
+        private final Scheduler.Inner scheduler;
         private final long time;
         private final TimeUnit unit;
         private volatile boolean unsubscribed = false;
@@ -247,15 +249,15 @@ public class ChunkedOperation {
             super(observer, chunkMaker);
             this.time = time;
             this.unit = unit;
-            this.scheduler = scheduler;
+            this.scheduler = scheduler.inner();
         }
 
         @Override
         public Chunk<T, C> createChunk() {
             final Chunk<T, C> chunk = super.createChunk();
-            subscriptions.put(chunk, scheduler.schedule(new Action1<Inner>() {
+            subscriptions.put(chunk, scheduler.schedule(new Action0() {
                 @Override
-                public void call(Inner inner) {
+                public void call() {
                     emitChunk(chunk);
                 }
             }, time, unit));
@@ -274,6 +276,7 @@ public class ChunkedOperation {
             for (Subscription s : subscriptions.values()) {
                 s.unsubscribe();
             }
+            scheduler.unsubscribe();
         }
 
         @Override
@@ -498,20 +501,20 @@ public class ChunkedOperation {
 
                 @Override
                 public void onCompleted() {
-                    
+
                 }
 
                 @Override
                 public void onError(Throwable e) {
-                    
+
                 }
 
                 @Override
                 public void onNext(TClosing t) {
                     chunks.emitAndReplaceChunk();
-                    listenForChunkEnd();                    
+                    listenForChunkEnd();
                 }
-                
+
             });
         }
 
@@ -545,12 +548,12 @@ public class ChunkedOperation {
 
                 @Override
                 public void onCompleted() {
-                    
+
                 }
 
                 @Override
                 public void onError(Throwable e) {
-                    
+
                 }
 
                 @Override
@@ -562,22 +565,22 @@ public class ChunkedOperation {
 
                         @Override
                         public void onCompleted() {
-                            
+
                         }
 
                         @Override
                         public void onError(Throwable e) {
-                            
+
                         }
 
                         @Override
                         public void onNext(TClosing t) {
-                            chunks.emitChunk(chunk);                            
+                            chunks.emitChunk(chunk);
                         }
-                        
-                    });                    
+
+                    });
                 }
-                
+
             });
         }
 
@@ -602,24 +605,28 @@ public class ChunkedOperation {
      */
     protected static class TimeBasedChunkCreator<T, C> implements ChunkCreator {
 
-        private final SafeObservableSubscription subscription = new SafeObservableSubscription();
+        private final MultipleAssignmentSubscription subscription = new MultipleAssignmentSubscription();
 
         public TimeBasedChunkCreator(final NonOverlappingChunks<T, C> chunks, long time, TimeUnit unit, Scheduler scheduler) {
-            this.subscription.wrap(scheduler.schedulePeriodically(new Action1<Inner>() {
+            Inner inner = scheduler.inner();
+            this.subscription.set(inner);
+            inner.schedulePeriodically(new Action0() {
                 @Override
-                public void call(Inner inner) {
+                public void call() {
                     chunks.emitAndReplaceChunk();
                 }
-            }, 0, time, unit));
+            }, 0, time, unit);
         }
 
         public TimeBasedChunkCreator(final OverlappingChunks<T, C> chunks, long time, TimeUnit unit, Scheduler scheduler) {
-            this.subscription.wrap(scheduler.schedulePeriodically(new Action1<Inner>() {
+            Inner inner = scheduler.inner();
+            this.subscription.set(inner);
+            inner.schedulePeriodically(new Action0() {
                 @Override
-                public void call(Inner inner) {
+                public void call() {
                     chunks.createChunk();
                 }
-            }, 0, time, unit));
+            }, 0, time, unit);
         }
 
         @Override

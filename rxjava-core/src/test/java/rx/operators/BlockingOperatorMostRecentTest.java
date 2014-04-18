@@ -15,8 +15,10 @@
  */
 package rx.operators;
 
-import static org.junit.Assert.*;
-import static rx.operators.BlockingOperatorMostRecent.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static rx.operators.BlockingOperatorMostRecent.mostRecent;
 
 import java.util.Iterator;
 import java.util.concurrent.TimeUnit;

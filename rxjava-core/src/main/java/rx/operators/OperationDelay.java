@@ -21,10 +21,9 @@ import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
-import rx.Scheduler.Inner;
 import rx.Subscriber;
 import rx.Subscription;
-import rx.functions.Action1;
+import rx.functions.Action0;
 import rx.functions.Func0;
 import rx.functions.Func1;
 import rx.observables.ConnectableObservable;
@@ -62,13 +61,13 @@ public final class OperationDelay {
     /** Subscribe function which schedules the actual subscription to source on a scheduler at a later time. */
     private static final class DelaySubscribeFunc<T> implements OnSubscribeFunc<T> {
         final Observable<? extends T> source;
-        final Scheduler scheduler;
+        final Scheduler.Inner scheduler;
         final long time;
         final TimeUnit unit;
 
         public DelaySubscribeFunc(Observable<? extends T> source, long time, TimeUnit unit, Scheduler scheduler) {
             this.source = source;
-            this.scheduler = scheduler;
+            this.scheduler = scheduler.inner();
             this.time = time;
             this.unit = unit;
         }
@@ -77,9 +76,9 @@ public final class OperationDelay {
         public Subscription onSubscribe(final Observer<? super T> t1) {
             final SerialSubscription ssub = new SerialSubscription();
 
-            ssub.set(scheduler.schedule(new Action1<Inner>() {
+            ssub.set(scheduler.schedule(new Action0() {
                 @Override
-                public void call(Inner inner) {
+                public void call() {
                     if (!ssub.isUnsubscribed()) {
                         ssub.set(source.unsafeSubscribe(Subscribers.from(t1)));
                     }

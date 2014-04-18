@@ -20,9 +20,8 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import rx.Observable.Operator;
 import rx.Scheduler;
-import rx.Scheduler.Inner;
 import rx.Subscriber;
-import rx.functions.Action1;
+import rx.functions.Action0;
 import rx.schedulers.ImmediateScheduler;
 import rx.schedulers.TrampolineScheduler;
 
@@ -51,23 +50,24 @@ public class OperatorObserveOn<T> implements Operator<T, T> {
             // avoid overhead, execute directly
             return child;
         } else {
-            return new ObserveOnSubscriber(child);
+            return new ObserveOnSubscriber<T>(scheduler, child);
         }
     }
 
-    private final NotificationLite<T> on = NotificationLite.instance();
-
     /** Observe through individual queue per observer. */
-    private class ObserveOnSubscriber extends Subscriber<T> {
+    private static class ObserveOnSubscriber<T> extends Subscriber<T> {
+        private final NotificationLite<T> on = NotificationLite.instance();
         final Subscriber<? super T> observer;
-        private volatile Scheduler.Inner recursiveScheduler;
+        private final Scheduler.Inner recursiveScheduler;
 
         private final ConcurrentLinkedQueue<Object> queue = new ConcurrentLinkedQueue<Object>();
         final AtomicLong counter = new AtomicLong(0);
 
-        public ObserveOnSubscriber(Subscriber<? super T> observer) {
-            super(observer);
-            this.observer = observer;
+        public ObserveOnSubscriber(Scheduler scheduler, Subscriber<? super T> subscriber) {
+            super(subscriber);
+            this.observer = subscriber;
+            this.recursiveScheduler = scheduler.inner();
+            subscriber.add(recursiveScheduler);
         }
 
         @Override
@@ -90,30 +90,17 @@ public class OperatorObserveOn<T> implements Operator<T, T> {
 
         protected void schedule() {
             if (counter.getAndIncrement() == 0) {
-                if (recursiveScheduler == null) {
-                    add(scheduler.schedule(new Action1<Inner>() {
+                recursiveScheduler.schedule(new Action0() {
 
-                        @Override
-                        public void call(Inner inner) {
-                            recursiveScheduler = inner;
-                            pollQueue();
-                        }
+                    @Override
+                    public void call() {
+                        pollQueue();
+                    }
 
-                    }));
-                } else {
-                    recursiveScheduler.schedule(new Action1<Inner>() {
-
-                        @Override
-                        public void call(Inner inner) {
-                            pollQueue();
-                        }
-
-                    });
-                }
+                });
             }
         }
 
-        @SuppressWarnings("unchecked")
         private void pollQueue() {
             do {
                 Object v = queue.poll();

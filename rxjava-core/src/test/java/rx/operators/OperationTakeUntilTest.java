@@ -15,8 +15,10 @@
  */
 package rx.operators;
 
-import static org.mockito.Mockito.*;
-import static rx.operators.OperationTakeUntil.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static rx.operators.OperationTakeUntil.takeUntil;
 
 import org.junit.Test;
 

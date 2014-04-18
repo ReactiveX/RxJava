@@ -23,9 +23,7 @@ import rx.Scheduler;
 import rx.Scheduler.Inner;
 import rx.Subscription;
 import rx.functions.Action0;
-import rx.functions.Action1;
 import rx.schedulers.Schedulers;
-import rx.subscriptions.Subscriptions;
 
 /**
  * Returns an observable sequence that produces a value after each period.
@@ -68,20 +66,15 @@ public final class OperationInterval {
 
         @Override
         public Subscription onSubscribe(final Observer<? super Long> observer) {
-            final Subscription wrapped = scheduler.schedulePeriodically(new Action1<Inner>() {
+            Inner inner = scheduler.inner();
+            inner.schedulePeriodically(new Action0() {
                 @Override
-                public void call(Inner inner) {
+                public void call() {
                     observer.onNext(currentValue);
                     currentValue++;
                 }
             }, period, period, unit);
-
-            return Subscriptions.create(new Action0() {
-                @Override
-                public void call() {
-                    wrapped.unsubscribe();
-                }
-            });
+            return inner;
         }
     }
 }

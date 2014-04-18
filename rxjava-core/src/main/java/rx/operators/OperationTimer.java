@@ -22,7 +22,7 @@ import rx.Observer;
 import rx.Scheduler;
 import rx.Scheduler.Inner;
 import rx.Subscription;
-import rx.functions.Action1;
+import rx.functions.Action0;
 
 /**
  * Operation Timer with several overloads.
@@ -50,9 +50,9 @@ public final class OperationTimer {
 
         @Override
         public Subscription onSubscribe(final Observer<? super Long> t1) {
-            return scheduler.schedule(new Action1<Inner>() {
+            return scheduler.inner().schedule(new Action0() {
                 @Override
-                public void call(Inner inner) {
+                public void call() {
                     t1.onNext(0L);
                     t1.onCompleted();
                 }
@@ -79,14 +79,16 @@ public final class OperationTimer {
 
         @Override
         public Subscription onSubscribe(final Observer<? super Long> t1) {
-            return scheduler.schedulePeriodically(new Action1<Inner>() {
+            Inner inner = scheduler.inner();
+            inner.schedulePeriodically(new Action0() {
                 long count;
 
                 @Override
-                public void call(Inner inner) {
+                public void call() {
                     t1.onNext(count++);
                 }
             }, initialDelay, period, unit);
+            return inner;
         }
     }
 }

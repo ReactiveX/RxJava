@@ -15,9 +15,13 @@
  */
 package rx.operators;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
-import static rx.operators.OperationUsing.*;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static rx.operators.OperationUsing.using;
 
 import org.junit.Test;
 import org.mockito.InOrder;

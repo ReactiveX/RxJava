@@ -35,19 +35,19 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import rx.Observable;
 import rx.Observable.Operator;
-import rx.Scheduler.Inner;
+import rx.Scheduler;
 import rx.Subscriber;
 import rx.functions.Action0;
-import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.SerialSubscription;
-import rx.subscriptions.Subscriptions;
 
 public class OperatorRetry<T> implements Operator<T, Observable<T>> {
 
     private static final int INFINITE_RETRY = -1;
 
     private final int retryCount;
+
+    private static Scheduler scheduler = Schedulers.trampoline();
 
     public OperatorRetry(int retryCount) {
         this.retryCount = retryCount;
@@ -59,6 +59,9 @@ public class OperatorRetry<T> implements Operator<T, Observable<T>> {
 
     @Override
     public Subscriber<? super Observable<T>> call(final Subscriber<? super T> child) {
+        final Scheduler.Inner inner = scheduler.inner();
+        child.add(inner);
+        
         final SerialSubscription serialSubscription = new SerialSubscription();
         // add serialSubscription so it gets unsubscribed if child is unsubscribed
         child.add(serialSubscription);
@@ -77,11 +80,11 @@ public class OperatorRetry<T> implements Operator<T, Observable<T>> {
 
             @Override
             public void onNext(final Observable<T> o) {
-                Schedulers.trampoline().schedule(new Action1<Inner>() {
+                inner.schedule(new Action0() {
 
                     @Override
-                    public void call(final Inner inner) {
-                        final Action1<Inner> _self = this;
+                    public void call() {
+                        final Action0 _self = this;
                         attempts.incrementAndGet();
 
                         // new subscription each time so if it unsubscribes itself it does not prevent retries

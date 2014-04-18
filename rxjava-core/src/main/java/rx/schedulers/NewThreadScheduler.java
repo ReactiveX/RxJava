@@ -25,7 +25,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Scheduler;
 import rx.Subscription;
-import rx.functions.Action1;
+import rx.functions.Action0;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.Subscriptions;
 
@@ -64,33 +64,23 @@ public class NewThreadScheduler extends Scheduler {
     }
 
     @Override
-    public Subscription schedule(Action1<Scheduler.Inner> action) {
-        EventLoopScheduler innerScheduler = new EventLoopScheduler();
-        innerScheduler.schedule(action);
-        return innerScheduler.innerSubscription;
-    }
-
-    @Override
-    public Subscription schedule(Action1<Inner> action, long delayTime, TimeUnit unit) {
-        EventLoopScheduler innerScheduler = new EventLoopScheduler();
-        innerScheduler.schedule(action, delayTime, unit);
-        return innerScheduler.innerSubscription;
+    public Inner inner() {
+        return new EventLoopScheduler();
     }
 
     private class EventLoopScheduler extends Scheduler.Inner implements Subscription {
         private final CompositeSubscription innerSubscription = new CompositeSubscription();
         private final ExecutorService executor;
-        private final Inner _inner = this;
 
         private EventLoopScheduler() {
             executor = Executors.newSingleThreadExecutor(THREAD_FACTORY);
         }
 
         @Override
-        public void schedule(final Action1<Scheduler.Inner> action) {
+        public Subscription schedule(final Action0 action) {
             if (innerSubscription.isUnsubscribed()) {
                 // don't schedule, we are unsubscribed
-                return;
+                return Subscriptions.empty();
             }
 
             final AtomicReference<Subscription> sf = new AtomicReference<Subscription>();
@@ -102,7 +92,7 @@ public class NewThreadScheduler extends Scheduler {
                         if (innerSubscription.isUnsubscribed()) {
                             return;
                         }
-                        action.call(_inner);
+                        action.call();
                     } finally {
                         // remove the subscription now that we're completed
                         Subscription s = sf.get();
@@ -115,10 +105,11 @@ public class NewThreadScheduler extends Scheduler {
 
             sf.set(s);
             innerSubscription.add(s);
+            return s;
         }
 
         @Override
-        public void schedule(final Action1<Inner> action, long delayTime, TimeUnit unit) {
+        public Subscription schedule(final Action0 action, long delayTime, TimeUnit unit) {
             final AtomicReference<Subscription> sf = new AtomicReference<Subscription>();
             // we will use the system scheduler since it doesn't make sense to launch a new Thread and then sleep
             // we will instead schedule the event then launch the thread after the delay has passed
@@ -146,6 +137,7 @@ public class NewThreadScheduler extends Scheduler {
             Subscription s = Subscriptions.from(f);
             sf.set(s);
             innerSubscription.add(s);
+            return s;
         }
 
         @Override

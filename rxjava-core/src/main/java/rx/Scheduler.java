@@ -17,157 +17,100 @@ package rx;
 
 import java.util.concurrent.TimeUnit;
 
-import rx.functions.Action1;
+import rx.functions.Action0;
+import rx.schedulers.Schedulers;
 
 /**
  * Represents an object that schedules units of work.
  * <p>
- * The methods left to implement are:
- * <ul>
- * <li>{@code <T> Subscription schedule(T state, Func2<Scheduler, T, Subscription> action, long delayTime, TimeUnit unit)}</li>
- * <li>{@code <T> Subscription schedule(T state, Func2<Scheduler, T, Subscription> action)}</li>
- * </ul>
+ * Common implementations can be found in {@link Schedulers}.
  * <p>
  * Why is this an abstract class instead of an interface?
  * <p>
  * <ol>
  * <li>Java doesn't support extension methods and there are many overload methods needing default
- *     implementations.</li>
+ * implementations.</li>
  * <li>Virtual extension methods aren't available until Java8 which RxJava will not set as a minimum target for
- *     a long time.</li>
+ * a long time.</li>
  * <li>If only an interface were used Scheduler implementations would then need to extend from an
- *     AbstractScheduler pair that gives all of the functionality unless they intend on copy/pasting the
- *     functionality.</li>
+ * AbstractScheduler pair that gives all of the functionality unless they intend on copy/pasting the
+ * functionality.</li>
  * <li>Without virtual extension methods even additive changes are breaking and thus severely impede library
- *     maintenance.</li>
+ * maintenance.</li>
  * </ol>
  */
 public abstract class Scheduler {
 
     /**
-     * Schedules an Action on a new Scheduler instance (typically another thread) for execution.
+     * Retrieve or create a new {@link Scheduler.Inner} that represents serial execution of actions.
+     * <p>
+     * When work is completed it should be unsubscribed. Work on a {@link Scheduler.Inner} is guaranteed to be sequential.
      * 
-     * @param action
-     *            Action to schedule
-     * @return a subscription to be able to unsubscribe from action
+     * @return Inner representing a serial queue of actions to be executed
      */
-
-    public abstract Subscription schedule(Action1<Scheduler.Inner> action);
+    public abstract Inner inner();
 
     /**
-     * Schedules an Action on a new Scheduler instance (typically another thread) for execution at some point
-     * in the future.
-     * 
-     * @param action
-     *            the Action to schedule
-     * @param delayTime
-     *            time to wait before executing the action
-     * @param unit
-     *            the time unit the delay time is given in
-     * @return a subscription to be able to unsubscribe from action
+     * Sequential Scheduler for executing actions on a single thread or event loop.
+     * <p>
+     * Unsubscribing the {@Inner} unschedules all outstanding work and allows resources cleanup.
      */
-    public abstract Subscription schedule(final Action1<Scheduler.Inner> action, final long delayTime, final TimeUnit unit);
-
-    /**
-     * Schedules a cancelable action to be executed periodically. This default implementation schedules
-     * recursively and waits for actions to complete (instead of potentially executing long-running actions
-     * concurrently). Each scheduler that can do periodic scheduling in a better way should override this.
-     * 
-     * @param action
-     *            the Action to execute periodically
-     * @param initialDelay
-     *            time to wait before executing the action for the first time
-     * @param period
-     *            the time interval to wait each time in between executing the action
-     * @param unit
-     *            the time unit the interval above is given in
-     * @return a subscription to be able to unsubscribe from action
-     */
-    public Subscription schedulePeriodically(final Action1<Scheduler.Inner> action, long initialDelay, long period, TimeUnit unit) {
-        final long periodInNanos = unit.toNanos(period);
-
-        final Action1<Scheduler.Inner> recursiveAction = new Action1<Scheduler.Inner>() {
-            @Override
-            public void call(Inner inner) {
-                if (!inner.isUnsubscribed()) {
-                    long startedAt = now();
-                    action.call(inner);
-                    long timeTakenByActionInNanos = TimeUnit.MILLISECONDS.toNanos(now() - startedAt);
-                    inner.schedule(this, periodInNanos - timeTakenByActionInNanos, TimeUnit.NANOSECONDS);
-                }
-            }
-        };
-        return schedule(recursiveAction, initialDelay, unit);
-    }
-
-    public final Subscription scheduleRecursive(final Action1<Recurse> action) {
-        return schedule(new Action1<Inner>() {
-
-            @Override
-            public void call(Inner inner) {
-                action.call(new Recurse(inner, action));
-            }
-
-        });
-    }
-
-    public static final class Recurse {
-        private final Action1<Recurse> action;
-        private final Inner inner;
-
-        private Recurse(Inner inner, Action1<Recurse> action) {
-            this.inner = inner;
-            this.action = action;
-        }
-
-        /**
-         * Schedule the current function for execution immediately.
-         */
-        public final void schedule() {
-            final Recurse self = this;
-            inner.schedule(new Action1<Inner>() {
-
-                @Override
-                public void call(Inner _inner) {
-                    action.call(self);
-                }
-
-            });
-        }
-
-        /**
-         * Schedule the current function for execution in the future.
-         */
-        public final void schedule(long delay, TimeUnit unit) {
-            final Recurse self = this;
-            inner.schedule(new Action1<Inner>() {
-
-                @Override
-                public void call(Inner _inner) {
-                    action.call(self);
-                }
-
-            }, delay, unit);
-        }
-    }
-
     public abstract static class Inner implements Subscription {
 
         /**
-         * Schedules an action to be executed in delayTime.
+         * Schedules an Action for execution.
          * 
-         * @param delayTime
-         *            time the action is to be delayed before executing
-         * @param unit
-         *            time unit of the delay time
+         * @param action
+         *            Action to schedule
+         * @return a subscription to be able to unsubscribe the action (unschedule it if not executed)
          */
-        public abstract void schedule(Action1<Scheduler.Inner> action, long delayTime, TimeUnit unit);
+
+        public abstract Subscription schedule(Action0 action);
 
         /**
-         * Schedules a cancelable action to be executed in delayTime.
+         * Schedules an Action for execution at some point in the future.
          * 
+         * @param action
+         *            the Action to schedule
+         * @param delayTime
+         *            time to wait before executing the action
+         * @param unit
+         *            the time unit the delay time is given in
+         * @return a subscription to be able to unsubscribe the action (unschedule it if not executed)
          */
-        public abstract void schedule(Action1<Scheduler.Inner> action);
+        public abstract Subscription schedule(final Action0 action, final long delayTime, final TimeUnit unit);
+
+        /**
+         * Schedules a cancelable action to be executed periodically. This default implementation schedules
+         * recursively and waits for actions to complete (instead of potentially executing long-running actions
+         * concurrently). Each scheduler that can do periodic scheduling in a better way should override this.
+         * 
+         * @param action
+         *            the Action to execute periodically
+         * @param initialDelay
+         *            time to wait before executing the action for the first time
+         * @param period
+         *            the time interval to wait each time in between executing the action
+         * @param unit
+         *            the time unit the interval above is given in
+         * @return a subscription to be able to unsubscribe the action (unschedule it if not executed)
+         */
+        public Subscription schedulePeriodically(final Action0 action, long initialDelay, long period, TimeUnit unit) {
+            final long periodInNanos = unit.toNanos(period);
+
+            final Action0 recursiveAction = new Action0() {
+                @Override
+                public void call() {
+                    if (!isUnsubscribed()) {
+                        long startedAt = now();
+                        action.call();
+                        long timeTakenByActionInNanos = TimeUnit.MILLISECONDS.toNanos(now() - startedAt);
+                        schedule(this, periodInNanos - timeTakenByActionInNanos, TimeUnit.NANOSECONDS);
+                    }
+                }
+            };
+            return schedule(recursiveAction, initialDelay, unit);
+        }
 
         /**
          * @return the scheduler's notion of current absolute time in milliseconds.

@@ -22,10 +22,9 @@ import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
-import rx.Scheduler.Inner;
 import rx.Subscriber;
 import rx.Subscription;
-import rx.functions.Action1;
+import rx.functions.Action0;
 import rx.functions.Func1;
 import rx.observers.SerializedObserver;
 import rx.schedulers.Schedulers;
@@ -105,7 +104,7 @@ public final class OperationDebounce {
         private final Observer<? super T> observer;
         private final long timeout;
         private final TimeUnit unit;
-        private final Scheduler scheduler;
+        private final Scheduler.Inner scheduler;
 
         private final AtomicReference<Subscription> lastScheduledNotification = new AtomicReference<Subscription>();
 
@@ -115,7 +114,7 @@ public final class OperationDebounce {
             this.observer = new SerializedObserver<T>(observer);
             this.timeout = timeout;
             this.unit = unit;
-            this.scheduler = scheduler;
+            this.scheduler = scheduler.inner();
         }
 
         @Override
@@ -142,10 +141,10 @@ public final class OperationDebounce {
 
         @Override
         public void onNext(final T v) {
-            Subscription previousSubscription = lastScheduledNotification.getAndSet(scheduler.schedule(new Action1<Inner>() {
+            Subscription previousSubscription = lastScheduledNotification.getAndSet(scheduler.schedule(new Action0() {
 
                 @Override
-                public void call(Inner inner) {
+                public void call() {
                     observer.onNext(v);
                 }
 
