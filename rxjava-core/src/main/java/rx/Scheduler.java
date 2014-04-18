@@ -128,7 +128,7 @@ public abstract class Scheduler {
      * 
      * @return the scheduler's available degree of parallelism
      */
-    public int degreeOfParallelism() {
+    public int parallelism() {
         return Runtime.getRuntime().availableProcessors();
     }
 
