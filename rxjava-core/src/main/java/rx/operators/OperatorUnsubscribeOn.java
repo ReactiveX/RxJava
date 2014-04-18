@@ -41,7 +41,7 @@ public class OperatorUnsubscribeOn<T> implements Operator<T, T> {
 
             @Override
             public void call() {
-                final Scheduler.Inner inner = scheduler.inner();
+                final Scheduler.Inner inner = scheduler.createInner();
                 inner.schedule(new Action0() {
 
                     @Override

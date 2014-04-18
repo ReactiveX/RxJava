@@ -166,7 +166,7 @@ public class ChunkedOperation {
             this.maxSize = maxSize;
             this.maxTime = maxTime;
             this.unit = unit;
-            this.scheduler = scheduler.inner();
+            this.scheduler = scheduler.createInner();
         }
 
         @Override
@@ -249,7 +249,7 @@ public class ChunkedOperation {
             super(observer, chunkMaker);
             this.time = time;
             this.unit = unit;
-            this.scheduler = scheduler.inner();
+            this.scheduler = scheduler.createInner();
         }
 
         @Override
@@ -608,7 +608,7 @@ public class ChunkedOperation {
         private final MultipleAssignmentSubscription subscription = new MultipleAssignmentSubscription();
 
         public TimeBasedChunkCreator(final NonOverlappingChunks<T, C> chunks, long time, TimeUnit unit, Scheduler scheduler) {
-            Inner inner = scheduler.inner();
+            Inner inner = scheduler.createInner();
             this.subscription.set(inner);
             inner.schedulePeriodically(new Action0() {
                 @Override
@@ -619,7 +619,7 @@ public class ChunkedOperation {
         }
 
         public TimeBasedChunkCreator(final OverlappingChunks<T, C> chunks, long time, TimeUnit unit, Scheduler scheduler) {
-            Inner inner = scheduler.inner();
+            Inner inner = scheduler.createInner();
             this.subscription.set(inner);
             inner.schedulePeriodically(new Action0() {
                 @Override

@@ -71,7 +71,7 @@ public class OperatorRepeat<T> implements Operator<T, Observable<T>> {
             @Override
             public void onNext(final Observable<T> t) {
                 // will only be invoked once since we're nested
-                final Inner inner = scheduler.inner();
+                final Inner inner = scheduler.createInner();
                 // cleanup on unsubscribe
                 add(inner);
                 inner.schedule(new Action0() {

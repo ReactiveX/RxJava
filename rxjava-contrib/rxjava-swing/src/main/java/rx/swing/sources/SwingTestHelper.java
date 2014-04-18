@@ -35,7 +35,7 @@ import rx.schedulers.SwingScheduler;
     }
 
     public SwingTestHelper runInEventDispatchThread(final Action0 action) {
-        Inner inner = SwingScheduler.getInstance().inner();
+        Inner inner = SwingScheduler.getInstance().createInner();
         inner.schedule(new Action0() {
 
             @Override

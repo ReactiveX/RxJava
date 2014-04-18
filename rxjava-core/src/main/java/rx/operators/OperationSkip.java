@@ -60,7 +60,7 @@ public final class OperationSkip {
 
         @Override
         public Subscription onSubscribe(Observer<? super T> t1) {
-            Inner inner = scheduler.inner();
+            Inner inner = scheduler.createInner();
             CompositeSubscription csub = new CompositeSubscription(inner);
             final SourceObserver<T> so = new SourceObserver<T>(t1, csub);
             csub.add(so);

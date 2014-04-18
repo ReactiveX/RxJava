@@ -50,7 +50,7 @@ public class OperationDebounceTest {
     public void before() {
         scheduler = new TestScheduler();
         observer = mock(Observer.class);
-        innerScheduler = scheduler.inner();
+        innerScheduler = scheduler.createInner();
     }
 
     @Test

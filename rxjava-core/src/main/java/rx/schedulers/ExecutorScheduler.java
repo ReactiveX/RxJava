@@ -54,7 +54,7 @@ public class ExecutorScheduler extends Scheduler {
     }
 
     @Override
-    public Inner inner() {
+    public Inner createInner() {
         return new InnerExecutorScheduler();
     }
 

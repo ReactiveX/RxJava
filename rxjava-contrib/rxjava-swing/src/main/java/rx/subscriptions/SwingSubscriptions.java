@@ -41,7 +41,7 @@ public final class SwingSubscriptions {
                 if (SwingUtilities.isEventDispatchThread()) {
                     unsubscribe.call();
                 } else {
-                    final Inner inner = SwingScheduler.getInstance().inner();
+                    final Inner inner = SwingScheduler.getInstance().createInner();
                     inner.schedule(new Action0() {
                         @Override
                         public void call() {

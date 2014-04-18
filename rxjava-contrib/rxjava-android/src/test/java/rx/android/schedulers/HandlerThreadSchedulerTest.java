@@ -45,7 +45,7 @@ public class HandlerThreadSchedulerTest {
         final Action0 action = mock(Action0.class);
 
         Scheduler scheduler = new HandlerThreadScheduler(handler);
-        Inner inner = scheduler.inner();
+        Inner inner = scheduler.createInner();
         inner.schedule(action);
 
         // verify that we post to the given Handler
@@ -64,7 +64,7 @@ public class HandlerThreadSchedulerTest {
         final Action0 action = mock(Action0.class);
 
         Scheduler scheduler = new HandlerThreadScheduler(handler);
-        Inner inner = scheduler.inner();
+        Inner inner = scheduler.createInner();
         inner.schedule(action, 1L, TimeUnit.SECONDS);
 
         // verify that we post to the given Handler

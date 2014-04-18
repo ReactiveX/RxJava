@@ -46,7 +46,7 @@ public final class ImmediateScheduler extends Scheduler {
     }
 
     @Override
-    public Inner inner() {
+    public Inner createInner() {
         return new InnerImmediateScheduler();
     }
 
@@ -57,7 +57,7 @@ public final class ImmediateScheduler extends Scheduler {
         @Override
         public Subscription schedule(Action0 action, long delayTime, TimeUnit unit) {
             // since we are executing immediately on this thread we must cause this thread to sleep
-            long execTime = now() + unit.toMillis(delayTime);
+            long execTime = ImmediateScheduler.this.now() + unit.toMillis(delayTime);
 
             return schedule(new SleepingAction(action, this, execTime));
         }

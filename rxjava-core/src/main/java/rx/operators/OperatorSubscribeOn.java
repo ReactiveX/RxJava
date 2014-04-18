@@ -37,7 +37,7 @@ public class OperatorSubscribeOn<T> implements Operator<T, Observable<T>> {
 
     @Override
     public Subscriber<? super Observable<T>> call(final Subscriber<? super T> subscriber) {
-        final Inner inner = scheduler.inner();
+        final Inner inner = scheduler.createInner();
         subscriber.add(inner);
         return new Subscriber<Observable<T>>(subscriber) {
 

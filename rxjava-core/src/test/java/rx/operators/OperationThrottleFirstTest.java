@@ -44,7 +44,7 @@ public class OperationThrottleFirstTest {
     @SuppressWarnings("unchecked")
     public void before() {
         scheduler = new TestScheduler();
-        innerScheduler = scheduler.inner();
+        innerScheduler = scheduler.createInner();
         observer = mock(Observer.class);
     }
 

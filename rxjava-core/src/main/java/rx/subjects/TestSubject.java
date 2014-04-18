@@ -96,7 +96,7 @@ public final class TestSubject<T> extends Subject<T, T> {
         super(onSubscribe);
         this.subscriptionManager = subscriptionManager;
         this.lastNotification = lastNotification;
-        this.innerScheduler = scheduler.inner();
+        this.innerScheduler = scheduler.createInner();
     }
 
     @Override

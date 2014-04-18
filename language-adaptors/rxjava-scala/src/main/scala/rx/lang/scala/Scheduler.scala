@@ -42,7 +42,7 @@ trait Scheduler {
    */
   def now: Long = this.asJavaScheduler.now()
 
-  def inner: Inner = this.asJavaScheduler.inner()
+  def createInner: Inner = this.asJavaScheduler.createInner()
 
 }
 

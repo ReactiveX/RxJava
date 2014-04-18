@@ -48,7 +48,7 @@ public class OperationSampleTest {
     // due to mocking
     public void before() {
         scheduler = new TestScheduler();
-        innerScheduler = scheduler.inner();
+        innerScheduler = scheduler.createInner();
         observer = mock(Observer.class);
         observer2 = mock(Observer.class);
     }

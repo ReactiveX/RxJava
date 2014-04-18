@@ -48,7 +48,7 @@ public abstract class Scheduler {
      * 
      * @return Inner representing a serial queue of actions to be executed
      */
-    public abstract Inner inner();
+    public abstract Inner createInner();
 
     /**
      * Sequential Scheduler for executing actions on a single thread or event loop.

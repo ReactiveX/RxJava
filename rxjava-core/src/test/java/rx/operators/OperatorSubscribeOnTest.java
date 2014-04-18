@@ -94,8 +94,8 @@ public class OperatorSubscribeOnTest {
         }
 
         @Override
-        public Inner inner() {
-            return new SlowInner(actual.inner());
+        public Inner createInner() {
+            return new SlowInner(actual.createInner());
         }
 
         private class SlowInner extends Inner {

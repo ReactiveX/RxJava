@@ -48,7 +48,7 @@ public class TestRecursionMemoryUsage {
 
             @Override
             public void call(final Subscriber<? super Long> o) {
-                final Inner inner = scheduler.inner();
+                final Inner inner = scheduler.createInner();
                 o.add(inner);
                 inner.schedule(new Action0() {
                     long i = 0;
@@ -81,7 +81,7 @@ public class TestRecursionMemoryUsage {
 
             @Override
             public void call(final Subscriber<? super Long> o) {
-                final Inner inner = scheduler.inner();
+                final Inner inner = scheduler.createInner();
                 o.add(inner);
                 inner.schedule(new Action0() {
 

@@ -64,7 +64,7 @@ class OperatorTimeoutBase<T> implements Operator<T, T> {
 
     @Override
     public Subscriber<? super T> call(Subscriber<? super T> subscriber) {
-        Scheduler.Inner inner = scheduler.inner();
+        Scheduler.Inner inner = scheduler.createInner();
         subscriber.add(inner);
         final SerialSubscription serial = new SerialSubscription();
         subscriber.add(serial);

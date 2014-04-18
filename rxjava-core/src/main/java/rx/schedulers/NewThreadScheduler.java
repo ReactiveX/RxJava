@@ -64,7 +64,7 @@ public class NewThreadScheduler extends Scheduler {
     }
 
     @Override
-    public Inner inner() {
+    public Inner createInner() {
         return new EventLoopScheduler();
     }
 

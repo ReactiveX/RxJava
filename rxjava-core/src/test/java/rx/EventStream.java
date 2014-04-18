@@ -34,7 +34,7 @@ public class EventStream {
 
             @Override
             public void call(final Subscriber<? super Event> subscriber) {
-                Inner inner = Schedulers.newThread().inner();
+                Inner inner = Schedulers.newThread().createInner();
                 subscriber.add(inner);
                 // run on a background thread inside the OnSubscribeFunc so unsubscribe works
                 inner.schedule(new Action0() {

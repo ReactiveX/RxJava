@@ -44,7 +44,7 @@ public class OperatorAmbTest {
     @Before
     public void setUp() {
         scheduler = new TestScheduler();
-        innerScheduler = scheduler.inner();
+        innerScheduler = scheduler.createInner();
     }
 
     private Observable<String> createObservable(final String[] values,

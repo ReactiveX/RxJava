@@ -114,7 +114,7 @@ public final class OperationDebounce {
             this.observer = new SerializedObserver<T>(observer);
             this.timeout = timeout;
             this.unit = unit;
-            this.scheduler = scheduler.inner();
+            this.scheduler = scheduler.createInner();
         }
 
         @Override

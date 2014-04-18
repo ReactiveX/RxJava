@@ -599,7 +599,7 @@ public final class Async {
             @Override
             public Observable<R> call() {
                 final AsyncSubject<R> subject = AsyncSubject.create();
-                final Inner inner = scheduler.inner();
+                final Inner inner = scheduler.createInner();
                 inner.schedule(new Action0() {
                     @Override
                     public void call() {
@@ -659,7 +659,7 @@ public final class Async {
             @Override
             public Observable<R> call(final T1 t1) {
                 final AsyncSubject<R> subject = AsyncSubject.create();
-                final Inner inner = scheduler.inner();
+                final Inner inner = scheduler.createInner();
                 inner.schedule(new Action0() {
                     @Override
                     public void call() {
@@ -721,7 +721,7 @@ public final class Async {
             @Override
             public Observable<R> call(final T1 t1, final T2 t2) {
                 final AsyncSubject<R> subject = AsyncSubject.create();
-                final Inner inner = scheduler.inner();
+                final Inner inner = scheduler.createInner();
                 inner.schedule(new Action0() {
                     @Override
                     public void call() {
@@ -785,7 +785,7 @@ public final class Async {
             @Override
             public Observable<R> call(final T1 t1, final T2 t2, final T3 t3) {
                 final AsyncSubject<R> subject = AsyncSubject.create();
-                final Inner inner = scheduler.inner();
+                final Inner inner = scheduler.createInner();
                 inner.schedule(new Action0() {
                     @Override
                     public void call() {
@@ -851,7 +851,7 @@ public final class Async {
             @Override
             public Observable<R> call(final T1 t1, final T2 t2, final T3 t3, final T4 t4) {
                 final AsyncSubject<R> subject = AsyncSubject.create();
-                final Inner inner = scheduler.inner();
+                final Inner inner = scheduler.createInner();
                 inner.schedule(new Action0() {
                     @Override
                     public void call() {
@@ -919,7 +919,7 @@ public final class Async {
             @Override
             public Observable<R> call(final T1 t1, final T2 t2, final T3 t3, final T4 t4, final T5 t5) {
                 final AsyncSubject<R> subject = AsyncSubject.create();
-                final Inner inner = scheduler.inner();
+                final Inner inner = scheduler.createInner();
                 inner.schedule(new Action0() {
                     @Override
                     public void call() {
@@ -989,7 +989,7 @@ public final class Async {
             @Override
             public Observable<R> call(final T1 t1, final T2 t2, final T3 t3, final T4 t4, final T5 t5, final T6 t6) {
                 final AsyncSubject<R> subject = AsyncSubject.create();
-                final Inner inner = scheduler.inner();
+                final Inner inner = scheduler.createInner();
                 inner.schedule(new Action0() {
                     @Override
                     public void call() {
@@ -1061,7 +1061,7 @@ public final class Async {
             @Override
             public Observable<R> call(final T1 t1, final T2 t2, final T3 t3, final T4 t4, final T5 t5, final T6 t6, final T7 t7) {
                 final AsyncSubject<R> subject = AsyncSubject.create();
-                final Inner inner = scheduler.inner();
+                final Inner inner = scheduler.createInner();
                 inner.schedule(new Action0() {
                     @Override
                     public void call() {
@@ -1135,7 +1135,7 @@ public final class Async {
             @Override
             public Observable<R> call(final T1 t1, final T2 t2, final T3 t3, final T4 t4, final T5 t5, final T6 t6, final T7 t7, final T8 t8) {
                 final AsyncSubject<R> subject = AsyncSubject.create();
-                final Inner inner = scheduler.inner();
+                final Inner inner = scheduler.createInner();
                 inner.schedule(new Action0() {
                     @Override
                     public void call() {
@@ -1211,7 +1211,7 @@ public final class Async {
             @Override
             public Observable<R> call(final T1 t1, final T2 t2, final T3 t3, final T4 t4, final T5 t5, final T6 t6, final T7 t7, final T8 t8, final T9 t9) {
                 final AsyncSubject<R> subject = AsyncSubject.create();
-                final Inner inner = scheduler.inner();
+                final Inner inner = scheduler.createInner();
                 inner.schedule(new Action0() {
                     @Override
                     public void call() {
@@ -1267,7 +1267,7 @@ public final class Async {
             @Override
             public Observable<R> call(final Object... args) {
                 final AsyncSubject<R> subject = AsyncSubject.create();
-                final Inner inner = scheduler.inner();
+                final Inner inner = scheduler.createInner();
                 inner.schedule(new Action0() {
                     @Override
                     public void call() {
@@ -1535,7 +1535,7 @@ public final class Async {
             Action1<? super T> onNext,
             Scheduler scheduler) {
         FutureTask<Void> task = OperationForEachFuture.forEachFuture(source, onNext);
-        final Inner inner = scheduler.inner();
+        final Inner inner = scheduler.createInner();
         inner.schedule(Functionals.fromRunnable(task, inner));
         return task;
     }
@@ -1563,7 +1563,7 @@ public final class Async {
             Action1<? super Throwable> onError,
             Scheduler scheduler) {
         FutureTask<Void> task = OperationForEachFuture.forEachFuture(source, onNext, onError);
-        final Inner inner = scheduler.inner();
+        final Inner inner = scheduler.createInner();
         inner.schedule(Functionals.fromRunnable(task, inner));
         return task;
     }
@@ -1593,7 +1593,7 @@ public final class Async {
             Action0 onCompleted,
             Scheduler scheduler) {
         FutureTask<Void> task = OperationForEachFuture.forEachFuture(source, onNext, onError, onCompleted);
-        final Inner inner = scheduler.inner();
+        final Inner inner = scheduler.createInner();
         inner.schedule(Functionals.fromRunnable(task, inner));
         return task;
     }
@@ -1800,7 +1800,7 @@ public final class Async {
             }
         }, csub);
         
-        final Inner inner = scheduler.inner();
+        final Inner inner = scheduler.createInner();
         csub.set(inner);
         
         inner.schedule(new Action0() {

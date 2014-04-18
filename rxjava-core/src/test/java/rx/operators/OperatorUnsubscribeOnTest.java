@@ -145,7 +145,7 @@ public class OperatorUnsubscribeOnTest {
 
         public UIEventLoopScheduler() {
 
-            eventLoop = Schedulers.newThread().inner();
+            eventLoop = Schedulers.newThread().createInner();
             s = eventLoop;
 
             /*
@@ -169,7 +169,7 @@ public class OperatorUnsubscribeOnTest {
         }
         
         @Override
-        public Inner inner() {
+        public Inner createInner() {
             return eventLoop;
         }
 

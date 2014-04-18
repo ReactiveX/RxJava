@@ -57,7 +57,7 @@ public class OperationBufferTest {
     public void before() {
         observer = Mockito.mock(Observer.class);
         scheduler = new TestScheduler();
-        innerScheduler = scheduler.inner();
+        innerScheduler = scheduler.createInner();
     }
 
     @Test

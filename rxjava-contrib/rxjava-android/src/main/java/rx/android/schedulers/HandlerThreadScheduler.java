@@ -43,7 +43,7 @@ public class HandlerThreadScheduler extends Scheduler {
     }
 
     @Override
-    public Inner inner() {
+    public Inner createInner() {
         return new InnerHandlerThreadScheduler(handler);
     }
     

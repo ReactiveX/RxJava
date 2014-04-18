@@ -66,7 +66,7 @@ public class OperatorObserveOn<T> implements Operator<T, T> {
         public ObserveOnSubscriber(Scheduler scheduler, Subscriber<? super T> subscriber) {
             super(subscriber);
             this.observer = subscriber;
-            this.recursiveScheduler = scheduler.inner();
+            this.recursiveScheduler = scheduler.createInner();
             subscriber.add(recursiveScheduler);
         }
 

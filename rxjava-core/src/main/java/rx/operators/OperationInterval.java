@@ -66,7 +66,7 @@ public final class OperationInterval {
 
         @Override
         public Subscription onSubscribe(final Observer<? super Long> observer) {
-            Inner inner = scheduler.inner();
+            Inner inner = scheduler.createInner();
             inner.schedulePeriodically(new Action0() {
                 @Override
                 public void call() {

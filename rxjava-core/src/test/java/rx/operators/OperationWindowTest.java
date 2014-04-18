@@ -51,7 +51,7 @@ public class OperationWindowTest {
     @Before
     public void before() {
         scheduler = new TestScheduler();
-        innerScheduler = scheduler.inner();
+        innerScheduler = scheduler.createInner();
     }
 
     private static <T> List<List<T>> toLists(Observable<Observable<T>> observables) {

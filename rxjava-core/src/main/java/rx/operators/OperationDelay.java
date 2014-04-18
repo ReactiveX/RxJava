@@ -67,7 +67,7 @@ public final class OperationDelay {
 
         public DelaySubscribeFunc(Observable<? extends T> source, long time, TimeUnit unit, Scheduler scheduler) {
             this.source = source;
-            this.scheduler = scheduler.inner();
+            this.scheduler = scheduler.createInner();
             this.time = time;
             this.unit = unit;
         }

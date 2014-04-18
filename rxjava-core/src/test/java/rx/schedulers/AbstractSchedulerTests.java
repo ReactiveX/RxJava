@@ -61,7 +61,7 @@ public abstract class AbstractSchedulerTests {
     @Test
     public void testNestedActions() throws InterruptedException {
         Scheduler scheduler = getScheduler();
-        final Scheduler.Inner inner = scheduler.inner();
+        final Scheduler.Inner inner = scheduler.createInner();
         final CountDownLatch latch = new CountDownLatch(1);
 
         final Action0 firstStepStart = mock(Action0.class);
@@ -153,7 +153,7 @@ public abstract class AbstractSchedulerTests {
     @Test
     public final void testSequenceOfActions() throws InterruptedException {
         final Scheduler scheduler = getScheduler();
-        final Scheduler.Inner inner = scheduler.inner();
+        final Scheduler.Inner inner = scheduler.createInner();
         
         final CountDownLatch latch = new CountDownLatch(2);
         final Action0 first = mock(Action0.class);
@@ -196,7 +196,7 @@ public abstract class AbstractSchedulerTests {
     @Test
     public void testSequenceOfDelayedActions() throws InterruptedException {
         Scheduler scheduler = getScheduler();
-        final Scheduler.Inner inner = scheduler.inner();
+        final Scheduler.Inner inner = scheduler.createInner();
         
         final CountDownLatch latch = new CountDownLatch(1);
         final Action0 first = mock(Action0.class);
@@ -228,7 +228,7 @@ public abstract class AbstractSchedulerTests {
     @Test
     public void testMixOfDelayedAndNonDelayedActions() throws InterruptedException {
         Scheduler scheduler = getScheduler();
-        final Scheduler.Inner inner = scheduler.inner();
+        final Scheduler.Inner inner = scheduler.createInner();
         
         final CountDownLatch latch = new CountDownLatch(1);
         final Action0 first = mock(Action0.class);
@@ -265,7 +265,7 @@ public abstract class AbstractSchedulerTests {
     @Test
     public final void testRecursiveExecution() throws InterruptedException {
         final Scheduler scheduler = getScheduler();
-        final Scheduler.Inner inner = scheduler.inner();
+        final Scheduler.Inner inner = scheduler.createInner();
         final AtomicInteger i = new AtomicInteger();
         final CountDownLatch latch = new CountDownLatch(1);
         inner.schedule(new Action0() {
@@ -287,7 +287,7 @@ public abstract class AbstractSchedulerTests {
     @Test
     public final void testRecursiveExecutionWithDelayTime() throws InterruptedException {
         Scheduler scheduler = getScheduler();
-        final Scheduler.Inner inner = scheduler.inner();
+        final Scheduler.Inner inner = scheduler.createInner();
         final AtomicInteger i = new AtomicInteger();
         final CountDownLatch latch = new CountDownLatch(1);
 
@@ -316,7 +316,7 @@ public abstract class AbstractSchedulerTests {
         Observable<Integer> obs = Observable.create(new OnSubscribe<Integer>() {
             @Override
             public void call(final Subscriber<? super Integer> observer) {
-                final Scheduler.Inner inner = getScheduler().inner();
+                final Scheduler.Inner inner = getScheduler().createInner();
                 observer.add(inner);
                 inner.schedule(new Action0() {
                     int i = 0;

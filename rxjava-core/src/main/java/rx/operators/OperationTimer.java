@@ -50,7 +50,7 @@ public final class OperationTimer {
 
         @Override
         public Subscription onSubscribe(final Observer<? super Long> t1) {
-            return scheduler.inner().schedule(new Action0() {
+            return scheduler.createInner().schedule(new Action0() {
                 @Override
                 public void call() {
                     t1.onNext(0L);
@@ -79,7 +79,7 @@ public final class OperationTimer {
 
         @Override
         public Subscription onSubscribe(final Observer<? super Long> t1) {
-            Inner inner = scheduler.inner();
+            Inner inner = scheduler.createInner();
             inner.schedulePeriodically(new Action0() {
                 long count;
 
