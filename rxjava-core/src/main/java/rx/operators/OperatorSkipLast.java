@@ -34,11 +34,11 @@ import rx.schedulers.Timestamped;
 /**
  * Bypasses a specified number of elements at the end of an observable sequence.
  */
-public class OperationSkipLast<T> implements Operator<T, T> {
+public class OperatorSkipLast<T> implements Operator<T, T> {
 
     private final int count;
 
-    public OperationSkipLast(int count) {
+    public OperatorSkipLast(int count) {
         if (count < 0) {
             throw new IndexOutOfBoundsException("count could not be negative");
         }

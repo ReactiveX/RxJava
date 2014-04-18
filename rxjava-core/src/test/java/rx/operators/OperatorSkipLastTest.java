@@ -34,7 +34,7 @@ import rx.operators.OperationSkipTest.CustomException;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
 
-public class OperationSkipLastTest {
+public class OperatorSkipLastTest {
 
     @Test
     public void testSkipLastEmpty() {
