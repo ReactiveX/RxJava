@@ -21,8 +21,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static rx.operators.OperationSkipLast.skipLast;
 
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
@@ -38,8 +38,7 @@ public class OperationSkipLastTest {
 
     @Test
     public void testSkipLastEmpty() {
-        Observable<String> w = Observable.empty();
-        Observable<String> observable = Observable.create(skipLast(w, 2));
+        Observable<String> observable = Observable.<String>empty().skipLast(2);
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
@@ -51,8 +50,7 @@ public class OperationSkipLastTest {
 
     @Test
     public void testSkipLast1() {
-        Observable<String> w = Observable.from("one", "two", "three");
-        Observable<String> observable = Observable.create(skipLast(w, 2));
+        Observable<String> observable = Observable.from(Arrays.asList("one", "two", "three")).skipLast(2);
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
@@ -67,8 +65,7 @@ public class OperationSkipLastTest {
 
     @Test
     public void testSkipLast2() {
-        Observable<String> w = Observable.from("one", "two");
-        Observable<String> observable = Observable.create(skipLast(w, 2));
+        Observable<String> observable = Observable.from(Arrays.asList("one", "two")).skipLast(2);
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
@@ -81,7 +78,7 @@ public class OperationSkipLastTest {
     @Test
     public void testSkipLastWithZeroCount() {
         Observable<String> w = Observable.from("one", "two");
-        Observable<String> observable = Observable.create(skipLast(w, 0));
+        Observable<String> observable = w.skipLast(0);
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
@@ -94,8 +91,7 @@ public class OperationSkipLastTest {
 
     @Test
     public void testSkipLastWithNull() {
-        Observable<String> w = Observable.from("one", null, "two");
-        Observable<String> observable = Observable.create(skipLast(w, 1));
+        Observable<String> observable = Observable.from(Arrays.asList("one", null, "two")).skipLast(1);
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
@@ -107,18 +103,9 @@ public class OperationSkipLastTest {
         verify(observer, times(1)).onCompleted();
     }
 
-    @Test
+    @Test(expected = IndexOutOfBoundsException.class)
     public void testSkipLastWithNegativeCount() {
-        Observable<String> w = Observable.from("one");
-        Observable<String> observable = Observable.create(skipLast(w, -1));
-
-        @SuppressWarnings("unchecked")
-        Observer<String> observer = mock(Observer.class);
-        observable.subscribe(observer);
-        verify(observer, never()).onNext(any(String.class));
-        verify(observer, times(1)).onError(
-                any(IndexOutOfBoundsException.class));
-        verify(observer, never()).onCompleted();
+        Observable.from("one").skipLast(-1);
     }
 
     @Test

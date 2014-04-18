@@ -6043,7 +6043,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211750.aspx">MSDN: Observable.SkipLast</a>
      */
     public final Observable<T> skipLast(int count) {
-        return create(OperationSkipLast.skipLast(this, count));
+        return lift(new OperationSkipLast<T>(count));
     }
 
     /**
