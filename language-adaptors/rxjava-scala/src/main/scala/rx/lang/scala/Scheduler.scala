@@ -16,7 +16,7 @@
 package rx.lang.scala
 
 import scala.concurrent.duration.Duration
-import rx.functions.Action1
+import rx.functions.Action0
 import rx.lang.scala.schedulers._
 import scala.concurrent.duration
 import rx.lang.scala.JavaConversions._
@@ -42,42 +42,8 @@ trait Scheduler {
    */
   def now: Long = this.asJavaScheduler.now()
 
-  /**
-   * Schedules a cancelable action to be executed.
-   *
-   * @param action Action to schedule.
-   * @return a subscription to be able to unsubscribe from action.
-   */
-  def schedule(action: Inner => Unit): Subscription = this.asJavaScheduler.schedule(action)
+  def inner: Inner = this.asJavaScheduler.inner()
 
-  /**
-   * Schedules a cancelable action to be executed periodically.
-   * This default implementation schedules recursively and waits for actions to complete (instead of potentially executing
-   * long-running actions concurrently). Each scheduler that can do periodic scheduling in a better way should override this.
-   *
-   * @param action
-   * The action to execute periodically.
-   * @param initialDelay
-   * Time to wait before executing the action for the first time.
-   * @param period
-   * The time interval to wait each time in between executing the action.
-   * @return A subscription to be able to unsubscribe from action.
-   */
-  def schedulePeriodically(action: Inner => Unit, initialDelay: Duration, period: Duration): Subscription =
-     this.asJavaScheduler.schedulePeriodically (
-       new Action1[rx.Scheduler.Inner] {
-         override def call(inner: rx.Scheduler.Inner): Unit = action(javaInnerToScalaInner(inner))
-       },
-       initialDelay.toNanos,
-       period.toNanos,
-       duration.NANOSECONDS
-     )
-
-  def scheduleRec(work: (=>Unit)=>Unit): Subscription = {
-    Subscription(asJavaScheduler.schedule(new Action1[rx.Scheduler.Inner] {
-      override def call(inner: rx.Scheduler.Inner): Unit =  work{ inner.schedule(this) }
-    }))
-  }
 }
 
 object Inner {
@@ -90,10 +56,10 @@ trait Inner extends Subscription {
   /**
    * Schedules a cancelable action to be executed in delayTime.
    */
-  def schedule(action: Inner => Unit, delayTime: Duration): Unit =
+  def schedule(action: Unit => Unit, delayTime: Duration): Subscription =
     this.asJavaInner.schedule(
-      new Action1[rx.Scheduler.Inner] {
-        override def call(inner: rx.Scheduler.Inner): Unit = action(javaInnerToScalaInner(inner))
+      new Action0 {
+        override def call(): Unit = action()
       },
       delayTime.length,
       delayTime.unit)
@@ -101,9 +67,9 @@ trait Inner extends Subscription {
   /**
    * Schedules a cancelable action to be executed immediately.
    */
-  def schedule(action: Inner=>Unit): Unit = this.asJavaInner.schedule(
-    new Action1[rx.Scheduler.Inner]{
-      override def call(inner: rx.Scheduler.Inner): Unit = action(javaInnerToScalaInner(inner))
+  def schedule(action: Unit => Unit): Subscription = this.asJavaInner.schedule(
+    new Action0 {
+      override def call(): Unit = action()
     }
   )
 

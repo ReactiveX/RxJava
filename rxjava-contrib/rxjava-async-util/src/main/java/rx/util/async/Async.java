@@ -599,15 +599,18 @@ public final class Async {
             @Override
             public Observable<R> call() {
                 final AsyncSubject<R> subject = AsyncSubject.create();
-                scheduler.schedule(new Action1<Inner>() {
+                final Inner inner = scheduler.inner();
+                inner.schedule(new Action0() {
                     @Override
-                    public void call(Inner inner) {
+                    public void call() {
                         R result;
                         try {
                             result = func.call();
                         } catch (Throwable t) {
                             subject.onError(t);
                             return;
+                        } finally {
+                            inner.unsubscribe();
                         }
                         subject.onNext(result);
                         subject.onCompleted();
@@ -656,15 +659,18 @@ public final class Async {
             @Override
             public Observable<R> call(final T1 t1) {
                 final AsyncSubject<R> subject = AsyncSubject.create();
-                scheduler.schedule(new Action1<Inner>() {
+                final Inner inner = scheduler.inner();
+                inner.schedule(new Action0() {
                     @Override
-                    public void call(Inner inner) {
+                    public void call() {
                         R result;
                         try {
                             result = func.call(t1);
                         } catch (Throwable t) {
                             subject.onError(t);
                             return;
+                        } finally {
+                            inner.unsubscribe();
                         }
                         subject.onNext(result);
                         subject.onCompleted();
@@ -715,15 +721,18 @@ public final class Async {
             @Override
             public Observable<R> call(final T1 t1, final T2 t2) {
                 final AsyncSubject<R> subject = AsyncSubject.create();
-                scheduler.schedule(new Action1<Inner>() {
+                final Inner inner = scheduler.inner();
+                inner.schedule(new Action0() {
                     @Override
-                    public void call(Inner inner) {
+                    public void call() {
                         R result;
                         try {
                             result = func.call(t1, t2);
                         } catch (Throwable t) {
                             subject.onError(t);
                             return;
+                        } finally {
+                            inner.unsubscribe();
                         }
                         subject.onNext(result);
                         subject.onCompleted();
@@ -776,15 +785,18 @@ public final class Async {
             @Override
             public Observable<R> call(final T1 t1, final T2 t2, final T3 t3) {
                 final AsyncSubject<R> subject = AsyncSubject.create();
-                scheduler.schedule(new Action1<Inner>() {
+                final Inner inner = scheduler.inner();
+                inner.schedule(new Action0() {
                     @Override
-                    public void call(Inner inner) {
+                    public void call() {
                         R result;
                         try {
                             result = func.call(t1, t2, t3);
                         } catch (Throwable t) {
                             subject.onError(t);
                             return;
+                        } finally {
+                            inner.unsubscribe();
                         }
                         subject.onNext(result);
                         subject.onCompleted();
@@ -839,15 +851,18 @@ public final class Async {
             @Override
             public Observable<R> call(final T1 t1, final T2 t2, final T3 t3, final T4 t4) {
                 final AsyncSubject<R> subject = AsyncSubject.create();
-                scheduler.schedule(new Action1<Inner>() {
+                final Inner inner = scheduler.inner();
+                inner.schedule(new Action0() {
                     @Override
-                    public void call(Inner inner) {
+                    public void call() {
                         R result;
                         try {
                             result = func.call(t1, t2, t3, t4);
                         } catch (Throwable t) {
                             subject.onError(t);
                             return;
+                        } finally {
+                            inner.unsubscribe();
                         }
                         subject.onNext(result);
                         subject.onCompleted();
@@ -904,15 +919,18 @@ public final class Async {
             @Override
             public Observable<R> call(final T1 t1, final T2 t2, final T3 t3, final T4 t4, final T5 t5) {
                 final AsyncSubject<R> subject = AsyncSubject.create();
-                scheduler.schedule(new Action1<Inner>() {
+                final Inner inner = scheduler.inner();
+                inner.schedule(new Action0() {
                     @Override
-                    public void call(Inner inner) {
+                    public void call() {
                         R result;
                         try {
                             result = func.call(t1, t2, t3, t4, t5);
                         } catch (Throwable t) {
                             subject.onError(t);
                             return;
+                        } finally {
+                            inner.unsubscribe();
                         }
                         subject.onNext(result);
                         subject.onCompleted();
@@ -971,15 +989,18 @@ public final class Async {
             @Override
             public Observable<R> call(final T1 t1, final T2 t2, final T3 t3, final T4 t4, final T5 t5, final T6 t6) {
                 final AsyncSubject<R> subject = AsyncSubject.create();
-                scheduler.schedule(new Action1<Inner>() {
+                final Inner inner = scheduler.inner();
+                inner.schedule(new Action0() {
                     @Override
-                    public void call(Inner inner) {
+                    public void call() {
                         R result;
                         try {
                             result = func.call(t1, t2, t3, t4, t5, t6);
                         } catch (Throwable t) {
                             subject.onError(t);
                             return;
+                        } finally {
+                            inner.unsubscribe();
                         }
                         subject.onNext(result);
                         subject.onCompleted();
@@ -1040,15 +1061,18 @@ public final class Async {
             @Override
             public Observable<R> call(final T1 t1, final T2 t2, final T3 t3, final T4 t4, final T5 t5, final T6 t6, final T7 t7) {
                 final AsyncSubject<R> subject = AsyncSubject.create();
-                scheduler.schedule(new Action1<Inner>() {
+                final Inner inner = scheduler.inner();
+                inner.schedule(new Action0() {
                     @Override
-                    public void call(Inner inner) {
+                    public void call() {
                         R result;
                         try {
                             result = func.call(t1, t2, t3, t4, t5, t6, t7);
                         } catch (Throwable t) {
                             subject.onError(t);
                             return;
+                        } finally {
+                            inner.unsubscribe();
                         }
                         subject.onNext(result);
                         subject.onCompleted();
@@ -1111,15 +1135,18 @@ public final class Async {
             @Override
             public Observable<R> call(final T1 t1, final T2 t2, final T3 t3, final T4 t4, final T5 t5, final T6 t6, final T7 t7, final T8 t8) {
                 final AsyncSubject<R> subject = AsyncSubject.create();
-                scheduler.schedule(new Action1<Inner>() {
+                final Inner inner = scheduler.inner();
+                inner.schedule(new Action0() {
                     @Override
-                    public void call(Inner inner) {
+                    public void call() {
                         R result;
                         try {
                             result = func.call(t1, t2, t3, t4, t5, t6, t7, t8);
                         } catch (Throwable t) {
                             subject.onError(t);
                             return;
+                        } finally {
+                            inner.unsubscribe();
                         }
                         subject.onNext(result);
                         subject.onCompleted();
@@ -1184,15 +1211,18 @@ public final class Async {
             @Override
             public Observable<R> call(final T1 t1, final T2 t2, final T3 t3, final T4 t4, final T5 t5, final T6 t6, final T7 t7, final T8 t8, final T9 t9) {
                 final AsyncSubject<R> subject = AsyncSubject.create();
-                scheduler.schedule(new Action1<Inner>() {
+                final Inner inner = scheduler.inner();
+                inner.schedule(new Action0() {
                     @Override
-                    public void call(Inner inner) {
+                    public void call() {
                         R result;
                         try {
                             result = func.call(t1, t2, t3, t4, t5, t6, t7, t8, t9);
                         } catch (Throwable t) {
                             subject.onError(t);
                             return;
+                        } finally {
+                            inner.unsubscribe();
                         }
                         subject.onNext(result);
                         subject.onCompleted();
@@ -1237,15 +1267,18 @@ public final class Async {
             @Override
             public Observable<R> call(final Object... args) {
                 final AsyncSubject<R> subject = AsyncSubject.create();
-                scheduler.schedule(new Action1<Inner>() {
+                final Inner inner = scheduler.inner();
+                inner.schedule(new Action0() {
                     @Override
-                    public void call(Inner inner) {
+                    public void call() {
                         R result;
                         try {
                             result = func.call(args);
                         } catch (Throwable t) {
                             subject.onError(t);
                             return;
+                        } finally {
+                            inner.unsubscribe();
                         }
                         subject.onNext(result);
                         subject.onCompleted();
@@ -1498,11 +1531,12 @@ public final class Async {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Async-Operators#foreachfuture">RxJava Wiki: forEachFuture()</a>
      */
     public static <T> FutureTask<Void> forEachFuture(
-        Observable<? extends T> source,
-        Action1<? super T> onNext,
-        Scheduler scheduler) {
-        FutureTask < Void > task = OperationForEachFuture.forEachFuture(source, onNext);
-        scheduler.schedule(Functionals.fromRunnable(task));
+            Observable<? extends T> source,
+            Action1<? super T> onNext,
+            Scheduler scheduler) {
+        FutureTask<Void> task = OperationForEachFuture.forEachFuture(source, onNext);
+        final Inner inner = scheduler.inner();
+        inner.schedule(Functionals.fromRunnable(task, inner));
         return task;
     }
     
@@ -1524,12 +1558,13 @@ public final class Async {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Async-Operators#foreachfuture">RxJava Wiki: forEachFuture()</a>
      */
     public static <T> FutureTask<Void> forEachFuture(
-        Observable<? extends T> source,
-        Action1<? super T> onNext,
-        Action1<? super Throwable> onError,
-        Scheduler scheduler) {
-        FutureTask < Void > task = OperationForEachFuture.forEachFuture(source, onNext, onError);
-        scheduler.schedule(Functionals.fromRunnable(task));
+            Observable<? extends T> source,
+            Action1<? super T> onNext,
+            Action1<? super Throwable> onError,
+            Scheduler scheduler) {
+        FutureTask<Void> task = OperationForEachFuture.forEachFuture(source, onNext, onError);
+        final Inner inner = scheduler.inner();
+        inner.schedule(Functionals.fromRunnable(task, inner));
         return task;
     }
     
@@ -1558,7 +1593,8 @@ public final class Async {
             Action0 onCompleted,
             Scheduler scheduler) {
         FutureTask<Void> task = OperationForEachFuture.forEachFuture(source, onNext, onError, onCompleted);
-        scheduler.schedule(Functionals.fromRunnable(task));
+        final Inner inner = scheduler.inner();
+        inner.schedule(Functionals.fromRunnable(task, inner));
         return task;
     }
     
@@ -1764,14 +1800,17 @@ public final class Async {
             }
         }, csub);
         
-        csub.set(scheduler.schedule(new Action1<Inner>() {
+        final Inner inner = scheduler.inner();
+        csub.set(inner);
+        
+        inner.schedule(new Action0() {
             @Override
-            public void call(Inner t1) {
+            public void call() {
                 if (!csub.isUnsubscribed()) {
                     action.call(subject, csub);
                 }
             }
-        }));
+        });
         
         return co;
     }

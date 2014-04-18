@@ -128,7 +128,8 @@ public class OperationConditionalsTest {
     <T> void observeSequence(Observable<? extends T> source, Iterable<? extends T> values) {
         Observer<T> o = mock(Observer.class);
 
-        Subscription s = source.subscribe(new TestObserver<T>(o));
+        TestObserver<T> testObserver = new TestObserver<T>(o);
+        Subscription s = source.subscribe(testObserver);
 
         InOrder inOrder = inOrder(o);
 
@@ -401,7 +402,7 @@ public class OperationConditionalsTest {
 
     @Test
     public void testDoWhileManyTimes() {
-        Observable<Integer> source1 = Observable.from(1, 2, 3).subscribeOn(Schedulers.currentThread());
+        Observable<Integer> source1 = Observable.from(1, 2, 3).subscribeOn(Schedulers.trampoline());
 
         List<Integer> expected = new ArrayList<Integer>(numRecursion * 3);
         for (int i = 0; i < numRecursion; i++) {
