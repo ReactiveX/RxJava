@@ -15,14 +15,18 @@
  */
 package rx.subjects;
 
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
-import rx.Observable;
 
+import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
 import rx.util.functions.Func1;

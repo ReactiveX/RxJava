@@ -18,11 +18,14 @@ package rx.operators;
 import java.util.Map;
 
 import rx.Observable;
+import rx.Observable.OnSubscribe;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Func0;
 import rx.subscriptions.MultipleAssignmentSubscription;
+import rx.subscriptions.SerialSubscription;
 import rx.subscriptions.Subscriptions;
 
 /**
@@ -92,7 +95,7 @@ public final class OperationConditionals {
      *            the post condition after the source completes
      * @return a subscription function.
      */
-    public static <T> OnSubscribeFunc<T> doWhile(Observable<? extends T> source, Func0<Boolean> postCondition) {
+    public static <T> OnSubscribe<T> doWhile(Observable<? extends T> source, Func0<Boolean> postCondition) {
         return new WhileDoWhile<T>(source, TRUE, postCondition);
     }
 
@@ -109,7 +112,7 @@ public final class OperationConditionals {
      *            and subscribe to source if it returns {@code true}
      * @return a subscription function.
      */
-    public static <T> OnSubscribeFunc<T> whileDo(Observable<? extends T> source, Func0<Boolean> preCondition) {
+    public static <T> OnSubscribe<T> whileDo(Observable<? extends T> source, Func0<Boolean> preCondition) {
         return new WhileDoWhile<T>(source, preCondition, preCondition);
     }
 
@@ -209,7 +212,7 @@ public final class OperationConditionals {
      * @param <T>
      *            the result value type
      */
-    private static final class WhileDoWhile<T> implements OnSubscribeFunc<T> {
+    private static final class WhileDoWhile<T> implements OnSubscribe<T> {
         final Func0<Boolean> preCondition;
         final Func0<Boolean> postCondition;
         final Observable<? extends T> source;
@@ -222,45 +225,62 @@ public final class OperationConditionals {
         }
 
         @Override
-        public Subscription onSubscribe(Observer<? super T> t1) {
+        public void call(Subscriber<? super T> child) {
             boolean first;
             try {
                 first = preCondition.call();
             } catch (Throwable t) {
-                t1.onError(t);
-                return Subscriptions.empty();
+                child.onError(t);
+                return;
             }
+
+            SerialSubscription cancel = new SerialSubscription();
+            final WhileDoWhile<T>.SourceObserver sourceObserver = new SourceObserver(child, cancel);
+
             if (first) {
-                MultipleAssignmentSubscription ssub = new MultipleAssignmentSubscription();
+                Subscriber<T> firstSubscription = new Subscriber<T>() {
 
-                ssub.set(source.subscribe(new SourceObserver(t1, ssub)));
+                    @Override
+                    public void onCompleted() {
+                        sourceObserver.onCompleted();
+                    }
 
-                return ssub;
+                    @Override
+                    public void onError(Throwable e) {
+                        sourceObserver.onError(e);
+                    }
+
+                    @Override
+                    public void onNext(T t) {
+                        sourceObserver.onNext(t);
+                    }
+
+                };
+                cancel.set(firstSubscription);
+                source.unsafeSubscribe(firstSubscription);
             } else {
-                t1.onCompleted();
+                child.onCompleted();
             }
-            return Subscriptions.empty();
         }
 
         /** Observe the source. */
         final class SourceObserver implements Observer<T> {
-            final MultipleAssignmentSubscription cancel;
-            final Observer<? super T> observer;
+            final Subscriber<? super T> actual;
+            final SerialSubscription cancel;
 
-            public SourceObserver(Observer<? super T> observer, MultipleAssignmentSubscription cancel) {
-                this.observer = observer;
+            public SourceObserver(Subscriber<? super T> actual, SerialSubscription cancel) {
+                this.actual = actual;
                 this.cancel = cancel;
             }
 
             @Override
             public void onNext(T args) {
-                observer.onNext(args);
+                actual.onNext(args);
             }
 
             @Override
             public void onError(Throwable e) {
-                observer.onError(e);
-                cancel.unsubscribe();
+                actual.onError(e);
             }
 
             @Override
@@ -269,14 +289,33 @@ public final class OperationConditionals {
                 try {
                     next = postCondition.call();
                 } catch (Throwable t) {
-                    observer.onError(t);
+                    actual.onError(t);
                     return;
                 }
                 if (next) {
-                    cancel.set(source.subscribe(this));
+                    Subscriber<T> newSubscription = new Subscriber<T>() {
+
+                        @Override
+                        public void onCompleted() {
+                            SourceObserver.this.onCompleted();
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            SourceObserver.this.onError(e);
+                        }
+
+                        @Override
+                        public void onNext(T t) {
+                            SourceObserver.this.onNext(t);
+                        }
+
+                    };
+                    cancel.set(newSubscription);
+                    source.unsafeSubscribe(newSubscription);
+
                 } else {
-                    observer.onCompleted();
-                    cancel.unsubscribe();
+                    actual.onCompleted();
                 }
             }
 

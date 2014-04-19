@@ -15,8 +15,10 @@
  */
 package rx.operators;
 
-import static org.mockito.Mockito.*;
-import static rx.operators.OperationAll.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static rx.operators.OperationAll.all;
 
 import org.junit.Test;
 

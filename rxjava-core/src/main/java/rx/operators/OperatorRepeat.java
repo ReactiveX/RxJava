@@ -21,7 +21,7 @@ import rx.Observable.Operator;
 import rx.Scheduler;
 import rx.Scheduler.Inner;
 import rx.Subscriber;
-import rx.functions.Action1;
+import rx.functions.Action0;
 import rx.observers.Subscribers;
 import rx.schedulers.Schedulers;
 
@@ -70,12 +70,16 @@ public class OperatorRepeat<T> implements Operator<T, Observable<T>> {
 
             @Override
             public void onNext(final Observable<T> t) {
-                scheduler.schedule(new Action1<Inner>() {
+                // will only be invoked once since we're nested
+                final Inner inner = scheduler.createInner();
+                // cleanup on unsubscribe
+                add(inner);
+                inner.schedule(new Action0() {
 
-                    final Action1<Inner> self = this;
+                    final Action0 self = this;
 
                     @Override
-                    public void call(final Inner inner) {
+                    public void call() {
                         executionCount++;
                         t.unsafeSubscribe(new Subscriber<T>(child) {
 

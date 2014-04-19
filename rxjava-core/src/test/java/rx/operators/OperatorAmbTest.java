@@ -30,19 +30,21 @@ import org.mockito.InOrder;
 import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Observer;
-import rx.Scheduler.Inner;
+import rx.Scheduler;
 import rx.Subscriber;
-import rx.functions.Action1;
+import rx.functions.Action0;
 import rx.schedulers.TestScheduler;
 import rx.subscriptions.CompositeSubscription;
 
 public class OperatorAmbTest {
 
     private TestScheduler scheduler;
+    private Scheduler.Inner innerScheduler;
 
     @Before
     public void setUp() {
         scheduler = new TestScheduler();
+        innerScheduler = scheduler.createInner();
     }
 
     private Observable<String> createObservable(final String[] values,
@@ -55,17 +57,17 @@ public class OperatorAmbTest {
                 subscriber.add(parentSubscription);
                 long delay = interval;
                 for (final String value : values) {
-                    parentSubscription.add(scheduler.schedule(new Action1<Inner>() {
+                    parentSubscription.add(innerScheduler.schedule(new Action0() {
                         @Override
-                        public void call(Inner inner) {
+                        public void call() {
                             subscriber.onNext(value);
                         }
                     }, delay, TimeUnit.MILLISECONDS));
                     delay += interval;
                 }
-                parentSubscription.add(scheduler.schedule(new Action1<Inner>() {
+                parentSubscription.add(innerScheduler.schedule(new Action0() {
                     @Override
-                    public void call(Inner inner) {
+                    public void call() {
                         if (e == null) {
                             subscriber.onCompleted();
                         } else {

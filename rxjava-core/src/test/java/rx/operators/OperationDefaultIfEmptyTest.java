@@ -15,8 +15,11 @@
  */
 package rx.operators;
 
-import static org.mockito.Mockito.*;
-import static rx.operators.OperationDefaultIfEmpty.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static rx.operators.OperationDefaultIfEmpty.defaultIfEmpty;
 
 import org.junit.Test;
 

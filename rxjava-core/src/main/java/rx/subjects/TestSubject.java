@@ -22,7 +22,6 @@ import java.util.concurrent.atomic.AtomicReference;
 import rx.Notification;
 import rx.Observer;
 import rx.Scheduler;
-import rx.Scheduler.Inner;
 import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.schedulers.TestScheduler;
@@ -97,7 +96,7 @@ public final class TestSubject<T> extends Subject<T, T> {
         super(onSubscribe);
         this.subscriptionManager = subscriptionManager;
         this.lastNotification = lastNotification;
-        this.innerScheduler = scheduler.createInnerScheduler();
+        this.innerScheduler = scheduler.createInner();
     }
 
     @Override
@@ -121,10 +120,10 @@ public final class TestSubject<T> extends Subject<T, T> {
     }
 
     public void onCompleted(long timeInMilliseconds) {
-        innerScheduler.schedule(new Action1<Inner>() {
+        innerScheduler.schedule(new Action0() {
 
             @Override
-            public void call(Inner t1) {
+            public void call() {
                 _onCompleted();
             }
 
@@ -153,10 +152,10 @@ public final class TestSubject<T> extends Subject<T, T> {
     }
 
     public void onError(final Throwable e, long timeInMilliseconds) {
-        innerScheduler.schedule(new Action1<Inner>() {
+        innerScheduler.schedule(new Action0() {
 
             @Override
-            public void call(Inner t1) {
+            public void call() {
                 _onError(e);
             }
 
@@ -175,10 +174,10 @@ public final class TestSubject<T> extends Subject<T, T> {
     }
 
     public void onNext(final T v, long timeInMilliseconds) {
-        innerScheduler.schedule(new Action1<Inner>() {
+        innerScheduler.schedule(new Action0() {
 
             @Override
-            public void call(Inner t1) {
+            public void call() {
                 _onNext(v);
             }
 

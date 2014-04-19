@@ -15,7 +15,9 @@
  */
 package rx.operators;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 
 import org.junit.Before;
 import org.junit.Test;

@@ -15,7 +15,8 @@
  */
 package rx;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
 
 import java.util.concurrent.TimeUnit;
 

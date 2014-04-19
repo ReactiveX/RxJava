@@ -15,8 +15,8 @@
  */
 package rx.operators;
 
-import static org.junit.Assert.*;
-import static rx.operators.BlockingOperatorToIterator.*;
+import static org.junit.Assert.assertEquals;
+import static rx.operators.BlockingOperatorToIterator.toIterator;
 
 import java.util.Iterator;
 

@@ -485,10 +485,12 @@ public class OperatorMergeTest {
 
             @Override
             public void call(final Subscriber<? super Integer> s) {
-                Schedulers.newThread().schedule(new Action1<Inner>() {
+                Inner inner = Schedulers.newThread().createInner();
+                s.add(inner);
+                inner.schedule(new Action0() {
 
                     @Override
-                    public void call(Inner inner) {
+                    public void call() {
                         for (int i = 0; i < 10000; i++) {
                             s.onNext(1);
                         }
@@ -519,10 +521,12 @@ public class OperatorMergeTest {
 
             @Override
             public void call(final Subscriber<? super Integer> s) {
-                Schedulers.newThread().schedule(new Action1<Inner>() {
+                Inner inner = Schedulers.newThread().createInner();
+                s.add(inner);
+                inner.schedule(new Action0() {
 
                     @Override
-                    public void call(Inner inner) {
+                    public void call() {
                         for (int i = 0; i < 100; i++) {
                             s.onNext(1);
                             try {
@@ -558,10 +562,12 @@ public class OperatorMergeTest {
 
             @Override
             public void call(final Subscriber<? super Integer> s) {
-                Schedulers.newThread().schedule(new Action1<Inner>() {
+                Inner inner = Schedulers.newThread().createInner();
+                s.add(inner);
+                inner.schedule(new Action0() {
 
                     @Override
-                    public void call(Inner inner) {
+                    public void call() {
                         for (int i = 0; i < 10000; i++) {
                             s.onNext(1);
                         }

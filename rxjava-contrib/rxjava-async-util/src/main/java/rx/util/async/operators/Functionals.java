@@ -66,23 +66,29 @@ public final class Functionals {
      * @param run the Runnable to run when the Action0 is called
      * @return the Action0 wrapping the Runnable
      */
-    public static Action1<Inner> fromRunnable(Runnable run) {
+    public static Action0 fromRunnable(Runnable run, Inner inner) {
         if (run == null) {
             throw new NullPointerException("run");
         }
-        return new ActionWrappingRunnable(run);
+        return new ActionWrappingRunnable(run, inner);
     }
     /** An Action1 which wraps and calls a Runnable. */
-    private static final class ActionWrappingRunnable implements Action1<Inner> {
+    private static final class ActionWrappingRunnable implements Action0 {
         final Runnable run;
+        final Inner inner;
 
-        public ActionWrappingRunnable(Runnable run) {
+        public ActionWrappingRunnable(Runnable run, Inner inner) {
             this.run = run;
+            this.inner = inner;
         }
 
         @Override
-        public void call(Inner inner) {
-            run.run();
+        public void call() {
+            try {
+                run.run();
+            } finally {
+                inner.unsubscribe();
+            }
         }
         
     }

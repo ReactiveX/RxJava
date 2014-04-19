@@ -15,8 +15,13 @@
  */
 package rx.operators;
 
-import static org.mockito.Mockito.*;
-import static rx.operators.OperationAny.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static rx.operators.OperationAny.any;
+import static rx.operators.OperationAny.exists;
+import static rx.operators.OperationAny.isEmpty;
 
 import org.junit.Test;
 

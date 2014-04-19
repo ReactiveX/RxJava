@@ -42,10 +42,12 @@ public final class AndroidSubscriptions {
                 if (Looper.getMainLooper() == Looper.myLooper()) {
                     unsubscribe.call();
                 } else {
-                    AndroidSchedulers.mainThread().schedule(new Action1<Inner>() {
+                    final Inner inner = AndroidSchedulers.mainThread().createInner();
+                    inner.schedule(new Action0() {
                         @Override
-                        public void call(Inner inner) {
+                        public void call() {
                             unsubscribe.call();
+                            inner.unsubscribe();
                         }
                     });
                 }

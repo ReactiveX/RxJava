@@ -15,9 +15,19 @@
  */
 package rx.operators;
 
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
-import static rx.operators.OperationSum.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyDouble;
+import static org.mockito.Matchers.anyFloat;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static rx.operators.OperationSum.sumDoubles;
+import static rx.operators.OperationSum.sumFloats;
+import static rx.operators.OperationSum.sumIntegers;
+import static rx.operators.OperationSum.sumLongs;
 
 import org.junit.Test;
 

@@ -15,7 +15,7 @@
  */
 package rx.operators;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
@@ -29,7 +29,7 @@ import rx.Observable.OnSubscribe;
 import rx.Scheduler;
 import rx.Subscriber;
 import rx.Subscription;
-import rx.functions.Action1;
+import rx.functions.Action0;
 import rx.observers.TestObserver;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
@@ -94,16 +94,42 @@ public class OperatorSubscribeOnTest {
         }
 
         @Override
-        public Subscription schedule(final Action1<Scheduler.Inner> action) {
-            return actual.schedule(action, delay, unit);
+        public Inner createInner() {
+            return new SlowInner(actual.createInner());
         }
 
-        @Override
-        public Subscription schedule(final Action1<Scheduler.Inner> action, final long delayTime, final TimeUnit delayUnit) {
-            TimeUnit common = delayUnit.compareTo(unit) < 0 ? delayUnit : unit;
-            long t = common.convert(delayTime, delayUnit) + common.convert(delay, unit);
-            return actual.schedule(action, t, common);
+        private class SlowInner extends Inner {
+
+            private final Scheduler.Inner actualInner;
+
+            private SlowInner(Inner actual) {
+                this.actualInner = actual;
+            }
+
+            @Override
+            public void unsubscribe() {
+                actualInner.unsubscribe();
+            }
+
+            @Override
+            public boolean isUnsubscribed() {
+                return actualInner.isUnsubscribed();
+            }
+
+            @Override
+            public Subscription schedule(final Action0 action) {
+                return actualInner.schedule(action, delay, unit);
+            }
+
+            @Override
+            public Subscription schedule(final Action0 action, final long delayTime, final TimeUnit delayUnit) {
+                TimeUnit common = delayUnit.compareTo(unit) < 0 ? delayUnit : unit;
+                long t = common.convert(delayTime, delayUnit) + common.convert(delay, unit);
+                return actualInner.schedule(action, t, common);
+            }
+
         }
+
     }
 
     @Test(timeout = 5000)

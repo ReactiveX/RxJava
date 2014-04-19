@@ -1,10 +1,15 @@
 package rx.operators;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
 import org.junit.Test;
+
 import rx.Observable;
 import rx.Observer;
-
-import static org.mockito.Mockito.*;
 
 public class OperatorSkipTest {
 

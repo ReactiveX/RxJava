@@ -19,8 +19,9 @@ import java.util.concurrent.TimeUnit;
 
 import rx.Scheduler;
 import rx.Subscription;
-import rx.functions.Action1;
+import rx.functions.Action0;
 import rx.subscriptions.BooleanSubscription;
+import rx.subscriptions.Subscriptions;
 
 /**
  * Executes work immediately on the current thread.
@@ -45,17 +46,8 @@ public final class ImmediateScheduler extends Scheduler {
     }
 
     @Override
-    public Subscription schedule(Action1<Scheduler.Inner> action) {
-        InnerImmediateScheduler inner = new InnerImmediateScheduler();
-        inner.schedule(action);
-        return inner.innerSubscription;
-    }
-
-    @Override
-    public Subscription schedule(Action1<Inner> action, long delayTime, TimeUnit unit) {
-        InnerImmediateScheduler inner = new InnerImmediateScheduler();
-        inner.schedule(action, delayTime, unit);
-        return inner.innerSubscription;
+    public Inner createInner() {
+        return new InnerImmediateScheduler();
     }
 
     private class InnerImmediateScheduler extends Scheduler.Inner implements Subscription {
@@ -63,16 +55,17 @@ public final class ImmediateScheduler extends Scheduler {
         final BooleanSubscription innerSubscription = new BooleanSubscription();
 
         @Override
-        public void schedule(Action1<Scheduler.Inner> action, long delayTime, TimeUnit unit) {
+        public Subscription schedule(Action0 action, long delayTime, TimeUnit unit) {
             // since we are executing immediately on this thread we must cause this thread to sleep
-            long execTime = now() + unit.toMillis(delayTime);
+            long execTime = ImmediateScheduler.this.now() + unit.toMillis(delayTime);
 
-            schedule(new SleepingAction(action, ImmediateScheduler.this, execTime));
+            return schedule(new SleepingAction(action, this, execTime));
         }
 
         @Override
-        public void schedule(Action1<Scheduler.Inner> action) {
-            action.call(this);
+        public Subscription schedule(Action0 action) {
+            action.call();
+            return Subscriptions.empty();
         }
 
         @Override

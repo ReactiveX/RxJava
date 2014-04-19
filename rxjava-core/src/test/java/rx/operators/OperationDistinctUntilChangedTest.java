@@ -15,10 +15,14 @@
  */
 package rx.operators;
 
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
-import static org.mockito.MockitoAnnotations.*;
-import static rx.operators.OperationDistinctUntilChanged.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.MockitoAnnotations.initMocks;
+import static rx.operators.OperationDistinctUntilChanged.distinctUntilChanged;
 
 import java.util.Comparator;
 
