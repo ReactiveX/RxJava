@@ -442,7 +442,7 @@ public class OperationConditionalsTest {
 
     @Test
     public void testWhileDoManyTimes() {
-        Observable<Integer> source1 = Observable.from(1, 2, 3).subscribeOn(Schedulers.currentThread());
+        Observable<Integer> source1 = Observable.from(1, 2, 3).subscribeOn(Schedulers.trampoline());
 
         List<Integer> expected = new ArrayList<Integer>(numRecursion * 3);
         for (int i = 0; i < numRecursion; i++) {

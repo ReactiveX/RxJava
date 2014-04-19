@@ -54,7 +54,7 @@ public class OperationForEachFutureTest {
         
         try {
             Observable<Integer> source = Observable.from(1, 2, 3)
-                    .subscribeOn(Schedulers.threadPoolForComputation());
+                    .subscribeOn(Schedulers.computation());
             
             final AtomicInteger sum = new AtomicInteger();
             Action1<Integer> add = new Action1<Integer>() {
@@ -93,7 +93,7 @@ public class OperationForEachFutureTest {
         
         try {
             Observable<Integer> source = Observable.<Integer>error(new CustomException())
-                    .subscribeOn(Schedulers.threadPoolForComputation());
+                    .subscribeOn(Schedulers.computation());
             
             final AtomicInteger sum = new AtomicInteger();
             Action1<Integer> add = new Action1<Integer>() {
@@ -128,7 +128,7 @@ public class OperationForEachFutureTest {
     @Test
     public void testSimpleScheduled() {
         Observable<Integer> source = Observable.from(1, 2, 3)
-                .subscribeOn(Schedulers.threadPoolForComputation());
+                .subscribeOn(Schedulers.computation());
         
         final AtomicInteger sum = new AtomicInteger();
         Action1<Integer> add = new Action1<Integer>() {
@@ -158,7 +158,7 @@ public class OperationForEachFutureTest {
     public void testSimpleScheduledThrowing() {
         
         Observable<Integer> source = Observable.<Integer>error(new CustomException())
-                .subscribeOn(Schedulers.threadPoolForComputation());
+                .subscribeOn(Schedulers.computation());
         
         final AtomicInteger sum = new AtomicInteger();
         Action1<Integer> add = new Action1<Integer>() {

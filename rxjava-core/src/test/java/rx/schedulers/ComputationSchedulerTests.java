@@ -30,7 +30,7 @@ import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Func1;
 
-public class ExecutorSchedulerTests extends AbstractSchedulerConcurrencyTests {
+public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests {
 
     @Override
     protected Scheduler getScheduler() {
@@ -44,9 +44,9 @@ public class ExecutorSchedulerTests extends AbstractSchedulerConcurrencyTests {
         final int NUM = 1000000;
         final CountDownLatch latch = new CountDownLatch(1);
         final HashMap<String, Integer> map = new HashMap<String, Integer>();
-        
+
         final Scheduler.Inner inner = Schedulers.computation().createInner();
-        
+
         inner.schedule(new Action0() {
 
             private HashMap<String, Integer> statefulMap = map;
@@ -113,28 +113,6 @@ public class ExecutorSchedulerTests extends AbstractSchedulerConcurrencyTests {
         });
     }
 
-    @Test
-    public final void testIOThreadPool1() {
-
-        Observable<Integer> o1 = Observable.<Integer> from(1, 2, 3, 4, 5);
-        Observable<Integer> o2 = Observable.<Integer> from(6, 7, 8, 9, 10);
-        Observable<String> o = Observable.<Integer> merge(o1, o2).map(new Func1<Integer, String>() {
-
-            @Override
-            public String call(Integer t) {
-                assertTrue(Thread.currentThread().getName().startsWith("RxIOThreadPool"));
-                return "Value_" + t + "_Thread_" + Thread.currentThread().getName();
-            }
-        });
-
-        o.subscribeOn(Schedulers.threadPoolForIO()).toBlockingObservable().forEach(new Action1<String>() {
-
-            @Override
-            public void call(String t) {
-                System.out.println("t: " + t);
-            }
-        });
-    }
 
     @Test
     public final void testMergeWithExecutorScheduler() {

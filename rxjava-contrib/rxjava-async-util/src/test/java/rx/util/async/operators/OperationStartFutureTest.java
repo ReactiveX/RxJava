@@ -104,7 +104,7 @@ public class OperationStartFutureTest {
                 }
             };
 
-            Observable<Integer> result = Async.startFuture(func, Schedulers.threadPoolForComputation());
+            Observable<Integer> result = Async.startFuture(func, Schedulers.computation());
 
             final Observer<Integer> observer = mock(Observer.class);
 

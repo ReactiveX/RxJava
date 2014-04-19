@@ -28,7 +28,7 @@ public class ImmediateSchedulerTest extends AbstractSchedulerTests {
 
     @Override
     protected Scheduler getScheduler() {
-        return ImmediateScheduler.getInstance();
+        return Schedulers.immediate();
     }
 
     @Override
