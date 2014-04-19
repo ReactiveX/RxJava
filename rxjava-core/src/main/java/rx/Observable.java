@@ -117,6 +117,7 @@ import rx.operators.OperatorScan;
 import rx.operators.OperatorSerialize;
 import rx.operators.OperatorSkip;
 import rx.operators.OperatorSkipLast;
+import rx.operators.OperatorSkipLastTimed;
 import rx.operators.OperatorSkipWhile;
 import rx.operators.OperatorSubscribeOn;
 import rx.operators.OperatorSynchronize;
@@ -6083,7 +6084,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211750.aspx">MSDN: Observable.SkipLast</a>
      */
     public final Observable<T> skipLast(long time, TimeUnit unit, Scheduler scheduler) {
-        return create(new OperatorSkipLast.SkipLastTimed<T>(this, time, unit, scheduler));
+        return lift(new OperatorSkipLastTimed<T>(time, unit, scheduler));
     }
 
     /**
