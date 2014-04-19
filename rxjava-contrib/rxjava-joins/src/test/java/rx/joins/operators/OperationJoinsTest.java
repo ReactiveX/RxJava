@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package rx.operators;
+package rx.joins.operators;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.inOrder;
@@ -36,6 +36,7 @@ import rx.functions.Func2;
 import rx.functions.Func3;
 import rx.functions.Functions;
 import rx.joins.Plan0;
+import rx.observables.JoinObservable;
 import rx.observers.TestSubscriber;
 import rx.subjects.PublishSubject;
 
@@ -95,20 +96,20 @@ public class OperationJoinsTest {
     @Test(expected = NullPointerException.class)
     public void and2ArgumentNull() {
         Observable<Integer> some = Observable.just(1);
-        some.and(null);
+        JoinObservable.from(some).and(null);
     }
 
     @Test(expected = NullPointerException.class)
     public void and3argumentNull() {
         Observable<Integer> some = Observable.just(1);
-        some.and(some).and(null);
+        JoinObservable.from(some).and(some).and(null);
     }
 
     @Test
     public void and2() {
         Observable<Integer> some = Observable.just(1);
 
-        Observable<Integer> m = Observable.when(some.and(some).then(add2));
+        Observable<Integer> m = JoinObservable.when(JoinObservable.from(some).and(some).then(add2)).toObservable();
 
         m.subscribe(observer);
 
@@ -123,7 +124,7 @@ public class OperationJoinsTest {
 
         Observable<Integer> some = Observable.just(1);
 
-        Observable<Integer> m = Observable.when(error.and(some).then(add2));
+        Observable<Integer> m = JoinObservable.when(JoinObservable.from(error).and(some).then(add2)).toObservable();
 
         m.subscribe(observer);
 
@@ -138,7 +139,7 @@ public class OperationJoinsTest {
 
         Observable<Integer> some = Observable.just(1);
 
-        Observable<Integer> m = Observable.when(some.and(error).then(add2));
+        Observable<Integer> m = JoinObservable.when(JoinObservable.from(some).and(error).then(add2)).toObservable();
 
         m.subscribe(observer);
 
@@ -151,7 +152,7 @@ public class OperationJoinsTest {
     public void and3() {
         Observable<Integer> some = Observable.just(1);
 
-        Observable<Integer> m = Observable.when(some.and(some).and(some).then(add3));
+        Observable<Integer> m = JoinObservable.when(JoinObservable.from(some).and(some).and(some).then(add3)).toObservable();
 
         m.subscribe(observer);
 
@@ -166,7 +167,7 @@ public class OperationJoinsTest {
 
         Observable<Integer> some = Observable.just(1);
 
-        Observable<Integer> m = Observable.when(error.and(some).and(some).then(add3));
+        Observable<Integer> m = JoinObservable.when(JoinObservable.from(error).and(some).and(some).then(add3)).toObservable();
 
         m.subscribe(observer);
 
@@ -181,7 +182,7 @@ public class OperationJoinsTest {
 
         Observable<Integer> some = Observable.just(1);
 
-        Observable<Integer> m = Observable.when(some.and(error).and(some).then(add3));
+        Observable<Integer> m = JoinObservable.when(JoinObservable.from(some).and(error).and(some).then(add3)).toObservable();
 
         m.subscribe(observer);
 
@@ -196,7 +197,7 @@ public class OperationJoinsTest {
 
         Observable<Integer> some = Observable.just(1);
 
-        Observable<Integer> m = Observable.when(some.and(some).and(error).then(add3));
+        Observable<Integer> m = JoinObservable.when(JoinObservable.from(some).and(some).and(error).then(add3)).toObservable();
 
         m.subscribe(observer);
 
@@ -209,28 +210,28 @@ public class OperationJoinsTest {
     public void thenArgumentNull() {
         Observable<Integer> some = Observable.just(1);
 
-        some.then(null);
+        JoinObservable.from(some).then(null);
     }
 
     @Test(expected = NullPointerException.class)
     public void then2ArgumentNull() {
         Observable<Integer> some = Observable.just(1);
 
-        some.and(some).then(null);
+        JoinObservable.from(some).and(some).then(null);
     }
 
     @Test(expected = NullPointerException.class)
     public void then3ArgumentNull() {
         Observable<Integer> some = Observable.just(1);
 
-        some.and(some).and(some).then(null);
+        JoinObservable.from(some).and(some).and(some).then(null);
     }
 
     @Test
     public void then1() {
         Observable<Integer> some = Observable.just(1);
 
-        Observable<Integer> m = Observable.when(some.then(Functions.<Integer> identity()));
+        Observable<Integer> m = JoinObservable.when(JoinObservable.from(some).then(Functions.<Integer> identity())).toObservable();
         m.subscribe(observer);
 
         verify(observer, never()).onError(any(Throwable.class));
@@ -242,7 +243,7 @@ public class OperationJoinsTest {
     public void then1Error() {
         Observable<Integer> some = Observable.error(new RuntimeException("Forced failure"));
 
-        Observable<Integer> m = Observable.when(some.then(Functions.<Integer> identity()));
+        Observable<Integer> m = JoinObservable.when(JoinObservable.from(some).then(Functions.<Integer> identity())).toObservable();
         m.subscribe(observer);
 
         verify(observer, times(1)).onError(any(Throwable.class));
@@ -254,7 +255,7 @@ public class OperationJoinsTest {
     public void then1Throws() {
         Observable<Integer> some = Observable.just(1);
 
-        Observable<Integer> m = Observable.when(some.then(func1Throw));
+        Observable<Integer> m = JoinObservable.when(JoinObservable.from(some).then(func1Throw)).toObservable();
         m.subscribe(observer);
 
         verify(observer, times(1)).onError(any(Throwable.class));
@@ -266,7 +267,7 @@ public class OperationJoinsTest {
     public void then2Throws() {
         Observable<Integer> some = Observable.just(1);
 
-        Observable<Integer> m = Observable.when(some.and(some).then(func2Throw));
+        Observable<Integer> m = JoinObservable.when(JoinObservable.from(some).and(some).then(func2Throw)).toObservable();
         m.subscribe(observer);
 
         verify(observer, times(1)).onError(any(Throwable.class));
@@ -278,7 +279,7 @@ public class OperationJoinsTest {
     public void then3Throws() {
         Observable<Integer> some = Observable.just(1);
 
-        Observable<Integer> m = Observable.when(some.and(some).and(some).then(func3Throw));
+        Observable<Integer> m = JoinObservable.when(JoinObservable.from(some).and(some).and(some).then(func3Throw)).toObservable();
         m.subscribe(observer);
 
         verify(observer, times(1)).onError(any(Throwable.class));
@@ -288,12 +289,12 @@ public class OperationJoinsTest {
 
     @Test(expected = NullPointerException.class)
     public void whenArgumentNull1() {
-        Observable.when((Plan0<Object>[]) null);
+        JoinObservable.when((Plan0<Object>[]) null);
     }
 
     @Test(expected = NullPointerException.class)
     public void whenArgumentNull2() {
-        Observable.when((Iterable<Plan0<Object>>) null);
+        JoinObservable.when((Iterable<Plan0<Object>>) null);
     }
 
     @Test
@@ -301,7 +302,7 @@ public class OperationJoinsTest {
         Observable<Integer> source1 = Observable.from(1, 2, 3);
         Observable<Integer> source2 = Observable.from(4, 5, 6);
 
-        Observable<Integer> m = Observable.when(source1.and(source2).then(add2));
+        Observable<Integer> m = JoinObservable.when(JoinObservable.from(source1).and(source2).then(add2)).toObservable();
         m.subscribe(observer);
 
         verify(observer, never()).onError(any(Throwable.class));
@@ -316,7 +317,7 @@ public class OperationJoinsTest {
         Observable<Integer> source1 = Observable.from(1, 2, 3);
         Observable<Integer> source2 = Observable.from(4, 5);
 
-        Observable<Integer> m = Observable.when(source1.and(source2).then(add2));
+        Observable<Integer> m = JoinObservable.when(JoinObservable.from(source1).and(source2).then(add2)).toObservable();
         m.subscribe(observer);
 
         verify(observer, never()).onError(any(Throwable.class));
@@ -330,7 +331,7 @@ public class OperationJoinsTest {
         Observable<Integer> source1 = Observable.empty();
         Observable<Integer> source2 = Observable.empty();
 
-        Observable<Integer> m = Observable.when(source1.and(source2).then(add2));
+        Observable<Integer> m = JoinObservable.when(JoinObservable.from(source1).and(source2).then(add2)).toObservable();
         m.subscribe(observer);
 
         verify(observer, never()).onError(any(Throwable.class));
@@ -343,7 +344,7 @@ public class OperationJoinsTest {
         Observable<Integer> source1 = Observable.never();
         Observable<Integer> source2 = Observable.never();
 
-        Observable<Integer> m = Observable.when(source1.and(source2).then(add2));
+        Observable<Integer> m = JoinObservable.when(JoinObservable.from(source1).and(source2).then(add2)).toObservable();
         m.subscribe(observer);
 
         verify(observer, never()).onError(any(Throwable.class));
@@ -356,7 +357,7 @@ public class OperationJoinsTest {
         Observable<Integer> source1 = Observable.empty();
         Observable<Integer> source2 = Observable.error(new RuntimeException("Forced failure"));
 
-        Observable<Integer> m = Observable.when(source1.and(source2).then(add2));
+        Observable<Integer> m = JoinObservable.when(JoinObservable.from(source1).and(source2).then(add2)).toObservable();
         m.subscribe(observer);
 
         verify(observer, times(1)).onError(any(Throwable.class));
@@ -370,11 +371,11 @@ public class OperationJoinsTest {
         PublishSubject<Integer> ys = PublishSubject.create();
         PublishSubject<Integer> zs = PublishSubject.create();
 
-        Observable<Integer> m = Observable.when(
-                xs.and(ys).then(add2), // 1+4=5, 2+5=7, 3+6=9
-                xs.and(zs).then(mul2), // 1*7=7, 2*8=16, 3*9=27
-                ys.and(zs).then(sub2)  // 4-7=-3, 5-8=-3, 6-9=-3
-                );
+        Observable<Integer> m = JoinObservable.when(
+                JoinObservable.from(xs).and(ys).then(add2), // 1+4=5, 2+5=7, 3+6=9
+                JoinObservable.from(xs).and(zs).then(mul2), // 1*7=7, 2*8=16, 3*9=27
+                JoinObservable.from(ys).and(zs).then(sub2)  // 4-7=-3, 5-8=-3, 6-9=-3
+                ).toObservable();
 
         TestSubscriber<Integer> to = new TestSubscriber<Integer>(observer);
         m.subscribe(to);

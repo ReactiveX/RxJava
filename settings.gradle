@@ -9,6 +9,7 @@ include 'rxjava-core', \
 'rxjava-contrib:rxjava-android', \
 'rxjava-contrib:rxjava-android-samples-build-wrapper', \
 'rxjava-contrib:rxjava-apache-http', \
+'rxjava-contrib:rxjava-joins', \
 'rxjava-contrib:rxjava-string', \
 'rxjava-contrib:rxjava-math', \
 'rxjava-contrib:rxjava-debug', \

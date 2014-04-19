@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package rx.operators;
+package rx.joins.operators;
 
 import java.util.ArrayList;
 import java.util.Arrays;

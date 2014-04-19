@@ -1,0 +1,21 @@
+apply plugin: 'osgi'
+
+sourceCompatibility = JavaVersion.VERSION_1_6
+targetCompatibility = JavaVersion.VERSION_1_6
+
+dependencies {
+    compile project(':rxjava-core')
+    testCompile project(":rxjava-core").sourceSets.test.output 
+    provided 'junit:junit-dep:4.10'
+    provided 'org.mockito:mockito-core:1.8.5'
+}
+
+jar {
+    manifest {
+        name = 'rxjava-joins'
+        instruction 'Bundle-Vendor', 'Netflix'
+        instruction 'Bundle-DocURL', 'https://github.com/Netflix/RxJava'
+        instruction 'Import-Package', '!org.junit,!junit.framework,!org.mockito.*,*'
+        instruction 'Fragment-Host', 'com.netflix.rxjava.core'
+    }
+}
