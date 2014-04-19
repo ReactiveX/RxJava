@@ -15,8 +15,8 @@
  */
 package rx.operators;
 
+import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.LinkedList;
 
 import rx.Observable.Operator;
 import rx.Subscriber;
@@ -38,10 +38,13 @@ public class OperatorSkipLast<T> implements Operator<T, T> {
     @Override
     public Subscriber<? super T> call(final Subscriber<? super T> subscriber) {
         return new Subscriber<T>(subscriber) {
+
+            private final NotificationLite<T> on = NotificationLite.instance();
+
             /**
              * Store the last count elements until now.
              */
-            private final Deque<T> deque = new LinkedList<T>();
+            private final Deque<Object> deque = new ArrayDeque<Object>();
 
             @Override
             public void onCompleted() {
@@ -62,14 +65,10 @@ public class OperatorSkipLast<T> implements Operator<T, T> {
                     subscriber.onNext(value);
                     return;
                 }
-                deque.offerLast(value);
-                if (deque.size() > count) {
-                    // Now deque has count + 1 elements, so the first
-                    // element in the deque definitely does not belong
-                    // to the last count elements of the source
-                    // sequence. We can emit it now.
-                    subscriber.onNext(deque.removeFirst());
+                if (deque.size() == count) {
+                    subscriber.onNext(on.getValue(deque.removeFirst()));
                 }
+                deque.offerLast(on.next(value));
             }
 
         };
