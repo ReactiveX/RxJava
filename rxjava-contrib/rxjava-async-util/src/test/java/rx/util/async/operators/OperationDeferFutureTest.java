@@ -58,7 +58,7 @@ public class OperationDeferFutureTest {
                 }
             };
             
-            Observable<Integer> result = Async.deferFuture(func, Schedulers.threadPoolForComputation());
+            Observable<Integer> result = Async.deferFuture(func, Schedulers.computation());
 
             final Observer<Integer> observer = mock(Observer.class);
 

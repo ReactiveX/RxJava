@@ -195,7 +195,7 @@ public final class OperationWindow extends ChunkedOperation {
      *         the {@link rx.functions.Func1} object representing the specified window operation
      */
     public static <T> OnSubscribeFunc<Observable<T>> window(Observable<? extends T> source, long timespan, TimeUnit unit) {
-        return window(source, timespan, unit, Schedulers.threadPoolForComputation());
+        return window(source, timespan, unit, Schedulers.computation());
     }
 
     /**
@@ -255,7 +255,7 @@ public final class OperationWindow extends ChunkedOperation {
      *         the {@link rx.functions.Func1} object representing the specified window operation
      */
     public static <T> OnSubscribeFunc<Observable<T>> window(Observable<? extends T> source, long timespan, TimeUnit unit, int count) {
-        return window(source, timespan, unit, count, Schedulers.threadPoolForComputation());
+        return window(source, timespan, unit, count, Schedulers.computation());
     }
 
     /**
@@ -318,7 +318,7 @@ public final class OperationWindow extends ChunkedOperation {
      *         the {@link rx.functions.Func1} object representing the specified window operation
      */
     public static <T> OnSubscribeFunc<Observable<T>> window(Observable<? extends T> source, long timespan, long timeshift, TimeUnit unit) {
-        return window(source, timespan, timeshift, unit, Schedulers.threadPoolForComputation());
+        return window(source, timespan, timeshift, unit, Schedulers.computation());
     }
 
     /**

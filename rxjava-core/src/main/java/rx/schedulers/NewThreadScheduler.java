@@ -46,15 +46,6 @@ public class NewThreadScheduler extends Scheduler {
         }
     };
 
-    /**
-     * @deprecated Use Schedulers.newThread();
-     * @return
-     */
-    @Deprecated
-    public static NewThreadScheduler getInstance() {
-        return INSTANCE;
-    }
-
     /* package */static NewThreadScheduler instance() {
         return INSTANCE;
     }
@@ -65,19 +56,23 @@ public class NewThreadScheduler extends Scheduler {
 
     @Override
     public Inner createInner() {
-        return new EventLoopScheduler();
+        return new EventLoopScheduler(THREAD_FACTORY);
     }
 
-    private class EventLoopScheduler extends Scheduler.Inner implements Subscription {
+    /* package */static class EventLoopScheduler extends Scheduler.Inner implements Subscription {
         private final CompositeSubscription innerSubscription = new CompositeSubscription();
         private final ExecutorService executor;
 
-        private EventLoopScheduler() {
-            executor = Executors.newSingleThreadExecutor(THREAD_FACTORY);
+        /* package */EventLoopScheduler(ThreadFactory threadFactory) {
+            executor = Executors.newSingleThreadExecutor(threadFactory);
         }
 
         @Override
         public Subscription schedule(final Action0 action) {
+            return schedule(action, null);
+        }
+
+        /* package */Subscription schedule(final Action0 action, final OnActionComplete onComplete) {
             if (innerSubscription.isUnsubscribed()) {
                 // don't schedule, we are unsubscribed
                 return Subscriptions.empty();
@@ -99,6 +94,9 @@ public class NewThreadScheduler extends Scheduler {
                         if (s != null) {
                             innerSubscription.remove(s);
                         }
+                        if (onComplete != null) {
+                            onComplete.complete(s);
+                        }
                     }
                 }
             }));
@@ -110,6 +108,10 @@ public class NewThreadScheduler extends Scheduler {
 
         @Override
         public Subscription schedule(final Action0 action, long delayTime, TimeUnit unit) {
+            return schedule(action, delayTime, unit, null);
+        }
+
+        /* package */Subscription schedule(final Action0 action, long delayTime, TimeUnit unit, final OnActionComplete onComplete) {
             final AtomicReference<Subscription> sf = new AtomicReference<Subscription>();
             // we will use the system scheduler since it doesn't make sense to launch a new Thread and then sleep
             // we will instead schedule the event then launch the thread after the delay has passed
@@ -128,6 +130,9 @@ public class NewThreadScheduler extends Scheduler {
                         Subscription s = sf.get();
                         if (s != null) {
                             innerSubscription.remove(s);
+                        }
+                        if (onComplete != null) {
+                            onComplete.complete(s);
                         }
                     }
                 }
@@ -149,6 +154,12 @@ public class NewThreadScheduler extends Scheduler {
         public boolean isUnsubscribed() {
             return innerSubscription.isUnsubscribed();
         }
+
+    }
+
+    /* package */static interface OnActionComplete {
+
+        public void complete(Subscription s);
 
     }
 

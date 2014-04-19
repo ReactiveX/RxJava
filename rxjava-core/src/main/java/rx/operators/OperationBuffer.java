@@ -197,7 +197,7 @@ public final class OperationBuffer extends ChunkedOperation {
      *         the {@link Func1} object representing the specified buffer operation
      */
     public static <T> OnSubscribeFunc<List<T>> buffer(Observable<T> source, long timespan, TimeUnit unit) {
-        return buffer(source, timespan, unit, Schedulers.threadPoolForComputation());
+        return buffer(source, timespan, unit, Schedulers.computation());
     }
 
     /**
@@ -259,7 +259,7 @@ public final class OperationBuffer extends ChunkedOperation {
      *         the {@link Func1} object representing the specified buffer operation
      */
     public static <T> OnSubscribeFunc<List<T>> buffer(Observable<T> source, long timespan, TimeUnit unit, int count) {
-        return buffer(source, timespan, unit, count, Schedulers.threadPoolForComputation());
+        return buffer(source, timespan, unit, count, Schedulers.computation());
     }
 
     /**
@@ -325,7 +325,7 @@ public final class OperationBuffer extends ChunkedOperation {
      *         the {@link Func1} object representing the specified buffer operation
      */
     public static <T> OnSubscribeFunc<List<T>> buffer(Observable<T> source, long timespan, long timeshift, TimeUnit unit) {
-        return buffer(source, timespan, timeshift, unit, Schedulers.threadPoolForComputation());
+        return buffer(source, timespan, timeshift, unit, Schedulers.computation());
     }
 
     /**

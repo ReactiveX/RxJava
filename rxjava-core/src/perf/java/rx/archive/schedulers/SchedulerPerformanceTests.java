@@ -36,7 +36,7 @@ public class SchedulerPerformanceTests {
 
                 @Override
                 public void call() {
-                    spt.singleResponse(Schedulers.immediate());
+                    spt.singleResponse(Schedulers.computation());
                     //                    spt.singleResponse(Schedulers.currentThread());
                     //                    spt.singleResponse(Schedulers.computation());
 
@@ -109,8 +109,11 @@ public class SchedulerPerformanceTests {
      * 
      * --- Schedulers.computation() ---
      * 
-     * Run: 0 - 224,004 ops/sec
-     * Run: 1 - 227,101 ops/sec
+     * Run: 10 - 12,616,099 ops/sec
+     * Run: 11 - 12,661,625 ops/sec
+     * Run: 12 - 12,775,536 ops/sec
+     * Run: 13 - 12,711,358 ops/sec
+     * Run: 14 - 12,815,452 ops/sec
      * 
      */
     public long singleResponse(Scheduler scheduler) {

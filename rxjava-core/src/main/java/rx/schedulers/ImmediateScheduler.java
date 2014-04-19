@@ -29,15 +29,6 @@ import rx.subscriptions.Subscriptions;
 public final class ImmediateScheduler extends Scheduler {
     private static final ImmediateScheduler INSTANCE = new ImmediateScheduler();
 
-    /**
-     * @deprecated Use Schedulers.immediate();
-     * @return
-     */
-    @Deprecated
-    public static ImmediateScheduler getInstance() {
-        return INSTANCE;
-    }
-
     /* package */static ImmediateScheduler instance() {
         return INSTANCE;
     }

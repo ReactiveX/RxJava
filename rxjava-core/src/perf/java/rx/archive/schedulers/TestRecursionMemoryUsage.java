@@ -30,52 +30,13 @@ import rx.schedulers.Schedulers;
 public class TestRecursionMemoryUsage {
 
     public static void main(String args[]) {
-        usingFunc2(Schedulers.newThread());
-        usingAction0(Schedulers.newThread());
-
-        usingFunc2(Schedulers.immediate());
-        usingAction0(Schedulers.immediate());
-
-        usingFunc2(Schedulers.computation());
-        usingAction0(Schedulers.computation());
+        testScheduler(Schedulers.newThread());
+        testScheduler(Schedulers.computation());
 
         System.exit(0);
     }
 
-    protected static void usingFunc2(final Scheduler scheduler) {
-        System.out.println("************ usingFunc2: " + scheduler);
-        Observable.create(new OnSubscribe<Long>() {
-
-            @Override
-            public void call(final Subscriber<? super Long> o) {
-                final Inner inner = scheduler.createInner();
-                o.add(inner);
-                inner.schedule(new Action0() {
-                    long i = 0;
-
-                    @Override
-                    public void call() {
-                        i++;
-                        if (i % 500000 == 0) {
-                            System.out.println(i + "  Total Memory: "
-                                    + Runtime.getRuntime().totalMemory()
-                                    + "  Free: "
-                                    + Runtime.getRuntime().freeMemory());
-                            o.onNext(i);
-                        }
-                        if (i == 100000000L) {
-                            o.onCompleted();
-                            return;
-                        }
-
-                        inner.schedule(this);
-                    }
-                });
-            }
-        }).toBlockingObservable().last();
-    }
-
-    protected static void usingAction0(final Scheduler scheduler) {
+    protected static void testScheduler(final Scheduler scheduler) {
         System.out.println("************ usingAction0: " + scheduler);
         Observable.create(new OnSubscribe<Long>() {
 
