@@ -38,20 +38,20 @@ public class OperationSequenceEqual {
 
                     @Override
                     public Notification<T> call(T t1) {
-                        return new Notification<T>(t1);
+                        return Notification.createOnNext(t1);
                     }
 
-                }), from(new Notification<T>()));
+                }), from(Notification.<T>createOnCompleted()));
 
         Observable<Notification<T>> secondObservable = concat(
                 second.map(new Func1<T, Notification<T>>() {
 
                     @Override
                     public Notification<T> call(T t1) {
-                        return new Notification<T>(t1);
+                        return Notification.createOnNext(t1);
                     }
 
-                }), from(new Notification<T>()));
+                }), from(Notification.<T>createOnCompleted()));
 
         return zip(firstObservable, secondObservable,
                 new Func2<Notification<T>, Notification<T>, Boolean>() {

@@ -144,7 +144,7 @@ public final class OperationSwitch {
 
             }));
 
-            this.child.setSubscription(sub);
+            this.child.set(sub);
         }
 
         @Override

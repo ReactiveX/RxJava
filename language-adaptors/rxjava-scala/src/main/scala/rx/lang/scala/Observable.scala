@@ -268,8 +268,8 @@ trait Observable[+T]
    * @return an Observable that is a chronologically well-behaved version of the source
    *         Observable, and that synchronously notifies its [[rx.lang.scala.Observer]]s
    */
-  def synchronize: Observable[T] = {
-    toScalaObservable[T](asJavaObservable.synchronize)
+  def serialize: Observable[T] = {
+    toScalaObservable[T](asJavaObservable.serialize)
   }
 
   /**

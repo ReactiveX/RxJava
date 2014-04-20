@@ -24,7 +24,6 @@ import rx.Observable.Operator;
 import rx.Scheduler;
 import rx.Subscriber;
 import rx.Subscription;
-import rx.functions.Func2;
 import rx.functions.Func3;
 import rx.functions.Func4;
 import rx.observers.SerializedSubscriber;

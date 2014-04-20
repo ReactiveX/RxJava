@@ -42,11 +42,6 @@ public class OperatorSerializePerf {
         input.observable.serialize().subscribe(input.subscriber);
     }
 
-    @GenerateMicroBenchmark
-    public void synchronizedSingleStream(Input input) {
-        input.observable.synchronize().subscribe(input.subscriber);
-    }
-
     @State(Scope.Thread)
     public static class Input {
 

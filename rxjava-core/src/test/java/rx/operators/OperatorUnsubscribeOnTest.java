@@ -6,7 +6,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;

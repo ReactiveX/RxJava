@@ -55,7 +55,7 @@ public class OperationJoin<TLeft, TRight, TLeftDuration, TRightDuration, R> impl
     public Subscription onSubscribe(Observer<? super R> t1) {
         SerialSubscription cancel = new SerialSubscription();
         ResultSink result = new ResultSink(t1, cancel);
-        cancel.setSubscription(result.run());
+        cancel.set(result.run());
         return cancel;
     }
 
@@ -84,8 +84,8 @@ public class OperationJoin<TLeft, TRight, TLeftDuration, TRightDuration, R> impl
             group.add(leftCancel);
             group.add(rightCancel);
 
-            leftCancel.setSubscription(left.unsafeSubscribe(new LeftObserver(leftCancel)));
-            rightCancel.setSubscription(right.unsafeSubscribe(new RightObserver(rightCancel)));
+            leftCancel.set(left.unsafeSubscribe(new LeftObserver(leftCancel)));
+            rightCancel.set(right.unsafeSubscribe(new RightObserver(rightCancel)));
 
             return group;
         }
@@ -129,7 +129,7 @@ public class OperationJoin<TLeft, TRight, TLeftDuration, TRightDuration, R> impl
                     return;
                 }
 
-                md.setSubscription(duration.unsafeSubscribe(new LeftDurationObserver(id, md)));
+                md.set(duration.unsafeSubscribe(new LeftDurationObserver(id, md)));
 
                 synchronized (gate) {
                     for (Map.Entry<Integer, TRight> entry : rightMap.entrySet()) {
@@ -236,7 +236,7 @@ public class OperationJoin<TLeft, TRight, TLeftDuration, TRightDuration, R> impl
                     return;
                 }
 
-                md.setSubscription(duration.unsafeSubscribe(new RightDurationObserver(id, md)));
+                md.set(duration.unsafeSubscribe(new RightDurationObserver(id, md)));
 
                 synchronized (gate) {
                     for (Map.Entry<Integer, TLeft> entry : leftMap.entrySet()) {

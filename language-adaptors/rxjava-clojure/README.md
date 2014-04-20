@@ -106,14 +106,14 @@ or, at the REPL:
 ```
 
 ### Using rx/fn
-Once the namespace is required, you can use the `rx/fn` macro anywhere RxJava wants a `rx.util.functions.Func` object. The syntax is exactly the same as `clojure.core/fn`:
+Once the namespace is required, you can use the `rx/fn` macro anywhere RxJava wants a `rx.functions.Func` object. The syntax is exactly the same as `clojure.core/fn`:
 
 ```clojure
 (-> my-observable
     (.map (rx/fn [v] (* 2 v))))
 ```
 
-If you already have a plain old Clojure function you'd like to use, you can pass it to the `rx/fn*` function to get a new object that implements `rx.util.functions.Func`:
+If you already have a plain old Clojure function you'd like to use, you can pass it to the `rx/fn*` function to get a new object that implements `rx.functions.Func`:
 
 ```clojure
 (-> my-numbers
@@ -121,7 +121,7 @@ If you already have a plain old Clojure function you'd like to use, you can pass
 ```
 
 ### Using rx/action
-The `rx/action` macro is identical to `rx/fn` except that the object returned implements `rx.util.functions.Action` interfaces. It's used in `subscribe` and other side-effect-y contexts:
+The `rx/action` macro is identical to `rx/fn` except that the object returned implements `rx.functions.Action` interfaces. It's used in `subscribe` and other side-effect-y contexts:
 
 ```clojure
 (-> my-observable
@@ -133,7 +133,7 @@ The `rx/action` macro is identical to `rx/fn` except that the object returned im
 ```
 
 ### Using Observable/create
-As of 0.17, `rx.Observable/create` takes an implementation of `rx.Observable$OnSubscribe` which is basically an alias for `rx.util.functions.Action1` that takes an `rx.Subscriber` as its argument. Thus, you can just use `rx/action` when creating new observables:
+As of 0.17, `rx.Observable/create` takes an implementation of `rx.Observable$OnSubscribe` which is basically an alias for `rx.functions.Action1` that takes an `rx.Subscriber` as its argument. Thus, you can just use `rx/action` when creating new observables:
 
 ```clojure
 ; A simple observable that emits 0..9 taking unsubscribe into account

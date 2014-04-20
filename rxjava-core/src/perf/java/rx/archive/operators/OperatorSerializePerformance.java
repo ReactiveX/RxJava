@@ -92,21 +92,6 @@ public class OperatorSerializePerformance extends AbstractPerformanceTester {
     }
 
     /**
-     * Run: 10 - 9,475,925 ops/sec
-     * Run: 11 - 9,501,341 ops/sec
-     * Run: 12 - 9,550,495 ops/sec
-     * Run: 13 - 9,510,303 ops/sec
-     * Run: 14 - 9,690,300 ops/sec
-     * 
-     * @param input
-     */
-    public void synchronizedSingleStream(Input input) {
-        for (int i = 0; i < reps; i++) {
-            input.observable.synchronize().subscribe(input.subscriber);
-        }
-    }
-
-    /**
      * 1 streams emitting in a tight loop. Testing for single-threaded overhead.
      * 
      * -> blocking synchronization (SynchronizedObserver)

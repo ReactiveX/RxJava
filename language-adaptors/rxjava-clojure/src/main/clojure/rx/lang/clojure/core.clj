@@ -22,7 +22,7 @@
             BlockingObservable
             GroupedObservable]
            [rx.subscriptions Subscriptions]
-           [rx.util.functions Action0 Action1 Func0 Func1 Func2]))
+           [rx.functions Action0 Action1 Func0 Func1 Func2]))
 
 (set! *warn-on-reflection* true)
 
@@ -292,16 +292,14 @@
 ;################################################################################
 ; Operators
 
-(defn synchronize
-  "Synchronize execution.
+(defn serialize
+  "Serialize execution.
 
   See:
-    rx.Observable/synchronize
+    rx.Observable/serialize
   "
   ([^Observable xs]
-  (.synchronize xs))
-  ([lock ^Observable xs]
-  (.synchronize xs lock)))
+  (.serialize xs)))
 
 (defn merge*
   "Merge an Observable of Observables into a single Observable
@@ -472,10 +470,10 @@
   empty Observable if xs is empty.
 
   See:
-    rx.Observable/takeFirst
+    rx.Observable/take(1)
   "
   [^Observable xs]
-  (.takeFirst xs))
+  (.take xs 1))
 
 (defn ^Observable group-by
   "Returns an Observable of clojure.lang.MapEntry where the key is the result of
@@ -832,7 +830,7 @@
 
   See:
     rx.Observable/onErrorResumeNext
-    http://netflix.github.io/RxJava/javadoc/rx/Observable.html#onErrorResumeNext(rx.util.functions.Func1)
+    http://netflix.github.io/RxJava/javadoc/rx/Observable.html#onErrorResumeNext(rx.functions.Func1)
   "
   [p f ^Observable o]
   (let [p (if (class? p)

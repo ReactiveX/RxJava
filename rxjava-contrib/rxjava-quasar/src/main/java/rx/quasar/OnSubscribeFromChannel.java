@@ -15,10 +15,10 @@
  */
 package rx.quasar;
 
-import co.paralleluniverse.fibers.Suspendable;
-import co.paralleluniverse.strands.channels.ReceivePort;
 import rx.Observable.OnSubscribe;
 import rx.Subscriber;
+import co.paralleluniverse.fibers.Suspendable;
+import co.paralleluniverse.strands.channels.ReceivePort;
 
 /**
  * Converts a {@link ReceivePort} into an Observable that emits each message received on the channel.
