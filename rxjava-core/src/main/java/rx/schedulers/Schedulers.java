@@ -36,7 +36,7 @@ public class Schedulers {
         if (c != null) {
             computationScheduler = c;
         } else {
-            computationScheduler = new ComputationScheduler();
+            computationScheduler = new EventLoopsScheduler();
         }
 
         Scheduler io = RxJavaPlugins.getInstance().getDefaultSchedulers().getIOScheduler();
