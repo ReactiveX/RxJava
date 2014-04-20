@@ -11,7 +11,7 @@ import rx.schedulers.NewThreadScheduler.OnActionComplete;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.Subscriptions;
 
-/* package */class ComputationScheduler extends Scheduler {
+/* package */class EventLoopsScheduler extends Scheduler {
 
     private static class ComputationSchedulerPool {
         final int cores = Runtime.getRuntime().availableProcessors();
