@@ -15,12 +15,13 @@
  */
 package rx.quasar;
 
-import co.paralleluniverse.fibers.instrument.MethodDatabase;
-import co.paralleluniverse.fibers.instrument.SimpleSuspendableClassifier;
-import co.paralleluniverse.fibers.instrument.SuspendableClassifier;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+
+import co.paralleluniverse.fibers.instrument.MethodDatabase;
+import co.paralleluniverse.fibers.instrument.SimpleSuspendableClassifier;
+import co.paralleluniverse.fibers.instrument.SuspendableClassifier;
 
 public class RxSuspendableClassifier implements SuspendableClassifier {
     private static final Set<String> CORE_PACKAGES = new HashSet<String>(Arrays.asList(new String[]{

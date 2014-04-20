@@ -15,15 +15,15 @@
  */
 package rx.operators;
 
-import rx.Observable.Operator;
-import rx.Scheduler;
-import rx.Subscriber;
-import rx.schedulers.Timestamped;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
+import rx.Observable.Operator;
+import rx.Scheduler;
+import rx.Subscriber;
+import rx.schedulers.Timestamped;
 
 /**
  * Skip delivering values in the time window before the values.

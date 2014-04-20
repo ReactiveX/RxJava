@@ -15,18 +15,22 @@
  */
 package rx.operators;
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+
+import java.util.concurrent.TimeUnit;
+
 import org.junit.Test;
 import org.mockito.InOrder;
+
 import rx.Observable;
 import rx.Observer;
 import rx.operators.OperationSkipTest.CustomException;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
-
-import java.util.concurrent.TimeUnit;
-
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
 
 public class OperatorSkipLastTimedTest {
 

@@ -15,12 +15,8 @@
  */
 package rx.quasar;
 
-import co.paralleluniverse.strands.channels.ProducerException;
-import co.paralleluniverse.strands.channels.ReceivePort;
-import static org.junit.Assert.*;
-
-import java.util.Iterator;
-import java.util.NoSuchElementException;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -32,10 +28,12 @@ import rx.Observable;
 import rx.Observer;
 import rx.Subscriber;
 import rx.Subscription;
+import rx.functions.Action1;
+import rx.functions.Func1;
 import rx.subscriptions.BooleanSubscription;
 import rx.subscriptions.Subscriptions;
-import rx.util.functions.Action1;
-import rx.util.functions.Func1;
+import co.paralleluniverse.strands.channels.ProducerException;
+import co.paralleluniverse.strands.channels.ReceivePort;
 
 public class BlockingObservableTest {
 

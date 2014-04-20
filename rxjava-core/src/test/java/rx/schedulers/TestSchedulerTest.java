@@ -30,7 +30,6 @@ import org.mockito.InOrder;
 import org.mockito.Mockito;
 
 import rx.Scheduler;
-import rx.Subscription;
 import rx.functions.Action0;
 import rx.functions.Func1;
 

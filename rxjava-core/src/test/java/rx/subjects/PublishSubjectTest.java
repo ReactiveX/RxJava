@@ -314,7 +314,7 @@ public class PublishSubjectTest {
             String v = "" + i;
             System.out.printf("Turn: %d%n", i);
             src.first()
-                .flatMap(new rx.util.functions.Func1<String, Observable<String>>() {
+                .flatMap(new Func1<String, Observable<String>>() {
 
                     @Override
                     public Observable<String> call(String t1) {

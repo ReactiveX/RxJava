@@ -14,6 +14,13 @@
  * limitations under the License.
  */package rx.quasar;
 
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
+import rx.Observable;
+import rx.Observer;
+import rx.Scheduler;
 import co.paralleluniverse.fibers.FiberAsync;
 import co.paralleluniverse.fibers.SuspendExecution;
 import co.paralleluniverse.fibers.Suspendable;
@@ -22,12 +29,6 @@ import co.paralleluniverse.strands.channels.Channel;
 import co.paralleluniverse.strands.channels.Channels;
 import co.paralleluniverse.strands.channels.ReceivePort;
 import co.paralleluniverse.strands.channels.SendPort;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-import rx.Observable;
-import rx.Observer;
-import rx.Scheduler;
 
 /**
  * This class contains static methods that connect {@link Observable}s and {@link Channel}s.

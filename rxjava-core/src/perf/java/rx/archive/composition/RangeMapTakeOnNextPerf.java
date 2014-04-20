@@ -3,8 +3,8 @@ package rx.archive.composition;
 import rx.Observable;
 import rx.archive.perf.AbstractPerformanceTester;
 import rx.archive.perf.IntegerSumObserver;
-import rx.util.functions.Action0;
-import rx.util.functions.Func1;
+import rx.functions.Action0;
+import rx.functions.Func1;
 
 public class RangeMapTakeOnNextPerf extends AbstractPerformanceTester {
 

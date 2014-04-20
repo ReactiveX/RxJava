@@ -15,9 +15,6 @@
  */
 package rx.quasar;
 
-import org.junit.Rule;
-import org.junit.rules.TestRule;
-import org.junit.rules.Timeout;
 import rx.Scheduler;
 import rx.schedulers.AbstractSchedulerConcurrencyTests;
 

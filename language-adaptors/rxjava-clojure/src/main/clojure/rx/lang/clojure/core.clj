@@ -22,7 +22,7 @@
             BlockingObservable
             GroupedObservable]
            [rx.subscriptions Subscriptions]
-           [rx.util.functions Action0 Action1 Func0 Func1 Func2]))
+           [rx.functions Action0 Action1 Func0 Func1 Func2]))
 
 (set! *warn-on-reflection* true)
 
@@ -832,7 +832,7 @@
 
   See:
     rx.Observable/onErrorResumeNext
-    http://netflix.github.io/RxJava/javadoc/rx/Observable.html#onErrorResumeNext(rx.util.functions.Func1)
+    http://netflix.github.io/RxJava/javadoc/rx/Observable.html#onErrorResumeNext(rx.functions.Func1)
   "
   [p f ^Observable o]
   (let [p (if (class? p)

@@ -15,16 +15,6 @@
  */
 package rx.quasar;
 
-import co.paralleluniverse.fibers.SuspendExecution;
-import co.paralleluniverse.fibers.Suspendable;
-import co.paralleluniverse.strands.AbstractFuture;
-import co.paralleluniverse.strands.ConditionSynchronizer;
-import co.paralleluniverse.strands.SimpleConditionSynchronizer;
-import co.paralleluniverse.strands.Strand;
-import co.paralleluniverse.strands.channels.Channels;
-import co.paralleluniverse.strands.channels.DelegatingReceivePort;
-import co.paralleluniverse.strands.channels.ProducerException;
-import co.paralleluniverse.strands.channels.ReceivePort;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -38,6 +28,16 @@ import rx.exceptions.Exceptions;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.observers.SafeSubscriber;
+import co.paralleluniverse.fibers.SuspendExecution;
+import co.paralleluniverse.fibers.Suspendable;
+import co.paralleluniverse.strands.AbstractFuture;
+import co.paralleluniverse.strands.ConditionSynchronizer;
+import co.paralleluniverse.strands.SimpleConditionSynchronizer;
+import co.paralleluniverse.strands.Strand;
+import co.paralleluniverse.strands.channels.Channels;
+import co.paralleluniverse.strands.channels.DelegatingReceivePort;
+import co.paralleluniverse.strands.channels.ProducerException;
+import co.paralleluniverse.strands.channels.ReceivePort;
 
 /**
  * An extension of {@link Observable} that provides blocking operators, compatible with both threads and fibers.
