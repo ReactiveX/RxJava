@@ -81,7 +81,6 @@ import rx.operators.OperationReplay;
 import rx.operators.OperationSample;
 import rx.operators.OperationSequenceEqual;
 import rx.operators.OperationSkip;
-import rx.operators.OperationSkipLast;
 import rx.operators.OperationSkipUntil;
 import rx.operators.OperationSum;
 import rx.operators.OperationSwitch;
@@ -118,6 +117,8 @@ import rx.operators.OperatorScan;
 import rx.operators.OperatorSerialize;
 import rx.operators.OperatorSingle;
 import rx.operators.OperatorSkip;
+import rx.operators.OperatorSkipLast;
+import rx.operators.OperatorSkipLastTimed;
 import rx.operators.OperatorSkipWhile;
 import rx.operators.OperatorSubscribeOn;
 import rx.operators.OperatorSynchronize;
@@ -6042,7 +6043,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211750.aspx">MSDN: Observable.SkipLast</a>
      */
     public final Observable<T> skipLast(int count) {
-        return create(OperationSkipLast.skipLast(this, count));
+        return lift(new OperatorSkipLast<T>(count));
     }
 
     /**
@@ -6082,7 +6083,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211750.aspx">MSDN: Observable.SkipLast</a>
      */
     public final Observable<T> skipLast(long time, TimeUnit unit, Scheduler scheduler) {
-        return create(new OperationSkipLast.SkipLastTimed<T>(this, time, unit, scheduler));
+        return lift(new OperatorSkipLastTimed<T>(time, unit, scheduler));
     }
 
     /**
