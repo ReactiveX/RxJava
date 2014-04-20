@@ -2115,7 +2115,7 @@ trait Observable[+T]
    * emits [1, 2, 3, 4, 5] then the complete output would be [1, 2, 1, 2, 3, 4, 5, onCompleted].
    * @return Observable with retry logic.
    */
-  def retry: Observable[T] = {
+  def retry(): Observable[T] = {
     toScalaObservable[T](asJavaObservable.retry())
   }
 
