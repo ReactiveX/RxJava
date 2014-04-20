@@ -177,7 +177,7 @@ public class OperationGroupJoinTest {
                 new Subscriber<PPF>() {
                     @Override
                     public void onNext(final PPF ppf) {
-                        ppf.fruits.where(new Func1<PersonFruit, Boolean>() {
+                        ppf.fruits.filter(new Func1<PersonFruit, Boolean>() {
                             @Override
                             public Boolean call(PersonFruit t1) {
                                 return ppf.person.id == t1.personId;

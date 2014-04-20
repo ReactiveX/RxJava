@@ -57,7 +57,7 @@ public final class AsyncSubject<T> extends Subject<T, T> {
 
     public static <T> AsyncSubject<T> create() {
         final SubjectSubscriptionManager<T> subscriptionManager = new SubjectSubscriptionManager<T>();
-        final AtomicReference<Notification<T>> lastNotification = new AtomicReference<Notification<T>>(new Notification<T>());
+        final AtomicReference<Notification<T>> lastNotification = new AtomicReference<Notification<T>>(Notification.<T>createOnCompleted());
 
         OnSubscribe<T> onSubscribe = subscriptionManager.getOnSubscribeFunc(
                 /**

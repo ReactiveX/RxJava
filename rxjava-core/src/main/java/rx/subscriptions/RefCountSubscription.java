@@ -65,11 +65,6 @@ public final class RefCountSubscription implements Subscription {
         this.actual = s;
     }
 
-    @Deprecated
-    public Subscription getSubscription() {
-        return get();
-    }
-
     /**
      * Returns a new sub-subscription.
      */

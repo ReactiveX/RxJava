@@ -67,11 +67,6 @@ public final class SerialSubscription implements Subscription {
         oldState.subscription.unsubscribe();
     }
 
-    @Deprecated
-    public void setSubscription(Subscription s) {
-        set(s);
-    }
-
     public void set(Subscription s) {
         if (s == null) {
             throw new IllegalArgumentException("Subscription can not be null");
@@ -88,11 +83,6 @@ public final class SerialSubscription implements Subscription {
             }
         } while (!state.compareAndSet(oldState, newState));
         oldState.subscription.unsubscribe();
-    }
-
-    @Deprecated
-    public Subscription getSubscription() {
-        return get();
     }
 
     public Subscription get() {

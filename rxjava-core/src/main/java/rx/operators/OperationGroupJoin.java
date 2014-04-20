@@ -91,8 +91,8 @@ public class OperationGroupJoin<T1, T2, D1, D2, R> implements OnSubscribeFunc<R>
             group.add(s1);
             group.add(s2);
 
-            s1.setSubscription(left.unsafeSubscribe(new LeftObserver(s1)));
-            s2.setSubscription(right.unsafeSubscribe(new RightObserver(s2)));
+            s1.set(left.unsafeSubscribe(new LeftObserver(s1)));
+            s2.set(right.unsafeSubscribe(new RightObserver(s2)));
 
         }
 
@@ -139,7 +139,7 @@ public class OperationGroupJoin<T1, T2, D1, D2, R> implements OnSubscribeFunc<R>
 
                     SerialSubscription sduration = new SerialSubscription();
                     group.add(sduration);
-                    sduration.setSubscription(duration.unsafeSubscribe(new LeftDurationObserver(id, sduration, subj)));
+                    sduration.set(duration.unsafeSubscribe(new LeftDurationObserver(id, sduration, subj)));
 
                     R result = resultSelector.call(args, window);
 
@@ -200,7 +200,7 @@ public class OperationGroupJoin<T1, T2, D1, D2, R> implements OnSubscribeFunc<R>
 
                     SerialSubscription sduration = new SerialSubscription();
                     group.add(sduration);
-                    sduration.setSubscription(duration.unsafeSubscribe(new RightDurationObserver(id, sduration)));
+                    sduration.set(duration.unsafeSubscribe(new RightDurationObserver(id, sduration)));
 
                     synchronized (guard) {
                         for (Observer<T2> o : leftMap.values()) {
@@ -325,7 +325,7 @@ public class OperationGroupJoin<T1, T2, D1, D2, R> implements OnSubscribeFunc<R>
         @Override
         public Subscription onSubscribe(Observer<? super T> t1) {
             CompositeSubscription cs = new CompositeSubscription();
-            cs.add(refCount.getSubscription());
+            cs.add(refCount.get());
             WindowObserver wo = new WindowObserver(t1, cs);
             cs.add(underlying.unsafeSubscribe(wo));
             return cs;

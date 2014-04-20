@@ -96,20 +96,14 @@
                     (b/into []))]
     (is (= [2 4] result))))
 
-(deftest test-syncrhonize
-  ; I'm going to believe synchronize works and just exercise it
+(deftest test-serialize
+  ; I'm going to believe serialize works and just exercise it
   ; here for sanity.
   (is (= [1 2 3]
          (->> [1 2 3]
               (rx/seq->o)
-              (rx/synchronize)
-              (b/into []))))
-  (let [lock (Object.)]
-    (is (= [1 2 3]
-           (->> [1 2 3]
-                (rx/seq->o)
-                (rx/synchronize lock)
-                (b/into []))))))
+              (rx/serialize)
+              (b/into [])))))
 
 (let [expected-result [[1 3 5] [2 4 6]]
       sleepy-o        #(f/future-generator*

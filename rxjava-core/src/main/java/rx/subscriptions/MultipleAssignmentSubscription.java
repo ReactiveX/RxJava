@@ -67,11 +67,6 @@ public final class MultipleAssignmentSubscription implements Subscription {
         oldState.subscription.unsubscribe();
     }
 
-    @Deprecated
-    public void setSubscription(Subscription s) {
-        set(s);
-    }
-
     public void set(Subscription s) {
         if (s == null) {
             throw new IllegalArgumentException("Subscription can not be null");
@@ -87,11 +82,6 @@ public final class MultipleAssignmentSubscription implements Subscription {
                 newState = oldState.set(s);
             }
         } while (!state.compareAndSet(oldState, newState));
-    }
-
-    @Deprecated
-    public Subscription getSubscription() {
-        return get();
     }
 
     public Subscription get() {

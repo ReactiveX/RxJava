@@ -193,7 +193,7 @@ public class ObservableTests {
     @Test
     public void testTakeFirstOfSome() {
         Observable<Integer> observable = Observable.from(1, 2, 3);
-        observable.takeFirst().subscribe(w);
+        observable.take(1).subscribe(w);
         verify(w, times(1)).onNext(anyInt());
         verify(w).onNext(1);
         verify(w, times(1)).onCompleted();
@@ -203,7 +203,7 @@ public class ObservableTests {
     @Test
     public void testTakeFirstOfNone() {
         Observable<Integer> observable = Observable.empty();
-        observable.takeFirst().subscribe(w);
+        observable.take(1).subscribe(w);
         verify(w, never()).onNext(anyInt());
         verify(w, times(1)).onCompleted();
         verify(w, never()).onError(any(Throwable.class));

@@ -66,8 +66,8 @@ public class OperationSkipUntil<T, U> implements OnSubscribeFunc<T> {
             cancel.add(toSource);
             cancel.add(toOther);
 
-            toSource.setSubscription(source.unsafeSubscribe(Subscribers.from(this)));
-            toOther.setSubscription(other.unsafeSubscribe(new OtherObserver(toOther)));
+            toSource.set(source.unsafeSubscribe(Subscribers.from(this)));
+            toOther.set(other.unsafeSubscribe(new OtherObserver(toOther)));
 
             return this;
         }
