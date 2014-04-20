@@ -5079,9 +5079,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#wiki-parallel">RxJava Wiki: parallel()</a>
      */
     public final <R> Observable<R> parallel(Func1<Observable<T>, Observable<R>> f) {
-        // TODO move this back to Schedulers.computation() again once that is properly using eventloops
-        // see https://github.com/Netflix/RxJava/issues/713 for why this was changed
-        return lift(new OperatorParallel<T, R>(f, Schedulers.newThread()));
+        return lift(new OperatorParallel<T, R>(f, Schedulers.computation()));
     }
 
     /**
