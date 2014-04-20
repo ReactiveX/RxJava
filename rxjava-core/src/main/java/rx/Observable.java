@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
@@ -79,7 +80,6 @@ import rx.operators.OperationParallelMerge;
 import rx.operators.OperationReplay;
 import rx.operators.OperationSample;
 import rx.operators.OperationSequenceEqual;
-import rx.operators.OperationSingle;
 import rx.operators.OperationSkip;
 import rx.operators.OperationSkipLast;
 import rx.operators.OperationSkipUntil;
@@ -116,6 +116,7 @@ import rx.operators.OperatorRepeat;
 import rx.operators.OperatorRetry;
 import rx.operators.OperatorScan;
 import rx.operators.OperatorSerialize;
+import rx.operators.OperatorSingle;
 import rx.operators.OperatorSkip;
 import rx.operators.OperatorSkipWhile;
 import rx.operators.OperatorSubscribeOn;
@@ -4268,11 +4269,11 @@ public class Observable<T> {
     }
 
     /**
-     * Returns an Observable that emits only the very first item emitted by the source Observable, or raises an {@code IllegalArgumentException} if the source Observable is empty.
+     * Returns an Observable that emits only the very first item emitted by the source Observable, or raises an {@code NoSuchElementException} if the source Observable is empty.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/first.png">
      * 
-     * @return an Observable that emits only the very first item emitted by the source Observable, or raises an {@code IllegalArgumentException} if the source Observable is empty
+     * @return an Observable that emits only the very first item emitted by the source Observable, or raises an {@code NoSuchElementException} if the source Observable is empty
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#wiki-first">RxJava Wiki: first()</a>
      * @see "MSDN: Observable.firstAsync()"
      */
@@ -4282,14 +4283,14 @@ public class Observable<T> {
 
     /**
      * Returns an Observable that emits only the very first item emitted by the source Observable that satisfies
-     * a specified condition, or raises an {@code IllegalArgumentException} if no such items are emitted.
+     * a specified condition, or raises an {@code NoSuchElementException} if no such items are emitted.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/firstN.png">
      * 
      * @param predicate
      *            the condition that an item emitted by the source Observable has to satisfy
      * @return an Observable that emits only the very first item emitted by the source Observable that satisfies
-     *         the {@code predicate}, or raises an {@code IllegalArgumentException} if no such items are emitted
+     *         the {@code predicate}, or raises an {@code NoSuchElementException} if no such items are emitted
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#wiki-first">RxJava Wiki: first()</a>
      * @see "MSDN: Observable.firstAsync()"
      */
@@ -4499,7 +4500,7 @@ public class Observable<T> {
 
     /**
      * Returns an Observable that emits the last item emitted by the source Observable or notifies observers of
-     * an {@code IllegalArgumentException} if the source Observable is empty.
+     * an {@code NoSuchElementException} if the source Observable is empty.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/last.png">
      * 
@@ -4514,13 +4515,13 @@ public class Observable<T> {
 
     /**
      * Returns an Observable that emits only the last item emitted by the source Observable that satisfies a
-     * given condition, or an {@code IllegalArgumentException} if no such items are emitted.
+     * given condition, or an {@code NoSuchElementException} if no such items are emitted.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/last.p.png">
      * 
      * @param predicate
      *            the condition any source emitted item has to satisfy
-     * @return an Observable that emits only the last item satisfying the given condition from the source, or an {@code IllegalArgumentException} if no such items are emitted
+     * @return an Observable that emits only the last item satisfying the given condition from the source, or an {@code NoSuchElementException} if no such items are emitted
      * @throws IllegalArgumentException
      *             if no items that match the predicate are emitted by the source Observable
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observable-Operators#wiki-last">RxJava Wiki: last()</a>
@@ -5003,8 +5004,7 @@ public class Observable<T> {
      * By default, when an Observable encounters an error that prevents it from emitting the expected item to
      * its {@link Observer}, the Observable invokes its Observer's {@code onError} method, and then quits
      * without invoking any more of its Observer's methods. The {@code onErrorReturn} method changes this
-     * behavior. If you pass a function ({@code resumeFunction}) to an Observable's {@code onErrorReturn}
-     * method, if the original Observable encounters an error, instead of invoking its Observer's
+     * behavior. If you pass a function ({@code resumeFunction}) to an Observable's {@code onErrorReturn} method, if the original Observable encounters an error, instead of invoking its Observer's
      * {@code onError} method, it will instead emit the return value of {@code resumeFunction}.
      * <p>
      * You can use this to prevent errors from propagating or to supply fallback data should errors be
@@ -5038,21 +5038,17 @@ public class Observable<T> {
     }
 
     /**
-     * Instruct an Observable to pass control to another Observable rather than invoking
-     * {@link Observer#onError onError} if it encounters an {@link java.lang.Exception}.
+     * Instruct an Observable to pass control to another Observable rather than invoking {@link Observer#onError onError} if it encounters an {@link java.lang.Exception}.
      * <p>
-     * This differs from {@link #onErrorResumeNext} in that this one does not handle {@link java.lang.Throwable}
-     * or {@link java.lang.Error} but lets those continue through.
+     * This differs from {@link #onErrorResumeNext} in that this one does not handle {@link java.lang.Throwable} or {@link java.lang.Error} but lets those continue through.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/onExceptionResumeNextViaObservable.png">
      * <p>
      * By default, when an Observable encounters an exception that prevents it from emitting the expected item
      * to its {@link Observer}, the Observable invokes its Observer's {@code onError} method, and then quits
      * without invoking any more of its Observer's methods. The {@code onExceptionResumeNext} method changes
-     * this behavior. If you pass another Observable ({@code resumeSequence}) to an Observable's
-     * {@code onExceptionResumeNext} method, if the original Observable encounters an exception, instead of
-     * invoking its Observer's {@code onError} method, it will instead relinquish control to
-     * {@code resumeSequence} which will invoke the Observer's {@link Observer#onNext onNext} method if it is
+     * this behavior. If you pass another Observable ({@code resumeSequence}) to an Observable's {@code onExceptionResumeNext} method, if the original Observable encounters an exception, instead of
+     * invoking its Observer's {@code onError} method, it will instead relinquish control to {@code resumeSequence} which will invoke the Observer's {@link Observer#onNext onNext} method if it is
      * able to do so. In such a case, because no Observable necessarily invokes {@code onError}, the Observer
      * may never know that an exception happened.
      * <p>
@@ -5894,24 +5890,26 @@ public class Observable<T> {
 
     /**
      * If the source Observable completes after emitting a single item, return an Observable that emits that
-     * item. If the source Observable emits more than one item or no items, throw an {@code IllegalArgumentException}.
+     * item. If the source Observable emits more than one item or no items, throw an {@code NoSuchElementException}.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/single.png">
      * 
      * @return an Observable that emits the single item emitted by the source Observable
      * @throws IllegalArgumentException
-     *             if the source emits more than one item or no items
+     *             if the source emits more than one item
+     * @throws NoSuchElementException
+     *             if the source emits no items
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#wiki-single-and-singleordefault">RxJava Wiki: single()</a>
      * @see "MSDN: Observable.singleAsync()"
      */
     public final Observable<T> single() {
-        return create(OperationSingle.<T> single(this));
+        return lift(new OperatorSingle<T>());
     }
 
     /**
      * If the Observable completes after emitting a single item that matches a specified predicate, return an
      * Observable that emits that item. If the source Observable emits more than one such item or no such items,
-     * throw an {@code IllegalArgumentException}.
+     * throw an {@code NoSuchElementException}.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/single.p.png">
      * 
@@ -5920,8 +5918,9 @@ public class Observable<T> {
      * @return an Observable that emits the single item emitted by the source Observable that matches the
      *         predicate
      * @throws IllegalArgumentException
-     *             if the source Observable emits either more than one item that matches the predicate or no
-     *             items that match the predicate
+     *             if the source Observable emits more than one item that matches the predicate
+     * @throws NoSuchElementException
+     *             if the source Observable emits no item that matches the predicate
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#wiki-single-and-singleordefault">RxJava Wiki: single()</a>
      * @see "MSDN: Observable.singleAsync()"
      */
@@ -5945,7 +5944,7 @@ public class Observable<T> {
      * @see "MSDN: Observable.singleOrDefaultAsync()"
      */
     public final Observable<T> singleOrDefault(T defaultValue) {
-        return create(OperationSingle.<T> singleOrDefault(this, defaultValue));
+        return lift(new OperatorSingle<T>(defaultValue));
     }
 
     /**

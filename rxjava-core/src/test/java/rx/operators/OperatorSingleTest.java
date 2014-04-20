@@ -20,6 +20,8 @@ import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 
+import java.util.NoSuchElementException;
+
 import org.junit.Test;
 import org.mockito.InOrder;
 
@@ -27,7 +29,7 @@ import rx.Observable;
 import rx.Observer;
 import rx.functions.Func1;
 
-public class OperationSingleTest {
+public class OperatorSingleTest {
 
     @Test
     public void testSingle() {
@@ -67,7 +69,7 @@ public class OperationSingleTest {
 
         InOrder inOrder = inOrder(observer);
         inOrder.verify(observer, times(1)).onError(
-                isA(IllegalArgumentException.class));
+                isA(NoSuchElementException.class));
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -129,7 +131,7 @@ public class OperationSingleTest {
 
         InOrder inOrder = inOrder(observer);
         inOrder.verify(observer, times(1)).onError(
-                isA(IllegalArgumentException.class));
+                isA(NoSuchElementException.class));
         inOrder.verifyNoMoreInteractions();
     }
 
