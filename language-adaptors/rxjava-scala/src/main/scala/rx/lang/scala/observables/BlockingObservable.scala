@@ -53,6 +53,49 @@ class BlockingObservable[+T] private[scala] (val asJava: rx.observables.Blocking
     new WithFilter[T](p, asJava)
   }
 
+  /**
+   * Returns the last item emitted by a specified [[Observable]], or
+   * throws `NoSuchElementException` if it emits no items.
+   * 
+   * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.last.png">
+   * 
+   * @return the last item emitted by the source [[Observable]]
+   * @throws NoSuchElementException
+   *             if source contains no elements
+   * @see <a href="https://github.com/Netflix/RxJava/wiki/Blocking-Observable-Operators#last-and-lastordefault">RxJava Wiki: last()</a>
+   * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.last.aspx">MSDN: Observable.Last</a>
+   */
+  def last : T = {
+    asJava.last : T
+  }
+
+  /**
+   * Returns the first item emitted by a specified [[Observable]], or
+   * `NoSuchElementException` if source contains no elements.
+   * 
+   * @return the first item emitted by the source [[Observable]]
+   * @throws NoSuchElementException
+   *             if source contains no elements
+   * @see <a href="https://github.com/Netflix/RxJava/wiki/Blocking-Observable-Operators#first-and-firstordefault">RxJava Wiki: first()</a>
+   * @see <a href="http://msdn.microsoft.com/en-us/library/hh229177.aspx">MSDN: Observable.First</a>
+   */
+  def first : T = {
+    asJava.first : T
+  }
+
+  /**
+   * Returns the first item emitted by a specified [[Observable]], or
+   * `NoSuchElementException` if source contains no elements.
+   * 
+   * @return the first item emitted by the source [[Observable]]
+   * @throws NoSuchElementException
+   *             if source contains no elements
+   * @see <a href="https://github.com/Netflix/RxJava/wiki/Blocking-Observable-Operators#first-and-firstordefault">RxJava Wiki: first()</a>
+   * @see <a href="http://msdn.microsoft.com/en-us/library/hh229177.aspx">MSDN: Observable.First</a>
+   * @see [[BlockingObservable.first]]
+   */
+  def head : T = first
+
   // last                 -> use toIterable.last
   // lastOrDefault        -> use toIterable.lastOption
   // first                -> use toIterable.head

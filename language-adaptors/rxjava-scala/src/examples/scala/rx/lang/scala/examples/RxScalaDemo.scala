@@ -388,6 +388,18 @@ class RxScalaDemo extends JUnitSuite {
     assertEquals(10, List(-1, 0, 1).toObservable.filter(condition).firstOrElse(10).toBlockingObservable.single)
   }
 
+  @Test def firstLastSingleExample() {
+    assertEquals(1, List(1, 2, 3, 4).toObservable.head.toBlockingObservable.single)
+    assertEquals(1, List(1, 2, 3, 4).toObservable.first.toBlockingObservable.single)
+    assertEquals(4, List(1, 2, 3, 4).toObservable.last.toBlockingObservable.single)
+    assertEquals(1, List(1).toObservable.single.toBlockingObservable.single)
+
+    assertEquals(1, List(1, 2, 3, 4).toObservable.toBlockingObservable.head)
+    assertEquals(1, List(1, 2, 3, 4).toObservable.toBlockingObservable.first)
+    assertEquals(4, List(1, 2, 3, 4).toObservable.toBlockingObservable.last)
+    assertEquals(1, List(1).toObservable.toBlockingObservable.single)
+  }
+
   def square(x: Int): Int = {
     println(s"$x*$x is being calculated on thread ${Thread.currentThread().getId}")
     Thread.sleep(100) // calculating a square is heavy work :)

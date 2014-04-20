@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -214,7 +215,7 @@ public class ObservableTests {
         observable.first().subscribe(w);
         verify(w, never()).onNext(anyInt());
         verify(w, never()).onCompleted();
-        verify(w, times(1)).onError(isA(IllegalArgumentException.class));
+        verify(w, times(1)).onError(isA(NoSuchElementException.class));
     }
 
     @Test
@@ -223,7 +224,7 @@ public class ObservableTests {
         observable.first(IS_EVEN).subscribe(w);
         verify(w, never()).onNext(anyInt());
         verify(w, never()).onCompleted();
-        verify(w, times(1)).onError(isA(IllegalArgumentException.class));
+        verify(w, times(1)).onError(isA(NoSuchElementException.class));
     }
 
     @Test
@@ -243,9 +244,9 @@ public class ObservableTests {
     }
 
     /**
-     * A reduce should fail with an IllegalArgumentException if done on an empty Observable.
+     * A reduce should fail with an NoSuchElementException if done on an empty Observable.
      */
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NoSuchElementException.class)
     public void testReduceWithEmptyObservable() {
         Observable<Integer> observable = Observable.range(1, 0);
         observable.reduce(new Func2<Integer, Integer, Integer>() {
