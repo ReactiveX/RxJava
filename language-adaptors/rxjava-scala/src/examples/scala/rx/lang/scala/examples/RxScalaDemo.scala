@@ -578,7 +578,7 @@ class RxScalaDemo extends JUnitSuite {
 
   @Test def elementAtExample(): Unit = {
     val o = List("red", "green", "blue").toObservable
-    println(o(2).toBlockingObservable.single)
+    println(o.elementAt(2).toBlockingObservable.single)
   }
 
   @Test def elementAtOrDefaultExample(): Unit = {
@@ -608,5 +608,15 @@ class RxScalaDemo extends JUnitSuite {
     val mapFactory = () => Map(('s',"tart"))
     val m = o.toMap(keySelector, valueSelector, mapFactory)
     println(m.toBlockingObservable.single)
+  }
+
+  @Test def retryExample1(): Unit = {
+    val o : Observable[String] = List("alice", "bob", "carol").toObservable
+    assertEquals(List("alice", "bob", "carol"), o.retry.toBlockingObservable.toList)
+  }
+
+  @Test def retryExample2(): Unit = {
+    val o : Observable[String] = List("alice", "bob", "carol").toObservable
+    assertEquals(List("alice", "bob", "carol"), o.retry(3).toBlockingObservable.toList)
   }
 }
