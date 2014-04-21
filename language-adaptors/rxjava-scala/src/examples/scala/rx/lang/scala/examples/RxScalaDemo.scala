@@ -578,7 +578,7 @@ class RxScalaDemo extends JUnitSuite {
 
   @Test def elementAtExample(): Unit = {
     val o = List("red", "green", "blue").toObservable
-    println(o(2).toBlockingObservable.single)
+    println(o.elementAt(2).toBlockingObservable.single)
   }
 
   @Test def elementAtOrDefaultExample(): Unit = {

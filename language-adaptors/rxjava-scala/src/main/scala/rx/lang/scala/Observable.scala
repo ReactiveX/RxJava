@@ -2350,6 +2350,7 @@ trait Observable[+T]
    * @throws IndexOutOfBoundsException
    *             if index is less than 0
    * @see `Observable.elementAt`
+   * @deprecated("Use `elementAt`", "0.18.0")
    */
   def apply(index: Int): Observable[T] = elementAt(index)
 
