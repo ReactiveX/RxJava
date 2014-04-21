@@ -32,10 +32,12 @@ jar {
 }
 
 tasks.withType(Test) {
+    // systemProperty 'co.paralleluniverse.fibers.verifyInstrumentation', 'true'
     jvmArgs "-javaagent:${configurations.quasar.iterator().next()}" // =vdmc (verbose, debug, allow monitors, check class)
 }
 
 tasks.withType(JavaExec) {
+    // systemProperty 'co.paralleluniverse.fibers.verifyInstrumentation', 'true'
     jvmArgs "-javaagent:${configurations.quasar.iterator().next()}" // =vdmc (verbose, debug, allow monitors, check class)
 }
 
