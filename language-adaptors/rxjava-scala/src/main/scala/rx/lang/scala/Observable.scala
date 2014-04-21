@@ -1232,6 +1232,35 @@ trait Observable[+T]
   }
 
   /**
+   * Returns an Observable that drops values emitted by the source Observable before a specified time window
+   * elapses.
+   *
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/skip.t.png">
+   *
+   * @param time the length of the time window to drop
+   * @return an Observable that drops values emitted by the source Observable before the time window defined
+   *         by `time` elapses and emits the remainder
+   */
+  def drop(time: Duration): Observable[T] = {
+    toScalaObservable(asJavaObservable.skip(time.length, time.unit))
+  }
+
+  /**
+   * Returns an Observable that drops values emitted by the source Observable before a specified time window
+   * elapses.
+   *
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/skip.t.png">
+   *
+   * @param time the length of the time window to drop
+   * @param scheduler the `Scheduler` on which the timed wait happens
+   * @return an Observable that drops values emitted by the source Observable before the time window defined
+   *         by `time` elapses and emits the remainder
+   */
+  def drop(time: Duration, scheduler: Scheduler): Observable[T] = {
+    toScalaObservable(asJavaObservable.skip(time.length, time.unit, scheduler))
+  }
+
+  /**
    * Returns an Observable that bypasses all items from the source Observable as long as the specified
    * condition holds true. Emits all further source items as soon as the condition becomes false.
    *
@@ -1244,6 +1273,58 @@ trait Observable[+T]
    */
   def dropWhile(predicate: T => Boolean): Observable[T] = {
     toScalaObservable(asJavaObservable.skipWhile(predicate))
+  }
+
+  /**
+   * Returns an Observable that drops a specified number of items from the end of the sequence emitted by the
+   * source Observable.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/skipLast.png">
+   * <p>
+   * This Observer accumulates a queue long enough to store the first `n` items. As more items are
+   * received, items are taken from the front of the queue and emitted by the returned Observable. This causes
+   * such items to be delayed.
+   *
+   * @param n number of items to drop from the end of the source sequence
+   * @return an Observable that emits the items emitted by the source Observable except for the dropped ones
+   *         at the end
+   * @throws IndexOutOfBoundsException if `n` is less than zero
+   */
+  def dropRight(n: Int): Observable[T] = {
+    toScalaObservable(asJavaObservable.skipLast(n))
+  }
+
+  /**
+   * Returns an Observable that drops items emitted by the source Observable during a specified time window
+   * before the source completes.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/skipLast.t.png">
+   *
+   * Note: this action will cache all items until "onCompleted" arrives. So don't use it on an infinite Observable.
+   *
+   * @param time the length of the time window
+   * @return an Observable that drops those items emitted by the source Observable in a time window before the
+   *         source completes defined by `time`
+   */
+  def dropRight(time: Duration): Observable[T] = {
+    toScalaObservable(asJavaObservable.skipLast(time.length, time.unit))
+  }
+
+  /**
+   * Returns an Observable that drops items emitted by the source Observable during a specified time window
+   * (defined on a specified scheduler) before the source completes.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/skipLast.ts.png">
+   *
+   * Note: this action will cache all items until "onCompleted" arrives. So don't use it on an infinite Observable.
+   *
+   * @param time the length of the time window
+   * @param scheduler the scheduler used as the time source
+   * @return an Observable that drops those items emitted by the source Observable in a time window before the
+   *         source completes defined by `time` and `scheduler`
+   */
+  def dropRight(time: Duration, scheduler: Scheduler): Observable[T] = {
+    toScalaObservable(asJavaObservable.skipLast(time.length, time.unit, scheduler))
   }
 
   /**

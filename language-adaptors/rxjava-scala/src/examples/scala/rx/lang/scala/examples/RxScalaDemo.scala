@@ -400,6 +400,32 @@ class RxScalaDemo extends JUnitSuite {
     assertEquals(1, List(1).toObservable.toBlockingObservable.single)
   }
 
+  @Test def dropExample() {
+    val o = List(1, 2, 3, 4).toObservable
+    assertEquals(List(3, 4), o.drop(2).toBlockingObservable.toList)
+  }
+
+  @Test def dropWithTimeExample() {
+    val o = List(1, 2, 3, 4).toObservable.zip(
+      Observable.interval(500 millis, IOScheduler())).map(_._1) // emit every 500 millis
+    println(
+      o.drop(1250 millis, IOScheduler()).toBlockingObservable.toList // output List(3, 4)
+    )
+  }
+
+  @Test def dropRightExample() {
+    val o = List(1, 2, 3, 4).toObservable
+    assertEquals(List(1, 2), o.dropRight(2).toBlockingObservable.toList)
+  }
+
+  @Test def dropRightWithTimeExample() {
+    val o = List(1, 2, 3, 4).toObservable.zip(
+      Observable.interval(500 millis, IOScheduler())).map(_._1) // emit every 500 millis
+    println(
+      o.dropRight(750 millis, IOScheduler()).toBlockingObservable.toList // output List(1, 2)
+    )
+  }
+
   def square(x: Int): Int = {
     println(s"$x*$x is being calculated on thread ${Thread.currentThread().getId}")
     Thread.sleep(100) // calculating a square is heavy work :)
