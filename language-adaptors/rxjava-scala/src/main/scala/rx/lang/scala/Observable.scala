@@ -2608,7 +2608,7 @@ object Observable {
   */
 
   /**
-   * Returns an Observable that will execute the specified function when a someone subscribes to it.
+   * Returns an Observable that will execute the specified function when someone subscribes to it.
    *
    * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/create.png">
    *
