@@ -50,7 +50,7 @@ import rx.operators.OnSubscribeFromIterable;
 import rx.operators.OnSubscribeRange;
 import rx.operators.OperationAll;
 import rx.operators.OperationAny;
-import rx.operators.OperationAsObservable;
+import rx.operators.OperatorAsObservable;
 import rx.operators.OperationBuffer;
 import rx.operators.OperationCombineLatest;
 import rx.operators.OperationConcat;
@@ -2952,7 +2952,7 @@ public class Observable<T> {
      * @return an Observable that hides the identity of this Observable
      */
     public final Observable<T> asObservable() {
-        return create(new OperationAsObservable<T>(this));
+        return lift(new OperatorAsObservable<T>());
     }
 
     /**
