@@ -49,7 +49,7 @@ import rx.observers.SafeSubscriber;
 import rx.operators.OnSubscribeFromIterable;
 import rx.operators.OnSubscribeRange;
 import rx.operators.OperationAll;
-import rx.operators.OperationAny;
+import rx.operators.OperatorAny;
 import rx.operators.OperationAsObservable;
 import rx.operators.OperationBuffer;
 import rx.operators.OperationCombineLatest;
@@ -3893,7 +3893,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211993.aspx">MSDN: Observable.Any (Note: the description in this page was wrong at the time of this writing)</a>
      */
     public final Observable<Boolean> exists(Func1<? super T, Boolean> predicate) {
-        return create(OperationAny.exists(this, predicate));
+        return lift(new OperatorAny<T>(predicate, false));
     }
 
     /**
@@ -4126,7 +4126,7 @@ public class Observable<T> {
      * @see <a href= "http://msdn.microsoft.com/en-us/library/hh229905.aspx">MSDN: Observable.Any</a>
      */
     public final Observable<Boolean> isEmpty() {
-        return create(OperationAny.isEmpty(this));
+        return lift(new OperatorAny<T>(Functions.alwaysTrue(), true)); // create(OperatorAny.isEmpty(this));
     }
 
     /**
