@@ -72,7 +72,7 @@ public final class CompositeSubscription implements Subscription {
             for (Subscription _s : subscriptions) {
                 if (!_s.equals(s)) {
                     // was not in this composite
-                    if (idx == subscriptions.length) {
+                    if (idx == newSubscriptions.length) {
                         return this;
                     }
                     newSubscriptions[idx] = _s;
