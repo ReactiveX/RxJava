@@ -48,7 +48,7 @@ import rx.observables.GroupedObservable;
 import rx.observers.SafeSubscriber;
 import rx.operators.OnSubscribeFromIterable;
 import rx.operators.OnSubscribeRange;
-import rx.operators.OperationAll;
+import rx.operators.OperatorAll;
 import rx.operators.OperationAny;
 import rx.operators.OperationAsObservable;
 import rx.operators.OperationBuffer;
@@ -2941,7 +2941,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Conditional-and-Boolean-Operators#wiki-all">RxJava Wiki: all()</a>
      */
     public final Observable<Boolean> all(Func1<? super T, Boolean> predicate) {
-        return create(OperationAll.all(this, predicate));
+        return lift(new OperatorAll<T>(predicate));
     }
 
     /**
