@@ -35,7 +35,7 @@ public final class OperatorTimeout<T> extends OperatorTimeoutBase<T> {
         super(new FirstTimeoutStub<T>() {
 
             @Override
-            public Subscription call(final TimeoutSubscriber<T> timeoutSubscriber, final Long seqId, Scheduler.Inner inner) {
+            public Subscription call(final TimeoutSubscriber<T> timeoutSubscriber, final Long seqId, Scheduler.Worker inner) {
                 return inner.schedule(new Action0() {
                     @Override
                     public void call() {
@@ -46,7 +46,7 @@ public final class OperatorTimeout<T> extends OperatorTimeoutBase<T> {
         }, new TimeoutStub<T>() {
 
             @Override
-            public Subscription call(final TimeoutSubscriber<T> timeoutSubscriber, final Long seqId, T value, Scheduler.Inner inner) {
+            public Subscription call(final TimeoutSubscriber<T> timeoutSubscriber, final Long seqId, T value, Scheduler.Worker inner) {
                 return inner.schedule(new Action0() {
                     @Override
                     public void call() {

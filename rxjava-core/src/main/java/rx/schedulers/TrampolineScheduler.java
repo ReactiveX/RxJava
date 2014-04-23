@@ -36,7 +36,7 @@ public class TrampolineScheduler extends Scheduler {
     }
 
     @Override
-    public Inner createInner() {
+    public Worker createWorker() {
         return new InnerCurrentThreadScheduler();
     }
 
@@ -47,7 +47,7 @@ public class TrampolineScheduler extends Scheduler {
 
     private final AtomicInteger counter = new AtomicInteger(0);
 
-    private class InnerCurrentThreadScheduler extends Scheduler.Inner implements Subscription {
+    private class InnerCurrentThreadScheduler extends Scheduler.Worker implements Subscription {
 
         private final BooleanSubscription innerSubscription = new BooleanSubscription();
 

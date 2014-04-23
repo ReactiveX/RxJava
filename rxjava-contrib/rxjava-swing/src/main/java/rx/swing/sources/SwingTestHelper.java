@@ -18,7 +18,7 @@ package rx.swing.sources;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import rx.Scheduler.Inner;
+import rx.Scheduler.Worker;
 import rx.functions.Action0;
 import rx.schedulers.SwingScheduler;
 
@@ -35,7 +35,7 @@ import rx.schedulers.SwingScheduler;
     }
 
     public SwingTestHelper runInEventDispatchThread(final Action0 action) {
-        Inner inner = SwingScheduler.getInstance().createInner();
+        Worker inner = SwingScheduler.getInstance().createWorker();
         inner.schedule(new Action0() {
 
             @Override

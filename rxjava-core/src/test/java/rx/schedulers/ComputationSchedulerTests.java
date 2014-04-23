@@ -45,7 +45,7 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
         final CountDownLatch latch = new CountDownLatch(1);
         final HashMap<String, Integer> map = new HashMap<String, Integer>();
 
-        final Scheduler.Inner inner = Schedulers.computation().createInner();
+        final Scheduler.Worker inner = Schedulers.computation().createWorker();
 
         inner.schedule(new Action0() {
 

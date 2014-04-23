@@ -52,8 +52,8 @@ public class OperatorTester {
         }
 
         @Override
-        public Inner createInner() {
-            return underlying.createInner();
+        public Worker createWorker() {
+            return underlying.createWorker();
         }
 
     }

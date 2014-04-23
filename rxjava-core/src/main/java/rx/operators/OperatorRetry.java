@@ -59,7 +59,7 @@ public class OperatorRetry<T> implements Operator<T, Observable<T>> {
 
     @Override
     public Subscriber<? super Observable<T>> call(final Subscriber<? super T> child) {
-        final Scheduler.Inner inner = scheduler.createInner();
+        final Scheduler.Worker inner = scheduler.createWorker();
         child.add(inner);
         
         final SerialSubscription serialSubscription = new SerialSubscription();

@@ -37,7 +37,7 @@ class OperatorTimeoutBase<T> implements Operator<T, T> {
      * @param <T>
      */
     /* package-private */static interface FirstTimeoutStub<T> extends
-            Func3<TimeoutSubscriber<T>, Long, Scheduler.Inner, Subscription> {
+            Func3<TimeoutSubscriber<T>, Long, Scheduler.Worker, Subscription> {
     }
 
     /**
@@ -46,7 +46,7 @@ class OperatorTimeoutBase<T> implements Operator<T, T> {
      * @param <T>
      */
     /* package-private */static interface TimeoutStub<T> extends
-            Func4<TimeoutSubscriber<T>, Long, T, Scheduler.Inner, Subscription> {
+            Func4<TimeoutSubscriber<T>, Long, T, Scheduler.Worker, Subscription> {
     }
 
     private final FirstTimeoutStub<T> firstTimeoutStub;
@@ -63,7 +63,7 @@ class OperatorTimeoutBase<T> implements Operator<T, T> {
 
     @Override
     public Subscriber<? super T> call(Subscriber<? super T> subscriber) {
-        Scheduler.Inner inner = scheduler.createInner();
+        Scheduler.Worker inner = scheduler.createWorker();
         subscriber.add(inner);
         final SerialSubscription serial = new SerialSubscription();
         subscriber.add(serial);
@@ -90,13 +90,13 @@ class OperatorTimeoutBase<T> implements Operator<T, T> {
         private final TimeoutStub<T> timeoutStub;
 
         private final Observable<? extends T> other;
-        private final Scheduler.Inner inner;
+        private final Scheduler.Worker inner;
 
         private TimeoutSubscriber(
                 SerializedSubscriber<T> serializedSubscriber,
                 TimeoutStub<T> timeoutStub, SerialSubscription serial,
                 Observable<? extends T> other,
-                Scheduler.Inner inner) {
+                Scheduler.Worker inner) {
             super(serializedSubscriber);
             this.serializedSubscriber = serializedSubscriber;
             this.timeoutStub = timeoutStub;

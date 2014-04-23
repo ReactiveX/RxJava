@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
-import rx.Scheduler.Inner;
+import rx.Scheduler.Worker;
 import rx.Subscription;
 import rx.functions.Action0;
 import rx.schedulers.Schedulers;
@@ -66,7 +66,7 @@ public final class OperationInterval {
 
         @Override
         public Subscription onSubscribe(final Observer<? super Long> observer) {
-            Inner inner = scheduler.createInner();
+            Worker inner = scheduler.createWorker();
             inner.schedulePeriodically(new Action0() {
                 @Override
                 public void call() {

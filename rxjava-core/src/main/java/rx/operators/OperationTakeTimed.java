@@ -22,7 +22,7 @@ import rx.Observable;
 import rx.Observable.OnSubscribeFunc;
 import rx.Observer;
 import rx.Scheduler;
-import rx.Scheduler.Inner;
+import rx.Scheduler.Worker;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Action0;
@@ -191,7 +191,7 @@ public final class OperationTakeTimed {
 
         @Override
         public Subscription onSubscribe(Observer<? super T> t1) {
-            Inner inner = scheduler.createInner();
+            Worker inner = scheduler.createWorker();
             CompositeSubscription csub = new CompositeSubscription(inner);
             final SourceObserver<T> so = new SourceObserver<T>(t1, csub);
             csub.add(so);

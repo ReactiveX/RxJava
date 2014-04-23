@@ -43,14 +43,14 @@ public class OperationDebounceTest {
 
     private TestScheduler scheduler;
     private Observer<String> observer;
-    private Scheduler.Inner innerScheduler;
+    private Scheduler.Worker innerScheduler;
 
     @Before
     @SuppressWarnings("unchecked")
     public void before() {
         scheduler = new TestScheduler();
         observer = mock(Observer.class);
-        innerScheduler = scheduler.createInner();
+        innerScheduler = scheduler.createWorker();
     }
 
     @Test

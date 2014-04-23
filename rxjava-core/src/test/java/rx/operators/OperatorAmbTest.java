@@ -39,12 +39,12 @@ import rx.subscriptions.CompositeSubscription;
 public class OperatorAmbTest {
 
     private TestScheduler scheduler;
-    private Scheduler.Inner innerScheduler;
+    private Scheduler.Worker innerScheduler;
 
     @Before
     public void setUp() {
         scheduler = new TestScheduler();
-        innerScheduler = scheduler.createInner();
+        innerScheduler = scheduler.createWorker();
     }
 
     private Observable<String> createObservable(final String[] values,

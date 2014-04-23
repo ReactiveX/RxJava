@@ -54,12 +54,12 @@ public class NewFiberScheduler extends Scheduler {
     }
     
     @Override
-    public Inner createInner() {
+    public Worker createWorker() {
         return new EventLoopScheduler();
     }
 
 
-    private class EventLoopScheduler extends Scheduler.Inner implements Subscription {
+    private class EventLoopScheduler extends Scheduler.Worker implements Subscription {
         private final CompositeSubscription innerSubscription = new CompositeSubscription();
 
         private EventLoopScheduler() {

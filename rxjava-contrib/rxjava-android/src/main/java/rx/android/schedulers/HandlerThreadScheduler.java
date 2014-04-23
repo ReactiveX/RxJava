@@ -43,11 +43,11 @@ public class HandlerThreadScheduler extends Scheduler {
     }
 
     @Override
-    public Inner createInner() {
+    public Worker createWorker() {
         return new InnerHandlerThreadScheduler(handler);
     }
     
-    private static class InnerHandlerThreadScheduler extends Inner {
+    private static class InnerHandlerThreadScheduler extends Worker {
 
         private final Handler handler;
         private BooleanSubscription innerSubscription = new BooleanSubscription();

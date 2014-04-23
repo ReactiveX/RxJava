@@ -61,13 +61,13 @@ public final class OperationDelay {
     /** Subscribe function which schedules the actual subscription to source on a scheduler at a later time. */
     private static final class DelaySubscribeFunc<T> implements OnSubscribeFunc<T> {
         final Observable<? extends T> source;
-        final Scheduler.Inner scheduler;
+        final Scheduler.Worker scheduler;
         final long time;
         final TimeUnit unit;
 
         public DelaySubscribeFunc(Observable<? extends T> source, long time, TimeUnit unit, Scheduler scheduler) {
             this.source = source;
-            this.scheduler = scheduler.createInner();
+            this.scheduler = scheduler.createWorker();
             this.time = time;
             this.unit = unit;
         }

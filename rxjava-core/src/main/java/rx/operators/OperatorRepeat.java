@@ -19,7 +19,7 @@ package rx.operators;
 import rx.Observable;
 import rx.Observable.Operator;
 import rx.Scheduler;
-import rx.Scheduler.Inner;
+import rx.Scheduler.Worker;
 import rx.Subscriber;
 import rx.functions.Action0;
 import rx.observers.Subscribers;
@@ -71,7 +71,7 @@ public class OperatorRepeat<T> implements Operator<T, Observable<T>> {
             @Override
             public void onNext(final Observable<T> t) {
                 // will only be invoked once since we're nested
-                final Inner inner = scheduler.createInner();
+                final Worker inner = scheduler.createWorker();
                 // cleanup on unsubscribe
                 add(inner);
                 inner.schedule(new Action0() {

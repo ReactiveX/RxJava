@@ -50,14 +50,14 @@ public class OperationBufferTest {
 
     private Observer<List<String>> observer;
     private TestScheduler scheduler;
-    private Scheduler.Inner innerScheduler;
+    private Scheduler.Worker innerScheduler;
 
     @Before
     @SuppressWarnings("unchecked")
     public void before() {
         observer = Mockito.mock(Observer.class);
         scheduler = new TestScheduler();
-        innerScheduler = scheduler.createInner();
+        innerScheduler = scheduler.createWorker();
     }
 
     @Test

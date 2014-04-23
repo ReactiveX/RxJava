@@ -42,22 +42,22 @@ trait Scheduler {
    */
   def now: Long = this.asJavaScheduler.now()
 
-  def createInner: Inner = this.asJavaScheduler.createInner()
+  def createWorker: Worker = this.asJavaScheduler.createWorker()
 
 }
 
-object Inner {
-  def apply(inner: rx.Scheduler.Inner): Inner = new Inner { private[scala] val asJavaInner = inner }
+object Worker {
+  def apply(worker: rx.Scheduler.Worker): Worker = new Worker { private[scala] val asJavaWorker = worker }
 }
 
-trait Inner extends Subscription {
-  private [scala] val asJavaInner: rx.Scheduler.Inner
+trait Worker extends Subscription {
+  private [scala] val asJavaWorker: rx.Scheduler.Worker
 
   /**
    * Schedules a cancelable action to be executed in delayTime.
    */
   def schedule(action: Unit => Unit, delayTime: Duration): Subscription =
-    this.asJavaInner.schedule(
+    this.asJavaWorker.schedule(
       new Action0 {
         override def call(): Unit = action()
       },
@@ -67,7 +67,7 @@ trait Inner extends Subscription {
   /**
    * Schedules a cancelable action to be executed immediately.
    */
-  def schedule(action: Unit => Unit): Subscription = this.asJavaInner.schedule(
+  def schedule(action: Unit => Unit): Subscription = this.asJavaWorker.schedule(
     new Action0 {
       override def call(): Unit = action()
     }
@@ -76,7 +76,7 @@ trait Inner extends Subscription {
   /**
    * @return the scheduler's notion of current absolute time in milliseconds.
    */
-  def now: Long = this.asJavaInner.now()
+  def now: Long = this.asJavaWorker.now()
 }
 
 

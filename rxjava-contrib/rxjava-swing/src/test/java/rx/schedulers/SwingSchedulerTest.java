@@ -33,7 +33,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.InOrder;
 
-import rx.Scheduler.Inner;
+import rx.Scheduler.Worker;
 import rx.functions.Action0;
 
 /**
@@ -48,7 +48,7 @@ public final class SwingSchedulerTest {
     @Test
     public void testInvalidDelayValues() {
         final SwingScheduler scheduler = new SwingScheduler();
-        final Inner inner = scheduler.createInner();
+        final Worker inner = scheduler.createWorker();
         final Action0 action = mock(Action0.class);
 
         exception.expect(IllegalArgumentException.class);
@@ -67,7 +67,7 @@ public final class SwingSchedulerTest {
     @Test
     public void testPeriodicScheduling() throws Exception {
         final SwingScheduler scheduler = new SwingScheduler();
-        final Inner inner = scheduler.createInner();
+        final Worker inner = scheduler.createWorker();
 
         final CountDownLatch latch = new CountDownLatch(4);
 
@@ -98,7 +98,7 @@ public final class SwingSchedulerTest {
     @Test
     public void testNestedActions() throws Exception {
         final SwingScheduler scheduler = new SwingScheduler();
-        final Inner inner = scheduler.createInner();
+        final Worker inner = scheduler.createWorker();
 
         final Action0 firstStepStart = mock(Action0.class);
         final Action0 firstStepEnd = mock(Action0.class);

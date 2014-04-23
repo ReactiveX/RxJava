@@ -48,11 +48,11 @@ import rx.subscriptions.Subscriptions;
     }
 
     @Override
-    public Inner createInner() {
+    public Worker createWorker() {
         return new EventLoop();
     }
 
-    private static class EventLoop extends Scheduler.Inner {
+    private static class EventLoop extends Scheduler.Worker {
         private final CompositeSubscription innerSubscription = new CompositeSubscription();
         private final EventLoopScheduler pooledEventLoop;
         private final OnActionComplete onComplete;

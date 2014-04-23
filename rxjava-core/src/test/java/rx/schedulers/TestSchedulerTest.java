@@ -42,7 +42,7 @@ public class TestSchedulerTest {
         final Func1<Long, Void> calledOp = mock(Func1.class);
 
         final TestScheduler scheduler = new TestScheduler();
-        final Scheduler.Inner inner = scheduler.createInner();
+        final Scheduler.Worker inner = scheduler.createWorker();
         
         inner.schedulePeriodically(new Action0() {
             @Override
@@ -80,7 +80,7 @@ public class TestSchedulerTest {
     @Test
     public final void testImmediateUnsubscribes() {
         TestScheduler s = new TestScheduler();
-        final Scheduler.Inner inner = s.createInner();
+        final Scheduler.Worker inner = s.createWorker();
         final AtomicInteger counter = new AtomicInteger(0);
         
         inner.schedule(new Action0() {

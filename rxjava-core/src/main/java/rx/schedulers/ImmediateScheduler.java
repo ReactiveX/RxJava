@@ -37,11 +37,11 @@ public final class ImmediateScheduler extends Scheduler {
     }
 
     @Override
-    public Inner createInner() {
+    public Worker createWorker() {
         return new InnerImmediateScheduler();
     }
 
-    private class InnerImmediateScheduler extends Scheduler.Inner implements Subscription {
+    private class InnerImmediateScheduler extends Scheduler.Worker implements Subscription {
 
         final BooleanSubscription innerSubscription = new BooleanSubscription();
 

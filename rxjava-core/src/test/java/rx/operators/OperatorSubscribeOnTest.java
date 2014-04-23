@@ -94,15 +94,15 @@ public class OperatorSubscribeOnTest {
         }
 
         @Override
-        public Inner createInner() {
-            return new SlowInner(actual.createInner());
+        public Worker createWorker() {
+            return new SlowInner(actual.createWorker());
         }
 
-        private class SlowInner extends Inner {
+        private class SlowInner extends Worker {
 
-            private final Scheduler.Inner actualInner;
+            private final Scheduler.Worker actualInner;
 
-            private SlowInner(Inner actual) {
+            private SlowInner(Worker actual) {
                 this.actualInner = actual;
             }
 
