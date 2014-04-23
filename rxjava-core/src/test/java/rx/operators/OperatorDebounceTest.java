@@ -39,7 +39,7 @@ import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.Subscriptions;
 
-public class OperationDebounceTest {
+public class OperatorDebounceTest {
 
     private TestScheduler scheduler;
     private Observer<String> observer;
@@ -67,7 +67,7 @@ public class OperationDebounceTest {
             }
         });
 
-        Observable<String> sampled = Observable.create(OperationDebounce.debounce(source, 400, TimeUnit.MILLISECONDS, scheduler));
+        Observable<String> sampled = source.debounce(400, TimeUnit.MILLISECONDS, scheduler);
         sampled.subscribe(observer);
 
         scheduler.advanceTimeTo(0, TimeUnit.MILLISECONDS);
@@ -100,7 +100,7 @@ public class OperationDebounceTest {
             }
         });
 
-        Observable<String> sampled = Observable.create(OperationDebounce.debounce(source, 200, TimeUnit.MILLISECONDS, scheduler));
+        Observable<String> sampled = source.debounce(200, TimeUnit.MILLISECONDS, scheduler);
         sampled.subscribe(observer);
 
         scheduler.advanceTimeTo(0, TimeUnit.MILLISECONDS);
@@ -125,7 +125,7 @@ public class OperationDebounceTest {
             }
         });
 
-        Observable<String> sampled = Observable.create(OperationDebounce.debounce(source, 400, TimeUnit.MILLISECONDS, scheduler));
+        Observable<String> sampled = source.debounce(400, TimeUnit.MILLISECONDS, scheduler);
         sampled.subscribe(observer);
 
         scheduler.advanceTimeTo(0, TimeUnit.MILLISECONDS);
@@ -251,5 +251,50 @@ public class OperationDebounceTest {
         verify(o, never()).onNext(any());
         verify(o, never()).onCompleted();
         verify(o).onError(any(OperationReduceTest.CustomException.class));
+    }
+    @Test
+    public void debounceTimedLastIsNotLost() {
+        PublishSubject<Integer> source = PublishSubject.create();
+        
+        @SuppressWarnings("unchecked")
+        Observer<Object> o = mock(Observer.class);
+
+        source.debounce(100, TimeUnit.MILLISECONDS, scheduler).subscribe(o);
+        
+        source.onNext(1);
+        source.onCompleted();
+        
+        scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+        
+        verify(o).onNext(1);
+        verify(o).onCompleted();
+        verify(o, never()).onError(any(Throwable.class));
+    }
+    @Test
+    public void debounceSelectorLastIsNotLost() {
+        PublishSubject<Integer> source = PublishSubject.create();
+        final PublishSubject<Integer> debouncer = PublishSubject.create();
+
+        Func1<Integer, Observable<Integer>> debounceSel = new Func1<Integer, Observable<Integer>>() {
+
+            @Override
+            public Observable<Integer> call(Integer t1) {
+                return debouncer;
+            }
+        };
+
+        @SuppressWarnings("unchecked")
+        Observer<Object> o = mock(Observer.class);
+
+        source.debounce(debounceSel).subscribe(o);
+        
+        source.onNext(1);
+        source.onCompleted();
+
+        debouncer.onCompleted();
+
+        verify(o).onNext(1);
+        verify(o).onCompleted();
+        verify(o, never()).onError(any(Throwable.class));
     }
 }
