@@ -48,7 +48,6 @@ import rx.observables.GroupedObservable;
 import rx.observers.SafeSubscriber;
 import rx.operators.OnSubscribeFromIterable;
 import rx.operators.OnSubscribeRange;
-import rx.operators.OperationAsObservable;
 import rx.operators.OperationBuffer;
 import rx.operators.OperationCombineLatest;
 import rx.operators.OperationConcat;
@@ -93,6 +92,7 @@ import rx.operators.OperationWindow;
 import rx.operators.OperatorAll;
 import rx.operators.OperatorAmb;
 import rx.operators.OperatorAny;
+import rx.operators.OperatorAsObservable;
 import rx.operators.OperatorCache;
 import rx.operators.OperatorCast;
 import rx.operators.OperatorDoOnEach;
@@ -2952,7 +2952,7 @@ public class Observable<T> {
      * @return an Observable that hides the identity of this Observable
      */
     public final Observable<T> asObservable() {
-        return create(new OperationAsObservable<T>(this));
+        return lift(new OperatorAsObservable<T>());
     }
 
     /**
