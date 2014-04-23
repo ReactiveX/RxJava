@@ -18,7 +18,6 @@ package rx.operators;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static rx.operators.OperationAll.all;
 
 import org.junit.Test;
 
@@ -26,7 +25,7 @@ import rx.Observable;
 import rx.Observer;
 import rx.functions.Func1;
 
-public class OperationAllTest {
+public class OperatorAllTest {
 
     @Test
     @SuppressWarnings("unchecked")
@@ -34,12 +33,12 @@ public class OperationAllTest {
         Observable<String> obs = Observable.from("one", "two", "six");
 
         Observer<Boolean> observer = mock(Observer.class);
-        Observable.create(all(obs, new Func1<String, Boolean>() {
+        obs.all(new Func1<String, Boolean>() {
             @Override
             public Boolean call(String s) {
                 return s.length() == 3;
             }
-        })).subscribe(observer);
+        }).subscribe(observer);
 
         verify(observer).onNext(true);
         verify(observer).onCompleted();
@@ -52,12 +51,12 @@ public class OperationAllTest {
         Observable<String> obs = Observable.from("one", "two", "three", "six");
 
         Observer<Boolean> observer = mock(Observer.class);
-        Observable.create(all(obs, new Func1<String, Boolean>() {
+        obs.all(new Func1<String, Boolean>() {
             @Override
             public Boolean call(String s) {
                 return s.length() == 3;
             }
-        })).subscribe(observer);
+        }).subscribe(observer);
 
         verify(observer).onNext(false);
         verify(observer).onCompleted();
@@ -70,12 +69,12 @@ public class OperationAllTest {
         Observable<String> obs = Observable.empty();
 
         Observer<Boolean> observer = mock(Observer.class);
-        Observable.create(all(obs, new Func1<String, Boolean>() {
+        obs.all(new Func1<String, Boolean>() {
             @Override
             public Boolean call(String s) {
                 return s.length() == 3;
             }
-        })).subscribe(observer);
+        }).subscribe(observer);
 
         verify(observer).onNext(true);
         verify(observer).onCompleted();
@@ -89,12 +88,12 @@ public class OperationAllTest {
         Observable<String> obs = Observable.error(error);
 
         Observer<Boolean> observer = mock(Observer.class);
-        Observable.create(all(obs, new Func1<String, Boolean>() {
+        obs.all(new Func1<String, Boolean>() {
             @Override
             public Boolean call(String s) {
                 return s.length() == 3;
             }
-        })).subscribe(observer);
+        }).subscribe(observer);
 
         verify(observer).onError(error);
         verifyNoMoreInteractions(observer);
