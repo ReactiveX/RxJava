@@ -2941,7 +2941,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Conditional-and-Boolean-Operators#wiki-all">RxJava Wiki: all()</a>
      */
     public final Observable<Boolean> all(Func1<? super T, Boolean> predicate) {
-        return create(OperationAll.all(this, predicate));
+        return lift(new OperatorAll<T>(predicate));
     }
 
     /**
