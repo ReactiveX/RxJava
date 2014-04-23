@@ -55,11 +55,11 @@ public class NewThreadScheduler extends Scheduler {
     }
 
     @Override
-    public Inner createInner() {
+    public Worker createWorker() {
         return new EventLoopScheduler(THREAD_FACTORY);
     }
 
-    /* package */static class EventLoopScheduler extends Scheduler.Inner implements Subscription {
+    /* package */static class EventLoopScheduler extends Scheduler.Worker implements Subscription {
         private final CompositeSubscription innerSubscription = new CompositeSubscription();
         private final ExecutorService executor;
 

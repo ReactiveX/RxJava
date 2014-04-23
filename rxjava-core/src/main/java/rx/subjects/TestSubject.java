@@ -90,13 +90,13 @@ public final class TestSubject<T> extends Subject<T, T> {
 
     private final SubjectSubscriptionManager<T> subscriptionManager;
     private final AtomicReference<Notification<T>> lastNotification;
-    private final Scheduler.Inner innerScheduler;
+    private final Scheduler.Worker innerScheduler;
 
     protected TestSubject(OnSubscribe<T> onSubscribe, SubjectSubscriptionManager<T> subscriptionManager, AtomicReference<Notification<T>> lastNotification, TestScheduler scheduler) {
         super(onSubscribe);
         this.subscriptionManager = subscriptionManager;
         this.lastNotification = lastNotification;
-        this.innerScheduler = scheduler.createInner();
+        this.innerScheduler = scheduler.createWorker();
     }
 
     @Override

@@ -27,7 +27,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import rx.Observable;
 import rx.Observer;
 import rx.Scheduler;
-import rx.Scheduler.Inner;
+import rx.Scheduler.Worker;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Action0;
@@ -155,7 +155,7 @@ public class ChunkedOperation {
 
         private final ConcurrentMap<Chunk<T, C>, Subscription> subscriptions = new ConcurrentHashMap<Chunk<T, C>, Subscription>();
 
-        private final Scheduler.Inner scheduler;
+        private final Scheduler.Worker scheduler;
         private final long maxTime;
         private final TimeUnit unit;
         private final int maxSize;
@@ -166,7 +166,7 @@ public class ChunkedOperation {
             this.maxSize = maxSize;
             this.maxTime = maxTime;
             this.unit = unit;
-            this.scheduler = scheduler.createInner();
+            this.scheduler = scheduler.createWorker();
         }
 
         @Override
@@ -240,7 +240,7 @@ public class ChunkedOperation {
 
         private final ConcurrentMap<Chunk<T, C>, Subscription> subscriptions = new ConcurrentHashMap<Chunk<T, C>, Subscription>();
 
-        private final Scheduler.Inner scheduler;
+        private final Scheduler.Worker scheduler;
         private final long time;
         private final TimeUnit unit;
         private volatile boolean unsubscribed = false;
@@ -249,7 +249,7 @@ public class ChunkedOperation {
             super(observer, chunkMaker);
             this.time = time;
             this.unit = unit;
-            this.scheduler = scheduler.createInner();
+            this.scheduler = scheduler.createWorker();
         }
 
         @Override
@@ -608,7 +608,7 @@ public class ChunkedOperation {
         private final MultipleAssignmentSubscription subscription = new MultipleAssignmentSubscription();
 
         public TimeBasedChunkCreator(final NonOverlappingChunks<T, C> chunks, long time, TimeUnit unit, Scheduler scheduler) {
-            Inner inner = scheduler.createInner();
+            Worker inner = scheduler.createWorker();
             this.subscription.set(inner);
             inner.schedulePeriodically(new Action0() {
                 @Override
@@ -619,7 +619,7 @@ public class ChunkedOperation {
         }
 
         public TimeBasedChunkCreator(final OverlappingChunks<T, C> chunks, long time, TimeUnit unit, Scheduler scheduler) {
-            Inner inner = scheduler.createInner();
+            Worker inner = scheduler.createWorker();
             this.subscription.set(inner);
             inner.schedulePeriodically(new Action0() {
                 @Override

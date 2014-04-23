@@ -18,7 +18,7 @@ package rx.archive.schedulers;
 import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Scheduler;
-import rx.Scheduler.Inner;
+import rx.Scheduler.Worker;
 import rx.Subscriber;
 import rx.functions.Action0;
 import rx.schedulers.Schedulers;
@@ -42,7 +42,7 @@ public class TestRecursionMemoryUsage {
 
             @Override
             public void call(final Subscriber<? super Long> o) {
-                final Inner inner = scheduler.createInner();
+                final Worker inner = scheduler.createWorker();
                 o.add(inner);
                 inner.schedule(new Action0() {
 

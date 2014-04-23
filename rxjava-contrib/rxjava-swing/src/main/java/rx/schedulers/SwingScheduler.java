@@ -44,11 +44,11 @@ public final class SwingScheduler extends Scheduler {
     }
 
     @Override
-    public Inner createInner() {
+    public Worker createWorker() {
         return new InnerSwingScheduler();
     }
 
-    private static class InnerSwingScheduler extends Inner {
+    private static class InnerSwingScheduler extends Worker {
 
         private final CompositeSubscription innerSubscription = new CompositeSubscription();
 

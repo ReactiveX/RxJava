@@ -20,10 +20,10 @@ import rx.functions.Action0;
 
 /* package */class SleepingAction implements Action0 {
     private final Action0 underlying;
-    private final Scheduler.Inner innerScheduler;
+    private final Scheduler.Worker innerScheduler;
     private final long execTime;
 
-    public SleepingAction(Action0 underlying, Scheduler.Inner scheduler, long execTime) {
+    public SleepingAction(Action0 underlying, Scheduler.Worker scheduler, long execTime) {
         this.underlying = underlying;
         this.innerScheduler = scheduler;
         this.execTime = execTime;

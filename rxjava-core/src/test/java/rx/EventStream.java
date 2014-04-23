@@ -20,7 +20,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import rx.Observable.OnSubscribe;
-import rx.Scheduler.Inner;
+import rx.Scheduler.Worker;
 import rx.functions.Action0;
 import rx.schedulers.Schedulers;
 
@@ -34,7 +34,7 @@ public class EventStream {
 
             @Override
             public void call(final Subscriber<? super Event> subscriber) {
-                Inner inner = Schedulers.newThread().createInner();
+                Worker inner = Schedulers.newThread().createWorker();
                 subscriber.add(inner);
                 // run on a background thread inside the OnSubscribeFunc so unsubscribe works
                 inner.schedule(new Action0() {

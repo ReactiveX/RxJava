@@ -37,14 +37,14 @@ import rx.subscriptions.Subscriptions;
 public class OperationThrottleFirstTest {
 
     private TestScheduler scheduler;
-    private Scheduler.Inner innerScheduler;
+    private Scheduler.Worker innerScheduler;
     private Observer<String> observer;
 
     @Before
     @SuppressWarnings("unchecked")
     public void before() {
         scheduler = new TestScheduler();
-        innerScheduler = scheduler.createInner();
+        innerScheduler = scheduler.createWorker();
         observer = mock(Observer.class);
     }
 

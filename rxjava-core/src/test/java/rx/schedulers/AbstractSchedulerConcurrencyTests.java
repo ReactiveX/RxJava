@@ -30,7 +30,7 @@ import org.junit.Test;
 import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Scheduler;
-import rx.Scheduler.Inner;
+import rx.Scheduler.Worker;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Action0;
@@ -100,7 +100,7 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
         final CountDownLatch latch = new CountDownLatch(1);
         final CountDownLatch unsubscribeLatch = new CountDownLatch(1);
         final AtomicInteger counter = new AtomicInteger();
-        final Inner inner = getScheduler().createInner();
+        final Worker inner = getScheduler().createWorker();
 
         inner.schedule(new Action0() {
 
@@ -145,7 +145,7 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
     public void testUnsubscribeRecursiveScheduleFromInside() throws InterruptedException {
         final CountDownLatch unsubscribeLatch = new CountDownLatch(1);
         final AtomicInteger counter = new AtomicInteger();
-        final Inner inner = getScheduler().createInner();
+        final Worker inner = getScheduler().createWorker();
         inner.schedule(new Action0() {
 
             @Override
@@ -179,7 +179,7 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
         final CountDownLatch latch = new CountDownLatch(1);
         final CountDownLatch unsubscribeLatch = new CountDownLatch(1);
         final AtomicInteger counter = new AtomicInteger();
-        final Inner inner = getScheduler().createInner();
+        final Worker inner = getScheduler().createWorker();
         inner.schedule(new Action0() {
 
             @Override
@@ -220,7 +220,7 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
     @Test
     public void recursionFromOuterActionAndUnsubscribeInside() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
-        final Inner inner = getScheduler().createInner();
+        final Worker inner = getScheduler().createWorker();
         inner.schedule(new Action0() {
 
             int i = 0;
@@ -245,7 +245,7 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
     @Test
     public void testRecursion() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
-        final Inner inner = getScheduler().createInner();
+        final Worker inner = getScheduler().createWorker();
         inner.schedule(new Action0() {
 
             private long i = 0;
@@ -276,7 +276,7 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
         Observable<Integer> obs = Observable.create(new OnSubscribe<Integer>() {
             @Override
             public void call(final Subscriber<? super Integer> observer) {
-                final Inner inner = getScheduler().createInner();
+                final Worker inner = getScheduler().createWorker();
                 inner.schedule(new Action0() {
                     @Override
                     public void call() {

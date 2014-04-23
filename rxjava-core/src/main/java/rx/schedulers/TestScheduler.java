@@ -34,10 +34,10 @@ public class TestScheduler extends Scheduler {
 
         private final long time;
         private final Action0 action;
-        private final Inner scheduler;
+        private final Worker scheduler;
         private final long count = counter++; // for differentiating tasks at same time
 
-        private TimedAction(Inner scheduler, long time, Action0 action) {
+        private TimedAction(Worker scheduler, long time, Action0 action) {
             this.time = time;
             this.action = action;
             this.scheduler = scheduler;
@@ -99,11 +99,11 @@ public class TestScheduler extends Scheduler {
     }
 
     @Override
-    public Inner createInner() {
+    public Worker createWorker() {
         return new InnerTestScheduler();
     }
 
-    private final class InnerTestScheduler extends Inner {
+    private final class InnerTestScheduler extends Worker {
 
         private BooleanSubscription s = new BooleanSubscription();
 

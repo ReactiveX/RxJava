@@ -58,7 +58,7 @@ public class OperatorObserveOn<T> implements Operator<T, T> {
     private static class ObserveOnSubscriber<T> extends Subscriber<T> {
         private final NotificationLite<T> on = NotificationLite.instance();
         final Subscriber<? super T> observer;
-        private final Scheduler.Inner recursiveScheduler;
+        private final Scheduler.Worker recursiveScheduler;
 
         private final ConcurrentLinkedQueue<Object> queue = new ConcurrentLinkedQueue<Object>();
         final AtomicLong counter = new AtomicLong(0);
@@ -66,7 +66,7 @@ public class OperatorObserveOn<T> implements Operator<T, T> {
         public ObserveOnSubscriber(Scheduler scheduler, Subscriber<? super T> subscriber) {
             super(subscriber);
             this.observer = subscriber;
-            this.recursiveScheduler = scheduler.createInner();
+            this.recursiveScheduler = scheduler.createWorker();
             subscriber.add(recursiveScheduler);
         }
 

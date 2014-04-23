@@ -42,20 +42,22 @@ import rx.schedulers.Schedulers;
 public abstract class Scheduler {
 
     /**
-     * Retrieve or create a new {@link Scheduler.Inner} that represents serial execution of actions.
+     * Retrieve or create a new {@link Scheduler.Worker} that represents serial execution of actions.
      * <p>
-     * When work is completed it should be unsubscribed. Work on a {@link Scheduler.Inner} is guaranteed to be sequential.
+     * When work is completed it should be unsubscribed using {@link Scheduler.Worker#unsubscribe()}.
+     * <p>
+     * Work on a {@link Scheduler.Worker} is guaranteed to be sequential.
      * 
      * @return Inner representing a serial queue of actions to be executed
      */
-    public abstract Inner createInner();
+    public abstract Worker createWorker();
 
     /**
      * Sequential Scheduler for executing actions on a single thread or event loop.
      * <p>
-     * Unsubscribing the {@Inner} unschedules all outstanding work and allows resources cleanup.
+     * Unsubscribing the {@link Worker} unschedules all outstanding work and allows resources cleanup.
      */
-    public abstract static class Inner implements Subscription {
+    public abstract static class Worker implements Subscription {
 
         /**
          * Schedules an Action for execution.

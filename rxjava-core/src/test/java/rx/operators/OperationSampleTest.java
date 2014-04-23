@@ -39,7 +39,7 @@ import rx.subscriptions.Subscriptions;
 
 public class OperationSampleTest {
     private TestScheduler scheduler;
-    private Scheduler.Inner innerScheduler;
+    private Scheduler.Worker innerScheduler;
     private Observer<Long> observer;
     private Observer<Object> observer2;
 
@@ -48,7 +48,7 @@ public class OperationSampleTest {
     // due to mocking
     public void before() {
         scheduler = new TestScheduler();
-        innerScheduler = scheduler.createInner();
+        innerScheduler = scheduler.createWorker();
         observer = mock(Observer.class);
         observer2 = mock(Observer.class);
     }

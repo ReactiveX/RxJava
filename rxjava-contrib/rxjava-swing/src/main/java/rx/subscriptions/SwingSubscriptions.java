@@ -17,7 +17,7 @@ package rx.subscriptions;
 
 import javax.swing.SwingUtilities;
 
-import rx.Scheduler.Inner;
+import rx.Scheduler.Worker;
 import rx.Subscription;
 import rx.functions.Action0;
 import rx.schedulers.SwingScheduler;
@@ -41,7 +41,7 @@ public final class SwingSubscriptions {
                 if (SwingUtilities.isEventDispatchThread()) {
                     unsubscribe.call();
                 } else {
-                    final Inner inner = SwingScheduler.getInstance().createInner();
+                    final Worker inner = SwingScheduler.getInstance().createWorker();
                     inner.schedule(new Action0() {
                         @Override
                         public void call() {

@@ -46,12 +46,12 @@ import rx.subscriptions.Subscriptions;
 public class OperationWindowTest {
 
     private TestScheduler scheduler;
-    private Scheduler.Inner innerScheduler;
+    private Scheduler.Worker innerScheduler;
 
     @Before
     public void before() {
         scheduler = new TestScheduler();
-        innerScheduler = scheduler.createInner();
+        innerScheduler = scheduler.createWorker();
     }
 
     private static <T> List<List<T>> toLists(Observable<Observable<T>> observables) {

@@ -104,7 +104,7 @@ public final class OperationDebounce {
         private final Observer<? super T> observer;
         private final long timeout;
         private final TimeUnit unit;
-        private final Scheduler.Inner scheduler;
+        private final Scheduler.Worker scheduler;
 
         private final AtomicReference<Subscription> lastScheduledNotification = new AtomicReference<Subscription>();
 
@@ -114,7 +114,7 @@ public final class OperationDebounce {
             this.observer = new SerializedObserver<T>(observer);
             this.timeout = timeout;
             this.unit = unit;
-            this.scheduler = scheduler.createInner();
+            this.scheduler = scheduler.createWorker();
         }
 
         @Override

@@ -18,7 +18,7 @@ package rx.operators;
 import rx.Observable;
 import rx.Observable.Operator;
 import rx.Scheduler;
-import rx.Scheduler.Inner;
+import rx.Scheduler.Worker;
 import rx.Subscriber;
 import rx.functions.Action0;
 
@@ -37,7 +37,7 @@ public class OperatorSubscribeOn<T> implements Operator<T, Observable<T>> {
 
     @Override
     public Subscriber<? super Observable<T>> call(final Subscriber<? super T> subscriber) {
-        final Inner inner = scheduler.createInner();
+        final Worker inner = scheduler.createWorker();
         subscriber.add(inner);
         return new Subscriber<Observable<T>>(subscriber) {
 

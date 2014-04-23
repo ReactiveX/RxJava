@@ -138,13 +138,13 @@ public class OperatorUnsubscribeOnTest {
 
     public static class UIEventLoopScheduler extends Scheduler {
 
-        private final Scheduler.Inner eventLoop;
+        private final Scheduler.Worker eventLoop;
         private final Subscription s;
         private volatile Thread t;
 
         public UIEventLoopScheduler() {
 
-            eventLoop = Schedulers.newThread().createInner();
+            eventLoop = Schedulers.newThread().createWorker();
             s = eventLoop;
 
             /*
@@ -168,7 +168,7 @@ public class OperatorUnsubscribeOnTest {
         }
         
         @Override
-        public Inner createInner() {
+        public Worker createWorker() {
             return eventLoop;
         }
 

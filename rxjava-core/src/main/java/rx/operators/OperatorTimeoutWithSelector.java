@@ -43,7 +43,7 @@ public class OperatorTimeoutWithSelector<T, U, V> extends
             @Override
             public Subscription call(
                     final TimeoutSubscriber<T> timeoutSubscriber,
-                    final Long seqId, Scheduler.Inner inner) {
+                    final Long seqId, Scheduler.Worker inner) {
                 if (firstTimeoutSelector != null) {
                     Observable<U> o = null;
                     try {
@@ -80,7 +80,7 @@ public class OperatorTimeoutWithSelector<T, U, V> extends
             @Override
             public Subscription call(
                     final TimeoutSubscriber<T> timeoutSubscriber,
-                    final Long seqId, T value, Scheduler.Inner inner) {
+                    final Long seqId, T value, Scheduler.Worker inner) {
                 Observable<V> o = null;
                 try {
                     o = timeoutSelector.call(value);

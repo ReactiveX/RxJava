@@ -29,7 +29,7 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import rx.Scheduler;
-import rx.Scheduler.Inner;
+import rx.Scheduler.Worker;
 import rx.functions.Action0;
 import rx.functions.Action1;
 import android.os.Handler;
@@ -45,7 +45,7 @@ public class HandlerThreadSchedulerTest {
         final Action0 action = mock(Action0.class);
 
         Scheduler scheduler = new HandlerThreadScheduler(handler);
-        Inner inner = scheduler.createInner();
+        Worker inner = scheduler.createWorker();
         inner.schedule(action);
 
         // verify that we post to the given Handler
@@ -64,7 +64,7 @@ public class HandlerThreadSchedulerTest {
         final Action0 action = mock(Action0.class);
 
         Scheduler scheduler = new HandlerThreadScheduler(handler);
-        Inner inner = scheduler.createInner();
+        Worker inner = scheduler.createWorker();
         inner.schedule(action, 1L, TimeUnit.SECONDS);
 
         // verify that we post to the given Handler

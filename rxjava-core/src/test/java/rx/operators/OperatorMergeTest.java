@@ -42,7 +42,7 @@ import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Observer;
 import rx.Scheduler;
-import rx.Scheduler.Inner;
+import rx.Scheduler.Worker;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Action0;
@@ -485,7 +485,7 @@ public class OperatorMergeTest {
 
             @Override
             public void call(final Subscriber<? super Integer> s) {
-                Inner inner = Schedulers.newThread().createInner();
+                Worker inner = Schedulers.newThread().createWorker();
                 s.add(inner);
                 inner.schedule(new Action0() {
 
@@ -521,7 +521,7 @@ public class OperatorMergeTest {
 
             @Override
             public void call(final Subscriber<? super Integer> s) {
-                Inner inner = Schedulers.newThread().createInner();
+                Worker inner = Schedulers.newThread().createWorker();
                 s.add(inner);
                 inner.schedule(new Action0() {
 
@@ -562,7 +562,7 @@ public class OperatorMergeTest {
 
             @Override
             public void call(final Subscriber<? super Integer> s) {
-                Inner inner = Schedulers.newThread().createInner();
+                Worker inner = Schedulers.newThread().createWorker();
                 s.add(inner);
                 inner.schedule(new Action0() {
 
