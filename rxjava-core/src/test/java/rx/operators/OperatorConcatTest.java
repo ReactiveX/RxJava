@@ -43,7 +43,7 @@ import rx.schedulers.TestScheduler;
 import rx.subscriptions.BooleanSubscription;
 import rx.subscriptions.Subscriptions;
 
-public class OperationConcatTest {
+public class OperatorConcatTest {
 
     @Test
     public void testConcat() {
