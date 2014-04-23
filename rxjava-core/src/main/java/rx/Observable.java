@@ -48,7 +48,6 @@ import rx.observables.GroupedObservable;
 import rx.observers.SafeSubscriber;
 import rx.operators.OnSubscribeFromIterable;
 import rx.operators.OnSubscribeRange;
-import rx.operators.OperationBuffer;
 import rx.operators.OperationCombineLatest;
 import rx.operators.OperationConcat;
 import rx.operators.OperationDebounce;
@@ -93,6 +92,10 @@ import rx.operators.OperatorAll;
 import rx.operators.OperatorAmb;
 import rx.operators.OperatorAny;
 import rx.operators.OperatorAsObservable;
+import rx.operators.OperatorBufferWithSingleObservable;
+import rx.operators.OperatorBufferWithSize;
+import rx.operators.OperatorBufferWithStartEndObservable;
+import rx.operators.OperatorBufferWithTime;
 import rx.operators.OperatorCache;
 import rx.operators.OperatorCast;
 import rx.operators.OperatorDoOnEach;
@@ -2973,7 +2976,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#wiki-buffer">RxJava Wiki: buffer()</a>
      */
     public final <TClosing> Observable<List<T>> buffer(Func0<? extends Observable<? extends TClosing>> bufferClosingSelector) {
-        return create(OperationBuffer.buffer(this, bufferClosingSelector));
+        return lift(new OperatorBufferWithSingleObservable<T, TClosing>(bufferClosingSelector, 16));
     }
 
     /**
@@ -2990,7 +2993,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#wiki-buffer">RxJava Wiki: buffer()</a>
      */
     public final Observable<List<T>> buffer(int count) {
-        return create(OperationBuffer.buffer(this, count));
+        return lift(new OperatorBufferWithSize<T>(count, count));
     }
 
     /**
@@ -3011,7 +3014,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#wiki-buffer">RxJava Wiki: buffer()</a>
      */
     public final Observable<List<T>> buffer(int count, int skip) {
-        return create(OperationBuffer.buffer(this, count, skip));
+        return lift(new OperatorBufferWithSize<T>(count, skip));
     }
 
     /**
@@ -3034,7 +3037,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#wiki-buffer">RxJava Wiki: buffer()</a>
      */
     public final Observable<List<T>> buffer(long timespan, long timeshift, TimeUnit unit) {
-        return create(OperationBuffer.buffer(this, timespan, timeshift, unit));
+        return lift(new OperatorBufferWithTime<T>(timespan, timeshift, unit, Integer.MAX_VALUE, Schedulers.computation()));
     }
 
     /**
@@ -3058,7 +3061,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#wiki-buffer">RxJava Wiki: buffer()</a>
      */
     public final Observable<List<T>> buffer(long timespan, long timeshift, TimeUnit unit, Scheduler scheduler) {
-        return create(OperationBuffer.buffer(this, timespan, timeshift, unit, scheduler));
+        return lift(new OperatorBufferWithTime<T>(timespan, timeshift, unit, Integer.MAX_VALUE, scheduler));
     }
 
     /**
@@ -3079,7 +3082,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#wiki-buffer">RxJava Wiki: buffer()</a>
      */
     public final Observable<List<T>> buffer(long timespan, TimeUnit unit) {
-        return create(OperationBuffer.buffer(this, timespan, unit));
+        return lift(new OperatorBufferWithTime<T>(timespan, timespan, unit, Integer.MAX_VALUE, Schedulers.computation()));
     }
 
     /**
@@ -3104,7 +3107,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#wiki-buffer">RxJava Wiki: buffer()</a>
      */
     public final Observable<List<T>> buffer(long timespan, TimeUnit unit, int count) {
-        return create(OperationBuffer.buffer(this, timespan, unit, count));
+        return lift(new OperatorBufferWithTime<T>(timespan, timespan, unit, count, Schedulers.computation()));
     }
 
     /**
@@ -3132,7 +3135,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#wiki-buffer">RxJava Wiki: buffer()</a>
      */
     public final Observable<List<T>> buffer(long timespan, TimeUnit unit, int count, Scheduler scheduler) {
-        return create(OperationBuffer.buffer(this, timespan, unit, count, scheduler));
+        return lift(new OperatorBufferWithTime<T>(timespan, timespan, unit, count, scheduler));
     }
 
     /**
@@ -3156,7 +3159,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#wiki-buffer">RxJava Wiki: buffer()</a>
      */
     public final Observable<List<T>> buffer(long timespan, TimeUnit unit, Scheduler scheduler) {
-        return create(OperationBuffer.buffer(this, timespan, unit, scheduler));
+        return lift(new OperatorBufferWithTime<T>(timespan, timespan, unit, Integer.MAX_VALUE, scheduler));
     }
 
     /**
@@ -3176,7 +3179,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#wiki-buffer">RxJava Wiki: buffer()</a>
      */
     public final <TOpening, TClosing> Observable<List<T>> buffer(Observable<? extends TOpening> bufferOpenings, Func1<? super TOpening, ? extends Observable<? extends TClosing>> bufferClosingSelector) {
-        return create(OperationBuffer.buffer(this, bufferOpenings, bufferClosingSelector));
+        return lift(new OperatorBufferWithStartEndObservable<T, TOpening, TClosing>(bufferOpenings, bufferClosingSelector));
     }
 
     /**
@@ -3198,7 +3201,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#wiki-buffer">RxJava Wiki: buffer()</a>
      */
     public final <B> Observable<List<T>> buffer(Observable<B> boundary) {
-        return create(OperationBuffer.bufferWithBoundaryObservable(this, boundary));
+        return lift(new OperatorBufferWithSingleObservable<T, B>(boundary, 16));
     }
 
     /**
@@ -3222,7 +3225,7 @@ public class Observable<T> {
      * @see #buffer(rx.Observable, int)
      */
     public final <B> Observable<List<T>> buffer(Observable<B> boundary, int initialCapacity) {
-        return create(OperationBuffer.bufferWithBoundaryObservable(this, boundary, initialCapacity));
+        return lift(new OperatorBufferWithSingleObservable<T, B>(boundary, initialCapacity));
     }
 
     /**
