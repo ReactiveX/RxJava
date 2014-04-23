@@ -15,11 +15,8 @@
  */
 package rx.operators;
 
-import rx.Observable;
-import rx.Observable.OnSubscribeFunc;
-import rx.Observer;
-import rx.Subscription;
-import rx.observers.Subscribers;
+import rx.Observable.Operator;
+import rx.Subscriber;
 
 /**
  * Hides the identity of another observable.
@@ -27,15 +24,11 @@ import rx.observers.Subscribers;
  * @param <T>
  *            the return value type of the wrapped observable.
  */
-public final class OperationAsObservable<T> implements OnSubscribeFunc<T> {
-    private final Observable<? extends T> source;
-
-    public OperationAsObservable(Observable<? extends T> source) {
-        this.source = source;
-    }
+public final class OperatorAsObservable<T> implements Operator<T, T> {
 
     @Override
-    public Subscription onSubscribe(final Observer<? super T> t1) {
-        return source.unsafeSubscribe(Subscribers.from(t1));
+    public Subscriber<? super T> call(Subscriber<? super T> s) {
+        return s;
     }
+    
 }
