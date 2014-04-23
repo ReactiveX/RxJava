@@ -1,5 +1,68 @@
 # RxJava Releases #
 
+### Version 0.18.0 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.18.0%22)) ###
+
+This release takes us a step closer to [1.0](https://github.com/Netflix/RxJava/issues/1001) by completing some of the remaining work on the roadmap.
+
+##### Scheduler
+
+The first is simplifying the [Scheduler API](https://github.com/Netflix/RxJava/issues/997). 
+
+The Scheduler API is now simplified to this:
+
+```java
+class Scheduler {
+    public abstract Worker createWorker(); 
+    public int parallelism();
+    public long now();
+
+    public abstract static class Worker implements Subscription {
+        public abstract Subscription schedule(Action0 action, long delayTime, TimeUnit unit);
+        public abstract Subscription schedule(Action0 action);
+        public Subscription schedulePeriodically(Action0 action, long initialDelay, long period, TimeUnit unit);
+        public long now();
+    }
+}
+```
+
+This is a breaking change if you have a custom `Scheduler` implementation or use a `Scheduler` directly. If you only ever pass in a `Scheduler` via the `Schedulers` factory methods, this change does not affect you.
+
+Additionally, the `ExecutionScheduler` was removed because a general threadpool does not meet the requirements of sequential execution for an `Observable`. It was replaced with `rx.schedulers.EventLoopScheduler` which is the new default for `Schedulers.computation()`. It is a pool of event loops.
+
+##### rx.joins
+
+The `rx.joins` package and associated `when`, `and` and `then` operators were moved out of rxjava-core into a new module rxjava-joins. This is done as the rx.joins API was not yet matured and is not going to happen before 1.0. It was determined low priority and not worth blocking a 1.0 release. If the API matures inside the separate module to the point where it makes sense to bring it back into the core it can be done in the 1.x series.
+
+##### Deprecation Cleanup
+
+This releases removes many of the classes and methods that have been deprecated in previous releases. Most of the removed functionality was migrated in previous releases to contrib modules such as rxjava-math, rxjava-async and rxjava-computation-expressions.
+
+A handful of deprecated items still remain but can not yet be removed until all internal operators are finished migrating to using the `lift`/`Subscriber` design changes done in 0.17.0.
+
+
+The full list of changes in 0.18.0:
+
+* [Pull 1047] (https://github.com/Netflix/RxJava/pull/1047) Scheduler Simplification
+* [Pull 1072] (https://github.com/Netflix/RxJava/pull/1072) Scheduler.Inner -> Scheduler.Worker
+* [Pull 1053] (https://github.com/Netflix/RxJava/pull/1053) Deprecation Cleanup
+* [Pull 1052] (https://github.com/Netflix/RxJava/pull/1052) Scheduler Cleanup
+* [Pull 1048] (https://github.com/Netflix/RxJava/pull/1048) Remove ExecutorScheduler - New ComputationScheduler
+* [Pull 1049] (https://github.com/Netflix/RxJava/pull/1049) Move rx.joins to rxjava-joins module
+* [Pull 1068] (https://github.com/Netflix/RxJava/pull/1068) add synchronous test of resubscribe after error
+* [Pull 1066] (https://github.com/Netflix/RxJava/pull/1066) CompositeSubscription fix
+* [Pull 1071] (https://github.com/Netflix/RxJava/pull/1071) Manual Merge of AsObservable
+* [Pull 1063] (https://github.com/Netflix/RxJava/pull/1063) Fix bugs in equals and hashCode of Timestamped
+* [Pull 1070] (https://github.com/Netflix/RxJava/pull/1070) OperationAny -> OperatorAny
+* [Pull 1069] (https://github.com/Netflix/RxJava/pull/1069) OperationAll -> OperatorAll
+* [Pull 1058] (https://github.com/Netflix/RxJava/pull/1058) Typo in javadoc
+* [Pull 1056] (https://github.com/Netflix/RxJava/pull/1056) Add drop(skip) and dropRight(skipLast) to rxscala
+* [Pull 1057] (https://github.com/Netflix/RxJava/pull/1057) Fix: Retry in Scala adaptor is ambiguous
+* [Pull 1055] (https://github.com/Netflix/RxJava/pull/1055) Fix: Missing Quasar instrumentation on Observable$2.call
+* [Pull 1050] (https://github.com/Netflix/RxJava/pull/1050) Reimplement the 'SkipLast' operator 
+* [Pull 967] (https://github.com/Netflix/RxJava/pull/967) Reimplement the 'single' operator
+
+
+
 ### Version 0.17.6 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.17.6%22)) ###
 
 * [Pull 1031] (https://github.com/Netflix/RxJava/pull/1031) Fix NPE in SubjectSubscriptionManager
