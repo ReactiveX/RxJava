@@ -15,14 +15,8 @@
  */
 package rx.operators;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import rx.Observable;
-import rx.Observable.OnSubscribeFunc;
 import rx.Observable.Operator;
-import rx.Observer;
 import rx.Subscriber;
-import rx.Subscription;
 import rx.functions.Func1;
 
 /**
@@ -40,8 +34,9 @@ public final class OperatorAll<T> implements Operator<Boolean, T> {
 
     @Override
     public Subscriber<? super T> call(final Subscriber<? super Boolean> child) {
-        Subscriber s = new Subscriber<T>() {
+        return new Subscriber<T>(child) {
             boolean done;
+
             @Override
             public void onNext(T t) {
                 boolean result = predicate.call(t);
@@ -67,7 +62,5 @@ public final class OperatorAll<T> implements Operator<Boolean, T> {
                 }
             }
         };
-        child.add(s);
-        return s;
     }
 }
