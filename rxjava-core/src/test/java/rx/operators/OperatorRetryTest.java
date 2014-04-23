@@ -18,6 +18,7 @@ package rx.operators;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -30,6 +31,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 import org.mockito.InOrder;
+import org.mockito.Mockito;
 
 import rx.Observable;
 import rx.Observable.OnSubscribe;
@@ -118,6 +120,50 @@ public class OperatorRetryTest {
         inOrder.verify(observer, times(1)).onCompleted();
         inOrder.verifyNoMoreInteractions();
     }
+    
+    /**
+     * Checks in a simple and synchronous way that retry resubscribes
+     * after error. This test fails against 0.16.1-0.17.4, hangs on 0.17.5 and
+     * passes in 0.17.6 thanks to fix for issue #1027.
+     */
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testRetrySubscribesAgainAfterError() {
+
+        // record emitted values with this action
+        Action1<Integer> record = mock(Action1.class);
+        InOrder inOrder = inOrder(record);
+
+        // always throw an exception with this action
+        Action1<Integer> throwException = mock(Action1.class);
+        doThrow(new RuntimeException()).when(throwException).call(Mockito.anyInt());
+        
+        // create a retrying observable based on a PublishSubject
+        PublishSubject<Integer> subject = PublishSubject.create();
+        subject
+        // record item
+        .doOnNext(record)
+        // throw a RuntimeException
+                .doOnNext(throwException)
+                // retry on error
+                .retry()
+                // subscribe and ignore
+                .subscribe();
+
+        inOrder.verifyNoMoreInteractions();
+
+        subject.onNext(1);
+        inOrder.verify(record).call(1);
+
+        subject.onNext(2);
+        inOrder.verify(record).call(2);
+
+        subject.onNext(3);
+        inOrder.verify(record).call(3);
+
+        inOrder.verifyNoMoreInteractions();
+    }
+
 
     public static class FuncWithErrors implements Observable.OnSubscribe<String> {
 
@@ -356,4 +402,5 @@ public class OperatorRetryTest {
 
         assertEquals("Start 6 threads, retry 5 then fail on 6", 6, so.efforts.get());
     }
+    
 }
