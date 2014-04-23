@@ -27,7 +27,7 @@ import rx.Observer;
 import rx.functions.Func1;
 import rx.functions.Functions;
 
-public class OperationAnyTest {
+public class OperatorAnyTest {
 
     @Test
     public void testAnyWithTwoItems() {
