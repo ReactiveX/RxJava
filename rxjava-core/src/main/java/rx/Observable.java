@@ -48,7 +48,7 @@ import rx.observables.GroupedObservable;
 import rx.observers.SafeSubscriber;
 import rx.operators.OnSubscribeFromIterable;
 import rx.operators.OnSubscribeRange;
-import rx.operators.OperationAll;
+import rx.operators.OperatorAll;
 import rx.operators.OperationAny;
 import rx.operators.OperationAsObservable;
 import rx.operators.OperationBuffer;
