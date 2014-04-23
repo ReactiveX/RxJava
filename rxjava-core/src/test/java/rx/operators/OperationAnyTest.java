@@ -19,22 +19,20 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static rx.operators.OperationAny.any;
-import static rx.operators.OperationAny.exists;
-import static rx.operators.OperationAny.isEmpty;
 
 import org.junit.Test;
 
 import rx.Observable;
 import rx.Observer;
 import rx.functions.Func1;
+import rx.functions.Functions;
 
 public class OperationAnyTest {
 
     @Test
     public void testAnyWithTwoItems() {
         Observable<Integer> w = Observable.from(1, 2);
-        Observable<Boolean> observable = Observable.create(any(w));
+        Observable<Boolean> observable = w.exists(Functions.alwaysTrue());
 
         @SuppressWarnings("unchecked")
         Observer<Boolean> observer = mock(Observer.class);
@@ -48,7 +46,7 @@ public class OperationAnyTest {
     @Test
     public void testIsEmptyWithTwoItems() {
         Observable<Integer> w = Observable.from(1, 2);
-        Observable<Boolean> observable = Observable.create(isEmpty(w));
+        Observable<Boolean> observable = w.isEmpty();
 
         @SuppressWarnings("unchecked")
         Observer<Boolean> observer = mock(Observer.class);
@@ -62,7 +60,7 @@ public class OperationAnyTest {
     @Test
     public void testAnyWithOneItem() {
         Observable<Integer> w = Observable.from(1);
-        Observable<Boolean> observable = Observable.create(any(w));
+        Observable<Boolean> observable = w.exists(Functions.alwaysTrue());
 
         @SuppressWarnings("unchecked")
         Observer<Boolean> observer = mock(Observer.class);
@@ -76,7 +74,7 @@ public class OperationAnyTest {
     @Test
     public void testIsEmptyWithOneItem() {
         Observable<Integer> w = Observable.from(1);
-        Observable<Boolean> observable = Observable.create(isEmpty(w));
+        Observable<Boolean> observable = w.isEmpty();
 
         @SuppressWarnings("unchecked")
         Observer<Boolean> observer = mock(Observer.class);
@@ -90,7 +88,7 @@ public class OperationAnyTest {
     @Test
     public void testAnyWithEmpty() {
         Observable<Integer> w = Observable.empty();
-        Observable<Boolean> observable = Observable.create(any(w));
+        Observable<Boolean> observable = w.exists(Functions.alwaysTrue());
 
         @SuppressWarnings("unchecked")
         Observer<Boolean> observer = mock(Observer.class);
@@ -104,7 +102,7 @@ public class OperationAnyTest {
     @Test
     public void testIsEmptyWithEmpty() {
         Observable<Integer> w = Observable.empty();
-        Observable<Boolean> observable = Observable.create(isEmpty(w));
+        Observable<Boolean> observable = w.isEmpty();
 
         @SuppressWarnings("unchecked")
         Observer<Boolean> observer = mock(Observer.class);
@@ -118,14 +116,14 @@ public class OperationAnyTest {
     @Test
     public void testAnyWithPredicate1() {
         Observable<Integer> w = Observable.from(1, 2, 3);
-        Observable<Boolean> observable = Observable.create(any(w,
+        Observable<Boolean> observable = w.exists(
                 new Func1<Integer, Boolean>() {
 
                     @Override
                     public Boolean call(Integer t1) {
                         return t1 < 2;
                     }
-                }));
+                });
 
         @SuppressWarnings("unchecked")
         Observer<Boolean> observer = mock(Observer.class);
@@ -139,14 +137,14 @@ public class OperationAnyTest {
     @Test
     public void testExists1() {
         Observable<Integer> w = Observable.from(1, 2, 3);
-        Observable<Boolean> observable = Observable.create(exists(w,
+        Observable<Boolean> observable = w.exists(
                 new Func1<Integer, Boolean>() {
 
                     @Override
                     public Boolean call(Integer t1) {
                         return t1 < 2;
                     }
-                }));
+                });
 
         @SuppressWarnings("unchecked")
         Observer<Boolean> observer = mock(Observer.class);
@@ -160,14 +158,14 @@ public class OperationAnyTest {
     @Test
     public void testAnyWithPredicate2() {
         Observable<Integer> w = Observable.from(1, 2, 3);
-        Observable<Boolean> observable = Observable.create(any(w,
+        Observable<Boolean> observable = w.exists(
                 new Func1<Integer, Boolean>() {
 
                     @Override
                     public Boolean call(Integer t1) {
                         return t1 < 1;
                     }
-                }));
+                });
 
         @SuppressWarnings("unchecked")
         Observer<Boolean> observer = mock(Observer.class);
@@ -182,14 +180,14 @@ public class OperationAnyTest {
     public void testAnyWithEmptyAndPredicate() {
         // If the source is empty, always output false.
         Observable<Integer> w = Observable.empty();
-        Observable<Boolean> observable = Observable.create(any(w,
+        Observable<Boolean> observable = w.exists(
                 new Func1<Integer, Boolean>() {
 
                     @Override
                     public Boolean call(Integer t1) {
                         return true;
                     }
-                }));
+                });
 
         @SuppressWarnings("unchecked")
         Observer<Boolean> observer = mock(Observer.class);
