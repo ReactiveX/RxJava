@@ -50,7 +50,6 @@ import rx.operators.OnSubscribeFromIterable;
 import rx.operators.OnSubscribeRange;
 import rx.operators.OperationBuffer;
 import rx.operators.OperationCombineLatest;
-import rx.operators.OperationConcat;
 import rx.operators.OperationDebounce;
 import rx.operators.OperationDefaultIfEmpty;
 import rx.operators.OperationDefer;
@@ -95,6 +94,7 @@ import rx.operators.OperatorAny;
 import rx.operators.OperatorAsObservable;
 import rx.operators.OperatorCache;
 import rx.operators.OperatorCast;
+import rx.operators.OperatorConcat;
 import rx.operators.OperatorDoOnEach;
 import rx.operators.OperatorElementAt;
 import rx.operators.OperatorFilter;
@@ -740,7 +740,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.concat.aspx">MSDN: Observable.Concat</a>
      */
     public final static <T> Observable<T> concat(Observable<? extends Observable<? extends T>> observables) {
-        return create(OperationConcat.concat(observables));
+        return observables.lift(new OperatorConcat<T>());
     }
 
     /**
@@ -761,7 +761,7 @@ public class Observable<T> {
     @SuppressWarnings("unchecked")
     // suppress because the types are checked by the method signature before using a vararg
     public final static <T> Observable<T> concat(Observable<? extends T> t1, Observable<? extends T> t2) {
-        return create(OperationConcat.concat(t1, t2));
+        return concat(from(t1, t2));
     }
 
     /**
@@ -784,7 +784,7 @@ public class Observable<T> {
     @SuppressWarnings("unchecked")
     // suppress because the types are checked by the method signature before using a vararg
     public final static <T> Observable<T> concat(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3) {
-        return create(OperationConcat.concat(t1, t2, t3));
+        return concat(from(t1, t2, t3));
     }
 
     /**
@@ -809,7 +809,7 @@ public class Observable<T> {
     @SuppressWarnings("unchecked")
     // suppress because the types are checked by the method signature before using a vararg
     public final static <T> Observable<T> concat(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4) {
-        return create(OperationConcat.concat(t1, t2, t3, t4));
+        return concat(from(t1, t2, t3, t4));
     }
 
     /**
@@ -836,7 +836,7 @@ public class Observable<T> {
     @SuppressWarnings("unchecked")
     // suppress because the types are checked by the method signature before using a vararg
     public final static <T> Observable<T> concat(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5) {
-        return create(OperationConcat.concat(t1, t2, t3, t4, t5));
+        return concat(from(t1, t2, t3, t4, t5));
     }
 
     /**
@@ -865,7 +865,7 @@ public class Observable<T> {
     @SuppressWarnings("unchecked")
     // suppress because the types are checked by the method signature before using a vararg
     public final static <T> Observable<T> concat(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6) {
-        return create(OperationConcat.concat(t1, t2, t3, t4, t5, t6));
+        return concat(from(t1, t2, t3, t4, t5, t6));
     }
 
     /**
@@ -896,7 +896,7 @@ public class Observable<T> {
     @SuppressWarnings("unchecked")
     // suppress because the types are checked by the method signature before using a vararg
     public final static <T> Observable<T> concat(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6, Observable<? extends T> t7) {
-        return create(OperationConcat.concat(t1, t2, t3, t4, t5, t6, t7));
+        return concat(from(t1, t2, t3, t4, t5, t6, t7));
     }
 
     /**
@@ -929,7 +929,7 @@ public class Observable<T> {
     @SuppressWarnings("unchecked")
     // suppress because the types are checked by the method signature before using a vararg
     public final static <T> Observable<T> concat(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6, Observable<? extends T> t7, Observable<? extends T> t8) {
-        return create(OperationConcat.concat(t1, t2, t3, t4, t5, t6, t7, t8));
+        return concat(from(t1, t2, t3, t4, t5, t6, t7, t8));
     }
 
     /**
@@ -964,7 +964,7 @@ public class Observable<T> {
     @SuppressWarnings("unchecked")
     // suppress because the types are checked by the method signature before using a vararg
     public final static <T> Observable<T> concat(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6, Observable<? extends T> t7, Observable<? extends T> t8, Observable<? extends T> t9) {
-        return create(OperationConcat.concat(t1, t2, t3, t4, t5, t6, t7, t8, t9));
+        return concat(from(t1, t2, t3, t4, t5, t6, t7, t8, t9));
     }
 
     /**
