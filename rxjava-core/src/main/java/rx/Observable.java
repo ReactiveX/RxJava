@@ -56,7 +56,6 @@ import rx.operators.OperationDefaultIfEmpty;
 import rx.operators.OperationDefer;
 import rx.operators.OperationDelay;
 import rx.operators.OperationDematerialize;
-import rx.operators.OperationDistinct;
 import rx.operators.OperationDistinctUntilChanged;
 import rx.operators.OperationFinally;
 import rx.operators.OperationFlatMap;
@@ -95,6 +94,7 @@ import rx.operators.OperatorAny;
 import rx.operators.OperatorAsObservable;
 import rx.operators.OperatorCache;
 import rx.operators.OperatorCast;
+import rx.operators.OperatorDistinct;
 import rx.operators.OperatorDoOnEach;
 import rx.operators.OperatorElementAt;
 import rx.operators.OperatorFilter;
@@ -3606,7 +3606,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229764.aspx">MSDN: Observable.distinct</a>
      */
     public final Observable<T> distinct() {
-        return create(OperationDistinct.distinct(this));
+        return lift(new OperatorDistinct<T, T>(Functions.<T>identity()));
     }
 
     /**
@@ -3623,7 +3623,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh244310.aspx">MSDN: Observable.distinct</a>
      */
     public final <U> Observable<T> distinct(Func1<? super T, ? extends U> keySelector) {
-        return create(OperationDistinct.distinct(this, keySelector));
+        return lift(new OperatorDistinct<T, U>(keySelector));
     }
 
     /**
