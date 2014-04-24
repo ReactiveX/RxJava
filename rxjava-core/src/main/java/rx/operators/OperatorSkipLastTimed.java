@@ -15,9 +15,8 @@
  */
 package rx.operators;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.concurrent.TimeUnit;
 
 import rx.Observable.Operator;
@@ -42,39 +41,37 @@ public class OperatorSkipLastTimed<T> implements Operator<T, T> {
     public Subscriber<? super T> call(final Subscriber<? super T> subscriber) {
         return new Subscriber<T>(subscriber) {
 
-            private List<Timestamped<T>> buffer = new ArrayList<Timestamped<T>>();
+            private Deque<Timestamped<T>> buffer = new ArrayDeque<Timestamped<T>>();
+
+            private void emitItemsOutOfWindow(long now) {
+                long limit = now - timeInMillis;
+                while (!buffer.isEmpty()) {
+                    Timestamped<T> v = buffer.getFirst();
+                    if (v.getTimestampMillis() < limit) {
+                        buffer.removeFirst();
+                        subscriber.onNext(v.getValue());
+                    } else {
+                        break;
+                    }
+                }
+            }
 
             @Override
             public void onNext(T value) {
-                buffer.add(new Timestamped<T>(scheduler.now(), value));
+                long now = scheduler.now();
+                emitItemsOutOfWindow(now);
+                buffer.offerLast(new Timestamped<T>(now, value));
             }
 
             @Override
             public void onError(Throwable e) {
-                buffer = Collections.emptyList();
                 subscriber.onError(e);
             }
 
             @Override
             public void onCompleted() {
-                long limit = scheduler.now() - timeInMillis;
-                try {
-                    for (Timestamped<T> v : buffer) {
-                        if (v.getTimestampMillis() < limit) {
-                            try {
-                                subscriber.onNext(v.getValue());
-                            } catch (Throwable t) {
-                                subscriber.onError(t);
-                                return;
-                            }
-                        } else {
-                            break;
-                        }
-                    }
-                    subscriber.onCompleted();
-                } finally {
-                    buffer = Collections.emptyList();
-                }
+                emitItemsOutOfWindow(scheduler.now());
+                subscriber.onCompleted();
             }
 
         };

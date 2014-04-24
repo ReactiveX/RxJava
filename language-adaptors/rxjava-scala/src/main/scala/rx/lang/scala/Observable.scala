@@ -1300,7 +1300,7 @@ trait Observable[+T]
    * <p>
    * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/skipLast.t.png">
    *
-   * Note: this action will cache all items until "onCompleted" arrives. So don't use it on an infinite Observable.
+   * Note: this action will cache the latest items arriving in the specified time window.
    *
    * @param time the length of the time window
    * @return an Observable that drops those items emitted by the source Observable in a time window before the
@@ -1316,7 +1316,7 @@ trait Observable[+T]
    * <p>
    * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/skipLast.ts.png">
    *
-   * Note: this action will cache all items until "onCompleted" arrives. So don't use it on an infinite Observable.
+   * Note: this action will cache the latest items arriving in the specified time window.
    *
    * @param time the length of the time window
    * @param scheduler the scheduler used as the time source
