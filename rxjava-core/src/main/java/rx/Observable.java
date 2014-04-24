@@ -49,7 +49,6 @@ import rx.observers.SafeSubscriber;
 import rx.operators.OnSubscribeFromIterable;
 import rx.operators.OnSubscribeRange;
 import rx.operators.OperationDebounce;
-import rx.operators.OperationDefer;
 import rx.operators.OperationDelay;
 import rx.operators.OperationDematerialize;
 import rx.operators.OperationDistinct;
@@ -98,6 +97,7 @@ import rx.operators.OperatorCast;
 import rx.operators.OperatorCombineLatest;
 import rx.operators.OperatorConcat;
 import rx.operators.OperatorDefaultIfEmpty;
+import rx.operators.OperatorDefer;
 import rx.operators.OperatorDoOnEach;
 import rx.operators.OperatorElementAt;
 import rx.operators.OperatorFilter;
@@ -1007,7 +1007,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#wiki-defer">RxJava Wiki: defer()</a>
      */
     public final static <T> Observable<T> defer(Func0<? extends Observable<? extends T>> observableFactory) {
-        return create(OperationDefer.defer(observableFactory));
+        return create(new OperatorDefer<T>(observableFactory));
     }
 
     /**
