@@ -52,7 +52,6 @@ import rx.operators.OperationBuffer;
 import rx.operators.OperationCombineLatest;
 import rx.operators.OperationConcat;
 import rx.operators.OperationDebounce;
-import rx.operators.OperationDefaultIfEmpty;
 import rx.operators.OperationDefer;
 import rx.operators.OperationDelay;
 import rx.operators.OperationDematerialize;
@@ -95,6 +94,7 @@ import rx.operators.OperatorAny;
 import rx.operators.OperatorAsObservable;
 import rx.operators.OperatorCache;
 import rx.operators.OperatorCast;
+import rx.operators.OperatorDefaultIfEmpty;
 import rx.operators.OperatorDoOnEach;
 import rx.operators.OperatorElementAt;
 import rx.operators.OperatorFilter;
@@ -3450,7 +3450,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229624.aspx">MSDN: Observable.DefaultIfEmpty</a>
      */
     public final Observable<T> defaultIfEmpty(T defaultValue) {
-        return create(OperationDefaultIfEmpty.defaultIfEmpty(this, defaultValue));
+        return lift(new OperatorDefaultIfEmpty<T>(defaultValue));
     }
 
     /**
