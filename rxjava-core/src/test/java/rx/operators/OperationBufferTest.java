@@ -17,11 +17,7 @@ package rx.operators;
 
 import static org.junit.Assert.assertFalse;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static rx.operators.OperationBuffer.buffer;
+import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -70,7 +66,7 @@ public class OperationBufferTest {
             }
         });
 
-        Observable<List<String>> buffered = Observable.create(buffer(source, 3, 3));
+        Observable<List<String>> buffered = source.buffer(3, 3);
         buffered.subscribe(observer);
 
         Mockito.verify(observer, Mockito.never()).onNext(Mockito.anyListOf(String.class));
@@ -92,7 +88,7 @@ public class OperationBufferTest {
             }
         });
 
-        Observable<List<String>> buffered = Observable.create(buffer(source, 3, 1));
+        Observable<List<String>> buffered = source.buffer(3, 1);
         buffered.subscribe(observer);
 
         InOrder inOrder = Mockito.inOrder(observer);
@@ -119,7 +115,7 @@ public class OperationBufferTest {
             }
         });
 
-        Observable<List<String>> buffered = Observable.create(buffer(source, 3, 3));
+        Observable<List<String>> buffered = source.buffer(3, 3);
         buffered.subscribe(observer);
 
         InOrder inOrder = Mockito.inOrder(observer);
@@ -145,7 +141,7 @@ public class OperationBufferTest {
             }
         });
 
-        Observable<List<String>> buffered = Observable.create(buffer(source, 2, 3));
+        Observable<List<String>> buffered = source.buffer(2, 3);
         buffered.subscribe(observer);
 
         InOrder inOrder = Mockito.inOrder(observer);
@@ -171,7 +167,7 @@ public class OperationBufferTest {
             }
         });
 
-        Observable<List<String>> buffered = Observable.create(buffer(source, 100, TimeUnit.MILLISECONDS, 2, scheduler));
+        Observable<List<String>> buffered = source.buffer(100, TimeUnit.MILLISECONDS, 2, scheduler);
         buffered.subscribe(observer);
 
         InOrder inOrder = Mockito.inOrder(observer);
@@ -193,9 +189,14 @@ public class OperationBufferTest {
         Observable<String> source = Observable.create(new Observable.OnSubscribeFunc<String>() {
             @Override
             public Subscription onSubscribe(Observer<? super String> observer) {
-                push(observer, "one", 98);
-                push(observer, "two", 99);
-                push(observer, "three", 100);
+                push(observer, "one", 97);
+                push(observer, "two", 98);
+                /**
+                 * Changed from 100. Because scheduling the cut to 100ms happens before this
+                 * Observable even runs due how lift works, pushing at 100ms would execute after the
+                 * buffer cut.
+                 */
+                push(observer, "three", 99);
                 push(observer, "four", 101);
                 push(observer, "five", 102);
                 complete(observer, 150);
@@ -203,7 +204,7 @@ public class OperationBufferTest {
             }
         });
 
-        Observable<List<String>> buffered = Observable.create(buffer(source, 100, TimeUnit.MILLISECONDS, scheduler));
+        Observable<List<String>> buffered = source.buffer(100, TimeUnit.MILLISECONDS, scheduler);
         buffered.subscribe(observer);
 
         InOrder inOrder = Mockito.inOrder(observer);
@@ -256,7 +257,7 @@ public class OperationBufferTest {
             }
         };
 
-        Observable<List<String>> buffered = Observable.create(buffer(source, openings, closer));
+        Observable<List<String>> buffered = source.buffer(openings, closer);
         buffered.subscribe(observer);
 
         InOrder inOrder = Mockito.inOrder(observer);
@@ -290,14 +291,16 @@ public class OperationBufferTest {
                     @Override
                     public Subscription onSubscribe(Observer<? super Object> observer) {
                         push(observer, new Object(), 100);
-                        complete(observer, 101);
+                        push(observer, new Object(), 200);
+                        push(observer, new Object(), 300);
+                        complete(observer, 301);
                         return Subscriptions.empty();
                     }
                 });
             }
         };
 
-        Observable<List<String>> buffered = Observable.create(buffer(source, closer));
+        Observable<List<String>> buffered = source.buffer(closer);
         buffered.subscribe(observer);
 
         InOrder inOrder = Mockito.inOrder(observer);
@@ -521,5 +524,264 @@ public class OperationBufferTest {
         verify(o).onError(any(OperationReduceTest.CustomException.class));
         verify(o, never()).onCompleted();
         verify(o, never()).onNext(any());
+    }
+    @Test(timeout = 2000)
+    public void bufferWithSizeTake1() {
+        Observable<Integer> source = Observable.from(1).repeat();
+        
+        Observable<List<Integer>> result = source.buffer(2).take(1);
+        
+        Observer<Object> o = mock(Observer.class);
+        
+        result.subscribe(o);
+        
+        verify(o).onNext(Arrays.asList(1, 1));
+        verify(o).onCompleted();
+        verify(o, never()).onError(any(Throwable.class));
+    }
+    
+    @Test(timeout = 2000)
+    public void bufferWithSizeSkipTake1() {
+        Observable<Integer> source = Observable.from(1).repeat();
+        
+        Observable<List<Integer>> result = source.buffer(2, 3).take(1);
+        
+        Observer<Object> o = mock(Observer.class);
+        
+        result.subscribe(o);
+        
+        verify(o).onNext(Arrays.asList(1, 1));
+        verify(o).onCompleted();
+        verify(o, never()).onError(any(Throwable.class));
+    }
+    @Test(timeout = 2000)
+    public void bufferWithTimeTake1() {
+        Observable<Long> source = Observable.timer(40, 40, TimeUnit.MILLISECONDS, scheduler);
+        
+        Observable<List<Long>> result = source.buffer(100, TimeUnit.MILLISECONDS, scheduler).take(1);
+        
+        Observer<Object> o = mock(Observer.class);
+        
+        result.subscribe(o);
+        
+        scheduler.advanceTimeBy(5, TimeUnit.SECONDS);
+        
+        verify(o).onNext(Arrays.asList(0L, 1L));
+        verify(o).onCompleted();
+        verify(o, never()).onError(any(Throwable.class));
+    }
+    @Test(timeout = 2000)
+    public void bufferWithTimeSkipTake2() {
+        Observable<Long> source = Observable.timer(40, 40, TimeUnit.MILLISECONDS, scheduler);
+        
+        Observable<List<Long>> result = source.buffer(100, 60, TimeUnit.MILLISECONDS, scheduler).take(2);
+        
+        Observer<Object> o = mock(Observer.class);
+        InOrder inOrder = inOrder(o);
+        
+        result.subscribe(o);
+        
+        scheduler.advanceTimeBy(5, TimeUnit.SECONDS);
+        
+        inOrder.verify(o).onNext(Arrays.asList(0L, 1L));
+        inOrder.verify(o).onNext(Arrays.asList(1L, 2L));
+        inOrder.verify(o).onCompleted();
+        verify(o, never()).onError(any(Throwable.class));
+    }
+    @Test(timeout = 2000)
+    public void bufferWithBoundaryTake2() {
+        Observable<Long> boundary = Observable.timer(60, 60, TimeUnit.MILLISECONDS, scheduler);
+        Observable<Long> source = Observable.timer(40, 40, TimeUnit.MILLISECONDS, scheduler);
+        
+        Observable<List<Long>> result = source.buffer(boundary).take(2);
+        
+        Observer<Object> o = mock(Observer.class);
+        InOrder inOrder = inOrder(o);
+        
+        result.subscribe(o);
+        
+        scheduler.advanceTimeBy(5, TimeUnit.SECONDS);
+        
+        inOrder.verify(o).onNext(Arrays.asList(0L));
+        inOrder.verify(o).onNext(Arrays.asList(1L));
+        inOrder.verify(o).onCompleted();
+        verify(o, never()).onError(any(Throwable.class));
+        
+    }
+    
+    @Test(timeout = 2000)
+    public void bufferWithStartEndBoundaryTake2() {
+        Observable<Long> start = Observable.timer(61, 61, TimeUnit.MILLISECONDS, scheduler);
+        Func1<Long, Observable<Long>> end = new Func1<Long, Observable<Long>>() {
+            @Override
+            public Observable<Long> call(Long t1) {
+                return Observable.timer(100, 100, TimeUnit.MILLISECONDS, scheduler);
+            }
+        };
+        
+        Observable<Long> source = Observable.timer(40, 40, TimeUnit.MILLISECONDS, scheduler);
+        
+        Observable<List<Long>> result = source.buffer(start, end).take(2);
+        
+        Observer<Object> o = mock(Observer.class);
+        InOrder inOrder = inOrder(o);
+        
+        result.subscribe(o);
+        
+        scheduler.advanceTimeBy(5, TimeUnit.SECONDS);
+        
+        inOrder.verify(o).onNext(Arrays.asList(1L, 2L, 3L));
+        inOrder.verify(o).onNext(Arrays.asList(3L, 4L));
+        inOrder.verify(o).onCompleted();
+        verify(o, never()).onError(any(Throwable.class));
+    }
+    @Test
+    public void bufferWithSizeThrows() {
+        PublishSubject<Integer> source = PublishSubject.create();
+        
+        Observable<List<Integer>> result = source.buffer(2);
+        
+        Observer<Object> o = mock(Observer.class);
+        InOrder inOrder = inOrder(o);
+        
+        result.subscribe(o);
+        
+        source.onNext(1);
+        source.onNext(2);
+        source.onNext(3);
+        source.onError(new OperationReduceTest.CustomException());
+        
+        inOrder.verify(o).onNext(Arrays.asList(1, 2));
+        inOrder.verify(o).onError(any(OperationReduceTest.CustomException.class));
+        inOrder.verifyNoMoreInteractions();
+        verify(o, never()).onNext(Arrays.asList(3));
+        verify(o, never()).onCompleted();
+                
+    }
+    
+    @Test
+    public void bufferWithTimeThrows() {
+        PublishSubject<Integer> source = PublishSubject.create();
+        
+        Observable<List<Integer>> result = source.buffer(100, TimeUnit.MILLISECONDS, scheduler);
+        
+        Observer<Object> o = mock(Observer.class);
+        InOrder inOrder = inOrder(o);
+        
+        result.subscribe(o);
+        
+        source.onNext(1);
+        source.onNext(2);
+        scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
+        source.onNext(3);
+        source.onError(new OperationReduceTest.CustomException());
+        scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
+        
+        inOrder.verify(o).onNext(Arrays.asList(1, 2));
+        inOrder.verify(o).onError(any(OperationReduceTest.CustomException.class));
+        inOrder.verifyNoMoreInteractions();
+        verify(o, never()).onNext(Arrays.asList(3));
+        verify(o, never()).onCompleted();
+                
+    }
+    @Test
+    public void bufferWithTimeAndSize() {
+        Observable<Long> source = Observable.timer(30, 30, TimeUnit.MILLISECONDS, scheduler);
+        
+        Observable<List<Long>> result = source.buffer(100, TimeUnit.MILLISECONDS, 2, scheduler).take(3);
+        
+        Observer<Object> o = mock(Observer.class);
+        InOrder inOrder = inOrder(o);
+        
+        result.subscribe(o);
+        
+        scheduler.advanceTimeBy(5, TimeUnit.SECONDS);
+        
+        inOrder.verify(o).onNext(Arrays.asList(0L, 1L));
+        inOrder.verify(o).onNext(Arrays.asList(2L));
+        inOrder.verify(o).onCompleted();
+        verify(o, never()).onError(any(Throwable.class));
+    }
+    @Test
+    public void bufferWithStartEndStartThrows() {
+        PublishSubject<Integer> start = PublishSubject.create();
+        
+        Func1<Integer, Observable<Integer>> end = new Func1<Integer, Observable<Integer>>() {
+            @Override
+            public Observable<Integer> call(Integer t1) {
+                return Observable.never();
+            }
+        };
+
+        PublishSubject<Integer> source = PublishSubject.create();
+
+        Observable<List<Integer>> result = source.buffer(start, end);
+        
+        Observer<Object> o = mock(Observer.class);
+        
+        result.subscribe(o);
+        
+        start.onNext(1);
+        source.onNext(1);
+        source.onNext(2);
+        start.onError(new OperationReduceTest.CustomException());
+        
+        verify(o, never()).onNext(any());
+        verify(o, never()).onCompleted();
+        verify(o).onError(any(OperationReduceTest.CustomException.class));
+    }
+    @Test
+    public void bufferWithStartEndEndFunctionThrows() {
+        PublishSubject<Integer> start = PublishSubject.create();
+        
+        Func1<Integer, Observable<Integer>> end = new Func1<Integer, Observable<Integer>>() {
+            @Override
+            public Observable<Integer> call(Integer t1) {
+                throw new OperationReduceTest.CustomException();
+            }
+        };
+
+        PublishSubject<Integer> source = PublishSubject.create();
+
+        Observable<List<Integer>> result = source.buffer(start, end);
+        
+        Observer<Object> o = mock(Observer.class);
+        
+        result.subscribe(o);
+        
+        start.onNext(1);
+        source.onNext(1);
+        source.onNext(2);
+        
+        verify(o, never()).onNext(any());
+        verify(o, never()).onCompleted();
+        verify(o).onError(any(OperationReduceTest.CustomException.class));
+    }
+    @Test
+    public void bufferWithStartEndEndThrows() {
+        PublishSubject<Integer> start = PublishSubject.create();
+        
+        Func1<Integer, Observable<Integer>> end = new Func1<Integer, Observable<Integer>>() {
+            @Override
+            public Observable<Integer> call(Integer t1) {
+                return Observable.error(new OperationReduceTest.CustomException());
+            }
+        };
+
+        PublishSubject<Integer> source = PublishSubject.create();
+
+        Observable<List<Integer>> result = source.buffer(start, end);
+        
+        Observer<Object> o = mock(Observer.class);
+        
+        result.subscribe(o);
+        
+        start.onNext(1);
+        source.onNext(1);
+        source.onNext(2);
+        
+        verify(o, never()).onNext(any());
+        verify(o, never()).onCompleted();
+        verify(o).onError(any(OperationReduceTest.CustomException.class));
     }
 }
