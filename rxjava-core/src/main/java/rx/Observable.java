@@ -48,16 +48,8 @@ import rx.observables.GroupedObservable;
 import rx.observers.SafeSubscriber;
 import rx.operators.OnSubscribeFromIterable;
 import rx.operators.OnSubscribeRange;
-import rx.operators.OperationCombineLatest;
 import rx.operators.OperationDebounce;
-import rx.operators.OperationDefaultIfEmpty;
-import rx.operators.OperationDefer;
 import rx.operators.OperationDelay;
-import rx.operators.OperationDematerialize;
-import rx.operators.OperationDistinct;
-import rx.operators.OperationDistinctUntilChanged;
-import rx.operators.OperationFinally;
-import rx.operators.OperationFlatMap;
 import rx.operators.OperationGroupByUntil;
 import rx.operators.OperationGroupJoin;
 import rx.operators.OperationInterval;
@@ -84,7 +76,6 @@ import rx.operators.OperationTimeInterval;
 import rx.operators.OperationTimer;
 import rx.operators.OperationToMap;
 import rx.operators.OperationToMultimap;
-import rx.operators.OperationToObservableFuture;
 import rx.operators.OperationUsing;
 import rx.operators.OperationWindow;
 import rx.operators.OperatorAll;
@@ -97,14 +88,23 @@ import rx.operators.OperatorBufferWithStartEndObservable;
 import rx.operators.OperatorBufferWithTime;
 import rx.operators.OperatorCache;
 import rx.operators.OperatorCast;
+import rx.operators.OperatorCombineLatest;
 import rx.operators.OperatorConcat;
+import rx.operators.OperatorDefaultIfEmpty;
+import rx.operators.OperatorDefer;
+import rx.operators.OperatorDematerialize;
+import rx.operators.OperatorDistinct;
+import rx.operators.OperatorDistinctUntilChanged;
 import rx.operators.OperatorDoOnEach;
 import rx.operators.OperatorElementAt;
 import rx.operators.OperatorFilter;
+import rx.operators.OperatorFinally;
 import rx.operators.OperatorGroupBy;
 import rx.operators.OperatorMap;
 import rx.operators.OperatorMaterialize;
 import rx.operators.OperatorMerge;
+import rx.operators.OperatorMergeMapPair;
+import rx.operators.OperatorMergeMapTransform;
 import rx.operators.OperatorObserveOn;
 import rx.operators.OperatorOnErrorFlatMap;
 import rx.operators.OperatorOnErrorResumeNextViaFunction;
@@ -124,6 +124,7 @@ import rx.operators.OperatorTake;
 import rx.operators.OperatorTimeout;
 import rx.operators.OperatorTimeoutWithSelector;
 import rx.operators.OperatorTimestamp;
+import rx.operators.OperatorToObservableFuture;
 import rx.operators.OperatorToObservableList;
 import rx.operators.OperatorToObservableSortedList;
 import rx.operators.OperatorUnsubscribeOn;
@@ -259,7 +260,7 @@ public class Observable<T> {
      * @return an Observable that emits values that are the result of applying the bind function to the values
      *         of the current Observable
      */
-    public <R> Observable<R> lift(final Operator<? extends R, ? super T> lift) {
+    public final <R> Observable<R> lift(final Operator<? extends R, ? super T> lift) {
         return new Observable<R>(new OnSubscribe<R>() {
             @Override
             public void call(Subscriber<? super R> o) {
@@ -516,8 +517,9 @@ public class Observable<T> {
      *         Observables by means of the given aggregation function
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#wiki-combinelatest">RxJava Wiki: combineLatest()</a>
      */
-    public final static <T1, T2, R> Observable<R> combineLatest(Observable<? extends T1> o1, Observable<? extends T2> o2, Func2<? super T1, ? super T2, ? extends R> combineFunction) {
-        return create(OperationCombineLatest.combineLatest(o1, o2, combineFunction));
+    @SuppressWarnings("unchecked")
+    public static final <T1, T2, R> Observable<R> combineLatest(Observable<? extends T1> o1, Observable<? extends T2> o2, Func2<? super T1, ? super T2, ? extends R> combineFunction) {
+        return combineLatest(Arrays.asList(o1, o2), Functions.fromFunc(combineFunction));
     }
 
     /**
@@ -539,8 +541,9 @@ public class Observable<T> {
      *         Observables by means of the given aggregation function
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#wiki-combinelatest">RxJava Wiki: combineLatest()</a>
      */
-    public final static <T1, T2, T3, R> Observable<R> combineLatest(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Func3<? super T1, ? super T2, ? super T3, ? extends R> combineFunction) {
-        return create(OperationCombineLatest.combineLatest(o1, o2, o3, combineFunction));
+    @SuppressWarnings("unchecked")
+    public static final <T1, T2, T3, R> Observable<R> combineLatest(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Func3<? super T1, ? super T2, ? super T3, ? extends R> combineFunction) {
+        return combineLatest(Arrays.asList(o1, o2, o3), Functions.fromFunc(combineFunction));
     }
 
     /**
@@ -564,9 +567,10 @@ public class Observable<T> {
      *         Observables by means of the given aggregation function
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#wiki-combinelatest">RxJava Wiki: combineLatest()</a>
      */
-    public final static <T1, T2, T3, T4, R> Observable<R> combineLatest(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4,
+    @SuppressWarnings("unchecked")
+    public static final <T1, T2, T3, T4, R> Observable<R> combineLatest(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4,
             Func4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> combineFunction) {
-        return create(OperationCombineLatest.combineLatest(o1, o2, o3, o4, combineFunction));
+        return combineLatest(Arrays.asList(o1, o2, o3, o4), Functions.fromFunc(combineFunction));
     }
 
     /**
@@ -592,9 +596,10 @@ public class Observable<T> {
      *         Observables by means of the given aggregation function
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#wiki-combinelatest">RxJava Wiki: combineLatest()</a>
      */
-    public final static <T1, T2, T3, T4, T5, R> Observable<R> combineLatest(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Observable<? extends T5> o5,
+    @SuppressWarnings("unchecked")
+    public static final <T1, T2, T3, T4, T5, R> Observable<R> combineLatest(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Observable<? extends T5> o5,
             Func5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> combineFunction) {
-        return create(OperationCombineLatest.combineLatest(o1, o2, o3, o4, o5, combineFunction));
+        return combineLatest(Arrays.asList(o1, o2, o3, o4, o5), Functions.fromFunc(combineFunction));
     }
 
     /**
@@ -622,9 +627,10 @@ public class Observable<T> {
      *         Observables by means of the given aggregation function
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#wiki-combinelatest">RxJava Wiki: combineLatest()</a>
      */
-    public final static <T1, T2, T3, T4, T5, T6, R> Observable<R> combineLatest(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Observable<? extends T5> o5, Observable<? extends T6> o6,
+    @SuppressWarnings("unchecked")
+    public static final <T1, T2, T3, T4, T5, T6, R> Observable<R> combineLatest(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Observable<? extends T5> o5, Observable<? extends T6> o6,
             Func6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> combineFunction) {
-        return create(OperationCombineLatest.combineLatest(o1, o2, o3, o4, o5, o6, combineFunction));
+        return combineLatest(Arrays.asList(o1, o2, o3, o4, o5, o6), Functions.fromFunc(combineFunction));
     }
 
     /**
@@ -654,9 +660,10 @@ public class Observable<T> {
      *         Observables by means of the given aggregation function
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#wiki-combinelatest">RxJava Wiki: combineLatest()</a>
      */
-    public final static <T1, T2, T3, T4, T5, T6, T7, R> Observable<R> combineLatest(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Observable<? extends T5> o5, Observable<? extends T6> o6, Observable<? extends T7> o7,
+    @SuppressWarnings("unchecked")
+    public static final <T1, T2, T3, T4, T5, T6, T7, R> Observable<R> combineLatest(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Observable<? extends T5> o5, Observable<? extends T6> o6, Observable<? extends T7> o7,
             Func7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> combineFunction) {
-        return create(OperationCombineLatest.combineLatest(o1, o2, o3, o4, o5, o6, o7, combineFunction));
+        return combineLatest(Arrays.asList(o1, o2, o3, o4, o5, o6, o7), Functions.fromFunc(combineFunction));
     }
 
     /**
@@ -688,9 +695,10 @@ public class Observable<T> {
      *         Observables by means of the given aggregation function
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#wiki-combinelatest">RxJava Wiki: combineLatest()</a>
      */
-    public final static <T1, T2, T3, T4, T5, T6, T7, T8, R> Observable<R> combineLatest(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Observable<? extends T5> o5, Observable<? extends T6> o6, Observable<? extends T7> o7, Observable<? extends T8> o8,
+    @SuppressWarnings("unchecked")
+    public static final <T1, T2, T3, T4, T5, T6, T7, T8, R> Observable<R> combineLatest(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Observable<? extends T5> o5, Observable<? extends T6> o6, Observable<? extends T7> o7, Observable<? extends T8> o8,
             Func8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> combineFunction) {
-        return create(OperationCombineLatest.combineLatest(o1, o2, o3, o4, o5, o6, o7, o8, combineFunction));
+        return combineLatest(Arrays.asList(o1, o2, o3, o4, o5, o6, o7, o8), Functions.fromFunc(combineFunction));
     }
 
     /**
@@ -724,10 +732,27 @@ public class Observable<T> {
      *         Observables by means of the given aggregation function
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#wiki-combinelatest">RxJava Wiki: combineLatest()</a>
      */
-    public final static <T1, T2, T3, T4, T5, T6, T7, T8, T9, R> Observable<R> combineLatest(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Observable<? extends T5> o5, Observable<? extends T6> o6, Observable<? extends T7> o7, Observable<? extends T8> o8,
+    @SuppressWarnings("unchecked")
+    public static final <T1, T2, T3, T4, T5, T6, T7, T8, T9, R> Observable<R> combineLatest(Observable<? extends T1> o1, Observable<? extends T2> o2, Observable<? extends T3> o3, Observable<? extends T4> o4, Observable<? extends T5> o5, Observable<? extends T6> o6, Observable<? extends T7> o7, Observable<? extends T8> o8,
             Observable<? extends T9> o9,
             Func9<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? super T9, ? extends R> combineFunction) {
-        return create(OperationCombineLatest.combineLatest(o1, o2, o3, o4, o5, o6, o7, o8, o9, combineFunction));
+        return combineLatest(Arrays.asList(o1, o2, o3, o4, o5, o6, o7, o8, o9), Functions.fromFunc(combineFunction));
+    }
+    /**
+     * Combines nine source Observables by emitting an item that aggregates the latest values of each of the
+     * source Observables each time an item is received from any of the source Observables, where this
+     * aggregation is defined by a specified function.
+     * @param <T> the common base type of source values
+     * @param <R> the result type
+     * @param sources the list of observable sources
+     * @param combineFunction
+     *            the aggregation function used to combine the items emitted by the source Observables
+     * @return an Observable that emits items that are the result of combining the items emitted by the source
+     *         Observables by means of the given aggregation function
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#wiki-combinelatest">RxJava Wiki: combineLatest()</a>
+     */
+    public static final <T, R> Observable<R> combineLatest(List<? extends Observable<? extends T>> sources, FuncN<? extends R> combineFunction) {
+        return create(new OperatorCombineLatest<T, R>(sources, combineFunction));
     }
 
     /**
@@ -761,8 +786,6 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#wiki-concat">RxJava Wiki: concat()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.concat.aspx">MSDN: Observable.Concat</a>
      */
-    @SuppressWarnings("unchecked")
-    // suppress because the types are checked by the method signature before using a vararg
     public final static <T> Observable<T> concat(Observable<? extends T> t1, Observable<? extends T> t2) {
         return concat(from(t1, t2));
     }
@@ -784,8 +807,6 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#wiki-concat">RxJava Wiki: concat()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.concat.aspx">MSDN: Observable.Concat</a>
      */
-    @SuppressWarnings("unchecked")
-    // suppress because the types are checked by the method signature before using a vararg
     public final static <T> Observable<T> concat(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3) {
         return concat(from(t1, t2, t3));
     }
@@ -809,8 +830,6 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#wiki-concat">RxJava Wiki: concat()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.concat.aspx">MSDN: Observable.Concat</a>
      */
-    @SuppressWarnings("unchecked")
-    // suppress because the types are checked by the method signature before using a vararg
     public final static <T> Observable<T> concat(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4) {
         return concat(from(t1, t2, t3, t4));
     }
@@ -836,8 +855,6 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#wiki-concat">RxJava Wiki: concat()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.concat.aspx">MSDN: Observable.Concat</a>
      */
-    @SuppressWarnings("unchecked")
-    // suppress because the types are checked by the method signature before using a vararg
     public final static <T> Observable<T> concat(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5) {
         return concat(from(t1, t2, t3, t4, t5));
     }
@@ -865,8 +882,6 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#wiki-concat">RxJava Wiki: concat()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.concat.aspx">MSDN: Observable.Concat</a>
      */
-    @SuppressWarnings("unchecked")
-    // suppress because the types are checked by the method signature before using a vararg
     public final static <T> Observable<T> concat(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6) {
         return concat(from(t1, t2, t3, t4, t5, t6));
     }
@@ -896,8 +911,6 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#wiki-concat">RxJava Wiki: concat()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.concat.aspx">MSDN: Observable.Concat</a>
      */
-    @SuppressWarnings("unchecked")
-    // suppress because the types are checked by the method signature before using a vararg
     public final static <T> Observable<T> concat(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6, Observable<? extends T> t7) {
         return concat(from(t1, t2, t3, t4, t5, t6, t7));
     }
@@ -929,8 +942,6 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#wiki-concat">RxJava Wiki: concat()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.concat.aspx">MSDN: Observable.Concat</a>
      */
-    @SuppressWarnings("unchecked")
-    // suppress because the types are checked by the method signature before using a vararg
     public final static <T> Observable<T> concat(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6, Observable<? extends T> t7, Observable<? extends T> t8) {
         return concat(from(t1, t2, t3, t4, t5, t6, t7, t8));
     }
@@ -964,8 +975,6 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#wiki-concat">RxJava Wiki: concat()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.concat.aspx">MSDN: Observable.Concat</a>
      */
-    @SuppressWarnings("unchecked")
-    // suppress because the types are checked by the method signature before using a vararg
     public final static <T> Observable<T> concat(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6, Observable<? extends T> t7, Observable<? extends T> t8, Observable<? extends T> t9) {
         return concat(from(t1, t2, t3, t4, t5, t6, t7, t8, t9));
     }
@@ -991,7 +1000,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#wiki-defer">RxJava Wiki: defer()</a>
      */
     public final static <T> Observable<T> defer(Func0<? extends Observable<? extends T>> observableFactory) {
-        return create(OperationDefer.defer(observableFactory));
+        return create(new OperatorDefer<T>(observableFactory));
     }
 
     /**
@@ -1086,7 +1095,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#wiki-from">RxJava Wiki: from()</a>
      */
     public final static <T> Observable<T> from(Future<? extends T> future) {
-        return create(OperationToObservableFuture.toObservableFuture(future));
+        return create(OperatorToObservableFuture.toObservableFuture(future));
     }
 
     /**
@@ -1112,7 +1121,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#wiki-from">RxJava Wiki: from()</a>
      */
     public final static <T> Observable<T> from(Future<? extends T> future, long timeout, TimeUnit unit) {
-        return create(OperationToObservableFuture.toObservableFuture(future, timeout, unit));
+        return create(OperatorToObservableFuture.toObservableFuture(future, timeout, unit));
     }
 
     /**
@@ -1135,7 +1144,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#wiki-from">RxJava Wiki: from()</a>
      */
     public final static <T> Observable<T> from(Future<? extends T> future, Scheduler scheduler) {
-        return create(OperationToObservableFuture.toObservableFuture(future)).subscribeOn(scheduler);
+        return create(OperatorToObservableFuture.toObservableFuture(future)).subscribeOn(scheduler);
     }
 
     /**
@@ -3453,7 +3462,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229624.aspx">MSDN: Observable.DefaultIfEmpty</a>
      */
     public final Observable<T> defaultIfEmpty(T defaultValue) {
-        return create(OperationDefaultIfEmpty.defaultIfEmpty(this, defaultValue));
+        return lift(new OperatorDefaultIfEmpty<T>(defaultValue));
     }
 
     /**
@@ -3593,9 +3602,9 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#wiki-dematerialize">RxJava Wiki: dematerialize()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229047.aspx">MSDN: Observable.dematerialize</a>
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public final <T2> Observable<T2> dematerialize() {
-        return create(OperationDematerialize.dematerialize((Observable<? extends Notification<? extends T2>>) this));
+        return lift(new OperatorDematerialize());
     }
 
     /**
@@ -3609,7 +3618,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229764.aspx">MSDN: Observable.distinct</a>
      */
     public final Observable<T> distinct() {
-        return create(OperationDistinct.distinct(this));
+        return lift(new OperatorDistinct<T, T>(Functions.<T>identity()));
     }
 
     /**
@@ -3626,7 +3635,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh244310.aspx">MSDN: Observable.distinct</a>
      */
     public final <U> Observable<T> distinct(Func1<? super T, ? extends U> keySelector) {
-        return create(OperationDistinct.distinct(this, keySelector));
+        return lift(new OperatorDistinct<T, U>(keySelector));
     }
 
     /**
@@ -3641,7 +3650,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229494.aspx">MSDN: Observable.distinctUntilChanged</a>
      */
     public final Observable<T> distinctUntilChanged() {
-        return create(OperationDistinctUntilChanged.distinctUntilChanged(this));
+        return lift(new OperatorDistinctUntilChanged<T, T>(Functions.<T>identity()));
     }
 
     /**
@@ -3659,7 +3668,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229508.aspx">MSDN: Observable.distinctUntilChanged</a>
      */
     public final <U> Observable<T> distinctUntilChanged(Func1<? super T, ? extends U> keySelector) {
-        return create(OperationDistinctUntilChanged.distinctUntilChanged(this, keySelector));
+        return lift(new OperatorDistinctUntilChanged<T, U>(keySelector));
     }
 
     /**
@@ -3926,7 +3935,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh212133.aspx">MSDN: Observable.Finally</a>
      */
     public final Observable<T> finallyDo(Action0 action) {
-        return create(OperationFinally.finallyDo(this, action));
+        return lift(new OperatorFinally<T>(action));
     }
 
     /**
@@ -4325,7 +4334,7 @@ public class Observable<T> {
             Func1<? super T, ? extends Observable<? extends R>> onNext,
             Func1<? super Throwable, ? extends Observable<? extends R>> onError,
             Func0<? extends Observable<? extends R>> onCompleted) {
-        return create(OperationFlatMap.flatMap(this, onNext, onError, onCompleted));
+        return lift(new OperatorMergeMapTransform<T, R>(onNext, onError, onCompleted));
     }
 
     /**
@@ -4348,7 +4357,7 @@ public class Observable<T> {
      */
     public final <U, R> Observable<R> mergeMap(Func1<? super T, ? extends Observable<? extends U>> collectionSelector,
             Func2<? super T, ? super U, ? extends R> resultSelector) {
-        return create(OperationFlatMap.flatMap(this, collectionSelector, resultSelector));
+        return lift(new OperatorMergeMapPair<T, U, R>(collectionSelector, resultSelector));
     }
 
     /**
@@ -4366,7 +4375,7 @@ public class Observable<T> {
      *         the values in the Iterables corresponding to those items, as generated by {@code collectionSelector}
      */
     public final <R> Observable<R> mergeMapIterable(Func1<? super T, ? extends Iterable<? extends R>> collectionSelector) {
-        return merge(map(OperationFlatMap.flatMapIterableFunc(collectionSelector)));
+        return merge(map(OperatorMergeMapPair.convertSelector(collectionSelector)));
     }
 
     /**
@@ -4390,7 +4399,7 @@ public class Observable<T> {
      */
     public final <U, R> Observable<R> mergeMapIterable(Func1<? super T, ? extends Iterable<? extends U>> collectionSelector,
             Func2<? super T, ? super U, ? extends R> resultSelector) {
-        return mergeMap(OperationFlatMap.flatMapIterableFunc(collectionSelector), resultSelector);
+        return mergeMap(OperatorMergeMapPair.convertSelector(collectionSelector), resultSelector);
     }
 
     /**

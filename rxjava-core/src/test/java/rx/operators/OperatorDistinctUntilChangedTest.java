@@ -22,9 +22,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static rx.operators.OperationDistinctUntilChanged.distinctUntilChanged;
 
-import java.util.Comparator;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -35,7 +33,7 @@ import rx.Observable;
 import rx.Observer;
 import rx.functions.Func1;
 
-public class OperationDistinctUntilChangedTest {
+public class OperatorDistinctUntilChangedTest {
 
     @Mock
     Observer<String> w;
@@ -53,13 +51,6 @@ public class OperationDistinctUntilChangedTest {
         }
     };
 
-    final Comparator<String> COMPARE_LENGTH = new Comparator<String>() {
-        @Override
-        public int compare(String s1, String s2) {
-            return s1.length() - s2.length();
-        }
-    };
-
     @Before
     public void before() {
         initMocks(this);
@@ -68,7 +59,7 @@ public class OperationDistinctUntilChangedTest {
     @Test
     public void testDistinctUntilChangedOfNone() {
         Observable<String> src = Observable.empty();
-        Observable.create(distinctUntilChanged(src)).subscribe(w);
+        src.distinctUntilChanged().subscribe(w);
 
         verify(w, never()).onNext(anyString());
         verify(w, never()).onError(any(Throwable.class));
@@ -78,7 +69,7 @@ public class OperationDistinctUntilChangedTest {
     @Test
     public void testDistinctUntilChangedOfNoneWithKeySelector() {
         Observable<String> src = Observable.empty();
-        Observable.create(distinctUntilChanged(src, TO_UPPER_WITH_EXCEPTION)).subscribe(w);
+        src.distinctUntilChanged(TO_UPPER_WITH_EXCEPTION).subscribe(w);
 
         verify(w, never()).onNext(anyString());
         verify(w, never()).onError(any(Throwable.class));
@@ -88,7 +79,7 @@ public class OperationDistinctUntilChangedTest {
     @Test
     public void testDistinctUntilChangedOfNormalSource() {
         Observable<String> src = Observable.from("a", "b", "c", "c", "c", "b", "b", "a", "e");
-        Observable.create(distinctUntilChanged(src)).subscribe(w);
+        src.distinctUntilChanged().subscribe(w);
 
         InOrder inOrder = inOrder(w);
         inOrder.verify(w, times(1)).onNext("a");
@@ -105,7 +96,7 @@ public class OperationDistinctUntilChangedTest {
     @Test
     public void testDistinctUntilChangedOfNormalSourceWithKeySelector() {
         Observable<String> src = Observable.from("a", "b", "c", "C", "c", "B", "b", "a", "e");
-        Observable.create(distinctUntilChanged(src, TO_UPPER_WITH_EXCEPTION)).subscribe(w);
+        src.distinctUntilChanged(TO_UPPER_WITH_EXCEPTION).subscribe(w);
 
         InOrder inOrder = inOrder(w);
         inOrder.verify(w, times(1)).onNext("a");
@@ -122,7 +113,7 @@ public class OperationDistinctUntilChangedTest {
     @Test
     public void testDistinctUntilChangedOfSourceWithNulls() {
         Observable<String> src = Observable.from(null, "a", "a", null, null, "b", null, null);
-        Observable.create(distinctUntilChanged(src)).subscribe(w);
+        src.distinctUntilChanged().subscribe(w);
 
         InOrder inOrder = inOrder(w);
         inOrder.verify(w, times(1)).onNext(null);
@@ -138,7 +129,7 @@ public class OperationDistinctUntilChangedTest {
     @Test
     public void testDistinctUntilChangedOfSourceWithExceptionsFromKeySelector() {
         Observable<String> src = Observable.from("a", "b", null, "c");
-        Observable.create(distinctUntilChanged(src, TO_UPPER_WITH_EXCEPTION)).subscribe(w);
+        src.distinctUntilChanged(TO_UPPER_WITH_EXCEPTION).subscribe(w);
 
         InOrder inOrder = inOrder(w);
         inOrder.verify(w, times(1)).onNext("a");
@@ -146,57 +137,5 @@ public class OperationDistinctUntilChangedTest {
         verify(w, times(1)).onError(any(NullPointerException.class));
         inOrder.verify(w, never()).onNext(anyString());
         inOrder.verify(w, never()).onCompleted();
-    }
-
-    @Test
-    public void testDistinctUntilChangedWithComparator() {
-        Observable<String> src = Observable.from("a", "b", "c", "aa", "bb", "c", "ddd");
-        Observable.create(distinctUntilChanged(src, COMPARE_LENGTH)).subscribe(w);
-        InOrder inOrder = inOrder(w);
-        inOrder.verify(w, times(1)).onNext("a");
-        inOrder.verify(w, times(1)).onNext("aa");
-        inOrder.verify(w, times(1)).onNext("c");
-        inOrder.verify(w, times(1)).onNext("ddd");
-        inOrder.verify(w, times(1)).onCompleted();
-        inOrder.verify(w, never()).onNext(anyString());
-        verify(w, never()).onError(any(Throwable.class));
-    }
-
-    @Test
-    public void testDistinctUntilChangedWithComparatorAndKeySelector() {
-        Observable<String> src = Observable.from("a", "b", "x", "aa", "bb", "c", "ddd");
-        Observable.create(distinctUntilChanged(src, TO_UPPER_WITH_EXCEPTION, COMPARE_LENGTH)).subscribe(w);
-        InOrder inOrder = inOrder(w);
-        inOrder.verify(w, times(1)).onNext("a");
-        inOrder.verify(w, times(1)).onNext("x");
-        inOrder.verify(w, times(1)).onNext("c");
-        inOrder.verify(w, times(1)).onNext("ddd");
-        inOrder.verify(w, times(1)).onCompleted();
-        inOrder.verify(w, never()).onNext(anyString());
-        verify(w, never()).onError(any(Throwable.class));
-    }
-
-    @Test
-    public void testDistinctUntilChangedWithComparatorAndKeySelectorandTwoSubscriptions() {
-        Observable<String> src = Observable.from("a", "b", "x", "aa", "bb", "c", "ddd");
-        Observable.create(distinctUntilChanged(src, TO_UPPER_WITH_EXCEPTION, COMPARE_LENGTH)).subscribe(w);
-        InOrder inOrder = inOrder(w);
-        inOrder.verify(w, times(1)).onNext("a");
-        inOrder.verify(w, times(1)).onNext("x");
-        Observable.create(distinctUntilChanged(src, TO_UPPER_WITH_EXCEPTION, COMPARE_LENGTH)).subscribe(w2);
-        inOrder.verify(w, times(1)).onNext("c");
-        inOrder.verify(w, times(1)).onNext("ddd");
-        inOrder.verify(w, times(1)).onCompleted();
-        inOrder.verify(w, never()).onNext(anyString());
-        verify(w, never()).onError(any(Throwable.class));
-
-        InOrder inOrder2 = inOrder(w2);
-        inOrder2.verify(w2, times(1)).onNext("a");
-        inOrder2.verify(w2, times(1)).onNext("x");
-        inOrder2.verify(w2, times(1)).onNext("c");
-        inOrder2.verify(w2, times(1)).onNext("ddd");
-        inOrder2.verify(w2, times(1)).onCompleted();
-        inOrder2.verify(w2, never()).onNext(anyString());
-        verify(w2, never()).onError(any(Throwable.class));
     }
 }

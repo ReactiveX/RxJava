@@ -22,9 +22,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
-import static rx.operators.OperationDistinct.distinct;
 
-import java.util.Comparator;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -35,7 +33,7 @@ import rx.Observable;
 import rx.Observer;
 import rx.functions.Func1;
 
-public class OperationDistinctTest {
+public class OperatorDistinctTest {
 
     @Mock
     Observer<String> w;
@@ -53,13 +51,6 @@ public class OperationDistinctTest {
         }
     };
 
-    final Comparator<String> COMPARE_LENGTH = new Comparator<String>() {
-        @Override
-        public int compare(String s1, String s2) {
-            return s1.length() - s2.length();
-        }
-    };
-
     @Before
     public void before() {
         initMocks(this);
@@ -68,7 +59,7 @@ public class OperationDistinctTest {
     @Test
     public void testDistinctOfNone() {
         Observable<String> src = Observable.empty();
-        Observable.create(distinct(src)).subscribe(w);
+        src.distinct().subscribe(w);
 
         verify(w, never()).onNext(anyString());
         verify(w, never()).onError(any(Throwable.class));
@@ -78,7 +69,7 @@ public class OperationDistinctTest {
     @Test
     public void testDistinctOfNoneWithKeySelector() {
         Observable<String> src = Observable.empty();
-        Observable.create(distinct(src, TO_UPPER_WITH_EXCEPTION)).subscribe(w);
+        src.distinct(TO_UPPER_WITH_EXCEPTION).subscribe(w);
 
         verify(w, never()).onNext(anyString());
         verify(w, never()).onError(any(Throwable.class));
@@ -88,7 +79,7 @@ public class OperationDistinctTest {
     @Test
     public void testDistinctOfNormalSource() {
         Observable<String> src = Observable.from("a", "b", "c", "c", "c", "b", "b", "a", "e");
-        Observable.create(distinct(src)).subscribe(w);
+        src.distinct().subscribe(w);
 
         InOrder inOrder = inOrder(w);
         inOrder.verify(w, times(1)).onNext("a");
@@ -103,7 +94,7 @@ public class OperationDistinctTest {
     @Test
     public void testDistinctOfNormalSourceWithKeySelector() {
         Observable<String> src = Observable.from("a", "B", "c", "C", "c", "B", "b", "a", "E");
-        Observable.create(distinct(src, TO_UPPER_WITH_EXCEPTION)).subscribe(w);
+        src.distinct(TO_UPPER_WITH_EXCEPTION).subscribe(w);
 
         InOrder inOrder = inOrder(w);
         inOrder.verify(w, times(1)).onNext("a");
@@ -116,64 +107,9 @@ public class OperationDistinctTest {
     }
 
     @Test
-    public void testDistinctOfNormalSourceWithComparator() {
-        Observable<String> src = Observable.from("1", "12", "123", "aaa", "321", "12", "21", "1", "12345");
-        Observable.create(distinct(src, COMPARE_LENGTH)).subscribe(w);
-
-        InOrder inOrder = inOrder(w);
-        inOrder.verify(w, times(1)).onNext("1");
-        inOrder.verify(w, times(1)).onNext("12");
-        inOrder.verify(w, times(1)).onNext("123");
-        inOrder.verify(w, times(1)).onNext("12345");
-        inOrder.verify(w, times(1)).onCompleted();
-        inOrder.verify(w, never()).onNext(anyString());
-        verify(w, never()).onError(any(Throwable.class));
-    }
-
-    @Test
-    public void testDistinctOfNormalSourceWithKeySelectorAndComparator() {
-        Observable<String> src = Observable.from("a", "x", "ab", "abc", "cba", "de", "x", "a", "abcd");
-        Observable.create(distinct(src, TO_UPPER_WITH_EXCEPTION, COMPARE_LENGTH)).subscribe(w);
-
-        InOrder inOrder = inOrder(w);
-        inOrder.verify(w, times(1)).onNext("a");
-        inOrder.verify(w, times(1)).onNext("x");
-        inOrder.verify(w, times(1)).onNext("abc");
-        inOrder.verify(w, times(1)).onNext("abcd");
-        inOrder.verify(w, times(1)).onCompleted();
-        inOrder.verify(w, never()).onNext(anyString());
-        verify(w, never()).onError(any(Throwable.class));
-    }
-
-    @Test
-    public void testDistinctOfNormalSourceWithKeySelectorAndComparatorAndTwoSubscriptions() {
-        Observable<String> src = Observable.from("a", "x", "ab", "abc", "cba", "de", "x", "a", "abcd");
-        Observable.create(distinct(src, TO_UPPER_WITH_EXCEPTION, COMPARE_LENGTH)).subscribe(w);
-
-        InOrder inOrder = inOrder(w);
-        inOrder.verify(w, times(1)).onNext("a");
-        inOrder.verify(w, times(1)).onNext("x");
-        Observable.create(distinct(src, TO_UPPER_WITH_EXCEPTION, COMPARE_LENGTH)).subscribe(w2);
-        inOrder.verify(w, times(1)).onNext("abc");
-        inOrder.verify(w, times(1)).onNext("abcd");
-        inOrder.verify(w, times(1)).onCompleted();
-        inOrder.verify(w, never()).onNext(anyString());
-        verify(w, never()).onError(any(Throwable.class));
-
-        InOrder inOrder2 = inOrder(w2);
-        inOrder2.verify(w2, times(1)).onNext("a");
-        inOrder2.verify(w2, times(1)).onNext("x");
-        inOrder2.verify(w2, times(1)).onNext("abc");
-        inOrder2.verify(w2, times(1)).onNext("abcd");
-        inOrder2.verify(w2, times(1)).onCompleted();
-        inOrder2.verify(w2, never()).onNext(anyString());
-        verify(w2, never()).onError(any(Throwable.class));
-    }
-
-    @Test
     public void testDistinctOfSourceWithNulls() {
         Observable<String> src = Observable.from(null, "a", "a", null, null, "b", null);
-        Observable.create(distinct(src)).subscribe(w);
+        src.distinct().subscribe(w);
 
         InOrder inOrder = inOrder(w);
         inOrder.verify(w, times(1)).onNext(null);
@@ -187,7 +123,7 @@ public class OperationDistinctTest {
     @Test
     public void testDistinctOfSourceWithExceptionsFromKeySelector() {
         Observable<String> src = Observable.from("a", "b", null, "c");
-        Observable.create(distinct(src, TO_UPPER_WITH_EXCEPTION)).subscribe(w);
+        src.distinct(TO_UPPER_WITH_EXCEPTION).subscribe(w);
 
         InOrder inOrder = inOrder(w);
         inOrder.verify(w, times(1)).onNext("a");

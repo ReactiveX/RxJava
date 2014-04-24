@@ -32,7 +32,7 @@ import rx.functions.Func0;
 import rx.functions.Func1;
 import rx.functions.Func2;
 
-public class OperationFlatMapTest {
+public class OperatorMergeMapTest {
     @Test
     public void testNormal() {
         @SuppressWarnings("unchecked")
