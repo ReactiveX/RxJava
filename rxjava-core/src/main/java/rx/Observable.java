@@ -56,7 +56,6 @@ import rx.operators.OperationDelay;
 import rx.operators.OperationDematerialize;
 import rx.operators.OperationDistinct;
 import rx.operators.OperationDistinctUntilChanged;
-import rx.operators.OperationFinally;
 import rx.operators.OperationFlatMap;
 import rx.operators.OperationGroupByUntil;
 import rx.operators.OperationGroupJoin;
@@ -101,6 +100,7 @@ import rx.operators.OperatorConcat;
 import rx.operators.OperatorDoOnEach;
 import rx.operators.OperatorElementAt;
 import rx.operators.OperatorFilter;
+import rx.operators.OperatorFinally;
 import rx.operators.OperatorGroupBy;
 import rx.operators.OperatorMap;
 import rx.operators.OperatorMaterialize;
@@ -3926,7 +3926,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh212133.aspx">MSDN: Observable.Finally</a>
      */
     public final Observable<T> finallyDo(Action0 action) {
-        return create(OperationFinally.finallyDo(this, action));
+        return lift(new OperatorFinally<T>(action));
     }
 
     /**

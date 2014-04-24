@@ -18,7 +18,6 @@ package rx.operators;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static rx.operators.OperationFinally.finallyDo;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -27,7 +26,7 @@ import rx.Observable;
 import rx.Observer;
 import rx.functions.Action0;
 
-public class OperationFinallyTest {
+public class OperatorFinallyTest {
 
     private Action0 aAction0;
     private Observer<String> observer;
@@ -41,7 +40,7 @@ public class OperationFinallyTest {
     }
 
     private void checkActionCalled(Observable<String> input) {
-        Observable.create(finallyDo(input, aAction0)).subscribe(observer);
+        input.finallyDo(aAction0).subscribe(observer);
         verify(aAction0, times(1)).call();
     }
 
