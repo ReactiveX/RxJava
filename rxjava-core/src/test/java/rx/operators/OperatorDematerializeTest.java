@@ -20,16 +20,16 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static rx.operators.OperationDematerialize.dematerialize;
 
 import org.junit.Test;
 
 import rx.Notification;
 import rx.Observable;
 import rx.Observer;
+import rx.observers.Subscribers;
 import rx.observers.TestSubscriber;
 
-public class OperationDematerializeTest {
+public class OperatorDematerializeTest {
 
     @Test
     @SuppressWarnings("unchecked")
@@ -51,7 +51,7 @@ public class OperationDematerializeTest {
     public void testDematerialize2() {
         Throwable exception = new Throwable("test");
         Observable<Integer> observable = Observable.error(exception);
-        Observable<Integer> dematerialize = Observable.create(dematerialize(observable.materialize()));
+        Observable<Integer> dematerialize = observable.materialize().dematerialize();
 
         Observer<Integer> observer = mock(Observer.class);
         dematerialize.subscribe(observer);
@@ -66,7 +66,7 @@ public class OperationDematerializeTest {
     public void testDematerialize3() {
         Exception exception = new Exception("test");
         Observable<Integer> observable = Observable.error(exception);
-        Observable<Integer> dematerialize = Observable.create(dematerialize(observable.materialize()));
+        Observable<Integer> dematerialize = observable.materialize().dematerialize();
 
         Observer<Integer> observer = mock(Observer.class);
         dematerialize.subscribe(observer);
@@ -106,4 +106,33 @@ public class OperationDematerializeTest {
         verify(observer, times(0)).onNext(any(Integer.class));
     }
 
+    @Test
+    public void testHonorsContractWhenCompleted() {
+        Observable<Integer> source = Observable.just(1);
+        
+        Observable<Integer> result = source.materialize().dematerialize();
+        
+        Observer<Integer> o = mock(Observer.class);
+        
+        result.unsafeSubscribe(Subscribers.from(o));
+        
+        verify(o).onNext(1);
+        verify(o).onCompleted();
+        verify(o, never()).onError(any(Throwable.class));
+    }
+    
+    @Test
+    public void testHonorsContractWhenThrows() {
+        Observable<Integer> source = Observable.error(new OperationReduceTest.CustomException());
+        
+        Observable<Integer> result = source.materialize().dematerialize();
+        
+        Observer<Integer> o = mock(Observer.class);
+        
+        result.unsafeSubscribe(Subscribers.from(o));
+        
+        verify(o, never()).onNext(any(Integer.class));
+        verify(o, never()).onCompleted();
+        verify(o).onError(any(OperationReduceTest.CustomException.class));
+    }
 }

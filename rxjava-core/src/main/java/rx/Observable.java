@@ -55,7 +55,6 @@ import rx.operators.OperationDebounce;
 import rx.operators.OperationDefaultIfEmpty;
 import rx.operators.OperationDefer;
 import rx.operators.OperationDelay;
-import rx.operators.OperationDematerialize;
 import rx.operators.OperationDistinct;
 import rx.operators.OperationDistinctUntilChanged;
 import rx.operators.OperationFinally;
@@ -95,6 +94,7 @@ import rx.operators.OperatorAny;
 import rx.operators.OperatorAsObservable;
 import rx.operators.OperatorCache;
 import rx.operators.OperatorCast;
+import rx.operators.OperatorDematerialize;
 import rx.operators.OperatorDoOnEach;
 import rx.operators.OperatorElementAt;
 import rx.operators.OperatorFilter;
@@ -3590,9 +3590,9 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#wiki-dematerialize">RxJava Wiki: dematerialize()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229047.aspx">MSDN: Observable.dematerialize</a>
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public final <T2> Observable<T2> dematerialize() {
-        return create(OperationDematerialize.dematerialize((Observable<? extends Notification<? extends T2>>) this));
+        return lift(new OperatorDematerialize());
     }
 
     /**
