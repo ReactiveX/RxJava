@@ -15,6 +15,7 @@
  */
 package rx.operators;
 
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -25,28 +26,27 @@ import java.util.concurrent.Future;
 
 import org.junit.Test;
 
+import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
 import rx.observers.TestObserver;
-import rx.operators.OperationToObservableFuture.ToObservableFuture;
 
-public class OperationToObservableFutureTest {
+public class OperatorToObservableFutureTest {
 
     @Test
     public void testSuccess() throws Exception {
         Future<Object> future = mock(Future.class);
         Object value = new Object();
         when(future.get()).thenReturn(value);
-        ToObservableFuture<Object> ob = new ToObservableFuture<Object>(future);
         Observer<Object> o = mock(Observer.class);
 
-        Subscription sub = ob.onSubscribe(new TestObserver<Object>(o));
+        Subscription sub = Observable.from(future).subscribe(new TestObserver<Object>(o));
         sub.unsubscribe();
 
         verify(o, times(1)).onNext(value);
         verify(o, times(1)).onCompleted();
-        verify(o, never()).onError(null);
-        verify(future, never()).cancel(true);
+        verify(o, never()).onError(any(Throwable.class));
+        verify(future, times(1)).cancel(true);
     }
 
     @Test
@@ -54,15 +54,14 @@ public class OperationToObservableFutureTest {
         Future<Object> future = mock(Future.class);
         RuntimeException e = new RuntimeException();
         when(future.get()).thenThrow(e);
-        ToObservableFuture<Object> ob = new ToObservableFuture<Object>(future);
         Observer<Object> o = mock(Observer.class);
 
-        Subscription sub = ob.onSubscribe(new TestObserver<Object>(o));
+        Subscription sub = Observable.from(future).subscribe(new TestObserver<Object>(o));
         sub.unsubscribe();
 
         verify(o, never()).onNext(null);
         verify(o, never()).onCompleted();
         verify(o, times(1)).onError(e);
-        verify(future, never()).cancel(true);
+        verify(future, times(1)).cancel(true);
     }
 }
