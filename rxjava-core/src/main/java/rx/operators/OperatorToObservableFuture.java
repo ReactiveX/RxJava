@@ -18,9 +18,9 @@ package rx.operators;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import rx.Observable.OnSubscribeFunc;
-import rx.Observer;
-import rx.Subscription;
+import rx.Observable.OnSubscribe;
+import rx.Subscriber;
+import rx.functions.Action0;
 import rx.subscriptions.Subscriptions;
 
 /**
@@ -34,15 +34,15 @@ import rx.subscriptions.Subscriptions;
  * This is blocking so the Subscription returned when calling
  * <code>Observable.unsafeSubscribe(Observer)</code> does nothing.
  */
-public class OperationToObservableFuture {
-    /* package accessible for unit tests */static class ToObservableFuture<T> implements OnSubscribeFunc<T> {
+public class OperatorToObservableFuture {
+    /* package accessible for unit tests */static class ToObservableFuture<T> implements OnSubscribe<T> {
         private final Future<? extends T> that;
-        private final Long time;
+        private final long time;
         private final TimeUnit unit;
 
         public ToObservableFuture(Future<? extends T> that) {
             this.that = that;
-            this.time = null;
+            this.time = 0;
             this.unit = null;
         }
 
@@ -53,29 +53,34 @@ public class OperationToObservableFuture {
         }
 
         @Override
-        public Subscription onSubscribe(Observer<? super T> observer) {
-            try {
-                T value = (time == null) ? (T) that.get() : (T) that.get(time, unit);
-
-                if (!that.isCancelled()) {
-                    observer.onNext(value);
+        public void call(Subscriber<? super T> subscriber) {
+            subscriber.add(Subscriptions.create(new Action0() {
+                @Override
+                public void call() {
+                    // If the Future is already completed, "cancel" does nothing.
+                    that.cancel(true);
                 }
-                observer.onCompleted();
+            }));
+            try {
+                T value = (unit == null) ? (T) that.get() : (T) that.get(time, unit);
+                subscriber.onNext(value);
+                subscriber.onCompleted();
             } catch (Throwable e) {
-                observer.onError(e);
+                // If this Observable is unsubscribed, we will receive an CancellationException.
+                // However, CancellationException will not be passed to the final Subscriber
+                // since it's already subscribed.
+                // If the Future is canceled in other place, CancellationException will be still
+                // passed to the final Subscriber.
+                subscriber.onError(e);
             }
-
-            // the get() has already completed so there is no point in
-            // giving the user a way to cancel.
-            return Subscriptions.empty();
         }
     }
 
-    public static <T> OnSubscribeFunc<T> toObservableFuture(final Future<? extends T> that) {
+    public static <T> OnSubscribe<T> toObservableFuture(final Future<? extends T> that) {
         return new ToObservableFuture<T>(that);
     }
 
-    public static <T> OnSubscribeFunc<T> toObservableFuture(final Future<? extends T> that, long time, TimeUnit unit) {
+    public static <T> OnSubscribe<T> toObservableFuture(final Future<? extends T> that, long time, TimeUnit unit) {
         return new ToObservableFuture<T>(that, time, unit);
     }
 }
