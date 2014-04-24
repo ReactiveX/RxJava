@@ -50,7 +50,6 @@ import rx.operators.OnSubscribeFromIterable;
 import rx.operators.OnSubscribeRange;
 import rx.operators.OperationDebounce;
 import rx.operators.OperationDelay;
-import rx.operators.OperationDistinctUntilChanged;
 import rx.operators.OperationFinally;
 import rx.operators.OperationFlatMap;
 import rx.operators.OperationGroupByUntil;
@@ -98,6 +97,7 @@ import rx.operators.OperatorDefaultIfEmpty;
 import rx.operators.OperatorDefer;
 import rx.operators.OperatorDematerialize;
 import rx.operators.OperatorDistinct;
+import rx.operators.OperatorDistinctUntilChanged;
 import rx.operators.OperatorDoOnEach;
 import rx.operators.OperatorElementAt;
 import rx.operators.OperatorFilter;
@@ -3657,7 +3657,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229494.aspx">MSDN: Observable.distinctUntilChanged</a>
      */
     public final Observable<T> distinctUntilChanged() {
-        return create(OperationDistinctUntilChanged.distinctUntilChanged(this));
+        return lift(new OperatorDistinctUntilChanged<T, T>(Functions.<T>identity()));
     }
 
     /**
@@ -3675,7 +3675,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229508.aspx">MSDN: Observable.distinctUntilChanged</a>
      */
     public final <U> Observable<T> distinctUntilChanged(Func1<? super T, ? extends U> keySelector) {
-        return create(OperationDistinctUntilChanged.distinctUntilChanged(this, keySelector));
+        return lift(new OperatorDistinctUntilChanged<T, U>(keySelector));
     }
 
     /**
