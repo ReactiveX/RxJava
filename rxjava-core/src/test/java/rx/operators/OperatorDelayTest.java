@@ -42,7 +42,7 @@ import rx.functions.Func1;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
 
-public class OperationDelayTest {
+public class OperatorDelayTest {
     @Mock
     private Observer<Long> observer;
     @Mock
@@ -157,8 +157,6 @@ public class OperationDelayTest {
         verify(observer, never()).onCompleted();
     }
 
-    // TODO activate this test once https://github.com/Netflix/RxJava/issues/552 is fixed
-    @Ignore
     @Test
     public void testDelayWithMultipleSubscriptions() {
         Observable<Long> source = Observable.interval(1L, TimeUnit.SECONDS, scheduler).take(3);
@@ -202,8 +200,6 @@ public class OperationDelayTest {
 
     @Test
     public void testDelaySubscription() {
-        TestScheduler scheduler = new TestScheduler();
-
         Observable<Integer> result = Observable.from(1, 2, 3).delaySubscription(100, TimeUnit.MILLISECONDS, scheduler);
 
         Observer<Object> o = mock(Observer.class);
@@ -226,8 +222,6 @@ public class OperationDelayTest {
 
     @Test
     public void testDelaySubscriptionCancelBeforeTime() {
-        TestScheduler scheduler = new TestScheduler();
-
         Observable<Integer> result = Observable.from(1, 2, 3).delaySubscription(100, TimeUnit.MILLISECONDS, scheduler);
 
         Observer<Object> o = mock(Observer.class);
@@ -548,5 +542,55 @@ public class OperationDelayTest {
         inOrder.verifyNoMoreInteractions();
         verify(o, never()).onError(any(Throwable.class));
         verify(o, never()).onCompleted();
+    }
+    
+    @Test
+    public void testDelayWithObservableAsTimed() {
+        Observable<Long> source = Observable.interval(1L, TimeUnit.SECONDS, scheduler).take(3);
+        
+        final Observable<Long> delayer = Observable.timer(500L, TimeUnit.MILLISECONDS, scheduler);
+        
+        Func1<Long, Observable<Long>> delayFunc = new Func1<Long, Observable<Long>>() {
+            @Override
+            public Observable<Long> call(Long t1) {
+                return delayer;
+            }
+        };
+        
+        Observable<Long> delayed = source.delay(delayFunc);
+        delayed.subscribe(observer);
+
+        InOrder inOrder = inOrder(observer);
+        scheduler.advanceTimeTo(1499L, TimeUnit.MILLISECONDS);
+        verify(observer, never()).onNext(anyLong());
+        verify(observer, never()).onCompleted();
+        verify(observer, never()).onError(any(Throwable.class));
+
+        scheduler.advanceTimeTo(1500L, TimeUnit.MILLISECONDS);
+        inOrder.verify(observer, times(1)).onNext(0L);
+        inOrder.verify(observer, never()).onNext(anyLong());
+        verify(observer, never()).onCompleted();
+        verify(observer, never()).onError(any(Throwable.class));
+
+        scheduler.advanceTimeTo(2400L, TimeUnit.MILLISECONDS);
+        inOrder.verify(observer, never()).onNext(anyLong());
+        verify(observer, never()).onCompleted();
+        verify(observer, never()).onError(any(Throwable.class));
+
+        scheduler.advanceTimeTo(2500L, TimeUnit.MILLISECONDS);
+        inOrder.verify(observer, times(1)).onNext(1L);
+        inOrder.verify(observer, never()).onNext(anyLong());
+        verify(observer, never()).onCompleted();
+        verify(observer, never()).onError(any(Throwable.class));
+
+        scheduler.advanceTimeTo(3400L, TimeUnit.MILLISECONDS);
+        inOrder.verify(observer, never()).onNext(anyLong());
+        verify(observer, never()).onCompleted();
+        verify(observer, never()).onError(any(Throwable.class));
+
+        scheduler.advanceTimeTo(3500L, TimeUnit.MILLISECONDS);
+        inOrder.verify(observer, times(1)).onNext(2L);
+        verify(observer, times(1)).onCompleted();
+        verify(observer, never()).onError(any(Throwable.class));
     }
 }
