@@ -16,11 +16,9 @@
 package rx.operators;
 
 import rx.Observable;
-import rx.Observable.OnSubscribeFunc;
-import rx.Observer;
-import rx.Subscription;
+import rx.Observable.OnSubscribe;
+import rx.Subscriber;
 import rx.functions.Func0;
-import rx.observers.Subscribers;
 
 /**
  * Do not create the Observable until an Observer subscribes; create a fresh Observable on each
@@ -32,17 +30,23 @@ import rx.observers.Subscribers;
  * return an Observable that will call this function to generate its Observable sequence afresh
  * each time a new Observer subscribes.
  */
-public final class OperationDefer {
+public final class OperatorDefer<T> implements OnSubscribe<T> {
+    final Func0<? extends Observable<? extends T>> observableFactory;
 
-    public static <T> OnSubscribeFunc<T> defer(final Func0<? extends Observable<? extends T>> observableFactory) {
-
-        return new OnSubscribeFunc<T>() {
-            @Override
-            public Subscription onSubscribe(Observer<? super T> observer) {
-                Observable<? extends T> obs = observableFactory.call();
-                return obs.unsafeSubscribe(Subscribers.from(observer));
-            }
-        };
-
+    public OperatorDefer(Func0<? extends Observable<? extends T>> observableFactory) {
+        this.observableFactory = observableFactory;
     }
+
+    @Override
+    public void call(Subscriber<? super T> s) {
+        Observable<? extends T> o;
+        try {
+            o = observableFactory.call();
+        } catch (Throwable t) {
+            s.onError(t);
+            return;
+        }
+        o.unsafeSubscribe(s);
+    }
+    
 }
