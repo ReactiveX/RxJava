@@ -111,14 +111,12 @@ public final class OperatorDebounceWithTime<T> implements Operator<T, T> {
         public void emit(int index, Subscriber<T> onNextAndComplete, Subscriber<?> onError) {
             T localValue;
             boolean localHasValue;
-            boolean localTerminate;
             synchronized (this) {
                 if (emitting || !hasValue || index != this.index) {
                     return;
                 }
                 localValue = value;
                 localHasValue = hasValue;
-                localTerminate = terminate;
                 
                 value = null;
                 hasValue = false;
@@ -133,11 +131,8 @@ public final class OperatorDebounceWithTime<T> implements Operator<T, T> {
                     return;
                 }
             }
-            if (localTerminate) {
-                onNextAndComplete.onCompleted();
-                return;
-            }
 
+            // Check if a termination was requested in the meantime.
             synchronized (this) {
                 if (!terminate) {
                     emitting = false;
