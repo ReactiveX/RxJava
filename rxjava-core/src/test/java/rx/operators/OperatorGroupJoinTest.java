@@ -35,7 +35,7 @@ import rx.functions.Func1;
 import rx.functions.Func2;
 import rx.subjects.PublishSubject;
 
-public class OperationGroupJoinTest {
+public class OperatorGroupJoinTest {
     @Mock
     Observer<Object> observer;
 

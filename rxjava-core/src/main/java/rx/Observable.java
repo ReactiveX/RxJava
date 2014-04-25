@@ -51,7 +51,7 @@ import rx.operators.OnSubscribeRange;
 import rx.operators.OperationDebounce;
 import rx.operators.OperationDelay;
 import rx.operators.OperationGroupByUntil;
-import rx.operators.OperationGroupJoin;
+import rx.operators.OperatorGroupJoin;
 import rx.operators.OperationInterval;
 import rx.operators.OperationJoin;
 import rx.operators.OperationMergeDelayError;
@@ -4108,7 +4108,7 @@ public class Observable<T> {
     public final <T2, D1, D2, R> Observable<R> groupJoin(Observable<T2> right, Func1<? super T, ? extends Observable<D1>> leftDuration,
             Func1<? super T2, ? extends Observable<D2>> rightDuration,
             Func2<? super T, ? super Observable<T2>, ? extends R> resultSelector) {
-        return create(new OperationGroupJoin<T, T2, D1, D2, R>(this, right, leftDuration, rightDuration, resultSelector));
+        return create(new OperatorGroupJoin<T, T2, D1, D2, R>(this, right, leftDuration, rightDuration, resultSelector));
     }
 
     /**
