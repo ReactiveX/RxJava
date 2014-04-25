@@ -74,7 +74,7 @@ import rx.operators.OperationTakeWhile;
 import rx.operators.OperationThrottleFirst;
 import rx.operators.OperationTimeInterval;
 import rx.operators.OperationTimer;
-import rx.operators.OperationToMap;
+import rx.operators.OperatorToMap;
 import rx.operators.OperationToMultimap;
 import rx.operators.OperationUsing;
 import rx.operators.OperationWindow;
@@ -7175,7 +7175,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229137.aspx">MSDN: Observable.ToDictionary</a>
      */
     public final <K> Observable<Map<K, T>> toMap(Func1<? super T, ? extends K> keySelector) {
-        return create(OperationToMap.toMap(this, keySelector));
+        return lift(new OperatorToMap<T, K, T>(keySelector, Functions.<T>identity()));
     }
 
     /**
@@ -7197,7 +7197,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh212075.aspx">MSDN: Observable.ToDictionary</a>
      */
     public final <K, V> Observable<Map<K, V>> toMap(Func1<? super T, ? extends K> keySelector, Func1<? super T, ? extends V> valueSelector) {
-        return create(OperationToMap.toMap(this, keySelector, valueSelector));
+        return lift(new OperatorToMap<T, K, V>(keySelector, valueSelector));
     }
 
     /**
@@ -7217,7 +7217,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#wiki-tomap-and-tomultimap">RxJava Wiki: toMap()</a>
      */
     public final <K, V> Observable<Map<K, V>> toMap(Func1<? super T, ? extends K> keySelector, Func1<? super T, ? extends V> valueSelector, Func0<? extends Map<K, V>> mapFactory) {
-        return create(OperationToMap.toMap(this, keySelector, valueSelector, mapFactory));
+        return lift(new OperatorToMap<T, K, V>(keySelector, valueSelector, mapFactory));
     }
 
     /**

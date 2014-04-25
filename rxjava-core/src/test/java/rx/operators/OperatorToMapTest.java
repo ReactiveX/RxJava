@@ -35,7 +35,7 @@ import rx.functions.Func0;
 import rx.functions.Func1;
 import rx.functions.Functions;
 
-public class OperationToMapTest {
+public class OperatorToMapTest {
     @Mock
     Observer<Object> objectObserver;
 
@@ -61,7 +61,7 @@ public class OperationToMapTest {
     public void testToMap() {
         Observable<String> source = Observable.from("a", "bb", "ccc", "dddd");
 
-        Observable<Map<Integer, String>> mapped = Observable.create(OperationToMap.toMap(source, lengthFunc));
+        Observable<Map<Integer, String>> mapped = source.toMap(lengthFunc);
 
         Map<Integer, String> expected = new HashMap<Integer, String>();
         expected.put(1, "a");
@@ -80,7 +80,7 @@ public class OperationToMapTest {
     public void testToMapWithValueSelector() {
         Observable<String> source = Observable.from("a", "bb", "ccc", "dddd");
 
-        Observable<Map<Integer, String>> mapped = Observable.create(OperationToMap.toMap(source, lengthFunc, duplicate));
+        Observable<Map<Integer, String>> mapped = source.toMap(lengthFunc, duplicate);
 
         Map<Integer, String> expected = new HashMap<Integer, String>();
         expected.put(1, "aa");
@@ -108,7 +108,7 @@ public class OperationToMapTest {
                 return t1.length();
             }
         };
-        Observable<Map<Integer, String>> mapped = Observable.create(OperationToMap.toMap(source, lengthFuncErr));
+        Observable<Map<Integer, String>> mapped = source.toMap(lengthFuncErr);
 
         Map<Integer, String> expected = new HashMap<Integer, String>();
         expected.put(1, "a");
@@ -138,7 +138,7 @@ public class OperationToMapTest {
             }
         };
 
-        Observable<Map<Integer, String>> mapped = Observable.create(OperationToMap.toMap(source, lengthFunc, duplicateErr));
+        Observable<Map<Integer, String>> mapped = source.toMap(lengthFunc, duplicateErr);
 
         Map<Integer, String> expected = new HashMap<Integer, String>();
         expected.put(1, "aa");
@@ -176,7 +176,7 @@ public class OperationToMapTest {
                 return t1.length();
             }
         };
-        Observable<Map<Integer, String>> mapped = Observable.create(OperationToMap.toMap(source, lengthFunc, Functions.<String> identity(), mapFactory));
+        Observable<Map<Integer, String>> mapped = source.toMap(lengthFunc, Functions.<String>identity(), mapFactory);
 
         Map<Integer, String> expected = new LinkedHashMap<Integer, String>();
         expected.put(2, "bb");
@@ -207,7 +207,7 @@ public class OperationToMapTest {
                 return t1.length();
             }
         };
-        Observable<Map<Integer, String>> mapped = Observable.create(OperationToMap.toMap(source, lengthFunc, Functions.<String> identity(), mapFactory));
+        Observable<Map<Integer, String>> mapped = source.toMap(lengthFunc, Functions.<String>identity(), mapFactory);
 
         Map<Integer, String> expected = new LinkedHashMap<Integer, String>();
         expected.put(2, "bb");
