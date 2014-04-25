@@ -20,7 +20,6 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static rx.operators.OperationOnErrorResumeNextViaObservable.onErrorResumeNextViaObservable;
 
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -30,7 +29,7 @@ import rx.Observer;
 import rx.Subscription;
 import rx.functions.Func1;
 
-public class OperationOnErrorResumeNextViaObservableTest {
+public class OperatorOnErrorResumeNextViaObservableTest {
 
     @Test
     public void testResumeNext() {
@@ -39,7 +38,7 @@ public class OperationOnErrorResumeNextViaObservableTest {
         TestObservable f = new TestObservable(s, "one", "fail", "two", "three");
         Observable<String> w = Observable.create(f);
         Observable<String> resume = Observable.from("twoResume", "threeResume");
-        Observable<String> observable = Observable.create(onErrorResumeNextViaObservable(w, resume));
+        Observable<String> observable = w.onErrorResumeNext(resume);
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
@@ -72,6 +71,7 @@ public class OperationOnErrorResumeNextViaObservableTest {
         // Introduce map function that fails intermittently (Map does not prevent this when the observer is a
         //  rx.operator incl onErrorResumeNextViaObservable)
         w = w.map(new Func1<String, String>() {
+            @Override
             public String call(String s) {
                 if ("fail".equals(s))
                     throw new RuntimeException("Forced Failure");
@@ -80,7 +80,7 @@ public class OperationOnErrorResumeNextViaObservableTest {
             }
         });
 
-        Observable<String> observable = Observable.create(onErrorResumeNextViaObservable(w, resume));
+        Observable<String> observable = w.onErrorResumeNext(resume);
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
