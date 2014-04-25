@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,52 @@ import rx.functions.Func0;
 import rx.schedulers.Schedulers;
 import rx.util.async.Async;
 
-public class OperationDeferFutureTest {
+public class OperatorStartFutureTest {
+    /** Custom exception to distinguish from any other RuntimeException. */
+    static class CustomException extends RuntimeException {}
+    /** 
+     * Forwards the events to the underlying observer and counts down the latch
+     * on terminal conditions.
+     * @param <T> 
+     */
+    static class MockHelper<T> implements Observer<T> {
+        final Observer<? super T> observer;
+        final CountDownLatch latch;
+
+        public MockHelper(Observer<? super T> observer, CountDownLatch latch) {
+            this.observer = observer;
+            this.latch = latch;
+        }
+
+        @Override
+        public void onNext(T args) {
+            try {
+                observer.onNext(args);
+            } catch (Throwable t) {
+                onError(t);
+            }
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            try {
+                observer.onError(e);
+            } finally {
+                latch.countDown();
+            }
+        }
+
+
+        @Override
+        public void onCompleted() {
+            try {
+                observer.onCompleted();
+            } finally {
+                latch.countDown();
+            }
+        }
+        
+    }
     @Test
     @SuppressWarnings("unchecked")
     public void testSimple() throws InterruptedException {
@@ -43,28 +88,29 @@ public class OperationDeferFutureTest {
         try {
             final CountDownLatch ready = new CountDownLatch(1);
 
-            Func0<Future<Observable<Integer>>> func = new Func0<Future<Observable<Integer>>>() {
+            Func0<Future<Integer>> func = new Func0<Future<Integer>>() {
+
                 @Override
-                public Future<Observable<Integer>> call() {
-                    return exec.submit(new Callable<Observable<Integer>>() {
+                public Future<Integer> call() {
+                    return exec.submit(new Callable<Integer>() {
                         @Override
-                        public Observable<Integer> call() throws Exception {
+                        public Integer call() throws Exception {
                             if (!ready.await(1000, TimeUnit.MILLISECONDS)) {
                                 throw new IllegalStateException("Not started in time");
                             }
-                            return Observable.from(1);
+                            return 1;
                         }
                     });
                 }
             };
-            
-            Observable<Integer> result = Async.deferFuture(func, Schedulers.computation());
+
+            Observable<Integer> result = Async.startFuture(func, Schedulers.computation());
 
             final Observer<Integer> observer = mock(Observer.class);
 
             final CountDownLatch done = new CountDownLatch(1);
 
-            result.subscribe(new OperationStartFutureTest.MockHelper<Integer>(observer, done));
+            result.subscribe(new MockHelper<Integer>(observer, done));
 
             ready.countDown();
 
@@ -77,29 +123,29 @@ public class OperationDeferFutureTest {
             inOrder.verify(observer).onNext(1);
             inOrder.verify(observer).onCompleted();
             verify(observer, never()).onError(any(Throwable.class));
-        } finally {
+        } finally {        
             exec.shutdown();
         }
     }
-    
+
     @Test
     @SuppressWarnings("unchecked")
     public void testSimpleFactoryThrows() {
-        Func0<Future<Observable<Integer>>> func = new Func0<Future<Observable<Integer>>>() {
+        Func0<Future<Integer>> func = new Func0<Future<Integer>>() {
 
             @Override
-            public Future<Observable<Integer>> call() {
-                throw new OperationStartFutureTest.CustomException();
+            public Future<Integer> call() {
+                throw new CustomException();
             }
         };
         
-        Observable<Integer> result = Async.deferFuture(func);
+        Observable<Integer> result = Async.startFuture(func);
         
         final Observer<Object> observer = mock(Observer.class);
         result.subscribe(observer);
         
         verify(observer, never()).onNext(any());
         verify(observer, never()).onCompleted();
-        verify(observer).onError(any(OperationStartFutureTest.CustomException.class));
+        verify(observer).onError(any(CustomException.class));
     }
 }
