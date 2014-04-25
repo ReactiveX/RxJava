@@ -29,15 +29,15 @@ import org.junit.Test;
 import org.mockito.InOrder;
 
 import rx.Observable;
+import rx.Observable.OnSubscribe;
 import rx.Observer;
 import rx.Scheduler;
-import rx.Subscription;
+import rx.Subscriber;
 import rx.functions.Action0;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
-import rx.subscriptions.Subscriptions;
 
-public class OperationSampleTest {
+public class OperatorSampleTest {
     private TestScheduler scheduler;
     private Scheduler.Worker innerScheduler;
     private Observer<Long> observer;
@@ -55,9 +55,9 @@ public class OperationSampleTest {
 
     @Test
     public void testSample() {
-        Observable<Long> source = Observable.create(new Observable.OnSubscribeFunc<Long>() {
+        Observable<Long> source = Observable.create(new OnSubscribe<Long>() {
             @Override
-            public Subscription onSubscribe(final Observer<? super Long> observer1) {
+            public void call(final Subscriber<? super Long> observer1) {
                 innerScheduler.schedule(new Action0() {
                     @Override
                     public void call() {
@@ -76,12 +76,10 @@ public class OperationSampleTest {
                         observer1.onCompleted();
                     }
                 }, 3, TimeUnit.SECONDS);
-
-                return Subscriptions.empty();
             }
         });
 
-        Observable<Long> sampled = Observable.create(OperationSample.sample(source, 400L, TimeUnit.MILLISECONDS, scheduler));
+        Observable<Long> sampled = source.sample(400L, TimeUnit.MILLISECONDS, scheduler);
         sampled.subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
@@ -98,7 +96,7 @@ public class OperationSampleTest {
         verify(observer, never()).onError(any(Throwable.class));
 
         scheduler.advanceTimeTo(1600L, TimeUnit.MILLISECONDS);
-        inOrder.verify(observer, times(1)).onNext(1L);
+        inOrder.verify(observer, never()).onNext(1L);
         verify(observer, never()).onNext(2L);
         verify(observer, never()).onCompleted();
         verify(observer, never()).onError(any(Throwable.class));
@@ -111,7 +109,7 @@ public class OperationSampleTest {
 
         scheduler.advanceTimeTo(3000L, TimeUnit.MILLISECONDS);
         inOrder.verify(observer, never()).onNext(1L);
-        inOrder.verify(observer, times(2)).onNext(2L);
+        inOrder.verify(observer, never()).onNext(2L);
         verify(observer, times(1)).onCompleted();
         verify(observer, never()).onError(any(Throwable.class));
     }
