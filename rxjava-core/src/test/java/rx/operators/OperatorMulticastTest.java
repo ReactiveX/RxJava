@@ -28,13 +28,13 @@ import rx.observables.ConnectableObservable;
 import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
 
-public class OperationMulticastTest {
+public class OperatorMulticastTest {
 
     @Test
     public void testMulticast() {
         Subject<String, String> source = PublishSubject.create();
 
-        ConnectableObservable<String> multicasted = OperationMulticast.multicast(source,
+        ConnectableObservable<String> multicasted = source.multicast(
                 PublishSubject.<String> create());
 
         @SuppressWarnings("unchecked")
@@ -62,7 +62,7 @@ public class OperationMulticastTest {
     public void testMulticastConnectTwice() {
         Subject<String, String> source = PublishSubject.create();
 
-        ConnectableObservable<String> multicasted = OperationMulticast.multicast(source,
+        ConnectableObservable<String> multicasted = source.multicast(
                 PublishSubject.<String> create());
 
         @SuppressWarnings("unchecked")
@@ -87,7 +87,7 @@ public class OperationMulticastTest {
     public void testMulticastDisconnect() {
         Subject<String, String> source = PublishSubject.create();
 
-        ConnectableObservable<String> multicasted = OperationMulticast.multicast(source,
+        ConnectableObservable<String> multicasted = source.multicast(
                 PublishSubject.<String> create());
 
         @SuppressWarnings("unchecked")
