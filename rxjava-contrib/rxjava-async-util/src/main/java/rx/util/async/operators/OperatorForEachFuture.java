@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,9 +29,9 @@ import rx.functions.Action1;
  * <p>
  * Remark: the cancellation token version's behavior is in doubt, so left out.
  */
-public final class OperationForEachFuture {
+public final class OperatorForEachFuture {
     /** Utility class. */
-    private OperationForEachFuture() { throw new IllegalStateException("No instances!"); }
+    private OperatorForEachFuture() { throw new IllegalStateException("No instances!"); }
     
     /**
      * Subscribes to the given source and calls the callback for each emitted item,

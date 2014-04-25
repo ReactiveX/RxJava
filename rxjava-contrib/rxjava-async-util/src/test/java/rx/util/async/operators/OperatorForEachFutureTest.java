@@ -47,7 +47,7 @@ import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 import rx.util.async.Async;
 
-public class OperationForEachFutureTest {
+public class OperatorForEachFutureTest {
     @Test
     public void testSimple() {
         final ExecutorService exec = Executors.newCachedThreadPool();

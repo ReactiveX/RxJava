@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -54,10 +54,10 @@ import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
 import rx.subscriptions.SerialSubscription;
 import rx.util.async.operators.Functionals;
-import rx.util.async.operators.OperationDeferFuture;
-import rx.util.async.operators.OperationForEachFuture;
-import rx.util.async.operators.OperationFromFunctionals;
-import rx.util.async.operators.OperationStartFuture;
+import rx.util.async.operators.OperatorDeferFuture;
+import rx.util.async.operators.OperatorForEachFuture;
+import rx.util.async.operators.OperatorFromFunctionals;
+import rx.util.async.operators.OperatorStartFuture;
 
 /**
  * Utility methods to convert functions and actions into asynchronous operations
@@ -1377,7 +1377,7 @@ public final class Async {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Async-Operators#startfuture">RxJava Wiki: startFuture()</a>
      */
     public static <T> Observable<T> startFuture(Func0<? extends Future<? extends T>> functionAsync) {
-        return OperationStartFuture.startFuture(functionAsync);
+        return OperatorStartFuture.startFuture(functionAsync);
     }
     
     /**
@@ -1395,7 +1395,7 @@ public final class Async {
      */
     public static <T> Observable<T> startFuture(Func0<? extends Future<? extends T>> functionAsync,
         Scheduler scheduler) {
-        return OperationStartFuture.startFuture(functionAsync, scheduler);
+        return OperatorStartFuture.startFuture(functionAsync, scheduler);
     }
     
     /**
@@ -1416,7 +1416,7 @@ public final class Async {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Async-Operators#deferfuture">RxJava Wiki: deferFuture()</a>
      */
     public static <T> Observable<T> deferFuture(Func0<? extends Future<? extends Observable<? extends T>>> observableFactoryAsync) {
-        return OperationDeferFuture.deferFuture(observableFactoryAsync);
+        return OperatorDeferFuture.deferFuture(observableFactoryAsync);
     }
     
     /**
@@ -1437,7 +1437,7 @@ public final class Async {
     public static <T> Observable<T> deferFuture(
         Func0<? extends Future<? extends Observable<? extends T>>> observableFactoryAsync,
         Scheduler scheduler) {
-        return OperationDeferFuture.deferFuture(observableFactoryAsync, scheduler);
+        return OperatorDeferFuture.deferFuture(observableFactoryAsync, scheduler);
     }
     
     /**
@@ -1453,13 +1453,13 @@ public final class Async {
      * @param source the source Observable
      * @param onNext the action to call with each emitted element
      * @return the Future representing the entire for-each operation
-     * @see #forEachFuture(rx.functions.Action1, rx.Scheduler)
+     * @see #forEachFuture(rx.Observable, rx.functions.Action1, rx.Scheduler)
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Async-Operators#foreachfuture">RxJava Wiki: forEachFuture()</a>
      */
     public static <T> FutureTask<Void> forEachFuture(
         Observable<? extends T> source,
         Action1<? super T> onNext) {
-        return OperationForEachFuture.forEachFuture(source, onNext);
+        return OperatorForEachFuture.forEachFuture(source, onNext);
     }
     
     
@@ -1477,14 +1477,14 @@ public final class Async {
      * @param onNext the action to call with each emitted element
      * @param onError the action to call when an exception is emitted
      * @return the Future representing the entire for-each operation
-     * @see #forEachFuture(rx.functions.Action1, rx.functions.Action1, rx.Scheduler)
+     * @see #forEachFuture(rx.Observable, rx.functions.Action1, rx.functions.Action1, rx.Scheduler)
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Async-Operators#foreachfuture">RxJava Wiki: forEachFuture()</a>
      */
     public static <T> FutureTask<Void> forEachFuture(
         Observable<? extends T> source,
         Action1<? super T> onNext,
         Action1<? super Throwable> onError) {
-        return OperationForEachFuture.forEachFuture(source, onNext, onError);
+        return OperatorForEachFuture.forEachFuture(source, onNext, onError);
     }
     
     
@@ -1503,7 +1503,7 @@ public final class Async {
      * @param onError the action to call when an exception is emitted
      * @param onCompleted the action to call when the source completes
      * @return the Future representing the entire for-each operation
-     * @see #forEachFuture(rx.functions.Action1, rx.functions.Action1, rx.functions.Action0, rx.Scheduler)
+     * @see #forEachFuture(rx.Observable, rx.functions.Action1, rx.functions.Action1, rx.functions.Action0, rx.Scheduler)
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Async-Operators#foreachfuture">RxJava Wiki: forEachFuture()</a>
      */
     public static <T> FutureTask<Void> forEachFuture(
@@ -1511,7 +1511,7 @@ public final class Async {
         Action1<? super T> onNext,
         Action1<? super Throwable> onError,
         Action0 onCompleted) {
-        return OperationForEachFuture.forEachFuture(source, onNext, onError, onCompleted);
+        return OperatorForEachFuture.forEachFuture(source, onNext, onError, onCompleted);
     }
     
     
@@ -1534,7 +1534,7 @@ public final class Async {
             Observable<? extends T> source,
             Action1<? super T> onNext,
             Scheduler scheduler) {
-        FutureTask<Void> task = OperationForEachFuture.forEachFuture(source, onNext);
+        FutureTask<Void> task = OperatorForEachFuture.forEachFuture(source, onNext);
         final Worker inner = scheduler.createWorker();
         inner.schedule(Functionals.fromRunnable(task, inner));
         return task;
@@ -1562,7 +1562,7 @@ public final class Async {
             Action1<? super T> onNext,
             Action1<? super Throwable> onError,
             Scheduler scheduler) {
-        FutureTask<Void> task = OperationForEachFuture.forEachFuture(source, onNext, onError);
+        FutureTask<Void> task = OperatorForEachFuture.forEachFuture(source, onNext, onError);
         final Worker inner = scheduler.createWorker();
         inner.schedule(Functionals.fromRunnable(task, inner));
         return task;
@@ -1592,7 +1592,7 @@ public final class Async {
             Action1<? super Throwable> onError,
             Action0 onCompleted,
             Scheduler scheduler) {
-        FutureTask<Void> task = OperationForEachFuture.forEachFuture(source, onNext, onError, onCompleted);
+        FutureTask<Void> task = OperatorForEachFuture.forEachFuture(source, onNext, onError, onCompleted);
         final Worker inner = scheduler.createWorker();
         inner.schedule(Functionals.fromRunnable(task, inner));
         return task;
@@ -1696,7 +1696,7 @@ public final class Async {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Async-Operators#fromaction">RxJava Wiki: fromAction()</a>
      */
     public static <R> Observable<R> fromAction(Action0 action, R result, Scheduler scheduler) {
-        return Observable.create(OperationFromFunctionals.fromAction(action, result)).subscribeOn(scheduler);
+        return Observable.create(OperatorFromFunctionals.fromAction(action, result)).subscribeOn(scheduler);
     }
     
     /**
@@ -1740,7 +1740,7 @@ public final class Async {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Async-Operators#fromcallable">RxJava Wiki: fromCallable()</a>
      */
     public static <R> Observable<R> fromCallable(Callable<? extends R> callable, Scheduler scheduler) {
-        return Observable.create(OperationFromFunctionals.fromCallable(callable)).subscribeOn(scheduler);
+        return Observable.create(OperatorFromFunctionals.fromCallable(callable)).subscribeOn(scheduler);
     }
     
     /**
@@ -1759,7 +1759,7 @@ public final class Async {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Async-Operators#fromrunnable">RxJava Wiki: fromRunnable()</a>
      */
     public static <R> Observable<R> fromRunnable(final Runnable run, final R result, Scheduler scheduler) {
-        return Observable.create(OperationFromFunctionals.fromRunnable(run, result)).subscribeOn(scheduler);
+        return Observable.create(OperatorFromFunctionals.fromRunnable(run, result)).subscribeOn(scheduler);
     }
     /**
      * Runs the provided action on the given scheduler and allows propagation
