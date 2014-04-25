@@ -48,7 +48,6 @@ import rx.observables.GroupedObservable;
 import rx.observers.SafeSubscriber;
 import rx.operators.OnSubscribeFromIterable;
 import rx.operators.OnSubscribeRange;
-import rx.operators.OperationDebounce;
 import rx.operators.OperationDelay;
 import rx.operators.OperationGroupByUntil;
 import rx.operators.OperationGroupJoin;
@@ -90,6 +89,8 @@ import rx.operators.OperatorCache;
 import rx.operators.OperatorCast;
 import rx.operators.OperatorCombineLatest;
 import rx.operators.OperatorConcat;
+import rx.operators.OperatorDebounceWithSelector;
+import rx.operators.OperatorDebounceWithTime;
 import rx.operators.OperatorDefaultIfEmpty;
 import rx.operators.OperatorDefer;
 import rx.operators.OperatorDematerialize;
@@ -3378,7 +3379,7 @@ public class Observable<T> {
      *         within a computed debounce duration
      */
     public final <U> Observable<T> debounce(Func1<? super T, ? extends Observable<U>> debounceSelector) {
-        return create(OperationDebounce.debounceSelector(this, debounceSelector));
+        return lift(new OperatorDebounceWithSelector<T, U>(debounceSelector));
     }
 
     /**
@@ -3410,7 +3411,7 @@ public class Observable<T> {
      * @see #throttleWithTimeout(long, TimeUnit)
      */
     public final Observable<T> debounce(long timeout, TimeUnit unit) {
-        return create(OperationDebounce.debounce(this, timeout, unit));
+        return lift(new OperatorDebounceWithTime<T>(timeout, unit, Schedulers.computation()));
     }
 
     /**
@@ -3445,7 +3446,7 @@ public class Observable<T> {
      * @see #throttleWithTimeout(long, TimeUnit, Scheduler)
      */
     public final Observable<T> debounce(long timeout, TimeUnit unit, Scheduler scheduler) {
-        return create(OperationDebounce.debounce(this, timeout, unit, scheduler));
+        return lift(new OperatorDebounceWithTime<T>(timeout, unit, scheduler));
     }
 
     /**
@@ -6831,7 +6832,7 @@ public class Observable<T> {
      * @see #debounce(long, TimeUnit)
      */
     public final Observable<T> throttleWithTimeout(long timeout, TimeUnit unit) {
-        return create(OperationDebounce.debounce(this, timeout, unit));
+        return debounce(timeout, unit);
     }
 
     /**
@@ -6866,7 +6867,7 @@ public class Observable<T> {
      * @see #debounce(long, TimeUnit, Scheduler)
      */
     public final Observable<T> throttleWithTimeout(long timeout, TimeUnit unit, Scheduler scheduler) {
-        return create(OperationDebounce.debounce(this, timeout, unit, scheduler));
+        return debounce(timeout, unit, scheduler);
     }
 
     /**
