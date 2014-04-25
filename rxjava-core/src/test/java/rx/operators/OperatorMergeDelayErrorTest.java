@@ -18,27 +18,26 @@ package rx.operators;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static rx.operators.OperationMergeDelayError.mergeDelayError;
+import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import rx.Observable;
+import rx.Observable.OnSubscribe;
 import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.exceptions.CompositeException;
 import rx.subscriptions.Subscriptions;
 
-public class OperationMergeDelayErrorTest {
+public class OperatorMergeDelayErrorTest {
 
     @Mock
     Observer<String> stringObserver;
@@ -54,7 +53,7 @@ public class OperationMergeDelayErrorTest {
         final Observable<String> o2 = Observable.create(new TestErrorObservable("one", "two", "three"));
 
         @SuppressWarnings("unchecked")
-        Observable<String> m = Observable.create(mergeDelayError(o1, o2));
+        Observable<String> m = Observable.mergeDelayError(o1, o2);
         m.subscribe(stringObserver);
 
         verify(stringObserver, times(1)).onError(any(NullPointerException.class));
@@ -75,7 +74,7 @@ public class OperationMergeDelayErrorTest {
         final Observable<String> o4 = Observable.create(new TestErrorObservable("nine"));
 
         @SuppressWarnings("unchecked")
-        Observable<String> m = Observable.create(mergeDelayError(o1, o2, o3, o4));
+        Observable<String> m = Observable.mergeDelayError(o1, o2, o3, o4);
         m.subscribe(stringObserver);
 
         verify(stringObserver, times(1)).onError(any(NullPointerException.class));
@@ -99,7 +98,7 @@ public class OperationMergeDelayErrorTest {
         final Observable<String> o4 = Observable.create(new TestErrorObservable("nine"));
 
         @SuppressWarnings("unchecked")
-        Observable<String> m = Observable.create(mergeDelayError(o1, o2, o3, o4));
+        Observable<String> m = Observable.mergeDelayError(o1, o2, o3, o4);
         m.subscribe(stringObserver);
 
         verify(stringObserver, times(1)).onError(any(NullPointerException.class));
@@ -123,7 +122,7 @@ public class OperationMergeDelayErrorTest {
         final Observable<String> o4 = Observable.create(new TestErrorObservable("nine", null));
 
         @SuppressWarnings("unchecked")
-        Observable<String> m = Observable.create(mergeDelayError(o1, o2, o3, o4));
+        Observable<String> m = Observable.mergeDelayError(o1, o2, o3, o4);
         m.subscribe(stringObserver);
 
         verify(stringObserver, times(1)).onError(any(NullPointerException.class));
@@ -148,7 +147,7 @@ public class OperationMergeDelayErrorTest {
         final TestAsyncErrorObservable o4 = new TestAsyncErrorObservable("nine", null);
 
         @SuppressWarnings("unchecked")
-        Observable<String> m = Observable.create(mergeDelayError(Observable.create(o1), Observable.create(o2), Observable.create(o3), Observable.create(o4)));
+        Observable<String> m = Observable.mergeDelayError(Observable.create(o1), Observable.create(o2), Observable.create(o3), Observable.create(o4));
         m.subscribe(stringObserver);
 
         try {
@@ -179,7 +178,7 @@ public class OperationMergeDelayErrorTest {
         final Observable<String> o2 = Observable.create(new TestErrorObservable("one", "two", null));
 
         @SuppressWarnings("unchecked")
-        Observable<String> m = Observable.create(mergeDelayError(o1, o2));
+        Observable<String> m = Observable.mergeDelayError(o1, o2);
         m.subscribe(stringObserver);
 
         verify(stringObserver, times(1)).onError(any(CompositeException.class));
@@ -198,7 +197,7 @@ public class OperationMergeDelayErrorTest {
         final Observable<String> o2 = Observable.create(new TestErrorObservable("one", "two", null));
 
         @SuppressWarnings("unchecked")
-        Observable<String> m = Observable.create(mergeDelayError(o1, o2));
+        Observable<String> m = Observable.mergeDelayError(o1, o2);
         CaptureObserver w = new CaptureObserver();
         m.subscribe(w);
 
@@ -234,7 +233,7 @@ public class OperationMergeDelayErrorTest {
             }
 
         });
-        Observable<String> m = Observable.create(mergeDelayError(observableOfObservables));
+        Observable<String> m = Observable.mergeDelayError(observableOfObservables);
         m.subscribe(stringObserver);
 
         verify(stringObserver, never()).onError(any(Throwable.class));
@@ -248,7 +247,7 @@ public class OperationMergeDelayErrorTest {
         final Observable<String> o2 = Observable.create(new TestSynchronousObservable());
 
         @SuppressWarnings("unchecked")
-        Observable<String> m = Observable.create(mergeDelayError(o1, o2));
+        Observable<String> m = Observable.mergeDelayError(o1, o2);
         m.subscribe(stringObserver);
 
         verify(stringObserver, never()).onError(any(Throwable.class));
@@ -264,7 +263,7 @@ public class OperationMergeDelayErrorTest {
         listOfObservables.add(o1);
         listOfObservables.add(o2);
 
-        Observable<String> m = Observable.create(mergeDelayError(listOfObservables));
+        Observable<String> m = Observable.mergeDelayError(Observable.from(listOfObservables));
         m.subscribe(stringObserver);
 
         verify(stringObserver, never()).onError(any(Throwable.class));
@@ -278,7 +277,7 @@ public class OperationMergeDelayErrorTest {
         final TestASynchronousObservable o2 = new TestASynchronousObservable();
 
         @SuppressWarnings("unchecked")
-        Observable<String> m = Observable.create(mergeDelayError(Observable.create(o1), Observable.create(o2)));
+        Observable<String> m = Observable.mergeDelayError(Observable.create(o1), Observable.create(o2));
         m.subscribe(stringObserver);
 
         try {
@@ -293,23 +292,20 @@ public class OperationMergeDelayErrorTest {
         verify(stringObserver, times(1)).onCompleted();
     }
 
-    private static class TestSynchronousObservable implements Observable.OnSubscribeFunc<String> {
+    private static class TestSynchronousObservable implements Observable.OnSubscribe<String> {
 
         @Override
-        public Subscription onSubscribe(Observer<? super String> observer) {
-
+        public void call(Subscriber<? super String> observer) {
             observer.onNext("hello");
             observer.onCompleted();
-
-            return Subscriptions.empty();
         }
     }
 
-    private static class TestASynchronousObservable implements Observable.OnSubscribeFunc<String> {
+    private static class TestASynchronousObservable implements Observable.OnSubscribe<String> {
         Thread t;
 
         @Override
-        public Subscription onSubscribe(final Observer<? super String> observer) {
+        public void call(final Subscriber<? super String> observer) {
             t = new Thread(new Runnable() {
 
                 @Override
@@ -320,8 +316,6 @@ public class OperationMergeDelayErrorTest {
 
             });
             t.start();
-
-            return Subscriptions.empty();
         }
     }
 
@@ -370,7 +364,7 @@ public class OperationMergeDelayErrorTest {
         }
     }
 
-    private static class TestErrorObservable implements Observable.OnSubscribeFunc<String> {
+    private static class TestErrorObservable implements Observable.OnSubscribe<String> {
 
         String[] valuesToReturn;
 
@@ -379,7 +373,7 @@ public class OperationMergeDelayErrorTest {
         }
 
         @Override
-        public Subscription onSubscribe(Observer<? super String> observer) {
+        public void call(Subscriber<? super String> observer) {
             boolean errorThrown = false;
             for (String s : valuesToReturn) {
                 if (s == null) {
@@ -395,12 +389,10 @@ public class OperationMergeDelayErrorTest {
             if (!errorThrown) {
                 observer.onCompleted();
             }
-
-            return Subscriptions.empty();
         }
     }
 
-    private static class TestAsyncErrorObservable implements Observable.OnSubscribeFunc<String> {
+    private static class TestAsyncErrorObservable implements Observable.OnSubscribe<String> {
 
         String[] valuesToReturn;
 
@@ -411,7 +403,7 @@ public class OperationMergeDelayErrorTest {
         Thread t;
 
         @Override
-        public Subscription onSubscribe(final Observer<? super String> observer) {
+        public void call(final Subscriber<? super String> observer) {
             t = new Thread(new Runnable() {
 
                 @Override
@@ -436,8 +428,6 @@ public class OperationMergeDelayErrorTest {
 
             });
             t.start();
-
-            return Subscriptions.empty();
         }
     }
 
@@ -459,5 +449,55 @@ public class OperationMergeDelayErrorTest {
 
         }
 
+    }
+    @Test
+    public void testMergeSourceWhichDoesntPropagateExceptionBack() {
+        Observable<Integer> source = Observable.create(new OnSubscribe<Integer>() {
+            @Override
+            public void call(Subscriber<? super Integer> t1) {
+                try {
+                    t1.onNext(0);
+                } catch (Throwable swallow) {
+                    
+                }
+                t1.onNext(1);
+                t1.onCompleted();
+            }
+        });
+        
+        Observable<Integer> result = Observable.mergeDelayError(source, Observable.just(2));
+        
+        @SuppressWarnings("unchecked")
+        final Observer<Integer> o = mock(Observer.class);
+        InOrder inOrder = inOrder(o);
+        
+        result.unsafeSubscribe(new Subscriber<Integer>() {
+            int calls;
+            @Override
+            public void onNext(Integer t) {
+                if (calls++ == 0) {
+                    throw new OperationReduceTest.CustomException();
+                }
+                o.onNext(t);
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                o.onError(e);
+            }
+
+            @Override
+            public void onCompleted() {
+                o.onCompleted();
+            }
+            
+        });
+        
+        inOrder.verify(o).onNext(2);
+        inOrder.verify(o, never()).onNext(0);
+        inOrder.verify(o, never()).onNext(1);
+        inOrder.verify(o, never()).onNext(anyInt());
+        inOrder.verify(o).onError(any(OperationReduceTest.CustomException.class));
+        verify(o, never()).onCompleted();
     }
 }
