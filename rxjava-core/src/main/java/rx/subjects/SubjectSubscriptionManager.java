@@ -235,19 +235,25 @@ import rx.subscriptions.Subscriptions;
 
         private final Observer<? super T> actual;
         protected volatile boolean caughtUp = false;
-
+        boolean once = true;
         SubjectObserver(Observer<? super T> actual) {
             this.actual = actual;
         }
 
         @Override
         public void onCompleted() {
-            this.actual.onCompleted();
+            if (once) {
+                once = false;
+                this.actual.onCompleted();
+            }
         }
 
         @Override
         public void onError(Throwable e) {
-            this.actual.onError(e);
+            if (once) {
+                once = false;
+                this.actual.onError(e);
+            }
         }
 
         @Override
