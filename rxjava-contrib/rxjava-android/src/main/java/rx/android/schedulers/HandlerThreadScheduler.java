@@ -91,7 +91,12 @@ public class HandlerThreadScheduler extends Scheduler {
 
         @Override
         public Subscription schedule(final Action0 action) {
-            return schedule(action, 0, TimeUnit.MILLISECONDS);
+            if (handler.getLooper().getThread() == Thread.currentThread()) {
+                action.call();
+                return Subscriptions.empty();
+            } else {
+                return schedule(action, 0, TimeUnit.MILLISECONDS);
+            }
         }
 
     }
