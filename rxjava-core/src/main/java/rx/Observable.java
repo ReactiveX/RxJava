@@ -54,7 +54,6 @@ import rx.operators.OperationGroupByUntil;
 import rx.operators.OperationGroupJoin;
 import rx.operators.OperationInterval;
 import rx.operators.OperationJoin;
-import rx.operators.OperationMergeDelayError;
 import rx.operators.OperationMergeMaxConcurrent;
 import rx.operators.OperationMulticast;
 import rx.operators.OperationOnErrorResumeNextViaObservable;
@@ -103,6 +102,7 @@ import rx.operators.OperatorGroupBy;
 import rx.operators.OperatorMap;
 import rx.operators.OperatorMaterialize;
 import rx.operators.OperatorMerge;
+import rx.operators.OperatorMergeDelayError;
 import rx.operators.OperatorMergeMapPair;
 import rx.operators.OperatorMergeMapTransform;
 import rx.operators.OperatorObserveOn;
@@ -2001,7 +2001,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge</a>
      */
     public final static <T> Observable<T> mergeDelayError(Observable<? extends Observable<? extends T>> source) {
-        return create(OperationMergeDelayError.mergeDelayError(source));
+        return source.lift(new OperatorMergeDelayError<T>());
     }
 
     /**
@@ -2025,10 +2025,8 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#wiki-mergedelayerror">RxJava Wiki: mergeDelayError()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge</a>
      */
-    @SuppressWarnings("unchecked")
-    // suppress because the types are checked by the method signature before using a vararg
     public final static <T> Observable<T> mergeDelayError(Observable<? extends T> t1, Observable<? extends T> t2) {
-        return create(OperationMergeDelayError.mergeDelayError(t1, t2));
+        return mergeDelayError(from(t1, t2));
     }
 
     /**
@@ -2055,10 +2053,8 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#wiki-mergedelayerror">RxJava Wiki: mergeDelayError()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge</a>
      */
-    @SuppressWarnings("unchecked")
-    // suppress because the types are checked by the method signature before using a vararg
     public final static <T> Observable<T> mergeDelayError(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3) {
-        return create(OperationMergeDelayError.mergeDelayError(t1, t2, t3));
+        return mergeDelayError(from(t1, t2, t3));
     }
 
     /**
@@ -2087,10 +2083,8 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#wiki-mergedelayerror">RxJava Wiki: mergeDelayError()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge</a>
      */
-    @SuppressWarnings("unchecked")
-    // suppress because the types are checked by the method signature before using a vararg
     public final static <T> Observable<T> mergeDelayError(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4) {
-        return create(OperationMergeDelayError.mergeDelayError(t1, t2, t3, t4));
+        return mergeDelayError(from(t1, t2, t3, t4));
     }
 
     /**
@@ -2120,10 +2114,8 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#wiki-mergedelayerror">RxJava Wiki: mergeDelayError()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge</a>
      */
-    @SuppressWarnings("unchecked")
-    // suppress because the types are checked by the method signature before using a vararg
     public final static <T> Observable<T> mergeDelayError(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5) {
-        return create(OperationMergeDelayError.mergeDelayError(t1, t2, t3, t4, t5));
+        return mergeDelayError(from(t1, t2, t3, t4, t5));
     }
 
     /**
@@ -2155,10 +2147,8 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#wiki-mergedelayerror">RxJava Wiki: mergeDelayError()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge</a>
      */
-    @SuppressWarnings("unchecked")
-    // suppress because the types are checked by the method signature before using a vararg
     public final static <T> Observable<T> mergeDelayError(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6) {
-        return create(OperationMergeDelayError.mergeDelayError(t1, t2, t3, t4, t5, t6));
+        return mergeDelayError(from(t1, t2, t3, t4, t5, t6));
     }
 
     /**
@@ -2192,10 +2182,8 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#wiki-mergedelayerror">RxJava Wiki: mergeDelayError()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge</a>
      */
-    @SuppressWarnings("unchecked")
-    // suppress because the types are checked by the method signature before using a vararg
     public final static <T> Observable<T> mergeDelayError(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6, Observable<? extends T> t7) {
-        return create(OperationMergeDelayError.mergeDelayError(t1, t2, t3, t4, t5, t6, t7));
+        return mergeDelayError(from(t1, t2, t3, t4, t5, t6, t7));
     }
 
     /**
@@ -2234,7 +2222,7 @@ public class Observable<T> {
     @SuppressWarnings("unchecked")
     // suppress because the types are checked by the method signature before using a vararg
     public final static <T> Observable<T> mergeDelayError(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6, Observable<? extends T> t7, Observable<? extends T> t8) {
-        return create(OperationMergeDelayError.mergeDelayError(t1, t2, t3, t4, t5, t6, t7, t8));
+        return mergeDelayError(from(t1, t2, t3, t4, t5, t6, t7, t8));
     }
 
     /**
@@ -2272,10 +2260,8 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#wiki-mergedelayerror">RxJava Wiki: mergeDelayError()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge</a>
      */
-    @SuppressWarnings("unchecked")
-    // suppress because the types are checked by the method signature before using a vararg
     public final static <T> Observable<T> mergeDelayError(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6, Observable<? extends T> t7, Observable<? extends T> t8, Observable<? extends T> t9) {
-        return create(OperationMergeDelayError.mergeDelayError(t1, t2, t3, t4, t5, t6, t7, t8, t9));
+        return mergeDelayError(from(t1, t2, t3, t4, t5, t6, t7, t8, t9));
     }
 
     /**
