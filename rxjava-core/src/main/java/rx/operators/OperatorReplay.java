@@ -27,18 +27,14 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import rx.Observable;
 import rx.Observable.OnSubscribe;
-import rx.Observable.OnSubscribeFunc;
-import rx.Observer;
 import rx.Scheduler;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Action0;
 import rx.functions.Func1;
 import rx.functions.Functions;
-import rx.observers.Subscribers;
 import rx.schedulers.Timestamped;
 import rx.subjects.Subject;
-import rx.subscriptions.Subscriptions;
 
 /**
  * Replay with limited buffer and/or time constraints.
@@ -46,14 +42,18 @@ import rx.subscriptions.Subscriptions;
  * 
  * @see <a href='http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.replay.aspx'>MSDN: Observable.Replay overloads</a>
  */
-public final class OperationReplay {
+public final class OperatorReplay {
     /** Utility class. */
-    private OperationReplay() {
+    private OperatorReplay() {
         throw new IllegalStateException("No instances!");
     }
 
     /**
-     * Create a BoundedReplaySubject with the given buffer size.
+     * Create a CustomReplaySubject with the given buffer size.
+     * 
+     * @param <T> the element type
+     * @param bufferSize the maximum number of items to keep in the buffer
+     * @return the created subject
      */
     public static <T> Subject<T, T> replayBuffered(int bufferSize) {
         return CustomReplaySubject.create(bufferSize);
@@ -62,6 +62,10 @@ public final class OperationReplay {
     /**
      * Creates a subject whose client observers will observe events
      * propagated through the given wrapped subject.
+     * @param <T> the element type
+     * @param subject the subject to wrap
+     * @param scheduler the target scheduler
+     * @return the created subject
      */
     public static <T> Subject<T, T> createScheduledSubject(Subject<T, T> subject, Scheduler scheduler) {
         final Observable<T> observedOn = subject.observeOn(scheduler);
@@ -69,8 +73,7 @@ public final class OperationReplay {
 
             @Override
             public void call(Subscriber<? super T> o) {
-                // TODO HACK between OnSubscribeFunc and Action1
-                subscriberOf(observedOn).onSubscribe(o);
+                subscriberOf(observedOn).call(o);
             }
 
         }, subject);
@@ -147,55 +150,23 @@ public final class OperationReplay {
 
     /**
      * Return an OnSubscribeFunc which delegates the subscription to the given observable.
+     * 
+     * @param <T> the value type
+     * @param target the target observable
+     * @return the function that delegates the subscription to the target
      */
-    public static <T> OnSubscribeFunc<T> subscriberOf(final Observable<T> target) {
-        return new OnSubscribeFunc<T>() {
+    public static <T> OnSubscribe<T> subscriberOf(final Observable<T> target) {
+        return new OnSubscribe<T>() {
             @Override
-            public Subscription onSubscribe(Observer<? super T> t1) {
-                return target.unsafeSubscribe(Subscribers.from(t1));
+            public void call(Subscriber<? super T> t1) {
+                target.unsafeSubscribe(t1);
             }
         };
     }
 
-//    /**
-//     * Subject that wraps another subject and uses a mapping function
-//     * to transform the received values.
-//     */
-//    public static final class MappingSubject<T, R> extends Subject<T, T> {
-//        private final Subject<T, R> subject;
-//        private final Func1<T, R> selector;
-//        private final OnSubscribe<R> func;
-//
-//        public MappingSubject(OnSubscribe<R> func, Subject<T, R> subject, Func1<T, R> selector) {
-//            this.func = func;
-//            this.subject = subject;
-//            this.selector = selector;
-//        }
-//
-//        @Override
-//        public Observable<R> toObservable() {
-//            return Observable.create(func);
-//        }
-//
-//        @Override
-//        public void onNext(T args) {
-//            subject.onNext(selector.call(args));
-//        }
-//
-//        @Override
-//        public void onError(Throwable e) {
-//            subject.onError(e);
-//        }
-//
-//        @Override
-//        public void onCompleted() {
-//            subject.onCompleted();
-//        }
-//
-//    }
-
     /**
      * A subject that wraps another subject.
+     * @param <T> the value type
      */
     public static final class SubjectWrapper<T> extends Subject<T, T> {
         /** The wrapped subject. */
@@ -262,7 +233,7 @@ public final class OperationReplay {
          * Retrieve an element at the specified logical index.
          * 
          * @param index
-         * @return
+         * @return the element
          */
         T get(int index);
 
@@ -286,14 +257,14 @@ public final class OperationReplay {
         /**
          * Returns the current head index of this list.
          * 
-         * @return
+         * @return the head index
          */
         int start();
 
         /**
          * Returns the current tail index of this list (where the next value would appear).
          * 
-         * @return
+         * @return the tail index
          */
         int end();
 
@@ -312,6 +283,7 @@ public final class OperationReplay {
 
     /**
      * Behaves like a normal, unbounded ArrayList but with virtual index.
+     * @param <T> the element type
      */
     public static final class VirtualArrayList<T> implements VirtualList<T> {
         /** The backing list . */
@@ -375,6 +347,8 @@ public final class OperationReplay {
     /**
      * A bounded list which increases its size up to a maximum capacity, then
      * behaves like a circular buffer with virtual indexes.
+     * 
+     * @param <T> the element type
      */
     public static final class VirtualBoundedList<T> implements VirtualList<T> {
         /** A list that grows up to maxSize. */
@@ -584,7 +558,7 @@ public final class OperationReplay {
          * @param obs
          * @return
          */
-        Subscription addReplayer(Observer<? super TResult> obs) {
+        Subscription addReplayer(Subscriber<? super TResult> obs) {
             Subscription s = new Subscription() {
                 final AtomicBoolean once = new AtomicBoolean();
 
@@ -601,6 +575,7 @@ public final class OperationReplay {
                 }
 
             };
+            obs.add(s);
             Replayer rp = new Replayer(obs, s);
             replayers.put(s, rp);
             rp.replayTill(values.start() + values.size());
@@ -609,13 +584,13 @@ public final class OperationReplay {
 
         /** The replayer that holds a value where the given observer is currently at. */
         final class Replayer {
-            protected final Observer<? super TResult> wrapped;
+            protected final Subscriber<? super TResult> wrapped;
             /** Where this replayer was in reading the list. */
             protected int index;
             /** To cancel and unsubscribe this replayer and observer. */
             protected final Subscription cancel;
 
-            protected Replayer(Observer<? super TResult> wrapped, Subscription cancel) {
+            protected Replayer(Subscriber<? super TResult> wrapped, Subscription cancel) {
                 this.wrapped = wrapped;
                 this.cancel = cancel;
             }
@@ -699,9 +674,9 @@ public final class OperationReplay {
      */
     public static final class CustomReplaySubject<TInput, TIntermediate, TResult> extends Subject<TInput, TResult> {
         /**
-         * Return a subject that retains all events and will replay them to an {@link Observer} that subscribes.
-         * 
-         * @return a subject that retains all events and will replay them to an {@link Observer} that subscribes.
+         * Return a subject that retains all events and will replay them to an {@link Subscriber} that subscribes.
+         * @param <T> the common value type
+         * @return a subject that retains all events and will replay them to an {@link Subscriber} that subscribes.
          */
         public static <T> CustomReplaySubject<T, T, T> create() {
             ReplayState<T, T> state = new ReplayState<T, T>(new VirtualArrayList<T>(), Functions.<T> identity());
@@ -713,9 +688,10 @@ public final class OperationReplay {
         /**
          * Create a bounded replay subject with the given maximum buffer size.
          * 
+         * @param <T> the common value type
          * @param maxSize
          *            the maximum size in number of onNext notifications
-         * @return
+         * @return the custom replay subject
          */
         public static <T> CustomReplaySubject<T, T, T> create(int maxSize) {
             ReplayState<T, T> state = new ReplayState<T, T>(new VirtualBoundedList<T>(maxSize), Functions.<T> identity());
@@ -730,14 +706,14 @@ public final class OperationReplay {
         protected final Func1<? super TInput, ? extends TIntermediate> intermediateSelector;
 
         private CustomReplaySubject(
-                final OnSubscribeFunc<TResult> onSubscribe,
+                final OnSubscribe<TResult> onSubscribe,
                 ReplayState<TIntermediate, TResult> state,
                 Func1<? super TInput, ? extends TIntermediate> intermediateSelector) {
             super(new OnSubscribe<TResult>() {
 
                 @Override
                 public void call(Subscriber<? super TResult> sub) {
-                    onSubscribe.onSubscribe(sub);
+                    onSubscribe.call(sub);
                 }
 
             });
@@ -796,7 +772,7 @@ public final class OperationReplay {
          */
         protected void replayValues() {
             int s = state.values.start() + state.values.size();
-            for (ReplayState.Replayer rp : state.replayers()) {
+            for (ReplayState<TIntermediate, TResult>.Replayer rp : state.replayers()) {
                 rp.replayTill(s);
             }
         }
@@ -811,7 +787,7 @@ public final class OperationReplay {
      *            the value type of the observers subscribing to this subject
      */
     protected static final class CustomReplaySubjectSubscribeFunc<TIntermediate, TResult>
-            implements Observable.OnSubscribeFunc<TResult> {
+            implements Observable.OnSubscribe<TResult> {
 
         private final ReplayState<TIntermediate, TResult> state;
 
@@ -820,14 +796,15 @@ public final class OperationReplay {
         }
 
         @Override
-        public Subscription onSubscribe(Observer<? super TResult> t1) {
+        public void call(Subscriber<? super TResult> t1) {
             VirtualList<TIntermediate> values;
             Throwable error;
             state.lock();
             try {
                 if (!state.done) {
                     state.onSubscription.call();
-                    return state.addReplayer(t1);
+                    state.addReplayer(t1);
+                    return;
                 }
                 values = state.values;
                 error = state.error;
@@ -840,7 +817,7 @@ public final class OperationReplay {
                     t1.onNext(state.resultSelector.call(values.get(i)));
                 } catch (Throwable t) {
                     t1.onError(t);
-                    return Subscriptions.empty();
+                    return;
                 }
             }
             if (error != null) {
@@ -848,7 +825,6 @@ public final class OperationReplay {
             } else {
                 t1.onCompleted();
             }
-            return Subscriptions.empty();
         }
     }
 }
