@@ -75,7 +75,6 @@ import rx.operators.OperationThrottleFirst;
 import rx.operators.OperationTimeInterval;
 import rx.operators.OperationTimer;
 import rx.operators.OperationToMap;
-import rx.operators.OperationToMultimap;
 import rx.operators.OperationUsing;
 import rx.operators.OperationWindow;
 import rx.operators.OperatorAll;
@@ -124,6 +123,7 @@ import rx.operators.OperatorTake;
 import rx.operators.OperatorTimeout;
 import rx.operators.OperatorTimeoutWithSelector;
 import rx.operators.OperatorTimestamp;
+import rx.operators.OperatorToMultimap;
 import rx.operators.OperatorToObservableFuture;
 import rx.operators.OperatorToObservableList;
 import rx.operators.OperatorToObservableSortedList;
@@ -7234,7 +7234,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh212098.aspx">MSDN: Observable.ToLookup</a>
      */
     public final <K> Observable<Map<K, Collection<T>>> toMultimap(Func1<? super T, ? extends K> keySelector) {
-        return create(OperationToMultimap.toMultimap(this, keySelector));
+        return lift(new OperatorToMultimap<T, K, T>(keySelector, Functions.<T>identity()));
     }
 
     /**
@@ -7254,7 +7254,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229101.aspx">MSDN: Observable.ToLookup</a>
      */
     public final <K, V> Observable<Map<K, Collection<V>>> toMultimap(Func1<? super T, ? extends K> keySelector, Func1<? super T, ? extends V> valueSelector) {
-        return create(OperationToMultimap.toMultimap(this, keySelector, valueSelector));
+        return lift(new OperatorToMultimap<T, K, V>(keySelector, valueSelector));
     }
 
     /**
@@ -7275,7 +7275,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#wiki-tomap-and-tomultimap">RxJava Wiki: toMap()</a>
      */
     public final <K, V> Observable<Map<K, Collection<V>>> toMultimap(Func1<? super T, ? extends K> keySelector, Func1<? super T, ? extends V> valueSelector, Func0<? extends Map<K, Collection<V>>> mapFactory) {
-        return create(OperationToMultimap.toMultimap(this, keySelector, valueSelector, mapFactory));
+        return lift(new OperatorToMultimap<T, K, V>(keySelector, valueSelector, mapFactory));
     }
 
     /**
@@ -7298,7 +7298,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#wiki-tomap-and-tomultimap">RxJava Wiki: toMap()</a>
      */
     public final <K, V> Observable<Map<K, Collection<V>>> toMultimap(Func1<? super T, ? extends K> keySelector, Func1<? super T, ? extends V> valueSelector, Func0<? extends Map<K, Collection<V>>> mapFactory, Func1<? super K, ? extends Collection<V>> collectionFactory) {
-        return create(OperationToMultimap.toMultimap(this, keySelector, valueSelector, mapFactory, collectionFactory));
+        return lift(new OperatorToMultimap<T, K, V>(keySelector, valueSelector, mapFactory, collectionFactory));
     }
 
     /**
