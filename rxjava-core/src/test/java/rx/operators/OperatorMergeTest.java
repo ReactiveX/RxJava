@@ -323,6 +323,24 @@ public class OperatorMergeTest {
         verify(stringObserver, times(0)).onNext("eight");
         verify(stringObserver, times(0)).onNext("nine");
     }
+    
+    @Test
+    public void testThrownErrorHandling() {
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+        Observable<String> o1 = Observable.create(new OnSubscribe<String>() {
+
+            @Override
+            public void call(Subscriber<? super String> s) {
+                throw new RuntimeException("fail");
+            }
+
+        });
+
+        Observable.merge(o1, o1).subscribe(ts);
+        ts.awaitTerminalEvent(1000, TimeUnit.MILLISECONDS);
+        ts.assertTerminalEvent();
+        System.out.println("Error: " + ts.getOnErrorEvents());
+    }
 
     private static class TestSynchronousObservable implements Observable.OnSubscribeFunc<String> {
 
