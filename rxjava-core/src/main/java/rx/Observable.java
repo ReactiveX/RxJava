@@ -174,7 +174,7 @@ public class Observable<T> {
         this.onSubscribe = f;
     }
 
-    private final RxJavaObservableExecutionHook hook = RxJavaPlugins.getInstance().getObservableExecutionHook();
+    private static final RxJavaObservableExecutionHook hook = RxJavaPlugins.getInstance().getObservableExecutionHook();
 
     /**
      * Returns an Observable that will execute the specified function when a {@link Subscriber} subscribes to
@@ -201,7 +201,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.create.aspx">MSDN: Observable.Create</a>
      */
     public final static <T> Observable<T> create(OnSubscribe<T> f) {
-        return new Observable<T>(f);
+        return new Observable<T>(hook.onCreate(f));
     }
 
     /**
