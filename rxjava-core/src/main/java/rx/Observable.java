@@ -49,7 +49,6 @@ import rx.observers.SafeSubscriber;
 import rx.operators.OnSubscribeFromIterable;
 import rx.operators.OnSubscribeRange;
 import rx.operators.OperationDebounce;
-import rx.operators.OperationDelay;
 import rx.operators.OperationGroupByUntil;
 import rx.operators.OperationGroupJoin;
 import rx.operators.OperationInterval;
@@ -92,6 +91,9 @@ import rx.operators.OperatorCombineLatest;
 import rx.operators.OperatorConcat;
 import rx.operators.OperatorDefaultIfEmpty;
 import rx.operators.OperatorDefer;
+import rx.operators.OperatorDelay;
+import rx.operators.OperatorDelaySubscription;
+import rx.operators.OperatorDelayWithSelector;
 import rx.operators.OperatorDematerialize;
 import rx.operators.OperatorDistinct;
 import rx.operators.OperatorDistinctUntilChanged;
@@ -3491,7 +3493,7 @@ public class Observable<T> {
     public final <U, V> Observable<T> delay(
             Func0<? extends Observable<U>> subscriptionDelay,
             Func1<? super T, ? extends Observable<V>> itemDelay) {
-        return create(OperationDelay.delay(this, subscriptionDelay, itemDelay));
+        return create(new OperatorDelayWithSelector<T, U, V>(this, subscriptionDelay, itemDelay));
     }
 
     /**
@@ -3513,7 +3515,7 @@ public class Observable<T> {
      *         per-item basis
      */
     public final <U> Observable<T> delay(Func1<? super T, ? extends Observable<U>> itemDelay) {
-        return create(OperationDelay.delay(this, itemDelay));
+        return create(new OperatorDelayWithSelector<T, Object, U>(this, itemDelay));
     }
 
     /**
@@ -3531,7 +3533,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229810.aspx">MSDN: Observable.Delay</a>
      */
     public final Observable<T> delay(long delay, TimeUnit unit) {
-        return OperationDelay.delay(this, delay, unit, Schedulers.computation());
+        return create(new OperatorDelay<T>(this, delay, unit, Schedulers.computation()));
     }
 
     /**
@@ -3551,7 +3553,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229280.aspx">MSDN: Observable.Delay</a>
      */
     public final Observable<T> delay(long delay, TimeUnit unit, Scheduler scheduler) {
-        return OperationDelay.delay(this, delay, unit, scheduler);
+        return create(new OperatorDelay<T>(this, delay, unit, scheduler));
     }
 
     /**
@@ -3585,7 +3587,7 @@ public class Observable<T> {
      *         amount, waiting and subscribing on the given Scheduler
      */
     public final Observable<T> delaySubscription(long delay, TimeUnit unit, Scheduler scheduler) {
-        return create(OperationDelay.delaySubscription(this, delay, unit, scheduler));
+        return create(new OperatorDelaySubscription<T>(this, delay, unit, scheduler));
     }
 
     /**
