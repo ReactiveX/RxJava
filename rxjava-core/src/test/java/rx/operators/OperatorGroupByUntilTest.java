@@ -42,7 +42,7 @@ import rx.functions.Func1;
 import rx.functions.Functions;
 import rx.observables.GroupedObservable;
 
-public class OperationGroupByUntilTest {
+public class OperatorGroupByUntilTest {
     @Mock
     Observer<Object> observer;
 
