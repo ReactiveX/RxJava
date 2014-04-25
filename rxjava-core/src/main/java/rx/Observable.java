@@ -58,7 +58,6 @@ import rx.operators.OperationMergeDelayError;
 import rx.operators.OperationMergeMaxConcurrent;
 import rx.operators.OperationMulticast;
 import rx.operators.OperationOnErrorResumeNextViaObservable;
-import rx.operators.OperationOnErrorReturn;
 import rx.operators.OperationOnExceptionResumeNextViaObservable;
 import rx.operators.OperationParallelMerge;
 import rx.operators.OperationReplay;
@@ -108,6 +107,7 @@ import rx.operators.OperatorMergeMapTransform;
 import rx.operators.OperatorObserveOn;
 import rx.operators.OperatorOnErrorFlatMap;
 import rx.operators.OperatorOnErrorResumeNextViaFunction;
+import rx.operators.OperatorOnErrorReturn;
 import rx.operators.OperatorParallel;
 import rx.operators.OperatorPivot;
 import rx.operators.OperatorRepeat;
@@ -4547,7 +4547,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Error-Handling-Operators#wiki-onerrorreturn">RxJava Wiki: onErrorReturn()</a>
      */
     public final Observable<T> onErrorReturn(Func1<Throwable, ? extends T> resumeFunction) {
-        return create(OperationOnErrorReturn.onErrorReturn(this, resumeFunction));
+        return lift(new OperatorOnErrorReturn<T>(resumeFunction));
     }
 
     /**

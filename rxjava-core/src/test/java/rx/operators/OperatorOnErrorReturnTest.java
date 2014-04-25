@@ -21,7 +21,6 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static rx.operators.OperationOnErrorReturn.onErrorReturn;
 
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -30,10 +29,11 @@ import org.mockito.Mockito;
 
 import rx.Observable;
 import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Func1;
 
-public class OperationOnErrorReturnTest {
+public class OperatorOnErrorReturnTest {
 
     @Test
     public void testResumeNext() {
@@ -42,7 +42,7 @@ public class OperationOnErrorReturnTest {
         Observable<String> w = Observable.create(f);
         final AtomicReference<Throwable> capturedException = new AtomicReference<Throwable>();
 
-        Observable<String> observable = Observable.create(onErrorReturn(w, new Func1<Throwable, String>() {
+        Observable<String> observable = w.onErrorReturn(new Func1<Throwable, String>() {
 
             @Override
             public String call(Throwable e) {
@@ -50,7 +50,7 @@ public class OperationOnErrorReturnTest {
                 return "failure";
             }
 
-        }));
+        });
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
@@ -79,7 +79,7 @@ public class OperationOnErrorReturnTest {
         Observable<String> w = Observable.create(f);
         final AtomicReference<Throwable> capturedException = new AtomicReference<Throwable>();
 
-        Observable<String> observable = Observable.create(onErrorReturn(w, new Func1<Throwable, String>() {
+        Observable<String> observable = w.onErrorReturn(new Func1<Throwable, String>() {
 
             @Override
             public String call(Throwable e) {
@@ -87,7 +87,7 @@ public class OperationOnErrorReturnTest {
                 throw new RuntimeException("exception from function");
             }
 
-        }));
+        });
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
@@ -108,7 +108,7 @@ public class OperationOnErrorReturnTest {
         assertNotNull(capturedException.get());
     }
 
-    private static class TestObservable implements Observable.OnSubscribeFunc<String> {
+    private static class TestObservable implements Observable.OnSubscribe<String> {
 
         final Subscription s;
         final String[] values;
@@ -120,7 +120,7 @@ public class OperationOnErrorReturnTest {
         }
 
         @Override
-        public Subscription onSubscribe(final Observer<? super String> observer) {
+        public void call(final Subscriber<? super String> subscriber) {
             System.out.println("TestObservable subscribed to ...");
             t = new Thread(new Runnable() {
 
@@ -130,11 +130,11 @@ public class OperationOnErrorReturnTest {
                         System.out.println("running TestObservable thread");
                         for (String s : values) {
                             System.out.println("TestObservable onNext: " + s);
-                            observer.onNext(s);
+                            subscriber.onNext(s);
                         }
                         throw new RuntimeException("Forced Failure");
                     } catch (Throwable e) {
-                        observer.onError(e);
+                        subscriber.onError(e);
                     }
                 }
 
@@ -142,7 +142,6 @@ public class OperationOnErrorReturnTest {
             System.out.println("starting TestObservable thread");
             t.start();
             System.out.println("done starting TestObservable thread");
-            return s;
         }
     }
 }
