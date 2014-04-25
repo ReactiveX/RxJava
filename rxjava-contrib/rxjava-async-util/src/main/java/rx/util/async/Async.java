@@ -1618,30 +1618,6 @@ public final class Async {
     }
     
     /**
-     * Return an Observable that calls the given function and emits its
-     * result when an Observer subscribes.
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/fromFunc0.png">
-     * <p>
-     * The function is called on the default thread pool for computation.
-     * 
-     * @param <R> the return type
-     * @param function the function to call on each subscription
-     * @return an Observable that calls the given function and emits its
-     *         result when an Observer subscribes
-     * @see #start(rx.functions.Func0) 
-     * @see #fromCallable(java.util.concurrent.Callable) 
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Async-Operators#fromfunc0">RxJava Wiki: fromFunc0()</a>
-     *
-     * @deprecated  Unnecessary now that Func0 extends Callable. Just call
-     *              {@link #fromCallable(Callable)} instead.
-     */
-    @Deprecated
-    public static <R> Observable<R> fromFunc0(Func0<? extends R> function) {
-        return fromCallable(function);
-    }
-
-    /**
      * Return an Observable that calls the given Callable and emits its
      * result or Exception when an Observer subscribes.
      * <p>
@@ -1654,7 +1630,6 @@ public final class Async {
      * @return an Observable that calls the given Callable and emits its
      *         result or Exception when an Observer subscribes
      * @see #start(rx.functions.Func0) 
-     * @see #fromFunc0(rx.functions.Func0) 
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Async-Operators#fromcallable">RxJava Wiki: fromCallable()</a>
      */
     public static <R> Observable<R> fromCallable(Callable<? extends R> callable) {
@@ -1700,30 +1675,6 @@ public final class Async {
     }
     
     /**
-     * Return an Observable that calls the given function and emits its
-     * result when an Observer subscribes.
-     * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/fromFunc0.s.png">
-     * 
-     * @param <R> the return type
-     * @param function the function to call on each subscription
-     * @param scheduler the scheduler where the function is called and the
-     *                  result is emitted
-     * @return an Observable that calls the given function and emits its
-     *         result when an Observer subscribes
-     * @see #start(rx.functions.Func0) 
-     * @see #fromCallable(java.util.concurrent.Callable) 
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Async-Operators#fromfunc0">RxJava Wiki: fromFunc0()</a>
-     *
-     * @deprecated  Unnecessary now that Func0 extends Callable. Just call
-     *              {@link #fromCallable(Callable, Scheduler)} instead.
-     */
-    @Deprecated
-    public static <R> Observable<R> fromFunc0(Func0<? extends R> function, Scheduler scheduler) {
-        return fromCallable(function, scheduler);
-    }
-
-    /**
      * Return an Observable that calls the given Callable and emits its
      * result or Exception when an Observer subscribes.
      * <p>
@@ -1736,7 +1687,6 @@ public final class Async {
      * @return an Observable that calls the given Callable and emits its
      *         result or Exception when an Observer subscribes
      * @see #start(rx.functions.Func0) 
-     * @see #fromFunc0(rx.functions.Func0) 
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Async-Operators#fromcallable">RxJava Wiki: fromCallable()</a>
      */
     public static <R> Observable<R> fromCallable(Callable<? extends R> callable, Scheduler scheduler) {
