@@ -2,22 +2,22 @@
 
 ### Version 0.18.1 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.18.1%22)) ###
 
-* [Pull 1065] (https://github.com/Netflix/RxJava/pull/1065] Optimize OperatorSkipLastTimed
-* [Pull 1073] (https://github.com/Netflix/RxJava/pull/1073] OperatorBuffer
-* [Pull 1074] (https://github.com/Netflix/RxJava/pull/1074] OperatorConcat
-* [Pull 1088] (https://github.com/Netflix/RxJava/pull/1088] OperatorToObservableFuture
-* [Pull 1087] (https://github.com/Netflix/RxJava/pull/1087] OperatorMergeMap
-* [Pull 1086] (https://github.com/Netflix/RxJava/pull/1086] OperatorFinallyDo
-* [Pull 1085] (https://github.com/Netflix/RxJava/pull/1085] OperatorDistinctUntilChanged
-* [Pull 1084] (https://github.com/Netflix/RxJava/pull/1084] OperatorDistinct
-* [Pull 1083] (https://github.com/Netflix/RxJava/pull/1083] OperatorDematerialize
-* [Pull 1081] (https://github.com/Netflix/RxJava/pull/1081] OperatorDefer
-* [Pull 1080] (https://github.com/Netflix/RxJava/pull/1080] OperatorDefaultIfEmpty
-* [Pull 1079] (https://github.com/Netflix/RxJava/pull/1079] OperatorCombineLatest
-* [Pull 1074] (https://github.com/Netflix/RxJava/pull/1074] OperatorConcat
-* [Pull 1073] (https://github.com/Netflix/RxJava/pull/1073] OperatorBuffer
-* [Pull 1091] (https://github.com/Netflix/RxJava/pull/1091] Handle Thrown Errors with UnsafeSubscribe
-* [Pull 1092] (https://github.com/Netflix/RxJava/pull/1092] Restore ObservableExecutionHook.onCreate
+* [Pull 1065] (https://github.com/Netflix/RxJava/pull/1065) Optimize OperatorSkipLastTimed
+* [Pull 1073] (https://github.com/Netflix/RxJava/pull/1073) OperatorBuffer
+* [Pull 1074] (https://github.com/Netflix/RxJava/pull/1074) OperatorConcat
+* [Pull 1088] (https://github.com/Netflix/RxJava/pull/1088) OperatorToObservableFuture
+* [Pull 1087] (https://github.com/Netflix/RxJava/pull/1087) OperatorMergeMap
+* [Pull 1086] (https://github.com/Netflix/RxJava/pull/1086) OperatorFinallyDo
+* [Pull 1085] (https://github.com/Netflix/RxJava/pull/1085) OperatorDistinctUntilChanged
+* [Pull 1084] (https://github.com/Netflix/RxJava/pull/1084) OperatorDistinct
+* [Pull 1083] (https://github.com/Netflix/RxJava/pull/1083) OperatorDematerialize
+* [Pull 1081] (https://github.com/Netflix/RxJava/pull/1081) OperatorDefer
+* [Pull 1080] (https://github.com/Netflix/RxJava/pull/1080) OperatorDefaultIfEmpty
+* [Pull 1079] (https://github.com/Netflix/RxJava/pull/1079) OperatorCombineLatest
+* [Pull 1074] (https://github.com/Netflix/RxJava/pull/1074) OperatorConcat
+* [Pull 1073] (https://github.com/Netflix/RxJava/pull/1073) OperatorBuffer
+* [Pull 1091] (https://github.com/Netflix/RxJava/pull/1091) Handle Thrown Errors with UnsafeSubscribe
+* [Pull 1092] (https://github.com/Netflix/RxJava/pull/1092) Restore ObservableExecutionHook.onCreate
 
 ### Version 0.18.0 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.18.0%22)) ###
 
