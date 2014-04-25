@@ -457,10 +457,10 @@ public class OperatorMergeDelayErrorTest {
             public void call(Subscriber<? super Integer> t1) {
                 try {
                     t1.onNext(0);
-                    t1.onNext(1);
                 } catch (Throwable swallow) {
                     
                 }
+                t1.onNext(1);
                 t1.onCompleted();
             }
         });
