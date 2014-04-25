@@ -6231,7 +6231,15 @@ public class Observable<T> {
      * @return Subscription which is the Subscriber passed in
      */
     public final Subscription unsafeSubscribe(Subscriber<? super T> subscriber) {
-        onSubscribe.call(subscriber);
+        try {
+            onSubscribe.call(subscriber);
+        } catch (Throwable e) {
+            if (e instanceof OnErrorNotImplementedException) {
+                throw (OnErrorNotImplementedException) e;
+            }
+            // handle broken contracts: https://github.com/Netflix/RxJava/issues/1090
+            subscriber.onError(e);
+        }
         return subscriber;
     }
 

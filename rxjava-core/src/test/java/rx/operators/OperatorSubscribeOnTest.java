@@ -77,6 +77,36 @@ public class OperatorSubscribeOnTest {
         assertEquals(0, observer.getOnErrorEvents().size());
         assertEquals(1, observer.getOnCompletedEvents().size());
     }
+    
+    @Test
+    public void testThrownErrorHandling() {
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+        Observable.create(new OnSubscribe<String>() {
+
+            @Override
+            public void call(Subscriber<? super String> s) {
+                throw new RuntimeException("fail");
+            }
+
+        }).subscribeOn(Schedulers.computation()).subscribe(ts);
+        ts.awaitTerminalEvent(1000, TimeUnit.MILLISECONDS);
+        ts.assertTerminalEvent();
+    }
+    
+    @Test
+    public void testOnError() {
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+        Observable.create(new OnSubscribe<String>() {
+
+            @Override
+            public void call(Subscriber<? super String> s) {
+                s.onError(new RuntimeException("fail"));
+            }
+
+        }).subscribeOn(Schedulers.computation()).subscribe(ts);
+        ts.awaitTerminalEvent(1000, TimeUnit.MILLISECONDS);
+        ts.assertTerminalEvent();
+    }
 
     public static class SlowScheduler extends Scheduler {
         final Scheduler actual;
