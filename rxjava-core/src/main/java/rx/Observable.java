@@ -72,7 +72,7 @@ import rx.operators.OperationTakeTimed;
 import rx.operators.OperationTakeUntil;
 import rx.operators.OperationTakeWhile;
 import rx.operators.OperationThrottleFirst;
-import rx.operators.OperationTimeInterval;
+import rx.operators.OperatorTimeInterval;
 import rx.operators.OperationTimer;
 import rx.operators.OperationToMap;
 import rx.operators.OperationToMultimap;
@@ -6880,7 +6880,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh212107.aspx">MSDN: Observable.TimeInterval</a>
      */
     public final Observable<TimeInterval<T>> timeInterval() {
-        return create(OperationTimeInterval.timeInterval(this));
+        return lift(new OperatorTimeInterval(Schedulers.immediate()));
     }
 
     /**
@@ -6896,7 +6896,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh212107.aspx">MSDN: Observable.TimeInterval</a>
      */
     public final Observable<TimeInterval<T>> timeInterval(Scheduler scheduler) {
-        return create(OperationTimeInterval.timeInterval(this, scheduler));
+        return lift(new OperatorTimeInterval(scheduler));
     }
 
     /**

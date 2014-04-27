@@ -32,7 +32,7 @@ import rx.schedulers.TestScheduler;
 import rx.schedulers.TimeInterval;
 import rx.subjects.PublishSubject;
 
-public class OperationTimeIntervalTest {
+public class OperatorTimeIntervalTest {
 
     private static final TimeUnit TIME_UNIT = TimeUnit.MILLISECONDS;
 
