@@ -2537,6 +2537,29 @@ trait Observable[+T]
     toScalaObservable[util.Map[K, V]](o).map(m => mapFactory() ++ m.toMap)
   }
 
+  /**
+   * Lift a function to the current Observable and return a new Observable that when subscribed to will pass
+   * the values of the current Observable through the function.
+   * <p>
+   * In other words, this allows chaining Observers together on an Observable for acting on the values within
+   * the Observable.
+   * {{{
+   * observable.map(...).filter(...).take(5).lift(new ObserverA()).lift(new ObserverB(...)).subscribe()
+   * }}}
+   *
+   * @param operator
+   * @return an Observable that emits values that are the result of applying the bind function to the values
+   *         of the current Observable
+   */
+  def lift[R](operator: Subscriber[_ >: R] => Subscriber[_ >: T]): Observable[R] = {
+    val thisJava = asJavaObservable.asInstanceOf[rx.Observable[T]]
+    val thatJava = thisJava.lift[R](new rx.Observable.Operator[R, T] {
+      override def call(subscriber: rx.Subscriber[_ >: R]): rx.Subscriber[_ >: T] = {
+        toJavaSubscriber(operator.call(toScalaSubscriber(subscriber)))
+      }
+    })
+    toScalaObservable(thatJava)
+  }
 }
 
 /**

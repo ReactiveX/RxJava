@@ -645,4 +645,60 @@ class RxScalaDemo extends JUnitSuite {
     val o : Observable[String] = List("alice", "bob", "carol").toObservable
     assertEquals(List("alice", "bob", "carol"), o.retry(3).toBlockingObservable.toList)
   }
+
+  @Test def liftExample1(): Unit = {
+    // Add "No. " in front of each item
+    val o = List(1, 2, 3).toObservable.lift {
+      subscriber: Subscriber[String] =>
+        Subscriber(
+          subscriber,
+          v => subscriber.onNext("No. " + v),
+          e => subscriber.onError(e),
+          () => subscriber.onCompleted
+        )
+    }.toBlockingObservable.toList
+    println(o)
+  }
+
+  @Test def liftExample2(): Unit = {
+    val o = Observable {
+      subscriber: Subscriber[Int] => {
+        for (i <- 1 to 10 if !subscriber.isUnsubscribed) {
+          println("emit " + i)
+          subscriber.onNext(i)
+        }
+        if (!subscriber.isUnsubscribed) {
+          println("emit onCompleted")
+          subscriber.onCompleted
+        }
+      }
+    }
+    // Take the first 5 items
+    val take = 5
+    val result = o.lift {
+      subscriber: Subscriber[String] =>
+        var index = 0
+        Subscriber(
+          subscriber,
+          v => {
+            if (index < take) {
+              subscriber.onNext("No. " + v)
+            }
+            if (index == take - 1) {
+              subscriber.onCompleted
+            }
+            index += 1
+          },
+          e => subscriber.onError(e),
+          () => subscriber.onCompleted
+        )
+    }.toBlockingObservable.toList
+    println(result)
+    // emit 1
+    // emit 2
+    // emit 3
+    // emit 4
+    // emit 5
+    // List(No. 1, No. 2, No. 3, No. 4, No. 5)
+  }
 }
