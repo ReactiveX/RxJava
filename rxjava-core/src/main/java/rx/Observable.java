@@ -64,7 +64,6 @@ import rx.operators.OperationParallelMerge;
 import rx.operators.OperationReplay;
 import rx.operators.OperationSample;
 import rx.operators.OperationSequenceEqual;
-import rx.operators.OperationSkip;
 import rx.operators.OperationSkipUntil;
 import rx.operators.OperationSwitch;
 import rx.operators.OperationTakeLast;
@@ -118,6 +117,7 @@ import rx.operators.OperatorSingle;
 import rx.operators.OperatorSkip;
 import rx.operators.OperatorSkipLast;
 import rx.operators.OperatorSkipLastTimed;
+import rx.operators.OperatorSkipTimed;
 import rx.operators.OperatorSkipWhile;
 import rx.operators.OperatorSubscribeOn;
 import rx.operators.OperatorTake;
@@ -5547,7 +5547,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#wiki-skip">RxJava Wiki: skip()</a>
      */
     public final Observable<T> skip(long time, TimeUnit unit, Scheduler scheduler) {
-        return create(new OperationSkip.SkipTimed<T>(this, time, unit, scheduler));
+        return lift(new OperatorSkipTimed<T>(time, unit, scheduler));
     }
 
     /**
