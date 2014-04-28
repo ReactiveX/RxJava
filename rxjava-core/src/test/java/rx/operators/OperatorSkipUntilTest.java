@@ -29,7 +29,7 @@ import rx.Observable;
 import rx.Observer;
 import rx.subjects.PublishSubject;
 
-public class OperationSkipUntilTest {
+public class OperatorSkipUntilTest {
     @Mock
     Observer<Object> observer;
 
