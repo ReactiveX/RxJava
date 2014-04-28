@@ -27,7 +27,7 @@ import rx.Observable;
 import rx.Observer;
 import rx.functions.Func2;
 
-public class OperationSequenceEqualTests {
+public class OperatorSequenceEqualTest {
 
     @Test
     public void test1() {
