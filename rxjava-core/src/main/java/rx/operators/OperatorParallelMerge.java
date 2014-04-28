@@ -23,7 +23,8 @@ import rx.functions.Func1;
 import rx.observables.GroupedObservable;
 import rx.schedulers.Schedulers;
 
-public class OperationParallelMerge {
+public final class OperatorParallelMerge {
+    private OperatorParallelMerge() { throw new IllegalStateException("No instances!"); }
 
     public static <T> Observable<Observable<T>> parallelMerge(final Observable<Observable<T>> source, final int parallelObservables) {
         return parallelMerge(source, parallelObservables, Schedulers.immediate());
