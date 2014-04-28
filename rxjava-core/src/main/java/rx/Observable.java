@@ -65,7 +65,6 @@ import rx.operators.OperationReplay;
 import rx.operators.OperationSample;
 import rx.operators.OperationSequenceEqual;
 import rx.operators.OperationSkip;
-import rx.operators.OperationSkipUntil;
 import rx.operators.OperationSwitch;
 import rx.operators.OperationTakeLast;
 import rx.operators.OperationTakeTimed;
@@ -118,6 +117,7 @@ import rx.operators.OperatorSingle;
 import rx.operators.OperatorSkip;
 import rx.operators.OperatorSkipLast;
 import rx.operators.OperatorSkipLastTimed;
+import rx.operators.OperatorSkipUntil;
 import rx.operators.OperatorSkipWhile;
 import rx.operators.OperatorSubscribeOn;
 import rx.operators.OperatorTake;
@@ -5632,7 +5632,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229358.aspx">MSDN: Observable.SkipUntil</a>
      */
     public final <U> Observable<T> skipUntil(Observable<U> other) {
-        return create(new OperationSkipUntil<T, U>(this, other));
+        return lift(new OperatorSkipUntil<T, U>(other));
     }
 
     /**
