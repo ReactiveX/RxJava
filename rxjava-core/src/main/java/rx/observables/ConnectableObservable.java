@@ -18,7 +18,7 @@ package rx.observables;
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
-import rx.operators.OperationRefCount;
+import rx.operators.OperatorRefCount;
 
 /**
  * A ConnectableObservable resembles an ordinary {@link Observable}, except that it does not begin
@@ -44,6 +44,7 @@ public abstract class ConnectableObservable<T> extends Observable<T> {
     /**
      * Call a ConnectableObservable's connect() method to instruct it to begin emitting the
      * items from its underlying {@link Observable} to its {@link Subscriber}s.
+     * @return the subscription representing the connection
      */
     public abstract Subscription connect();
 
@@ -54,6 +55,6 @@ public abstract class ConnectableObservable<T> extends Observable<T> {
      * @return a {@link Observable}
      */
     public Observable<T> refCount() {
-        return Observable.create(OperationRefCount.refCount(this));
+        return create(new OperatorRefCount<T>(this));
     }
 }
