@@ -18,7 +18,6 @@ package rx.operators;
 import static rx.Observable.concat;
 import static rx.Observable.from;
 import static rx.Observable.zip;
-import rx.Notification;
 import rx.Observable;
 import rx.functions.Func1;
 import rx.functions.Func2;
@@ -28,44 +27,43 @@ import rx.functions.Functions;
  * Returns an Observable that emits a Boolean value that indicate whether two
  * sequences are equal by comparing the elements pairwise.
  */
-public class OperationSequenceEqual {
+public final class OperatorSequenceEqual {
+    private OperatorSequenceEqual() { throw new IllegalStateException("No instances!"); }
+    /** NotificationLite doesn't work as zip uses it. */
+    private static final Object LOCAL_ONCOMPLETED = new Object();
+    static <T> Observable<Object> materializeLite(Observable<T> source) {
+        return concat(
+                source.map(new Func1<T, Object>() {
 
+                    @Override
+                    public Object call(T t1) {
+                        return t1;
+                    }
+
+                }), from(LOCAL_ONCOMPLETED));
+    }
     public static <T> Observable<Boolean> sequenceEqual(
             Observable<? extends T> first, Observable<? extends T> second,
             final Func2<? super T, ? super T, Boolean> equality) {
-        Observable<Notification<T>> firstObservable = concat(
-                first.map(new Func1<T, Notification<T>>() {
-
-                    @Override
-                    public Notification<T> call(T t1) {
-                        return Notification.createOnNext(t1);
-                    }
-
-                }), from(Notification.<T>createOnCompleted()));
-
-        Observable<Notification<T>> secondObservable = concat(
-                second.map(new Func1<T, Notification<T>>() {
-
-                    @Override
-                    public Notification<T> call(T t1) {
-                        return Notification.createOnNext(t1);
-                    }
-
-                }), from(Notification.<T>createOnCompleted()));
+        Observable<Object> firstObservable = materializeLite(first);
+        Observable<Object> secondObservable = materializeLite(second);
 
         return zip(firstObservable, secondObservable,
-                new Func2<Notification<T>, Notification<T>, Boolean>() {
+                new Func2<Object, Object, Boolean>() {
 
                     @Override
-                    public Boolean call(Notification<T> t1, Notification<T> t2) {
-                        if (t1.isOnCompleted() && t2.isOnCompleted()) {
+                    @SuppressWarnings("unchecked")
+                    public Boolean call(Object t1, Object t2) {
+                        boolean c1 = t1 == LOCAL_ONCOMPLETED;
+                        boolean c2 = t2 == LOCAL_ONCOMPLETED;
+                        if (c1 && c2) {
                             return true;
                         }
-                        if (t1.isOnCompleted() || t2.isOnCompleted()) {
+                        if (c1 || c2) {
                             return false;
                         }
                         // Now t1 and t2 must be 'onNext'.
-                        return equality.call(t1.getValue(), t2.getValue());
+                        return equality.call((T)t1, (T)t2);
                     }
 
                 }).all(Functions.<Boolean> identity());
