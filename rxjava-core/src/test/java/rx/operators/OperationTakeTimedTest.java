@@ -28,7 +28,7 @@ import org.mockito.InOrder;
 
 import rx.Observable;
 import rx.Observer;
-import rx.operators.OperationSkipTest.CustomException;
+import rx.operators.OperatorSkipTimedTest.CustomException;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
 

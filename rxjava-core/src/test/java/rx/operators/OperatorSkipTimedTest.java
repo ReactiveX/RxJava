@@ -31,7 +31,7 @@ import rx.Observer;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
 
-public class OperationSkipTest {
+public class OperatorSkipTimedTest {
 
     @Test
     public void testSkipTimed() {
@@ -41,6 +41,7 @@ public class OperationSkipTest {
 
         Observable<Integer> result = source.skip(1, TimeUnit.SECONDS, scheduler);
 
+        @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
 
         result.subscribe(o);
@@ -78,6 +79,7 @@ public class OperationSkipTest {
 
         Observable<Integer> result = source.skip(1, TimeUnit.SECONDS, scheduler);
 
+        @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
 
         result.subscribe(o);
@@ -108,6 +110,7 @@ public class OperationSkipTest {
 
         Observable<Integer> result = source.skip(1, TimeUnit.SECONDS, scheduler);
 
+        @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
 
         result.subscribe(o);
@@ -135,6 +138,7 @@ public class OperationSkipTest {
 
         Observable<Integer> result = source.skip(1, TimeUnit.SECONDS, scheduler);
 
+        @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
 
         result.subscribe(o);
