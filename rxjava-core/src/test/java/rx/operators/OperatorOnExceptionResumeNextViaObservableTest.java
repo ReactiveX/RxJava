@@ -22,7 +22,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static rx.operators.OperationOnExceptionResumeNextViaObservable.onExceptionResumeNextViaObservable;
 
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -32,7 +31,7 @@ import rx.Observer;
 import rx.Subscription;
 import rx.functions.Func1;
 
-public class OperationOnExceptionResumeNextViaObservableTest {
+public class OperatorOnExceptionResumeNextViaObservableTest {
 
     @Test
     public void testResumeNextWithException() {
@@ -41,7 +40,7 @@ public class OperationOnExceptionResumeNextViaObservableTest {
         TestObservable f = new TestObservable(s, "one", "EXCEPTION", "two", "three");
         Observable<String> w = Observable.create(f);
         Observable<String> resume = Observable.from("twoResume", "threeResume");
-        Observable<String> observable = Observable.create(onExceptionResumeNextViaObservable(w, resume));
+        Observable<String> observable = w.onExceptionResumeNext(resume);
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
@@ -70,7 +69,7 @@ public class OperationOnExceptionResumeNextViaObservableTest {
         TestObservable f = new TestObservable(s, "one", "RUNTIMEEXCEPTION", "two", "three");
         Observable<String> w = Observable.create(f);
         Observable<String> resume = Observable.from("twoResume", "threeResume");
-        Observable<String> observable = Observable.create(onExceptionResumeNextViaObservable(w, resume));
+        Observable<String> observable = w.onExceptionResumeNext(resume);
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
@@ -99,7 +98,7 @@ public class OperationOnExceptionResumeNextViaObservableTest {
         TestObservable f = new TestObservable(s, "one", "THROWABLE", "two", "three");
         Observable<String> w = Observable.create(f);
         Observable<String> resume = Observable.from("twoResume", "threeResume");
-        Observable<String> observable = Observable.create(onExceptionResumeNextViaObservable(w, resume));
+        Observable<String> observable = w.onExceptionResumeNext(resume);
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
@@ -128,7 +127,7 @@ public class OperationOnExceptionResumeNextViaObservableTest {
         TestObservable f = new TestObservable(s, "one", "ERROR", "two", "three");
         Observable<String> w = Observable.create(f);
         Observable<String> resume = Observable.from("twoResume", "threeResume");
-        Observable<String> observable = Observable.create(onExceptionResumeNextViaObservable(w, resume));
+        Observable<String> observable = w.onExceptionResumeNext(resume);
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
@@ -162,6 +161,7 @@ public class OperationOnExceptionResumeNextViaObservableTest {
         // Introduce map function that fails intermittently (Map does not prevent this when the observer is a
         //  rx.operator incl onErrorResumeNextViaObservable)
         w = w.map(new Func1<String, String>() {
+            @Override
             public String call(String s) {
                 if ("fail".equals(s))
                     throw new RuntimeException("Forced Failure");
@@ -170,7 +170,7 @@ public class OperationOnExceptionResumeNextViaObservableTest {
             }
         });
 
-        Observable<String> observable = Observable.create(onExceptionResumeNextViaObservable(w, resume));
+        Observable<String> observable = w.onExceptionResumeNext(resume);
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
