@@ -51,7 +51,6 @@ import rx.operators.OnSubscribeRange;
 import rx.operators.OperationDelay;
 import rx.operators.OperatorGroupByUntil;
 import rx.operators.OperationGroupJoin;
-import rx.operators.OperationJoin;
 import rx.operators.OperationMergeDelayError;
 import rx.operators.OperationMergeMaxConcurrent;
 import rx.operators.OperationMulticast;
@@ -97,6 +96,7 @@ import rx.operators.OperatorElementAt;
 import rx.operators.OperatorFilter;
 import rx.operators.OperatorFinally;
 import rx.operators.OperatorGroupBy;
+import rx.operators.OperatorJoin;
 import rx.operators.OperatorMap;
 import rx.operators.OperatorMaterialize;
 import rx.operators.OperatorMerge;
@@ -4170,7 +4170,7 @@ public class Observable<T> {
     public final <TRight, TLeftDuration, TRightDuration, R> Observable<R> join(Observable<TRight> right, Func1<T, Observable<TLeftDuration>> leftDurationSelector,
             Func1<TRight, Observable<TRightDuration>> rightDurationSelector,
             Func2<T, TRight, R> resultSelector) {
-        return create(new OperationJoin<T, TRight, TLeftDuration, TRightDuration, R>(this, right, leftDurationSelector, rightDurationSelector, resultSelector));
+        return create(new OperatorJoin<T, TRight, TLeftDuration, TRightDuration, R>(this, right, leftDurationSelector, rightDurationSelector, resultSelector));
     }
 
     /**
