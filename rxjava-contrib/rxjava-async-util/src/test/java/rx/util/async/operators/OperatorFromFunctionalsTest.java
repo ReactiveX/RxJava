@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package rx.util.async.operators;
 
-import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
@@ -38,7 +37,7 @@ import rx.observers.TestObserver;
 import rx.schedulers.TestScheduler;
 import rx.util.async.Async;
 
-public class OperationFromFunctionalsTest {
+public class OperatorFromFunctionalsTest {
     TestScheduler scheduler;
     @Before
     public void before() {
@@ -47,6 +46,7 @@ public class OperationFromFunctionalsTest {
     private void testRunShouldThrow(Observable<Integer> source, Class<? extends Throwable> exception) {
         for (int i = 0; i < 3; i++) {
             
+            @SuppressWarnings("unchecked")
             Observer<Object> observer = mock(Observer.class);
             source.subscribe(new TestObserver<Object>(observer));
 
@@ -79,6 +79,7 @@ public class OperationFromFunctionalsTest {
             
             value.set(0);
             
+            @SuppressWarnings("unchecked")
             Observer<Object> observer = mock(Observer.class);
             source.subscribe(new TestObserver<Object>(observer));
 
@@ -111,62 +112,6 @@ public class OperationFromFunctionalsTest {
         testRunShouldThrow(source, RuntimeException.class);
     }
 
-    /**
-     * @deprecated  {@link Func0} now extends {@link Callable}, so
-     *              {@link Async#fromFunc0(Func0)} is unnecessary. Once it's
-     *              removed, this test can be removed as well.
-     */
-    @Deprecated
-    @Test
-    public void testFromFunc0() {
-        Func0<Integer> func = new Func0<Integer>() {
-            @Override
-            public Integer call() {
-                return 1;
-            }
-        };
-        
-        Observable<Integer> source = Async.fromFunc0(func, scheduler);
-        
-        for (int i = 0; i < 3; i++) {
-            
-            Observer<Object> observer = mock(Observer.class);
-            source.subscribe(new TestObserver<Object>(observer));
-
-            InOrder inOrder = inOrder(observer);
-
-            inOrder.verify(observer, never()).onNext(any());
-            inOrder.verify(observer, never()).onCompleted();
-
-            scheduler.advanceTimeBy(1, TimeUnit.MILLISECONDS);
-
-            inOrder.verify(observer, times(1)).onNext(1);
-            inOrder.verify(observer, times(1)).onCompleted();
-            inOrder.verifyNoMoreInteractions();
-            verify(observer, never()).onError(any(Throwable.class));
-        }
-    }
-
-    /**
-     * @deprecated  {@link Func0} now extends {@link Callable}, so
-     *              {@link Async#fromFunc0(Func0, rx.Scheduler)} is
-     *              unnecessary. Once it's removed, this test can be removed
-     *              as well.
-     */
-    @Deprecated
-    @Test
-    public void testFromFunc0Throws() {
-        Func0<Integer> func = new Func0<Integer>() {
-            @Override
-            public Integer call() {
-                throw new RuntimeException("Forced failure!");
-            }
-        };
-        
-        Observable<Integer> source = Async.fromFunc0(func, scheduler);
-        
-        testRunShouldThrow(source, RuntimeException.class);
-    }
     @Test
     public void testFromRunnable() {
         final AtomicInteger value = new AtomicInteger();
@@ -184,6 +129,7 @@ public class OperationFromFunctionalsTest {
             
             value.set(0);
             
+            @SuppressWarnings("unchecked")
             Observer<Object> observer = mock(Observer.class);
             source.subscribe(new TestObserver<Object>(observer));
 
@@ -228,6 +174,7 @@ public class OperationFromFunctionalsTest {
         
         for (int i = 0; i < 3; i++) {
             
+            @SuppressWarnings("unchecked")
             Observer<Object> observer = mock(Observer.class);
             source.subscribe(new TestObserver<Object>(observer));
 

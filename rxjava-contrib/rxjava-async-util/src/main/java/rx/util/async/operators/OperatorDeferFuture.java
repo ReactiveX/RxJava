@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,9 +24,9 @@ import rx.functions.Func0;
 /**
  * Defer the execution of a factory method which produces an observable sequence.
  */
-public final class OperationDeferFuture {
+public final class OperatorDeferFuture {
     /** Utility class. */
-    private OperationDeferFuture() { throw new IllegalStateException("No instances!"); }
+    private OperatorDeferFuture() { throw new IllegalStateException("No instances!"); }
     
     /**
      * Returns an observable sequence that starts the specified asynchronous 
@@ -49,7 +49,7 @@ public final class OperationDeferFuture {
         
         @Override
         public Observable<T> call() {
-            return Observable.merge(OperationStartFuture.startFuture(observableFactoryAsync));
+            return Observable.merge(OperatorStartFuture.startFuture(observableFactoryAsync));
         }
         
     }
@@ -81,7 +81,7 @@ public final class OperationDeferFuture {
         
         @Override
         public Observable<T> call() {
-            return Observable.merge(OperationStartFuture.startFuture(observableFactoryAsync, scheduler));
+            return Observable.merge(OperatorStartFuture.startFuture(observableFactoryAsync, scheduler));
         }
         
     }
