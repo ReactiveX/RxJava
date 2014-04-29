@@ -30,7 +30,7 @@ import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 
-public class OperationParallelMergeTest {
+public class OperatorParallelMergeTest {
 
     @Test
     public void testParallelMerge() {
@@ -41,8 +41,8 @@ public class OperationParallelMergeTest {
 
         Observable<Observable<String>> fourStreams = Observable.<Observable<String>> from(p1, p2, p3, p4);
 
-        Observable<Observable<String>> twoStreams = OperationParallelMerge.parallelMerge(fourStreams, 2);
-        Observable<Observable<String>> threeStreams = OperationParallelMerge.parallelMerge(fourStreams, 3);
+        Observable<Observable<String>> twoStreams = Observable.parallelMerge(fourStreams, 2);
+        Observable<Observable<String>> threeStreams = Observable.parallelMerge(fourStreams, 3);
 
         List<? super Observable<String>> fourList = fourStreams.toList().toBlockingObservable().last();
         List<? super Observable<String>> threeList = threeStreams.toList().toBlockingObservable().last();
@@ -62,7 +62,7 @@ public class OperationParallelMergeTest {
         final ConcurrentHashMap<Long, Long> threads = new ConcurrentHashMap<Long, Long>();
         // parallelMerge into 3 streams and observeOn for each
         // we expect 3 threads in the output
-        OperationParallelMerge.parallelMerge(getStreams(), 3)
+        Observable.parallelMerge(getStreams(), 3)
                 .flatMap(new Func1<Observable<String>, Observable<String>>() {
 
                     @Override
@@ -89,7 +89,7 @@ public class OperationParallelMergeTest {
 
         // now we parallelMerge into 3 streams and observeOn for each
         // we expect 3 threads in the output
-        Observable.merge(OperationParallelMerge.parallelMerge(getStreams(), 3, Schedulers.newThread()))
+        Observable.merge(Observable.parallelMerge(getStreams(), 3, Schedulers.newThread()))
                 .toBlockingObservable().forEach(new Action1<String>() {
 
                     @Override

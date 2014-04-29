@@ -49,7 +49,6 @@ import rx.observers.SafeSubscriber;
 import rx.operators.OnSubscribeFromIterable;
 import rx.operators.OnSubscribeRange;
 import rx.operators.OperationDelay;
-import rx.operators.OperationParallelMerge;
 import rx.operators.OperationSequenceEqual;
 import rx.operators.OperationSkip;
 import rx.operators.OperationSkipUntil;
@@ -101,6 +100,7 @@ import rx.operators.OperatorOnErrorResumeNextViaObservable;
 import rx.operators.OperatorOnErrorReturn;
 import rx.operators.OperatorOnExceptionResumeNextViaObservable;
 import rx.operators.OperatorParallel;
+import rx.operators.OperatorParallelMerge;
 import rx.operators.OperatorPivot;
 import rx.operators.OperatorRepeat;
 import rx.operators.OperatorReplay;
@@ -2312,7 +2312,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#wiki-parallelmerge">RxJava Wiki: parallelMerge()</a>
      */
     public final static <T> Observable<Observable<T>> parallelMerge(Observable<Observable<T>> source, int parallelObservables) {
-        return OperationParallelMerge.parallelMerge(source, parallelObservables);
+        return OperatorParallelMerge.parallelMerge(source, parallelObservables);
     }
 
     /**
@@ -2335,7 +2335,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#wiki-parallelmerge">RxJava Wiki: parallelMerge()</a>
      */
     public final static <T> Observable<Observable<T>> parallelMerge(Observable<Observable<T>> source, int parallelObservables, Scheduler scheduler) {
-        return OperationParallelMerge.parallelMerge(source, parallelObservables, scheduler);
+        return OperatorParallelMerge.parallelMerge(source, parallelObservables, scheduler);
     }
 
     /**
