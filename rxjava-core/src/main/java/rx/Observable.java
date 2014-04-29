@@ -49,7 +49,6 @@ import rx.observers.SafeSubscriber;
 import rx.operators.OnSubscribeFromIterable;
 import rx.operators.OnSubscribeRange;
 import rx.operators.OperationDelay;
-import rx.operators.OperationMergeMaxConcurrent;
 import rx.operators.OperationMulticast;
 import rx.operators.OperationOnErrorResumeNextViaObservable;
 import rx.operators.OperationOnErrorReturn;
@@ -100,6 +99,7 @@ import rx.operators.OperatorMerge;
 import rx.operators.OperatorMergeDelayError;
 import rx.operators.OperatorMergeMapPair;
 import rx.operators.OperatorMergeMapTransform;
+import rx.operators.OperatorMergeMaxConcurrent;
 import rx.operators.OperatorObserveOn;
 import rx.operators.OperatorOnErrorFlatMap;
 import rx.operators.OperatorOnErrorResumeNextViaFunction;
@@ -1716,7 +1716,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211914.aspx">MSDN: Observable.Merge</a>
      */
     public final static <T> Observable<T> merge(Observable<? extends Observable<? extends T>> source, int maxConcurrent) {
-        return Observable.create(OperationMergeMaxConcurrent.merge(source, maxConcurrent));
+        return source.lift(new OperatorMergeMaxConcurrent<T>(maxConcurrent));
     }
 
     /**

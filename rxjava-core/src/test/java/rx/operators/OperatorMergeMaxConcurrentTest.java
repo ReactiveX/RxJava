@@ -35,7 +35,7 @@ import rx.Subscription;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.Subscriptions;
 
-public class OperationMergeMaxConcurrentTest {
+public class OperatorMergeMaxConcurrentTest {
 
     @Mock
     Observer<String> stringObserver;
@@ -128,5 +128,36 @@ public class OperationMergeMaxConcurrentTest {
             return Subscriptions.empty();
         }
 
+    }
+    
+    @Test
+    public void testMergeALotOfSourcesOneByOneSynchronously() {
+        int n = 10000;
+        List<Observable<Integer>> sourceList = new ArrayList<Observable<Integer>>(n);
+        for (int i = 0; i < n; i++) {
+            sourceList.add(Observable.just(i));
+        }
+        Iterator<Integer> it = Observable.merge(Observable.from(sourceList), 1).toBlockingObservable().getIterator();
+        int j = 0;
+        while (it.hasNext()) {
+            assertEquals((Integer)j, it.next());
+            j++;
+        }
+        assertEquals(j, n);
+    }
+    @Test
+    public void testMergeALotOfSourcesOneByOneSynchronouslyTakeHalf() {
+        int n = 10000;
+        List<Observable<Integer>> sourceList = new ArrayList<Observable<Integer>>(n);
+        for (int i = 0; i < n; i++) {
+            sourceList.add(Observable.just(i));
+        }
+        Iterator<Integer> it = Observable.merge(Observable.from(sourceList), 1).take(n / 2).toBlockingObservable().getIterator();
+        int j = 0;
+        while (it.hasNext()) {
+            assertEquals((Integer)j, it.next());
+            j++;
+        }
+        assertEquals(j, n / 2);
     }
 }
