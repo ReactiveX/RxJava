@@ -59,7 +59,6 @@ import rx.operators.OperationTakeLast;
 import rx.operators.OperationTakeTimed;
 import rx.operators.OperationTakeUntil;
 import rx.operators.OperationTakeWhile;
-import rx.operators.OperationThrottleFirst;
 import rx.operators.OperationWindow;
 import rx.operators.OperatorAll;
 import rx.operators.OperatorAmb;
@@ -118,6 +117,7 @@ import rx.operators.OperatorSkipLastTimed;
 import rx.operators.OperatorSkipWhile;
 import rx.operators.OperatorSubscribeOn;
 import rx.operators.OperatorTake;
+import rx.operators.OperatorThrottleFirst;
 import rx.operators.OperatorTimeInterval;
 import rx.operators.OperatorTimeout;
 import rx.operators.OperatorTimeoutWithSelector;
@@ -6725,7 +6725,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#wiki-throttlefirst">RxJava Wiki: throttleFirst()</a>
      */
     public final Observable<T> throttleFirst(long windowDuration, TimeUnit unit) {
-        return create(OperationThrottleFirst.throttleFirst(this, windowDuration, unit));
+        return lift(new OperatorThrottleFirst<T>(windowDuration, unit, Schedulers.computation()));
     }
 
     /**
@@ -6747,7 +6747,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#wiki-throttlefirst">RxJava Wiki: throttleFirst()</a>
      */
     public final Observable<T> throttleFirst(long skipDuration, TimeUnit unit, Scheduler scheduler) {
-        return create(OperationThrottleFirst.throttleFirst(this, skipDuration, unit, scheduler));
+        return lift(new OperatorThrottleFirst<T>(skipDuration, unit, scheduler));
     }
 
     /**

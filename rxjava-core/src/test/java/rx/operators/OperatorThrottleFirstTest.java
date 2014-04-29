@@ -27,14 +27,15 @@ import org.junit.Test;
 import org.mockito.InOrder;
 
 import rx.Observable;
+import rx.Observable.OnSubscribe;
 import rx.Observer;
 import rx.Scheduler;
-import rx.Subscription;
+import rx.Subscriber;
 import rx.functions.Action0;
 import rx.schedulers.TestScheduler;
-import rx.subscriptions.Subscriptions;
+import rx.subjects.PublishSubject;
 
-public class OperationThrottleFirstTest {
+public class OperatorThrottleFirstTest {
 
     private TestScheduler scheduler;
     private Scheduler.Worker innerScheduler;
@@ -50,20 +51,18 @@ public class OperationThrottleFirstTest {
 
     @Test
     public void testThrottlingWithCompleted() {
-        Observable<String> source = Observable.create(new Observable.OnSubscribeFunc<String>() {
+        Observable<String> source = Observable.create(new OnSubscribe<String>() {
             @Override
-            public Subscription onSubscribe(Observer<? super String> observer) {
+            public void call(Subscriber<? super String> observer) {
                 publishNext(observer, 100, "one");    // publish as it's first
                 publishNext(observer, 300, "two");    // skip as it's last within the first 400
                 publishNext(observer, 900, "three");   // publish
                 publishNext(observer, 905, "four");   // skip
                 publishCompleted(observer, 1000);     // Should be published as soon as the timeout expires.
-
-                return Subscriptions.empty();
             }
         });
 
-        Observable<String> sampled = Observable.create(OperationThrottleFirst.throttleFirst(source, 400, TimeUnit.MILLISECONDS, scheduler));
+        Observable<String> sampled = source.throttleFirst(400, TimeUnit.MILLISECONDS, scheduler);
         sampled.subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
@@ -79,19 +78,17 @@ public class OperationThrottleFirstTest {
 
     @Test
     public void testThrottlingWithError() {
-        Observable<String> source = Observable.create(new Observable.OnSubscribeFunc<String>() {
+        Observable<String> source = Observable.create(new OnSubscribe<String>() {
             @Override
-            public Subscription onSubscribe(Observer<? super String> observer) {
+            public void call(Subscriber<? super String> observer) {
                 Exception error = new TestException();
                 publishNext(observer, 100, "one");    // Should be published since it is first
                 publishNext(observer, 200, "two");    // Should be skipped since onError will arrive before the timeout expires
                 publishError(observer, 300, error);   // Should be published as soon as the timeout expires.
-
-                return Subscriptions.empty();
             }
         });
 
-        Observable<String> sampled = Observable.create(OperationThrottleFirst.throttleFirst(source, 400, TimeUnit.MILLISECONDS, scheduler));
+        Observable<String> sampled = source.throttleFirst(400, TimeUnit.MILLISECONDS, scheduler);
         sampled.subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
@@ -131,5 +128,37 @@ public class OperationThrottleFirstTest {
 
     @SuppressWarnings("serial")
     private class TestException extends Exception {
+    }
+
+    @Test
+    public void testThrottle() {
+        @SuppressWarnings("unchecked")
+        Observer<Integer> observer = mock(Observer.class);
+        TestScheduler s = new TestScheduler();
+        PublishSubject<Integer> o = PublishSubject.create();
+        o.throttleFirst(500, TimeUnit.MILLISECONDS, s).subscribe(observer);
+
+        // send events with simulated time increments
+        s.advanceTimeTo(0, TimeUnit.MILLISECONDS);
+        o.onNext(1); // deliver
+        o.onNext(2); // skip
+        s.advanceTimeTo(501, TimeUnit.MILLISECONDS);
+        o.onNext(3); // deliver
+        s.advanceTimeTo(600, TimeUnit.MILLISECONDS);
+        o.onNext(4); // skip
+        s.advanceTimeTo(700, TimeUnit.MILLISECONDS);
+        o.onNext(5); // skip
+        o.onNext(6); // skip
+        s.advanceTimeTo(1001, TimeUnit.MILLISECONDS);
+        o.onNext(7); // deliver
+        s.advanceTimeTo(1501, TimeUnit.MILLISECONDS);
+        o.onCompleted();
+
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer).onNext(1);
+        inOrder.verify(observer).onNext(3);
+        inOrder.verify(observer).onNext(7);
+        inOrder.verify(observer).onCompleted();
+        inOrder.verifyNoMoreInteractions();
     }
 }
