@@ -17,7 +17,7 @@ package rx.math.operators;
 
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
-import static rx.math.operators.OperationMinMax.*;
+import static rx.math.operators.OperatorMinMax.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,7 +32,7 @@ import rx.Observable;
 import rx.Observer;
 import rx.functions.Func1;
 
-public class OperationMinMaxTest {
+public class OperatorMinMaxTest {
     @Test
     public void testMin() {
         Observable<Integer> observable = min(Observable.from(2, 3, 1, 4));

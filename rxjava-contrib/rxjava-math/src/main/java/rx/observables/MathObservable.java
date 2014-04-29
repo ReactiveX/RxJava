@@ -19,9 +19,13 @@ import java.util.Comparator;
 
 import rx.Observable;
 import rx.functions.Func1;
-import rx.math.operators.OperationAverage;
-import rx.math.operators.OperationMinMax;
-import rx.math.operators.OperationSum;
+import rx.functions.Functions;
+import rx.math.operators.OperatorMinMax;
+import rx.math.operators.OperatorSum;
+import rx.math.operators.OperatorAverageDouble;
+import rx.math.operators.OperatorAverageFloat;
+import rx.math.operators.OperatorAverageInteger;
+import rx.math.operators.OperatorAverageLong;
 
 public class MathObservable<T> {
 
@@ -48,7 +52,7 @@ public class MathObservable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.average.aspx">MSDN: Observable.Average</a>
      */
     public final static Observable<Double> averageDouble(Observable<Double> source) {
-        return OperationAverage.averageDoubles(source);
+        return source.lift(new OperatorAverageDouble<Double>(Functions.<Double>identity()));
     }
 
     /**
@@ -64,7 +68,7 @@ public class MathObservable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.average.aspx">MSDN: Observable.Average</a>
      */
     public final static Observable<Float> averageFloat(Observable<Float> source) {
-        return OperationAverage.averageFloats(source);
+        return source.lift(new OperatorAverageFloat<Float>(Functions.<Float>identity()));
     }
 
     /**
@@ -82,7 +86,7 @@ public class MathObservable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.average.aspx">MSDN: Observable.Average</a>
      */
     public final static Observable<Integer> averageInteger(Observable<Integer> source) {
-        return OperationAverage.average(source);
+        return source.lift(new OperatorAverageInteger<Integer>(Functions.<Integer>identity()));
     }
 
     /**
@@ -98,7 +102,7 @@ public class MathObservable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.average.aspx">MSDN: Observable.Average</a>
      */
     public final static Observable<Long> averageLong(Observable<Long> source) {
-        return OperationAverage.averageLongs(source);
+        return source.lift(new OperatorAverageLong<Long>(Functions.<Long>identity()));
     }
 
     /**
@@ -117,7 +121,7 @@ public class MathObservable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211837.aspx">MSDN: Observable.Max</a>
      */
     public final static <T extends Comparable<? super T>> Observable<T> max(Observable<T> source) {
-        return OperationMinMax.max(source);
+        return OperatorMinMax.max(source);
     }
 
     /**
@@ -134,7 +138,7 @@ public class MathObservable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229715.aspx">MSDN: Observable.Min</a>
      */
     public final static <T extends Comparable<? super T>> Observable<T> min(Observable<T> source) {
-        return OperationMinMax.min(source);
+        return OperatorMinMax.min(source);
     }
 
     /**
@@ -150,7 +154,7 @@ public class MathObservable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum.aspx">MSDN: Observable.Sum</a>
      */
     public final static Observable<Double> sumDouble(Observable<Double> source) {
-        return OperationSum.sumDoubles(source);
+        return OperatorSum.sumDoubles(source);
     }
 
     /**
@@ -166,7 +170,7 @@ public class MathObservable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum.aspx">MSDN: Observable.Sum</a>
      */
     public final static Observable<Float> sumFloat(Observable<Float> source) {
-        return OperationSum.sumFloats(source);
+        return OperatorSum.sumFloats(source);
     }
 
     /**
@@ -182,7 +186,7 @@ public class MathObservable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum.aspx">MSDN: Observable.Sum</a>
      */
     public final static Observable<Integer> sumInteger(Observable<Integer> source) {
-        return OperationSum.sumIntegers(source);
+        return OperatorSum.sumIntegers(source);
     }
 
     /**
@@ -198,7 +202,7 @@ public class MathObservable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum.aspx">MSDN: Observable.Sum</a>
      */
     public final static Observable<Long> sumLong(Observable<Long> source) {
-        return OperationSum.sumLongs(source);
+        return OperatorSum.sumLongs(source);
     }
 
     /**
@@ -215,7 +219,7 @@ public class MathObservable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.average.aspx">MSDN: Observable.Average</a>
      */
     public final Observable<Double> averageDouble(Func1<? super T, Double> valueExtractor) {
-        return Observable.create(new OperationAverage.AverageDoubleExtractor<T>(o, valueExtractor));
+        return o.lift(new OperatorAverageDouble<T>(valueExtractor));
     }
 
     /**
@@ -232,7 +236,7 @@ public class MathObservable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.average.aspx">MSDN: Observable.Average</a>
      */
     public final Observable<Float> averageFloat(Func1<? super T, Float> valueExtractor) {
-        return Observable.create(new OperationAverage.AverageFloatExtractor<T>(o, valueExtractor));
+        return o.lift(new OperatorAverageFloat<T>(valueExtractor));
     }
 
     /**
@@ -249,7 +253,7 @@ public class MathObservable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.average.aspx">MSDN: Observable.Average</a>
      */
     public final Observable<Integer> averageInteger(Func1<? super T, Integer> valueExtractor) {
-        return Observable.create(new OperationAverage.AverageIntegerExtractor<T>(o, valueExtractor));
+        return o.lift(new OperatorAverageInteger<T>(valueExtractor));
     }
 
     /**
@@ -266,7 +270,7 @@ public class MathObservable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.average.aspx">MSDN: Observable.Average</a>
      */
     public final Observable<Long> averageLong(Func1<? super T, Long> valueExtractor) {
-        return Observable.create(new OperationAverage.AverageLongExtractor<T>(o, valueExtractor));
+        return o.lift(new OperatorAverageLong<T>(valueExtractor));
     }
 
     /**
@@ -286,7 +290,7 @@ public class MathObservable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211635.aspx">MSDN: Observable.Max</a>
      */
     public final Observable<T> max(Comparator<? super T> comparator) {
-        return OperationMinMax.max(o, comparator);
+        return OperatorMinMax.max(o, comparator);
     }
 
     /**
@@ -305,7 +309,7 @@ public class MathObservable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229095.aspx">MSDN: Observable.Min</a>
      */
     public final Observable<T> min(Comparator<? super T> comparator) {
-        return OperationMinMax.min(o, comparator);
+        return OperatorMinMax.min(o, comparator);
     }
 
     /**
@@ -322,7 +326,7 @@ public class MathObservable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum.aspx">MSDN: Observable.Sum</a>
      */
     public final Observable<Double> sumDouble(Func1<? super T, Double> valueExtractor) {
-        return OperationSum.sumAtLeastOneDoubles(o.map(valueExtractor));
+        return OperatorSum.sumAtLeastOneDoubles(o.map(valueExtractor));
     }
 
     /**
@@ -339,7 +343,7 @@ public class MathObservable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum.aspx">MSDN: Observable.Sum</a>
      */
     public final Observable<Float> sumFloat(Func1<? super T, Float> valueExtractor) {
-        return OperationSum.sumAtLeastOneFloats(o.map(valueExtractor));
+        return OperatorSum.sumAtLeastOneFloats(o.map(valueExtractor));
     }
 
     /**
@@ -356,7 +360,7 @@ public class MathObservable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum.aspx">MSDN: Observable.Sum</a>
      */
     public final Observable<Integer> sumInteger(Func1<? super T, Integer> valueExtractor) {
-        return OperationSum.sumAtLeastOneIntegers(o.map(valueExtractor));
+        return OperatorSum.sumAtLeastOneIntegers(o.map(valueExtractor));
     }
 
     /**
@@ -373,6 +377,6 @@ public class MathObservable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum.aspx">MSDN: Observable.Sum</a>
      */
     public final Observable<Long> sumLong(Func1<? super T, Long> valueExtractor) {
-        return OperationSum.sumAtLeastOneLongs(o.map(valueExtractor));
+        return OperatorSum.sumAtLeastOneLongs(o.map(valueExtractor));
     }
 }
