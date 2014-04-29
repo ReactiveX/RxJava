@@ -49,7 +49,6 @@ import rx.observers.SafeSubscriber;
 import rx.operators.OnSubscribeFromIterable;
 import rx.operators.OnSubscribeRange;
 import rx.operators.OperationDelay;
-import rx.operators.OperationSequenceEqual;
 import rx.operators.OperationSkip;
 import rx.operators.OperationSkipUntil;
 import rx.operators.OperationSwitch;
@@ -108,6 +107,7 @@ import rx.operators.OperatorRetry;
 import rx.operators.OperatorSampleWithObservable;
 import rx.operators.OperatorSampleWithTime;
 import rx.operators.OperatorScan;
+import rx.operators.OperatorSequenceEqual;
 import rx.operators.OperatorSerialize;
 import rx.operators.OperatorSingle;
 import rx.operators.OperatorSkip;
@@ -2465,7 +2465,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Conditional-and-Boolean-Operators#wiki-sequenceequal">RxJava Wiki: sequenceEqual()</a>
      */
     public final static <T> Observable<Boolean> sequenceEqual(Observable<? extends T> first, Observable<? extends T> second, Func2<? super T, ? super T, Boolean> equality) {
-        return OperationSequenceEqual.sequenceEqual(first, second, equality);
+        return OperatorSequenceEqual.sequenceEqual(first, second, equality);
     }
 
     /**
