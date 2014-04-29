@@ -33,11 +33,11 @@ import rx.Observable;
 import rx.Observer;
 import rx.functions.Func1;
 import rx.observables.ConnectableObservable;
-import rx.operators.OperationReplay.VirtualBoundedList;
+import rx.operators.OperatorReplay.VirtualBoundedList;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
 
-public class OperationReplayTest {
+public class OperatorReplayTest {
     @Test
     public void testBoundedList() {
         VirtualBoundedList<Integer> list = new VirtualBoundedList<Integer>(3);
@@ -98,6 +98,7 @@ public class OperationReplayTest {
         co.connect();
 
         {
+            @SuppressWarnings("unchecked")
             Observer<Object> observer1 = mock(Observer.class);
             InOrder inOrder = inOrder(observer1);
 
@@ -121,6 +122,7 @@ public class OperationReplayTest {
         }
 
         {
+            @SuppressWarnings("unchecked")
             Observer<Object> observer1 = mock(Observer.class);
             InOrder inOrder = inOrder(observer1);
 
@@ -145,6 +147,7 @@ public class OperationReplayTest {
         co.connect();
 
         {
+            @SuppressWarnings("unchecked")
             Observer<Object> observer1 = mock(Observer.class);
             InOrder inOrder = inOrder(observer1);
 
@@ -169,6 +172,7 @@ public class OperationReplayTest {
 
         }
         {
+            @SuppressWarnings("unchecked")
             Observer<Object> observer1 = mock(Observer.class);
             InOrder inOrder = inOrder(observer1);
 
@@ -206,6 +210,7 @@ public class OperationReplayTest {
         Observable<Integer> co = source.replay(selector);
 
         {
+            @SuppressWarnings("unchecked")
             Observer<Object> observer1 = mock(Observer.class);
             InOrder inOrder = inOrder(observer1);
 
@@ -229,6 +234,7 @@ public class OperationReplayTest {
         }
 
         {
+            @SuppressWarnings("unchecked")
             Observer<Object> observer1 = mock(Observer.class);
             InOrder inOrder = inOrder(observer1);
 
@@ -268,6 +274,7 @@ public class OperationReplayTest {
         Observable<Integer> co = source.replay(selector, 3);
 
         {
+            @SuppressWarnings("unchecked")
             Observer<Object> observer1 = mock(Observer.class);
             InOrder inOrder = inOrder(observer1);
 
@@ -291,6 +298,7 @@ public class OperationReplayTest {
         }
 
         {
+            @SuppressWarnings("unchecked")
             Observer<Object> observer1 = mock(Observer.class);
             InOrder inOrder = inOrder(observer1);
 
@@ -330,6 +338,7 @@ public class OperationReplayTest {
         Observable<Integer> co = source.replay(selector, 100, TimeUnit.MILLISECONDS, scheduler);
 
         {
+            @SuppressWarnings("unchecked")
             Observer<Object> observer1 = mock(Observer.class);
             InOrder inOrder = inOrder(observer1);
 
@@ -354,6 +363,7 @@ public class OperationReplayTest {
 
         }
         {
+            @SuppressWarnings("unchecked")
             Observer<Object> observer1 = mock(Observer.class);
             InOrder inOrder = inOrder(observer1);
 
@@ -373,6 +383,7 @@ public class OperationReplayTest {
         co.connect();
 
         {
+            @SuppressWarnings("unchecked")
             Observer<Object> observer1 = mock(Observer.class);
             InOrder inOrder = inOrder(observer1);
 
@@ -397,6 +408,7 @@ public class OperationReplayTest {
         }
 
         {
+            @SuppressWarnings("unchecked")
             Observer<Object> observer1 = mock(Observer.class);
             InOrder inOrder = inOrder(observer1);
 
@@ -421,6 +433,7 @@ public class OperationReplayTest {
         co.connect();
 
         {
+            @SuppressWarnings("unchecked")
             Observer<Object> observer1 = mock(Observer.class);
             InOrder inOrder = inOrder(observer1);
 
@@ -445,6 +458,7 @@ public class OperationReplayTest {
 
         }
         {
+            @SuppressWarnings("unchecked")
             Observer<Object> observer1 = mock(Observer.class);
             InOrder inOrder = inOrder(observer1);
 
