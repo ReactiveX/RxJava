@@ -15,44 +15,78 @@
  */
 package rx.operators;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InOrder;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyLong;
+import org.mockito.Mock;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import org.mockito.MockitoAnnotations;
 
 import rx.Observable;
 import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.observables.ConnectableObservable;
 import rx.schedulers.TestScheduler;
 
-public class OperationIntervalTest {
-
-    private TestScheduler scheduler;
-    private Observer<Long> observer;
-    private Observer<Long> observer2;
+public class OperatorTimerTest {
+    @Mock
+    Observer<Object> observer;
+    @Mock
+    Observer<Long> observer2;
+    TestScheduler scheduler;
 
     @Before
-    @SuppressWarnings("unchecked")
-    // due to mocking
     public void before() {
+        MockitoAnnotations.initMocks(this);
         scheduler = new TestScheduler();
-        observer = mock(Observer.class);
-        observer2 = mock(Observer.class);
     }
 
     @Test
+    public void testTimerOnce() {
+        Observable.timer(100, TimeUnit.MILLISECONDS, scheduler).subscribe(observer);
+        scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
+
+        verify(observer, times(1)).onNext(0L);
+        verify(observer, times(1)).onCompleted();
+        verify(observer, never()).onError(any(Throwable.class));
+    }
+
+    @Test
+    public void testTimerPeriodically() {
+        Subscription c = Observable.timer(100, 100, TimeUnit.MILLISECONDS, scheduler).subscribe(observer);
+        scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
+
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer, times(1)).onNext(0L);
+
+        scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
+        inOrder.verify(observer, times(1)).onNext(1L);
+
+        scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
+        inOrder.verify(observer, times(1)).onNext(2L);
+
+        scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
+        inOrder.verify(observer, times(1)).onNext(3L);
+
+        c.unsubscribe();
+        scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
+        inOrder.verify(observer, never()).onNext(any());
+
+        verify(observer, never()).onCompleted();
+        verify(observer, never()).onError(any(Throwable.class));
+    }
+    @Test
     public void testInterval() {
-        Observable<Long> w = Observable.create(OperationInterval.interval(1, TimeUnit.SECONDS, scheduler));
+        Observable<Long> w = Observable.interval(1, TimeUnit.SECONDS, scheduler);
         Subscription sub = w.subscribe(observer);
 
         verify(observer, never()).onNext(0L);
@@ -77,7 +111,7 @@ public class OperationIntervalTest {
 
     @Test
     public void testWithMultipleSubscribersStartingAtSameTime() {
-        Observable<Long> w = Observable.create(OperationInterval.interval(1, TimeUnit.SECONDS, scheduler));
+        Observable<Long> w = Observable.interval(1, TimeUnit.SECONDS, scheduler);
         Subscription sub1 = w.subscribe(observer);
         Subscription sub2 = w.subscribe(observer2);
 
@@ -116,7 +150,7 @@ public class OperationIntervalTest {
 
     @Test
     public void testWithMultipleStaggeredSubscribers() {
-        Observable<Long> w = Observable.create(OperationInterval.interval(1, TimeUnit.SECONDS, scheduler));
+        Observable<Long> w = Observable.interval(1, TimeUnit.SECONDS, scheduler);
         Subscription sub1 = w.subscribe(observer);
 
         verify(observer, never()).onNext(anyLong());
@@ -156,7 +190,7 @@ public class OperationIntervalTest {
 
     @Test
     public void testWithMultipleStaggeredSubscribersAndPublish() {
-        ConnectableObservable<Long> w = Observable.create(OperationInterval.interval(1, TimeUnit.SECONDS, scheduler)).publish();
+        ConnectableObservable<Long> w = Observable.interval(1, TimeUnit.SECONDS, scheduler).publish();
         Subscription sub1 = w.subscribe(observer);
         w.connect();
 
@@ -193,5 +227,67 @@ public class OperationIntervalTest {
         inOrder2.verify(observer2, never()).onNext(anyLong());
         inOrder2.verify(observer2, never()).onCompleted();
         verify(observer2, never()).onError(any(Throwable.class));
+    }
+    @Test
+    public void testOnceObserverThrows() {
+        Observable<Long> source = Observable.timer(100, TimeUnit.MILLISECONDS, scheduler);
+        
+        source.subscribe(new Subscriber<Long>() {
+
+            @Override
+            public void onNext(Long t) {
+                throw new OperationReduceTest.CustomException();
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                observer.onError(e);
+            }
+
+            @Override
+            public void onCompleted() {
+                observer.onCompleted();
+            }
+        });
+        
+        scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+        
+        verify(observer).onError(any(OperationReduceTest.CustomException.class));
+        verify(observer, never()).onNext(anyLong());
+        verify(observer, never()).onCompleted();
+    }
+    @Test
+    public void testPeriodicObserverThrows() {
+        Observable<Long> source = Observable.timer(100, 100, TimeUnit.MILLISECONDS, scheduler);
+        
+        InOrder inOrder = inOrder(observer);
+        
+        source.subscribe(new Subscriber<Long>() {
+
+            @Override
+            public void onNext(Long t) {
+                if (t > 0) {
+                    throw new OperationReduceTest.CustomException();
+                }
+                observer.onNext(t);
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                observer.onError(e);
+            }
+
+            @Override
+            public void onCompleted() {
+                observer.onCompleted();
+            }
+        });
+        
+        scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+        
+        inOrder.verify(observer).onNext(0L);
+        inOrder.verify(observer).onError(any(OperationReduceTest.CustomException.class));
+        inOrder.verifyNoMoreInteractions();
+        verify(observer, never()).onCompleted();
     }
 }

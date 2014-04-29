@@ -51,7 +51,6 @@ import rx.operators.OnSubscribeRange;
 import rx.operators.OperationDelay;
 import rx.operators.OperatorGroupByUntil;
 import rx.operators.OperationGroupJoin;
-import rx.operators.OperationInterval;
 import rx.operators.OperationJoin;
 import rx.operators.OperationMergeDelayError;
 import rx.operators.OperationMergeMaxConcurrent;
@@ -61,7 +60,6 @@ import rx.operators.OperationOnErrorReturn;
 import rx.operators.OperationOnExceptionResumeNextViaObservable;
 import rx.operators.OperationParallelMerge;
 import rx.operators.OperationReplay;
-import rx.operators.OperationSample;
 import rx.operators.OperationSequenceEqual;
 import rx.operators.OperationSkip;
 import rx.operators.OperationSkipUntil;
@@ -72,7 +70,6 @@ import rx.operators.OperationTakeUntil;
 import rx.operators.OperationTakeWhile;
 import rx.operators.OperationThrottleFirst;
 import rx.operators.OperationTimeInterval;
-import rx.operators.OperationTimer;
 import rx.operators.OperationToMap;
 import rx.operators.OperationUsing;
 import rx.operators.OperationWindow;
@@ -112,6 +109,8 @@ import rx.operators.OperatorParallel;
 import rx.operators.OperatorPivot;
 import rx.operators.OperatorRepeat;
 import rx.operators.OperatorRetry;
+import rx.operators.OperatorSampleWithObservable;
+import rx.operators.OperatorSampleWithTime;
 import rx.operators.OperatorScan;
 import rx.operators.OperatorSerialize;
 import rx.operators.OperatorSingle;
@@ -123,6 +122,8 @@ import rx.operators.OperatorSubscribeOn;
 import rx.operators.OperatorTake;
 import rx.operators.OperatorTimeout;
 import rx.operators.OperatorTimeoutWithSelector;
+import rx.operators.OperatorTimerOnce;
+import rx.operators.OperatorTimerPeriodically;
 import rx.operators.OperatorTimestamp;
 import rx.operators.OperatorToMultimap;
 import rx.operators.OperatorToObservableFuture;
@@ -1506,7 +1507,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229027.aspx">MSDN: Observable.Interval</a>
      */
     public final static Observable<Long> interval(long interval, TimeUnit unit) {
-        return create(OperationInterval.interval(interval, unit));
+        return create(new OperatorTimerPeriodically(interval, interval, unit, Schedulers.computation()));
     }
 
     /**
@@ -1526,7 +1527,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh228911.aspx">MSDN: Observable.Interval</a>
      */
     public final static Observable<Long> interval(long interval, TimeUnit unit, Scheduler scheduler) {
-        return create(OperationInterval.interval(interval, unit, scheduler));
+        return create(new OperatorTimerPeriodically(interval, interval, unit, scheduler));
     }
 
     /**
@@ -2541,7 +2542,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229652.aspx">MSDN: Observable.Timer</a>
      */
     public final static Observable<Long> timer(long initialDelay, long period, TimeUnit unit, Scheduler scheduler) {
-        return create(new OperationTimer.TimerPeriodically(initialDelay, period, unit, scheduler));
+        return create(new OperatorTimerPeriodically(initialDelay, period, unit, scheduler));
     }
 
     /**
@@ -2553,6 +2554,7 @@ public class Observable<T> {
      *            the initial delay before emitting a single 0L
      * @param unit
      *            time units to use for {@code delay}
+     * @return an Observable that emits one item after a specified delay, and then completes
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#wiki-timer">RxJava wiki: timer()</a>
      */
     public final static Observable<Long> timer(long delay, TimeUnit unit) {
@@ -2571,10 +2573,12 @@ public class Observable<T> {
      *            time units to use for {@code delay}
      * @param scheduler
      *            the Scheduler to use for scheduling the item
+     * @return Observable that emits one item after a specified delay, on a specified Scheduler, and then
+     * completes
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#wiki-timer">RxJava wiki: timer()</a>
      */
     public final static Observable<Long> timer(long delay, TimeUnit unit, Scheduler scheduler) {
-        return create(new OperationTimer.TimerOnce(delay, unit, scheduler));
+        return create(new OperatorTimerOnce(delay, unit, scheduler));
     }
 
     /**
@@ -5323,7 +5327,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#wiki-sample-or-throttlelast">RxJava Wiki: sample()</a>
      */
     public final Observable<T> sample(long period, TimeUnit unit) {
-        return create(OperationSample.sample(this, period, unit));
+        return lift(new OperatorSampleWithTime<T>(period, unit, Schedulers.computation()));
     }
 
     /**
@@ -5343,7 +5347,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#wiki-sample-or-throttlelast">RxJava Wiki: sample()</a>
      */
     public final Observable<T> sample(long period, TimeUnit unit, Scheduler scheduler) {
-        return create(OperationSample.sample(this, period, unit, scheduler));
+        return lift(new OperatorSampleWithTime<T>(period, unit, scheduler));
     }
 
     /**
@@ -5360,7 +5364,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#wiki-sample-or-throttlelast">RxJava Wiki: sample()</a>
      */
     public final <U> Observable<T> sample(Observable<U> sampler) {
-        return create(new OperationSample.SampleWithObservable<T, U>(this, sampler));
+        return lift(new OperatorSampleWithObservable<T, U>(sampler));
     }
 
     /**
