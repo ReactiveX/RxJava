@@ -56,12 +56,14 @@ public final class OperatorTakeWhile<T> implements Operator<T, T> {
                     isSelected = predicate.call(args, counter++);
                 } catch (Throwable e) {
                     subscriber.onError(e);
+                    unsubscribe();
                     return;
                 }
                 if (isSelected) {
                     subscriber.onNext(args);
                 } else {
                     subscriber.onCompleted();
+                    unsubscribe();
                 }
             }
 
