@@ -2057,7 +2057,28 @@ trait Observable[+T]
    * @see [[Observable.first]]
    */
   def head: Observable[T] = first
-  
+
+  /**
+   * Returns an Observable that emits all items except the first one, or raises an `UnsupportedOperationException`
+   * if the source Observable is empty.
+   *
+   * @return an Observable that emits all items except the first one, or raises an `UnsupportedOperationException`
+   *         if the source Observable is empty.
+   */
+  def tail: Observable[T] = {
+    lift {
+      (subscriber: Subscriber[T]) => {
+        var isFirst = true
+        Subscriber[T](
+          subscriber,
+          (v: T) => if(isFirst) isFirst = false else subscriber.onNext(v),
+          e => subscriber.onError(e),
+          () => if(isFirst) subscriber.onError(new UnsupportedOperationException("tail of empty Observable")) else subscriber.onCompleted
+        )
+      }
+    }
+  }
+
   /**
    * Returns an Observable that emits the last item emitted by the source Observable or notifies observers of
    * an `NoSuchElementException` if the source Observable is empty.
@@ -2551,14 +2572,8 @@ trait Observable[+T]
    * @return an Observable that emits values that are the result of applying the bind function to the values
    *         of the current Observable
    */
-  def lift[R](operator: Subscriber[_ >: R] => Subscriber[_ >: T]): Observable[R] = {
-    val thisJava = asJavaObservable.asInstanceOf[rx.Observable[T]]
-    val thatJava = thisJava.lift[R](new rx.Observable.Operator[R, T] {
-      override def call(subscriber: rx.Subscriber[_ >: R]): rx.Subscriber[_ >: T] = {
-        toJavaSubscriber(operator.call(toScalaSubscriber(subscriber)))
-      }
-    })
-    toScalaObservable(thatJava)
+  def lift[R](operator: Subscriber[R] => Subscriber[_ >: T]): Observable[R] = {
+    toScalaObservable(asJavaObservable.lift(toJavaOperator[T, R](operator)))
   }
 }
 

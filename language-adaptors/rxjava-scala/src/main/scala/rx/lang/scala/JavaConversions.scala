@@ -54,4 +54,12 @@ object JavaConversions {
       val asJavaObservable = observable
     }
   }
+
+  implicit def toJavaOperator[T, R](operator: Subscriber[R] => Subscriber[_ >: T]): rx.Observable.Operator[R, T] = {
+    new rx.Observable.Operator[R, T] {
+      override def call(subscriber: rx.Subscriber[_ >: R]): rx.Subscriber[_ >: T] = {
+        toJavaSubscriber[T](operator(toScalaSubscriber[R](subscriber)))
+      }
+    }
+  }
 }

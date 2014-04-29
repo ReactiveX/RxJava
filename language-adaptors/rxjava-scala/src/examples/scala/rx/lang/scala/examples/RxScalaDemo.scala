@@ -650,9 +650,9 @@ class RxScalaDemo extends JUnitSuite {
     // Add "No. " in front of each item
     val o = List(1, 2, 3).toObservable.lift {
       subscriber: Subscriber[String] =>
-        Subscriber(
+        Subscriber[Int](
           subscriber,
-          v => subscriber.onNext("No. " + v),
+          (v: Int)  => subscriber.onNext("No. " + v),
           e => subscriber.onError(e),
           () => subscriber.onCompleted
         )
@@ -661,44 +661,51 @@ class RxScalaDemo extends JUnitSuite {
   }
 
   @Test def liftExample2(): Unit = {
-    val o = Observable {
-      subscriber: Subscriber[Int] => {
-        for (i <- 1 to 10 if !subscriber.isUnsubscribed) {
-          println("emit " + i)
-          subscriber.onNext(i)
-        }
-        if (!subscriber.isUnsubscribed) {
-          println("emit onCompleted")
-          subscriber.onCompleted
-        }
-      }
+    // Split the input Strings with " "
+    val splitStringsWithSpace = (subscriber: Subscriber[String]) => {
+      Subscriber[String](
+        subscriber,
+        (v: String) => v.split(" ").foreach(subscriber.onNext(_)),
+        e => subscriber.onError(e),
+        () => subscriber.onCompleted
+      )
     }
-    // Take the first 5 items
-    val take = 5
-    val result = o.lift {
-      subscriber: Subscriber[String] =>
-        var index = 0
-        Subscriber(
-          subscriber,
-          v => {
-            if (index < take) {
-              subscriber.onNext("No. " + v)
-            }
-            if (index == take - 1) {
-              subscriber.onCompleted
-            }
-            index += 1
-          },
-          e => subscriber.onError(e),
-          () => subscriber.onCompleted
-        )
-    }.toBlockingObservable.toList
-    println(result)
-    // emit 1
-    // emit 2
-    // emit 3
-    // emit 4
-    // emit 5
-    // List(No. 1, No. 2, No. 3, No. 4, No. 5)
+
+    // Convert the input Strings to Chars
+    val stringsToChars = (subscriber: Subscriber[Char]) => {
+      Subscriber[String](
+        subscriber,
+        (v: String) => v.foreach(subscriber.onNext(_)),
+        e => subscriber.onError(e),
+        () => subscriber.onCompleted
+      )
+    }
+
+    // Skip the first n items. If the length of source is less than n, throw an IllegalArgumentException
+    def skipWithException[T](n: Int) = (subscriber: Subscriber[T]) => {
+      var count = 0
+      Subscriber[T](
+        subscriber,
+        (v: T) => {
+          if (count >= n) subscriber.onNext(v)
+          count += 1
+        },
+        e => subscriber.onError(e),
+        () => if (count < n) subscriber.onError(new IllegalArgumentException("There is no enough items")) else subscriber.onCompleted
+      )
+    }
+
+    val o = List("RxJava – Reactive Extensions for the JVM").toObservable
+      .lift(splitStringsWithSpace)
+      .map(_.toLowerCase)
+      .lift(stringsToChars)
+      .filter(_.isLetter)
+      .lift(skipWithException(100))
+    try {
+      o.toBlockingObservable.toList
+    }
+    catch {
+      case e: IllegalArgumentException => println("IllegalArgumentException from skipWithException")
+    }
   }
 }
