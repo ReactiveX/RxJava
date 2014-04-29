@@ -49,8 +49,6 @@ import rx.observers.SafeSubscriber;
 import rx.operators.OnSubscribeFromIterable;
 import rx.operators.OnSubscribeRange;
 import rx.operators.OperationDelay;
-import rx.operators.OperatorGroupByUntil;
-import rx.operators.OperationGroupJoin;
 import rx.operators.OperationMergeDelayError;
 import rx.operators.OperationMergeMaxConcurrent;
 import rx.operators.OperationMulticast;
@@ -69,8 +67,6 @@ import rx.operators.OperationTakeUntil;
 import rx.operators.OperationTakeWhile;
 import rx.operators.OperationThrottleFirst;
 import rx.operators.OperationTimeInterval;
-import rx.operators.OperatorToMap;
-import rx.operators.OperatorUsing;
 import rx.operators.OperationWindow;
 import rx.operators.OperatorAll;
 import rx.operators.OperatorAmb;
@@ -96,6 +92,8 @@ import rx.operators.OperatorElementAt;
 import rx.operators.OperatorFilter;
 import rx.operators.OperatorFinally;
 import rx.operators.OperatorGroupBy;
+import rx.operators.OperatorGroupByUntil;
+import rx.operators.OperatorGroupJoin;
 import rx.operators.OperatorJoin;
 import rx.operators.OperatorMap;
 import rx.operators.OperatorMaterialize;
@@ -125,11 +123,13 @@ import rx.operators.OperatorTimeoutWithSelector;
 import rx.operators.OperatorTimerOnce;
 import rx.operators.OperatorTimerPeriodically;
 import rx.operators.OperatorTimestamp;
+import rx.operators.OperatorToMap;
 import rx.operators.OperatorToMultimap;
 import rx.operators.OperatorToObservableFuture;
 import rx.operators.OperatorToObservableList;
 import rx.operators.OperatorToObservableSortedList;
 import rx.operators.OperatorUnsubscribeOn;
+import rx.operators.OperatorUsing;
 import rx.operators.OperatorZip;
 import rx.operators.OperatorZipIterable;
 import rx.plugins.RxJavaObservableExecutionHook;
@@ -4113,7 +4113,7 @@ public class Observable<T> {
     public final <T2, D1, D2, R> Observable<R> groupJoin(Observable<T2> right, Func1<? super T, ? extends Observable<D1>> leftDuration,
             Func1<? super T2, ? extends Observable<D2>> rightDuration,
             Func2<? super T, ? super Observable<T2>, ? extends R> resultSelector) {
-        return create(new OperationGroupJoin<T, T2, D1, D2, R>(this, right, leftDuration, rightDuration, resultSelector));
+        return create(new OperatorGroupJoin<T, T2, D1, D2, R>(this, right, leftDuration, rightDuration, resultSelector));
     }
 
     /**
