@@ -32,7 +32,7 @@ import rx.operators.OperationSkipTest.CustomException;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
 
-public class OperationTakeTimedTest {
+public class OperatorTakeTimedTest {
 
     @Test
     public void testTakeTimed() {
