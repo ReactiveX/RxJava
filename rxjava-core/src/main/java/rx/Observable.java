@@ -58,7 +58,6 @@ import rx.operators.OperationSwitch;
 import rx.operators.OperationTakeLast;
 import rx.operators.OperationTakeTimed;
 import rx.operators.OperationTakeUntil;
-import rx.operators.OperationTakeWhile;
 import rx.operators.OperationWindow;
 import rx.operators.OperatorAll;
 import rx.operators.OperatorAmb;
@@ -117,6 +116,7 @@ import rx.operators.OperatorSkipLastTimed;
 import rx.operators.OperatorSkipWhile;
 import rx.operators.OperatorSubscribeOn;
 import rx.operators.OperatorTake;
+import rx.operators.OperatorTakeWhile;
 import rx.operators.OperatorThrottleFirst;
 import rx.operators.OperatorTimeInterval;
 import rx.operators.OperatorTimeout;
@@ -6687,7 +6687,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Conditional-and-Boolean-Operators#wiki-takewhile-and-takewhilewithindex">RxJava Wiki: takeWhile()</a>
      */
     public final Observable<T> takeWhile(final Func1<? super T, Boolean> predicate) {
-        return create(OperationTakeWhile.takeWhile(this, predicate));
+        return lift(new OperatorTakeWhile(predicate));
     }
 
     /**
@@ -6706,7 +6706,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Conditional-and-Boolean-Operators#wiki-takewhile-and-takewhilewithindex">RxJava Wiki: takeWhileWithIndex()</a>
      */
     public final Observable<T> takeWhileWithIndex(final Func2<? super T, ? super Integer, Boolean> predicate) {
-        return create(OperationTakeWhile.takeWhileWithIndex(this, predicate));
+        return lift(new OperatorTakeWhile(predicate));
     }
 
     /**
