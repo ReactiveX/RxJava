@@ -25,7 +25,8 @@ import rx.functions.Func2;
  *      href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sum%28v=vs.103%29.aspx">MSDN:
  *      Observable.Sum</a>
  */
-public final class OperationSum {
+public final class OperatorSum {
+	private OperatorSum() { throw new IllegalStateException("No instances!"); }
 
     public static Observable<Integer> sumIntegers(Observable<Integer> source) {
         return source.reduce(0, ACCUM_INT);
