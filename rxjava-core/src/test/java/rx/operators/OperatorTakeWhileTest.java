@@ -21,31 +21,30 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static rx.operators.OperationTakeWhile.takeWhile;
-import static rx.operators.OperationTakeWhile.takeWhileWithIndex;
 
 import org.junit.Test;
 
 import rx.Observable;
+import rx.Observable.OnSubscribe;
 import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Func1;
 import rx.functions.Func2;
 import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
-import rx.subscriptions.Subscriptions;
 
-public class OperationTakeWhileTest {
+public class OperatorTakeWhileTest {
 
     @Test
     public void testTakeWhile1() {
         Observable<Integer> w = Observable.from(1, 2, 3);
-        Observable<Integer> take = Observable.create(takeWhile(w, new Func1<Integer, Boolean>() {
+        Observable<Integer> take = w.takeWhile(new Func1<Integer, Boolean>() {
             @Override
             public Boolean call(Integer input) {
                 return input < 3;
             }
-        }));
+        });
 
         @SuppressWarnings("unchecked")
         Observer<Integer> observer = mock(Observer.class);
@@ -60,12 +59,12 @@ public class OperationTakeWhileTest {
     @Test
     public void testTakeWhileOnSubject1() {
         Subject<Integer, Integer> s = PublishSubject.create();
-        Observable<Integer> take = Observable.create(takeWhile(s, new Func1<Integer, Boolean>() {
+        Observable<Integer> take = s.takeWhile(new Func1<Integer, Boolean>() {
             @Override
             public Boolean call(Integer input) {
                 return input < 3;
             }
-        }));
+        });
 
         @SuppressWarnings("unchecked")
         Observer<Integer> observer = mock(Observer.class);
@@ -90,12 +89,12 @@ public class OperationTakeWhileTest {
     @Test
     public void testTakeWhile2() {
         Observable<String> w = Observable.from("one", "two", "three");
-        Observable<String> take = Observable.create(takeWhileWithIndex(w, new Func2<String, Integer, Boolean>() {
+        Observable<String> take = w.takeWhileWithIndex(new Func2<String, Integer, Boolean>() {
             @Override
             public Boolean call(String input, Integer index) {
                 return index < 2;
             }
-        }));
+        });
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
@@ -109,21 +108,20 @@ public class OperationTakeWhileTest {
 
     @Test
     public void testTakeWhileDoesntLeakErrors() {
-        Observable<String> source = Observable.create(new Observable.OnSubscribeFunc<String>() {
+        Observable<String> source = Observable.create(new OnSubscribe<String>() {
             @Override
-            public Subscription onSubscribe(Observer<? super String> observer) {
+            public void call(Subscriber<? super String> observer) {
                 observer.onNext("one");
                 observer.onError(new Throwable("test failed"));
-                return Subscriptions.empty();
             }
         });
 
-        Observable.create(takeWhile(source, new Func1<String, Boolean>() {
+        source.takeWhile(new Func1<String, Boolean>() {
             @Override
             public Boolean call(String s) {
                 return false;
             }
-        })).toBlockingObservable().lastOrDefault("");
+        }).toBlockingObservable().lastOrDefault("");
     }
 
     @Test
@@ -133,12 +131,12 @@ public class OperationTakeWhileTest {
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
-        Observable<String> take = Observable.create(takeWhile(Observable.create(source), new Func1<String, Boolean>() {
+        Observable<String> take = Observable.create(source).takeWhile(new Func1<String, Boolean>() {
             @Override
             public Boolean call(String s) {
                 throw testException;
             }
-        }));
+        });
         take.subscribe(observer);
 
         // wait for the Observable to complete
@@ -160,12 +158,12 @@ public class OperationTakeWhileTest {
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
-        Observable<String> take = Observable.create(takeWhileWithIndex(Observable.create(w), new Func2<String, Integer, Boolean>() {
+        Observable<String> take = Observable.create(w).takeWhileWithIndex(new Func2<String, Integer, Boolean>() {
             @Override
             public Boolean call(String s, Integer index) {
                 return index < 1;
             }
-        }));
+        });
         take.subscribe(observer);
 
         // wait for the Observable to complete
