@@ -49,7 +49,6 @@ import rx.observers.SafeSubscriber;
 import rx.operators.OnSubscribeFromIterable;
 import rx.operators.OnSubscribeRange;
 import rx.operators.OperationDelay;
-import rx.operators.OperationOnExceptionResumeNextViaObservable;
 import rx.operators.OperationParallelMerge;
 import rx.operators.OperationSequenceEqual;
 import rx.operators.OperationSkip;
@@ -100,6 +99,7 @@ import rx.operators.OperatorOnErrorFlatMap;
 import rx.operators.OperatorOnErrorResumeNextViaFunction;
 import rx.operators.OperatorOnErrorResumeNextViaObservable;
 import rx.operators.OperatorOnErrorReturn;
+import rx.operators.OperatorOnExceptionResumeNextViaObservable;
 import rx.operators.OperatorParallel;
 import rx.operators.OperatorPivot;
 import rx.operators.OperatorRepeat;
@@ -4584,7 +4584,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Error-Handling-Operators#wiki-onexceptionresumenext">RxJava Wiki: onExceptionResumeNext()</a>
      */
     public final Observable<T> onExceptionResumeNext(final Observable<? extends T> resumeSequence) {
-        return create(OperationOnExceptionResumeNextViaObservable.onExceptionResumeNextViaObservable(this, resumeSequence));
+        return lift(new OperatorOnExceptionResumeNextViaObservable<T>(resumeSequence));
     }
 
     /**
