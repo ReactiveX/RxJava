@@ -39,10 +39,10 @@ import rx.Observer;
 import rx.functions.Func0;
 import rx.functions.Func1;
 import rx.functions.Functions;
-import rx.operators.OperationToMultimap.DefaultMultimapCollectionFactory;
-import rx.operators.OperationToMultimap.DefaultToMultimapFactory;
+import rx.operators.OperatorToMultimap.DefaultMultimapCollectionFactory;
+import rx.operators.OperatorToMultimap.DefaultToMultimapFactory;
 
-public class OperationToMultimapTest {
+public class OperatorToMultimapTest {
     @Mock
     Observer<Object> objectObserver;
 
@@ -68,7 +68,7 @@ public class OperationToMultimapTest {
     public void testToMultimap() {
         Observable<String> source = Observable.from("a", "b", "cc", "dd");
 
-        Observable<Map<Integer, Collection<String>>> mapped = Observable.create(OperationToMultimap.toMultimap(source, lengthFunc));
+        Observable<Map<Integer, Collection<String>>> mapped = source.toMultimap(lengthFunc);
 
         Map<Integer, Collection<String>> expected = new HashMap<Integer, Collection<String>>();
         expected.put(1, Arrays.asList("a", "b"));
@@ -85,7 +85,7 @@ public class OperationToMultimapTest {
     public void testToMultimapWithValueSelector() {
         Observable<String> source = Observable.from("a", "b", "cc", "dd");
 
-        Observable<Map<Integer, Collection<String>>> mapped = Observable.create(OperationToMultimap.toMultimap(source, lengthFunc, duplicate));
+        Observable<Map<Integer, Collection<String>>> mapped = source.toMultimap(lengthFunc, duplicate);
 
         Map<Integer, Collection<String>> expected = new HashMap<Integer, Collection<String>>();
         expected.put(1, Arrays.asList("aa", "bb"));
@@ -114,10 +114,9 @@ public class OperationToMultimapTest {
             }
         };
 
-        Observable<Map<Integer, Collection<String>>> mapped = Observable.create(
-                OperationToMultimap.toMultimap(source,
-                        lengthFunc, Functions.<String> identity(),
-                        mapFactory, new DefaultMultimapCollectionFactory<Integer, String>()));
+        Observable<Map<Integer, Collection<String>>> mapped = source.toMultimap(
+                lengthFunc, Functions.<String>identity(),
+                mapFactory, new DefaultMultimapCollectionFactory<Integer, String>());
 
         Map<Integer, Collection<String>> expected = new HashMap<Integer, Collection<String>>();
         expected.put(2, Arrays.asList("cc", "dd"));
@@ -146,10 +145,9 @@ public class OperationToMultimapTest {
             }
         };
 
-        Observable<Map<Integer, Collection<String>>> mapped = Observable.create(
-                OperationToMultimap.toMultimap(
-                        source, lengthFunc, Functions.<String> identity(),
-                        new DefaultToMultimapFactory<Integer, String>(), collectionFactory));
+        Observable<Map<Integer, Collection<String>>> mapped = source.toMultimap(
+                lengthFunc, Functions.<String>identity(),
+                new DefaultToMultimapFactory<Integer, String>(), collectionFactory);
 
         Map<Integer, Collection<String>> expected = new HashMap<Integer, Collection<String>>();
         expected.put(2, Arrays.asList("cc", "dd"));
@@ -176,7 +174,7 @@ public class OperationToMultimapTest {
             }
         };
 
-        Observable<Map<Integer, Collection<String>>> mapped = Observable.create(OperationToMultimap.toMultimap(source, lengthFuncErr));
+        Observable<Map<Integer, Collection<String>>> mapped = source.toMultimap(lengthFuncErr);
 
         Map<Integer, Collection<String>> expected = new HashMap<Integer, Collection<String>>();
         expected.put(1, Arrays.asList("a", "b"));
@@ -203,7 +201,7 @@ public class OperationToMultimapTest {
             }
         };
 
-        Observable<Map<Integer, Collection<String>>> mapped = Observable.create(OperationToMultimap.toMultimap(source, lengthFunc, duplicateErr));
+        Observable<Map<Integer, Collection<String>>> mapped = source.toMultimap(lengthFunc, duplicateErr);
 
         Map<Integer, Collection<String>> expected = new HashMap<Integer, Collection<String>>();
         expected.put(1, Arrays.asList("aa", "bb"));
@@ -227,8 +225,7 @@ public class OperationToMultimapTest {
             }
         };
 
-        Observable<Map<Integer, Collection<String>>> mapped = Observable.create(
-                OperationToMultimap.toMultimap(source, lengthFunc, Functions.<String> identity(), mapFactory));
+        Observable<Map<Integer, Collection<String>>> mapped = source.toMultimap(lengthFunc, Functions.<String>identity(), mapFactory);
 
         Map<Integer, Collection<String>> expected = new HashMap<Integer, Collection<String>>();
         expected.put(2, Arrays.asList("cc", "dd"));
@@ -257,9 +254,7 @@ public class OperationToMultimapTest {
             }
         };
 
-        Observable<Map<Integer, Collection<String>>> mapped = Observable.create(
-                OperationToMultimap.toMultimap(
-                        source, lengthFunc, Functions.<String> identity(), new DefaultToMultimapFactory(), collectionFactory));
+        Observable<Map<Integer, Collection<String>>> mapped = source.toMultimap(lengthFunc, Functions.<String>identity(), new DefaultToMultimapFactory<Integer, String>(), collectionFactory);
 
         Map<Integer, Collection<String>> expected = new HashMap<Integer, Collection<String>>();
         expected.put(2, Arrays.asList("cc", "dd"));
