@@ -5624,7 +5624,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229358.aspx">MSDN: Observable.SkipUntil</a>
      */
     public final <U> Observable<T> skipUntil(Observable<U> other) {
-        return create(new OperationSkipUntil<T, U>(this, other));
+        return lift(new OperatorSkipUntil<T, U>(other));
     }
 
     /**
