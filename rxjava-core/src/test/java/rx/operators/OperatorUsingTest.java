@@ -21,7 +21,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static rx.operators.OperationUsing.using;
 
 import org.junit.Test;
 import org.mockito.InOrder;
@@ -35,7 +34,7 @@ import rx.functions.Func0;
 import rx.functions.Func1;
 import rx.subscriptions.Subscriptions;
 
-public class OperationUsingTest {
+public class OperatorUsingTest {
 
     @SuppressWarnings("serial")
     private static class TestException extends RuntimeException {
@@ -69,8 +68,7 @@ public class OperationUsingTest {
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = (Observer<String>) mock(Observer.class);
-        Observable<String> observable = Observable.create(using(
-                resourceFactory, observableFactory));
+        Observable<String> observable = Observable.using(resourceFactory, observableFactory);
         observable.subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
@@ -124,8 +122,7 @@ public class OperationUsingTest {
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = (Observer<String>) mock(Observer.class);
-        Observable<String> observable = Observable.create(using(
-                resourceFactory, observableFactory));
+        Observable<String> observable = Observable.using(resourceFactory, observableFactory);
         observable.subscribe(observer);
         observable.subscribe(observer);
 
@@ -157,8 +154,7 @@ public class OperationUsingTest {
             }
         };
 
-        Observable.create(using(resourceFactory, observableFactory))
-                .toBlockingObservable().last();
+        Observable.using(resourceFactory, observableFactory).toBlockingObservable().last();
     }
 
     @Test
@@ -179,8 +175,7 @@ public class OperationUsingTest {
         };
 
         try {
-            Observable.create(using(resourceFactory, observableFactory))
-                    .toBlockingObservable().last();
+            Observable.using(resourceFactory, observableFactory).toBlockingObservable().last();
             fail("Should throw a TestException when the observableFactory throws it");
         } catch (TestException e) {
             // Make sure that unsubscribe is called so that users can close
@@ -212,8 +207,7 @@ public class OperationUsingTest {
         };
 
         try {
-            Observable.create(using(resourceFactory, observableFactory))
-                    .toBlockingObservable().last();
+            Observable.using(resourceFactory, observableFactory).toBlockingObservable().last();
             fail("Should throw a TestException when the observableFactory throws it");
         } catch (TestException e) {
             // Make sure that unsubscribe is called so that users can close
