@@ -60,7 +60,6 @@ import rx.operators.OperationTakeTimed;
 import rx.operators.OperationTakeUntil;
 import rx.operators.OperationTakeWhile;
 import rx.operators.OperationThrottleFirst;
-import rx.operators.OperationTimeInterval;
 import rx.operators.OperationWindow;
 import rx.operators.OperatorAll;
 import rx.operators.OperatorAmb;
@@ -119,6 +118,7 @@ import rx.operators.OperatorSkipLastTimed;
 import rx.operators.OperatorSkipWhile;
 import rx.operators.OperatorSubscribeOn;
 import rx.operators.OperatorTake;
+import rx.operators.OperatorTimeInterval;
 import rx.operators.OperatorTimeout;
 import rx.operators.OperatorTimeoutWithSelector;
 import rx.operators.OperatorTimerOnce;
@@ -6872,7 +6872,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh212107.aspx">MSDN: Observable.TimeInterval</a>
      */
     public final Observable<TimeInterval<T>> timeInterval() {
-        return create(OperationTimeInterval.timeInterval(this));
+        return lift(new OperatorTimeInterval(Schedulers.immediate()));
     }
 
     /**
@@ -6888,7 +6888,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh212107.aspx">MSDN: Observable.TimeInterval</a>
      */
     public final Observable<TimeInterval<T>> timeInterval(Scheduler scheduler) {
-        return create(OperationTimeInterval.timeInterval(this, scheduler));
+        return lift(new OperatorTimeInterval(scheduler));
     }
 
     /**
