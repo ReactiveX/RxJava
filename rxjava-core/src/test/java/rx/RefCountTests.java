@@ -56,6 +56,7 @@ public class RefCountTests {
             }
         });
         Observable<Integer> refCounted = observable.publish().refCount();
+        @SuppressWarnings("unchecked")
         Observer<Integer> observer = mock(Observer.class);
         Subscription first = refCounted.subscribe(observer);
         assertEquals(1, subscriptionCount.get());
