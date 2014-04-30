@@ -15,108 +15,23 @@
  */
 package rx.operators;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static rx.operators.OperationTakeLast.takeLast;
-
-import java.util.concurrent.TimeUnit;
-
 import org.junit.Test;
 import org.mockito.InOrder;
-
 import rx.Observable;
 import rx.Observer;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
 
-public class OperationTakeLastTest {
+import java.util.concurrent.TimeUnit;
 
-    @Test
-    public void testTakeLastEmpty() {
-        Observable<String> w = Observable.empty();
-        Observable<String> take = Observable.create(takeLast(w, 2));
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.*;
 
-        @SuppressWarnings("unchecked")
-        Observer<String> observer = mock(Observer.class);
-        take.subscribe(observer);
-        verify(observer, never()).onNext(any(String.class));
-        verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onCompleted();
-    }
+public class OperatorTakeLastTimedTest {
 
-    @Test
-    public void testTakeLast1() {
-        Observable<String> w = Observable.from("one", "two", "three");
-        Observable<String> take = Observable.create(takeLast(w, 2));
-
-        @SuppressWarnings("unchecked")
-        Observer<String> observer = mock(Observer.class);
-        InOrder inOrder = inOrder(observer);
-        take.subscribe(observer);
-        inOrder.verify(observer, times(1)).onNext("two");
-        inOrder.verify(observer, times(1)).onNext("three");
-        verify(observer, never()).onNext("one");
-        verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onCompleted();
-    }
-
-    @Test
-    public void testTakeLast2() {
-        Observable<String> w = Observable.from("one");
-        Observable<String> take = Observable.create(takeLast(w, 10));
-
-        @SuppressWarnings("unchecked")
-        Observer<String> observer = mock(Observer.class);
-        take.subscribe(observer);
-        verify(observer, times(1)).onNext("one");
-        verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onCompleted();
-    }
-
-    @Test
-    public void testTakeLastWithZeroCount() {
-        Observable<String> w = Observable.from("one");
-        Observable<String> take = Observable.create(takeLast(w, 0));
-
-        @SuppressWarnings("unchecked")
-        Observer<String> observer = mock(Observer.class);
-        take.subscribe(observer);
-        verify(observer, never()).onNext("one");
-        verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onCompleted();
-    }
-
-    @Test
-    public void testTakeLastWithNull() {
-        Observable<String> w = Observable.from("one", null, "three");
-        Observable<String> take = Observable.create(takeLast(w, 2));
-
-        @SuppressWarnings("unchecked")
-        Observer<String> observer = mock(Observer.class);
-        take.subscribe(observer);
-        verify(observer, never()).onNext("one");
-        verify(observer, times(1)).onNext(null);
-        verify(observer, times(1)).onNext("three");
-        verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onCompleted();
-    }
-
-    @Test
-    public void testTakeLastWithNegativeCount() {
-        Observable<String> w = Observable.from("one");
-        Observable<String> take = Observable.create(takeLast(w, -1));
-
-        @SuppressWarnings("unchecked")
-        Observer<String> observer = mock(Observer.class);
-        take.subscribe(observer);
-        verify(observer, never()).onNext("one");
-        verify(observer, times(1)).onError(
-                any(IndexOutOfBoundsException.class));
-        verify(observer, never()).onCompleted();
+    @Test(expected = IndexOutOfBoundsException.class)
+    public void testTakeLastTimedWithNegativeCount() {
+        Observable.from("one").takeLast(-1, 1, TimeUnit.SECONDS);
     }
 
     @Test

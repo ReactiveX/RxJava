@@ -6356,7 +6356,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#wiki-takelast">RxJava Wiki: takeLast()</a>
      */
     public final Observable<T> takeLast(final int count) {
-        return create(OperationTakeLast.takeLast(this, count));
+        return lift(new OperatorTakeLast<T>(count));
     }
 
     /**
@@ -6400,10 +6400,7 @@ public class Observable<T> {
      *             if {@code count} is less than zero
      */
     public final Observable<T> takeLast(int count, long time, TimeUnit unit, Scheduler scheduler) {
-        if (count < 0) {
-            throw new IllegalArgumentException("count >= 0 required");
-        }
-        return create(OperationTakeLast.takeLast(this, count, time, unit, scheduler));
+        return lift(new OperatorTakeLastTimed<T>(count, time, unit, scheduler));
     }
 
     /**
@@ -6441,7 +6438,7 @@ public class Observable<T> {
      *         provided by {@code scheduler}
      */
     public final Observable<T> takeLast(long time, TimeUnit unit, Scheduler scheduler) {
-        return create(OperationTakeLast.takeLast(this, time, unit, scheduler));
+        return lift(new OperatorTakeLastTimed<T>(time, unit, scheduler));
     }
 
     /**
