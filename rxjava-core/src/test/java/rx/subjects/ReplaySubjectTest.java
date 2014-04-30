@@ -403,4 +403,38 @@ public class ReplaySubjectTest {
             inOrder.verify(o).onCompleted();
             verify(o, never()).onError(any(Throwable.class));
         }
-    }}
+    }
+    @Test
+    public void testTerminateOnce() {
+        ReplaySubject<Integer> source = ReplaySubject.create();
+        source.onNext(1);
+        source.onNext(2);
+        source.onCompleted();
+        
+        @SuppressWarnings("unchecked")
+        final Observer<Integer> o = mock(Observer.class);
+        
+        source.unsafeSubscribe(new Subscriber<Integer>() {
+
+            @Override
+            public void onNext(Integer t) {
+                o.onNext(t);
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                o.onError(e);
+            }
+
+            @Override
+            public void onCompleted() {
+                o.onCompleted();
+            }
+        });
+        
+        verify(o).onNext(1);
+        verify(o).onNext(2);
+        verify(o).onCompleted();
+        verify(o, never()).onError(any(Throwable.class));
+    }
+}
