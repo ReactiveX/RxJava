@@ -16,11 +16,10 @@
 package rx.operators;
 
 import rx.Observable;
-import rx.Observable.OnSubscribeFunc;
-import rx.Observer;
 import rx.Subscriber;
-import rx.Subscription;
 import rx.functions.Func1;
+
+import static rx.Observable.Operator;
 
 /**
  * Returns an Observable that emits the items from the source Observable until another Observable
@@ -28,7 +27,7 @@ import rx.functions.Func1;
  * <p>
  * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/takeUntil.png">
  */
-public class OperationTakeUntil {
+public final class OperatorTakeUntil {
 
     /**
      * Returns the values from the source observable sequence until the other observable sequence produces a value.
@@ -44,8 +43,8 @@ public class OperationTakeUntil {
      * @return An observable sequence containing the elements of the source sequence up to the point the other sequence interrupted further propagation.
      */
     public static <T, E> Observable<T> takeUntil(final Observable<? extends T> source, final Observable<? extends E> other) {
-        Observable<Notification<T>> s = Observable.create(new SourceObservable<T>(source));
-        Observable<Notification<T>> o = Observable.create(new OtherObservable<T, E>(other));
+        Observable<Notification<T>> s = source.lift(new SourceObservable<T>());
+        Observable<Notification<T>> o = other.lift(new OtherObservable<T, E>());
 
         Observable<Notification<T>> result = Observable.merge(s, o);
 
@@ -81,19 +80,14 @@ public class OperationTakeUntil {
 
     }
 
-    private static class SourceObservable<T> implements OnSubscribeFunc<Notification<T>> {
-        private final Observable<? extends T> sequence;
-
-        private SourceObservable(Observable<? extends T> sequence) {
-            this.sequence = sequence;
-        }
+    private static class SourceObservable<T> implements Operator<Notification<T>, T> {
 
         @Override
-        public Subscription onSubscribe(final Observer<? super Notification<T>> notificationObserver) {
-            return sequence.unsafeSubscribe(new Subscriber<T>() {
+        public Subscriber<? super T> call(final Subscriber<? super Notification<T>> notificationObserver) {
+            return new Subscriber<T>(notificationObserver) {
                 @Override
                 public void onCompleted() {
-                    notificationObserver.onNext(Notification.<T> halt());
+                    notificationObserver.onNext(Notification.<T>halt());
                 }
 
                 @Override
@@ -105,23 +99,18 @@ public class OperationTakeUntil {
                 public void onNext(T args) {
                     notificationObserver.onNext(Notification.value(args));
                 }
-            });
+            };
         }
     }
 
-    private static class OtherObservable<T, E> implements OnSubscribeFunc<Notification<T>> {
-        private final Observable<? extends E> sequence;
-
-        private OtherObservable(Observable<? extends E> sequence) {
-            this.sequence = sequence;
-        }
+    private static class OtherObservable<T, E> implements Operator<Notification<T>, E> {
 
         @Override
-        public Subscription onSubscribe(final Observer<? super Notification<T>> notificationObserver) {
-            return sequence.unsafeSubscribe(new Subscriber<E>() {
+        public Subscriber<? super E> call(final Subscriber<? super Notification<T>> notificationObserver) {
+            return new Subscriber<E>(notificationObserver) {
                 @Override
                 public void onCompleted() {
-                    notificationObserver.onNext(Notification.<T> halt());
+                    notificationObserver.onNext(Notification.<T>halt());
                 }
 
                 @Override
@@ -131,9 +120,9 @@ public class OperationTakeUntil {
 
                 @Override
                 public void onNext(E args) {
-                    notificationObserver.onNext(Notification.<T> halt());
+                    notificationObserver.onNext(Notification.<T>halt());
                 }
-            });
+            };
         }
     }
 }

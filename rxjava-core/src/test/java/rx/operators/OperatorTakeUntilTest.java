@@ -18,7 +18,7 @@ package rx.operators;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static rx.operators.OperationTakeUntil.takeUntil;
+import static rx.operators.OperatorTakeUntil.takeUntil;
 
 import org.junit.Test;
 
@@ -26,7 +26,7 @@ import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
 
-public class OperationTakeUntilTest {
+public class OperatorTakeUntilTest {
 
     @Test
     @SuppressWarnings("unchecked")
