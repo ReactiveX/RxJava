@@ -22,9 +22,9 @@ import java.util.List;
 import java.util.Map;
 
 import rx.Observable;
-import rx.Observable.OnSubscribeFunc;
+import rx.Observable.OnSubscribe;
 import rx.Observer;
-import rx.Subscription;
+import rx.Subscriber;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.joins.ActivePlan0;
@@ -32,13 +32,12 @@ import rx.joins.JoinObserver;
 import rx.joins.Pattern1;
 import rx.joins.Pattern2;
 import rx.joins.Plan0;
-import rx.observers.Subscribers;
 import rx.subscriptions.CompositeSubscription;
 
 /**
  * Join patterns: And, Then, When.
  */
-public class OperationJoinPatterns {
+public class OperatorJoinPatterns {
     /**
      * Creates a pattern that matches when both observable sequences have an available element.
      */
@@ -68,7 +67,7 @@ public class OperationJoinPatterns {
     /**
      * Joins together the results from several patterns.
      */
-    public static <R> OnSubscribeFunc<R> when(Plan0<R>... plans) {
+    public static <R> OnSubscribe<R> when(Plan0<R>... plans) {
         if (plans == null) {
             throw new NullPointerException("plans");
         }
@@ -78,13 +77,13 @@ public class OperationJoinPatterns {
     /**
      * Joins together the results from several patterns.
      */
-    public static <R> OnSubscribeFunc<R> when(final Iterable<? extends Plan0<R>> plans) {
+    public static <R> OnSubscribe<R> when(final Iterable<? extends Plan0<R>> plans) {
         if (plans == null) {
             throw new NullPointerException("plans");
         }
-        return new OnSubscribeFunc<R>() {
+        return new OnSubscribe<R>() {
             @Override
-            public Subscription onSubscribe(final Observer<? super R> t1) {
+            public void call(final Subscriber<? super R> t1) {
                 final Map<Object, JoinObserver> externalSubscriptions = new HashMap<Object, JoinObserver>();
                 final Object gate = new Object();
                 final List<ActivePlan0> activePlans = new ArrayList<ActivePlan0>();
@@ -122,14 +121,15 @@ public class OperationJoinPatterns {
                         }));
                     }
                 } catch (Throwable t) {
-                    return Observable.<R> error(t).unsafeSubscribe(Subscribers.from(t1));
+                	Observable.<R> error(t).unsafeSubscribe(t1);
+                    return;
                 }
                 CompositeSubscription group = new CompositeSubscription();
+                t1.add(group);
                 for (JoinObserver jo : externalSubscriptions.values()) {
                     jo.subscribe(gate);
                     group.add(jo);
                 }
-                return group;
             }
         };
     }

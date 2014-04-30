@@ -40,7 +40,7 @@ import rx.observables.JoinObservable;
 import rx.observers.TestSubscriber;
 import rx.subjects.PublishSubject;
 
-public class OperationJoinsTest {
+public class OperatorJoinsTest {
     @Mock
     Observer<Integer> observer;
 

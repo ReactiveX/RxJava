@@ -4,7 +4,7 @@ import rx.Observable;
 import rx.functions.Func1;
 import rx.joins.Pattern2;
 import rx.joins.Plan0;
-import rx.joins.operators.OperationJoinPatterns;
+import rx.joins.operators.OperatorJoinPatterns;
 
 public class JoinObservable<T> {
 
@@ -32,7 +32,7 @@ public class JoinObservable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229153.aspx">MSDN: Observable.And</a>
      */
     public final <T2> Pattern2<T, T2> and(Observable<T2> right) {
-        return OperationJoinPatterns.and(o, right);
+        return OperatorJoinPatterns.and(o, right);
     }
 
     /**
@@ -52,7 +52,7 @@ public class JoinObservable<T> {
         if (plans == null) {
             throw new NullPointerException("plans");
         }
-        return from(Observable.create(OperationJoinPatterns.when(plans)));
+        return from(Observable.create(OperatorJoinPatterns.when(plans)));
     }
 
     /**
@@ -69,7 +69,7 @@ public class JoinObservable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229889.aspx">MSDN: Observable.When</a>
      */
     public final static <R> JoinObservable<R> when(Plan0<R>... plans) {
-        return from(Observable.create(OperationJoinPatterns.when(plans)));
+        return from(Observable.create(OperatorJoinPatterns.when(plans)));
     }
 
     /**
@@ -85,7 +85,7 @@ public class JoinObservable<T> {
      */
     @SuppressWarnings("unchecked")
     public final static <R> JoinObservable<R> when(Plan0<R> p1) {
-        return from(Observable.create(OperationJoinPatterns.when(p1)));
+        return from(Observable.create(OperatorJoinPatterns.when(p1)));
     }
 
     /**
@@ -103,7 +103,7 @@ public class JoinObservable<T> {
      */
     @SuppressWarnings("unchecked")
     public final static <R> JoinObservable<R> when(Plan0<R> p1, Plan0<R> p2) {
-        return from(Observable.create(OperationJoinPatterns.when(p1, p2)));
+        return from(Observable.create(OperatorJoinPatterns.when(p1, p2)));
     }
 
     /**
@@ -123,7 +123,7 @@ public class JoinObservable<T> {
      */
     @SuppressWarnings("unchecked")
     public final static <R> JoinObservable<R> when(Plan0<R> p1, Plan0<R> p2, Plan0<R> p3) {
-        return from(Observable.create(OperationJoinPatterns.when(p1, p2, p3)));
+        return from(Observable.create(OperatorJoinPatterns.when(p1, p2, p3)));
     }
 
     /**
@@ -145,7 +145,7 @@ public class JoinObservable<T> {
      */
     @SuppressWarnings("unchecked")
     public final static <R> JoinObservable<R> when(Plan0<R> p1, Plan0<R> p2, Plan0<R> p3, Plan0<R> p4) {
-        return from(Observable.create(OperationJoinPatterns.when(p1, p2, p3, p4)));
+        return from(Observable.create(OperatorJoinPatterns.when(p1, p2, p3, p4)));
     }
 
     /**
@@ -169,7 +169,7 @@ public class JoinObservable<T> {
      */
     @SuppressWarnings("unchecked")
     public final static <R> JoinObservable<R> when(Plan0<R> p1, Plan0<R> p2, Plan0<R> p3, Plan0<R> p4, Plan0<R> p5) {
-        return from(Observable.create(OperationJoinPatterns.when(p1, p2, p3, p4, p5)));
+        return from(Observable.create(OperatorJoinPatterns.when(p1, p2, p3, p4, p5)));
     }
 
     /**
@@ -195,7 +195,7 @@ public class JoinObservable<T> {
      */
     @SuppressWarnings("unchecked")
     public final static <R> JoinObservable<R> when(Plan0<R> p1, Plan0<R> p2, Plan0<R> p3, Plan0<R> p4, Plan0<R> p5, Plan0<R> p6) {
-        return from(Observable.create(OperationJoinPatterns.when(p1, p2, p3, p4, p5, p6)));
+        return from(Observable.create(OperatorJoinPatterns.when(p1, p2, p3, p4, p5, p6)));
     }
 
     /**
@@ -223,7 +223,7 @@ public class JoinObservable<T> {
      */
     @SuppressWarnings("unchecked")
     public final static <R> JoinObservable<R> when(Plan0<R> p1, Plan0<R> p2, Plan0<R> p3, Plan0<R> p4, Plan0<R> p5, Plan0<R> p6, Plan0<R> p7) {
-        return from(Observable.create(OperationJoinPatterns.when(p1, p2, p3, p4, p5, p6, p7)));
+        return from(Observable.create(OperatorJoinPatterns.when(p1, p2, p3, p4, p5, p6, p7)));
     }
 
     /**
@@ -253,7 +253,7 @@ public class JoinObservable<T> {
      */
     @SuppressWarnings("unchecked")
     public final static <R> JoinObservable<R> when(Plan0<R> p1, Plan0<R> p2, Plan0<R> p3, Plan0<R> p4, Plan0<R> p5, Plan0<R> p6, Plan0<R> p7, Plan0<R> p8) {
-        return from(Observable.create(OperationJoinPatterns.when(p1, p2, p3, p4, p5, p6, p7, p8)));
+        return from(Observable.create(OperatorJoinPatterns.when(p1, p2, p3, p4, p5, p6, p7, p8)));
     }
 
     /**
@@ -285,7 +285,7 @@ public class JoinObservable<T> {
      */
     @SuppressWarnings("unchecked")
     public final static <R> JoinObservable<R> when(Plan0<R> p1, Plan0<R> p2, Plan0<R> p3, Plan0<R> p4, Plan0<R> p5, Plan0<R> p6, Plan0<R> p7, Plan0<R> p8, Plan0<R> p9) {
-        return from(Observable.create(OperationJoinPatterns.when(p1, p2, p3, p4, p5, p6, p7, p8, p9)));
+        return from(Observable.create(OperatorJoinPatterns.when(p1, p2, p3, p4, p5, p6, p7, p8, p9)));
     }
 
     /**
@@ -303,7 +303,7 @@ public class JoinObservable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211662.aspx">MSDN: Observable.Then</a>
      */
     public final <R> Plan0<R> then(Func1<T, R> selector) {
-        return OperationJoinPatterns.then(o, selector);
+        return OperatorJoinPatterns.then(o, selector);
     }
     
     public Observable<T> toObservable() {
