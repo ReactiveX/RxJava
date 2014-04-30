@@ -38,7 +38,7 @@ import rx.observers.TestObserver;
 import rx.schedulers.Schedulers;
 import rx.schedulers.TestScheduler;
 
-public class OperationConditionalsTest {
+public class OperatorConditionalsTest {
     @Mock
     Observer<Object> observer;
     TestScheduler scheduler;
@@ -232,8 +232,9 @@ public class OperationConditionalsTest {
         Observable<Integer> source2 = Observable.from(4, 5, 6);
 
         Map<Integer, Observable<Integer>> map = new HashMap<Integer, Observable<Integer>>() {
+			private static final long serialVersionUID = -4342868139960216388L;
 
-            @Override
+			@Override
             public Observable<Integer> get(Object key) {
                 if (key.equals(2)) {
                     throw new RuntimeException("Forced failure!");
@@ -256,8 +257,9 @@ public class OperationConditionalsTest {
         Observable<Integer> source1 = Observable.from(1, 2, 3);
 
         Map<Integer, Observable<Integer>> map = new HashMap<Integer, Observable<Integer>>() {
+			private static final long serialVersionUID = 1975411728567003983L;
 
-            @Override
+			@Override
             public boolean containsKey(Object key) {
                 if (key.equals(2)) {
                     throw new RuntimeException("Forced failure!");
