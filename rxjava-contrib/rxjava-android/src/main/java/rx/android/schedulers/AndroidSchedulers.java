@@ -25,7 +25,7 @@ import android.os.Looper;
 public class AndroidSchedulers {
 
     private static final Scheduler MAIN_THREAD_SCHEDULER =
-            new HandlerThreadScheduler(new Handler(Looper.getMainLooper()));
+            new HandlerThreadScheduler(new Handler(Looper.getMainLooper()), true);
 
     private AndroidSchedulers(){
 
@@ -38,6 +38,18 @@ public class AndroidSchedulers {
      */
     public static Scheduler handlerThread(final Handler handler) {
         return new HandlerThreadScheduler(handler);
+    }
+
+    /**
+     * {@link Scheduler} which uses the provided {@link Handler} to execute an action
+     * @param handler The handler that will be used when executing the action
+     * @param immediate
+     *      if true, immediate actions scheduled from the same Thread will be called directly
+     *      without posting to {@link Handler}
+     * @return A handler based scheduler
+     */
+    public static Scheduler handlerThread(final Handler handler, final boolean immediate) {
+        return new HandlerThreadScheduler(handler, immediate);
     }
 
     /**

@@ -29,6 +29,7 @@ import org.mockito.ArgumentCaptor;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
+import rx.Observable;
 import rx.Scheduler;
 import rx.Scheduler.Worker;
 import rx.functions.Action0;
@@ -49,7 +50,7 @@ public class HandlerThreadSchedulerTest {
         @SuppressWarnings("unchecked")
         final Action0 action = mock(Action0.class);
 
-        Scheduler scheduler = new HandlerThreadScheduler(handler);
+        Scheduler scheduler = new HandlerThreadScheduler(handler, true);
         Worker inner = scheduler.createWorker();
         inner.schedule(action);
 
@@ -64,9 +65,6 @@ public class HandlerThreadSchedulerTest {
     @Test
     public void shouldScheduleDelayedActionOnHandlerThread() {
         final Handler handler = mock(Handler.class);
-        final Looper looper = mock(Looper.class);
-        when(handler.getLooper()).thenReturn(looper);
-        when(looper.getThread()).thenReturn(Thread.currentThread());
         @SuppressWarnings("unchecked")
         final Action0 action = mock(Action0.class);
 
