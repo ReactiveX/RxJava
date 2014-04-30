@@ -43,84 +43,71 @@ public final class OperatorTakeUntil {
      * @return An observable sequence containing the elements of the source sequence up to the point the other sequence interrupted further propagation.
      */
     public static <T, E> Observable<T> takeUntil(final Observable<? extends T> source, final Observable<? extends E> other) {
-        Observable<Notification<T>> s = source.lift(new SourceObservable<T>());
-        Observable<Notification<T>> o = other.lift(new OtherObservable<T, E>());
+        Observable<Object> s = source.lift(new SourceObservable<T>());
+        Observable<Object> o = other.lift(new OtherObservable<E>());
 
-        Observable<Notification<T>> result = Observable.merge(s, o);
+        Observable<Object> result = Observable.merge(s, o);
 
-        return result.takeWhile(new Func1<Notification<T>, Boolean>() {
+        final NotificationLite<T> notification = NotificationLite.instance();
+
+        return result.takeWhile(new Func1<Object, Boolean>() {
             @Override
-            public Boolean call(Notification<T> notification) {
-                return !notification.halt;
+            public Boolean call(Object args) {
+                return !notification.isCompleted(args);
             }
-        }).map(new Func1<Notification<T>, T>() {
+        }).map(new Func1<Object, T>() {
             @Override
-            public T call(Notification<T> notification) {
-                return notification.value;
+            public T call(Object args) {
+                return notification.getValue(args);
             }
         });
     }
 
-    private static class Notification<T> {
-        private final boolean halt;
-        private final T value;
+    private final static class SourceObservable<T> implements Operator<Object, T> {
 
-        public static <T> Notification<T> value(T value) {
-            return new Notification<T>(false, value);
-        }
-
-        public static <T> Notification<T> halt() {
-            return new Notification<T>(true, null);
-        }
-
-        private Notification(boolean halt, T value) {
-            this.halt = halt;
-            this.value = value;
-        }
-
-    }
-
-    private static class SourceObservable<T> implements Operator<Notification<T>, T> {
+        private final NotificationLite<T> notification = NotificationLite.instance();
 
         @Override
-        public Subscriber<? super T> call(final Subscriber<? super Notification<T>> notificationObserver) {
-            return new Subscriber<T>(notificationObserver) {
+        public Subscriber<? super T> call(final Subscriber<? super Object> subscriber) {
+            return new Subscriber<T>(subscriber) {
                 @Override
                 public void onCompleted() {
-                    notificationObserver.onNext(Notification.<T>halt());
+                    subscriber.onNext(notification.completed());
                 }
 
                 @Override
                 public void onError(Throwable e) {
-                    notificationObserver.onError(e);
+                    subscriber.onError(e);
                 }
 
                 @Override
                 public void onNext(T args) {
-                    notificationObserver.onNext(Notification.value(args));
+                    subscriber.onNext(notification.next(args));
                 }
             };
         }
     }
 
-    private static class OtherObservable<T, E> implements Operator<Notification<T>, E> {
+    private final static class OtherObservable<E> implements Operator<Object, E> {
+
+        private final NotificationLite<E> notification = NotificationLite.instance();
 
         @Override
-        public Subscriber<? super E> call(final Subscriber<? super Notification<T>> notificationObserver) {
-            return new Subscriber<E>(notificationObserver) {
+        public Subscriber<? super E> call(final Subscriber<? super Object> subscriber) {
+            return new Subscriber<E>(subscriber) {
                 @Override
                 public void onCompleted() {
-                    notificationObserver.onNext(Notification.<T>halt());
+                    subscriber.onNext(notification.completed());
                 }
 
                 @Override
                 public void onError(Throwable e) {
-                    notificationObserver.onError(e);
+                    subscriber.onError(e);
                 }
 
                 @Override
                 public void onNext(E args) {
-                    notificationObserver.onNext(Notification.<T>halt());
+                    subscriber.onNext(notification.completed());
                 }
             };
         }
