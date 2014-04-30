@@ -253,6 +253,7 @@ public final class OperatorBufferWithTime<T> implements Operator<List<T>, T> {
                 chunk = null;
             }
             child.onError(e);
+            unsubscribe();
         }
 
         @Override
@@ -274,6 +275,7 @@ public final class OperatorBufferWithTime<T> implements Operator<List<T>, T> {
                 return;
             }
             child.onCompleted();
+            unsubscribe();
         }
         void scheduleExact() {
             inner.schedulePeriodically(new Action0() {

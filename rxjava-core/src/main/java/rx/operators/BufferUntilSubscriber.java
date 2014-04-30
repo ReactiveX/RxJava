@@ -15,12 +15,18 @@
  */
 package rx.operators;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Observable;
 import rx.Observer;
 import rx.Subscriber;
+import rx.functions.Action0;
+import rx.observers.Subscribers;
+import rx.subscriptions.Subscriptions;
 
 /**
  * A solution to the "time gap" problem that occurs with `groupBy` and `pivot` => https://github.com/Netflix/RxJava/issues/844
@@ -43,44 +49,151 @@ import rx.Subscriber;
 public class BufferUntilSubscriber<T> extends Observable<T> implements Observer<T> {
 
     public static <T> BufferUntilSubscriber<T> create() {
-        return new BufferUntilSubscriber<T>(new AtomicReference<Observer<? super T>>(new BufferedObserver<T>()));
+        State<T> state = new State<T>();
+        return new BufferUntilSubscriber<T>(state);
     }
 
-    private final AtomicReference<Observer<? super T>> observerRef;
+    /** The common state. */
+    static final class State<T> {
+        /** Lite notifications of type T. */
+        final NotificationLite<T> nl = NotificationLite.instance();
+        /** The first observer or the one which buffers until the first arrives. */
+        final AtomicReference<Observer<? super T>> observerRef = new AtomicReference<Observer<? super T>>(new BufferedObserver<T>());
+        /** How many subscribers. */
+        final AtomicBoolean first = new AtomicBoolean();
+        /** The rest of the subscribers without buffering. Guarded by this. */
+        final Set<Subscriber<? super T>> subscribers = new LinkedHashSet<Subscriber<? super T>>();
+        /** Guarded by this. */
+        boolean done;
+        /** Guarded by this. */
+        Throwable exception;
+    }
+    
+    static final class OnSubscribeAction<T> implements OnSubscribe<T> {
+        final State<T> state;
 
-    private BufferUntilSubscriber(final AtomicReference<Observer<? super T>> observerRef) {
-        super(new OnSubscribe<T>() {
+        public OnSubscribeAction(State<T> state) {
+            this.state = state;
+        }
 
-            @Override
-            public void call(Subscriber<? super T> s) {
+        @Override
+        public void call(final Subscriber<? super T> s) {
+            if (state.first.compareAndSet(false, true)) {
                 // drain queued notifications before subscription
                 // we do this here before PassThruObserver so the consuming thread can do this before putting itself in the line of the producer
-                BufferedObserver<T> buffered = (BufferedObserver<T>) observerRef.get();
-                Object o = null;
+                BufferedObserver<? super T> buffered = (BufferedObserver<? super T>)state.observerRef.get();
+                Object o;
                 while ((o = buffered.buffer.poll()) != null) {
-                    emit(s, o);
+                    state.nl.accept(s, o);
                 }
                 // register real observer for pass-thru ... and drain any further events received on first notification
-                observerRef.set(new PassThruObserver<T>(s, buffered.buffer, observerRef));
-            }
+                state.observerRef.set(new PassThruObserver<T>(s, buffered.buffer, state.observerRef));
+                s.add(Subscriptions.create(new Action0() {
+                    @Override
+                    public void call() {
+                        state.observerRef.set(Subscribers.empty());
+                    }
+                }));
+            } else {
+                Throwable e = null;
+                boolean done;
+                synchronized (state) {
+                    done = state.done;
+                    if (!done) {
+                        state.subscribers.add(s);
+                    } else {
+                        e = state.exception;
+                    }
+                }
+                if (done) {
+                    if (e != null) {
+                        s.onError(e);
+                    } else {
+                        s.onCompleted();
+                    }
+                    return;
+                }
+                s.add(Subscriptions.create(new Action0() { 
 
-        });
-        this.observerRef = observerRef;
+                    @Override
+                    public void call() {
+                        synchronized (state) {
+                            state.subscribers.remove(s);
+                        }
+                    }
+                }));
+            }
+        }
+        
+    }
+    final State<T> state;
+    
+    private BufferUntilSubscriber(State<T> state) {
+        super(new OnSubscribeAction<T>(state));
+        this.state = state;
     }
 
     @Override
     public void onCompleted() {
-        observerRef.get().onCompleted();
+        state.observerRef.get().onCompleted();
+        // notify the rest
+        Subscriber<?>[] list;
+        synchronized (state) {
+            if (!state.done) {
+                return;
+            }
+            state.done = true;
+            if (state.subscribers.isEmpty()) {
+                return;
+            }
+            list = state.subscribers.toArray(new Subscriber<?>[state.subscribers.size()]);
+            state.subscribers.clear();
+        }
+        for (Subscriber<?> s : list) {
+            s.onCompleted();
+        }
     }
 
     @Override
     public void onError(Throwable e) {
-        observerRef.get().onError(e);
+        state.observerRef.get().onError(e);
+        // notify the rest
+        Subscriber<?>[] list;
+        synchronized (state) {
+            if (!state.done) {
+                return;
+            }
+            state.done = true;
+            state.exception = e;
+            if (state.subscribers.isEmpty()) {
+                return;
+            }
+            list = state.subscribers.toArray(new Subscriber<?>[state.subscribers.size()]);
+            state.subscribers.clear();
+        }
+        for (Subscriber<?> s : list) {
+            s.onError(e);
+        }
     }
 
     @Override
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void onNext(T t) {
-        observerRef.get().onNext(t);
+        state.observerRef.get().onNext(t);
+        // notify the rest
+        Subscriber[] list;
+        synchronized (state) {
+            if (state.done) {
+                return;
+            }
+            if (state.subscribers.isEmpty()) {
+                return;
+            }
+            list = state.subscribers.toArray(new Subscriber[state.subscribers.size()]);
+        }
+        for (Subscriber s : list) {
+            s.onNext(t);
+        }
     }
 
     /**
@@ -97,6 +210,7 @@ public class BufferUntilSubscriber<T> extends Observable<T> implements Observer<
         // this assumes single threaded synchronous notifications (the Rx contract for a single Observer)
         private final ConcurrentLinkedQueue<Object> buffer;
         private final AtomicReference<Observer<? super T>> observerRef;
+        private final NotificationLite<T> nl = NotificationLite.instance();
 
         PassThruObserver(Observer<? super T> actual, ConcurrentLinkedQueue<Object> buffer, AtomicReference<Observer<? super T>> observerRef) {
             this.actual = actual;
@@ -123,67 +237,34 @@ public class BufferUntilSubscriber<T> extends Observable<T> implements Observer<
         }
 
         private void drainIfNeededAndSwitchToActual() {
-            Object o = null;
+            Object o;
             while ((o = buffer.poll()) != null) {
-                emit(this, o);
+                nl.accept(this, o);
             }
             // now we can safely change over to the actual and get rid of the pass-thru
-            observerRef.set(actual);
+            observerRef.compareAndSet(this, actual);
         }
 
     }
 
     private static class BufferedObserver<T> extends Subscriber<T> {
         private final ConcurrentLinkedQueue<Object> buffer = new ConcurrentLinkedQueue<Object>();
+        private final NotificationLite<T> nl = NotificationLite.instance();
 
         @Override
         public void onCompleted() {
-            buffer.add(COMPLETE_SENTINEL);
+            buffer.add(nl.completed());
         }
 
         @Override
         public void onError(Throwable e) {
-            buffer.add(new ErrorSentinel(e));
+            buffer.add(nl.error(e));
         }
 
         @Override
         public void onNext(T t) {
-            if (t == null) {
-                buffer.add(NULL_SENTINEL);
-            } else {
-                buffer.add(t);
-            }
+            buffer.add(nl.next(t));
         }
 
     }
-
-    private final static <T> void emit(Observer<T> s, Object v) {
-        if (v instanceof Sentinel) {
-            if (v == NULL_SENTINEL) {
-                s.onNext(null);
-            } else if (v == COMPLETE_SENTINEL) {
-                s.onCompleted();
-            } else if (v instanceof ErrorSentinel) {
-                s.onError(((ErrorSentinel) v).e);
-            }
-        } else {
-            s.onNext((T) v);
-        }
-    }
-
-    private static class Sentinel {
-
-    }
-
-    private static Sentinel NULL_SENTINEL = new Sentinel();
-    private static Sentinel COMPLETE_SENTINEL = new Sentinel();
-
-    private static class ErrorSentinel extends Sentinel {
-        final Throwable e;
-
-        ErrorSentinel(Throwable e) {
-            this.e = e;
-        }
-    }
-
 }

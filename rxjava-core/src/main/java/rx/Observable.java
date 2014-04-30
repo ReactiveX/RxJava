@@ -7238,7 +7238,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#wiki-window">RxJava Wiki: window()</a>
      */
     public final <TClosing> Observable<Observable<T>> window(Func0<? extends Observable<? extends TClosing>> closingSelector) {
-        return create(OperationWindow.window(this, closingSelector));
+        return lift(new OperatorWindowWithObservable<T, TClosing>(closingSelector));
     }
 
     /**
@@ -7255,7 +7255,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#wiki-window">RxJava Wiki: window()</a>
      */
     public final Observable<Observable<T>> window(int count) {
-        return create(OperationWindow.window(this, count));
+        return lift(new OperatorWindowWithSize<T>(count, count));
     }
 
     /**
@@ -7275,7 +7275,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#wiki-window">RxJava Wiki: window()</a>
      */
     public final Observable<Observable<T>> window(int count, int skip) {
-        return create(OperationWindow.window(this, count, skip));
+        return lift(new OperatorWindowWithSize<T>(count, skip));
     }
 
     /**
@@ -7297,7 +7297,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#wiki-window">RxJava Wiki: window()</a>
      */
     public final Observable<Observable<T>> window(long timespan, long timeshift, TimeUnit unit) {
-        return create(OperationWindow.window(this, timespan, timeshift, unit));
+        return lift(new OperatorWindowWithTime<T>(timespan, timeshift, unit, Integer.MAX_VALUE, Schedulers.computation()));
     }
 
     /**
@@ -7321,7 +7321,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#wiki-window">RxJava Wiki: window()</a>
      */
     public final Observable<Observable<T>> window(long timespan, long timeshift, TimeUnit unit, Scheduler scheduler) {
-        return create(OperationWindow.window(this, timespan, timeshift, unit, scheduler));
+        return lift(new OperatorWindowWithTime<T>(timespan, timeshift, unit, Integer.MAX_VALUE, scheduler));
     }
 
     /**
@@ -7342,7 +7342,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#wiki-window">RxJava Wiki: window()</a>
      */
     public final Observable<Observable<T>> window(long timespan, TimeUnit unit) {
-        return create(OperationWindow.window(this, timespan, unit));
+        return lift(new OperatorWindowWithTime<T>(timespan, timespan, unit, Integer.MAX_VALUE, Schedulers.computation()));
     }
 
     /**
@@ -7367,7 +7367,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#wiki-window">RxJava Wiki: window()</a>
      */
     public final Observable<Observable<T>> window(long timespan, TimeUnit unit, int count) {
-        return create(OperationWindow.window(this, timespan, unit, count));
+        return lift(new OperatorWindowWithTime<T>(timespan, timespan, unit, count, Schedulers.computation()));
     }
 
     /**
@@ -7394,7 +7394,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#wiki-window">RxJava Wiki: window()</a>
      */
     public final Observable<Observable<T>> window(long timespan, TimeUnit unit, int count, Scheduler scheduler) {
-        return create(OperationWindow.window(this, timespan, unit, count, scheduler));
+        return lift(new OperatorWindowWithTime<T>(timespan, timespan, unit, count, scheduler));
     }
 
     /**
@@ -7417,7 +7417,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#wiki-window">RxJava Wiki: window()</a>
      */
     public final Observable<Observable<T>> window(long timespan, TimeUnit unit, Scheduler scheduler) {
-        return create(OperationWindow.window(this, timespan, unit, scheduler));
+        return lift(new OperatorWindowWithTime<T>(timespan, timespan, unit, Integer.MAX_VALUE, scheduler));
     }
 
     /**
@@ -7437,7 +7437,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#wiki-window">RxJava Wiki: window()</a>
      */
     public final <TOpening, TClosing> Observable<Observable<T>> window(Observable<? extends TOpening> windowOpenings, Func1<? super TOpening, ? extends Observable<? extends TClosing>> closingSelector) {
-        return create(OperationWindow.window(this, windowOpenings, closingSelector));
+        return lift(new OperatorWindowWithStartEndObservable<T, TOpening, TClosing>(windowOpenings, closingSelector));
     }
 
     /**
@@ -7455,7 +7455,7 @@ public class Observable<T> {
      *         where the boundary of each window is determined by the items emitted from the {@code boundary} Observable
      */
     public final <U> Observable<Observable<T>> window(Observable<U> boundary) {
-        return create(OperationWindow.window(this, boundary));
+        return lift(new OperatorWindowWithObservable<T, U>(boundary));
     }
 
     /**
