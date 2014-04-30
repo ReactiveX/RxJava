@@ -50,7 +50,6 @@ import rx.operators.OnSubscribeFromIterable;
 import rx.operators.OnSubscribeRange;
 import rx.operators.OperationDelay;
 import rx.operators.OperationSkipUntil;
-import rx.operators.OperationSwitch;
 import rx.operators.OperationTakeLast;
 import rx.operators.OperationTakeTimed;
 import rx.operators.OperationTakeUntil;
@@ -115,6 +114,7 @@ import rx.operators.OperatorSkipLastTimed;
 import rx.operators.OperatorSkipTimed;
 import rx.operators.OperatorSkipWhile;
 import rx.operators.OperatorSubscribeOn;
+import rx.operators.OperatorSwitch;
 import rx.operators.OperatorTake;
 import rx.operators.OperatorTakeWhile;
 import rx.operators.OperatorThrottleFirst;
@@ -2483,9 +2483,11 @@ public class Observable<T> {
      * @return an Observable that emits the items emitted by the Observable most recently emitted by the source
      *         Observable
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#wiki-switchonnext">RxJava Wiki: switchOnNext()</a>
+     * 
+     * @param <T> the element type
      */
     public final static <T> Observable<T> switchOnNext(Observable<? extends Observable<? extends T>> sequenceOfSequences) {
-        return create(OperationSwitch.switchDo(sequenceOfSequences));
+        return sequenceOfSequences.lift(new OperatorSwitch<T>());
     }
 
     /**

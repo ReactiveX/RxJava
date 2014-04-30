@@ -28,16 +28,17 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InOrder;
-
 import rx.Observable;
 import rx.Observer;
+
 import rx.Scheduler;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Action0;
 import rx.schedulers.TestScheduler;
 import rx.subscriptions.Subscriptions;
 
-public class OperationSwitchTest {
+public class OperatorSwitchTest {
 
     private TestScheduler scheduler;
     private Scheduler.Worker innerScheduler;
@@ -53,25 +54,22 @@ public class OperationSwitchTest {
 
     @Test
     public void testSwitchWhenOuterCompleteBeforeInner() {
-        Observable<Observable<String>> source = Observable.create(new Observable.OnSubscribeFunc<Observable<String>>() {
+        Observable<Observable<String>> source = Observable.create(new Observable.OnSubscribe<Observable<String>>() {
             @Override
-            public Subscription onSubscribe(Observer<? super Observable<String>> observer) {
-                publishNext(observer, 50, Observable.create(new Observable.OnSubscribeFunc<String>() {
+            public void call(Subscriber<? super Observable<String>> observer) {
+                publishNext(observer, 50, Observable.create(new Observable.OnSubscribe<String>() {
                     @Override
-                    public Subscription onSubscribe(Observer<? super String> observer) {
+                    public void call(Subscriber<? super String> observer) {
                         publishNext(observer, 70, "one");
                         publishNext(observer, 100, "two");
                         publishCompleted(observer, 200);
-                        return Subscriptions.empty();
                     }
                 }));
                 publishCompleted(observer, 60);
-
-                return Subscriptions.empty();
             }
         });
 
-        Observable<String> sampled = Observable.create(OperationSwitch.switchDo(source));
+        Observable<String> sampled = Observable.switchOnNext(source);
         sampled.subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
@@ -111,7 +109,7 @@ public class OperationSwitchTest {
             }
         });
 
-        Observable<String> sampled = Observable.create(OperationSwitch.switchDo(source));
+        Observable<String> sampled = Observable.switchOnNext(source);
         sampled.subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
@@ -157,7 +155,7 @@ public class OperationSwitchTest {
             }
         });
 
-        Observable<String> sampled = Observable.create(OperationSwitch.switchDo(source));
+        Observable<String> sampled = Observable.switchOnNext(source);
         sampled.subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
@@ -217,7 +215,7 @@ public class OperationSwitchTest {
             }
         });
 
-        Observable<String> sampled = Observable.create(OperationSwitch.switchDo(source));
+        Observable<String> sampled = Observable.switchOnNext(source);
         sampled.subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
@@ -282,7 +280,7 @@ public class OperationSwitchTest {
             }
         });
 
-        Observable<String> sampled = Observable.create(OperationSwitch.switchDo(source));
+        Observable<String> sampled = Observable.switchOnNext(source);
         sampled.subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
@@ -337,7 +335,7 @@ public class OperationSwitchTest {
             }
         });
 
-        Observable<String> sampled = Observable.create(OperationSwitch.switchDo(source));
+        Observable<String> sampled = Observable.switchOnNext(source);
         sampled.subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
@@ -421,7 +419,7 @@ public class OperationSwitchTest {
             }
         });
 
-        Observable<String> sampled = Observable.create(OperationSwitch.switchDo(source));
+        Observable<String> sampled = Observable.switchOnNext(source);
         sampled.subscribe(observer);
 
         scheduler.advanceTimeTo(1000, TimeUnit.MILLISECONDS);
