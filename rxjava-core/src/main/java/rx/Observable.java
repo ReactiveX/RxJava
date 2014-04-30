@@ -49,9 +49,7 @@ import rx.observers.SafeSubscriber;
 import rx.operators.OnSubscribeFromIterable;
 import rx.operators.OnSubscribeRange;
 import rx.operators.OperationDelay;
-import rx.operators.OperationSkipUntil;
 import rx.operators.OperationTakeLast;
-import rx.operators.OperationTakeTimed;
 import rx.operators.OperationTakeUntil;
 import rx.operators.OperationWindow;
 import rx.operators.OperatorAll;
@@ -112,10 +110,12 @@ import rx.operators.OperatorSkip;
 import rx.operators.OperatorSkipLast;
 import rx.operators.OperatorSkipLastTimed;
 import rx.operators.OperatorSkipTimed;
+import rx.operators.OperatorSkipUntil;
 import rx.operators.OperatorSkipWhile;
 import rx.operators.OperatorSubscribeOn;
 import rx.operators.OperatorSwitch;
 import rx.operators.OperatorTake;
+import rx.operators.OperatorTakeTimed;
 import rx.operators.OperatorTakeWhile;
 import rx.operators.OperatorThrottleFirst;
 import rx.operators.OperatorTimeInterval;
@@ -6441,7 +6441,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#wiki-take">RxJava Wiki: take()</a>
      */
     public final Observable<T> take(long time, TimeUnit unit, Scheduler scheduler) {
-        return create(new OperationTakeTimed.TakeTimed<T>(this, time, unit, scheduler));
+        return lift(new OperatorTakeTimed<T>(time, unit, scheduler));
     }
 
     /**
