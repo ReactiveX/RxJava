@@ -15,9 +15,16 @@
  */
 package rx.math.operators;
 
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
-import static rx.math.operators.OperationSum.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyDouble;
+import static org.mockito.Matchers.anyFloat;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Matchers.isA;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import org.junit.Test;
 
@@ -25,8 +32,9 @@ import rx.Observable;
 import rx.Observer;
 import rx.functions.Func1;
 import rx.observables.MathObservable;
+import static rx.observables.MathObservable.*;
 
-public class OperationSumTest {
+public class OperatorAverageTest {
 
     @SuppressWarnings("unchecked")
     Observer<Integer> w = mock(Observer.class);
@@ -38,75 +46,72 @@ public class OperationSumTest {
     Observer<Double> wd = mock(Observer.class);
 
     @Test
-    public void testSumOfAFewInts() throws Throwable {
-        Observable<Integer> src = Observable.from(1, 2, 3, 4, 5);
-        sumIntegers(src).subscribe(w);
+    public void testAverageOfAFewInts() throws Throwable {
+        Observable<Integer> src = Observable.from(1, 2, 3, 4, 6);
+        averageInteger(src).subscribe(w);
 
         verify(w, times(1)).onNext(anyInt());
-        verify(w).onNext(15);
+        verify(w).onNext(3);
         verify(w, never()).onError(any(Throwable.class));
         verify(w, times(1)).onCompleted();
     }
 
     @Test
-    public void testEmptySum() throws Throwable {
+    public void testEmptyAverage() throws Throwable {
         Observable<Integer> src = Observable.empty();
-        sumIntegers(src).subscribe(w);
+        averageInteger(src).subscribe(w);
 
-        verify(w, times(1)).onNext(anyInt());
-        verify(w).onNext(0);
-        verify(w, never()).onError(any(Throwable.class));
-        verify(w, times(1)).onCompleted();
+        verify(w, never()).onNext(anyInt());
+        verify(w, times(1)).onError(isA(IllegalArgumentException.class));
+        verify(w, never()).onCompleted();
     }
 
     @Test
-    public void testSumOfAFewLongs() throws Throwable {
-        Observable<Long> src = Observable.from(1L, 2L, 3L, 4L, 5L);
-        sumLongs(src).subscribe(wl);
+    public void testAverageOfAFewLongs() throws Throwable {
+        Observable<Long> src = Observable.from(1L, 2L, 3L, 4L, 6L);
+        averageLong(src).subscribe(wl);
 
         verify(wl, times(1)).onNext(anyLong());
-        verify(wl).onNext(15L);
+        verify(wl).onNext(3L);
         verify(wl, never()).onError(any(Throwable.class));
         verify(wl, times(1)).onCompleted();
     }
 
     @Test
-    public void testEmptySumLongs() throws Throwable {
+    public void testEmptyAverageLongs() throws Throwable {
         Observable<Long> src = Observable.empty();
-        sumLongs(src).subscribe(wl);
+        averageLong(src).subscribe(wl);
 
-        verify(wl, times(1)).onNext(anyLong());
-        verify(wl).onNext(0L);
-        verify(wl, never()).onError(any(Throwable.class));
-        verify(wl, times(1)).onCompleted();
+        verify(wl, never()).onNext(anyLong());
+        verify(wl, times(1)).onError(isA(IllegalArgumentException.class));
+        verify(wl, never()).onCompleted();
     }
 
     @Test
-    public void testSumOfAFewFloats() throws Throwable {
-        Observable<Float> src = Observable.from(1.0f);
-        sumFloats(src).subscribe(wf);
+    public void testAverageOfAFewFloats() throws Throwable {
+        Observable<Float> src = Observable.from(1.0f, 2.0f);
+        averageFloat(src).subscribe(wf);
 
         verify(wf, times(1)).onNext(anyFloat());
-        verify(wf).onNext(1.0f);
+        verify(wf).onNext(1.5f);
         verify(wf, never()).onError(any(Throwable.class));
         verify(wf, times(1)).onCompleted();
     }
 
     @Test
-    public void testEmptySumFloats() throws Throwable {
+    public void testEmptyAverageFloats() throws Throwable {
         Observable<Float> src = Observable.empty();
-        sumFloats(src).subscribe(wf);
+        averageFloat(src).subscribe(wf);
 
-        verify(wf, times(1)).onNext(anyFloat());
-        verify(wf).onNext(0.0f);
-        verify(wf, never()).onError(any(Throwable.class));
-        verify(wf, times(1)).onCompleted();
+        verify(wf, never()).onNext(anyFloat());
+        verify(wf, times(1)).onError(isA(IllegalArgumentException.class));
+        verify(wf, never()).onCompleted();
     }
 
     @Test
-    public void testSumOfAFewDoubles() throws Throwable {
-        Observable<Double> src = Observable.from(0.0d, 1.0d, 0.5d);
-        sumDoubles(src).subscribe(wd);
+    public void testAverageOfAFewDoubles() throws Throwable {
+        Observable<Double> src = Observable.from(1.0d, 2.0d);
+        averageDouble(src).subscribe(wd);
 
         verify(wd, times(1)).onNext(anyDouble());
         verify(wd).onNext(1.5d);
@@ -115,14 +120,13 @@ public class OperationSumTest {
     }
 
     @Test
-    public void testEmptySumDoubles() throws Throwable {
+    public void testEmptyAverageDoubles() throws Throwable {
         Observable<Double> src = Observable.empty();
-        sumDoubles(src).subscribe(wd);
+        averageDouble(src).subscribe(wd);
 
-        verify(wd, times(1)).onNext(anyDouble());
-        verify(wd).onNext(0.0d);
-        verify(wd, never()).onError(any(Throwable.class));
-        verify(wd, times(1)).onCompleted();
+        verify(wd, never()).onNext(anyDouble());
+        verify(wd, times(1)).onError(isA(IllegalArgumentException.class));
+        verify(wd, never()).onCompleted();
     }
 
     void testThrows(Observer<Object> o, Class<? extends Throwable> errorClass) {
@@ -138,7 +142,7 @@ public class OperationSumTest {
     }
 
     @Test
-    public void testIntegerSumSelector() {
+    public void testIntegerAverageSelector() {
         Observable<String> source = Observable.from("a", "bb", "ccc", "dddd");
         Func1<String, Integer> length = new Func1<String, Integer>() {
             @Override
@@ -147,15 +151,16 @@ public class OperationSumTest {
             }
         };
 
-        Observable<Integer> result = MathObservable.from(source).sumInteger(length);
+        Observable<Integer> result = MathObservable.from(source).averageInteger(length);
+        @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
         result.subscribe(o);
 
-        testValue(o, 10);
+        testValue(o, 2);
     }
 
     @Test
-    public void testLongSumSelector() {
+    public void testLongAverageSelector() {
         Observable<String> source = Observable.from("a", "bb", "ccc", "dddd");
         Func1<String, Long> length = new Func1<String, Long>() {
             @Override
@@ -164,15 +169,16 @@ public class OperationSumTest {
             }
         };
 
-        Observable<Long> result = MathObservable.from(source).sumLong(length);
+        Observable<Long> result = MathObservable.from(source).averageLong(length);
+        @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
         result.subscribe(o);
 
-        testValue(o, 10L);
+        testValue(o, 2L);
     }
 
     @Test
-    public void testFloatSumSelector() {
+    public void testFloatAverageSelector() {
         Observable<String> source = Observable.from("a", "bb", "ccc", "dddd");
         Func1<String, Float> length = new Func1<String, Float>() {
             @Override
@@ -181,15 +187,16 @@ public class OperationSumTest {
             }
         };
 
-        Observable<Float> result = MathObservable.from(source).sumFloat(length);
+        Observable<Float> result = MathObservable.from(source).averageFloat(length);
+        @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
         result.subscribe(o);
 
-        testValue(o, 10f);
+        testValue(o, 2.5f);
     }
 
     @Test
-    public void testDoubleSumSelector() {
+    public void testDoubleAverageSelector() {
         Observable<String> source = Observable.from("a", "bb", "ccc", "dddd");
         Func1<String, Double> length = new Func1<String, Double>() {
             @Override
@@ -198,15 +205,16 @@ public class OperationSumTest {
             }
         };
 
-        Observable<Double> result = MathObservable.from(source).sumDouble(length);
+        Observable<Double> result = MathObservable.from(source).averageDouble(length);
+        @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
         result.subscribe(o);
 
-        testValue(o, 10d);
+        testValue(o, 2.5d);
     }
 
     @Test
-    public void testIntegerSumSelectorEmpty() {
+    public void testIntegerAverageSelectorEmpty() {
         Observable<String> source = Observable.empty();
         Func1<String, Integer> length = new Func1<String, Integer>() {
             @Override
@@ -215,7 +223,8 @@ public class OperationSumTest {
             }
         };
 
-        Observable<Integer> result = MathObservable.from(source).sumInteger(length);
+        Observable<Integer> result = MathObservable.from(source).averageInteger(length);
+        @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
         result.subscribe(o);
 
@@ -223,7 +232,7 @@ public class OperationSumTest {
     }
 
     @Test
-    public void testLongSumSelectorEmpty() {
+    public void testLongAverageSelectorEmpty() {
         Observable<String> source = Observable.empty();
         Func1<String, Long> length = new Func1<String, Long>() {
             @Override
@@ -232,7 +241,8 @@ public class OperationSumTest {
             }
         };
 
-        Observable<Long> result = MathObservable.from(source).sumLong(length);
+        Observable<Long> result = MathObservable.from(source).averageLong(length);
+        @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
         result.subscribe(o);
 
@@ -240,7 +250,7 @@ public class OperationSumTest {
     }
 
     @Test
-    public void testFloatSumSelectorEmpty() {
+    public void testFloatAverageSelectorEmpty() {
         Observable<String> source = Observable.empty();
         Func1<String, Float> length = new Func1<String, Float>() {
             @Override
@@ -249,7 +259,8 @@ public class OperationSumTest {
             }
         };
 
-        Observable<Float> result = MathObservable.from(source).sumFloat(length);
+        Observable<Float> result = MathObservable.from(source).averageFloat(length);
+        @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
         result.subscribe(o);
 
@@ -257,7 +268,7 @@ public class OperationSumTest {
     }
 
     @Test
-    public void testDoubleSumSelectorEmpty() {
+    public void testDoubleAverageSelectorEmpty() {
         Observable<String> source = Observable.empty();
         Func1<String, Double> length = new Func1<String, Double>() {
             @Override
@@ -266,7 +277,8 @@ public class OperationSumTest {
             }
         };
 
-        Observable<Double> result = MathObservable.from(source).sumDouble(length);
+        Observable<Double> result = MathObservable.from(source).averageDouble(length);
+        @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
         result.subscribe(o);
 
@@ -274,7 +286,7 @@ public class OperationSumTest {
     }
 
     @Test
-    public void testIntegerSumSelectorThrows() {
+    public void testIntegerAverageSelectorThrows() {
         Observable<String> source = Observable.from("a");
         Func1<String, Integer> length = new Func1<String, Integer>() {
             @Override
@@ -283,7 +295,8 @@ public class OperationSumTest {
             }
         };
 
-        Observable<Integer> result = MathObservable.from(source).sumInteger(length);
+        Observable<Integer> result = MathObservable.from(source).averageInteger(length);
+        @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
         result.subscribe(o);
 
@@ -291,7 +304,7 @@ public class OperationSumTest {
     }
 
     @Test
-    public void testLongSumSelectorThrows() {
+    public void testLongAverageSelectorThrows() {
         Observable<String> source = Observable.from("a");
         Func1<String, Long> length = new Func1<String, Long>() {
             @Override
@@ -300,7 +313,8 @@ public class OperationSumTest {
             }
         };
 
-        Observable<Long> result = MathObservable.from(source).sumLong(length);
+        Observable<Long> result = MathObservable.from(source).averageLong(length);
+        @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
         result.subscribe(o);
 
@@ -308,7 +322,7 @@ public class OperationSumTest {
     }
 
     @Test
-    public void testFloatSumSelectorThrows() {
+    public void testFloatAverageSelectorThrows() {
         Observable<String> source = Observable.from("a");
         Func1<String, Float> length = new Func1<String, Float>() {
             @Override
@@ -317,7 +331,8 @@ public class OperationSumTest {
             }
         };
 
-        Observable<Float> result = MathObservable.from(source).sumFloat(length);
+        Observable<Float> result = MathObservable.from(source).averageFloat(length);
+        @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
         result.subscribe(o);
 
@@ -325,7 +340,7 @@ public class OperationSumTest {
     }
 
     @Test
-    public void testDoubleSumSelectorThrows() {
+    public void testDoubleAverageSelectorThrows() {
         Observable<String> source = Observable.from("a");
         Func1<String, Double> length = new Func1<String, Double>() {
             @Override
@@ -334,13 +349,15 @@ public class OperationSumTest {
             }
         };
 
-        Observable<Double> result = MathObservable.from(source).sumDouble(length);
+        Observable<Double> result = MathObservable.from(source).averageDouble(length);
+        @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
         result.subscribe(o);
 
         testThrows(o, CustomException.class);
     }
-
+    
     static class CustomException extends RuntimeException {
+		private static final long serialVersionUID = 6873927510089089979L;
     }
 }

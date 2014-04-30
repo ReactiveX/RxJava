@@ -26,7 +26,8 @@ import rx.functions.Func2;
 /**
  * Returns the minimum element in an observable sequence.
  */
-public class OperationMinMax {
+public final class OperatorMinMax {
+	private OperatorMinMax() { throw new IllegalStateException("No instances!"); }
 
     public static <T extends Comparable<? super T>> Observable<T> min(
             Observable<T> source) {
