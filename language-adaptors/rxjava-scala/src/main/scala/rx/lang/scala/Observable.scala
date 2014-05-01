@@ -2572,7 +2572,7 @@ trait Observable[+T]
    * @return an Observable that emits values that are the result of applying the bind function to the values
    *         of the current Observable
    */
-  def lift[R](operator: Subscriber[R] => Subscriber[_ >: T]): Observable[R] = {
+  def lift[R](operator: Subscriber[R] => Subscriber[T]): Observable[R] = {
     toScalaObservable(asJavaObservable.lift(toJavaOperator[T, R](operator)))
   }
 }
