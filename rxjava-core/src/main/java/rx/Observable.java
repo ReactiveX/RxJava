@@ -3213,7 +3213,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Conditional-and-Boolean-Operators#wiki-contains">RxJava Wiki: contains()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh228965.aspx">MSDN: Observable.Contains</a>
      */
-    public final Observable<Boolean> contains(final T element) {
+    public final Observable<Boolean> contains(final Object element) {
         return exists(new Func1<T, Boolean>() {
             public final Boolean call(T t1) {
                 return element == null ? t1 == null : element.equals(t1);
