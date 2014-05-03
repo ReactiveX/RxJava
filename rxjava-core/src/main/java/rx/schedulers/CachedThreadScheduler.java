@@ -21,7 +21,7 @@ import rx.functions.Action0;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.Subscriptions;
 
-import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -40,13 +40,11 @@ import java.util.concurrent.atomic.AtomicInteger;
         };
 
         private final long keepAliveTime;
-        private final long queuePollTimeout;
-        private final LinkedBlockingDeque<EventLoopScheduler> expiringQueue;
+        private final ConcurrentLinkedQueue<EventLoopScheduler> expiringQueue;
 
         CachedEventLoopPool(long keepAliveTime, TimeUnit unit) {
             this.keepAliveTime = unit.toNanos(keepAliveTime);
-            this.queuePollTimeout = (long) (keepAliveTime * 0.10);
-            this.expiringQueue = new LinkedBlockingDeque<EventLoopScheduler>();
+            this.expiringQueue = new ConcurrentLinkedQueue<EventLoopScheduler>();
         }
 
         private static CachedEventLoopPool INSTANCE = new CachedEventLoopPool(
@@ -55,24 +53,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 
         EventLoopScheduler takeEventLoop() {
             long currentTimestamp = now();
-            long timeoutTimestamp = currentTimestamp + queuePollTimeout;
             while (!expiringQueue.isEmpty()) {
-                try {
-                    EventLoopScheduler eventLoopScheduler = expiringQueue.pollFirst(queuePollTimeout, TimeUnit.NANOSECONDS);
-                    if (eventLoopScheduler != null && eventLoopScheduler.getExpirationTime() > currentTimestamp) {
-                        return eventLoopScheduler;
-                    }
-                } catch (InterruptedException e) {
-                    // If we were interrupted, try again next loop
-                }
-
-                // Don't spin too long trying to find a cached event loop
-                if (timeoutTimestamp < now()) {
-                    break;
+                EventLoopScheduler eventLoopScheduler = expiringQueue.poll();
+                if (eventLoopScheduler != null && eventLoopScheduler.getExpirationTime() > currentTimestamp) {
+                    return eventLoopScheduler;
                 }
             }
 
-            // No non-expired cached event loop found, or we timed out looking for one. Create a new one.
+            // No non-expired cached event loop found, so create a new one.
             return new EventLoopScheduler(factory);
         }
 
@@ -80,7 +68,7 @@ import java.util.concurrent.atomic.AtomicInteger;
             // Refresh expire time before putting event loop back in pool
             eventLoopScheduler.setExpirationTime(now() + keepAliveTime);
 
-            expiringQueue.addLast(eventLoopScheduler);
+            expiringQueue.add(eventLoopScheduler);
         }
 
         long now() {
