@@ -2254,6 +2254,68 @@ trait Observable[+T]
   }
 
   /**
+   * Returns an Observable that repeats the sequence of items emitted by the source Observable indefinitely.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/repeat.o.png">
+   *
+   * @return an Observable that emits the items emitted by the source Observable repeatedly and in sequence
+   * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#wiki-repeat">RxJava Wiki: repeat()</a>
+   * @see <a href="http://msdn.microsoft.com/en-us/library/hh229428.aspx">MSDN: Observable.Repeat</a>
+   */
+  def repeat(): Observable[T] = {
+    toScalaObservable[T](asJavaObservable.repeat())
+  }
+
+  /**
+   * Returns an Observable that repeats the sequence of items emitted by the source Observable indefinitely,
+   * on a particular Scheduler.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/repeat.os.png">
+   *
+   * @param scheduler the Scheduler to emit the items on
+   * @return an Observable that emits the items emitted by the source Observable repeatedly and in sequence
+   * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#wiki-repeat">RxJava Wiki: repeat()</a>
+   * @see <a href="http://msdn.microsoft.com/en-us/library/hh229428.aspx">MSDN: Observable.Repeat</a>
+   */
+  def repeat(scheduler: Scheduler): Observable[T] = {
+    toScalaObservable[T](asJavaObservable.repeat(scheduler))
+  }
+
+  /**
+   * Returns an Observable that repeats the sequence of items emitted by the source Observable at most `count` times.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/repeat.on.png">
+   *
+   * @param count the number of times the source Observable items are repeated,
+   *              a count of 0 will yield an empty sequence
+   * @return an Observable that repeats the sequence of items emitted by the source Observable at most `count` times
+   * @throws IllegalArgumentException if `count` is less than zero
+   * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#wiki-repeat">RxJava Wiki: repeat()</a>
+   * @see <a href="http://msdn.microsoft.com/en-us/library/hh229428.aspx">MSDN: Observable.Repeat</a>
+   */
+  def repeat(count: Long): Observable[T] = {
+    toScalaObservable[T](asJavaObservable.repeat(count))
+  }
+
+  /**
+   * Returns an Observable that repeats the sequence of items emitted by the source Observable
+   * at most `count` times, on a particular Scheduler.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/repeat.ons.png">
+   *
+   * @param count the number of times the source Observable items are repeated,
+   *              a count of 0 will yield an empty sequence
+   * @param scheduler the `Scheduler` to emit the items on
+   * @return an Observable that repeats the sequence of items emitted by the source Observable at most `count` times
+   *         on a particular Scheduler
+   * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#wiki-repeat">RxJava Wiki: repeat()</a>
+   * @see <a href="http://msdn.microsoft.com/en-us/library/hh229428.aspx">MSDN: Observable.Repeat</a>
+   */
+  def repeat(count: Long, scheduler: Scheduler): Observable[T] = {
+    toScalaObservable[T](asJavaObservable.repeat(count, scheduler))
+  }
+
+  /**
    * Converts an Observable into a [[rx.lang.scala.observables.BlockingObservable]] (an Observable with blocking
    * operators).
    *

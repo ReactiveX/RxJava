@@ -654,6 +654,16 @@ class RxScalaDemo extends JUnitSuite {
     assertFalse(o2.toBlockingObservable.single)
   }
 
+  @Test def repeatExample1(): Unit = {
+    val o : Observable[String] = List("alice", "bob", "carol").toObservable.repeat().take(6)
+    assertEquals(List("alice", "bob", "carol", "alice", "bob", "carol"), o.toBlockingObservable.toList)
+  }
+
+  @Test def repeatExample2(): Unit = {
+    val o : Observable[String] = List("alice", "bob", "carol").toObservable.repeat(2)
+    assertEquals(List("alice", "bob", "carol", "alice", "bob", "carol"), o.toBlockingObservable.toList)
+  }
+
   @Test def retryExample1(): Unit = {
     val o : Observable[String] = List("alice", "bob", "carol").toObservable
     assertEquals(List("alice", "bob", "carol"), o.retry.toBlockingObservable.toList)

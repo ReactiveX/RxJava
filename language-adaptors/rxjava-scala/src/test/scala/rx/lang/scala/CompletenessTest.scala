@@ -143,6 +143,8 @@ class CompletenessTest extends JUnitSuite {
       "mergeDelayError(Observable[_ <: T], Observable[_ <: T])" -> "mergeDelayError(Observable[U])",
       "mergeDelayError(Observable[_ <: Observable[_ <: T]])" -> "flattenDelayError(<:<[Observable[T], Observable[Observable[U]]])",
       "range(Int, Int)" -> "apply(Range)",
+      "repeat()" -> "repeat()",
+      "retry()" -> "retry()",
       "sequenceEqual(Observable[_ <: T], Observable[_ <: T])" -> "[use `(first zip second) map (p => p._1 == p._2)`]",
       "sequenceEqual(Observable[_ <: T], Observable[_ <: T], Func2[_ >: T, _ >: T, Boolean])" -> "[use `(first zip second) map (p => equality(p._1, p._2))`]",
       "sum(Observable[Integer])" -> "sum(Numeric[U])",
