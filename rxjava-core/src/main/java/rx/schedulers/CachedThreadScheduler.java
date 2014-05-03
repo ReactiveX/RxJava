@@ -21,14 +21,13 @@ import rx.functions.Action0;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.Subscriptions;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class CachedThreadScheduler extends Scheduler {
-    private static class EventLoopSchedulerPool {
+/* package */public class CachedThreadScheduler extends Scheduler {
+    private static class CachedEventLoopPool {
         final ThreadFactory factory = new ThreadFactory() {
             final AtomicInteger counter = new AtomicInteger();
 
@@ -40,34 +39,48 @@ public class CachedThreadScheduler extends Scheduler {
             }
         };
 
-        private final long expirationTime;
-        private final ConcurrentHashMap<EventLoopScheduler, Long> expiringQueue;
+        private final long keepAliveTime;
+        private final LinkedBlockingDeque<EventLoopScheduler> expiringQueue;
 
-        EventLoopSchedulerPool(long expirationTime, TimeUnit unit) {
-            this.expirationTime = unit.toNanos(expirationTime);
-            this.expiringQueue = new ConcurrentHashMap<EventLoopScheduler, Long>();
+        CachedEventLoopPool(long keepAliveTime, TimeUnit unit) {
+            this.keepAliveTime = unit.toNanos(keepAliveTime);
+            this.expiringQueue = new LinkedBlockingDeque<EventLoopScheduler>();
         }
 
-        private static EventLoopSchedulerPool INSTANCE = new EventLoopSchedulerPool(
+        private static CachedEventLoopPool INSTANCE = new CachedEventLoopPool(
             60L, TimeUnit.SECONDS
         );
 
-        EventLoopScheduler get() {
-            long now = now();
-            if (!expiringQueue.isEmpty()) {
-                for (Map.Entry<EventLoopScheduler, Long> eventLoopSchedulerExpirationTimeEntry : expiringQueue.entrySet()) {
-                    expiringQueue.remove(eventLoopSchedulerExpirationTimeEntry.getKey());
-                    if((now - eventLoopSchedulerExpirationTimeEntry.getValue()) <= expirationTime) {
-                        return eventLoopSchedulerExpirationTimeEntry.getKey();
-                    }
+        EventLoopScheduler takeEventLoop() {
+            long startTimestamp = now();
+            while (!expiringQueue.isEmpty()) {
+                EventLoopScheduler eventLoopScheduler = null;
+                try {
+                    eventLoopScheduler = expiringQueue.pollFirst(keepAliveTime, TimeUnit.NANOSECONDS);
+                } catch (InterruptedException e) {
+                    // If we were interrupted, try again next loop
+                }
+
+                if (eventLoopScheduler != null &&
+                    (startTimestamp - eventLoopScheduler.getExpirationTime()) <= keepAliveTime) {
+                    return eventLoopScheduler;
+                }
+
+                // Don't spin too long trying to find a cached event loop
+                if ((startTimestamp + keepAliveTime) > now()) {
+                    break;
                 }
             }
 
+            // No suitable cached event loop found, or we timed out looking for one. Create a new one.
             return new EventLoopScheduler(factory);
         }
 
-        void put(EventLoopScheduler eventLoopScheduler) {
-            expiringQueue.put(eventLoopScheduler, now());
+        void returnEventLoop(EventLoopScheduler eventLoopScheduler) {
+            // Refresh expire time before putting event loop back in pool
+            eventLoopScheduler.setExpirationTime(now());
+
+            expiringQueue.addLast(eventLoopScheduler);
         }
 
         long now() {
@@ -86,7 +99,7 @@ public class CachedThreadScheduler extends Scheduler {
         private final NewThreadScheduler.OnActionComplete onComplete;
 
         EventLoop() {
-            pooledEventLoop = EventLoopSchedulerPool.INSTANCE.get();
+            pooledEventLoop = CachedEventLoopPool.INSTANCE.takeEventLoop();
             onComplete = new NewThreadScheduler.OnActionComplete() {
                 @Override
                 public void complete(Subscription s) {
@@ -98,7 +111,7 @@ public class CachedThreadScheduler extends Scheduler {
         @Override
         public void unsubscribe() {
             innerSubscription.unsubscribe();
-            EventLoopSchedulerPool.INSTANCE.put(pooledEventLoop);
+            CachedEventLoopPool.INSTANCE.returnEventLoop(pooledEventLoop);
         }
 
         @Override
@@ -127,8 +140,19 @@ public class CachedThreadScheduler extends Scheduler {
     }
 
     private static class EventLoopScheduler extends NewThreadScheduler.EventLoopScheduler {
+        private long expirationTime;
+
         EventLoopScheduler(ThreadFactory threadFactory) {
             super(threadFactory);
+            this.expirationTime = 0L;
+        }
+
+        public long getExpirationTime() {
+            return expirationTime;
+        }
+
+        public void setExpirationTime(long expirationTime) {
+            this.expirationTime = expirationTime;
         }
     }
 }
