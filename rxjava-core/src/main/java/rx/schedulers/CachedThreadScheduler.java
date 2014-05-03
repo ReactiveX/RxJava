@@ -40,10 +40,12 @@ import java.util.concurrent.atomic.AtomicInteger;
         };
 
         private final long keepAliveTime;
+        private final long queuePollTimeout;
         private final LinkedBlockingDeque<EventLoopScheduler> expiringQueue;
 
         CachedEventLoopPool(long keepAliveTime, TimeUnit unit) {
             this.keepAliveTime = unit.toNanos(keepAliveTime);
+            this.queuePollTimeout = (long) (keepAliveTime * 0.10);
             this.expiringQueue = new LinkedBlockingDeque<EventLoopScheduler>();
         }
 
@@ -52,33 +54,31 @@ import java.util.concurrent.atomic.AtomicInteger;
         );
 
         EventLoopScheduler takeEventLoop() {
-            long startTimestamp = now();
+            long currentTimestamp = now();
+            long timeoutTimestamp = currentTimestamp + queuePollTimeout;
             while (!expiringQueue.isEmpty()) {
-                EventLoopScheduler eventLoopScheduler = null;
                 try {
-                    eventLoopScheduler = expiringQueue.pollFirst(keepAliveTime, TimeUnit.NANOSECONDS);
+                    EventLoopScheduler eventLoopScheduler = expiringQueue.pollFirst(queuePollTimeout, TimeUnit.NANOSECONDS);
+                    if (eventLoopScheduler != null && eventLoopScheduler.getExpirationTime() > currentTimestamp) {
+                        return eventLoopScheduler;
+                    }
                 } catch (InterruptedException e) {
                     // If we were interrupted, try again next loop
                 }
 
-                if (eventLoopScheduler != null &&
-                    (startTimestamp - eventLoopScheduler.getExpirationTime()) <= keepAliveTime) {
-                    return eventLoopScheduler;
-                }
-
                 // Don't spin too long trying to find a cached event loop
-                if ((startTimestamp + keepAliveTime) > now()) {
+                if (timeoutTimestamp < now()) {
                     break;
                 }
             }
 
-            // No suitable cached event loop found, or we timed out looking for one. Create a new one.
+            // No non-expired cached event loop found, or we timed out looking for one. Create a new one.
             return new EventLoopScheduler(factory);
         }
 
         void returnEventLoop(EventLoopScheduler eventLoopScheduler) {
             // Refresh expire time before putting event loop back in pool
-            eventLoopScheduler.setExpirationTime(now());
+            eventLoopScheduler.setExpirationTime(now() + keepAliveTime);
 
             expiringQueue.addLast(eventLoopScheduler);
         }
