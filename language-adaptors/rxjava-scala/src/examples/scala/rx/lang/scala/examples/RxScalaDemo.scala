@@ -426,6 +426,15 @@ class RxScalaDemo extends JUnitSuite {
     )
   }
 
+  @Test def dropUntilExample() {
+    val o = List("Alice", "Bob", "Carlos").toObservable.zip(
+      Observable.interval(700 millis, IOScheduler())).map(_._1) // emit every 700 millis
+    val other = List(1).toObservable.delay(1 seconds)
+    println(
+      o.dropUntil(other).toBlockingObservable.toList // output List("Bob", "Carlos")
+    )
+  }
+
   def square(x: Int): Int = {
     println(s"$x*$x is being calculated on thread ${Thread.currentThread().getId}")
     Thread.sleep(100) // calculating a square is heavy work :)

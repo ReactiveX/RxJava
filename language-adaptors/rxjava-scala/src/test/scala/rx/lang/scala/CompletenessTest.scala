@@ -98,6 +98,7 @@ class CompletenessTest extends JUnitSuite {
       "skip(Long, TimeUnit, Scheduler)" -> "drop(Duration, Scheduler)",
       "skipWhile(Func1[_ >: T, Boolean])" -> "dropWhile(T => Boolean)",
       "skipWhileWithIndex(Func2[_ >: T, Integer, Boolean])" -> unnecessary,
+      "skipUntil(Observable[U])" -> "dropUntil(Observable[E])",
       "startWith(Iterable[T])" -> "[unnecessary because we can just use `++` instead]",
       "skipLast(Int)" -> "dropRight(Int)",
       "skipLast(Long, TimeUnit)" -> "dropRight(Duration)",

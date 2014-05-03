@@ -1328,6 +1328,22 @@ trait Observable[+T]
   }
 
   /**
+   * Returns an Observable that skips items emitted by the source Observable until a second Observable emits an item.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/skipUntil.png">
+   *
+   * @param other the second Observable that has to emit an item before the source Observable's elements begin
+   *              to be mirrored by the resulting Observable
+   * @return an Observable that skips items from the source Observable until the second Observable emits an
+   *         item, then emits the remaining items
+   * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#wiki-skipuntil">RxJava Wiki: skipUntil()</a>
+   * @see <a href="http://msdn.microsoft.com/en-us/library/hh229358.aspx">MSDN: Observable.SkipUntil</a>
+   */
+  def dropUntil[E](other: Observable[E]): Observable[T] = {
+    toScalaObservable[T](asJavaObservable.skipUntil(other))
+  }
+
+  /**
    * Returns an Observable that emits only the first `num` items emitted by the source
    * Observable.
    *
