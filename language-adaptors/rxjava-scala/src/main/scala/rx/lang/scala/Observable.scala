@@ -1062,6 +1062,22 @@ trait Observable[+T]
   }
 
   /**
+   * Returns an Observable that emits a Boolean that indicates whether the source Observable emitted a
+   * specified item.
+   *
+   * Note: this method uses `==` to compare elements. It's a bit different from RxJava which uses `Object.equals`.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/contains.png">
+   *
+   *@param elem the item to search for in the emissions from the source Observable
+   * @return an Observable that emits `true` if the specified item is emitted by the source Observable,
+   *         or `false` if the source Observable completes without emitting that item
+   */
+  def contains(elem: Any): Observable[Boolean] = {
+    exists(_ == elem)
+  }
+
+  /**
    * Returns a a pair of a start function and an [[rx.lang.scala.Observable]], which waits until the start function is called before it begins emitting
    * items to those [[rx.lang.scala.Observer]]s that have subscribed to it.
    *

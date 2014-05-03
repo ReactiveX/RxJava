@@ -25,6 +25,7 @@ import scala.language.implicitConversions
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
+import org.junit.Assert.assertFalse
 import org.junit.Ignore
 import org.junit.Test
 import org.scalatest.junit.JUnitSuite
@@ -643,6 +644,14 @@ class RxScalaDemo extends JUnitSuite {
     val mapFactory = () => Map(('s',"tart"))
     val m = o.toMap(keySelector, valueSelector, mapFactory)
     println(m.toBlockingObservable.single)
+  }
+
+  @Test def containsExample(): Unit = {
+    val o1 = List(1, 2, 3).toObservable.contains(2)
+    assertTrue(o1.toBlockingObservable.single)
+
+    val o2 = List(1, 2, 3).toObservable.contains(4)
+    assertFalse(o2.toBlockingObservable.single)
   }
 
   @Test def retryExample1(): Unit = {

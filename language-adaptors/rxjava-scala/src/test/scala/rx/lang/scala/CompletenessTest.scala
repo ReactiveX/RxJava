@@ -71,6 +71,7 @@ class CompletenessTest extends JUnitSuite {
       "all(Func1[_ >: T, Boolean])" -> "forall(T => Boolean)",
       "buffer(Long, Long, TimeUnit)" -> "buffer(Duration, Duration)",
       "buffer(Long, Long, TimeUnit, Scheduler)" -> "buffer(Duration, Duration, Scheduler)",
+      "contains(T)" -> "contains(Any)",
       "count()" -> "length",
       "dematerialize()" -> "dematerialize(<:<[Observable[T], Observable[Notification[U]]])",
       "elementAt(Int)" -> "[use `.drop(index).first`]",
