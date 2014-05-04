@@ -24,6 +24,7 @@ import rx.subscriptions.Subscriptions;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /* package */public class CachedThreadScheduler extends Scheduler {
@@ -85,6 +86,7 @@ import java.util.concurrent.atomic.AtomicInteger;
         private final CompositeSubscription innerSubscription = new CompositeSubscription();
         private final EventLoopScheduler pooledEventLoop;
         private final NewThreadScheduler.OnActionComplete onComplete;
+        private final AtomicBoolean returnEventLoopOnce = new AtomicBoolean(false);
 
         EventLoop() {
             pooledEventLoop = CachedEventLoopPool.INSTANCE.takeEventLoop();
@@ -98,8 +100,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 
         @Override
         public void unsubscribe() {
+            if (returnEventLoopOnce.compareAndSet(false, true)) {
+                // unsubscribe should be idempotent, so only do this once
+                CachedEventLoopPool.INSTANCE.returnEventLoop(pooledEventLoop);
+            }
             innerSubscription.unsubscribe();
-            CachedEventLoopPool.INSTANCE.returnEventLoop(pooledEventLoop);
         }
 
         @Override
