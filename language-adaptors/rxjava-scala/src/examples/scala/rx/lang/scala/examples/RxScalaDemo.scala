@@ -560,6 +560,26 @@ class RxScalaDemo extends JUnitSuite {
     obs.toBlockingObservable.toIterable.last
   }
 
+  @Test def doOnTerminateExample(): Unit = {
+    val o = List("red", "green", "blue").toObservable.doOnTerminate(() => println("terminate"))
+    o.subscribe(v => println(v), e => e.printStackTrace, () => println("onCompleted"))
+    // red
+    // green
+    // blud
+    // terminate
+    // onCompleted
+  }
+
+  @Test def finallyDoExample(): Unit = {
+    val o = List("red", "green", "blue").toObservable.finallyDo(() => println("finally"))
+    o.subscribe(v => println(v), e => e.printStackTrace, () => println("onCompleted"))
+    // red
+    // green
+    // blud
+    // onCompleted
+    // finally
+  }
+
   @Test def timeoutExample(): Unit = {
     val other = List(100L, 200L, 300L).toObservable
     val result = Observable.interval(100 millis).timeout(50 millis, other).toBlockingObservable.toList

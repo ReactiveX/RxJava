@@ -2462,6 +2462,22 @@ trait Observable[+T]
   }
 
   /**
+   * Modifies an Observable so that it invokes an action when it calls `onCompleted` or `onError`.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/doOnTerminate.png">
+   * <p>
+   * This differs from `finallyDo` in that this happens BEFORE onCompleted/onError are emitted.
+   *
+   * @param onTerminate the action to invoke when the source Observable calls `onCompleted` or `onError`
+   * @return the source Observable with the side-effecting behavior applied
+   * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#wiki-doonterminate">RxJava Wiki: doOnTerminate()</a>
+   * @see <a href="http://msdn.microsoft.com/en-us/library/hh229804.aspx">MSDN: Observable.Do</a>
+   */
+  def doOnTerminate(onTerminate: () => Unit): Observable[T] = {
+    toScalaObservable[T](asJavaObservable.doOnTerminate(onTerminate))
+  }
+
+  /**
    * Given two Observables, mirror the one that first emits an item.
    *
    * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/amb.png">
