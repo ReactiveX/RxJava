@@ -21,6 +21,7 @@ import rx.functions.Action0;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.Subscriptions;
 
+import java.util.Iterator;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -90,15 +91,18 @@ import java.util.concurrent.atomic.AtomicInteger;
         }
 
         void evictExpiredEventLoops() {
-            long currentTimestamp = now();
-            while (!expiringQueue.isEmpty()) {
-                EventLoopScheduler eventLoopScheduler = expiringQueue.poll();
-                // Queue is ordered with the event loops that will expire first in the beginning, so when we
-                // find a non-expired event loop we can stop evicting.
-                if (eventLoopScheduler != null && eventLoopScheduler.getExpirationTime() > currentTimestamp) {
-                    // return non-expired event loop to the pool
-                    returnEventLoop(eventLoopScheduler);
-                    break;
+            if (!expiringQueue.isEmpty()) {
+                long currentTimestamp = now();
+                Iterator<EventLoopScheduler> eventLoopSchedulerIterator = expiringQueue.iterator();
+                while (eventLoopSchedulerIterator.hasNext()) {
+                    EventLoopScheduler eventLoopScheduler = eventLoopSchedulerIterator.next();
+                    if (eventLoopScheduler.getExpirationTime() <= currentTimestamp) {
+                        eventLoopSchedulerIterator.remove();
+                    } else {
+                        // Queue is ordered with the event loops that will expire first in the beginning, so when we
+                        // find a non-expired event loop we can stop evicting.
+                        break;
+                    }
                 }
             }
         }
