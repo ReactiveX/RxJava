@@ -21,9 +21,7 @@ import rx.functions.Action0;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.Subscriptions;
 
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -42,10 +40,30 @@ import java.util.concurrent.atomic.AtomicInteger;
 
         private final long keepAliveTime;
         private final ConcurrentLinkedQueue<EventLoopScheduler> expiringQueue;
+        private final ScheduledExecutorService evictExpiredEventLoopExecutor;
 
         CachedEventLoopPool(long keepAliveTime, TimeUnit unit) {
             this.keepAliveTime = unit.toNanos(keepAliveTime);
             this.expiringQueue = new ConcurrentLinkedQueue<EventLoopScheduler>();
+
+            evictExpiredEventLoopExecutor = Executors.newScheduledThreadPool(1, new ThreadFactory() {
+                final AtomicInteger counter = new AtomicInteger();
+
+                @Override
+                public Thread newThread(Runnable r) {
+                    Thread t = new Thread(r, "RxCachedEventLoopEvictor-" + counter.incrementAndGet());
+                    t.setDaemon(true);
+                    return t;
+                }
+            });
+            evictExpiredEventLoopExecutor.scheduleWithFixedDelay(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        evictExpiredEventLoops();
+                    }
+                }, this.keepAliveTime, this.keepAliveTime, TimeUnit.NANOSECONDS
+            );
         }
 
         private static CachedEventLoopPool INSTANCE = new CachedEventLoopPool(
@@ -53,10 +71,9 @@ import java.util.concurrent.atomic.AtomicInteger;
         );
 
         EventLoopScheduler takeEventLoop() {
-            long currentTimestamp = now();
             while (!expiringQueue.isEmpty()) {
                 EventLoopScheduler eventLoopScheduler = expiringQueue.poll();
-                if (eventLoopScheduler != null && eventLoopScheduler.getExpirationTime() > currentTimestamp) {
+                if (eventLoopScheduler != null) {
                     return eventLoopScheduler;
                 }
             }
@@ -70,6 +87,21 @@ import java.util.concurrent.atomic.AtomicInteger;
             eventLoopScheduler.setExpirationTime(now() + keepAliveTime);
 
             expiringQueue.add(eventLoopScheduler);
+        }
+
+        void evictExpiredEventLoops() {
+            long currentTimestamp = now();
+            while (!expiringQueue.isEmpty()) {
+                EventLoopScheduler eventLoopScheduler = expiringQueue.poll();
+                if (eventLoopScheduler != null && eventLoopScheduler.getExpirationTime() > currentTimestamp) {
+                    // Queue is ordered with the event loops that will expire first in the beginning,
+                    // so when we find a non-expired event loop we can stop evicting.
+                    // TODO: Since we use a concurrent queue, we can only put it back as tail.
+                    // When we can start requiring 1.7, use ConcurrentLinkedDeque and put it back as head.
+                    expiringQueue.add(eventLoopScheduler);
+                    break;
+                }
+            }
         }
 
         long now() {
