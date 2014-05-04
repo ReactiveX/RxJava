@@ -98,6 +98,7 @@ import java.util.concurrent.atomic.AtomicInteger;
                     EventLoopScheduler eventLoopScheduler = eventLoopSchedulerIterator.next();
                     if (eventLoopScheduler.getExpirationTime() <= currentTimestamp) {
                         eventLoopSchedulerIterator.remove();
+                        eventLoopScheduler.unsubscribe();
                     } else {
                         // Queue is ordered with the event loops that will expire first in the beginning, so when we
                         // find a non-expired event loop we can stop evicting.
