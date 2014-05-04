@@ -150,7 +150,10 @@ import java.util.concurrent.atomic.AtomicInteger;
                 // don't schedule, we are unsubscribed
                 return Subscriptions.empty();
             }
-            return pooledEventLoop.schedule(action, onComplete);
+
+            Subscription subscription = pooledEventLoop.schedule(action, onComplete);
+            innerSubscription.add(subscription);
+            return subscription;
         }
 
         @Override
@@ -160,7 +163,9 @@ import java.util.concurrent.atomic.AtomicInteger;
                 return Subscriptions.empty();
             }
 
-            return pooledEventLoop.schedule(action, delayTime, unit, onComplete);
+            Subscription subscription = pooledEventLoop.schedule(action, delayTime, unit, onComplete);
+            innerSubscription.add(subscription);
+            return subscription;
         }
     }
 
