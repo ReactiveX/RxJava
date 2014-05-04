@@ -93,12 +93,11 @@ import java.util.concurrent.atomic.AtomicInteger;
             long currentTimestamp = now();
             while (!expiringQueue.isEmpty()) {
                 EventLoopScheduler eventLoopScheduler = expiringQueue.poll();
+                // Queue is ordered with the event loops that will expire first in the beginning, so when we
+                // find a non-expired event loop we can stop evicting.
                 if (eventLoopScheduler != null && eventLoopScheduler.getExpirationTime() > currentTimestamp) {
-                    // Queue is ordered with the event loops that will expire first in the beginning,
-                    // so when we find a non-expired event loop we can stop evicting.
-                    // TODO: Since we use a concurrent queue, we can only put it back as tail.
-                    // When we can start requiring 1.7, use ConcurrentLinkedDeque and put it back as head.
-                    expiringQueue.add(eventLoopScheduler);
+                    // return non-expired event loop to the pool
+                    returnEventLoop(eventLoopScheduler);
                     break;
                 }
             }
