@@ -93,6 +93,7 @@ import java.util.concurrent.atomic.AtomicInteger;
         void evictExpiredEventLoops() {
             if (!expiringQueue.isEmpty()) {
                 long currentTimestamp = now();
+
                 Iterator<EventLoopScheduler> eventLoopSchedulerIterator = expiringQueue.iterator();
                 while (eventLoopSchedulerIterator.hasNext()) {
                     EventLoopScheduler eventLoopScheduler = eventLoopSchedulerIterator.next();
@@ -155,9 +156,15 @@ import java.util.concurrent.atomic.AtomicInteger;
                 return Subscriptions.empty();
             }
 
-            Subscription subscription = pooledEventLoop.schedule(action, onComplete);
+            final Subscription subscription = pooledEventLoop.schedule(action, onComplete);
             innerSubscription.add(subscription);
-            return subscription;
+
+            return Subscriptions.create(new Action0() {
+                @Override
+                public void call() {
+                    innerSubscription.remove(subscription);
+                }
+            });
         }
 
         @Override
@@ -167,9 +174,15 @@ import java.util.concurrent.atomic.AtomicInteger;
                 return Subscriptions.empty();
             }
 
-            Subscription subscription = pooledEventLoop.schedule(action, delayTime, unit, onComplete);
+            final Subscription subscription = pooledEventLoop.schedule(action, delayTime, unit, onComplete);
             innerSubscription.add(subscription);
-            return subscription;
+
+            return Subscriptions.create(new Action0() {
+                @Override
+                public void call() {
+                    innerSubscription.remove(subscription);
+                }
+            });
         }
     }
 
