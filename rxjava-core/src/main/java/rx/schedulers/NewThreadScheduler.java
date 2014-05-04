@@ -148,6 +148,7 @@ public class NewThreadScheduler extends Scheduler {
         @Override
         public void unsubscribe() {
             innerSubscription.unsubscribe();
+            executor.shutdown();
         }
 
         @Override
