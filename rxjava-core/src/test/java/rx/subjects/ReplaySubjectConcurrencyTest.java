@@ -17,9 +17,7 @@ package rx.subjects;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
@@ -32,6 +30,8 @@ import rx.Observer;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Action1;
+import rx.observers.TestSubscriber;
+import rx.schedulers.Schedulers;
 import rx.subscriptions.Subscriptions;
 
 public class ReplaySubjectConcurrencyTest {
@@ -302,6 +302,21 @@ public class ReplaySubjectConcurrencyTest {
             assertEquals("value", t5.value.get());
         }
 
+    }
+    
+    /**
+     * https://github.com/Netflix/RxJava/issues/1147
+     */
+    @Test
+    public void testRaceForTerminalState() {
+        final List<Integer> expected = Arrays.asList(1);
+        for (int i = 0; i < 100000; i++) {
+            TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+            Observable.just(1).subscribeOn(Schedulers.computation()).cache().subscribe(ts);
+            ts.awaitTerminalEvent();
+            ts.assertReceivedOnNext(expected);
+            ts.assertTerminalEvent();
+        }
     }
 
     private static class SubjectObserverThread extends Thread {
