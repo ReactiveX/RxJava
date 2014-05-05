@@ -23,7 +23,7 @@ import rx.plugins.RxJavaPlugins;
 /**
  * Static factory methods for creating Schedulers.
  */
-public class Schedulers {
+public final class Schedulers {
 
     private final Scheduler computationScheduler;
     private final Scheduler ioScheduler;
@@ -111,5 +111,16 @@ public class Schedulers {
 
     public static TestScheduler test() {
         return new TestScheduler();
+    }
+    /**
+     * {@link Scheduler} intended for work that requires a fixed amount of
+     * threads (for example, less than the available processor count).
+     * The returned instance implements the {@link Subscription} interface
+     * and allows the complete termination of the entire pool.
+     * @param numThreads the number of threads the scheduler's thread pool should contain.
+     * @return the created scheduler
+     */
+    public static Scheduler fixed(int numThreads) {
+        return new EventLoopsScheduler(numThreads);
     }
 }
