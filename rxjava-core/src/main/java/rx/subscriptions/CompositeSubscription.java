@@ -40,7 +40,7 @@ public final class CompositeSubscription implements Subscription {
     /** Unsubscribed empty state. */
     private static final State CLEAR_STATE_UNSUBSCRIBED;
     /** Set mode threshold count. */
-    private static final int SET_MODE_THRESHOLD = 256;
+    private static final int SET_MODE_THRESHOLD = 16;
     /** Array mode threshold count. */
     private static final int ARRAY_MODE_THRESHOLD = SET_MODE_THRESHOLD * 3 / 4;
     static {
