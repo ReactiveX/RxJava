@@ -80,6 +80,7 @@ public final class OperatorSampleWithTime<T> implements Operator<T, T> {
         @Override
         public void onCompleted() {
             subscriber.onCompleted();
+            unsubscribe();
         }
 
         @Override

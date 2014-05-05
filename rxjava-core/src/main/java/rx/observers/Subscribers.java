@@ -7,29 +7,9 @@ import rx.functions.Action0;
 import rx.functions.Action1;
 
 public class Subscribers {
-
-    private static final Subscriber<Object> EMPTY = new Subscriber<Object>() {
-
-        @Override
-        public final void onCompleted() {
-            // do nothing
-        }
-
-        @Override
-        public final void onError(Throwable e) {
-            throw new OnErrorNotImplementedException(e);
-        }
-
-        @Override
-        public final void onNext(Object args) {
-            // do nothing
-        }
-
-    };
-
     @SuppressWarnings("unchecked")
     public static <T> Subscriber<T> empty() {
-        return (Subscriber<T>) EMPTY;
+        return from(Observers.empty());
     }
 
     public static <T> Subscriber<T> from(final Observer<? super T> o) {
