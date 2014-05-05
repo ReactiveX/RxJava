@@ -42,12 +42,12 @@ import rx.subscriptions.Subscriptions;
         final AtomicBoolean unsubscribed;
 
         FixedSchedulerPool() {
-            this(Runtime.getRuntime().availableProcessors(), WorkerSelectionPolicy.LEAST_RECENT_USED);
+            this(Runtime.getRuntime().availableProcessors(), WorkerSelectionPolicy.LEAST_RECENT_USED, false);
         }
-        FixedSchedulerPool(int numThreads, WorkerSelectionPolicy policy) {
+        FixedSchedulerPool(int numThreads, WorkerSelectionPolicy policy, boolean allowTermination) {
             // initialize event loops
             this.policy = policy;
-            this.unsubscribed = new AtomicBoolean();
+            this.unsubscribed = new AtomicBoolean(!allowTermination);
             this.n = new AtomicLong();
             this.cores = numThreads;
             this.eventLoops = new PoolWorker[numThreads];
@@ -128,20 +128,21 @@ import rx.subscriptions.Subscriptions;
     }
     /**
      * Create a scheduler with pool size as requested and least-recent
-     * worker selection policy
+     * worker selection policy and allow the termination of the entire pool.
      * @param numThreads the number of threads
      */
     EventLoopsScheduler(int numThreads) {
-        pool = new FixedSchedulerPool(numThreads, WorkerSelectionPolicy.LEAST_RECENT_USED);
+        pool = new FixedSchedulerPool(numThreads, WorkerSelectionPolicy.LEAST_RECENT_USED, true);
     }
     /**
      * Create a scheduler with pool size and worker selection policy
      * as requested.
      * @param numThreads the number of threads
      * @param policy the worker selection policy
+     * @param allowTermination allow terminating the Scheduler via unsubscribe.
      */
-    EventLoopsScheduler(int numThreads, WorkerSelectionPolicy policy) {
-        pool = new FixedSchedulerPool(numThreads, policy);
+    EventLoopsScheduler(int numThreads, WorkerSelectionPolicy policy, boolean allowTermination) {
+        pool = new FixedSchedulerPool(numThreads, policy, allowTermination);
     }
     
     @Override
