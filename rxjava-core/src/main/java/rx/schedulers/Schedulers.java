@@ -23,7 +23,7 @@ import rx.plugins.RxJavaPlugins;
 /**
  * Static factory methods for creating Schedulers.
  */
-public class Schedulers {
+public final class Schedulers {
 
     private final Scheduler computationScheduler;
     private final Scheduler ioScheduler;
