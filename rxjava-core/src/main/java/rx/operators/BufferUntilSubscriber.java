@@ -15,8 +15,6 @@
  */
 package rx.operators;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -59,14 +57,8 @@ public class BufferUntilSubscriber<T> extends Observable<T> implements Observer<
         final NotificationLite<T> nl = NotificationLite.instance();
         /** The first observer or the one which buffers until the first arrives. */
         final AtomicReference<Observer<? super T>> observerRef = new AtomicReference<Observer<? super T>>(new BufferedObserver<T>());
-        /** How many subscribers. */
+        /** Allow a single subscriber only. */
         final AtomicBoolean first = new AtomicBoolean();
-        /** The rest of the subscribers without buffering. Guarded by this. */
-        final Set<Subscriber<? super T>> subscribers = new LinkedHashSet<Subscriber<? super T>>();
-        /** Guarded by this. */
-        boolean done;
-        /** Guarded by this. */
-        Throwable exception;
     }
     
     static final class OnSubscribeAction<T> implements OnSubscribe<T> {
@@ -95,33 +87,7 @@ public class BufferUntilSubscriber<T> extends Observable<T> implements Observer<
                     }
                 }));
             } else {
-                Throwable e = null;
-                boolean done;
-                synchronized (state) {
-                    done = state.done;
-                    if (!done) {
-                        state.subscribers.add(s);
-                    } else {
-                        e = state.exception;
-                    }
-                }
-                if (done) {
-                    if (e != null) {
-                        s.onError(e);
-                    } else {
-                        s.onCompleted();
-                    }
-                    return;
-                }
-                s.add(Subscriptions.create(new Action0() { 
-
-                    @Override
-                    public void call() {
-                        synchronized (state) {
-                            state.subscribers.remove(s);
-                        }
-                    }
-                }));
+                s.onError(new IllegalStateException("Only one subscriber allowed!"));
             }
         }
         
@@ -136,64 +102,17 @@ public class BufferUntilSubscriber<T> extends Observable<T> implements Observer<
     @Override
     public void onCompleted() {
         state.observerRef.get().onCompleted();
-        // notify the rest
-        Subscriber<?>[] list;
-        synchronized (state) {
-            if (!state.done) {
-                return;
-            }
-            state.done = true;
-            if (state.subscribers.isEmpty()) {
-                return;
-            }
-            list = state.subscribers.toArray(new Subscriber<?>[state.subscribers.size()]);
-            state.subscribers.clear();
-        }
-        for (Subscriber<?> s : list) {
-            s.onCompleted();
-        }
     }
 
     @Override
     public void onError(Throwable e) {
         state.observerRef.get().onError(e);
-        // notify the rest
-        Subscriber<?>[] list;
-        synchronized (state) {
-            if (!state.done) {
-                return;
-            }
-            state.done = true;
-            state.exception = e;
-            if (state.subscribers.isEmpty()) {
-                return;
-            }
-            list = state.subscribers.toArray(new Subscriber<?>[state.subscribers.size()]);
-            state.subscribers.clear();
-        }
-        for (Subscriber<?> s : list) {
-            s.onError(e);
-        }
     }
 
     @Override
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public void onNext(T t) {
         state.observerRef.get().onNext(t);
-        // notify the rest
-        Subscriber[] list;
-        synchronized (state) {
-            if (state.done) {
-                return;
-            }
-            if (state.subscribers.isEmpty()) {
-                return;
-            }
-            list = state.subscribers.toArray(new Subscriber[state.subscribers.size()]);
-        }
-        for (Subscriber s : list) {
-            s.onNext(t);
-        }
     }
 
     /**
@@ -242,6 +161,7 @@ public class BufferUntilSubscriber<T> extends Observable<T> implements Observer<
                 nl.accept(this, o);
             }
             // now we can safely change over to the actual and get rid of the pass-thru
+            // but only if not unsubscribed
             observerRef.compareAndSet(this, actual);
         }
 
