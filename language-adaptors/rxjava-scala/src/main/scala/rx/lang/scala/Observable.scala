@@ -2057,7 +2057,28 @@ trait Observable[+T]
    * @see [[Observable.first]]
    */
   def head: Observable[T] = first
-  
+
+  /**
+   * Returns an Observable that emits all items except the first one, or raises an `UnsupportedOperationException`
+   * if the source Observable is empty.
+   *
+   * @return an Observable that emits all items except the first one, or raises an `UnsupportedOperationException`
+   *         if the source Observable is empty.
+   */
+  def tail: Observable[T] = {
+    lift {
+      (subscriber: Subscriber[T]) => {
+        var isFirst = true
+        Subscriber[T](
+          subscriber,
+          (v: T) => if(isFirst) isFirst = false else subscriber.onNext(v),
+          e => subscriber.onError(e),
+          () => if(isFirst) subscriber.onError(new UnsupportedOperationException("tail of empty Observable")) else subscriber.onCompleted
+        )
+      }
+    }
+  }
+
   /**
    * Returns an Observable that emits the last item emitted by the source Observable or notifies observers of
    * an `NoSuchElementException` if the source Observable is empty.
@@ -2537,6 +2558,23 @@ trait Observable[+T]
     toScalaObservable[util.Map[K, V]](o).map(m => mapFactory() ++ m.toMap)
   }
 
+  /**
+   * Lift a function to the current Observable and return a new Observable that when subscribed to will pass
+   * the values of the current Observable through the function.
+   * <p>
+   * In other words, this allows chaining Observers together on an Observable for acting on the values within
+   * the Observable.
+   * {{{
+   * observable.map(...).filter(...).take(5).lift(new ObserverA()).lift(new ObserverB(...)).subscribe()
+   * }}}
+   *
+   * @param operator
+   * @return an Observable that emits values that are the result of applying the bind function to the values
+   *         of the current Observable
+   */
+  def lift[R](operator: Subscriber[R] => Subscriber[T]): Observable[R] = {
+    toScalaObservable(asJavaObservable.lift(toJavaOperator[T, R](operator)))
+  }
 }
 
 /**

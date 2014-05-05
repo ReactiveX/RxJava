@@ -49,4 +49,14 @@ object Subscriber extends ObserverFactoryMethods[Subscriber] {
       override def onCompleted(): Unit = c()
     })
   }
+
+  def apply[T](subscriber: Subscriber[_], onNext: T => Unit, onError: Throwable => Unit, onCompleted: () => Unit): Subscriber[T] = {
+    val n = onNext; val e = onError; val c = onCompleted
+    // Java calls XXX; Scala receives XXX.
+    Subscriber(new rx.Subscriber[T](subscriber.asJavaSubscriber) {
+      override def onNext(value: T): Unit = n(value)
+      override def onError(error: Throwable): Unit = e(error)
+      override def onCompleted(): Unit = c()
+    })
+  }
 }
