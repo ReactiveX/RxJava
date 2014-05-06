@@ -122,7 +122,7 @@ public class Observable<T> {
     }
 
     /**
-     * @deprecated use {@link #OnSubscribe}
+     * @deprecated use {@link OnSubscribe}
      */
     @Deprecated
     public static interface OnSubscribeFunc<T> extends Function {
@@ -884,7 +884,7 @@ public class Observable<T> {
      *         Observable factory function
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#wiki-defer">RxJava Wiki: defer()</a>
      */
-    public final static <T> Observable<T> defer(Func0<? extends Observable<? extends T>> observableFactory) {
+    public final static <T> Observable<T> defer(Func0<Observable<? extends T>> observableFactory) {
         return create(new OperatorDefer<T>(observableFactory));
     }
 
@@ -2104,7 +2104,6 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#wiki-mergedelayerror">RxJava Wiki: mergeDelayError()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge</a>
      */
-    @SuppressWarnings("unchecked")
     // suppress because the types are checked by the method signature before using a vararg
     public final static <T> Observable<T> mergeDelayError(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6, Observable<? extends T> t7, Observable<? extends T> t8) {
         return mergeDelayError(from(t1, t2, t3, t4, t5, t6, t7, t8));
@@ -2247,7 +2246,7 @@ public class Observable<T> {
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/pivot.ex.png">
      * 
      * @param groups
-     * @return
+     * @return an Observable containing a stream of nested GroupedObservables with swapped inner-outer keys.
      */
     public static final <K1, K2, T> Observable<GroupedObservable<K2, GroupedObservable<K1, T>>> pivot(Observable<GroupedObservable<K1, GroupedObservable<K2, T>>> groups) {
         return groups.lift(new OperatorPivot<K1, K2, T>());
@@ -3213,7 +3212,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Conditional-and-Boolean-Operators#wiki-contains">RxJava Wiki: contains()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh228965.aspx">MSDN: Observable.Contains</a>
      */
-    public final Observable<Boolean> contains(final T element) {
+    public final Observable<Boolean> contains(final Object element) {
         return exists(new Func1<T, Boolean>() {
             public final Boolean call(T t1) {
                 return element == null ? t1 == null : element.equals(t1);
@@ -3367,7 +3366,7 @@ public class Observable<T> {
     public final <U, V> Observable<T> delay(
             Func0<? extends Observable<U>> subscriptionDelay,
             Func1<? super T, ? extends Observable<V>> itemDelay) {
-        return create(OperationDelay.delay(this, subscriptionDelay, itemDelay));
+        return create(new OperatorDelayWithSelector<T, U, V>(this, subscriptionDelay, itemDelay));
     }
 
     /**
@@ -3389,7 +3388,7 @@ public class Observable<T> {
      *         per-item basis
      */
     public final <U> Observable<T> delay(Func1<? super T, ? extends Observable<U>> itemDelay) {
-        return create(OperationDelay.delay(this, itemDelay));
+        return create(new OperatorDelayWithSelector<T, U, U>(this, itemDelay));
     }
 
     /**
@@ -3407,7 +3406,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229810.aspx">MSDN: Observable.Delay</a>
      */
     public final Observable<T> delay(long delay, TimeUnit unit) {
-        return OperationDelay.delay(this, delay, unit, Schedulers.computation());
+        return create(new OperatorDelay<T>(this, delay, unit, Schedulers.computation()));
     }
 
     /**
@@ -3427,7 +3426,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229280.aspx">MSDN: Observable.Delay</a>
      */
     public final Observable<T> delay(long delay, TimeUnit unit, Scheduler scheduler) {
-        return OperationDelay.delay(this, delay, unit, scheduler);
+        return create(new OperatorDelay<T>(this, delay, unit, scheduler));
     }
 
     /**
@@ -3461,7 +3460,7 @@ public class Observable<T> {
      *         amount, waiting and subscribing on the given Scheduler
      */
     public final Observable<T> delaySubscription(long delay, TimeUnit unit, Scheduler scheduler) {
-        return create(OperationDelay.delaySubscription(this, delay, unit, scheduler));
+        return create(new OperatorDelaySubscription<T>(this, delay, unit, scheduler));
     }
 
     /**
@@ -6356,7 +6355,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#wiki-takelast">RxJava Wiki: takeLast()</a>
      */
     public final Observable<T> takeLast(final int count) {
-        return create(OperationTakeLast.takeLast(this, count));
+        return lift(new OperatorTakeLast<T>(count));
     }
 
     /**
@@ -6400,10 +6399,7 @@ public class Observable<T> {
      *             if {@code count} is less than zero
      */
     public final Observable<T> takeLast(int count, long time, TimeUnit unit, Scheduler scheduler) {
-        if (count < 0) {
-            throw new IllegalArgumentException("count >= 0 required");
-        }
-        return create(OperationTakeLast.takeLast(this, count, time, unit, scheduler));
+        return lift(new OperatorTakeLastTimed<T>(count, time, unit, scheduler));
     }
 
     /**
@@ -6441,7 +6437,7 @@ public class Observable<T> {
      *         provided by {@code scheduler}
      */
     public final Observable<T> takeLast(long time, TimeUnit unit, Scheduler scheduler) {
-        return create(OperationTakeLast.takeLast(this, time, unit, scheduler));
+        return lift(new OperatorTakeLastTimed<T>(time, unit, scheduler));
     }
 
     /**
@@ -6555,7 +6551,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Conditional-and-Boolean-Operators#wiki-takeuntil">RxJava Wiki: takeUntil()</a>
      */
     public final <E> Observable<T> takeUntil(Observable<? extends E> other) {
-        return OperationTakeUntil.takeUntil(this, other);
+        return OperatorTakeUntil.takeUntil(this, other);
     }
 
     /**
@@ -6571,7 +6567,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Conditional-and-Boolean-Operators#wiki-takewhile-and-takewhilewithindex">RxJava Wiki: takeWhile()</a>
      */
     public final Observable<T> takeWhile(final Func1<? super T, Boolean> predicate) {
-        return lift(new OperatorTakeWhile(predicate));
+        return lift(new OperatorTakeWhile<T>(predicate));
     }
 
     /**
@@ -6590,7 +6586,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Conditional-and-Boolean-Operators#wiki-takewhile-and-takewhilewithindex">RxJava Wiki: takeWhileWithIndex()</a>
      */
     public final Observable<T> takeWhileWithIndex(final Func2<? super T, ? super Integer, Boolean> predicate) {
-        return lift(new OperatorTakeWhile(predicate));
+        return lift(new OperatorTakeWhile<T>(predicate));
     }
 
     /**
@@ -6756,7 +6752,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh212107.aspx">MSDN: Observable.TimeInterval</a>
      */
     public final Observable<TimeInterval<T>> timeInterval() {
-        return lift(new OperatorTimeInterval(Schedulers.immediate()));
+        return lift(new OperatorTimeInterval<T>(Schedulers.immediate()));
     }
 
     /**
@@ -6772,7 +6768,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh212107.aspx">MSDN: Observable.TimeInterval</a>
      */
     public final Observable<TimeInterval<T>> timeInterval(Scheduler scheduler) {
-        return lift(new OperatorTimeInterval(scheduler));
+        return lift(new OperatorTimeInterval<T>(scheduler));
     }
 
     /**
@@ -7238,7 +7234,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#wiki-window">RxJava Wiki: window()</a>
      */
     public final <TClosing> Observable<Observable<T>> window(Func0<? extends Observable<? extends TClosing>> closingSelector) {
-        return create(OperationWindow.window(this, closingSelector));
+        return lift(new OperatorWindowWithObservable<T, TClosing>(closingSelector));
     }
 
     /**
@@ -7255,7 +7251,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#wiki-window">RxJava Wiki: window()</a>
      */
     public final Observable<Observable<T>> window(int count) {
-        return create(OperationWindow.window(this, count));
+        return lift(new OperatorWindowWithSize<T>(count, count));
     }
 
     /**
@@ -7275,7 +7271,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#wiki-window">RxJava Wiki: window()</a>
      */
     public final Observable<Observable<T>> window(int count, int skip) {
-        return create(OperationWindow.window(this, count, skip));
+        return lift(new OperatorWindowWithSize<T>(count, skip));
     }
 
     /**
@@ -7297,7 +7293,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#wiki-window">RxJava Wiki: window()</a>
      */
     public final Observable<Observable<T>> window(long timespan, long timeshift, TimeUnit unit) {
-        return create(OperationWindow.window(this, timespan, timeshift, unit));
+        return lift(new OperatorWindowWithTime<T>(timespan, timeshift, unit, Integer.MAX_VALUE, Schedulers.computation()));
     }
 
     /**
@@ -7321,7 +7317,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#wiki-window">RxJava Wiki: window()</a>
      */
     public final Observable<Observable<T>> window(long timespan, long timeshift, TimeUnit unit, Scheduler scheduler) {
-        return create(OperationWindow.window(this, timespan, timeshift, unit, scheduler));
+        return lift(new OperatorWindowWithTime<T>(timespan, timeshift, unit, Integer.MAX_VALUE, scheduler));
     }
 
     /**
@@ -7342,7 +7338,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#wiki-window">RxJava Wiki: window()</a>
      */
     public final Observable<Observable<T>> window(long timespan, TimeUnit unit) {
-        return create(OperationWindow.window(this, timespan, unit));
+        return lift(new OperatorWindowWithTime<T>(timespan, timespan, unit, Integer.MAX_VALUE, Schedulers.computation()));
     }
 
     /**
@@ -7367,7 +7363,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#wiki-window">RxJava Wiki: window()</a>
      */
     public final Observable<Observable<T>> window(long timespan, TimeUnit unit, int count) {
-        return create(OperationWindow.window(this, timespan, unit, count));
+        return lift(new OperatorWindowWithTime<T>(timespan, timespan, unit, count, Schedulers.computation()));
     }
 
     /**
@@ -7394,7 +7390,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#wiki-window">RxJava Wiki: window()</a>
      */
     public final Observable<Observable<T>> window(long timespan, TimeUnit unit, int count, Scheduler scheduler) {
-        return create(OperationWindow.window(this, timespan, unit, count, scheduler));
+        return lift(new OperatorWindowWithTime<T>(timespan, timespan, unit, count, scheduler));
     }
 
     /**
@@ -7417,7 +7413,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#wiki-window">RxJava Wiki: window()</a>
      */
     public final Observable<Observable<T>> window(long timespan, TimeUnit unit, Scheduler scheduler) {
-        return create(OperationWindow.window(this, timespan, unit, scheduler));
+        return lift(new OperatorWindowWithTime<T>(timespan, timespan, unit, Integer.MAX_VALUE, scheduler));
     }
 
     /**
@@ -7437,7 +7433,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#wiki-window">RxJava Wiki: window()</a>
      */
     public final <TOpening, TClosing> Observable<Observable<T>> window(Observable<? extends TOpening> windowOpenings, Func1<? super TOpening, ? extends Observable<? extends TClosing>> closingSelector) {
-        return create(OperationWindow.window(this, windowOpenings, closingSelector));
+        return lift(new OperatorWindowWithStartEndObservable<T, TOpening, TClosing>(windowOpenings, closingSelector));
     }
 
     /**
@@ -7455,7 +7451,7 @@ public class Observable<T> {
      *         where the boundary of each window is determined by the items emitted from the {@code boundary} Observable
      */
     public final <U> Observable<Observable<T>> window(Observable<U> boundary) {
-        return create(OperationWindow.window(this, boundary));
+        return lift(new OperatorWindowWithObservable<T, U>(boundary));
     }
 
     /**

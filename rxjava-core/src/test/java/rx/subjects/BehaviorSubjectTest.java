@@ -137,7 +137,7 @@ public class BehaviorSubjectTest {
         Observer<Object> observerC = mock(Observer.class);
 
         Subscription a = channel.subscribe(observerA);
-        Subscription b = channel.subscribe(observerB);
+        channel.subscribe(observerB);
 
         InOrder inOrderA = inOrder(observerA);
         InOrder inOrderB = inOrder(observerB);
@@ -162,7 +162,7 @@ public class BehaviorSubjectTest {
 
         inOrderB.verify(observerB).onCompleted();
 
-        Subscription c = channel.subscribe(observerC);
+        channel.subscribe(observerC);
 
         inOrderC.verify(observerC).onCompleted();
 
@@ -211,6 +211,7 @@ public class BehaviorSubjectTest {
         verify(observer, never()).onNext("two");
         verify(observer, never()).onCompleted();
 
+        @SuppressWarnings("unchecked")
         Observer<Object> o2 = mock(Observer.class);
         subject.subscribe(o2);
         verify(o2, times(1)).onError(testException);
@@ -237,6 +238,7 @@ public class BehaviorSubjectTest {
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, never()).onNext("two");
 
+        @SuppressWarnings("unchecked")
         Observer<Object> o2 = mock(Observer.class);
         subject.subscribe(o2);
         verify(o2, times(1)).onCompleted();

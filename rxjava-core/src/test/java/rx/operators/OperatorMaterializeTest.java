@@ -27,10 +27,7 @@ import org.junit.Test;
 
 import rx.Notification;
 import rx.Observable;
-import rx.Observer;
 import rx.Subscriber;
-import rx.Subscription;
-import rx.subscriptions.Subscriptions;
 
 public class OperatorMaterializeTest {
 
@@ -119,7 +116,7 @@ public class OperatorMaterializeTest {
 
     }
 
-    private static class TestAsyncErrorObservable implements Observable.OnSubscribeFunc<String> {
+    private static class TestAsyncErrorObservable implements Observable.OnSubscribe<String> {
 
         String[] valuesToReturn;
 
@@ -130,7 +127,7 @@ public class OperatorMaterializeTest {
         volatile Thread t;
 
         @Override
-        public Subscription onSubscribe(final Observer<? super String> observer) {
+        public void call(final Subscriber<? super String> observer) {
             t = new Thread(new Runnable() {
 
                 @Override
@@ -155,8 +152,6 @@ public class OperatorMaterializeTest {
 
             });
             t.start();
-
-            return Subscriptions.empty();
         }
     }
 }

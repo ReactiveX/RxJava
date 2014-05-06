@@ -1,5 +1,48 @@
 # RxJava Releases #
 
+### Version 0.18.2 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.18.2%22)) ###
+
+
+* [Pull 1150] (https://github.com/Netflix/RxJava/pull/1150) Fix ReplaySubject Terminal State Race Condition
+* [Pull 1144] (https://github.com/Netflix/RxJava/pull/1144) Operator Delay rebase & fixes
+* [Pull 1142] (https://github.com/Netflix/RxJava/pull/1142) Update 'contains' signature to 'contains(Object)'
+* [Pull 1134] (https://github.com/Netflix/RxJava/pull/1134) OperatorTakeLast
+* [Pull 1135] (https://github.com/Netflix/RxJava/pull/1135) OperatorTakeUntil
+* [Pull 1137] (https://github.com/Netflix/RxJava/pull/1137) Random fixes to operators multicast, sample, refCount
+* [Pull 1138] (https://github.com/Netflix/RxJava/pull/1138) Operator Window and other changes
+* [Pull 1131] (https://github.com/Netflix/RxJava/pull/1131) Operator TakeTimed
+* [Pull 1130] (https://github.com/Netflix/RxJava/pull/1130) Operator Switch
+* [Pull 1129] (https://github.com/Netflix/RxJava/pull/1129) Conditional statements contribution to Operator
+* [Pull 1128] (https://github.com/Netflix/RxJava/pull/1128) Fix for SerializedObserverTest
+* [Pull 1126] (https://github.com/Netflix/RxJava/pull/1126) Operator When
+* [Pull 1125] (https://github.com/Netflix/RxJava/pull/1125) Operator contrib math
+* [Pull 1124] (https://github.com/Netflix/RxJava/pull/1124) Add lift to rxscala
+* [Pull 1122] (https://github.com/Netflix/RxJava/pull/1122) OperatorSkipUntil
+* [Pull 1121] (https://github.com/Netflix/RxJava/pull/1121) OperatorSkipTimed
+* [Pull 1120] (https://github.com/Netflix/RxJava/pull/1120) OperatorSequenceEqual
+* [Pull 1119] (https://github.com/Netflix/RxJava/pull/1119) OperatorRefCount
+* [Pull 1118] (https://github.com/Netflix/RxJava/pull/1118) Operator ParallelMerge
+* [Pull 1117] (https://github.com/Netflix/RxJava/pull/1117) Operator OnExceptionResumeNextViaObservable
+* [Pull 1115] (https://github.com/Netflix/RxJava/pull/1115) OperatorTakeWhile
+* [Pull 1112] (https://github.com/Netflix/RxJava/pull/1112) OperatorThrottleFirst
+* [Pull 1111] (https://github.com/Netflix/RxJava/pull/1111) OperatorTimeInterval
+* [Pull 1110] (https://github.com/Netflix/RxJava/pull/1110) OperatorOnErrorReturn
+* [Pull 1109] (https://github.com/Netflix/RxJava/pull/1109) OperatorOnErrorResumeNextViaObservable
+* [Pull 1108] (https://github.com/Netflix/RxJava/pull/1108) OperatorMulticastAndReplay
+* [Pull 1107] (https://github.com/Netflix/RxJava/pull/1107) Fix ReplaySubject's double termination problem.
+* [Pull 1106] (https://github.com/Netflix/RxJava/pull/1106) OperatorMergeMaxConcurrent
+* [Pull 1104] (https://github.com/Netflix/RxJava/pull/1104) Operator merge delay error
+* [Pull 1103] (https://github.com/Netflix/RxJava/pull/1103) OperatorJoin
+* [Pull 1101] (https://github.com/Netflix/RxJava/pull/1101) Operator async
+* [Pull 1100] (https://github.com/Netflix/RxJava/pull/1100) OperatorUsing
+* [Pull 1099] (https://github.com/Netflix/RxJava/pull/1099) OperatorToMap
+* [Pull 1098] (https://github.com/Netflix/RxJava/pull/1098) OperatorTimerAndSample
+* [Pull 1097] (https://github.com/Netflix/RxJava/pull/1097) OperatorToMultimap
+* [Pull 1096] (https://github.com/Netflix/RxJava/pull/1096) OperatorGroupJoin
+* [Pull 1095] (https://github.com/Netflix/RxJava/pull/1095) OperatorGroupByUntil
+* [Pull 1094] (https://github.com/Netflix/RxJava/pull/1094) Operator debounce
+
+
 ### Version 0.18.1 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.18.1%22)) ###
 
 * [Pull 1065] (https://github.com/Netflix/RxJava/pull/1065) Optimize OperatorSkipLastTimed

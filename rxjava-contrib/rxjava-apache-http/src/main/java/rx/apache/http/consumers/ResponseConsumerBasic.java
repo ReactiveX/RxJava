@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,9 +27,9 @@ import org.apache.http.nio.protocol.BasicAsyncResponseConsumer;
 import org.apache.http.protocol.HttpContext;
 
 import rx.Observable;
-import rx.Observable.OnSubscribeFunc;
+import rx.Observable.OnSubscribe;
 import rx.Observer;
-import rx.Subscription;
+import rx.Subscriber;
 import rx.apache.http.ObservableHttpResponse;
 import rx.subscriptions.CompositeSubscription;
 
@@ -68,10 +68,11 @@ class ResponseConsumerBasic extends BasicAsyncResponseConsumer implements Respon
     public HttpResponse _buildResult(HttpContext context) throws Exception {
         final HttpResponse response = buildResult(context);
 
-        Observable<byte[]> contentObservable = Observable.create(new OnSubscribeFunc<byte[]>() {
+        Observable<byte[]> contentObservable = Observable.create(new OnSubscribe<byte[]>() {
 
             @Override
-            public Subscription onSubscribe(Observer<? super byte[]> o) {
+            public void call(Subscriber<? super byte[]> o) {
+                o.add(parentSubscription);
                 long length = response.getEntity().getContentLength();
                 if (length > Integer.MAX_VALUE) {
                     o.onError(new IllegalStateException("Content Length too large for a byte[] => " + length));
@@ -85,8 +86,6 @@ class ResponseConsumerBasic extends BasicAsyncResponseConsumer implements Respon
                         o.onError(e);
                     }
                 }
-
-                return parentSubscription;
             }
         });
 

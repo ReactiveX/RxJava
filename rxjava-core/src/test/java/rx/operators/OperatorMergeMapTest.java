@@ -28,6 +28,7 @@ import org.junit.Test;
 
 import rx.Observable;
 import rx.Observer;
+import rx.exceptions.TestException;
 import rx.functions.Func0;
 import rx.functions.Func1;
 import rx.functions.Func2;
@@ -75,7 +76,7 @@ public class OperatorMergeMapTest {
         Func1<Integer, List<Integer>> func = new Func1<Integer, List<Integer>>() {
             @Override
             public List<Integer> call(Integer t1) {
-                throw new OperationReduceTest.CustomException();
+                throw new TestException();
             }
         };
         Func2<Integer, Integer, Integer> resFunc = new Func2<Integer, Integer, Integer>() {
@@ -92,7 +93,7 @@ public class OperatorMergeMapTest {
 
         verify(o, never()).onCompleted();
         verify(o, never()).onNext(any());
-        verify(o).onError(any(OperationReduceTest.CustomException.class));
+        verify(o).onError(any(TestException.class));
     }
 
     @Test
@@ -112,7 +113,7 @@ public class OperatorMergeMapTest {
 
             @Override
             public Integer call(Integer t1, Integer t2) {
-                throw new OperationReduceTest.CustomException();
+                throw new TestException();
             }
         };
 
@@ -122,7 +123,7 @@ public class OperatorMergeMapTest {
 
         verify(o, never()).onCompleted();
         verify(o, never()).onNext(any());
-        verify(o).onError(any(OperationReduceTest.CustomException.class));
+        verify(o).onError(any(TestException.class));
     }
 
     @Test
@@ -133,7 +134,7 @@ public class OperatorMergeMapTest {
         Func1<Integer, Observable<Integer>> func = new Func1<Integer, Observable<Integer>>() {
             @Override
             public Observable<Integer> call(Integer t1) {
-                return Observable.error(new OperationReduceTest.CustomException());
+                return Observable.error(new TestException());
             }
         };
         Func2<Integer, Integer, Integer> resFunc = new Func2<Integer, Integer, Integer>() {
@@ -150,7 +151,7 @@ public class OperatorMergeMapTest {
 
         verify(o, never()).onCompleted();
         verify(o, never()).onNext(any());
-        verify(o).onError(any(OperationReduceTest.CustomException.class));
+        verify(o).onError(any(TestException.class));
     }
 
     <T, R> Func1<T, R> just(final R value) {
@@ -226,7 +227,7 @@ public class OperatorMergeMapTest {
         return new Func0<R>() {
             @Override
             public R call() {
-                throw new OperationReduceTest.CustomException();
+                throw new TestException();
             }
         };
     }
@@ -235,7 +236,7 @@ public class OperatorMergeMapTest {
         return new Func1<T, R>() {
             @Override
             public R call(T t) {
-                throw new OperationReduceTest.CustomException();
+                throw new TestException();
             }
         };
     }
@@ -252,7 +253,7 @@ public class OperatorMergeMapTest {
 
         source.mergeMap(funcThrow(1, onError), just(onError), just0(onCompleted)).subscribe(o);
 
-        verify(o).onError(any(OperationReduceTest.CustomException.class));
+        verify(o).onError(any(TestException.class));
         verify(o, never()).onNext(any());
         verify(o, never()).onCompleted();
     }
@@ -263,14 +264,14 @@ public class OperatorMergeMapTest {
         Observable<Integer> onCompleted = Observable.from(Arrays.asList(4));
         Observable<Integer> onError = Observable.from(Arrays.asList(5));
 
-        Observable<Integer> source = Observable.error(new OperationReduceTest.CustomException());
+        Observable<Integer> source = Observable.error(new TestException());
 
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
 
         source.mergeMap(just(onNext), funcThrow((Throwable) null, onError), just0(onCompleted)).subscribe(o);
 
-        verify(o).onError(any(OperationReduceTest.CustomException.class));
+        verify(o).onError(any(TestException.class));
         verify(o, never()).onNext(any());
         verify(o, never()).onCompleted();
     }
@@ -288,14 +289,14 @@ public class OperatorMergeMapTest {
 
         source.mergeMap(just(onNext), just(onError), funcThrow0(onCompleted)).subscribe(o);
 
-        verify(o).onError(any(OperationReduceTest.CustomException.class));
+        verify(o).onError(any(TestException.class));
         verify(o, never()).onNext(any());
         verify(o, never()).onCompleted();
     }
 
     @Test
     public void testFlatMapTransformsMergeException() {
-        Observable<Integer> onNext = Observable.error(new OperationReduceTest.CustomException());
+        Observable<Integer> onNext = Observable.error(new TestException());
         Observable<Integer> onCompleted = Observable.from(Arrays.asList(4));
         Observable<Integer> onError = Observable.from(Arrays.asList(5));
 
@@ -306,7 +307,7 @@ public class OperatorMergeMapTest {
 
         source.mergeMap(just(onNext), just(onError), funcThrow0(onCompleted)).subscribe(o);
 
-        verify(o).onError(any(OperationReduceTest.CustomException.class));
+        verify(o).onError(any(TestException.class));
         verify(o, never()).onNext(any());
         verify(o, never()).onCompleted();
     }

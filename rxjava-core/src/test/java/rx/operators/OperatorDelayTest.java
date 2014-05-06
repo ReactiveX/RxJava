@@ -16,6 +16,7 @@
 package rx.operators;
 
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -29,7 +30,6 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mock;
@@ -37,12 +37,13 @@ import org.mockito.Mock;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
+import rx.exceptions.TestException;
 import rx.functions.Func0;
 import rx.functions.Func1;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
 
-public class OperationDelayTest {
+public class OperatorDelayTest {
     @Mock
     private Observer<Long> observer;
     @Mock
@@ -157,8 +158,6 @@ public class OperationDelayTest {
         verify(observer, never()).onCompleted();
     }
 
-    // TODO activate this test once https://github.com/Netflix/RxJava/issues/552 is fixed
-    @Ignore
     @Test
     public void testDelayWithMultipleSubscriptions() {
         Observable<Long> source = Observable.interval(1L, TimeUnit.SECONDS, scheduler).take(3);
@@ -202,10 +201,9 @@ public class OperationDelayTest {
 
     @Test
     public void testDelaySubscription() {
-        TestScheduler scheduler = new TestScheduler();
-
         Observable<Integer> result = Observable.from(1, 2, 3).delaySubscription(100, TimeUnit.MILLISECONDS, scheduler);
 
+        @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
         InOrder inOrder = inOrder(o);
 
@@ -226,10 +224,9 @@ public class OperationDelayTest {
 
     @Test
     public void testDelaySubscriptionCancelBeforeTime() {
-        TestScheduler scheduler = new TestScheduler();
-
         Observable<Integer> result = Observable.from(1, 2, 3).delaySubscription(100, TimeUnit.MILLISECONDS, scheduler);
 
+        @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
 
         Subscription s = result.subscribe(o);
@@ -322,10 +319,10 @@ public class OperationDelayTest {
 
         source.delay(delayFunc).subscribe(o);
         source.onNext(1);
-        source.onError(new OperationReduceTest.CustomException());
+        source.onError(new TestException());
         delay.onNext(1);
 
-        inOrder.verify(o).onError(any(OperationReduceTest.CustomException.class));
+        inOrder.verify(o).onError(any(TestException.class));
         inOrder.verifyNoMoreInteractions();
         verify(o, never()).onNext(any());
         verify(o, never()).onCompleted();
@@ -339,7 +336,7 @@ public class OperationDelayTest {
 
             @Override
             public Observable<Integer> call(Integer t1) {
-                throw new OperationReduceTest.CustomException();
+                throw new TestException();
             }
         };
         @SuppressWarnings("unchecked")
@@ -349,7 +346,7 @@ public class OperationDelayTest {
         source.delay(delayFunc).subscribe(o);
         source.onNext(1);
 
-        inOrder.verify(o).onError(any(OperationReduceTest.CustomException.class));
+        inOrder.verify(o).onError(any(TestException.class));
         inOrder.verifyNoMoreInteractions();
         verify(o, never()).onNext(any());
         verify(o, never()).onCompleted();
@@ -373,9 +370,9 @@ public class OperationDelayTest {
 
         source.delay(delayFunc).subscribe(o);
         source.onNext(1);
-        delay.onError(new OperationReduceTest.CustomException());
+        delay.onError(new TestException());
 
-        inOrder.verify(o).onError(any(OperationReduceTest.CustomException.class));
+        inOrder.verify(o).onError(any(TestException.class));
         inOrder.verifyNoMoreInteractions();
         verify(o, never()).onNext(any());
         verify(o, never()).onCompleted();
@@ -424,7 +421,7 @@ public class OperationDelayTest {
         Func0<Observable<Integer>> subFunc = new Func0<Observable<Integer>>() {
             @Override
             public Observable<Integer> call() {
-                throw new OperationReduceTest.CustomException();
+                throw new TestException();
             }
         };
         Func1<Integer, Observable<Integer>> delayFunc = new Func1<Integer, Observable<Integer>>() {
@@ -446,7 +443,7 @@ public class OperationDelayTest {
 
         source.onNext(2);
 
-        inOrder.verify(o).onError(any(OperationReduceTest.CustomException.class));
+        inOrder.verify(o).onError(any(TestException.class));
         inOrder.verifyNoMoreInteractions();
         verify(o, never()).onNext(any());
         verify(o, never()).onCompleted();
@@ -477,11 +474,11 @@ public class OperationDelayTest {
         source.delay(subFunc, delayFunc).subscribe(o);
 
         source.onNext(1);
-        delay.onError(new OperationReduceTest.CustomException());
+        delay.onError(new TestException());
 
         source.onNext(2);
 
-        inOrder.verify(o).onError(any(OperationReduceTest.CustomException.class));
+        inOrder.verify(o).onError(any(TestException.class));
         inOrder.verifyNoMoreInteractions();
         verify(o, never()).onNext(any());
         verify(o, never()).onCompleted();
@@ -548,5 +545,97 @@ public class OperationDelayTest {
         inOrder.verifyNoMoreInteractions();
         verify(o, never()).onError(any(Throwable.class));
         verify(o, never()).onCompleted();
+    }
+    
+    @Test
+    public void testDelayWithObservableAsTimed() {
+        Observable<Long> source = Observable.interval(1L, TimeUnit.SECONDS, scheduler).take(3);
+        
+        final Observable<Long> delayer = Observable.timer(500L, TimeUnit.MILLISECONDS, scheduler);
+        
+        Func1<Long, Observable<Long>> delayFunc = new Func1<Long, Observable<Long>>() {
+            @Override
+            public Observable<Long> call(Long t1) {
+                return delayer;
+            }
+        };
+        
+        Observable<Long> delayed = source.delay(delayFunc);
+        delayed.subscribe(observer);
+
+        InOrder inOrder = inOrder(observer);
+        scheduler.advanceTimeTo(1499L, TimeUnit.MILLISECONDS);
+        verify(observer, never()).onNext(anyLong());
+        verify(observer, never()).onCompleted();
+        verify(observer, never()).onError(any(Throwable.class));
+
+        scheduler.advanceTimeTo(1500L, TimeUnit.MILLISECONDS);
+        inOrder.verify(observer, times(1)).onNext(0L);
+        inOrder.verify(observer, never()).onNext(anyLong());
+        verify(observer, never()).onCompleted();
+        verify(observer, never()).onError(any(Throwable.class));
+
+        scheduler.advanceTimeTo(2400L, TimeUnit.MILLISECONDS);
+        inOrder.verify(observer, never()).onNext(anyLong());
+        verify(observer, never()).onCompleted();
+        verify(observer, never()).onError(any(Throwable.class));
+
+        scheduler.advanceTimeTo(2500L, TimeUnit.MILLISECONDS);
+        inOrder.verify(observer, times(1)).onNext(1L);
+        inOrder.verify(observer, never()).onNext(anyLong());
+        verify(observer, never()).onCompleted();
+        verify(observer, never()).onError(any(Throwable.class));
+
+        scheduler.advanceTimeTo(3400L, TimeUnit.MILLISECONDS);
+        inOrder.verify(observer, never()).onNext(anyLong());
+        verify(observer, never()).onCompleted();
+        verify(observer, never()).onError(any(Throwable.class));
+
+        scheduler.advanceTimeTo(3500L, TimeUnit.MILLISECONDS);
+        inOrder.verify(observer, times(1)).onNext(2L);
+        verify(observer, times(1)).onCompleted();
+        verify(observer, never()).onError(any(Throwable.class));
+    }
+    
+    @Test
+    public void testDelayWithObservableReorder() {
+        int n = 3;
+
+        PublishSubject<Integer> source = PublishSubject.create();
+        final List<PublishSubject<Integer>> subjects = new ArrayList<PublishSubject<Integer>>();
+        for (int i = 0; i < n; i++) {
+            subjects.add(PublishSubject.<Integer>create());
+        }
+        
+        Observable<Integer> result = source.delay(new Func1<Integer, Observable<Integer>>() {
+
+            @Override
+            public Observable<Integer> call(Integer t1) {
+                return subjects.get(t1);
+            }
+        });
+        
+        @SuppressWarnings("unchecked")
+        Observer<Integer> o = mock(Observer.class);
+        InOrder inOrder = inOrder(o);
+        
+        result.subscribe(o);
+        
+        for (int i = 0; i < n; i++) {
+            source.onNext(i);
+        }
+        source.onCompleted();
+        
+        inOrder.verify(o, never()).onNext(anyInt());
+        inOrder.verify(o, never()).onCompleted();
+        
+        for (int i = n - 1; i >= 0; i--) {
+            subjects.get(i).onCompleted();
+            inOrder.verify(o).onNext(i);
+        }
+        
+        inOrder.verify(o).onCompleted();
+        
+        verify(o, never()).onError(any(Throwable.class));
     }
 }

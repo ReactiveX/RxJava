@@ -45,7 +45,7 @@ public class StartWithTests {
         assertEquals("two", values.get(3));
     }
 
-	@Test
+    @Test
     public void startWithObservable() {
         List<String> li = new ArrayList<String>();
         li.add("alpha");

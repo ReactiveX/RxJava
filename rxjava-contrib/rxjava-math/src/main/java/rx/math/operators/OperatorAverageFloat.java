@@ -45,7 +45,7 @@ public final class OperatorAverageFloat<T> implements Operator<Float, T> {
         int count;
 
         public AverageObserver(Subscriber<? super Float> subscriber) {
-        	super(subscriber);
+            super(subscriber);
             this.child = subscriber;
         }
 

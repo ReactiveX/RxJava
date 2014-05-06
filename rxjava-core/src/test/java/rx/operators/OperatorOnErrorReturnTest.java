@@ -30,15 +30,13 @@ import org.mockito.Mockito;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscriber;
-import rx.Subscription;
 import rx.functions.Func1;
 
 public class OperatorOnErrorReturnTest {
 
     @Test
     public void testResumeNext() {
-        Subscription s = mock(Subscription.class);
-        TestObservable f = new TestObservable(s, "one");
+        TestObservable f = new TestObservable("one");
         Observable<String> w = Observable.create(f);
         final AtomicReference<Throwable> capturedException = new AtomicReference<Throwable>();
 
@@ -74,8 +72,7 @@ public class OperatorOnErrorReturnTest {
      */
     @Test
     public void testFunctionThrowsError() {
-        Subscription s = mock(Subscription.class);
-        TestObservable f = new TestObservable(s, "one");
+        TestObservable f = new TestObservable("one");
         Observable<String> w = Observable.create(f);
         final AtomicReference<Throwable> capturedException = new AtomicReference<Throwable>();
 
@@ -110,12 +107,10 @@ public class OperatorOnErrorReturnTest {
 
     private static class TestObservable implements Observable.OnSubscribe<String> {
 
-        final Subscription s;
         final String[] values;
         Thread t = null;
 
-        public TestObservable(Subscription s, String... values) {
-            this.s = s;
+        public TestObservable(String... values) {
             this.values = values;
         }
 

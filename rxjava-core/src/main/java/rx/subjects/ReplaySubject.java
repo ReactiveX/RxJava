@@ -19,12 +19,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 
-import rx.Notification;
 import rx.Observer;
 import rx.functions.Action0;
 import rx.functions.Action1;
+import rx.operators.NotificationLite;
 import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
 
 /**
@@ -127,7 +126,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
 
             @Override
             public void call() {
-                state.history.complete(Notification.<T> createOnCompleted());
+                state.history.complete();
             }
         });
         if (observers != null) {
@@ -145,7 +144,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
 
             @Override
             public void call() {
-                state.history.complete(Notification.<T> createOnError(e));
+                state.history.complete(e);
             }
         });
         if (observers != null) {
@@ -159,7 +158,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
 
     @Override
     public void onNext(T v) {
-        if (state.history.terminalValue.get() != null) {
+        if (state.history.terminated) {
             return;
         }
         state.history.next(v);
@@ -200,11 +199,8 @@ public final class ReplaySubject<T> extends Subject<T, T> {
 
     private static <T> int replayObserverFromIndex(History<T> history, Integer l, SubjectObserver<? super T> observer) {
         while (l < history.index.get()) {
-            observer.onNext(history.list.get(l));
+            history.accept(observer, l);
             l++;
-        }
-        if (history.terminalValue.get() != null) {
-            history.terminalValue.get().accept(observer);
         }
 
         return l;
@@ -217,19 +213,19 @@ public final class ReplaySubject<T> extends Subject<T, T> {
      * @param <T>
      */
     private static class History<T> {
+        private final NotificationLite<T> nl = NotificationLite.instance();
         private final AtomicInteger index;
-        private final ArrayList<T> list;
-        private final AtomicReference<Notification<T>> terminalValue;
+        private final ArrayList<Object> list;
+        private boolean terminated;
 
         public History(int initialCapacity) {
             index = new AtomicInteger(0);
-            list = new ArrayList<T>(initialCapacity);
-            terminalValue = new AtomicReference<Notification<T>>();
+            list = new ArrayList<Object>(initialCapacity);
         }
 
         public boolean next(T n) {
-            if (terminalValue.get() == null) {
-                list.add(n);
+            if (!terminated) {
+                list.add(nl.next(n));
                 index.getAndIncrement();
                 return true;
             } else {
@@ -237,8 +233,23 @@ public final class ReplaySubject<T> extends Subject<T, T> {
             }
         }
 
-        public void complete(Notification<T> n) {
-            terminalValue.set(n);
+        public void accept(Observer<? super T> o, int idx) {
+            nl.accept(o, list.get(idx));
+        }
+        
+        public void complete() {
+            if (!terminated) {
+                terminated = true;
+                list.add(nl.completed());
+                index.getAndIncrement();
+            }
+        }
+        public void complete(Throwable e) {
+            if (!terminated) {
+                terminated = true;
+                list.add(nl.error(e));
+                index.getAndIncrement();
+            }
         }
     }
 

@@ -91,6 +91,7 @@ public class DebugHookTest {
     public void testSimple() {
         TestDebugNotificationListener listener = new TestDebugNotificationListener();
         listener = spy(listener);
+        @SuppressWarnings("rawtypes")
         final DebugHook hook = new DebugHook(listener);
         RxJavaPlugins.getInstance().registerObservableExecutionHook(hook);
 
@@ -210,6 +211,7 @@ public class DebugHookTest {
         });
     }
 
+    @SuppressWarnings("rawtypes")
     private static <T> DebugNotification subscribe() {
         return argThat(new BaseMatcher<DebugNotification<T>>() {
             @Override
@@ -228,6 +230,7 @@ public class DebugHookTest {
         });
     }
 
+    @SuppressWarnings("rawtypes")
     private static <T> DebugNotification unsubscribe() {
         return argThat(new BaseMatcher<DebugNotification<T>>() {
             @Override
@@ -246,6 +249,7 @@ public class DebugHookTest {
         });
     }
 
+    @SuppressWarnings("rawtypes")
     private static DebugNotification onCompleted() {
         return argThat(new BaseMatcher<DebugNotification>() {
             @Override

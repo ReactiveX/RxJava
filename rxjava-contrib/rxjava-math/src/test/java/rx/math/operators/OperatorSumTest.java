@@ -354,6 +354,6 @@ public class OperatorSumTest {
     }
 
     static class CustomException extends RuntimeException {
-		private static final long serialVersionUID = 8825937249852675778L;
+        private static final long serialVersionUID = 8825937249852675778L;
     }
 }

@@ -31,7 +31,7 @@ import rx.Observer;
 import rx.functions.Func1;
 import rx.functions.Func2;
 
-public class OperationSkipWhileTest {
+public class OperatorSkipWhileTest {
 
     @SuppressWarnings("unchecked")
     Observer<Integer> w = mock(Observer.class);

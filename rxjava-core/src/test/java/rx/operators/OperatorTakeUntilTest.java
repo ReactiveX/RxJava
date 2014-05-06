@@ -18,15 +18,16 @@ package rx.operators;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static rx.operators.OperationTakeUntil.takeUntil;
+import static rx.operators.OperatorTakeUntil.takeUntil;
 
 import org.junit.Test;
 
 import rx.Observable;
 import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 
-public class OperationTakeUntilTest {
+public class OperatorTakeUntilTest {
 
     @Test
     @SuppressWarnings("unchecked")
@@ -158,7 +159,7 @@ public class OperationTakeUntilTest {
 
     }
 
-    private static class TestObservable implements Observable.OnSubscribeFunc<String> {
+    private static class TestObservable implements Observable.OnSubscribe<String> {
 
         Observer<? super String> observer = null;
         Subscription s;
@@ -183,9 +184,9 @@ public class OperationTakeUntilTest {
         }
 
         @Override
-        public Subscription onSubscribe(final Observer<? super String> observer) {
+        public void call(Subscriber<? super String> observer) {
             this.observer = observer;
-            return s;
+            observer.add(s);
         }
     }
 }

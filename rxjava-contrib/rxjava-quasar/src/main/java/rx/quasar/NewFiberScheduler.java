@@ -73,7 +73,7 @@ public class NewFiberScheduler extends Scheduler {
             }
 
             final AtomicReference<Subscription> sf = new AtomicReference<Subscription>();
-            final Subscription s = Subscriptions.from(new Fiber(fiberScheduler, new SuspendableRunnable() {
+            final Subscription s = Subscriptions.from(new Fiber<Void>(fiberScheduler, new SuspendableRunnable() {
 
                 @Override
                 public void run() throws SuspendExecution {
@@ -109,7 +109,7 @@ public class NewFiberScheduler extends Scheduler {
         public Subscription schedule(final Action0 action, final long delayTime, final TimeUnit unit) {
             final AtomicReference<Subscription> sf = new AtomicReference<Subscription>();
 
-            final Subscription s = Subscriptions.from(new Fiber(fiberScheduler, new SuspendableRunnable() {
+            final Subscription s = Subscriptions.from(new Fiber<Void>(fiberScheduler, new SuspendableRunnable() {
 
                 @Override
                 public void run() throws InterruptedException, SuspendExecution  {

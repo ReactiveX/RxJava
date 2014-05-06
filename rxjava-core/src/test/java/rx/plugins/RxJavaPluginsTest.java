@@ -68,7 +68,6 @@ public class RxJavaPluginsTest {
     // inside test so it is stripped from Javadocs
     public static class RxJavaErrorHandlerTestImpl extends RxJavaErrorHandler {
 
-        @SuppressWarnings("unused")
         private volatile Throwable e;
         private volatile int count = 0;
 

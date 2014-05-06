@@ -15,7 +15,6 @@
  */
 package rx.operators;
 
-import java.util.ArrayList;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.inOrder;
@@ -24,7 +23,9 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
@@ -44,8 +45,8 @@ import rx.functions.Func7;
 import rx.functions.Func8;
 import rx.functions.Func9;
 import rx.functions.FuncN;
-import rx.subjects.PublishSubject;
 import rx.schedulers.Schedulers;
+import rx.subjects.PublishSubject;
 
 public class OperatorCombineLatestTest {
 
@@ -263,25 +264,6 @@ public class OperatorCombineLatestTest {
         return combineLatestFunction;
     }
 
-    private FuncN<String> getConcatCombineLatestFunction() {
-        FuncN<String> combineLatestFunction = new FuncN<String>() {
-
-            @Override
-            public String call(Object... args) {
-                String returnValue = "";
-                for (Object o : args) {
-                    if (o != null) {
-                        returnValue += getStringValue(o);
-                    }
-                }
-                System.out.println("returning: " + returnValue);
-                return returnValue;
-            }
-
-        };
-        return combineLatestFunction;
-    }
-
     private Func2<String, Integer, String> getConcatStringIntegerCombineLatestFunction() {
         Func2<String, Integer, String> combineLatestFunction = new Func2<String, Integer, String>() {
 
@@ -332,6 +314,7 @@ public class OperatorCombineLatestTest {
 
         Observable<Integer> source = Observable.combineLatest(a, b, or);
 
+        @SuppressWarnings("unchecked")
         Observer<Object> observer = mock(Observer.class);
         InOrder inOrder = inOrder(observer);
 
@@ -377,7 +360,9 @@ public class OperatorCombineLatestTest {
 
         Observable<Integer> source = Observable.combineLatest(a, b, or);
 
+        @SuppressWarnings("unchecked")
         Observer<Object> observer1 = mock(Observer.class);
+        @SuppressWarnings("unchecked")
         Observer<Object> observer2 = mock(Observer.class);
 
         InOrder inOrder1 = inOrder(observer1);
@@ -434,6 +419,7 @@ public class OperatorCombineLatestTest {
 
         Observable<Integer> source = Observable.combineLatest(a, b, or);
 
+        @SuppressWarnings("unchecked")
         Observer<Object> observer = mock(Observer.class);
         InOrder inOrder = inOrder(observer);
 
@@ -457,6 +443,7 @@ public class OperatorCombineLatestTest {
 
         Observable<Integer> source = Observable.combineLatest(a, b, or);
 
+        @SuppressWarnings("unchecked")
         Observer<Object> observer = mock(Observer.class);
         InOrder inOrder = inOrder(observer);
 
@@ -498,6 +485,7 @@ public class OperatorCombineLatestTest {
             
             Observable<List<Object>> result = Observable.combineLatest(sources, func);
             
+            @SuppressWarnings("unchecked")
             Observer<List<Object>> o = mock(Observer.class);
             
             result.subscribe(o);
@@ -528,6 +516,7 @@ public class OperatorCombineLatestTest {
             
             Observable<List<Object>> result = Observable.combineLatest(sources, func);
             
+            @SuppressWarnings("unchecked")
             final Observer<List<Object>> o = mock(Observer.class);
             
             final CountDownLatch cdl = new CountDownLatch(1);
@@ -573,6 +562,7 @@ public class OperatorCombineLatestTest {
             }
         });
         
+        @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
         
         result.subscribe(o);
@@ -595,6 +585,7 @@ public class OperatorCombineLatestTest {
             }
         });
         
+        @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
         
         result.subscribe(o);
@@ -618,6 +609,7 @@ public class OperatorCombineLatestTest {
             }
         });
         
+        @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
         
         result.subscribe(o);
@@ -642,6 +634,7 @@ public class OperatorCombineLatestTest {
             }
         });
         
+        @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
         
         result.subscribe(o);
@@ -667,6 +660,7 @@ public class OperatorCombineLatestTest {
             }
         });
         
+        @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
         
         result.subscribe(o);
@@ -693,6 +687,7 @@ public class OperatorCombineLatestTest {
             }
         });
         
+        @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
         
         result.subscribe(o);
@@ -720,6 +715,7 @@ public class OperatorCombineLatestTest {
             }
         });
         
+        @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
         
         result.subscribe(o);
@@ -748,6 +744,7 @@ public class OperatorCombineLatestTest {
             }
         });
         
+        @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
         
         result.subscribe(o);
@@ -758,7 +755,7 @@ public class OperatorCombineLatestTest {
     }
     @Test
     public void testZeroSources() {
-        Observable<Object> result = Observable.combineLatest(Arrays.<Observable<Object>>asList(), new FuncN<Object>() {
+        Observable<Object> result = Observable.combineLatest(Collections.<Observable<Object>>emptyList(), new FuncN<Object>() {
 
             @Override
             public Object call(Object... args) {
@@ -767,6 +764,7 @@ public class OperatorCombineLatestTest {
             
         });
         
+        @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
         
         result.subscribe(o);

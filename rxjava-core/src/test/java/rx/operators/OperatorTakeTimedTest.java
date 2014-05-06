@@ -28,7 +28,7 @@ import org.mockito.InOrder;
 
 import rx.Observable;
 import rx.Observer;
-import rx.operators.OperatorSkipTimedTest.CustomException;
+import rx.exceptions.TestException;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
 
@@ -82,7 +82,7 @@ public class OperatorTakeTimedTest {
         source.onNext(1);
         source.onNext(2);
         source.onNext(3);
-        source.onError(new CustomException());
+        source.onError(new TestException());
 
         scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
@@ -92,7 +92,7 @@ public class OperatorTakeTimedTest {
         inOrder.verify(o).onNext(1);
         inOrder.verify(o).onNext(2);
         inOrder.verify(o).onNext(3);
-        inOrder.verify(o).onError(any(CustomException.class));
+        inOrder.verify(o).onError(any(TestException.class));
         inOrder.verifyNoMoreInteractions();
 
         verify(o, never()).onCompleted();
@@ -119,7 +119,7 @@ public class OperatorTakeTimedTest {
         scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
         source.onNext(4);
-        source.onError(new CustomException());
+        source.onError(new TestException());
 
         InOrder inOrder = inOrder(o);
         inOrder.verify(o).onNext(1);
@@ -129,6 +129,6 @@ public class OperatorTakeTimedTest {
         inOrder.verifyNoMoreInteractions();
 
         verify(o, never()).onNext(4);
-        verify(o, never()).onError(any(CustomException.class));
+        verify(o, never()).onError(any(TestException.class));
     }
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,21 +15,24 @@
  */
 package rx.observables;
 
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.NotSerializableException;
 import java.io.StringReader;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.nio.charset.MalformedInputException;
 import java.util.Arrays;
 import java.util.List;
-
-import junit.framework.Assert;
 
 import org.junit.Test;
 
@@ -141,10 +144,11 @@ public class StringObservableTest {
 
     @Test
     public void testJoinMixed() {
-        Observable<Object> source = Observable.<Object> from(Arrays.asList("a", 1, "c"));
+        Observable<Object> source = Observable.<Object> from(Arrays.<Object>asList("a", 1, "c"));
 
         Observable<String> result = StringObservable.join(source, ", ");
 
+        @SuppressWarnings("unchecked")
         Observer<Object> observer = mock(Observer.class);
 
         result.subscribe(new TestObserver<Object>(observer));
@@ -160,6 +164,7 @@ public class StringObservableTest {
 
         Observable<String> result = StringObservable.join(source, ", ");
 
+        @SuppressWarnings("unchecked")
         Observer<Object> observer = mock(Observer.class);
 
         result.subscribe(new TestObserver<Object>(observer));
@@ -175,6 +180,7 @@ public class StringObservableTest {
 
         Observable<String> result = StringObservable.join(source, ", ");
 
+        @SuppressWarnings("unchecked")
         Observer<Object> observer = mock(Observer.class);
 
         result.subscribe(new TestObserver<Object>(observer));
@@ -190,6 +196,7 @@ public class StringObservableTest {
 
         Observable<String> result = StringObservable.join(source, ", ");
 
+        @SuppressWarnings("unchecked")
         Observer<Object> observer = mock(Observer.class);
 
         result.subscribe(new TestObserver<Object>(observer));
@@ -205,6 +212,7 @@ public class StringObservableTest {
 
         Observable<String> result = StringObservable.join(source, ", ");
 
+        @SuppressWarnings("unchecked")
         Observer<Object> observer = mock(Observer.class);
 
         result.subscribe(new TestObserver<Object>(observer));
@@ -220,6 +228,7 @@ public class StringObservableTest {
 
         Observable<String> result = StringObservable.join(source, ", ");
 
+        @SuppressWarnings("unchecked")
         Observer<Object> observer = mock(Observer.class);
 
         result.subscribe(new TestObserver<Object>(observer));

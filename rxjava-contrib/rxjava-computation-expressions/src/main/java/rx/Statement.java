@@ -26,7 +26,7 @@ import rx.operators.OperatorWhileDoWhile;
  * Imperative statements expressed as Observable operators.
  */
 public final class Statement {
-	private Statement() { throw new IllegalStateException("No instances!"); }
+    private Statement() { throw new IllegalStateException("No instances!"); }
     /**
      * Return a particular one of several possible Observables based on a case
      * selector.
@@ -94,7 +94,7 @@ public final class Statement {
      * @param mapOfCases
      *            a map that maps a case key to an Observable
      * @param defaultCase
-     *            the default Observable if the {@code mapOfCases} doesn't contain a value for the key returned by the {@case caseSelector}
+     *            the default Observable if the {@code mapOfCases} doesn't contain a value for the key returned by the {@code caseSelector}
      * @return a particular Observable chosen by key from the map of
      *         Observables, or the default case if no Observable matches the key
      */

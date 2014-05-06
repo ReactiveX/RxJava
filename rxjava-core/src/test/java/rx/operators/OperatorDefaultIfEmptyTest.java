@@ -15,13 +15,17 @@
  */
 package rx.operators;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 import org.junit.Test;
 
 import rx.Observable;
 import rx.Observer;
 import rx.Subscriber;
+import rx.exceptions.TestException;
 
 public class OperatorDefaultIfEmptyTest {
 
@@ -57,12 +61,13 @@ public class OperatorDefaultIfEmptyTest {
     
     @Test
     public void testEmptyButClientThrows() {
+        @SuppressWarnings("unchecked")
         final Observer<Integer> o = mock(Observer.class);
         
         Observable.<Integer>empty().defaultIfEmpty(1).subscribe(new Subscriber<Integer>() {
             @Override
             public void onNext(Integer t) {
-                throw new OperationReduceTest.CustomException();
+                throw new TestException();
             }
 
             @Override
@@ -76,7 +81,7 @@ public class OperatorDefaultIfEmptyTest {
             }
         });
         
-        verify(o).onError(any(OperationReduceTest.CustomException.class));
+        verify(o).onError(any(TestException.class));
         verify(o, never()).onNext(any(Integer.class));
         verify(o, never()).onCompleted();
     }

@@ -82,7 +82,7 @@ public final class ChannelObservable {
      * @param <T>     the type of messages that can be sent to the channel and the type of items to be
      *                received by the Observer
      * @param channel the target {@link SendPort}
-     * @return
+     * @return the observer
      */
     public static <T> Observer<T> to(final SendPort<T> channel) {
         return new Observer<T>() {
@@ -116,7 +116,7 @@ public final class ChannelObservable {
      * <p>
      * @param <T>        the type of messages emitted by the observable and received on the channel.
      * @param bufferSize the channel's buffer size
-     * @param policy     the channel's {@link Channels.OverflowPolicy OverflowPolicy}
+     * @param policy     the channel's {@link Channels.OverflowPolicy}
      * @param o          the observable
      * @return A new channel with the given buffer size and overflow policy that will receive all events emitted by the observable.
      */

@@ -28,11 +28,12 @@ import org.mockito.MockitoAnnotations;
 
 import rx.Observable;
 import rx.Observer;
+import rx.exceptions.TestException;
 import rx.functions.Func1;
 import rx.functions.Func2;
 import rx.functions.Functions;
 
-public class OperationReduceTest {
+public class OperatorReduceTest {
     @Mock
     Observer<Object> observer;
 
@@ -60,20 +61,17 @@ public class OperationReduceTest {
         verify(observer, never()).onError(any(Throwable.class));
     }
 
-    static class CustomException extends RuntimeException {
-    }
-
     @Test
     public void testAggregateAsIntSumSourceThrows() {
         Observable<Integer> result = Observable.concat(Observable.from(1, 2, 3, 4, 5),
-                Observable.<Integer> error(new CustomException()))
+                Observable.<Integer> error(new TestException()))
                 .reduce(0, sum).map(Functions.<Integer> identity());
 
         result.subscribe(observer);
 
         verify(observer, never()).onNext(any());
         verify(observer, never()).onCompleted();
-        verify(observer, times(1)).onError(any(CustomException.class));
+        verify(observer, times(1)).onError(any(TestException.class));
     }
 
     @Test
@@ -81,7 +79,7 @@ public class OperationReduceTest {
         Func2<Integer, Integer, Integer> sumErr = new Func2<Integer, Integer, Integer>() {
             @Override
             public Integer call(Integer t1, Integer t2) {
-                throw new CustomException();
+                throw new TestException();
             }
         };
 
@@ -92,7 +90,7 @@ public class OperationReduceTest {
 
         verify(observer, never()).onNext(any());
         verify(observer, never()).onCompleted();
-        verify(observer, times(1)).onError(any(CustomException.class));
+        verify(observer, times(1)).onError(any(TestException.class));
     }
 
     @Test
@@ -102,7 +100,7 @@ public class OperationReduceTest {
 
             @Override
             public Integer call(Integer t1) {
-                throw new CustomException();
+                throw new TestException();
             }
         };
 
@@ -113,7 +111,7 @@ public class OperationReduceTest {
 
         verify(observer, never()).onNext(any());
         verify(observer, never()).onCompleted();
-        verify(observer, times(1)).onError(any(CustomException.class));
+        verify(observer, times(1)).onError(any(TestException.class));
     }
 
 }

@@ -49,9 +49,10 @@ public final class OperatorMulticast<T, R> extends ConnectableObservable<R> {
 
     @Override
     public Subscription connect() {
+        Subscriber<T> s = null;
         synchronized (guard) {
             if (subscription == null) {
-                subscription = source.unsafeSubscribe(new Subscriber<T>() {
+                s = new Subscriber<T>() {
                     @Override
                     public void onCompleted() {
                         subject.onCompleted();
@@ -66,18 +67,24 @@ public final class OperatorMulticast<T, R> extends ConnectableObservable<R> {
                     public void onNext(T args) {
                         subject.onNext(args);
                     }
-                });
+                };
+                subscription = s;
             }
+        }
+        if (s != null) {
+            source.unsafeSubscribe(s);
         }
 
         return Subscriptions.create(new Action0() {
             @Override
             public void call() {
+                Subscription s;
                 synchronized (guard) {
-                    if (subscription != null) {
-                        subscription.unsubscribe();
-                        subscription = null;
-                    }
+                    s = subscription;
+                    subscription = null;
+                }
+                if (s != null) {
+                    s.unsubscribe();
                 }
             }
         });

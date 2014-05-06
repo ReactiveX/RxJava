@@ -23,7 +23,7 @@ import rx.plugins.RxJavaPlugins;
 /**
  * Static factory methods for creating Schedulers.
  */
-public class Schedulers {
+public final class Schedulers {
 
     private final Scheduler computationScheduler;
     private final Scheduler ioScheduler;
@@ -103,7 +103,7 @@ public class Schedulers {
      * <p>
      * Do not perform computational work on this scheduler. Use {@link #computation()} instead.
      * 
-     * @return {@link ExecutorScheduler} for IO-bound work
+     * @return {@link Scheduler} for IO-bound work
      */
     public static Scheduler io() {
         return INSTANCE.ioScheduler;

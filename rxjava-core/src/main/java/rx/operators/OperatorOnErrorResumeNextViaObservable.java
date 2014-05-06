@@ -18,7 +18,6 @@ package rx.operators;
 import rx.Observable;
 import rx.Observable.Operator;
 import rx.Subscriber;
-import rx.subscriptions.SerialSubscription;
 
 /**
  * Instruct an Observable to pass control to another Observable rather than invoking
