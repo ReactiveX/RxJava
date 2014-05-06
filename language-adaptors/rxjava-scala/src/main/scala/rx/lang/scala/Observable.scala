@@ -215,10 +215,9 @@ trait Observable[+T]
    * @return a pair of a start function and an [[rx.lang.scala.Observable]] such that when the start function
    *         is called, the Observable starts to push results into the specified Subject
    */
-  def multicast[R >: T](subject: rx.lang.scala.Subject[R]): (() => Subscription, Observable[R]) = {
+  def multicast[R >: T](subject: rx.lang.scala.Subject[R]): ConnectableObservable[R] = {
     val s: rx.subjects.Subject[_ >: T, _<: R] = subject.asJavaSubject
-    val javaCO: rx.observables.ConnectableObservable[R] = asJavaObservable.multicast(s)
-    (() => javaCO.connect(), toScalaObservable(javaCO))
+    new ConnectableObservable[R](asJavaObservable.multicast(s))
   }
 
   /**
@@ -1032,9 +1031,8 @@ trait Observable[+T]
    * @return a pair of a start function and an [[rx.lang.scala.Observable]] such that when the start function
    *         is called, the Observable starts to emit items to its [[rx.lang.scala.Observer]]s
    */
-  def replay: (() => Subscription, Observable[T]) = {
-    val javaCO = asJavaObservable.replay()
-    (() => javaCO.connect(), toScalaObservable[T](javaCO))
+  def replay: ConnectableObservable[T] = {
+    new ConnectableObservable[T](asJavaObservable.replay())
   }
 
   /**

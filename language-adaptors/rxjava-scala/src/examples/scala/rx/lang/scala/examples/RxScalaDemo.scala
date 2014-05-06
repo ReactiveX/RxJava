@@ -312,9 +312,9 @@ class RxScalaDemo extends JUnitSuite {
 
   @Test def exampleWithReplay() {
     val numbers = Observable.interval(1000 millis).take(6)
-    val (startFunc, sharedNumbers) = numbers.replay
+    val sharedNumbers = numbers.replay
     sharedNumbers.subscribe(n => println(s"subscriber 1 gets $n"))
-    startFunc()
+    sharedNumbers.connect
     // subscriber 2 subscribes later but still gets all numbers
     doLater(3500 millis, () => { sharedNumbers.subscribe(n => println(s"subscriber 2 gets $n")) })
     waitFor(sharedNumbers)
