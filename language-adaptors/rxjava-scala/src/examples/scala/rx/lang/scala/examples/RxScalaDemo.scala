@@ -320,6 +320,46 @@ class RxScalaDemo extends JUnitSuite {
     waitFor(sharedNumbers)
   }
 
+  @Test def exampleWithReplay2() {
+    val numbers = Observable.interval(100 millis).take(10)
+    val sharedNumbers = numbers.replay(3)
+    sharedNumbers.subscribe(n => println(s"subscriber 1 gets $n"))
+    sharedNumbers.connect
+    // subscriber 2 subscribes later but only gets the 3 buffered numbers and the following numbers
+    Thread.sleep(700)
+    sharedNumbers.subscribe(n => println(s"subscriber 2 gets $n"))
+    waitFor(sharedNumbers)
+  }
+
+  @Test def exampleWithReplay3() {
+    val numbers = Observable.interval(100 millis).take(10)
+    val sharedNumbers = numbers.replay(300 millis)
+    sharedNumbers.subscribe(n => println(s"subscriber 1 gets $n"))
+    sharedNumbers.connect
+    // subscriber 2 subscribes later but only gets the buffered numbers and the following numbers
+    Thread.sleep(700)
+    sharedNumbers.subscribe(n => println(s"subscriber 2 gets $n"))
+    waitFor(sharedNumbers)
+  }
+
+  @Test def exampleWithReplay4() {
+    val numbers = Observable.interval(100 millis).take(10)
+    val sharedNumbers = numbers.replay(2, 300 millis)
+    sharedNumbers.subscribe(n => println(s"subscriber 1 gets $n"))
+    sharedNumbers.connect
+    // subscriber 2 subscribes later but only gets the buffered numbers and the following numbers
+    Thread.sleep(700)
+    sharedNumbers.subscribe(n => println(s"subscriber 2 gets $n"))
+    waitFor(sharedNumbers)
+  }
+
+  @Test def exampleWithReplay5() {
+    val numbers = Observable.interval(100 millis).take(10)
+    val sharedNumbers = numbers.replay[Long, Long]((o: Observable[Long]) => o.map(_ * 2))
+    sharedNumbers.subscribe(n => println(s"subscriber gets $n"))
+    waitFor(sharedNumbers)
+  }
+
   @Test def testSingleOption() {
     assertEquals(None,    List(1, 2).toObservable.toBlockingObservable.singleOption)
     assertEquals(Some(1), List(1).toObservable.toBlockingObservable.singleOption)

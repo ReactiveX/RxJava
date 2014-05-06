@@ -1051,6 +1051,279 @@ trait Observable[+T]
   }
 
   /**
+   * Returns an Observable that emits items that are the results of invoking a specified selector on the items
+   * emitted by a `ConnectableObservable` that shares a single subscription to the source Observable.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.f.png">
+   *
+   * @param selector the selector function, which can use the multicasted sequence as many times as needed, without
+   *                 causing multiple subscriptions to the Observable
+   * @return an Observable that emits items that are the results of invoking the selector on a `ConnectableObservable`
+   *         that shares a single subscription to the source Observable
+   */
+  def replay[U >: T, R](selector: Observable[U] => Observable[R]): Observable[R] = {
+    val thisJava = this.asJavaObservable.asInstanceOf[rx.Observable[U]]
+    val fJava: Func1[rx.Observable[U], rx.Observable[R]] =
+      (jo: rx.Observable[U]) => selector(toScalaObservable[U](jo)).asJavaObservable.asInstanceOf[rx.Observable[R]]
+    toScalaObservable[R](thisJava.replay(fJava))
+  }
+
+  /**
+   * Returns an Observable that emits items that are the results of invoking a specified selector on items
+   * emitted by a `ConnectableObservable` that shares a single subscription to the source Observable,
+   * replaying `bufferSize` notifications.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.fn.png">
+   *
+   * @param selector the selector function, which can use the multicasted sequence as many times as needed, without
+   *                 causing multiple subscriptions to the Observable
+   * @param bufferSize  the buffer size that limits the number of items the connectable observable can replay
+   * @return an Observable that emits items that are the results of invoking the selector on items emitted by
+   *         a `ConnectableObservable` that shares a single subscription to the source Observable  replaying
+   *         no more than `bufferSize` items
+   */
+  def replay[U >: T, R](selector: Observable[U] => Observable[R], bufferSize: Int): Observable[R] = {
+    val thisJava = this.asJavaObservable.asInstanceOf[rx.Observable[U]]
+    val fJava: Func1[rx.Observable[U], rx.Observable[R]] =
+      (jo: rx.Observable[U]) => selector(toScalaObservable[U](jo)).asJavaObservable.asInstanceOf[rx.Observable[R]]
+    toScalaObservable[R](thisJava.replay(fJava, bufferSize))
+  }
+
+  /**
+   * Returns an Observable that emits items that are the results of invoking a specified selector on items
+   * emitted by a `ConnectableObservable` that shares a single subscription to the source Observable,
+   * replaying no more than `bufferSize` items that were emitted within a specified time window.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.fnt.png">
+   *
+   * @param selector  a selector function, which can use the multicasted sequence as many times as needed, without
+   *                  causing multiple subscriptions to the Observable
+   * @param bufferSize the buffer size that limits the number of items the connectable observable can replay
+   * @param time the duration of the window in which the replayed items must have been emitted
+   * @return an Observable that emits items that are the results of invoking the selector on items emitted by
+   *         a `ConnectableObservable` that shares a single subscription to the source Observable, and
+   *         replays no more than `bufferSize` items that were emitted within the window defined by `time`
+   */
+  def replay[U >: T, R](selector: Observable[U] => Observable[R], bufferSize: Int, time: Duration): Observable[R] = {
+    val thisJava = this.asJavaObservable.asInstanceOf[rx.Observable[U]]
+    val fJava: Func1[rx.Observable[U], rx.Observable[R]] =
+      (jo: rx.Observable[U]) => selector(toScalaObservable[U](jo)).asJavaObservable.asInstanceOf[rx.Observable[R]]
+    toScalaObservable[R](thisJava.replay(fJava, bufferSize, time.length, time.unit))
+  }
+
+  /**
+   * Returns an Observable that emits items that are the results of invoking a specified selector on items
+   * emitted by a `ConnectableObservable` that shares a single subscription to the source Observable,
+   * replaying no more than `bufferSize` items that were emitted within a specified time window.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.fnts.png">
+   *
+   * @param selector  a selector function, which can use the multicasted sequence as many times as needed, without
+   *                  causing multiple subscriptions to the Observable
+   * @param bufferSize the buffer size that limits the number of items the connectable observable can replay
+   * @param time  the duration of the window in which the replayed items must have been emitted
+   * @param scheduler  the Scheduler that is the time source for the window
+   * @return an Observable that emits items that are the results of invoking the selector on items emitted by
+   *         a `ConnectableObservable` that shares a single subscription to the source Observable, and
+   *         replays no more than `bufferSize` items that were emitted within the window defined by `time`
+   * @throws IllegalArgumentException if `bufferSize` is less than zero
+   */
+  def replay[U >: T, R](selector: Observable[U] => Observable[R], bufferSize: Int, time: Duration, scheduler: Scheduler): Observable[R] = {
+    val thisJava = this.asJavaObservable.asInstanceOf[rx.Observable[U]]
+    val fJava: Func1[rx.Observable[U], rx.Observable[R]] =
+      (jo: rx.Observable[U]) => selector(toScalaObservable[U](jo)).asJavaObservable.asInstanceOf[rx.Observable[R]]
+    toScalaObservable[R](thisJava.replay(fJava, bufferSize, time.length, time.unit, scheduler))
+  }
+
+  /**
+   * Returns an Observable that emits items that are the results of invoking a specified selector on items
+   * emitted by a `ConnectableObservable` that shares a single subscription to the source Observable,
+   * replaying a maximum of `bufferSize` items.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.fns.png">
+   *
+   * @param selector  a selector function, which can use the multicasted sequence as many times as needed, without
+   *                  causing multiple subscriptions to the Observable
+   * @param bufferSize  the buffer size that limits the number of items the connectable observable can replay
+   * @param scheduler  the Scheduler on which the replay is observed
+   * @return an Observable that emits items that are the results of invoking the selector on items emitted by
+   *         a `ConnectableObservable` that shares a single subscription to the source Observable,
+   *         replaying no more than `bufferSize` notifications
+   */
+  def replay[U >: T, R](selector: Observable[U] => Observable[R], bufferSize: Int, scheduler: Scheduler): Observable[R] = {
+    val thisJava = this.asJavaObservable.asInstanceOf[rx.Observable[U]]
+    val fJava: Func1[rx.Observable[U], rx.Observable[R]] =
+      (jo: rx.Observable[U]) => selector(toScalaObservable[U](jo)).asJavaObservable.asInstanceOf[rx.Observable[R]]
+    toScalaObservable[R](thisJava.replay(fJava, bufferSize, scheduler))
+  }
+
+  /**
+   * Returns an Observable that emits items that are the results of invoking a specified selector on items
+   * emitted by a `ConnectableObservable` that shares a single subscription to the source Observable,
+   * replaying all items that were emitted within a specified time window.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.ft.png">
+   *
+   * @param selector   a selector function, which can use the multicasted sequence as many times as needed, without
+   *                   causing multiple subscriptions to the Observable
+   * @param time  the duration of the window in which the replayed items must have been emitted
+   * @return an Observable that emits items that are the results of invoking the selector on items emitted by
+   *         a `ConnectableObservable` that shares a single subscription to the source Observable,
+   *         replaying all items that were emitted within the window defined by `time`
+   */
+  def replay[U >: T, R](selector: Observable[U] => Observable[R], time: Duration, scheduler: Scheduler): Observable[R] = {
+    val thisJava = this.asJavaObservable.asInstanceOf[rx.Observable[U]]
+    val fJava: Func1[rx.Observable[U], rx.Observable[R]] =
+      (jo: rx.Observable[U]) => selector(toScalaObservable[U](jo)).asJavaObservable.asInstanceOf[rx.Observable[R]]
+    toScalaObservable[R](thisJava.replay(fJava, time.length, time.unit, scheduler))
+  }
+
+  /**
+   * Returns an Observable that emits items that are the results of invoking a specified selector on items
+   * emitted by a `ConnectableObservable` that shares a single subscription to the source Observable.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.fs.png">
+   *
+   * @param selector  a selector function, which can use the multicasted sequence as many times as needed, without
+   *                  causing multiple subscriptions to the Observable
+   * @param scheduler    the Scheduler where the replay is observed
+   * @return an Observable that emits items that are the results of invoking the selector on items emitted by
+   *         a `ConnectableObservable` that shares a single subscription to the source Observable,
+   *         replaying all items
+   */
+  def replay[U >: T, R](selector: Observable[U] => Observable[R], scheduler: Scheduler): Observable[R] = {
+    val thisJava = this.asJavaObservable.asInstanceOf[rx.Observable[U]]
+    val fJava: Func1[rx.Observable[U], rx.Observable[R]] =
+      (jo: rx.Observable[U]) => selector(toScalaObservable[U](jo)).asJavaObservable.asInstanceOf[rx.Observable[R]]
+    toScalaObservable[R](thisJava.replay(fJava, scheduler))
+  }
+
+  /**
+   * Returns a `ConnectableObservable` that shares a single subscription to the source Observable and
+   * replays at most `bufferSize` items that were emitted during a specified time window.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.nt.png">
+   *
+   * @param bufferSize the buffer size that limits the number of items that can be replayed
+   * @param time the duration of the window in which the replayed items must have been emitted
+   * @return a `ConnectableObservable` that shares a single subscription to the source Observable and
+   *         replays at most `bufferSize` items that were emitted during the window defined by `time`
+   */
+  def replay(bufferSize: Int, time: Duration): ConnectableObservable[T] = {
+    new ConnectableObservable[T](asJavaObservable.replay(bufferSize, time.length, time.unit))
+  }
+
+  /**
+   * Returns a `ConnectableObservable` that shares a single subscription to the source Observable and
+   * that replays a maximum of `bufferSize` items that are emitted within a specified time window.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.nts.png">
+   *
+   * @param bufferSize the buffer size that limits the number of items that can be replayed
+   * @param time the duration of the window in which the replayed items must have been emitted
+   * @param scheduler the scheduler that is used as a time source for the window
+   * @return a `ConnectableObservable` that shares a single subscription to the source Observable and
+   *         replays at most `bufferSize` items that were emitted during the window defined by `time``
+   * @throws IllegalArgumentException if `bufferSize` is less than zero
+   */
+  def replay(bufferSize: Int, time: Duration, scheduler: Scheduler): ConnectableObservable[T] = {
+    new ConnectableObservable[T](asJavaObservable.replay(bufferSize, time.length, time.unit, scheduler))
+  }
+
+  /**
+   * Returns an Observable that emits items that are the results of invoking a specified selector on items
+   * emitted by a `ConnectableObservable` that shares a single subscription to the source Observable,
+   * replaying all items that were emitted within a specified time window.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.ft.png">
+   *
+   * @param selector  a selector function, which can use the multicasted sequence as many times as needed, without
+   *                  causing multiple subscriptions to the Observable
+   * @param time the duration of the window in which the replayed items must have been emitted
+   * @return an Observable that emits items that are the results of invoking the selector on items emitted by
+   *         a `ConnectableObservable` that shares a single subscription to the source Observable,
+   *         replaying all items that were emitted within the window defined by `time``
+   */
+  def replay[U >: T, R](selector: Observable[U] => Observable[R], time: Duration): Observable[R] = {
+    val thisJava = this.asJavaObservable.asInstanceOf[rx.Observable[U]]
+    val fJava: Func1[rx.Observable[U], rx.Observable[R]] =
+      (jo: rx.Observable[U]) => selector(toScalaObservable[U](jo)).asJavaObservable.asInstanceOf[rx.Observable[R]]
+    toScalaObservable[R](thisJava.replay(fJava, time.length, time.unit))
+  }
+
+  /**
+   * Returns a `ConnectableObservable` that shares a single subscription to the source Observable that
+   * replays at most `bufferSize` items emitted by that Observable.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.n.png">
+   *
+   * @param bufferSize the buffer size that limits the number of items that can be replayed
+   * @return a `ConnectableObservable` that shares a single subscription to the source Observable and
+   *         replays at most `bufferSize` items emitted by that Observable
+   */
+  def replay(bufferSize: Int): ConnectableObservable[T] = {
+    new ConnectableObservable[T](asJavaObservable.replay(bufferSize))
+  }
+
+  /**
+   * Returns a `ConnectableObservable` that shares a single subscription to the source Observable and
+   * replays at most `bufferSize` items emitted by that Observable.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.ns.png">
+   *
+   * @param bufferSize the buffer size that limits the number of items that can be replayed
+   * @param scheduler the scheduler on which the Observers will observe the emitted items
+   * @return a `ConnectableObservable` that shares a single subscription to the source Observable and
+   *         replays at most `bufferSize` items that were emitted by the Observable
+   */
+  def replay(bufferSize: Int, scheduler: Scheduler): ConnectableObservable[T] = {
+    new ConnectableObservable[T](asJavaObservable.replay(bufferSize, scheduler))
+  }
+
+  /**
+   * Returns a `ConnectableObservable` that shares a single subscription to the source Observable and
+   * replays all items emitted by that Observable within a specified time window.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.t.png">
+   *
+   * @param time  the duration of the window in which the replayed items must have been emitted
+   * @return a `ConnectableObservable` that shares a single subscription to the source Observable and
+   *         replays the items that were emitted during the window defined by `time`
+   */
+  def replay(time: Duration): ConnectableObservable[T] = {
+    new ConnectableObservable[T](asJavaObservable.replay(time.length, time.unit))
+  }
+
+  /**
+   * Returns a `ConnectableObservable` that shares a single subscription to the source Observable and
+   * replays all items emitted by that Observable within a specified time window.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.ts.png">
+   *
+   * @param time the duration of the window in which the replayed items must have been emitted
+   * @param scheduler the Scheduler that is the time source for the window
+   * @return a `ConnectableObservable` that shares a single subscription to the source Observable and
+   *         replays the items that were emitted during the window defined by `time`
+   */
+  def replay(time: Duration, scheduler: Scheduler): ConnectableObservable[T] = {
+    new ConnectableObservable[T](asJavaObservable.replay(time.length, time.unit, scheduler))
+  }
+
+  /**
+   * Returns a `ConnectableObservable` that shares a single subscription to the source Observable that
+   * will replay all of its items and notifications to any future `Observer` on the given `Scheduler`.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.s.png">
+   *
+   * @param scheduler the Scheduler on which the Observers will observe the emitted items
+   * @return a `ConnectableObservable` that shares a single subscription to the source Observable that
+   *         will replay all of its items and notifications to any future `bserver` on the given `Scheduler`
+   */
+  def replay(scheduler: Scheduler): ConnectableObservable[T] = {
+    new ConnectableObservable[T](asJavaObservable.replay(scheduler))
+  }
+
+  /**
    * This method has similar behavior to [[rx.lang.scala.Observable.replay]] except that this auto-subscribes to
    * the source Observable rather than returning a start function and an Observable.
    *
