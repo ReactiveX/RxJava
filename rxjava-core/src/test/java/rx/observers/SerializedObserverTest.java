@@ -21,7 +21,6 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -63,7 +62,6 @@ public class SerializedObserverTest {
 
     @Test
     public void testSingleThreadedBasic() {
-        Subscription s = mock(Subscription.class);
         TestSingleThreadedObservable onSubscribe = new TestSingleThreadedObservable("one", "two", "three");
         Observable<String> w = Observable.create(onSubscribe);
 
@@ -251,7 +249,6 @@ public class SerializedObserverTest {
             }
 
             waitOnThreads(f1, f2, f3, f4, f5, f6, f7, f8, f10);
-            @SuppressWarnings("unused")
             int numNextEvents = tw.assertEvents(null); // no check of type since we don't want to test barging results here, just interleaving behavior
             assertEquals(173500, numNextEvents);
             // System.out.println("Number of events executed: " + numNextEvents);

@@ -16,10 +16,11 @@
 package rx.subscriptions;
 
 import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Subscription;
 import rx.functions.Action0;
-import rx.operators.SafeObservableSubscription;
+import rx.functions.Actions;
 
 /**
  * Helper methods and utilities for creating and working with {@link Subscription} objects
@@ -42,22 +43,32 @@ public final class Subscriptions {
      * @return {@link Subscription}
      */
     public static Subscription create(final Action0 unsubscribe) {
-        return new SafeObservableSubscription(new Subscription() {
-
-            private volatile boolean unsubscribed = false;
-
+        return new ActionSubscription(unsubscribe);
+    }
+    /**
+     * Subscription that delegates the unsubscription action to an Action0 instance
+     */
+    private static final class ActionSubscription implements Subscription {
+        private final AtomicReference<Action0> actual;
+        public ActionSubscription(Action0 action) {
+            this.actual = new AtomicReference<Action0>(action != null ? action : Actions.empty());
+        }
+        @Override
+        public boolean isUnsubscribed() {
+            return actual.get() == UNSUBSCRIBED_ACTION;
+        }
+        @Override
+        public void unsubscribe() {
+            Action0 a = actual.getAndSet(UNSUBSCRIBED_ACTION);
+            a.call();
+        }
+        /** The no-op unique action indicating an unsubscribed state. */
+        private static final Action0 UNSUBSCRIBED_ACTION = new Action0() {
             @Override
-            public void unsubscribe() {
-                unsubscribed = true;
-                unsubscribe.call();
+            public void call() {
+                
             }
-
-            @Override
-            public boolean isUnsubscribed() {
-                return unsubscribed;
-            }
-
-        });
+        };
     }
 
     /**

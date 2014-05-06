@@ -44,8 +44,8 @@ import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import rx.Observable.OnSubscribe;
 
-import rx.Observable.OnSubscribeFunc;
 import rx.functions.Action1;
 import rx.functions.Action2;
 import rx.functions.Func1;
@@ -53,7 +53,6 @@ import rx.functions.Func2;
 import rx.observables.ConnectableObservable;
 import rx.schedulers.TestScheduler;
 import rx.subscriptions.BooleanSubscription;
-import rx.subscriptions.Subscriptions;
 
 public class ObservableTests {
 
@@ -112,15 +111,14 @@ public class ObservableTests {
     @Test
     public void testCreate() {
 
-        Observable<String> observable = Observable.create(new OnSubscribeFunc<String>() {
+        Observable<String> observable = Observable.create(new OnSubscribe<String>() {
 
             @Override
-            public Subscription onSubscribe(Observer<? super String> Observer) {
+            public void call(Subscriber<? super String> Observer) {
                 Observer.onNext("one");
                 Observer.onNext("two");
                 Observer.onNext("three");
                 Observer.onCompleted();
-                return Subscriptions.empty();
             }
 
         });
@@ -159,11 +157,10 @@ public class ObservableTests {
 
     @Test
     public void testCountError() {
-        Observable<String> o = Observable.create(new OnSubscribeFunc<String>() {
+        Observable<String> o = Observable.create(new OnSubscribe<String>() {
             @Override
-            public Subscription onSubscribe(Observer<? super String> obsv) {
+            public void call(Subscriber<? super String> obsv) {
                 obsv.onError(new RuntimeException());
-                return Subscriptions.empty();
             }
         });
         o.count().subscribe(w);
@@ -308,10 +305,10 @@ public class ObservableTests {
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
         final RuntimeException re = new RuntimeException("bad impl");
-        Observable<String> o = Observable.create(new OnSubscribeFunc<String>() {
+        Observable<String> o = Observable.create(new OnSubscribe<String>() {
 
             @Override
-            public Subscription onSubscribe(Observer<? super String> t1) {
+            public void call(Subscriber<? super String> t1) {
                 throw re;
             }
 
@@ -348,10 +345,10 @@ public class ObservableTests {
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicInteger count = new AtomicInteger();
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
-        Observable.create(new OnSubscribeFunc<String>() {
+        Observable.create(new OnSubscribe<String>() {
 
             @Override
-            public Subscription onSubscribe(final Observer<? super String> observer) {
+            public void call(final Subscriber<? super String> observer) {
                 final BooleanSubscription s = new BooleanSubscription();
                 new Thread(new Runnable() {
 
@@ -370,7 +367,6 @@ public class ObservableTests {
                         }
                     }
                 }).start();
-                return s;
             }
         }).subscribe(new Subscriber<String>() {
             @Override
@@ -414,16 +410,15 @@ public class ObservableTests {
     public void testCustomObservableWithErrorInObserverSynchronous() {
         final AtomicInteger count = new AtomicInteger();
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
-        Observable.create(new OnSubscribeFunc<String>() {
+        Observable.create(new OnSubscribe<String>() {
 
             @Override
-            public Subscription onSubscribe(Observer<? super String> observer) {
+            public void call(Subscriber<? super String> observer) {
                 observer.onNext("1");
                 observer.onNext("2");
                 observer.onNext("three");
                 observer.onNext("4");
                 observer.onCompleted();
-                return Subscriptions.empty();
             }
         }).subscribe(new Subscriber<String>() {
 
@@ -465,10 +460,10 @@ public class ObservableTests {
     public void testCustomObservableWithErrorInObservableSynchronous() {
         final AtomicInteger count = new AtomicInteger();
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
-        Observable.create(new OnSubscribeFunc<String>() {
+        Observable.create(new OnSubscribe<String>() {
 
             @Override
-            public Subscription onSubscribe(Observer<? super String> observer) {
+            public void call(Subscriber<? super String> observer) {
                 observer.onNext("1");
                 observer.onNext("2");
                 throw new NumberFormatException();
@@ -504,11 +499,10 @@ public class ObservableTests {
     @Test
     public void testPublish() throws InterruptedException {
         final AtomicInteger counter = new AtomicInteger();
-        ConnectableObservable<String> o = Observable.create(new OnSubscribeFunc<String>() {
+        ConnectableObservable<String> o = Observable.create(new OnSubscribe<String>() {
 
             @Override
-            public Subscription onSubscribe(final Observer<? super String> observer) {
-                final BooleanSubscription subscription = new BooleanSubscription();
+            public void call(final Subscriber<? super String> observer) {
                 new Thread(new Runnable() {
 
                     @Override
@@ -518,7 +512,6 @@ public class ObservableTests {
                         observer.onCompleted();
                     }
                 }).start();
-                return subscription;
             }
         }).publish();
 
@@ -558,11 +551,10 @@ public class ObservableTests {
     @Test
     public void testPublishLast() throws InterruptedException {
         final AtomicInteger count = new AtomicInteger();
-        ConnectableObservable<String> connectable = Observable.create(new OnSubscribeFunc<String>() {
+        ConnectableObservable<String> connectable = Observable.create(new OnSubscribe<String>() {
             @Override
-            public Subscription onSubscribe(final Observer<? super String> observer) {
+            public void call(final Subscriber<? super String> observer) {
                 count.incrementAndGet();
-                final BooleanSubscription subscription = new BooleanSubscription();
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
@@ -571,7 +563,6 @@ public class ObservableTests {
                         observer.onCompleted();
                     }
                 }).start();
-                return subscription;
             }
         }).publishLast();
 
@@ -588,7 +579,7 @@ public class ObservableTests {
         // subscribe twice
         connectable.subscribe(new Action1<String>() {
             @Override
-            public void call(String _) {
+            public void call(String ignored) {
             }
         });
 
@@ -601,11 +592,10 @@ public class ObservableTests {
     @Test
     public void testReplay() throws InterruptedException {
         final AtomicInteger counter = new AtomicInteger();
-        ConnectableObservable<String> o = Observable.create(new OnSubscribeFunc<String>() {
+        ConnectableObservable<String> o = Observable.create(new OnSubscribe<String>() {
 
             @Override
-            public Subscription onSubscribe(final Observer<? super String> observer) {
-                final BooleanSubscription subscription = new BooleanSubscription();
+            public void call(final Subscriber<? super String> observer) {
                 new Thread(new Runnable() {
 
                     @Override
@@ -615,7 +605,6 @@ public class ObservableTests {
                         observer.onCompleted();
                     }
                 }).start();
-                return subscription;
             }
         }).replay();
 
@@ -658,11 +647,10 @@ public class ObservableTests {
     @Test
     public void testCache() throws InterruptedException {
         final AtomicInteger counter = new AtomicInteger();
-        Observable<String> o = Observable.create(new OnSubscribeFunc<String>() {
+        Observable<String> o = Observable.create(new OnSubscribe<String>() {
 
             @Override
-            public Subscription onSubscribe(final Observer<? super String> observer) {
-                final BooleanSubscription subscription = new BooleanSubscription();
+            public void call(final Subscriber<? super String> observer) {
                 new Thread(new Runnable() {
 
                     @Override
@@ -672,7 +660,6 @@ public class ObservableTests {
                         observer.onCompleted();
                     }
                 }).start();
-                return subscription;
             }
         }).cache();
 
@@ -746,10 +733,10 @@ public class ObservableTests {
     public void testErrorThrownWithoutErrorHandlerAsynchronous() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicReference<Throwable> exception = new AtomicReference<Throwable>();
-        Observable.create(new OnSubscribeFunc<String>() {
+        Observable.create(new OnSubscribe<String>() {
 
             @Override
-            public Subscription onSubscribe(final Observer<? super String> observer) {
+            public void call(final Subscriber<? super String> observer) {
                 new Thread(new Runnable() {
 
                     @Override
@@ -763,7 +750,6 @@ public class ObservableTests {
                         latch.countDown();
                     }
                 }).start();
-                return Subscriptions.empty();
             }
         }).subscribe(new Action1<String>() {
 

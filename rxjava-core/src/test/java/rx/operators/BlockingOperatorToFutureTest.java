@@ -29,11 +29,9 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 
 import rx.Observable;
-import rx.Observable.OnSubscribeFunc;
-import rx.Observer;
+import rx.Observable.OnSubscribe;
 import rx.Subscriber;
-import rx.Subscription;
-import rx.subscriptions.Subscriptions;
+import rx.exceptions.TestException;
 
 public class BlockingOperatorToFutureTest {
 
@@ -63,13 +61,12 @@ public class BlockingOperatorToFutureTest {
 
     @Test
     public void testToFutureWithException() {
-        Observable<String> obs = Observable.create(new OnSubscribeFunc<String>() {
+        Observable<String> obs = Observable.create(new OnSubscribe<String>() {
 
             @Override
-            public Subscription onSubscribe(Observer<? super String> observer) {
+            public void call(Subscriber<? super String> observer) {
                 observer.onNext("one");
                 observer.onError(new TestException());
-                return Subscriptions.empty();
             }
         });
 
@@ -108,9 +105,5 @@ public class BlockingOperatorToFutureTest {
         public void call(Subscriber<? super T> unused) {
             // do nothing
         }
-    }
-
-    private static class TestException extends RuntimeException {
-        private static final long serialVersionUID = 1L;
     }
 }

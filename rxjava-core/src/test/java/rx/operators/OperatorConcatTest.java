@@ -41,7 +41,6 @@ import rx.Subscriber;
 import rx.Subscription;
 import rx.schedulers.TestScheduler;
 import rx.subscriptions.BooleanSubscription;
-import rx.subscriptions.Subscriptions;
 
 public class OperatorConcatTest {
 
@@ -56,7 +55,6 @@ public class OperatorConcatTest {
         final Observable<String> odds = Observable.from(o);
         final Observable<String> even = Observable.from(e);
 
-        @SuppressWarnings("unchecked")
         Observable<String> concat = Observable.concat(odds, even);
         concat.subscribe(observer);
 
@@ -93,16 +91,14 @@ public class OperatorConcatTest {
         final Observable<String> odds = Observable.from(o);
         final Observable<String> even = Observable.from(e);
 
-        Observable<Observable<String>> observableOfObservables = Observable.create(new Observable.OnSubscribeFunc<Observable<String>>() {
+        Observable<Observable<String>> observableOfObservables = Observable.create(new Observable.OnSubscribe<Observable<String>>() {
 
             @Override
-            public Subscription onSubscribe(Observer<? super Observable<String>> observer) {
+            public void call(Subscriber<? super Observable<String>> observer) {
                 // simulate what would happen in an observable
                 observer.onNext(odds);
                 observer.onNext(even);
                 observer.onCompleted();
-
-                return Subscriptions.empty();
             }
 
         });
@@ -158,11 +154,12 @@ public class OperatorConcatTest {
 
         final AtomicReference<Thread> parent = new AtomicReference<Thread>();
         final CountDownLatch parentHasStarted = new CountDownLatch(1);
-        Observable<Observable<String>> observableOfObservables = Observable.create(new Observable.OnSubscribeFunc<Observable<String>>() {
+        Observable<Observable<String>> observableOfObservables = Observable.create(new Observable.OnSubscribe<Observable<String>>() {
 
             @Override
-            public Subscription onSubscribe(final Observer<? super Observable<String>> observer) {
+            public void call(final Subscriber<? super Observable<String>> observer) {
                 final BooleanSubscription s = new BooleanSubscription();
+                observer.add(s);
                 parent.set(new Thread(new Runnable() {
 
                     @Override
@@ -200,7 +197,6 @@ public class OperatorConcatTest {
                 }));
                 parent.get().start();
                 parentHasStarted.countDown();
-                return s;
             }
         });
 
@@ -336,16 +332,14 @@ public class OperatorConcatTest {
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
-        Observable<Observable<String>> observableOfObservables = Observable.create(new Observable.OnSubscribeFunc<Observable<String>>() {
+        Observable<Observable<String>> observableOfObservables = Observable.create(new Observable.OnSubscribe<Observable<String>>() {
 
             @Override
-            public Subscription onSubscribe(Observer<? super Observable<String>> observer) {
+            public void call(Subscriber<? super Observable<String>> observer) {
                 // simulate what would happen in an observable
                 observer.onNext(Observable.create(w1));
                 observer.onNext(Observable.create(w2));
                 observer.onCompleted();
-
-                return Subscriptions.empty();
             }
 
         });
@@ -388,7 +382,7 @@ public class OperatorConcatTest {
 
         @SuppressWarnings("unchecked")
         final Observer<String> observer = mock(Observer.class);
-        @SuppressWarnings("unchecked")
+
         final Observable<String> concat = Observable.concat(Observable.create(w1), Observable.create(w2));
 
         try {
@@ -462,7 +456,7 @@ public class OperatorConcatTest {
         verify(observer, never()).onError(any(Throwable.class));
     }
 
-    private static class TestObservable<T> implements Observable.OnSubscribeFunc<T> {
+    private static class TestObservable<T> implements Observable.OnSubscribe<T> {
 
         private final Subscription s = new Subscription() {
 
@@ -508,7 +502,8 @@ public class OperatorConcatTest {
         }
 
         @Override
-        public Subscription onSubscribe(final Observer<? super T> observer) {
+        public void call(final Subscriber<? super T> observer) {
+            observer.add(s);
             t = new Thread(new Runnable() {
 
                 @Override
@@ -538,7 +533,6 @@ public class OperatorConcatTest {
             });
             t.start();
             threadHasStarted.countDown();
-            return s;
         }
 
         void waitForThreadDone() throws InterruptedException {
@@ -549,7 +543,9 @@ public class OperatorConcatTest {
 
     @Test
     public void testMultipleObservers() {
+        @SuppressWarnings("unchecked")
         Observer<Object> o1 = mock(Observer.class);
+        @SuppressWarnings("unchecked")
         Observer<Object> o2 = mock(Observer.class);
 
         TestScheduler s = new TestScheduler();
@@ -608,6 +604,7 @@ public class OperatorConcatTest {
         
         Observable<List<Integer>> result = Observable.concat(source).toList();
         
+        @SuppressWarnings("unchecked")
         Observer<List<Integer>> o = mock(Observer.class);
         InOrder inOrder = inOrder(o);
         
@@ -639,6 +636,7 @@ public class OperatorConcatTest {
         
         Observable<List<Integer>> result = Observable.concat(source).take(n / 2).toList();
         
+        @SuppressWarnings("unchecked")
         Observer<List<Integer>> o = mock(Observer.class);
         InOrder inOrder = inOrder(o);
         

@@ -45,7 +45,7 @@ public final class OperatorAverageInteger<T> implements Operator<Integer, T> {
         int count;
 
         public AverageObserver(Subscriber<? super Integer> subscriber) {
-        	super(subscriber);
+            super(subscriber);
             this.child = subscriber;
         }
 

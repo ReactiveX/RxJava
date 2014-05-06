@@ -67,16 +67,14 @@ public class OperatorMergeTest {
         final Observable<String> o1 = Observable.create(new TestSynchronousObservable());
         final Observable<String> o2 = Observable.create(new TestSynchronousObservable());
 
-        Observable<Observable<String>> observableOfObservables = Observable.create(new Observable.OnSubscribeFunc<Observable<String>>() {
+        Observable<Observable<String>> observableOfObservables = Observable.create(new Observable.OnSubscribe<Observable<String>>() {
 
             @Override
-            public Subscription onSubscribe(Observer<? super Observable<String>> observer) {
+            public void call(Subscriber<? super Observable<String>> observer) {
                 // simulate what would happen in an observable
                 observer.onNext(o1);
                 observer.onNext(o2);
                 observer.onCompleted();
-
-                return Subscriptions.empty();
             }
 
         });
@@ -123,10 +121,10 @@ public class OperatorMergeTest {
         final AtomicBoolean unsubscribed = new AtomicBoolean();
         final CountDownLatch latch = new CountDownLatch(1);
 
-        Observable<Observable<Long>> source = Observable.create(new Observable.OnSubscribeFunc<Observable<Long>>() {
+        Observable<Observable<Long>> source = Observable.create(new Observable.OnSubscribe<Observable<Long>>() {
 
             @Override
-            public Subscription onSubscribe(final Observer<? super Observable<Long>> observer) {
+            public void call(final Subscriber<? super Observable<Long>> observer) {
                 // verbose on purpose so I can track the inside of it
                 final Subscription s = Subscriptions.create(new Action0() {
 
@@ -137,6 +135,7 @@ public class OperatorMergeTest {
                     }
 
                 });
+                observer.add(s);
 
                 new Thread(new Runnable() {
 
@@ -153,8 +152,6 @@ public class OperatorMergeTest {
                         latch.countDown();
                     }
                 }).start();
-
-                return s;
             }
 
             ;
@@ -342,24 +339,22 @@ public class OperatorMergeTest {
         System.out.println("Error: " + ts.getOnErrorEvents());
     }
 
-    private static class TestSynchronousObservable implements Observable.OnSubscribeFunc<String> {
+    private static class TestSynchronousObservable implements Observable.OnSubscribe<String> {
 
         @Override
-        public Subscription onSubscribe(Observer<? super String> observer) {
+        public void call(Subscriber<? super String> observer) {
 
             observer.onNext("hello");
             observer.onCompleted();
-
-            return Subscriptions.empty();
         }
     }
 
-    private static class TestASynchronousObservable implements Observable.OnSubscribeFunc<String> {
+    private static class TestASynchronousObservable implements Observable.OnSubscribe<String> {
         Thread t;
         final CountDownLatch onNextBeingSent = new CountDownLatch(1);
 
         @Override
-        public Subscription onSubscribe(final Observer<? super String> observer) {
+        public void call(final Subscriber<? super String> observer) {
             t = new Thread(new Runnable() {
 
                 @Override
@@ -373,12 +368,10 @@ public class OperatorMergeTest {
 
             });
             t.start();
-
-            return Subscriptions.empty();
         }
     }
 
-    private static class TestErrorObservable implements Observable.OnSubscribeFunc<String> {
+    private static class TestErrorObservable implements Observable.OnSubscribe<String> {
 
         String[] valuesToReturn;
 
@@ -387,7 +380,7 @@ public class OperatorMergeTest {
         }
 
         @Override
-        public Subscription onSubscribe(Observer<? super String> observer) {
+        public void call(Subscriber<? super String> observer) {
 
             for (String s : valuesToReturn) {
                 if (s == null) {
@@ -398,8 +391,6 @@ public class OperatorMergeTest {
                 }
             }
             observer.onCompleted();
-
-            return Subscriptions.empty();
         }
     }
 
@@ -526,8 +517,8 @@ public class OperatorMergeTest {
 
             ts.awaitTerminalEvent();
             assertEquals(1, ts.getOnCompletedEvents().size());
-            assertEquals(30000, ts.getOnNextEvents().size());
             List<Integer> onNextEvents = ts.getOnNextEvents();
+            assertEquals(30000, onNextEvents.size());
             //            System.out.println("onNext: " + onNextEvents.size() + " onCompleted: " + ts.getOnCompletedEvents().size());
         }
     }
@@ -567,8 +558,8 @@ public class OperatorMergeTest {
 
             ts.awaitTerminalEvent();
             assertEquals(1, ts.getOnCompletedEvents().size());
-            assertEquals(300, ts.getOnNextEvents().size());
             List<Integer> onNextEvents = ts.getOnNextEvents();
+            assertEquals(300, onNextEvents.size());
             //            System.out.println("onNext: " + onNextEvents.size() + " onCompleted: " + ts.getOnCompletedEvents().size());
         }
     }
@@ -605,8 +596,8 @@ public class OperatorMergeTest {
 
             ts.awaitTerminalEvent();
             assertEquals(1, ts.getOnCompletedEvents().size());
-            assertEquals(30000, ts.getOnNextEvents().size());
             List<Integer> onNextEvents = ts.getOnNextEvents();
+            assertEquals(30000, onNextEvents.size());
             //            System.out.println("onNext: " + onNextEvents.size() + " onCompleted: " + ts.getOnCompletedEvents().size());
         }
     }

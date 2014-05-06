@@ -134,7 +134,7 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
         };
     }
 
-    static final NotificationLite on = NotificationLite.instance();
+    static final NotificationLite<Object> on = NotificationLite.instance();
     private static class Zip<R> {
         @SuppressWarnings("rawtypes")
         final Observable[] os;
@@ -199,6 +199,8 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
                             // independently subscribed
                             childSubscription.unsubscribe();
                             return;
+                        default:
+                            // shouldn't get here
                         }
                     }
                     if (allHaveValues) {

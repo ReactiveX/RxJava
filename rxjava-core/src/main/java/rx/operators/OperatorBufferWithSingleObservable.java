@@ -17,6 +17,7 @@ package rx.operators;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import rx.Observable;
 import rx.Observable.Operator;
 import rx.Observer;
@@ -81,7 +82,7 @@ public final class OperatorBufferWithSingleObservable<T, TClosing> implements Op
             child.onError(t);
             return Subscribers.empty();
         }
-        final BufferingSubscriber<T> bsub = new BufferingSubscriber<T>(new SerializedSubscriber<List<T>>(child));
+        final BufferingSubscriber bsub = new BufferingSubscriber(new SerializedSubscriber<List<T>>(child));
 
         Subscriber<TClosing> closingSubscriber = new Subscriber<TClosing>() {
 
@@ -109,7 +110,7 @@ public final class OperatorBufferWithSingleObservable<T, TClosing> implements Op
         return bsub;
     }
     
-    final class BufferingSubscriber<T> extends Subscriber<T> {
+    final class BufferingSubscriber extends Subscriber<T> {
         final Subscriber<? super List<T>> child;
         /** Guarded by this. */
         List<T> chunk;

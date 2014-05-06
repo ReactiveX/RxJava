@@ -16,7 +16,12 @@
 
 package rx.util.async.operators;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
 import java.util.concurrent.Callable;
@@ -32,7 +37,6 @@ import org.mockito.InOrder;
 import rx.Observable;
 import rx.Observer;
 import rx.functions.Action0;
-import rx.functions.Func0;
 import rx.observers.TestObserver;
 import rx.schedulers.TestScheduler;
 import rx.util.async.Async;

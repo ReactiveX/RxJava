@@ -15,17 +15,23 @@
  */
 package rx.operators;
 
-import org.junit.Test;
-import org.mockito.InOrder;
-import rx.Observable;
-import rx.Observer;
-import rx.schedulers.TestScheduler;
-import rx.subjects.PublishSubject;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import java.util.concurrent.TimeUnit;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
+import org.junit.Test;
+import org.mockito.InOrder;
+
+import rx.Observable;
+import rx.Observer;
+import rx.exceptions.TestException;
+import rx.schedulers.TestScheduler;
+import rx.subjects.PublishSubject;
 
 public class OperatorTakeLastTimedTest {
 
@@ -42,6 +48,7 @@ public class OperatorTakeLastTimedTest {
 
         Observable<Object> result = source.takeLast(1, TimeUnit.SECONDS, scheduler);
 
+        @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
 
         InOrder inOrder = inOrder(o);
@@ -77,6 +84,7 @@ public class OperatorTakeLastTimedTest {
 
         Observable<Object> result = source.takeLast(1, TimeUnit.SECONDS, scheduler);
 
+        @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
 
         InOrder inOrder = inOrder(o);
@@ -109,6 +117,7 @@ public class OperatorTakeLastTimedTest {
 
         Observable<Object> result = source.takeLast(2, 1, TimeUnit.SECONDS, scheduler);
 
+        @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
 
         InOrder inOrder = inOrder(o);
@@ -134,10 +143,6 @@ public class OperatorTakeLastTimedTest {
         verify(o, never()).onError(any(Throwable.class));
     }
 
-    static final class CustomException extends RuntimeException {
-
-    }
-
     @Test
     public void takeLastTimedThrowingSource() {
         TestScheduler scheduler = new TestScheduler();
@@ -146,6 +151,7 @@ public class OperatorTakeLastTimedTest {
 
         Observable<Object> result = source.takeLast(1, TimeUnit.SECONDS, scheduler);
 
+        @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
 
         InOrder inOrder = inOrder(o);
@@ -162,9 +168,9 @@ public class OperatorTakeLastTimedTest {
         scheduler.advanceTimeBy(250, TimeUnit.MILLISECONDS);
         source.onNext(5); // T: 1000ms
         scheduler.advanceTimeBy(250, TimeUnit.MILLISECONDS);
-        source.onError(new CustomException()); // T: 1250ms
+        source.onError(new TestException()); // T: 1250ms
 
-        inOrder.verify(o, times(1)).onError(any(CustomException.class));
+        inOrder.verify(o, times(1)).onError(any(TestException.class));
 
         verify(o, never()).onNext(any());
         verify(o, never()).onCompleted();
@@ -178,6 +184,7 @@ public class OperatorTakeLastTimedTest {
 
         Observable<Object> result = source.takeLast(0, 1, TimeUnit.SECONDS, scheduler);
 
+        @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
 
         InOrder inOrder = inOrder(o);

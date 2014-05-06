@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,6 +48,9 @@ public class CompositeExceptionTest {
         Throwable e2 = new Throwable("2", rootCause);
         Throwable e3 = new Throwable("3", rootCause);
         CompositeException ce = new CompositeException("3 failures with same root cause", Arrays.asList(e1, e2, e3));
+        
+        assertEquals(3, ce.getExceptions().size());
+        
     }
 
     @Test(timeout = 1000)

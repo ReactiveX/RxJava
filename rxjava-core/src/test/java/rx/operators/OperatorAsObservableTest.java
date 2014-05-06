@@ -17,11 +17,16 @@
 package rx.operators;
 
 import static org.junit.Assert.assertFalse;
-import org.junit.Test;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+
+import org.junit.Test;
+
 import rx.Observable;
 import rx.Observer;
+import rx.exceptions.TestException;
 import rx.subjects.PublishSubject;
 
 public class OperatorAsObservableTest {
@@ -33,6 +38,7 @@ public class OperatorAsObservableTest {
         
         assertFalse(dst instanceof PublishSubject);
         
+        @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
         
         dst.subscribe(o);
@@ -52,14 +58,15 @@ public class OperatorAsObservableTest {
         
         assertFalse(dst instanceof PublishSubject);
         
+        @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
         
         dst.subscribe(o);
         
-        src.onError(new OperationReduceTest.CustomException());
+        src.onError(new TestException());
         
         verify(o, never()).onNext(any());
         verify(o, never()).onCompleted();
-        verify(o).onError(any(OperationReduceTest.CustomException.class));
+        verify(o).onError(any(TestException.class));
     }
 }

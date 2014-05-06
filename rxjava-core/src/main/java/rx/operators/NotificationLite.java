@@ -1,8 +1,22 @@
+/**
+ * Copyright 2014 Netflix, Inc.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package rx.operators;
 
 import java.io.Serializable;
 
-import rx.Notification;
 import rx.Notification.Kind;
 import rx.Observer;
 
@@ -25,6 +39,7 @@ public final class NotificationLite<T> {
     private NotificationLite() {
     }
 
+    @SuppressWarnings("rawtypes")
     private static final NotificationLite INSTANCE = new NotificationLite();
 
     @SuppressWarnings("unchecked")
@@ -54,7 +69,7 @@ public final class NotificationLite<T> {
      * be unwrapped and sent with the {@link #accept} method.
      * 
      * @param t
-     * @return
+     * @return the value or a null token
      */
     public Object next(T t) {
         if (t == null)
@@ -67,7 +82,7 @@ public final class NotificationLite<T> {
      * Creates a lite onComplete notification without doing any allocation. Can be unwrapped and
      * sent with the {@link #accept} method.
      * 
-     * @return
+     * @return the completion token
      */
     public Object completed() {
         return ON_COMPLETED_SENTINEL;
@@ -79,7 +94,7 @@ public final class NotificationLite<T> {
      * be small. Can be unwrapped and sent with the {@link #accept} method.
      * 
      * @param e
-     * @return
+     * @return an object encapsulating the exception
      */
     public Object error(Throwable e) {
         return new OnErrorSentinel(e);
@@ -96,7 +111,6 @@ public final class NotificationLite<T> {
      * @throws NullPointerException
      *             if the {@link Observer} is null.
      */
-    @SuppressWarnings("unchecked")
     public void accept(Observer<? super T> o, Object n) {
         switch (kind(n)) {
         case OnNext:
@@ -121,10 +135,10 @@ public final class NotificationLite<T> {
 
     /**
      * If there is custom logic that isn't as simple as call the right method on an {@link Observer}
-     * then this method can be used to get the {@link Notification.Kind}
+     * then this method can be used to get the {@link rx.Notification.Kind}
      * 
      * @param n
-     * @return
+     * @return the kind of the raw object
      */
     public Kind kind(Object n) {
         if (n == null)
@@ -144,7 +158,7 @@ public final class NotificationLite<T> {
      * when it is appropriate.
      * 
      * @param n
-     * @return
+     * @return the unwrapped value, which can be null
      */
     @SuppressWarnings("unchecked")
     public T getValue(Object n) {

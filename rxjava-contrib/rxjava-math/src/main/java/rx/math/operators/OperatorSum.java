@@ -26,7 +26,7 @@ import rx.functions.Func2;
  *      Observable.Sum</a>
  */
 public final class OperatorSum {
-	private OperatorSum() { throw new IllegalStateException("No instances!"); }
+    private OperatorSum() { throw new IllegalStateException("No instances!"); }
 
     public static Observable<Integer> sumIntegers(Observable<Integer> source) {
         return source.reduce(0, ACCUM_INT);

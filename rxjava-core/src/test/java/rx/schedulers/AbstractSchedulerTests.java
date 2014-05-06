@@ -38,15 +38,11 @@ import org.mockito.stubbing.Answer;
 
 import rx.Observable;
 import rx.Observable.OnSubscribe;
-import rx.Observable.OnSubscribeFunc;
-import rx.Observer;
 import rx.Scheduler;
 import rx.Subscriber;
-import rx.Subscription;
 import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Func1;
-import rx.subscriptions.Subscriptions;
 
 /**
  * Base tests for all schedulers including Immediate/Current.
@@ -353,10 +349,10 @@ public abstract class AbstractSchedulerTests {
     public final void testConcurrentOnNextFailsValidation() throws InterruptedException {
         final int count = 10;
         final CountDownLatch latch = new CountDownLatch(count);
-        Observable<String> o = Observable.create(new OnSubscribeFunc<String>() {
+        Observable<String> o = Observable.create(new OnSubscribe<String>() {
 
             @Override
-            public Subscription onSubscribe(final Observer<? super String> observer) {
+            public void call(final Subscriber<? super String> observer) {
                 for (int i = 0; i < count; i++) {
                     final int v = i;
                     new Thread(new Runnable() {
@@ -369,7 +365,6 @@ public abstract class AbstractSchedulerTests {
                         }
                     }).start();
                 }
-                return Subscriptions.empty();
             }
         });
 
@@ -415,13 +410,12 @@ public abstract class AbstractSchedulerTests {
 
                     @Override
                     public Observable<String> call(final String v) {
-                        return Observable.create(new OnSubscribeFunc<String>() {
+                        return Observable.create(new OnSubscribe<String>() {
 
                             @Override
-                            public Subscription onSubscribe(final Observer<? super String> observer) {
+                            public void call(Subscriber<? super String> observer) {
                                 observer.onNext("value_after_map-" + v);
                                 observer.onCompleted();
-                                return Subscriptions.empty();
                             }
                         }).subscribeOn(scheduler);
                     }

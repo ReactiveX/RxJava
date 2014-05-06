@@ -358,6 +358,6 @@ public class OperatorAverageTest {
     }
     
     static class CustomException extends RuntimeException {
-		private static final long serialVersionUID = 6873927510089089979L;
+        private static final long serialVersionUID = 6873927510089089979L;
     }
 }

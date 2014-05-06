@@ -26,6 +26,7 @@ import org.mockito.Mockito;
 
 import rx.Observable;
 import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Func1;
 
@@ -101,7 +102,7 @@ public class OperatorOnErrorResumeNextViaObservableTest {
         verify(observer, times(1)).onNext("threeResume");
     }
 
-    private static class TestObservable implements Observable.OnSubscribeFunc<String> {
+    private static class TestObservable implements Observable.OnSubscribe<String> {
 
         final Subscription s;
         final String[] values;
@@ -113,8 +114,9 @@ public class OperatorOnErrorResumeNextViaObservableTest {
         }
 
         @Override
-        public Subscription onSubscribe(final Observer<? super String> observer) {
+        public void call(final Subscriber<? super String> observer) {
             System.out.println("TestObservable subscribed to ...");
+            observer.add(s);
             t = new Thread(new Runnable() {
 
                 @Override
@@ -139,7 +141,6 @@ public class OperatorOnErrorResumeNextViaObservableTest {
             System.out.println("starting TestObservable thread");
             t.start();
             System.out.println("done starting TestObservable thread");
-            return s;
         }
     }
 }

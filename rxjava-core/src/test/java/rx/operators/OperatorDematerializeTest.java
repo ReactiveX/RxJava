@@ -26,6 +26,7 @@ import org.junit.Test;
 import rx.Notification;
 import rx.Observable;
 import rx.Observer;
+import rx.exceptions.TestException;
 import rx.observers.Subscribers;
 import rx.observers.TestSubscriber;
 
@@ -82,6 +83,7 @@ public class OperatorDematerializeTest {
         Observable<Integer> observable = Observable.error(exception);
         Observable<Integer> dematerialize = observable.dematerialize();
 
+        @SuppressWarnings("unchecked")
         Observer<Integer> observer = mock(Observer.class);
         dematerialize.subscribe(observer);
 
@@ -95,6 +97,7 @@ public class OperatorDematerializeTest {
         Observable<Integer> observable = Observable.empty();
         Observable<Integer> dematerialize = observable.dematerialize();
 
+        @SuppressWarnings("unchecked")
         Observer<Integer> observer = mock(Observer.class);
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(observer);
         dematerialize.subscribe(ts);
@@ -112,6 +115,7 @@ public class OperatorDematerializeTest {
         
         Observable<Integer> result = source.materialize().dematerialize();
         
+        @SuppressWarnings("unchecked")
         Observer<Integer> o = mock(Observer.class);
         
         result.unsafeSubscribe(Subscribers.from(o));
@@ -123,16 +127,17 @@ public class OperatorDematerializeTest {
     
     @Test
     public void testHonorsContractWhenThrows() {
-        Observable<Integer> source = Observable.error(new OperationReduceTest.CustomException());
+        Observable<Integer> source = Observable.error(new TestException());
         
         Observable<Integer> result = source.materialize().dematerialize();
         
+        @SuppressWarnings("unchecked")
         Observer<Integer> o = mock(Observer.class);
         
         result.unsafeSubscribe(Subscribers.from(o));
         
         verify(o, never()).onNext(any(Integer.class));
         verify(o, never()).onCompleted();
-        verify(o).onError(any(OperationReduceTest.CustomException.class));
+        verify(o).onError(any(TestException.class));
     }
 }

@@ -34,6 +34,7 @@ import org.junit.Test;
 
 import rx.Observable;
 import rx.Observer;
+import rx.exceptions.TestException;
 import rx.subjects.PublishSubject;
 import co.paralleluniverse.fibers.Fiber;
 import co.paralleluniverse.fibers.SuspendExecution;
@@ -122,7 +123,7 @@ public class ChannelObservableTest {
         ReceivePort<String> c = ChannelObservable.subscribe(10, Channels.OverflowPolicy.BLOCK, o);
 
         o.onNext("a");
-        o.onError(new MyException());
+        o.onError(new TestException());
         o.onNext("c");
 
         assertThat(c.receive(), equalTo("a"));
@@ -130,7 +131,7 @@ public class ChannelObservableTest {
             c.receive();
             fail();
         } catch (ProducerException e) {
-            assertThat(e.getCause(), instanceOf(MyException.class));
+            assertThat(e.getCause(), instanceOf(TestException.class));
         }
         assertThat(c.isClosed(), is(true));
     }
@@ -186,7 +187,7 @@ public class ChannelObservableTest {
     public void whenGetAndObservableEmitsTwoValuesThenBlowup() throws Exception {
         final PublishSubject<String> o = PublishSubject.create();
 
-        Fiber<String> f = new Fiber<String>(new SuspendableCallable<String>() {
+        new Fiber<String>(new SuspendableCallable<String>() {
 
             @Override
             public String run() throws SuspendExecution, InterruptedException {
@@ -206,9 +207,5 @@ public class ChannelObservableTest {
             fail();
         } catch (Exception e) {
         }
-    }
-
-    static class MyException extends RuntimeException {
-
     }
 }

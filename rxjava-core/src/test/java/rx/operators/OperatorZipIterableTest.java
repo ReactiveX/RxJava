@@ -30,9 +30,9 @@ import org.mockito.InOrder;
 
 import rx.Observable;
 import rx.Observer;
+import rx.exceptions.TestException;
 import rx.functions.Func2;
 import rx.functions.Func3;
-import rx.operators.OperationReduceTest.CustomException;
 import rx.subjects.PublishSubject;
 
 public class OperatorZipIterableTest {
@@ -85,6 +85,7 @@ public class OperatorZipIterableTest {
     public void testZipIterableSameSize() {
         PublishSubject<String> r1 = PublishSubject.create();
         /* define a Observer to receive aggregated events */
+        @SuppressWarnings("unchecked")
         Observer<String> o = mock(Observer.class);
         InOrder io = inOrder(o);
 
@@ -110,6 +111,7 @@ public class OperatorZipIterableTest {
     public void testZipIterableEmptyFirstSize() {
         PublishSubject<String> r1 = PublishSubject.create();
         /* define a Observer to receive aggregated events */
+        @SuppressWarnings("unchecked")
         Observer<String> o = mock(Observer.class);
         InOrder io = inOrder(o);
 
@@ -130,6 +132,7 @@ public class OperatorZipIterableTest {
     public void testZipIterableEmptySecond() {
         PublishSubject<String> r1 = PublishSubject.create();
         /* define a Observer to receive aggregated events */
+        @SuppressWarnings("unchecked")
         Observer<String> o = mock(Observer.class);
         InOrder io = inOrder(o);
 
@@ -152,6 +155,7 @@ public class OperatorZipIterableTest {
     public void testZipIterableFirstShorter() {
         PublishSubject<String> r1 = PublishSubject.create();
         /* define a Observer to receive aggregated events */
+        @SuppressWarnings("unchecked")
         Observer<String> o = mock(Observer.class);
         InOrder io = inOrder(o);
 
@@ -175,6 +179,7 @@ public class OperatorZipIterableTest {
     public void testZipIterableSecondShorter() {
         PublishSubject<String> r1 = PublishSubject.create();
         /* define a Observer to receive aggregated events */
+        @SuppressWarnings("unchecked")
         Observer<String> o = mock(Observer.class);
         InOrder io = inOrder(o);
 
@@ -199,6 +204,7 @@ public class OperatorZipIterableTest {
     public void testZipIterableFirstThrows() {
         PublishSubject<String> r1 = PublishSubject.create();
         /* define a Observer to receive aggregated events */
+        @SuppressWarnings("unchecked")
         Observer<String> o = mock(Observer.class);
         InOrder io = inOrder(o);
 
@@ -208,11 +214,11 @@ public class OperatorZipIterableTest {
 
         r1.onNext("one-");
         r1.onNext("two-");
-        r1.onError(new OperationReduceTest.CustomException());
+        r1.onError(new TestException());
 
         io.verify(o).onNext("one-1");
         io.verify(o).onNext("two-2");
-        io.verify(o).onError(any(OperationReduceTest.CustomException.class));
+        io.verify(o).onError(any(TestException.class));
 
         verify(o, never()).onCompleted();
 
@@ -222,13 +228,14 @@ public class OperatorZipIterableTest {
     public void testZipIterableIteratorThrows() {
         PublishSubject<String> r1 = PublishSubject.create();
         /* define a Observer to receive aggregated events */
+        @SuppressWarnings("unchecked")
         Observer<String> o = mock(Observer.class);
         InOrder io = inOrder(o);
 
         Iterable<String> r2 = new Iterable<String>() {
             @Override
             public Iterator<String> iterator() {
-                throw new OperationReduceTest.CustomException();
+                throw new TestException();
             }
         };
 
@@ -236,9 +243,9 @@ public class OperatorZipIterableTest {
 
         r1.onNext("one-");
         r1.onNext("two-");
-        r1.onError(new OperationReduceTest.CustomException());
+        r1.onError(new TestException());
 
-        io.verify(o).onError(any(OperationReduceTest.CustomException.class));
+        io.verify(o).onError(any(TestException.class));
 
         verify(o, never()).onCompleted();
         verify(o, never()).onNext(any(String.class));
@@ -249,6 +256,7 @@ public class OperatorZipIterableTest {
     public void testZipIterableHasNextThrows() {
         PublishSubject<String> r1 = PublishSubject.create();
         /* define a Observer to receive aggregated events */
+        @SuppressWarnings("unchecked")
         Observer<String> o = mock(Observer.class);
         InOrder io = inOrder(o);
 
@@ -264,7 +272,7 @@ public class OperatorZipIterableTest {
                         if (count == 0) {
                             return true;
                         }
-                        throw new CustomException();
+                        throw new TestException();
                     }
 
                     @Override
@@ -286,10 +294,10 @@ public class OperatorZipIterableTest {
         r1.zip(r2, zipr2).subscribe(o);
 
         r1.onNext("one-");
-        r1.onError(new OperationReduceTest.CustomException());
+        r1.onError(new TestException());
 
         io.verify(o).onNext("one-1");
-        io.verify(o).onError(any(OperationReduceTest.CustomException.class));
+        io.verify(o).onError(any(TestException.class));
 
         verify(o, never()).onCompleted();
 
@@ -299,6 +307,7 @@ public class OperatorZipIterableTest {
     public void testZipIterableNextThrows() {
         PublishSubject<String> r1 = PublishSubject.create();
         /* define a Observer to receive aggregated events */
+        @SuppressWarnings("unchecked")
         Observer<String> o = mock(Observer.class);
         InOrder io = inOrder(o);
 
@@ -307,8 +316,6 @@ public class OperatorZipIterableTest {
             @Override
             public Iterator<String> iterator() {
                 return new Iterator<String>() {
-                    int count;
-
                     @Override
                     public boolean hasNext() {
                         return true;
@@ -316,7 +323,7 @@ public class OperatorZipIterableTest {
 
                     @Override
                     public String next() {
-                        throw new CustomException();
+                        throw new TestException();
                     }
 
                     @Override
@@ -331,9 +338,9 @@ public class OperatorZipIterableTest {
 
         r1.zip(r2, zipr2).subscribe(o);
 
-        r1.onError(new OperationReduceTest.CustomException());
+        r1.onError(new TestException());
 
-        io.verify(o).onError(any(OperationReduceTest.CustomException.class));
+        io.verify(o).onError(any(TestException.class));
 
         verify(o, never()).onNext(any(String.class));
         verify(o, never()).onCompleted();

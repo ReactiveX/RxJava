@@ -17,7 +17,11 @@ package rx.operators;
 
 import static org.junit.Assert.assertFalse;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,16 +37,17 @@ import org.mockito.Mockito;
 import rx.Observable;
 import rx.Observer;
 import rx.Scheduler;
+import rx.Subscriber;
 import rx.Subscription;
+import rx.exceptions.TestException;
 import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Func0;
 import rx.functions.Func1;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
-import rx.subscriptions.Subscriptions;
 
-public class OperationBufferTest {
+public class OperatorBufferTest {
 
     private Observer<List<String>> observer;
     private TestScheduler scheduler;
@@ -58,11 +63,10 @@ public class OperationBufferTest {
 
     @Test
     public void testComplete() {
-        Observable<String> source = Observable.create(new Observable.OnSubscribeFunc<String>() {
+        Observable<String> source = Observable.create(new Observable.OnSubscribe<String>() {
             @Override
-            public Subscription onSubscribe(Observer<? super String> observer) {
+            public void call(Subscriber<? super String> observer) {
                 observer.onCompleted();
-                return Subscriptions.empty();
             }
         });
 
@@ -76,15 +80,14 @@ public class OperationBufferTest {
 
     @Test
     public void testSkipAndCountOverlappingBuffers() {
-        Observable<String> source = Observable.create(new Observable.OnSubscribeFunc<String>() {
+        Observable<String> source = Observable.create(new Observable.OnSubscribe<String>() {
             @Override
-            public Subscription onSubscribe(Observer<? super String> observer) {
+            public void call(Subscriber<? super String> observer) {
                 observer.onNext("one");
                 observer.onNext("two");
                 observer.onNext("three");
                 observer.onNext("four");
                 observer.onNext("five");
-                return Subscriptions.empty();
             }
         });
 
@@ -102,16 +105,15 @@ public class OperationBufferTest {
 
     @Test
     public void testSkipAndCountGaplessBuffers() {
-        Observable<String> source = Observable.create(new Observable.OnSubscribeFunc<String>() {
+        Observable<String> source = Observable.create(new Observable.OnSubscribe<String>() {
             @Override
-            public Subscription onSubscribe(Observer<? super String> observer) {
+            public void call(Subscriber<? super String> observer) {
                 observer.onNext("one");
                 observer.onNext("two");
                 observer.onNext("three");
                 observer.onNext("four");
                 observer.onNext("five");
                 observer.onCompleted();
-                return Subscriptions.empty();
             }
         });
 
@@ -128,16 +130,15 @@ public class OperationBufferTest {
 
     @Test
     public void testSkipAndCountBuffersWithGaps() {
-        Observable<String> source = Observable.create(new Observable.OnSubscribeFunc<String>() {
+        Observable<String> source = Observable.create(new Observable.OnSubscribe<String>() {
             @Override
-            public Subscription onSubscribe(Observer<? super String> observer) {
+            public void call(Subscriber<? super String> observer) {
                 observer.onNext("one");
                 observer.onNext("two");
                 observer.onNext("three");
                 observer.onNext("four");
                 observer.onNext("five");
                 observer.onCompleted();
-                return Subscriptions.empty();
             }
         });
 
@@ -154,16 +155,15 @@ public class OperationBufferTest {
 
     @Test
     public void testTimedAndCount() {
-        Observable<String> source = Observable.create(new Observable.OnSubscribeFunc<String>() {
+        Observable<String> source = Observable.create(new Observable.OnSubscribe<String>() {
             @Override
-            public Subscription onSubscribe(Observer<? super String> observer) {
+            public void call(Subscriber<? super String> observer) {
                 push(observer, "one", 10);
                 push(observer, "two", 90);
                 push(observer, "three", 110);
                 push(observer, "four", 190);
                 push(observer, "five", 210);
                 complete(observer, 250);
-                return Subscriptions.empty();
             }
         });
 
@@ -186,9 +186,9 @@ public class OperationBufferTest {
 
     @Test
     public void testTimed() {
-        Observable<String> source = Observable.create(new Observable.OnSubscribeFunc<String>() {
+        Observable<String> source = Observable.create(new Observable.OnSubscribe<String>() {
             @Override
-            public Subscription onSubscribe(Observer<? super String> observer) {
+            public void call(Subscriber<? super String> observer) {
                 push(observer, "one", 97);
                 push(observer, "two", 98);
                 /**
@@ -200,7 +200,6 @@ public class OperationBufferTest {
                 push(observer, "four", 101);
                 push(observer, "five", 102);
                 complete(observer, 150);
-                return Subscriptions.empty();
             }
         });
 
@@ -220,38 +219,35 @@ public class OperationBufferTest {
 
     @Test
     public void testObservableBasedOpenerAndCloser() {
-        Observable<String> source = Observable.create(new Observable.OnSubscribeFunc<String>() {
+        Observable<String> source = Observable.create(new Observable.OnSubscribe<String>() {
             @Override
-            public Subscription onSubscribe(Observer<? super String> observer) {
+            public void call(Subscriber<? super String> observer) {
                 push(observer, "one", 10);
                 push(observer, "two", 60);
                 push(observer, "three", 110);
                 push(observer, "four", 160);
                 push(observer, "five", 210);
                 complete(observer, 500);
-                return Subscriptions.empty();
             }
         });
 
-        Observable<Object> openings = Observable.create(new Observable.OnSubscribeFunc<Object>() {
+        Observable<Object> openings = Observable.create(new Observable.OnSubscribe<Object>() {
             @Override
-            public Subscription onSubscribe(Observer<Object> observer) {
+            public void call(Subscriber<Object> observer) {
                 push(observer, new Object(), 50);
                 push(observer, new Object(), 200);
                 complete(observer, 250);
-                return Subscriptions.empty();
             }
         });
 
         Func1<Object, Observable<Object>> closer = new Func1<Object, Observable<Object>>() {
             @Override
             public Observable<Object> call(Object opening) {
-                return Observable.create(new Observable.OnSubscribeFunc<Object>() {
+                return Observable.create(new Observable.OnSubscribe<Object>() {
                     @Override
-                    public Subscription onSubscribe(Observer<? super Object> observer) {
+                    public void call(Subscriber<? super Object> observer) {
                         push(observer, new Object(), 100);
                         complete(observer, 101);
-                        return Subscriptions.empty();
                     }
                 });
             }
@@ -271,30 +267,28 @@ public class OperationBufferTest {
 
     @Test
     public void testObservableBasedCloser() {
-        Observable<String> source = Observable.create(new Observable.OnSubscribeFunc<String>() {
+        Observable<String> source = Observable.create(new Observable.OnSubscribe<String>() {
             @Override
-            public Subscription onSubscribe(Observer<? super String> observer) {
+            public void call(Subscriber<? super String> observer) {
                 push(observer, "one", 10);
                 push(observer, "two", 60);
                 push(observer, "three", 110);
                 push(observer, "four", 160);
                 push(observer, "five", 210);
                 complete(observer, 250);
-                return Subscriptions.empty();
             }
         });
 
         Func0<Observable<Object>> closer = new Func0<Observable<Object>>() {
             @Override
             public Observable<Object> call() {
-                return Observable.create(new Observable.OnSubscribeFunc<Object>() {
+                return Observable.create(new Observable.OnSubscribe<Object>() {
                     @Override
-                    public Subscription onSubscribe(Observer<? super Object> observer) {
+                    public void call(Subscriber<? super Object> observer) {
                         push(observer, new Object(), 100);
                         push(observer, new Object(), 200);
                         push(observer, new Object(), 300);
                         complete(observer, 301);
-                        return Subscriptions.empty();
                     }
                 });
             }
@@ -377,6 +371,7 @@ public class OperationBufferTest {
     public void testBufferStopsWhenUnsubscribed1() {
         Observable<Integer> source = Observable.never();
 
+        @SuppressWarnings("unchecked")
         Observer<List<Integer>> o = mock(Observer.class);
 
         Subscription s = source.buffer(100, 200, TimeUnit.MILLISECONDS, scheduler).subscribe(o);
@@ -501,9 +496,9 @@ public class OperationBufferTest {
 
         source.buffer(boundary).subscribe(o);
         source.onNext(1);
-        source.onError(new OperationReduceTest.CustomException());
+        source.onError(new TestException());
 
-        verify(o).onError(any(OperationReduceTest.CustomException.class));
+        verify(o).onError(any(TestException.class));
         verify(o, never()).onCompleted();
         verify(o, never()).onNext(any());
     }
@@ -519,9 +514,9 @@ public class OperationBufferTest {
         source.buffer(boundary).subscribe(o);
 
         source.onNext(1);
-        boundary.onError(new OperationReduceTest.CustomException());
+        boundary.onError(new TestException());
 
-        verify(o).onError(any(OperationReduceTest.CustomException.class));
+        verify(o).onError(any(TestException.class));
         verify(o, never()).onCompleted();
         verify(o, never()).onNext(any());
     }
@@ -531,6 +526,7 @@ public class OperationBufferTest {
         
         Observable<List<Integer>> result = source.buffer(2).take(1);
         
+        @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
         
         result.subscribe(o);
@@ -546,6 +542,7 @@ public class OperationBufferTest {
         
         Observable<List<Integer>> result = source.buffer(2, 3).take(1);
         
+        @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
         
         result.subscribe(o);
@@ -560,6 +557,7 @@ public class OperationBufferTest {
         
         Observable<List<Long>> result = source.buffer(100, TimeUnit.MILLISECONDS, scheduler).take(1);
         
+        @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
         
         result.subscribe(o);
@@ -576,6 +574,7 @@ public class OperationBufferTest {
         
         Observable<List<Long>> result = source.buffer(100, 60, TimeUnit.MILLISECONDS, scheduler).take(2);
         
+        @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
         InOrder inOrder = inOrder(o);
         
@@ -595,6 +594,7 @@ public class OperationBufferTest {
         
         Observable<List<Long>> result = source.buffer(boundary).take(2);
         
+        @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
         InOrder inOrder = inOrder(o);
         
@@ -623,6 +623,7 @@ public class OperationBufferTest {
         
         Observable<List<Long>> result = source.buffer(start, end).take(2);
         
+        @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
         InOrder inOrder = inOrder(o);
         
@@ -641,6 +642,7 @@ public class OperationBufferTest {
         
         Observable<List<Integer>> result = source.buffer(2);
         
+        @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
         InOrder inOrder = inOrder(o);
         
@@ -649,10 +651,10 @@ public class OperationBufferTest {
         source.onNext(1);
         source.onNext(2);
         source.onNext(3);
-        source.onError(new OperationReduceTest.CustomException());
+        source.onError(new TestException());
         
         inOrder.verify(o).onNext(Arrays.asList(1, 2));
-        inOrder.verify(o).onError(any(OperationReduceTest.CustomException.class));
+        inOrder.verify(o).onError(any(TestException.class));
         inOrder.verifyNoMoreInteractions();
         verify(o, never()).onNext(Arrays.asList(3));
         verify(o, never()).onCompleted();
@@ -665,6 +667,7 @@ public class OperationBufferTest {
         
         Observable<List<Integer>> result = source.buffer(100, TimeUnit.MILLISECONDS, scheduler);
         
+        @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
         InOrder inOrder = inOrder(o);
         
@@ -674,11 +677,11 @@ public class OperationBufferTest {
         source.onNext(2);
         scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
         source.onNext(3);
-        source.onError(new OperationReduceTest.CustomException());
+        source.onError(new TestException());
         scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
         
         inOrder.verify(o).onNext(Arrays.asList(1, 2));
-        inOrder.verify(o).onError(any(OperationReduceTest.CustomException.class));
+        inOrder.verify(o).onError(any(TestException.class));
         inOrder.verifyNoMoreInteractions();
         verify(o, never()).onNext(Arrays.asList(3));
         verify(o, never()).onCompleted();
@@ -690,6 +693,7 @@ public class OperationBufferTest {
         
         Observable<List<Long>> result = source.buffer(100, TimeUnit.MILLISECONDS, 2, scheduler).take(3);
         
+        @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
         InOrder inOrder = inOrder(o);
         
@@ -717,6 +721,7 @@ public class OperationBufferTest {
 
         Observable<List<Integer>> result = source.buffer(start, end);
         
+        @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
         
         result.subscribe(o);
@@ -724,11 +729,11 @@ public class OperationBufferTest {
         start.onNext(1);
         source.onNext(1);
         source.onNext(2);
-        start.onError(new OperationReduceTest.CustomException());
+        start.onError(new TestException());
         
         verify(o, never()).onNext(any());
         verify(o, never()).onCompleted();
-        verify(o).onError(any(OperationReduceTest.CustomException.class));
+        verify(o).onError(any(TestException.class));
     }
     @Test
     public void bufferWithStartEndEndFunctionThrows() {
@@ -737,7 +742,7 @@ public class OperationBufferTest {
         Func1<Integer, Observable<Integer>> end = new Func1<Integer, Observable<Integer>>() {
             @Override
             public Observable<Integer> call(Integer t1) {
-                throw new OperationReduceTest.CustomException();
+                throw new TestException();
             }
         };
 
@@ -745,6 +750,7 @@ public class OperationBufferTest {
 
         Observable<List<Integer>> result = source.buffer(start, end);
         
+        @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
         
         result.subscribe(o);
@@ -755,7 +761,7 @@ public class OperationBufferTest {
         
         verify(o, never()).onNext(any());
         verify(o, never()).onCompleted();
-        verify(o).onError(any(OperationReduceTest.CustomException.class));
+        verify(o).onError(any(TestException.class));
     }
     @Test
     public void bufferWithStartEndEndThrows() {
@@ -764,7 +770,7 @@ public class OperationBufferTest {
         Func1<Integer, Observable<Integer>> end = new Func1<Integer, Observable<Integer>>() {
             @Override
             public Observable<Integer> call(Integer t1) {
-                return Observable.error(new OperationReduceTest.CustomException());
+                return Observable.error(new TestException());
             }
         };
 
@@ -772,6 +778,7 @@ public class OperationBufferTest {
 
         Observable<List<Integer>> result = source.buffer(start, end);
         
+        @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
         
         result.subscribe(o);
@@ -782,6 +789,6 @@ public class OperationBufferTest {
         
         verify(o, never()).onNext(any());
         verify(o, never()).onCompleted();
-        verify(o).onError(any(OperationReduceTest.CustomException.class));
+        verify(o).onError(any(TestException.class));
     }
 }

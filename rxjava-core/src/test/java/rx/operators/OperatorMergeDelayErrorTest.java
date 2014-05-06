@@ -18,7 +18,13 @@ package rx.operators;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
-import static org.mockito.Mockito.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,9 +39,8 @@ import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Observer;
 import rx.Subscriber;
-import rx.Subscription;
 import rx.exceptions.CompositeException;
-import rx.subscriptions.Subscriptions;
+import rx.exceptions.TestException;
 
 public class OperatorMergeDelayErrorTest {
 
@@ -52,7 +57,6 @@ public class OperatorMergeDelayErrorTest {
         final Observable<String> o1 = Observable.create(new TestErrorObservable("four", null, "six")); // we expect to lose "six" from the source (and it should never be sent by the source since onError was called
         final Observable<String> o2 = Observable.create(new TestErrorObservable("one", "two", "three"));
 
-        @SuppressWarnings("unchecked")
         Observable<String> m = Observable.mergeDelayError(o1, o2);
         m.subscribe(stringObserver);
 
@@ -73,7 +77,6 @@ public class OperatorMergeDelayErrorTest {
         final Observable<String> o3 = Observable.create(new TestErrorObservable("seven", "eight", null));
         final Observable<String> o4 = Observable.create(new TestErrorObservable("nine"));
 
-        @SuppressWarnings("unchecked")
         Observable<String> m = Observable.mergeDelayError(o1, o2, o3, o4);
         m.subscribe(stringObserver);
 
@@ -97,7 +100,6 @@ public class OperatorMergeDelayErrorTest {
         final Observable<String> o3 = Observable.create(new TestErrorObservable("seven", "eight", null));
         final Observable<String> o4 = Observable.create(new TestErrorObservable("nine"));
 
-        @SuppressWarnings("unchecked")
         Observable<String> m = Observable.mergeDelayError(o1, o2, o3, o4);
         m.subscribe(stringObserver);
 
@@ -121,7 +123,6 @@ public class OperatorMergeDelayErrorTest {
         final Observable<String> o3 = Observable.create(new TestErrorObservable("seven", "eight"));
         final Observable<String> o4 = Observable.create(new TestErrorObservable("nine", null));
 
-        @SuppressWarnings("unchecked")
         Observable<String> m = Observable.mergeDelayError(o1, o2, o3, o4);
         m.subscribe(stringObserver);
 
@@ -146,7 +147,6 @@ public class OperatorMergeDelayErrorTest {
         // throw the error at the very end so no onComplete will be called after it
         final TestAsyncErrorObservable o4 = new TestAsyncErrorObservable("nine", null);
 
-        @SuppressWarnings("unchecked")
         Observable<String> m = Observable.mergeDelayError(Observable.create(o1), Observable.create(o2), Observable.create(o3), Observable.create(o4));
         m.subscribe(stringObserver);
 
@@ -177,7 +177,6 @@ public class OperatorMergeDelayErrorTest {
         final Observable<String> o1 = Observable.create(new TestErrorObservable("four", null, "six")); // we expect to lose "six" from the source (and it should never be sent by the source since onError was called
         final Observable<String> o2 = Observable.create(new TestErrorObservable("one", "two", null));
 
-        @SuppressWarnings("unchecked")
         Observable<String> m = Observable.mergeDelayError(o1, o2);
         m.subscribe(stringObserver);
 
@@ -196,7 +195,6 @@ public class OperatorMergeDelayErrorTest {
         final Observable<String> o1 = Observable.create(new TestErrorObservable("four", null, "six")); // we expect to lose "six" from the source (and it should never be sent by the source since onError was called
         final Observable<String> o2 = Observable.create(new TestErrorObservable("one", "two", null));
 
-        @SuppressWarnings("unchecked")
         Observable<String> m = Observable.mergeDelayError(o1, o2);
         CaptureObserver w = new CaptureObserver();
         m.subscribe(w);
@@ -220,16 +218,14 @@ public class OperatorMergeDelayErrorTest {
         final Observable<String> o1 = Observable.create(new TestSynchronousObservable());
         final Observable<String> o2 = Observable.create(new TestSynchronousObservable());
 
-        Observable<Observable<String>> observableOfObservables = Observable.create(new Observable.OnSubscribeFunc<Observable<String>>() {
+        Observable<Observable<String>> observableOfObservables = Observable.create(new Observable.OnSubscribe<Observable<String>>() {
 
             @Override
-            public Subscription onSubscribe(Observer<? super Observable<String>> observer) {
+            public void call(Subscriber<? super Observable<String>> observer) {
                 // simulate what would happen in an observable
                 observer.onNext(o1);
                 observer.onNext(o2);
                 observer.onCompleted();
-
-                return Subscriptions.empty();
             }
 
         });
@@ -246,7 +242,6 @@ public class OperatorMergeDelayErrorTest {
         final Observable<String> o1 = Observable.create(new TestSynchronousObservable());
         final Observable<String> o2 = Observable.create(new TestSynchronousObservable());
 
-        @SuppressWarnings("unchecked")
         Observable<String> m = Observable.mergeDelayError(o1, o2);
         m.subscribe(stringObserver);
 
@@ -276,7 +271,6 @@ public class OperatorMergeDelayErrorTest {
         final TestASynchronousObservable o1 = new TestASynchronousObservable();
         final TestASynchronousObservable o2 = new TestASynchronousObservable();
 
-        @SuppressWarnings("unchecked")
         Observable<String> m = Observable.mergeDelayError(Observable.create(o1), Observable.create(o2));
         m.subscribe(stringObserver);
 
@@ -316,51 +310,6 @@ public class OperatorMergeDelayErrorTest {
 
             });
             t.start();
-        }
-    }
-
-    /**
-     * A Observable that doesn't do the right thing on UnSubscribe/Error/etc in that it will keep sending events down the pipe regardless of what happens.
-     */
-    private static class TestObservable implements Observable.OnSubscribeFunc<String> {
-
-        Observer<? super String> observer = null;
-        volatile boolean unsubscribed = false;
-        Subscription s = new Subscription() {
-
-            @Override
-            public void unsubscribe() {
-                unsubscribed = true;
-
-            }
-
-            @Override
-            public boolean isUnsubscribed() {
-                return unsubscribed;
-            }
-
-        };
-
-        /* used to simulate subscription */
-        public void sendOnCompleted() {
-            observer.onCompleted();
-        }
-
-        /* used to simulate subscription */
-        public void sendOnNext(String value) {
-            observer.onNext(value);
-        }
-
-        /* used to simulate subscription */
-        @SuppressWarnings("unused")
-        public void sendOnError(Throwable e) {
-            observer.onError(e);
-        }
-
-        @Override
-        public Subscription onSubscribe(final Observer<? super String> observer) {
-            this.observer = observer;
-            return s;
         }
     }
 
@@ -476,7 +425,7 @@ public class OperatorMergeDelayErrorTest {
             @Override
             public void onNext(Integer t) {
                 if (calls++ == 0) {
-                    throw new OperationReduceTest.CustomException();
+                    throw new TestException();
                 }
                 o.onNext(t);
             }
@@ -497,7 +446,7 @@ public class OperatorMergeDelayErrorTest {
         inOrder.verify(o, never()).onNext(0);
         inOrder.verify(o, never()).onNext(1);
         inOrder.verify(o, never()).onNext(anyInt());
-        inOrder.verify(o).onError(any(OperationReduceTest.CustomException.class));
+        inOrder.verify(o).onError(any(TestException.class));
         verify(o, never()).onCompleted();
     }
 }

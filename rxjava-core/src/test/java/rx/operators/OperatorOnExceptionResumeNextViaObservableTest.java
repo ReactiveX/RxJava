@@ -28,16 +28,15 @@ import org.mockito.Mockito;
 
 import rx.Observable;
 import rx.Observer;
-import rx.Subscription;
+import rx.Subscriber;
 import rx.functions.Func1;
 
 public class OperatorOnExceptionResumeNextViaObservableTest {
 
     @Test
     public void testResumeNextWithException() {
-        Subscription s = mock(Subscription.class);
         // Trigger failure on second element
-        TestObservable f = new TestObservable(s, "one", "EXCEPTION", "two", "three");
+        TestObservable f = new TestObservable("one", "EXCEPTION", "two", "three");
         Observable<String> w = Observable.create(f);
         Observable<String> resume = Observable.from("twoResume", "threeResume");
         Observable<String> observable = w.onExceptionResumeNext(resume);
@@ -64,9 +63,8 @@ public class OperatorOnExceptionResumeNextViaObservableTest {
 
     @Test
     public void testResumeNextWithRuntimeException() {
-        Subscription s = mock(Subscription.class);
         // Trigger failure on second element
-        TestObservable f = new TestObservable(s, "one", "RUNTIMEEXCEPTION", "two", "three");
+        TestObservable f = new TestObservable("one", "RUNTIMEEXCEPTION", "two", "three");
         Observable<String> w = Observable.create(f);
         Observable<String> resume = Observable.from("twoResume", "threeResume");
         Observable<String> observable = w.onExceptionResumeNext(resume);
@@ -93,9 +91,8 @@ public class OperatorOnExceptionResumeNextViaObservableTest {
 
     @Test
     public void testThrowablePassesThru() {
-        Subscription s = mock(Subscription.class);
         // Trigger failure on second element
-        TestObservable f = new TestObservable(s, "one", "THROWABLE", "two", "three");
+        TestObservable f = new TestObservable("one", "THROWABLE", "two", "three");
         Observable<String> w = Observable.create(f);
         Observable<String> resume = Observable.from("twoResume", "threeResume");
         Observable<String> observable = w.onExceptionResumeNext(resume);
@@ -122,9 +119,8 @@ public class OperatorOnExceptionResumeNextViaObservableTest {
 
     @Test
     public void testErrorPassesThru() {
-        Subscription s = mock(Subscription.class);
         // Trigger failure on second element
-        TestObservable f = new TestObservable(s, "one", "ERROR", "two", "three");
+        TestObservable f = new TestObservable("one", "ERROR", "two", "three");
         Observable<String> w = Observable.create(f);
         Observable<String> resume = Observable.from("twoResume", "threeResume");
         Observable<String> observable = w.onExceptionResumeNext(resume);
@@ -151,11 +147,10 @@ public class OperatorOnExceptionResumeNextViaObservableTest {
 
     @Test
     public void testMapResumeAsyncNext() {
-        Subscription sr = mock(Subscription.class);
         // Trigger multiple failures
         Observable<String> w = Observable.from("one", "fail", "two", "three", "fail");
         // Resume Observable is async
-        TestObservable f = new TestObservable(sr, "twoResume", "threeResume");
+        TestObservable f = new TestObservable("twoResume", "threeResume");
         Observable<String> resume = Observable.create(f);
 
         // Introduce map function that fails intermittently (Map does not prevent this when the observer is a
@@ -194,19 +189,17 @@ public class OperatorOnExceptionResumeNextViaObservableTest {
         verify(observer, times(1)).onCompleted();
     }
 
-    private static class TestObservable implements Observable.OnSubscribeFunc<String> {
+    private static class TestObservable implements Observable.OnSubscribe<String> {
 
-        final Subscription s;
         final String[] values;
         Thread t = null;
 
-        public TestObservable(Subscription s, String... values) {
-            this.s = s;
+        public TestObservable(String... values) {
             this.values = values;
         }
 
         @Override
-        public Subscription onSubscribe(final Observer<? super String> observer) {
+        public void call(final Subscriber<? super String> observer) {
             System.out.println("TestObservable subscribed to ...");
             t = new Thread(new Runnable() {
 
@@ -238,7 +231,6 @@ public class OperatorOnExceptionResumeNextViaObservableTest {
             System.out.println("starting TestObservable thread");
             t.start();
             System.out.println("done starting TestObservable thread");
-            return s;
         }
     }
 }

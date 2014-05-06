@@ -26,19 +26,17 @@ import org.junit.Test;
 import org.mockito.InOrder;
 
 import rx.Observable;
-import rx.Observable.OnSubscribeFunc;
+import rx.Observable.OnSubscribe;
 import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
+import rx.exceptions.TestException;
 import rx.functions.Action0;
 import rx.functions.Func0;
 import rx.functions.Func1;
 import rx.subscriptions.Subscriptions;
 
 public class OperatorUsingTest {
-
-    @SuppressWarnings("serial")
-    private static class TestException extends RuntimeException {
-    }
 
     private static interface Resource extends Subscription {
         public String getTextFromWeb();
@@ -197,9 +195,9 @@ public class OperatorUsingTest {
         Func1<Subscription, Observable<Integer>> observableFactory = new Func1<Subscription, Observable<Integer>>() {
             @Override
             public Observable<Integer> call(Subscription subscription) {
-                return Observable.create(new OnSubscribeFunc<Integer>() {
+                return Observable.create(new OnSubscribe<Integer>() {
                     @Override
-                    public Subscription onSubscribe(Observer<? super Integer> t1) {
+                    public void call(Subscriber<? super Integer> t1) {
                         throw new TestException();
                     }
                 });

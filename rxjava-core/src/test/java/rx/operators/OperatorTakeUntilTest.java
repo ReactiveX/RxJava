@@ -24,6 +24,7 @@ import org.junit.Test;
 
 import rx.Observable;
 import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 
 public class OperatorTakeUntilTest {
@@ -158,7 +159,7 @@ public class OperatorTakeUntilTest {
 
     }
 
-    private static class TestObservable implements Observable.OnSubscribeFunc<String> {
+    private static class TestObservable implements Observable.OnSubscribe<String> {
 
         Observer<? super String> observer = null;
         Subscription s;
@@ -183,9 +184,9 @@ public class OperatorTakeUntilTest {
         }
 
         @Override
-        public Subscription onSubscribe(final Observer<? super String> observer) {
+        public void call(Subscriber<? super String> observer) {
             this.observer = observer;
-            return s;
+            observer.add(s);
         }
     }
 }
