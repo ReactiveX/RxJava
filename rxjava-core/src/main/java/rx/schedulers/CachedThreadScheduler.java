@@ -27,7 +27,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /* package */public class CachedThreadScheduler extends Scheduler {
-    private static class CachedEventLoopPool {
+    private static class CachedWorkerPool {
         final ThreadFactory factory = new ThreadFactory() {
             final AtomicInteger counter = new AtomicInteger();
 
@@ -40,69 +40,69 @@ import java.util.concurrent.atomic.AtomicInteger;
         };
 
         private final long keepAliveTime;
-        private final ConcurrentLinkedQueue<EventLoopScheduler> expiringQueue;
-        private final ScheduledExecutorService evictExpiredEventLoopExecutor;
+        private final ConcurrentLinkedQueue<PoolWorker> expiringQueue;
+        private final ScheduledExecutorService evictExpiredWorkerExecutor;
 
-        CachedEventLoopPool(long keepAliveTime, TimeUnit unit) {
+        CachedWorkerPool(long keepAliveTime, TimeUnit unit) {
             this.keepAliveTime = unit.toNanos(keepAliveTime);
-            this.expiringQueue = new ConcurrentLinkedQueue<EventLoopScheduler>();
+            this.expiringQueue = new ConcurrentLinkedQueue<PoolWorker>();
 
-            evictExpiredEventLoopExecutor = Executors.newScheduledThreadPool(1, new ThreadFactory() {
+            evictExpiredWorkerExecutor = Executors.newScheduledThreadPool(1, new ThreadFactory() {
                 final AtomicInteger counter = new AtomicInteger();
 
                 @Override
                 public Thread newThread(Runnable r) {
-                    Thread t = new Thread(r, "RxCachedEventLoopEvictor-" + counter.incrementAndGet());
+                    Thread t = new Thread(r, "RxCachedWorkerPoolEvictor-" + counter.incrementAndGet());
                     t.setDaemon(true);
                     return t;
                 }
             });
-            evictExpiredEventLoopExecutor.scheduleWithFixedDelay(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        evictExpiredEventLoops();
-                    }
-                }, this.keepAliveTime, this.keepAliveTime, TimeUnit.NANOSECONDS
+            evictExpiredWorkerExecutor.scheduleWithFixedDelay(
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            evictExpiredWorkers();
+                        }
+                    }, this.keepAliveTime, this.keepAliveTime, TimeUnit.NANOSECONDS
             );
         }
 
-        private static CachedEventLoopPool INSTANCE = new CachedEventLoopPool(
+        private static CachedWorkerPool INSTANCE = new CachedWorkerPool(
             60L, TimeUnit.SECONDS
         );
 
-        EventLoopScheduler takeEventLoop() {
+        PoolWorker get() {
             while (!expiringQueue.isEmpty()) {
-                EventLoopScheduler eventLoopScheduler = expiringQueue.poll();
-                if (eventLoopScheduler != null) {
-                    return eventLoopScheduler;
+                PoolWorker poolWorker = expiringQueue.poll();
+                if (poolWorker != null) {
+                    return poolWorker;
                 }
             }
 
-            // No non-expired cached event loop found, so create a new one.
-            return new EventLoopScheduler(factory);
+            // No cached worker found, so create a new one.
+            return new PoolWorker(factory);
         }
 
-        void returnEventLoop(EventLoopScheduler eventLoopScheduler) {
-            // Refresh expire time before putting event loop back in pool
-            eventLoopScheduler.setExpirationTime(now() + keepAliveTime);
+        void release(PoolWorker poolWorker) {
+            // Refresh expire time before putting worker back in pool
+            poolWorker.setExpirationTime(now() + keepAliveTime);
 
-            expiringQueue.add(eventLoopScheduler);
+            expiringQueue.add(poolWorker);
         }
 
-        void evictExpiredEventLoops() {
+        void evictExpiredWorkers() {
             if (!expiringQueue.isEmpty()) {
                 long currentTimestamp = now();
 
-                Iterator<EventLoopScheduler> eventLoopSchedulerIterator = expiringQueue.iterator();
-                while (eventLoopSchedulerIterator.hasNext()) {
-                    EventLoopScheduler eventLoopScheduler = eventLoopSchedulerIterator.next();
-                    if (eventLoopScheduler.getExpirationTime() <= currentTimestamp) {
-                        eventLoopSchedulerIterator.remove();
-                        eventLoopScheduler.unsubscribe();
+                Iterator<PoolWorker> poolWorkerIterator = expiringQueue.iterator();
+                while (poolWorkerIterator.hasNext()) {
+                    PoolWorker poolWorker = poolWorkerIterator.next();
+                    if (poolWorker.getExpirationTime() <= currentTimestamp) {
+                        poolWorkerIterator.remove();
+                        poolWorker.unsubscribe();
                     } else {
-                        // Queue is ordered with the event loops that will expire first in the beginning, so when we
-                        // find a non-expired event loop we can stop evicting.
+                        // Queue is ordered with the worker that will expire first in the beginning, so when we
+                        // find a non-expired worker we can stop evicting.
                         break;
                     }
                 }
@@ -116,30 +116,23 @@ import java.util.concurrent.atomic.AtomicInteger;
 
     @Override
     public Worker createWorker() {
-        return new EventLoop();
+        return new EventLoopWorker(CachedWorkerPool.INSTANCE.get());
     }
 
-    private static class EventLoop extends Scheduler.Worker {
+    private static class EventLoopWorker extends Scheduler.Worker {
         private final CompositeSubscription innerSubscription = new CompositeSubscription();
-        private final EventLoopScheduler pooledEventLoop;
-        private final NewThreadScheduler.OnActionComplete onComplete;
-        private final AtomicBoolean returnEventLoopOnce = new AtomicBoolean(false);
+        private final PoolWorker poolWorker;
+        private final AtomicBoolean releasePoolWorkerOnce = new AtomicBoolean(false);
 
-        EventLoop() {
-            pooledEventLoop = CachedEventLoopPool.INSTANCE.takeEventLoop();
-            onComplete = new NewThreadScheduler.OnActionComplete() {
-                @Override
-                public void complete(Subscription s) {
-                    innerSubscription.remove(s);
-                }
-            };
+        EventLoopWorker(PoolWorker poolWorker) {
+            this.poolWorker = poolWorker;
         }
 
         @Override
         public void unsubscribe() {
-            if (returnEventLoopOnce.compareAndSet(false, true)) {
+            if (releasePoolWorkerOnce.compareAndSet(false, true)) {
                 // unsubscribe should be idempotent, so only do this once
-                CachedEventLoopPool.INSTANCE.returnEventLoop(pooledEventLoop);
+                CachedWorkerPool.INSTANCE.release(poolWorker);
             }
             innerSubscription.unsubscribe();
         }
@@ -151,20 +144,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
         @Override
         public Subscription schedule(Action0 action) {
-            if (innerSubscription.isUnsubscribed()) {
-                // don't schedule, we are unsubscribed
-                return Subscriptions.empty();
-            }
-
-            final Subscription subscription = pooledEventLoop.schedule(action, onComplete);
-            innerSubscription.add(subscription);
-
-            return Subscriptions.create(new Action0() {
-                @Override
-                public void call() {
-                    innerSubscription.remove(subscription);
-                }
-            });
+            return schedule(action, 0, null);
         }
 
         @Override
@@ -174,22 +154,17 @@ import java.util.concurrent.atomic.AtomicInteger;
                 return Subscriptions.empty();
             }
 
-            final Subscription subscription = pooledEventLoop.schedule(action, delayTime, unit, onComplete);
-            innerSubscription.add(subscription);
-
-            return Subscriptions.create(new Action0() {
-                @Override
-                public void call() {
-                    innerSubscription.remove(subscription);
-                }
-            });
+            NewThreadScheduler.NewThreadWorker.ScheduledAction s = poolWorker.scheduleActual(action, delayTime, unit);
+            innerSubscription.add(s);
+            s.addParent(innerSubscription);
+            return s;
         }
     }
 
-    private static class EventLoopScheduler extends NewThreadScheduler.EventLoopScheduler {
+    private static final class PoolWorker extends NewThreadScheduler.NewThreadWorker {
         private long expirationTime;
 
-        EventLoopScheduler(ThreadFactory threadFactory) {
+        PoolWorker(ThreadFactory threadFactory) {
             super(threadFactory);
             this.expirationTime = 0L;
         }
