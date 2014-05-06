@@ -297,6 +297,28 @@ class RxScalaDemo extends JUnitSuite {
     shared.connect
   }
 
+  @Test def exampleWithPublish2() {
+    val unshared = Observable.from(1 to 4)
+    val shared = unshared.publish(0)
+    shared.subscribe(n => println(s"subscriber 1 gets $n"))
+    shared.subscribe(n => println(s"subscriber 2 gets $n"))
+    shared.connect
+  }
+
+  @Test def exampleWithPublish3() {
+    val o = Observable.interval(100 millis).take(5).publish((o: Observable[Long]) => o.map(_ * 2))
+    o.subscribe(n => println(s"subscriber 1 gets $n"))
+    o.subscribe(n => println(s"subscriber 2 gets $n"))
+    Thread.sleep(1000)
+  }
+
+  @Test def exampleWithPublish4() {
+    val o = Observable.interval(100 millis).take(5).publish((o: Observable[Long]) => o.map(_ * 2), -1L)
+    o.subscribe(n => println(s"subscriber 1 gets $n"))
+    o.subscribe(n => println(s"subscriber 2 gets $n"))
+    Thread.sleep(1000)
+  }
+
   def doLater(waitTime: Duration, action: () => Unit): Unit = {
     Observable.interval(waitTime).take(1).subscribe(_ => action())
   }
