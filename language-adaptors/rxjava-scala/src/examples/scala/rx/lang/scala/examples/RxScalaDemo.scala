@@ -780,8 +780,9 @@ class RxScalaDemo extends JUnitSuite {
   }
 
   @Test def startWithExample1(): Unit = {
-    val o = List(2, 3).toObservable + 1
-    assertEquals(List(1, 2, 3), o.toBlockingObservable.toList)
+    val o1 = List(3, 4).toObservable
+    val o2 = 1 :: 2 :: o1
+    assertEquals(List(1, 2, 3, 4), o2.toBlockingObservable.toList)
   }
 
   @Test def startWithExample2(): Unit = {

@@ -247,7 +247,7 @@ trait Observable[+T]
    * @param elem the item to emit
    * @return an Observable that emits the specified item before it begins to emit items emitted by the source Observable
    */
-  def +[U >: T](elem: U): Observable[U] = {
+  def ::[U >: T](elem: U): Observable[U] = {
     val thisJava = this.asJavaObservable.asInstanceOf[rx.Observable[U]]
     toScalaObservable(thisJava.startWith(elem))
   }

@@ -167,7 +167,7 @@ class CompletenessTest extends JUnitSuite {
       "zip(Iterable[_ <: Observable[_]], FuncN[_ <: R])" -> "[use `zip` in companion object and `map`]"
   ) ++ List.iterate("T", 9)(s => s + ", T").map(
       // all 9 overloads of startWith:
-      "startWith(" + _ + ")" -> "[unnecessary because we can just use `+` instead]"
+      "startWith(" + _ + ")" -> "[unnecessary because we can just use `::` instead]"
   ).toMap ++ List.iterate("Observable[_ <: T]", 9)(s => s + ", Observable[_ <: T]").map(
       // concat 2-9
       "concat(" + _ + ")" -> "[unnecessary because we can use `++` instead or `Observable(o1, o2, ...).concat`]"
