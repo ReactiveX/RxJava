@@ -69,11 +69,7 @@ public class NewThreadScheduler extends Scheduler {
 
         @Override
         public Subscription schedule(final Action0 action) {
-            return schedule(action, null);
-        }
-
-        /* package */Subscription schedule(final Action0 action, final OnActionComplete onComplete) {
-            return scheduleActual(action, 0, null);
+            return schedule(action, 0, null);
         }
 
         @Override
@@ -98,7 +94,7 @@ public class NewThreadScheduler extends Scheduler {
         }
         
         /** Remove a child subscription from a composite when unsubscribing. */
-        public static final class Remover implements Subscription {
+        private static final class Remover implements Subscription {
             final Subscription s;
             final CompositeSubscription parent;
             final AtomicBoolean once;
@@ -185,11 +181,4 @@ public class NewThreadScheduler extends Scheduler {
         }
 
     }
-
-    /* package */static interface OnActionComplete {
-
-        public void complete(Subscription s);
-
-    }
-
 }
