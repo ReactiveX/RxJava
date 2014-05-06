@@ -77,6 +77,7 @@ import collection.JavaConversions._
  */
 trait Observable[+T]
 {
+  import scala.collection.JavaConverters._
   import scala.collection.Seq
   import scala.concurrent.duration.{Duration, TimeUnit}
   import rx.functions._
@@ -236,6 +237,65 @@ trait Observable[+T]
     val o1: rx.Observable[_ <: U] = this.asJavaObservable
     val o2: rx.Observable[_ <: U] = that.asJavaObservable
     toScalaObservable(rx.Observable.concat(o1, o2))
+  }
+
+  /**
+   * Returns an Observable that emits a specified item before it begins to emit items emitted by the source Observable.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.png">
+   *
+   * @param elem the item to emit
+   * @return an Observable that emits the specified item before it begins to emit items emitted by the source Observable
+   */
+  def +[U >: T](elem: U): Observable[U] = {
+    val thisJava = this.asJavaObservable.asInstanceOf[rx.Observable[U]]
+    toScalaObservable(thisJava.startWith(elem))
+  }
+
+  /**
+   * Returns an Observable that emits the items in a specified `Observable` before it begins to emit
+   * items emitted by the source Observable.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.o.png">
+   *
+   * @param that an Observable that contains the items you want the modified Observable to emit first
+   * @return an Observable that emits the items in the specified `Observable` and then emits the items
+   *         emitted by the source Observable
+   */
+  def startWith[U >: T](that: Observable[U]): Observable[U] = {
+    val thisJava = this.asJavaObservable.asInstanceOf[rx.Observable[U]]
+    val thatJava = that.asJavaObservable.asInstanceOf[rx.Observable[U]]
+    toScalaObservable(thisJava.startWith(thatJava))
+  }
+
+  /**
+   * Returns an Observable that emits the items in a specified `Iterable` before it begins to emit items
+   * emitted by the source Observable.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.png">
+   *
+   * @param iterable an Iterable that contains the items you want the modified Observable to emit first
+   * @return an Observable that emits the items in the specified `Iterable` and then emits the items
+   *         emitted by the source Observable
+   */
+  def startWith[U >: T](iterable: Iterable[U]): Observable[U] = {
+    val thisJava = this.asJavaObservable.asInstanceOf[rx.Observable[U]]
+    toScalaObservable(thisJava.startWith(iterable.asJava))
+  }
+
+  /**
+   * Returns an Observable that emits the items in a specified `Iterable`, on a specified `Scheduler`, before it begins to emit items emitted by the source Observable.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.s.png">
+   *
+   * @param iterable an Iterable that contains the items you want the modified Observable to emit first
+   * @param scheduler the Scheduler to emit the prepended values on
+   * @return an Observable that emits the items in the specified `Iterable`, on a specified `Scheduler`, and then emits the items
+   *         emitted by the source Observable
+   */
+  def startWith[U >: T](iterable: Iterable[U], scheduler: Scheduler): Observable[U] = {
+    val thisJava = this.asJavaObservable.asInstanceOf[rx.Observable[U]]
+    toScalaObservable(thisJava.startWith(iterable.asJava, scalaSchedulerToJavaScheduler(scheduler)))
   }
 
   /**
