@@ -7,14 +7,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 import rx.Scheduler;
 import rx.Subscription;
 import rx.functions.Action0;
-import rx.schedulers.NewThreadScheduler.OnActionComplete;
+import rx.schedulers.NewThreadScheduler.NewThreadWorker.Remover;
+import rx.schedulers.NewThreadScheduler.NewThreadWorker.ScheduledAction;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.Subscriptions;
 
 /* package */class EventLoopsScheduler extends Scheduler {
-
-    private static class ComputationSchedulerPool {
-        final int cores = Runtime.getRuntime().availableProcessors();
+    /** Manages a fixed number of workers. */
+    static final class FixedSchedulerPool {
+        final int cores;
         final ThreadFactory factory = new ThreadFactory() {
             final AtomicInteger counter = new AtomicInteger();
 
@@ -26,47 +27,46 @@ import rx.subscriptions.Subscriptions;
             }
         };
 
-        final EventLoopScheduler[] eventLoops;
+        final PoolWorker[] eventLoops;
+        long n;
 
-        ComputationSchedulerPool() {
+        FixedSchedulerPool() {
             // initialize event loops
-            eventLoops = new EventLoopScheduler[cores];
+            this.cores = Runtime.getRuntime().availableProcessors();
+            this.eventLoops = new PoolWorker[cores];
             for (int i = 0; i < cores; i++) {
-                eventLoops[i] = new EventLoopScheduler(factory);
+                this.eventLoops[i] = new PoolWorker(factory);
             }
         }
 
-        private static ComputationSchedulerPool INSTANCE = new ComputationSchedulerPool();
-
-        long n = 0;
-
-        public EventLoopScheduler getEventLoop() {
-            // round-robin selection (improvements to come)
-            return eventLoops[(int) (n++ % cores)];
+        public PoolWorker getEventLoop() {
+            // simple round robin, improvements to come
+            return eventLoops[(int)(n++ % cores)];
         }
-
     }
 
+    final FixedSchedulerPool pool;
+    
+    /**
+     * Create a scheduler with pool size equal to the available processor
+     * count and using least-recent worker selection policy.
+     */
+    EventLoopsScheduler() {
+        pool = new FixedSchedulerPool();
+    }
+    
     @Override
     public Worker createWorker() {
-        return new EventLoop();
+        return new EventLoopWorker(pool.getEventLoop());
     }
 
-    private static class EventLoop extends Scheduler.Worker {
+    private static class EventLoopWorker extends Scheduler.Worker {
         private final CompositeSubscription innerSubscription = new CompositeSubscription();
-        private final EventLoopScheduler pooledEventLoop;
-        private final OnActionComplete onComplete;
+        private final PoolWorker poolWorker;
 
-        EventLoop() {
-            pooledEventLoop = ComputationSchedulerPool.INSTANCE.getEventLoop();
-            onComplete = new OnActionComplete() {
-
-                @Override
-                public void complete(Subscription s) {
-                    innerSubscription.remove(s);
-                }
-
-            };
+        EventLoopWorker(PoolWorker poolWorker) {
+            this.poolWorker = poolWorker;
+            
         }
 
         @Override
@@ -81,13 +81,8 @@ import rx.subscriptions.Subscriptions;
 
         @Override
         public Subscription schedule(Action0 action) {
-            if (innerSubscription.isUnsubscribed()) {
-                // don't schedule, we are unsubscribed
-                return Subscriptions.empty();
-            }
-            return pooledEventLoop.schedule(action, onComplete);
+            return schedule(action, 0, null);
         }
-
         @Override
         public Subscription schedule(Action0 action, long delayTime, TimeUnit unit) {
             if (innerSubscription.isUnsubscribed()) {
@@ -95,15 +90,16 @@ import rx.subscriptions.Subscriptions;
                 return Subscriptions.empty();
             }
             
-            return pooledEventLoop.schedule(action, delayTime, unit, onComplete);
+            ScheduledAction s = poolWorker.scheduleActual(action, delayTime, unit);
+            innerSubscription.add(s);
+            s.addParent(innerSubscription);
+            return s;
         }
-
     }
-
-    private static class EventLoopScheduler extends NewThreadScheduler.EventLoopScheduler {
-        EventLoopScheduler(ThreadFactory threadFactory) {
+    
+    private static final class PoolWorker extends NewThreadScheduler.NewThreadWorker {
+        PoolWorker(ThreadFactory threadFactory) {
             super(threadFactory);
         }
     }
-
 }
