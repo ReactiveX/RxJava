@@ -33,7 +33,7 @@ import rx.subjects.PublishSubject;
  * the resulting Observable is finite.
  * 
  */
-public class OperationZipTestCompletion {
+public class OperatorZipCompletionTest {
     Func2<String, String, String> concat2Strings;
 
     PublishSubject<String> s1;

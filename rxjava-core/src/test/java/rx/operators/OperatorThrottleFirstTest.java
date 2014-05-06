@@ -31,6 +31,7 @@ import rx.Observable.OnSubscribe;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Subscriber;
+import rx.exceptions.TestException;
 import rx.functions.Action0;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
@@ -124,10 +125,6 @@ public class OperatorThrottleFirstTest {
                 observer.onNext(value);
             }
         }, delay, TimeUnit.MILLISECONDS);
-    }
-
-    @SuppressWarnings("serial")
-    private class TestException extends Exception {
     }
 
     @Test

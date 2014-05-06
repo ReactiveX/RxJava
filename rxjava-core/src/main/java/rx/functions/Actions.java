@@ -30,6 +30,7 @@ public final class Actions {
         return (EmptyAction<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9>) EMPTY_ACTION;
     }
 
+    @SuppressWarnings("rawtypes")
     private static final EmptyAction EMPTY_ACTION = new EmptyAction();
 
     private static final class EmptyAction<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9> implements

@@ -19,9 +19,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 
-import rx.Notification;
 import rx.Observer;
 import rx.functions.Action0;
 import rx.functions.Action1;

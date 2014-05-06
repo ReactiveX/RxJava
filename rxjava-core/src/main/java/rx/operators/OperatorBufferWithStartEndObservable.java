@@ -32,7 +32,7 @@ import rx.subscriptions.CompositeSubscription;
  * values from the specified {@link Observable} source and stores them in the currently active chunks.
  * Initially there are no chunks active.
  * <p>
- * Chunks can be created by pushing a {@link rx.util.TOpening} value to the "bufferOpenings"
+ * Chunks can be created by pushing a {@code TOpening} value to the "bufferOpenings"
  * {@link Observable}. This creates a new buffer which will then start recording values which are produced
  * by the "source" {@link Observable}. Additionally the "bufferClosingSelector" will be used to construct an
  * {@link Observable} which can produce values. When it does so it will close this (and only this) newly
@@ -52,7 +52,7 @@ public final class OperatorBufferWithStartEndObservable<T, TOpening, TClosing> i
 
     /**
      * @param bufferOpenings
-     *            an {@link Observable} which when it produces a {@link rx.util.TOpening} value will create a
+     *            an {@link Observable} which when it produces a {@code TOpening} value will create a
      *            new buffer which instantly starts recording the "source" {@link Observable}
      * @param bufferClosingSelector
      *            a {@link Func1} object which produces {@link Observable}s. These {@link Observable}s determine

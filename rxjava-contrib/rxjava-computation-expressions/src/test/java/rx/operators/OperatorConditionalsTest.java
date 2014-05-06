@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -232,9 +232,9 @@ public class OperatorConditionalsTest {
         Observable<Integer> source2 = Observable.from(4, 5, 6);
 
         Map<Integer, Observable<Integer>> map = new HashMap<Integer, Observable<Integer>>() {
-			private static final long serialVersionUID = -4342868139960216388L;
+            private static final long serialVersionUID = -4342868139960216388L;
 
-			@Override
+            @Override
             public Observable<Integer> get(Object key) {
                 if (key.equals(2)) {
                     throw new RuntimeException("Forced failure!");
@@ -257,9 +257,9 @@ public class OperatorConditionalsTest {
         Observable<Integer> source1 = Observable.from(1, 2, 3);
 
         Map<Integer, Observable<Integer>> map = new HashMap<Integer, Observable<Integer>>() {
-			private static final long serialVersionUID = 1975411728567003983L;
+            private static final long serialVersionUID = 1975411728567003983L;
 
-			@Override
+            @Override
             public boolean containsKey(Object key) {
                 if (key.equals(2)) {
                     throw new RuntimeException("Forced failure!");

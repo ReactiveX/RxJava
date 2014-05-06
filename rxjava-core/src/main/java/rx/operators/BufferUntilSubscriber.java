@@ -110,7 +110,6 @@ public class BufferUntilSubscriber<T> extends Observable<T> implements Observer<
     }
 
     @Override
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     public void onNext(T t) {
         state.observerRef.get().onNext(t);
     }

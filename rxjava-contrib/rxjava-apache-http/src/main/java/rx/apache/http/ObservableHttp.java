@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,13 +21,13 @@ import org.apache.http.concurrent.FutureCallback;
 import org.apache.http.nio.client.HttpAsyncClient;
 import org.apache.http.nio.client.methods.HttpAsyncMethods;
 import org.apache.http.nio.protocol.HttpAsyncRequestProducer;
-import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.BasicHttpContext;
+import org.apache.http.protocol.HttpContext;
 
 import rx.Observable;
-import rx.Observable.OnSubscribeFunc;
+import rx.Observable.OnSubscribe;
 import rx.Observer;
-import rx.Subscription;
+import rx.Subscriber;
 import rx.apache.http.consumers.ResponseConsumerDelegate;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.Subscriptions;
@@ -80,22 +80,22 @@ import rx.subscriptions.Subscriptions;
  */
 public class ObservableHttp<T> {
 
-    private final OnSubscribeFunc<T> onSubscribe;
+    private final OnSubscribe<T> onSubscribe;
 
-    private ObservableHttp(OnSubscribeFunc<T> onSubscribe) {
+    private ObservableHttp(OnSubscribe<T> onSubscribe) {
         this.onSubscribe = onSubscribe;
     }
 
-    private static <T> ObservableHttp<T> create(OnSubscribeFunc<T> onSubscribe) {
+    private static <T> ObservableHttp<T> create(OnSubscribe<T> onSubscribe) {
         return new ObservableHttp<T>(onSubscribe);
     }
 
     public Observable<T> toObservable() {
-        return Observable.create(new OnSubscribeFunc<T>() {
+        return Observable.create(new OnSubscribe<T>() {
 
             @Override
-            public Subscription onSubscribe(Observer<? super T> observer) {
-                return onSubscribe.onSubscribe(observer);
+            public void call(Subscriber<? super T> observer) {
+                onSubscribe.call(observer);
             }
         });
     }
@@ -133,7 +133,7 @@ public class ObservableHttp<T> {
      * 
      * @param requestProducer
      * @param client
-     * @return
+     * @return the observable HTTP response stream
      */
     public static ObservableHttp<ObservableHttpResponse> createRequest(final HttpAsyncRequestProducer requestProducer, final HttpAsyncClient client) {
         return createRequest(requestProducer, client, new BasicHttpContext());
@@ -169,16 +169,17 @@ public class ObservableHttp<T> {
      * @param requestProducer
      * @param client
      * @param context The HttpContext
-     * @return
+     * @return the observable HTTP response stream
      */
     public static ObservableHttp<ObservableHttpResponse> createRequest(final HttpAsyncRequestProducer requestProducer, final HttpAsyncClient client, final HttpContext context) {
 
-        return ObservableHttp.create(new OnSubscribeFunc<ObservableHttpResponse>() {
+        return ObservableHttp.create(new OnSubscribe<ObservableHttpResponse>() {
 
             @Override
-            public Subscription onSubscribe(final Observer<? super ObservableHttpResponse> observer) {
+            public void call(final Subscriber<? super ObservableHttpResponse> observer) {
 
                 final CompositeSubscription parentSubscription = new CompositeSubscription();
+                observer.add(parentSubscription);
 
                 // return a Subscription that wraps the Future so it can be cancelled
                 parentSubscription.add(Subscriptions.from(client.execute(requestProducer, new ResponseConsumerDelegate(observer, parentSubscription),
@@ -200,8 +201,6 @@ public class ObservableHttp<T> {
                             }
 
                         })));
-
-                return parentSubscription;
             }
         });
     }

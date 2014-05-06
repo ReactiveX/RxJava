@@ -27,6 +27,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.MockitoAnnotations;
+import rx.Observable.OnSubscribe;
 
 import rx.functions.Action0;
 import rx.functions.Action1;
@@ -46,16 +47,16 @@ public class RefCountTests {
     public void onlyFirstShouldSubscribeAndLastUnsubscribe() {
         final AtomicInteger subscriptionCount = new AtomicInteger();
         final AtomicInteger unsubscriptionCount = new AtomicInteger();
-        Observable<Integer> observable = Observable.create(new Observable.OnSubscribeFunc<Integer>() {
+        Observable<Integer> observable = Observable.create(new OnSubscribe<Integer>() {
             @Override
-            public Subscription onSubscribe(Observer<? super Integer> observer) {
+            public void call(Subscriber<? super Integer> observer) {
                 subscriptionCount.incrementAndGet();
-                return Subscriptions.create(new Action0() {
+                observer.add(Subscriptions.create(new Action0() {
                     @Override
                     public void call() {
                         unsubscriptionCount.incrementAndGet();
                     }
-                });
+                }));
             }
         });
         Observable<Integer> refCounted = observable.publish().refCount();
@@ -140,7 +141,7 @@ public class RefCountTests {
         // subscribing a new one should start over because the source should have been unsubscribed
         // subscribe list3
         final List<Long> list3 = new ArrayList<Long>();
-        Subscription s3 = interval.subscribe(new Action1<Long>() {
+        interval.subscribe(new Action1<Long>() {
 
             @Override
             public void call(Long t1) {

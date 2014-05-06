@@ -28,6 +28,7 @@ import org.mockito.InOrder;
 
 import rx.Observable;
 import rx.Observer;
+import rx.exceptions.TestException;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
 
@@ -99,9 +100,6 @@ public class OperatorSkipTimedTest {
         verify(o, never()).onError(any(Throwable.class));
     }
 
-    static class CustomException extends RuntimeException {
-    }
-
     @Test
     public void testSkipTimedErrorBeforeTime() {
         TestScheduler scheduler = new TestScheduler();
@@ -118,13 +116,13 @@ public class OperatorSkipTimedTest {
         source.onNext(1);
         source.onNext(2);
         source.onNext(3);
-        source.onError(new CustomException());
+        source.onError(new TestException());
 
         scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
         InOrder inOrder = inOrder(o);
 
-        inOrder.verify(o).onError(any(CustomException.class));
+        inOrder.verify(o).onError(any(TestException.class));
         inOrder.verifyNoMoreInteractions();
         verify(o, never()).onNext(any());
         verify(o, never()).onCompleted();
@@ -153,7 +151,7 @@ public class OperatorSkipTimedTest {
         source.onNext(5);
         source.onNext(6);
 
-        source.onError(new CustomException());
+        source.onError(new TestException());
 
         InOrder inOrder = inOrder(o);
 
@@ -163,7 +161,7 @@ public class OperatorSkipTimedTest {
         inOrder.verify(o).onNext(4);
         inOrder.verify(o).onNext(5);
         inOrder.verify(o).onNext(6);
-        inOrder.verify(o).onError(any(CustomException.class));
+        inOrder.verify(o).onError(any(TestException.class));
         inOrder.verifyNoMoreInteractions();
         verify(o, never()).onCompleted();
 

@@ -42,7 +42,6 @@ public final class OperatorSwitch<T> implements Operator<T, Observable<? extends
         
         return new Subscriber<Observable<? extends T>>(child) {
             final Object guard = new Object();
-            final Subscriber<?> self = this;
             final NotificationLite<?> nl = NotificationLite.instance();
             /** Guarded by guard. */
             int index;

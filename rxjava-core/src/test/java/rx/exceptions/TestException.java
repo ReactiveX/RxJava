@@ -13,14 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rx.android.observables;
+package rx.exceptions;
 
-import android.os.Looper;
-
-public class Assertions {
-    public static void assertUiThread() {
-        if (Looper.getMainLooper() != Looper.myLooper()) {
-            throw new IllegalStateException("Observers must subscribe from the main UI thread, but was " + Thread.currentThread());
-        }
+/**
+ * Custom exception for operator testing; makes sure an unwanted exception is
+ * not mixed up with a wanted exception.
+ */
+public final class TestException extends RuntimeException {
+    /** */
+    private static final long serialVersionUID = -1138830497957801910L;
+    /** Create the test exception without any message. */
+    public TestException() {
+        super();
+    }
+    /**
+     * Create the test exception with the provided message.
+     * @param message the mesage to use
+     */
+    public TestException(String message) {
+        super(message);
     }
 }

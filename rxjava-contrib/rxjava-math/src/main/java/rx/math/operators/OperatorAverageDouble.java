@@ -35,7 +35,7 @@ public final class OperatorAverageDouble<T> implements Operator<Double, T> {
 
     @Override
     public Subscriber<? super T> call(Subscriber<? super Double> child) {
-    	return new AverageObserver(child);
+        return new AverageObserver(child);
     }
 
     /** Computes the average. */
@@ -45,7 +45,7 @@ public final class OperatorAverageDouble<T> implements Operator<Double, T> {
         int count;
 
         public AverageObserver(Subscriber<? super Double> subscriber) {
-        	super(subscriber);
+            super(subscriber);
             this.child = subscriber;
         }
 

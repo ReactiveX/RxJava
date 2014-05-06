@@ -25,6 +25,7 @@ import org.mockito.InOrder;
 
 import rx.Observable;
 import rx.Observer;
+import rx.exceptions.TestException;
 import rx.functions.Func2;
 
 public class OperatorSequenceEqualTest {
@@ -150,9 +151,5 @@ public class OperatorSequenceEqualTest {
         InOrder inOrder = inOrder(observer);
         inOrder.verify(observer, times(1)).onError(isA(TestException.class));
         inOrder.verifyNoMoreInteractions();
-    }
-
-    private class TestException extends RuntimeException {
-        private static final long serialVersionUID = 1L;
     }
 }

@@ -45,7 +45,7 @@ public final class OperatorAverageLong<T> implements Operator<Long, T> {
         int count;
 
         public AverageObserver(Subscriber<? super Long> subscriber) {
-        	super(subscriber);
+            super(subscriber);
             this.child = subscriber;
         }
 

@@ -364,6 +364,7 @@ public class Functions {
         return (NullFunction<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, R>) NULL_FUNCTION;
     }
 
+    @SuppressWarnings("rawtypes")
     private static final NullFunction NULL_FUNCTION = new NullFunction();
 
     private static final class NullFunction<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, R> implements

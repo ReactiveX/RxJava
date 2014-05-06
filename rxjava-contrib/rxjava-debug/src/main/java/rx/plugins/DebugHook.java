@@ -5,11 +5,6 @@ import rx.Observable.OnSubscribe;
 import rx.Observable.Operator;
 import rx.Subscriber;
 import rx.Subscription;
-import rx.functions.Action1;
-import rx.functions.Action2;
-import rx.functions.Actions;
-import rx.functions.Func1;
-import rx.functions.Functions;
 import rx.operators.DebugSubscriber;
 
 /**
@@ -25,11 +20,9 @@ public class DebugHook<C> extends RxJavaObservableExecutionHook {
      * Creates a new instance of the DebugHook RxJava plug-in that can be passed into
      * {@link RxJavaPlugins} registerObservableExecutionHook(hook) method.
      * 
-     * @param onNextDataHook
+     * @param listener
      *            all of the onNext values are passed through this function to allow for
      *            manipulation of the values
-     * @param events
-     *            This action is invoked as each notification is generated
      */
     public DebugHook(DebugNotificationListener<C> listener) {
         if (listener == null)

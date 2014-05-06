@@ -16,24 +16,26 @@
 package rx.operators;
 
 
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InOrder;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyLong;
 import org.mockito.Mock;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import org.mockito.MockitoAnnotations;
 
 import rx.Observable;
 import rx.Observer;
 import rx.Subscriber;
 import rx.Subscription;
+import rx.exceptions.TestException;
 import rx.observables.ConnectableObservable;
 import rx.schedulers.TestScheduler;
 
@@ -236,7 +238,7 @@ public class OperatorTimerTest {
 
             @Override
             public void onNext(Long t) {
-                throw new OperationReduceTest.CustomException();
+                throw new TestException();
             }
 
             @Override
@@ -252,7 +254,7 @@ public class OperatorTimerTest {
         
         scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
         
-        verify(observer).onError(any(OperationReduceTest.CustomException.class));
+        verify(observer).onError(any(TestException.class));
         verify(observer, never()).onNext(anyLong());
         verify(observer, never()).onCompleted();
     }
@@ -267,7 +269,7 @@ public class OperatorTimerTest {
             @Override
             public void onNext(Long t) {
                 if (t > 0) {
-                    throw new OperationReduceTest.CustomException();
+                    throw new TestException();
                 }
                 observer.onNext(t);
             }
@@ -286,7 +288,7 @@ public class OperatorTimerTest {
         scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
         
         inOrder.verify(observer).onNext(0L);
-        inOrder.verify(observer).onError(any(OperationReduceTest.CustomException.class));
+        inOrder.verify(observer).onError(any(TestException.class));
         inOrder.verifyNoMoreInteractions();
         verify(observer, never()).onCompleted();
     }

@@ -16,6 +16,7 @@
 package rx.operators;
 
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -31,12 +32,12 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InOrder;
-import static org.mockito.Matchers.anyInt;
 import org.mockito.Mock;
 
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
+import rx.exceptions.TestException;
 import rx.functions.Func0;
 import rx.functions.Func1;
 import rx.schedulers.TestScheduler;
@@ -318,10 +319,10 @@ public class OperatorDelayTest {
 
         source.delay(delayFunc).subscribe(o);
         source.onNext(1);
-        source.onError(new OperationReduceTest.CustomException());
+        source.onError(new TestException());
         delay.onNext(1);
 
-        inOrder.verify(o).onError(any(OperationReduceTest.CustomException.class));
+        inOrder.verify(o).onError(any(TestException.class));
         inOrder.verifyNoMoreInteractions();
         verify(o, never()).onNext(any());
         verify(o, never()).onCompleted();
@@ -335,7 +336,7 @@ public class OperatorDelayTest {
 
             @Override
             public Observable<Integer> call(Integer t1) {
-                throw new OperationReduceTest.CustomException();
+                throw new TestException();
             }
         };
         @SuppressWarnings("unchecked")
@@ -345,7 +346,7 @@ public class OperatorDelayTest {
         source.delay(delayFunc).subscribe(o);
         source.onNext(1);
 
-        inOrder.verify(o).onError(any(OperationReduceTest.CustomException.class));
+        inOrder.verify(o).onError(any(TestException.class));
         inOrder.verifyNoMoreInteractions();
         verify(o, never()).onNext(any());
         verify(o, never()).onCompleted();
@@ -369,9 +370,9 @@ public class OperatorDelayTest {
 
         source.delay(delayFunc).subscribe(o);
         source.onNext(1);
-        delay.onError(new OperationReduceTest.CustomException());
+        delay.onError(new TestException());
 
-        inOrder.verify(o).onError(any(OperationReduceTest.CustomException.class));
+        inOrder.verify(o).onError(any(TestException.class));
         inOrder.verifyNoMoreInteractions();
         verify(o, never()).onNext(any());
         verify(o, never()).onCompleted();
@@ -420,7 +421,7 @@ public class OperatorDelayTest {
         Func0<Observable<Integer>> subFunc = new Func0<Observable<Integer>>() {
             @Override
             public Observable<Integer> call() {
-                throw new OperationReduceTest.CustomException();
+                throw new TestException();
             }
         };
         Func1<Integer, Observable<Integer>> delayFunc = new Func1<Integer, Observable<Integer>>() {
@@ -442,7 +443,7 @@ public class OperatorDelayTest {
 
         source.onNext(2);
 
-        inOrder.verify(o).onError(any(OperationReduceTest.CustomException.class));
+        inOrder.verify(o).onError(any(TestException.class));
         inOrder.verifyNoMoreInteractions();
         verify(o, never()).onNext(any());
         verify(o, never()).onCompleted();
@@ -473,11 +474,11 @@ public class OperatorDelayTest {
         source.delay(subFunc, delayFunc).subscribe(o);
 
         source.onNext(1);
-        delay.onError(new OperationReduceTest.CustomException());
+        delay.onError(new TestException());
 
         source.onNext(2);
 
-        inOrder.verify(o).onError(any(OperationReduceTest.CustomException.class));
+        inOrder.verify(o).onError(any(TestException.class));
         inOrder.verifyNoMoreInteractions();
         verify(o, never()).onNext(any());
         verify(o, never()).onCompleted();

@@ -15,9 +15,12 @@
  */
 package rx.util.async.operators;
 
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
@@ -31,6 +34,7 @@ import org.mockito.InOrder;
 
 import rx.Observable;
 import rx.Observer;
+import rx.exceptions.TestException;
 import rx.functions.Func0;
 import rx.schedulers.Schedulers;
 import rx.util.async.Async;
@@ -89,7 +93,7 @@ public class OperatorDeferFutureTest {
 
             @Override
             public Future<Observable<Integer>> call() {
-                throw new OperatorStartFutureTest.CustomException();
+                throw new TestException();
             }
         };
         
@@ -100,6 +104,6 @@ public class OperatorDeferFutureTest {
         
         verify(observer, never()).onNext(any());
         verify(observer, never()).onCompleted();
-        verify(observer).onError(any(OperatorStartFutureTest.CustomException.class));
+        verify(observer).onError(any(TestException.class));
     }
 }

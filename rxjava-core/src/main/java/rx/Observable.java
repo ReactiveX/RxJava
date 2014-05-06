@@ -122,7 +122,7 @@ public class Observable<T> {
     }
 
     /**
-     * @deprecated use {@link #OnSubscribe}
+     * @deprecated use {@link OnSubscribe}
      */
     @Deprecated
     public static interface OnSubscribeFunc<T> extends Function {
@@ -2104,7 +2104,6 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#wiki-mergedelayerror">RxJava Wiki: mergeDelayError()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge</a>
      */
-    @SuppressWarnings("unchecked")
     // suppress because the types are checked by the method signature before using a vararg
     public final static <T> Observable<T> mergeDelayError(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6, Observable<? extends T> t7, Observable<? extends T> t8) {
         return mergeDelayError(from(t1, t2, t3, t4, t5, t6, t7, t8));
@@ -2247,7 +2246,7 @@ public class Observable<T> {
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/pivot.ex.png">
      * 
      * @param groups
-     * @return
+     * @return an Observable containing a stream of nested GroupedObservables with swapped inner-outer keys.
      */
     public static final <K1, K2, T> Observable<GroupedObservable<K2, GroupedObservable<K1, T>>> pivot(Observable<GroupedObservable<K1, GroupedObservable<K2, T>>> groups) {
         return groups.lift(new OperatorPivot<K1, K2, T>());
@@ -6568,7 +6567,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Conditional-and-Boolean-Operators#wiki-takewhile-and-takewhilewithindex">RxJava Wiki: takeWhile()</a>
      */
     public final Observable<T> takeWhile(final Func1<? super T, Boolean> predicate) {
-        return lift(new OperatorTakeWhile(predicate));
+        return lift(new OperatorTakeWhile<T>(predicate));
     }
 
     /**
@@ -6587,7 +6586,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Conditional-and-Boolean-Operators#wiki-takewhile-and-takewhilewithindex">RxJava Wiki: takeWhileWithIndex()</a>
      */
     public final Observable<T> takeWhileWithIndex(final Func2<? super T, ? super Integer, Boolean> predicate) {
-        return lift(new OperatorTakeWhile(predicate));
+        return lift(new OperatorTakeWhile<T>(predicate));
     }
 
     /**
@@ -6753,7 +6752,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh212107.aspx">MSDN: Observable.TimeInterval</a>
      */
     public final Observable<TimeInterval<T>> timeInterval() {
-        return lift(new OperatorTimeInterval(Schedulers.immediate()));
+        return lift(new OperatorTimeInterval<T>(Schedulers.immediate()));
     }
 
     /**
@@ -6769,7 +6768,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh212107.aspx">MSDN: Observable.TimeInterval</a>
      */
     public final Observable<TimeInterval<T>> timeInterval(Scheduler scheduler) {
-        return lift(new OperatorTimeInterval(scheduler));
+        return lift(new OperatorTimeInterval<T>(scheduler));
     }
 
     /**

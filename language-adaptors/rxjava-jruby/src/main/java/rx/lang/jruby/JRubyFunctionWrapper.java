@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,6 +41,11 @@ import rx.functions.Function;
  * @param <T2>
  * @param <T3>
  * @param <T4>
+ * @param <T5>
+ * @param <T6>
+ * @param <T7>
+ * @param <T8>
+ * @param <T9>
  * @param <R>
  */
 public class JRubyFunctionWrapper<T1, T2, T3, T4, T5, T6, T7, T8, T9, R> implements
@@ -67,18 +72,21 @@ public class JRubyFunctionWrapper<T1, T2, T3, T4, T5, T6, T7, T8, T9, R> impleme
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public R call() {
         IRubyObject[] array = new IRubyObject[0];
         return (R) proc.call(context, array);
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public R call(T1 t1) {
         IRubyObject[] array = {JavaUtil.convertJavaToRuby(runtime, t1)};
         return (R) proc.call(context, array);
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public R call(T1 t1, T2 t2) {
         IRubyObject[] array = {JavaUtil.convertJavaToRuby(runtime, t1),
                                JavaUtil.convertJavaToRuby(runtime, t2)};
@@ -86,6 +94,7 @@ public class JRubyFunctionWrapper<T1, T2, T3, T4, T5, T6, T7, T8, T9, R> impleme
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public R call(T1 t1, T2 t2, T3 t3) {
         IRubyObject[] array = {JavaUtil.convertJavaToRuby(runtime, t1),
                                JavaUtil.convertJavaToRuby(runtime, t2),
@@ -94,6 +103,7 @@ public class JRubyFunctionWrapper<T1, T2, T3, T4, T5, T6, T7, T8, T9, R> impleme
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public R call(T1 t1, T2 t2, T3 t3, T4 t4) {
         IRubyObject[] array = {JavaUtil.convertJavaToRuby(runtime, t1),
                                JavaUtil.convertJavaToRuby(runtime, t2),
@@ -103,6 +113,7 @@ public class JRubyFunctionWrapper<T1, T2, T3, T4, T5, T6, T7, T8, T9, R> impleme
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public R call(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5) {
         IRubyObject[] array = {JavaUtil.convertJavaToRuby(runtime, t1),
                                JavaUtil.convertJavaToRuby(runtime, t2),
@@ -113,6 +124,7 @@ public class JRubyFunctionWrapper<T1, T2, T3, T4, T5, T6, T7, T8, T9, R> impleme
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public R call(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6) {
         IRubyObject[] array = {JavaUtil.convertJavaToRuby(runtime, t1),
                                JavaUtil.convertJavaToRuby(runtime, t2),
@@ -124,6 +136,7 @@ public class JRubyFunctionWrapper<T1, T2, T3, T4, T5, T6, T7, T8, T9, R> impleme
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public R call(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7) {
         IRubyObject[] array = {JavaUtil.convertJavaToRuby(runtime, t1),
                                JavaUtil.convertJavaToRuby(runtime, t2),
@@ -136,6 +149,7 @@ public class JRubyFunctionWrapper<T1, T2, T3, T4, T5, T6, T7, T8, T9, R> impleme
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public R call(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8) {
         IRubyObject[] array = {JavaUtil.convertJavaToRuby(runtime, t1),
                                JavaUtil.convertJavaToRuby(runtime, t2),
@@ -149,6 +163,7 @@ public class JRubyFunctionWrapper<T1, T2, T3, T4, T5, T6, T7, T8, T9, R> impleme
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public R call(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8, T9 t9) {
         IRubyObject[] array = {JavaUtil.convertJavaToRuby(runtime, t1),
                                JavaUtil.convertJavaToRuby(runtime, t2),
@@ -163,6 +178,7 @@ public class JRubyFunctionWrapper<T1, T2, T3, T4, T5, T6, T7, T8, T9, R> impleme
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public R call(Object... args) {
         IRubyObject[] array = new IRubyObject[args.length];
         for (int i = 0; i < args.length; i++) {

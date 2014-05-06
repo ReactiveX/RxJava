@@ -31,9 +31,8 @@ import org.mockito.MockitoAnnotations;
 
 import rx.Observable;
 import rx.Observer;
-import rx.Subscription;
+import rx.Subscriber;
 import rx.schedulers.Schedulers;
-import rx.subscriptions.Subscriptions;
 
 public class OperatorMergeMaxConcurrentTest {
 
@@ -92,7 +91,7 @@ public class OperatorMergeMaxConcurrentTest {
         }
     }
 
-    private static class SubscriptionCheckObservable implements Observable.OnSubscribeFunc<String> {
+    private static class SubscriptionCheckObservable implements Observable.OnSubscribe<String> {
 
         private final AtomicInteger subscriptionCount;
         private final int maxConcurrent;
@@ -104,7 +103,7 @@ public class OperatorMergeMaxConcurrentTest {
         }
 
         @Override
-        public Subscription onSubscribe(final Observer<? super String> t1) {
+        public void call(final Subscriber<? super String> t1) {
             new Thread(new Runnable() {
 
                 @Override
@@ -124,8 +123,6 @@ public class OperatorMergeMaxConcurrentTest {
                 }
 
             }).start();
-
-            return Subscriptions.empty();
         }
 
     }

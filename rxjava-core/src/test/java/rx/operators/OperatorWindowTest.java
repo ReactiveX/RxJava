@@ -33,6 +33,7 @@ import rx.Observable;
 import rx.Observer;
 import rx.Scheduler;
 import rx.Subscriber;
+import rx.exceptions.TestException;
 import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Func0;
@@ -478,7 +479,7 @@ public class OperatorWindowTest {
         source.onNext(1);
         source.onNext(2);
 
-        boundary.onError(new OperationReduceTest.CustomException());
+        boundary.onError(new TestException());
 
         assertEquals(1, values.size());
 
@@ -487,10 +488,10 @@ public class OperatorWindowTest {
         verify(mo).onNext(0);
         verify(mo).onNext(1);
         verify(mo).onNext(2);
-        verify(mo).onError(any(OperationReduceTest.CustomException.class));
+        verify(mo).onError(any(TestException.class));
 
         verify(o, never()).onCompleted();
-        verify(o).onError(any(OperationReduceTest.CustomException.class));
+        verify(o).onError(any(TestException.class));
     }
 
     @Test
@@ -530,7 +531,7 @@ public class OperatorWindowTest {
         source.onNext(1);
         source.onNext(2);
 
-        source.onError(new OperationReduceTest.CustomException());
+        source.onError(new TestException());
 
         assertEquals(1, values.size());
 
@@ -539,9 +540,9 @@ public class OperatorWindowTest {
         verify(mo).onNext(0);
         verify(mo).onNext(1);
         verify(mo).onNext(2);
-        verify(mo).onError(any(OperationReduceTest.CustomException.class));
+        verify(mo).onError(any(TestException.class));
 
         verify(o, never()).onCompleted();
-        verify(o).onError(any(OperationReduceTest.CustomException.class));
+        verify(o).onError(any(TestException.class));
     }
 }

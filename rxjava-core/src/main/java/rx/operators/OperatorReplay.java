@@ -276,7 +276,7 @@ public final class OperatorReplay {
         /**
          * Returns the current content as a list.
          * 
-         * @return
+         * @return the {@link java.util.List} representation of this virtual list
          */
         List<T> toList();
     }
