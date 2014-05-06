@@ -884,7 +884,7 @@ public class Observable<T> {
      *         Observable factory function
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#wiki-defer">RxJava Wiki: defer()</a>
      */
-    public final static <T> Observable<T> defer(Func0<? extends Observable<? extends T>> observableFactory) {
+    public final static <T> Observable<T> defer(Func0<Observable<? extends T>> observableFactory) {
         return create(new OperatorDefer<T>(observableFactory));
     }
 
