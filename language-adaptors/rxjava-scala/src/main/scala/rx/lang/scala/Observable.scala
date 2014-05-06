@@ -221,6 +221,21 @@ trait Observable[+T]
   }
 
   /**
+   * Returns an Observable that emits items produced by multicasting the source Observable within a selector function.
+   *
+   * @param subjectFactory the `Subject` factory
+   * @param selector the selector function, which can use the multicasted source Observable subject to the policies
+   *                 enforced by the created `Subject`
+   * @return an Observable that emits the items produced by multicasting the source Observable within a selector function
+   */
+  def multicast[R >: T, U](subjectFactory: () => rx.lang.scala.Subject[R], selector: Observable[R] => Observable[U]): Observable[U] = {
+    val subjectFactoryJava: Func0[rx.subjects.Subject[_ >: T, _ <: R]] = () => subjectFactory().asJavaSubject
+    val selectorJava: Func1[rx.Observable[R], rx.Observable[U]] =
+      (jo: rx.Observable[R]) => selector(toScalaObservable[R](jo)).asJavaObservable.asInstanceOf[rx.Observable[U]]
+    toScalaObservable[U](asJavaObservable.multicast[R, U](subjectFactoryJava, selectorJava))
+  }
+
+  /**
    * Returns an Observable that first emits the items emitted by `this`, and then the items emitted
    * by `that`.
    *
