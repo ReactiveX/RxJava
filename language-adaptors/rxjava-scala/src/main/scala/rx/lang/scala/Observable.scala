@@ -2464,26 +2464,6 @@ trait Observable[+T]
    *             Observable
    * @throws IndexOutOfBoundsException
    *             if index is less than 0
-   * @see `Observable.elementAt`
-   * @deprecated("Use `elementAt`", "0.18.0")
-   */
-  def apply(index: Int): Observable[T] = elementAt(index)
-
-  /**
-   * Returns an Observable that emits the single item at a specified index in a sequence of emissions from a
-   * source Observbable.
-   * 
-   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/elementAt.png">
-   * 
-   * @param index
-   *            the zero-based index of the item to retrieve
-   * @return an Observable that emits a single item: the item at the specified position in the sequence of
-   *         those emitted by the source Observable
-   * @throws IndexOutOfBoundsException
-   *             if index is greater than or equal to the number of items emitted by the source
-   *             Observable
-   * @throws IndexOutOfBoundsException
-   *             if index is less than 0
    */
   def elementAt(index: Int): Observable[T] = {
     toScalaObservable[T](asJavaObservable.elementAt(index))
