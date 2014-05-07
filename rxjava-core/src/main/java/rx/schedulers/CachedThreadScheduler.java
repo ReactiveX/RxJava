@@ -26,8 +26,8 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/* package */public class CachedThreadScheduler extends Scheduler {
-    private static class CachedWorkerPool {
+/* package */class CachedThreadScheduler extends Scheduler {
+    private static final class CachedWorkerPool {
         final ThreadFactory factory = new ThreadFactory() {
             final AtomicInteger counter = new AtomicInteger();
 
