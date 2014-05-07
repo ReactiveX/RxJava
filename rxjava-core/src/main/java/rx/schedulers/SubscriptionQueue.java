@@ -135,25 +135,19 @@ public final class SubscriptionQueue implements Subscription {
     private static final class Dequeuer implements Subscription {
         final Subscription s;
         final SubscriptionQueue sq;
-//        final AtomicBoolean once;
         
         public Dequeuer(Subscription s, SubscriptionQueue sq) {
             this.s = s;
             this.sq = sq;
-//            this.once = new AtomicBoolean();
         }
         
         @Override
         public boolean isUnsubscribed() {
-//            return once.get();
             return s.isUnsubscribed();
         }
         
         @Override
         public void unsubscribe() {
-//            if (once.compareAndSet(false, true)) {
-//                sq.remove(s);
-//            }
             sq.remove(s);
         }
     }
