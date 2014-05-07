@@ -104,11 +104,11 @@ class CompletenessTest extends JUnitSuite {
       "skipWhile(Func1[_ >: T, Boolean])" -> "dropWhile(T => Boolean)",
       "skipWhileWithIndex(Func2[_ >: T, Integer, Boolean])" -> unnecessary,
       "skipUntil(Observable[U])" -> "dropUntil(Observable[E])",
-      "startWith(Array[T])" -> "startWith(Iterable[U])",
-      "startWith(Array[T], Scheduler)" -> "startWith(Iterable[U], Scheduler)",
-      "startWith(Iterable[T])" -> "startWith(Iterable[U])",
-      "startWith(Iterable[T], Scheduler)" -> "startWith(Iterable[U], Scheduler)",
-      "startWith(Observable[T])" -> "startWith(Observable[U])",
+      "startWith(Array[T])" -> "[use `Observable.items(items) ++ o`]",
+      "startWith(Array[T], Scheduler)" -> "[use `Observable.items(items).subscribeOn(scheduler) ++ o`]",
+      "startWith(Iterable[T])" -> "[use `Observable.from(iterable) ++ o`]",
+      "startWith(Iterable[T], Scheduler)" -> "[use `Observable.from(iterable).subscribeOn(scheduler) ++ o`]",
+      "startWith(Observable[T])" -> "[use `++`]",
       "skipLast(Int)" -> "dropRight(Int)",
       "skipLast(Long, TimeUnit)" -> "dropRight(Duration)",
       "skipLast(Long, TimeUnit, Scheduler)" -> "dropRight(Duration, Scheduler)",
@@ -167,7 +167,7 @@ class CompletenessTest extends JUnitSuite {
       "zip(Iterable[_ <: Observable[_]], FuncN[_ <: R])" -> "[use `zip` in companion object and `map`]"
   ) ++ List.iterate("T", 9)(s => s + ", T").map(
       // all 9 overloads of startWith:
-      "startWith(" + _ + ")" -> "[unnecessary because we can just use `::` instead]"
+      "startWith(" + _ + ")" -> "[unnecessary because we can just use `++` instead]"
   ).toMap ++ List.iterate("Observable[_ <: T]", 9)(s => s + ", Observable[_ <: T]").map(
       // concat 2-9
       "concat(" + _ + ")" -> "[unnecessary because we can use `++` instead or `Observable(o1, o2, ...).concat`]"
