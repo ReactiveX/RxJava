@@ -75,7 +75,7 @@ import rx.subscriptions.Subscriptions;
     }
 
     private static class EventLoopWorker extends Scheduler.Worker {
-        private final CompositeSubscription innerSubscription = new CompositeSubscription();
+        private final SubscriptionQueue innerSubscription = new SubscriptionQueue();
         private final PoolWorker poolWorker;
 
         EventLoopWorker(PoolWorker poolWorker) {
@@ -105,8 +105,8 @@ import rx.subscriptions.Subscriptions;
             }
             
             ScheduledAction s = poolWorker.scheduleActual(action, delayTime, unit);
-            innerSubscription.add(s);
-            s.addParent(innerSubscription);
+            innerSubscription.enqueue(s);
+            s.add(innerSubscription.createDequeuer(s));
             return s;
         }
     }
