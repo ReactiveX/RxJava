@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,11 +39,11 @@ import rx.functions.Func2;
 public class StringObservable {
     /**
      * Reads from the bytes from a source {@link InputStream} and outputs {@link Observable} of
-     * {@link byte[]}s
+     * {@code byte[]}s
      * 
      * @param i
      *            Source {@link InputStream}
-     * @return
+     * @return the Observable containing read byte arrays from the input
      */
     public static Observable<byte[]> from(final InputStream i) {
         return from(i, 8 * 1024);
@@ -51,13 +51,13 @@ public class StringObservable {
 
     /**
      * Reads from the bytes from a source {@link InputStream} and outputs {@link Observable} of
-     * {@link byte[]}s
+     * {@code byte[]}s
      * 
      * @param i
      *            Source {@link InputStream}
      * @param size
      *            internal buffer size
-     * @return
+     * @return the Observable containing read byte arrays from the input
      */
     public static Observable<byte[]> from(final InputStream i, final int size) {
         return Observable.create(new OnSubscribe<byte[]>() {
@@ -89,7 +89,7 @@ public class StringObservable {
      * 
      * @param i
      *            Source {@link Reader}
-     * @return
+     * @return the Observable of Strings read from the source
      */
     public static Observable<String> from(final Reader i) {
         return from(i, 8 * 1024);
@@ -103,7 +103,7 @@ public class StringObservable {
      *            Source {@link Reader}
      * @param size
      *            internal buffer size
-     * @return
+     * @return the Observable of Strings read from the source
      */
     public static Observable<String> from(final Reader i, final int size) {
         return Observable.create(new OnSubscribe<String>() {
@@ -135,7 +135,7 @@ public class StringObservable {
      * 
      * @param src
      * @param charsetName
-     * @return
+     * @return the Observable returning a stream of decoded strings
      */
     public static Observable<String> decode(Observable<byte[]> src, String charsetName) {
         return decode(src, Charset.forName(charsetName));
@@ -147,7 +147,7 @@ public class StringObservable {
      * 
      * @param src
      * @param charset
-     * @return
+     * @return the Observable returning a stream of decoded strings
      */
     public static Observable<String> decode(Observable<byte[]> src, Charset charset) {
         return decode(src, charset.newDecoder().onMalformedInput(CodingErrorAction.REPLACE).onUnmappableCharacter(CodingErrorAction.REPLACE));
@@ -160,7 +160,7 @@ public class StringObservable {
      * 
      * @param src
      * @param charsetDecoder
-     * @return
+     * @return the Observable returning a stream of decoded strings
      */
     public static Observable<String> decode(final Observable<byte[]> src, final CharsetDecoder charsetDecoder) {
         return src.lift(new Operator<String, byte[]>() {
@@ -249,7 +249,7 @@ public class StringObservable {
      * 
      * @param src
      * @param charsetName
-     * @return
+     * @return the Observable with a stream of encoded byte arrays
      */
     public static Observable<byte[]> encode(Observable<String> src, String charsetName) {
         return encode(src, Charset.forName(charsetName));
@@ -260,7 +260,7 @@ public class StringObservable {
      * 
      * @param src
      * @param charset
-     * @return
+     * @return the Observable with a stream of encoded byte arrays
      */
     public static Observable<byte[]> encode(Observable<String> src, Charset charset) {
         return encode(src, charset.newEncoder().onMalformedInput(CodingErrorAction.REPLACE).onUnmappableCharacter(CodingErrorAction.REPLACE));
@@ -272,7 +272,7 @@ public class StringObservable {
      * 
      * @param src
      * @param charsetEncoder
-     * @return
+     * @return the Observable with a stream of encoded byte arrays
      */
     public static Observable<byte[]> encode(Observable<String> src, final CharsetEncoder charsetEncoder) {
         return src.map(new Func1<String, byte[]>() {
@@ -295,7 +295,7 @@ public class StringObservable {
      * this on infinite streams.
      * 
      * @param src
-     * @return
+     * @return the Observable returing all strings concatenated as a single string
      */
     public static Observable<String> stringConcat(Observable<String> src) {
         return src.reduce(new Func2<String, String, String>() {
@@ -318,7 +318,7 @@ public class StringObservable {
      * 
      * @param src
      * @param regex
-     * @return
+     * @return the Observable streaming the split values
      */
     public static Observable<String> split(final Observable<String> src, String regex) {
         final Pattern pattern = Pattern.compile(regex);
@@ -489,7 +489,7 @@ public class StringObservable {
      * Splits the {@link Observable} of Strings by lines and numbers them (zero based index)
      * 
      * @param source
-     * @return
+     * @return the Observable conaining the split lines of the source
      */
     public static Observable<Line> byLine(Observable<String> source) {
         return split(source, System.getProperty("line.separator")).map(new Func1<String, Line>() {

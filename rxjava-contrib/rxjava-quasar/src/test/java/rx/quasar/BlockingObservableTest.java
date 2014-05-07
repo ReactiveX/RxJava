@@ -25,13 +25,9 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import rx.Observable;
-import rx.Observer;
 import rx.Subscriber;
-import rx.Subscription;
 import rx.functions.Action1;
 import rx.functions.Func1;
-import rx.subscriptions.BooleanSubscription;
-import rx.subscriptions.Subscriptions;
 import co.paralleluniverse.strands.channels.ProducerException;
 import co.paralleluniverse.strands.channels.ReceivePort;
 
@@ -249,13 +245,12 @@ public class BlockingObservableTest {
 
     @Test(expected = TestException.class)
     public void testToChannelWithException() throws Throwable {
-        BlockingObservable<String> obs = BlockingObservable.from(Observable.create(new Observable.OnSubscribeFunc<String>() {
+        BlockingObservable<String> obs = BlockingObservable.from(Observable.create(new Observable.OnSubscribe<String>() {
 
             @Override
-            public Subscription onSubscribe(Observer<? super String> observer) {
+            public void call(Subscriber<? super String> observer) {
                 observer.onNext("one");
                 observer.onError(new TestException());
-                return Subscriptions.empty();
             }
         }));
 
@@ -274,11 +269,10 @@ public class BlockingObservableTest {
     @Test
     public void testForEachWithError() {
         try {
-            BlockingObservable.from(Observable.create(new Observable.OnSubscribeFunc<String>() {
+            BlockingObservable.from(Observable.create(new Observable.OnSubscribe<String>() {
 
                 @Override
-                public Subscription onSubscribe(final Observer<? super String> observer) {
-                    final BooleanSubscription subscription = new BooleanSubscription();
+                public void call(final Subscriber<? super String> observer) {
                     new Thread(new Runnable() {
 
                         @Override
@@ -289,7 +283,6 @@ public class BlockingObservableTest {
                             observer.onCompleted();
                         }
                     }).start();
-                    return subscription;
                 }
             })).forEach(new Action1<String>() {
 

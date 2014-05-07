@@ -14,7 +14,7 @@
  * limitations under the License.
  */
  /**
-  * Copyright 2013 Netflix, Inc.
+  * Copyright 2014 Netflix, Inc.
   *
   * Licensed under the Apache License, Version 2.0 (the "License");
   * you may not use this file except in compliance with the License.
@@ -30,7 +30,8 @@
   */
 package rx.util.async.operators;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -43,6 +44,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 
 import rx.Observable;
+import rx.exceptions.TestException;
 import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 import rx.util.async.Async;
@@ -85,14 +87,13 @@ public class OperatorForEachFutureTest {
             exec.shutdown();
         }
     }
-    private static final class CustomException extends RuntimeException { }
     @Test
     public void testSimpleThrowing() {
         
         final ExecutorService exec = Executors.newCachedThreadPool();
         
         try {
-            Observable<Integer> source = Observable.<Integer>error(new CustomException())
+            Observable<Integer> source = Observable.<Integer>error(new TestException())
                     .subscribeOn(Schedulers.computation());
             
             final AtomicInteger sum = new AtomicInteger();
@@ -112,7 +113,7 @@ public class OperatorForEachFutureTest {
             } catch (TimeoutException ex) {
                 fail("Timed out: " + ex);
             } catch (ExecutionException ex) {
-                if (!(ex.getCause() instanceof CustomException)) {
+                if (!(ex.getCause() instanceof TestException)) {
                     fail("Got different exception: " + ex.getCause());
                 }
             } catch (InterruptedException ex) {
@@ -157,7 +158,7 @@ public class OperatorForEachFutureTest {
     @Test
     public void testSimpleScheduledThrowing() {
         
-        Observable<Integer> source = Observable.<Integer>error(new CustomException())
+        Observable<Integer> source = Observable.<Integer>error(new TestException())
                 .subscribeOn(Schedulers.computation());
         
         final AtomicInteger sum = new AtomicInteger();
@@ -175,7 +176,7 @@ public class OperatorForEachFutureTest {
         } catch (TimeoutException ex) {
             fail("Timed out: " + ex);
         } catch (ExecutionException ex) {
-            if (!(ex.getCause() instanceof CustomException)) {
+            if (!(ex.getCause() instanceof TestException)) {
                 fail("Got different exception: " + ex.getCause());
             }
         } catch (InterruptedException ex) {

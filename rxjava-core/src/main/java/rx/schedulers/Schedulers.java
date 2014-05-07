@@ -103,7 +103,7 @@ public final class Schedulers {
      * <p>
      * Do not perform computational work on this scheduler. Use {@link #computation()} instead.
      * 
-     * @return {@link ExecutorScheduler} for IO-bound work
+     * @return {@link Scheduler} for IO-bound work
      */
     public static Scheduler io() {
         return INSTANCE.ioScheduler;

@@ -121,7 +121,7 @@ public class OperatorJoinPatterns {
                         }));
                     }
                 } catch (Throwable t) {
-                	Observable.<R> error(t).unsafeSubscribe(t1);
+                    Observable.<R> error(t).unsafeSubscribe(t1);
                     return;
                 }
                 CompositeSubscription group = new CompositeSubscription();

@@ -74,7 +74,7 @@ public class PublishSubjectTest {
         Observer<Object> observerC = mock(Observer.class);
 
         Subscription a = channel.subscribe(observerA);
-        Subscription b = channel.subscribe(observerB);
+        channel.subscribe(observerB);
 
         InOrder inOrderA = inOrder(observerA);
         InOrder inOrderB = inOrder(observerB);
@@ -96,7 +96,7 @@ public class PublishSubjectTest {
 
         inOrderB.verify(observerB).onCompleted();
 
-        Subscription c = channel.subscribe(observerC);
+        channel.subscribe(observerC);
 
         inOrderC.verify(observerC).onCompleted();
 
@@ -270,6 +270,7 @@ public class PublishSubjectTest {
     public void testReSubscribe() {
         final PublishSubject<Integer> ps = PublishSubject.create();
 
+        @SuppressWarnings("unchecked")
         Observer<Integer> o1 = mock(Observer.class);
         Subscription s1 = ps.subscribe(o1);
 
@@ -287,6 +288,7 @@ public class PublishSubjectTest {
         // emit again but nothing will be there to receive it
         ps.onNext(2);
 
+        @SuppressWarnings("unchecked")
         Observer<Integer> o2 = mock(Observer.class);
         Subscription s2 = ps.subscribe(o2);
 

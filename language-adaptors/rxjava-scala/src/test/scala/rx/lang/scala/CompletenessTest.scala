@@ -71,6 +71,7 @@ class CompletenessTest extends JUnitSuite {
       "all(Func1[_ >: T, Boolean])" -> "forall(T => Boolean)",
       "buffer(Long, Long, TimeUnit)" -> "buffer(Duration, Duration)",
       "buffer(Long, Long, TimeUnit, Scheduler)" -> "buffer(Duration, Duration, Scheduler)",
+      "contains(T)" -> "contains(Any)",
       "count()" -> "length",
       "dematerialize()" -> "dematerialize(<:<[Observable[T], Observable[Notification[U]]])",
       "elementAt(Int)" -> "[use `.drop(index).first`]",
@@ -88,6 +89,10 @@ class CompletenessTest extends JUnitSuite {
       "onExceptionResumeNext(Observable[_ <: T])" -> "onExceptionResumeNext(Observable[U])",
       "parallel(Func1[Observable[T], Observable[R]])" -> "parallel(Observable[T] => Observable[R])",
       "parallel(Func1[Observable[T], Observable[R]], Scheduler)" -> "parallel(Observable[T] => Observable[R], Scheduler)",
+      "publish()" -> "publish()",
+      "publish(T)" -> "publish(U)",
+      "publish(Func1[_ >: Observable[T], _ <: Observable[R]])" -> "publish(Observable[U] => Observable[R])",
+      "publish(Func1[_ >: Observable[T], _ <: Observable[R]], T)" -> "publish(Observable[U] => Observable[R], U)",
       "reduce(Func2[T, T, T])" -> "reduce((U, U) => U)",
       "reduce(R, Func2[R, _ >: T, R])" -> "foldLeft(R)((R, T) => R)",
       "replay(Func1[_ >: Observable[T], _ <: Observable[R]])" -> "replay(Observable[U] => Observable[R])",
@@ -106,7 +111,12 @@ class CompletenessTest extends JUnitSuite {
       "skip(Long, TimeUnit, Scheduler)" -> "drop(Duration, Scheduler)",
       "skipWhile(Func1[_ >: T, Boolean])" -> "dropWhile(T => Boolean)",
       "skipWhileWithIndex(Func2[_ >: T, Integer, Boolean])" -> unnecessary,
-      "startWith(Iterable[T])" -> "[unnecessary because we can just use `++` instead]",
+      "skipUntil(Observable[U])" -> "dropUntil(Observable[E])",
+      "startWith(Array[T])" -> "startWith(Iterable[U])",
+      "startWith(Array[T], Scheduler)" -> "startWith(Iterable[U], Scheduler)",
+      "startWith(Iterable[T])" -> "startWith(Iterable[U])",
+      "startWith(Iterable[T], Scheduler)" -> "startWith(Iterable[U], Scheduler)",
+      "startWith(Observable[T])" -> "startWith(Observable[U])",
       "skipLast(Int)" -> "dropRight(Int)",
       "skipLast(Long, TimeUnit)" -> "dropRight(Duration)",
       "skipLast(Long, TimeUnit, Scheduler)" -> "dropRight(Duration, Scheduler)",
@@ -151,6 +161,8 @@ class CompletenessTest extends JUnitSuite {
       "multicast(Subject[_ >: T, _ <: R])" -> "multicast(Subject[R])",
       "multicast(Func0[_ <: Subject[_ >: T, _ <: TIntermediate]], Func1[_ >: Observable[TIntermediate], _ <: Observable[TResult]])" -> "multicast(() => Subject[R], Observable[R] => Observable[U])",
       "range(Int, Int)" -> "apply(Range)",
+      "repeat()" -> "repeat()",
+      "retry()" -> "retry()",
       "sequenceEqual(Observable[_ <: T], Observable[_ <: T])" -> "[use `(first zip second) map (p => p._1 == p._2)`]",
       "sequenceEqual(Observable[_ <: T], Observable[_ <: T], Func2[_ >: T, _ >: T, Boolean])" -> "[use `(first zip second) map (p => equality(p._1, p._2))`]",
       "sum(Observable[Integer])" -> "sum(Numeric[U])",
@@ -165,7 +177,7 @@ class CompletenessTest extends JUnitSuite {
       "zip(Iterable[_ <: Observable[_]], FuncN[_ <: R])" -> "[use `zip` in companion object and `map`]"
   ) ++ List.iterate("T", 9)(s => s + ", T").map(
       // all 9 overloads of startWith:
-      "startWith(" + _ + ")" -> "[unnecessary because we can just use `++` instead]"
+      "startWith(" + _ + ")" -> "[unnecessary because we can just use `::` instead]"
   ).toMap ++ List.iterate("Observable[_ <: T]", 9)(s => s + ", Observable[_ <: T]").map(
       // concat 2-9
       "concat(" + _ + ")" -> "[unnecessary because we can use `++` instead or `Observable(o1, o2, ...).concat`]"

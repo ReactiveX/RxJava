@@ -32,13 +32,12 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import rx.Observable;
-import rx.Observer;
-import rx.Subscription;
+import rx.Subscriber;
+import rx.exceptions.TestException;
 import rx.observables.BlockingObservable;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
-import rx.subscriptions.Subscriptions;
 
 public class BlockingOperatorNextTest {
 
@@ -222,11 +221,6 @@ public class BlockingOperatorNextTest {
         }
     }
 
-    @SuppressWarnings("serial")
-    private static class TestException extends RuntimeException {
-
-    }
-
     /**
      * Confirm that no buffering or blocking of the Observable onNext calls occurs and it just grabs the next emitted value.
      * <p/>
@@ -241,10 +235,10 @@ public class BlockingOperatorNextTest {
         final CountDownLatch timeHasPassed = new CountDownLatch(COUNT);
         final AtomicBoolean running = new AtomicBoolean(true);
         final AtomicInteger count = new AtomicInteger(0);
-        final Observable<Integer> obs = Observable.create(new Observable.OnSubscribeFunc<Integer>() {
+        final Observable<Integer> obs = Observable.create(new Observable.OnSubscribe<Integer>() {
 
             @Override
-            public Subscription onSubscribe(final Observer<? super Integer> o) {
+            public void call(final Subscriber<? super Integer> o) {
                 new Thread(new Runnable() {
 
                     @Override
@@ -262,7 +256,6 @@ public class BlockingOperatorNextTest {
                         }
                     }
                 }).start();
-                return Subscriptions.empty();
             }
 
         });

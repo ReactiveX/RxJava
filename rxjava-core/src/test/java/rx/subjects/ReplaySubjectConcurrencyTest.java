@@ -17,7 +17,10 @@ package rx.subjects;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
@@ -25,14 +28,11 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.Test;
 
 import rx.Observable;
-import rx.Observable.OnSubscribeFunc;
-import rx.Observer;
+import rx.Observable.OnSubscribe;
 import rx.Subscriber;
-import rx.Subscription;
 import rx.functions.Action1;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
-import rx.subscriptions.Subscriptions;
 
 public class ReplaySubjectConcurrencyTest {
 
@@ -55,17 +55,16 @@ public class ReplaySubjectConcurrencyTest {
 
             @Override
             public void run() {
-                Observable.create(new OnSubscribeFunc<Long>() {
+                Observable.create(new OnSubscribe<Long>() {
 
                     @Override
-                    public Subscription onSubscribe(Observer<? super Long> o) {
+                    public void call(Subscriber<? super Long> o) {
                         System.out.println("********* Start Source Data ***********");
                         for (long l = 1; l <= 10000; l++) {
                             o.onNext(l);
                         }
                         System.out.println("********* Finished Source Data ***********");
                         o.onCompleted();
-                        return Subscriptions.empty();
                     }
                 }).subscribe(replay);
             }
@@ -165,17 +164,16 @@ public class ReplaySubjectConcurrencyTest {
 
             @Override
             public void run() {
-                Observable.create(new OnSubscribeFunc<Long>() {
+                Observable.create(new OnSubscribe<Long>() {
 
                     @Override
-                    public Subscription onSubscribe(Observer<? super Long> o) {
+                    public void call(Subscriber<? super Long> o) {
                         System.out.println("********* Start Source Data ***********");
                         for (long l = 1; l <= 10000; l++) {
                             o.onNext(l);
                         }
                         System.out.println("********* Finished Source Data ***********");
                         o.onCompleted();
-                        return Subscriptions.empty();
                     }
                 }).subscribe(replay);
             }

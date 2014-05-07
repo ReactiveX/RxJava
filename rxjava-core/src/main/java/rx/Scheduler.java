@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -99,15 +99,16 @@ public abstract class Scheduler {
          */
         public Subscription schedulePeriodically(final Action0 action, long initialDelay, long period, TimeUnit unit) {
             final long periodInNanos = unit.toNanos(period);
+            final long startInNanos = TimeUnit.MILLISECONDS.toNanos(now()) + unit.toNanos(initialDelay);
 
             final Action0 recursiveAction = new Action0() {
+                long count = 0;
                 @Override
                 public void call() {
                     if (!isUnsubscribed()) {
-                        long startedAt = now();
                         action.call();
-                        long timeTakenByActionInNanos = TimeUnit.MILLISECONDS.toNanos(now() - startedAt);
-                        schedule(this, periodInNanos - timeTakenByActionInNanos, TimeUnit.NANOSECONDS);
+                        long nextTick = startInNanos + (++count * periodInNanos);
+                        schedule(this, nextTick - TimeUnit.MILLISECONDS.toNanos(now()), TimeUnit.NANOSECONDS);
                     }
                 }
             };

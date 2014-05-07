@@ -13,29 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rx.operators;
+package rx.schedulers;
 
 import org.openjdk.jmh.annotations.GenerateMicroBenchmark;
 
-import rx.Observable.Operator;
-import rx.functions.Func1;
 import rx.jmh.InputWithIncrementingInteger;
 
-public class OperatorMapPerf {
+public class ComputationSchedulerPerf {
 
     @GenerateMicroBenchmark
-    public void mapIdentityFunction(InputWithIncrementingInteger input) throws InterruptedException {
-        input.observable.lift(MAP_OPERATOR).subscribe(input.observer);
+    public void subscribeOn(InputWithIncrementingInteger input) throws InterruptedException {
+        input.observable.subscribeOn(Schedulers.computation()).subscribe(input.observer);
         input.awaitCompletion();
     }
 
-    private static final Func1<Integer, Integer> IDENTITY_FUNCTION = new Func1<Integer, Integer>() {
-        @Override
-        public Integer call(Integer value) {
-            return value;
-        }
-    };
-
-    private static final Operator<Integer, Integer> MAP_OPERATOR = new OperatorMap<Integer, Integer>(IDENTITY_FUNCTION);
-
+    @GenerateMicroBenchmark
+    public void observeOn(InputWithIncrementingInteger input) throws InterruptedException {
+        input.observable.observeOn(Schedulers.computation()).subscribe(input.observer);
+        input.awaitCompletion();
+    }
 }

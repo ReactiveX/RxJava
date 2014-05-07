@@ -27,6 +27,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import rx.Observable;
+import rx.exceptions.TestException;
 import rx.observables.BlockingObservable;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
@@ -73,10 +74,6 @@ public class BlockingOperatorMostRecentTest {
         assertTrue(it.hasNext());
 
         it.next();
-    }
-
-    private static class TestException extends RuntimeException {
-        private static final long serialVersionUID = 1L;
     }
 
     @Test(timeout = 1000)

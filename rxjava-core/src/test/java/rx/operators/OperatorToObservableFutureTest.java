@@ -35,9 +35,11 @@ public class OperatorToObservableFutureTest {
 
     @Test
     public void testSuccess() throws Exception {
+        @SuppressWarnings("unchecked")
         Future<Object> future = mock(Future.class);
         Object value = new Object();
         when(future.get()).thenReturn(value);
+        @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
 
         Subscription sub = Observable.from(future).subscribe(new TestObserver<Object>(o));
@@ -51,9 +53,11 @@ public class OperatorToObservableFutureTest {
 
     @Test
     public void testFailure() throws Exception {
+        @SuppressWarnings("unchecked")
         Future<Object> future = mock(Future.class);
         RuntimeException e = new RuntimeException();
         when(future.get()).thenThrow(e);
+        @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
 
         Subscription sub = Observable.from(future).subscribe(new TestObserver<Object>(o));

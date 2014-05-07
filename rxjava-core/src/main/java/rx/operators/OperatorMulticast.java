@@ -15,7 +15,6 @@
  */
 package rx.operators;
 
-import java.util.BitSet;
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;

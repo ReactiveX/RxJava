@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,9 +29,9 @@ import org.apache.http.nio.protocol.HttpAsyncResponseConsumer;
 import org.apache.http.protocol.HttpContext;
 
 import rx.Observable;
-import rx.Observable.OnSubscribeFunc;
+import rx.Observable.OnSubscribe;
 import rx.Observer;
-import rx.Subscription;
+import rx.Subscriber;
 import rx.apache.http.ObservableHttpResponse;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
@@ -81,12 +81,12 @@ class ResponseConsumerEventStream extends AsyncByteConsumer<HttpResponse> implem
     protected void onResponseReceived(HttpResponse response) throws HttpException, IOException {
 
         // wrap the contentSubject so we can chain the Subscription between parent and child
-        Observable<byte[]> contentObservable = Observable.create(new OnSubscribeFunc<byte[]>() {
+        Observable<byte[]> contentObservable = Observable.create(new OnSubscribe<byte[]>() {
 
             @Override
-            public Subscription onSubscribe(Observer<? super byte[]> observer) {
+            public void call(Subscriber<? super byte[]> observer) {
+                observer.add(parentSubscription);
                 parentSubscription.add(contentSubject.subscribe(observer));
-                return parentSubscription;
             }
         });
         observer.onNext(new ObservableHttpResponse(response, contentObservable));

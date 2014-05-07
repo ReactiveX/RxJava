@@ -38,7 +38,7 @@ public class Pattern1<T1> implements Pattern {
      * 
      * @param selector
      *            the function that will be invoked for elements in the source sequences.
-     * @return
+     * @return the plan for the matching
      * @throws NullPointerException
      *             if selector is null
      */

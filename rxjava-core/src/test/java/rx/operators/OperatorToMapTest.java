@@ -162,6 +162,9 @@ public class OperatorToMapTest {
             @Override
             public Map<Integer, String> call() {
                 return new LinkedHashMap<Integer, String>() {
+                    /** */
+                    private static final long serialVersionUID = -3296811238780863394L;
+
                     @Override
                     protected boolean removeEldestEntry(Map.Entry<Integer, String> eldest) {
                         return size() > 3;
