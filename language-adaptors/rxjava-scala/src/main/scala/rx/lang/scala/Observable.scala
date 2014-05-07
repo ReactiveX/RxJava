@@ -1133,7 +1133,7 @@ trait Observable[+T]
    * @return an Observable that emits `true` if the specified item is emitted by the source Observable,
    *         or `false` if the source Observable completes without emitting that item
    */
-  def contains(elem: Any): Observable[Boolean] = {
+  def contains[U >: T](elem: U): Observable[Boolean] = {
     exists(_ == elem)
   }
 
@@ -2580,7 +2580,7 @@ trait Observable[+T]
    * <p>
    * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/doOnTerminate.png">
    * <p>
-   * This differs from `finallyDo` in that this happens BEFORE onCompleted/onError are emitted.
+   * This differs from `finallyDo` in that this happens **before** `onCompleted/nError` are emitted.
    *
    * @param onTerminate the action to invoke when the source Observable calls `onCompleted` or `onError`
    * @return the source Observable with the side-effecting behavior applied
