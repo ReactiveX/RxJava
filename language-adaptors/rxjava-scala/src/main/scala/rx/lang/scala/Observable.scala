@@ -1431,7 +1431,7 @@ trait Observable[+T]
    *
    * @return an [[rx.lang.scala.observables.ConnectableObservable]].
    */
-  def publish(): ConnectableObservable[T] = {
+  def publish: ConnectableObservable[T] = {
     new ConnectableObservable[T](asJavaObservable.publish())
   }
 
@@ -2649,7 +2649,7 @@ trait Observable[+T]
    * emits [1, 2, 3, 4, 5] then the complete output would be [1, 2, 1, 2, 3, 4, 5, onCompleted].
    * @return Observable with retry logic.
    */
-  def retry(): Observable[T] = {
+  def retry: Observable[T] = {
     toScalaObservable[T](asJavaObservable.retry())
   }
 
@@ -2662,7 +2662,7 @@ trait Observable[+T]
    * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#wiki-repeat">RxJava Wiki: repeat()</a>
    * @see <a href="http://msdn.microsoft.com/en-us/library/hh229428.aspx">MSDN: Observable.Repeat</a>
    */
-  def repeat(): Observable[T] = {
+  def repeat: Observable[T] = {
     toScalaObservable[T](asJavaObservable.repeat())
   }
 

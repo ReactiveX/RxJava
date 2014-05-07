@@ -737,7 +737,7 @@ class RxScalaDemo extends JUnitSuite {
   }
 
   @Test def repeatExample1(): Unit = {
-    val o : Observable[String] = List("alice", "bob", "carol").toObservable.repeat().take(6)
+    val o : Observable[String] = List("alice", "bob", "carol").toObservable.repeat.take(6)
     assertEquals(List("alice", "bob", "carol", "alice", "bob", "carol"), o.toBlockingObservable.toList)
   }
 
