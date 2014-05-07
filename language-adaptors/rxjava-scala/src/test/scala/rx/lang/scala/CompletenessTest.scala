@@ -104,6 +104,7 @@ class CompletenessTest extends JUnitSuite {
       "skipWhile(Func1[_ >: T, Boolean])" -> "dropWhile(T => Boolean)",
       "skipWhileWithIndex(Func2[_ >: T, Integer, Boolean])" -> unnecessary,
       "skipUntil(Observable[U])" -> "dropUntil(Observable[E])",
+      "startWith(T)" -> "[use `item +: o`]",
       "startWith(Array[T])" -> "[use `Observable.items(items) ++ o`]",
       "startWith(Array[T], Scheduler)" -> "[use `Observable.items(items).subscribeOn(scheduler) ++ o`]",
       "startWith(Iterable[T])" -> "[use `Observable.from(iterable) ++ o`]",
@@ -165,9 +166,9 @@ class CompletenessTest extends JUnitSuite {
       "zip(Observable[_ <: T1], Observable[_ <: T2], Func2[_ >: T1, _ >: T2, _ <: R])" -> "[use instance method `zip` and `map`]",
       "zip(Observable[_ <: Observable[_]], FuncN[_ <: R])" -> "[use `zip` in companion object and `map`]",
       "zip(Iterable[_ <: Observable[_]], FuncN[_ <: R])" -> "[use `zip` in companion object and `map`]"
-  ) ++ List.iterate("T", 9)(s => s + ", T").map(
+  ) ++ List.iterate("T, T", 8)(s => s + ", T").map(
       // all 9 overloads of startWith:
-      "startWith(" + _ + ")" -> "[unnecessary because we can just use `++` instead]"
+      "startWith(" + _ + ")" -> "[use `Observable.items(...) ++ o`]"
   ).toMap ++ List.iterate("Observable[_ <: T]", 9)(s => s + ", Observable[_ <: T]").map(
       // concat 2-9
       "concat(" + _ + ")" -> "[unnecessary because we can use `++` instead or `Observable(o1, o2, ...).concat`]"
