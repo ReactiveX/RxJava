@@ -35,19 +35,19 @@ public class SubscriptionQueueTest {
     @Test
     public void testSimpleQueueing() {
         Subscription s1 = Subscriptions.create(Actions.empty());
-        sq.enqueue(s1);
-        sq.dequeue(s1);
+        sq.add(s1);
+        sq.remove(s1);
         
         assertFalse(s1.isUnsubscribed());
         assertEquals(0, sq.size);
         
-        sq.dequeue(s1);
+        sq.remove(s1);
         assertEquals(0, sq.size);
     }
     @Test
     public void testEnqueueAndUnsubscribe() {
         Subscription s1 = Subscriptions.create(Actions.empty());
-        sq.enqueue(s1);
+        sq.add(s1);
         
         sq.unsubscribe();
         
@@ -62,7 +62,7 @@ public class SubscriptionQueueTest {
         
         sq.unsubscribe();
         
-        sq.enqueue(s1);
+        sq.add(s1);
 
         assertTrue(sq.isUnsubscribed());
         assertTrue(s1.isUnsubscribed());
@@ -74,13 +74,13 @@ public class SubscriptionQueueTest {
         Subscription s1 = Subscriptions.create(Actions.empty());
         Subscription s2 = Subscriptions.create(Actions.empty());
         
-        sq.enqueue(s1);
+        sq.add(s1);
         
-        sq.dequeue(s2);
+        sq.remove(s2);
         
         assertEquals(1, sq.size);
         
-        sq.dequeue(s1);
+        sq.remove(s1);
         
         assertEquals(0, sq.size);
     }
@@ -90,21 +90,21 @@ public class SubscriptionQueueTest {
         Subscription s2 = Subscriptions.create(Actions.empty());
         Subscription s3 = Subscriptions.create(Actions.empty());
         
-        sq.enqueue(s1);
-        sq.enqueue(s2);
-        sq.enqueue(s3);
+        sq.add(s1);
+        sq.add(s2);
+        sq.add(s3);
         
         assertEquals(3, sq.size);
         
-        sq.dequeue(s2);
+        sq.remove(s2);
 
         assertEquals(2, sq.size);
 
-        sq.dequeue(s1);
+        sq.remove(s1);
 
         assertEquals(1, sq.size);
         
-        sq.dequeue(s3);
+        sq.remove(s3);
         
         assertEquals(0, sq.size);
     }
@@ -124,7 +124,7 @@ public class SubscriptionQueueTest {
                 public void run() {
                     int p = n / k;
                     for (int m = 0; m < p; m++) {
-                        sq.enqueue(list.get(p * j + m));
+                        sq.add(list.get(p * j + m));
                     }
                 }
                 
@@ -138,7 +138,7 @@ public class SubscriptionQueueTest {
         
         int r = n;
         for (Subscription s : list) {
-            sq.dequeue(s);
+            sq.remove(s);
             assertEquals(--r, sq.size);
         }
     }
