@@ -92,7 +92,6 @@ import rx.subscriptions.Subscriptions;
             
             return run;
         }
-        
         /** Remove a child subscription from a composite when unsubscribing. */
         private static final class Remover implements Subscription {
             final Subscription s;
@@ -125,10 +124,12 @@ import rx.subscriptions.Subscriptions;
         public static final class ScheduledAction implements Runnable, Subscription {
             final CompositeSubscription cancel;
             final Action0 action;
+            final AtomicBoolean once;
 
             public ScheduledAction(Action0 action) {
                 this.action = action;
                 this.cancel = new CompositeSubscription();
+                this.once = new AtomicBoolean();
             }
 
             @Override
@@ -147,7 +148,9 @@ import rx.subscriptions.Subscriptions;
             
             @Override
             public void unsubscribe() {
-                cancel.unsubscribe();
+                if (once.compareAndSet(false, true)) {
+                    cancel.unsubscribe();
+                }
             }
             public void add(Subscription s) {
                 cancel.add(s);
@@ -158,7 +161,7 @@ import rx.subscriptions.Subscriptions;
              * @param parent 
              */
             public void addParent(CompositeSubscription parent) {
-                cancel.add(new Remover(this, parent));
+                add(new Remover(this, parent));
             } 
         }
 
