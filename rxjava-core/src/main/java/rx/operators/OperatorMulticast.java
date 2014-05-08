@@ -19,6 +19,7 @@ import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Action0;
+import rx.functions.Action1;
 import rx.observables.ConnectableObservable;
 import rx.subjects.Subject;
 import rx.subscriptions.Subscriptions;
@@ -48,7 +49,20 @@ public final class OperatorMulticast<T, R> extends ConnectableObservable<R> {
     }
 
     @Override
-    public Subscription connect() {
+    public void connect(Action1<? super Subscription> connection) {
+        connection.call(Subscriptions.create(new Action0() {
+            @Override
+            public void call() {
+                Subscription s;
+                synchronized (guard) {
+                    s = subscription;
+                    subscription = null;
+                }
+                if (s != null) {
+                    s.unsubscribe();
+                }
+            }
+        }));
         Subscriber<T> s = null;
         synchronized (guard) {
             if (subscription == null) {
@@ -74,20 +88,5 @@ public final class OperatorMulticast<T, R> extends ConnectableObservable<R> {
         if (s != null) {
             source.unsafeSubscribe(s);
         }
-
-        return Subscriptions.create(new Action0() {
-            @Override
-            public void call() {
-                Subscription s;
-                synchronized (guard) {
-                    s = subscription;
-                    subscription = null;
-                }
-                if (s != null) {
-                    s.unsubscribe();
-                }
-            }
-        });
     }
-    
 }
