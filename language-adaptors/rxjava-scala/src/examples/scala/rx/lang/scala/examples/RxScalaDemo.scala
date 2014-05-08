@@ -834,25 +834,14 @@ class RxScalaDemo extends JUnitSuite {
     shared.subscribe(n => println(s"subscriber 2 gets $n"))
   }
 
-  @Test def startWithExample1(): Unit = {
+  @Test def startWithExample(): Unit = {
     val o1 = List(3, 4).toObservable
-    val o2 = 1 :: 2 :: o1
+    val o2 = 1 +: 2 +: o1
     assertEquals(List(1, 2, 3, 4), o2.toBlockingObservable.toList)
   }
 
-  @Test def startWithExample2(): Unit = {
-    val prepended = List(2, 4).toObservable
-    val o = List(5, 6, 7, 8).toObservable.filter(_ % 2 == 0).startWith(prepended)
-    assertEquals(List(2, 4, 6, 8), o.toBlockingObservable.toList)
-  }
-
-  @Test def startWithExample3(): Unit = {
-    val o = List(5, 6, 7, 8).toObservable.filter(_ % 2 == 0).startWith(List(2, 4))
-    assertEquals(List(2, 4, 6, 8), o.toBlockingObservable.toList)
-  }
-
-  @Test def startWithExample4(): Unit = {
-    val o = List(5, 6, 7, 8).toObservable.filter(_ % 2 == 0).startWith(Array(2, 4))
-    assertEquals(List(2, 4, 6, 8), o.toBlockingObservable.toList)
+  @Test def appendExample(): Unit = {
+    val o = List(1, 2).toObservable :+ 3 :+ 4
+    assertEquals(List(1, 2, 3, 4), o.toBlockingObservable.toList)
   }
 }

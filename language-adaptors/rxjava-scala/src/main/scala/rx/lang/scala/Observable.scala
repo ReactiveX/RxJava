@@ -237,6 +237,16 @@ trait Observable[+T]
   }
 
   /**
+   * Returns an Observable that first emits the items emitted by `this`, and then `elem`.
+   *
+   * @param elem the item to be appended
+   * @return  an Observable that first emits the items emitted by `this`, and then `elem`.
+   */
+  def :+[U >: T](elem: U): Observable[U] = {
+    this ++ Observable.items(elem)
+  }
+
+  /**
    * Returns an Observable that first emits the items emitted by `this`, and then the items emitted
    * by `that`.
    *
@@ -261,55 +271,9 @@ trait Observable[+T]
    * @param elem the item to emit
    * @return an Observable that emits the specified item before it begins to emit items emitted by the source Observable
    */
-  def ::[U >: T](elem: U): Observable[U] = {
+  def +:[U >: T](elem: U): Observable[U] = {
     val thisJava = this.asJavaObservable.asInstanceOf[rx.Observable[U]]
     toScalaObservable(thisJava.startWith(elem))
-  }
-
-  /**
-   * Returns an Observable that emits the items in a specified `Observable` before it begins to emit
-   * items emitted by the source Observable.
-   * <p>
-   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.o.png">
-   *
-   * @param that an Observable that contains the items you want the modified Observable to emit first
-   * @return an Observable that emits the items in the specified `Observable` and then emits the items
-   *         emitted by the source Observable
-   */
-  def startWith[U >: T](that: Observable[U]): Observable[U] = {
-    val thisJava = this.asJavaObservable.asInstanceOf[rx.Observable[U]]
-    val thatJava = that.asJavaObservable.asInstanceOf[rx.Observable[U]]
-    toScalaObservable(thisJava.startWith(thatJava))
-  }
-
-  /**
-   * Returns an Observable that emits the items in a specified `Iterable` before it begins to emit items
-   * emitted by the source Observable.
-   * <p>
-   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.png">
-   *
-   * @param iterable an Iterable that contains the items you want the modified Observable to emit first
-   * @return an Observable that emits the items in the specified `Iterable` and then emits the items
-   *         emitted by the source Observable
-   */
-  def startWith[U >: T](iterable: Iterable[U]): Observable[U] = {
-    val thisJava = this.asJavaObservable.asInstanceOf[rx.Observable[U]]
-    toScalaObservable(thisJava.startWith(iterable.asJava))
-  }
-
-  /**
-   * Returns an Observable that emits the items in a specified `Iterable`, on a specified `Scheduler`, before it begins to emit items emitted by the source Observable.
-   * <p>
-   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.s.png">
-   *
-   * @param iterable an Iterable that contains the items you want the modified Observable to emit first
-   * @param scheduler the Scheduler to emit the prepended values on
-   * @return an Observable that emits the items in the specified `Iterable`, on a specified `Scheduler`, and then emits the items
-   *         emitted by the source Observable
-   */
-  def startWith[U >: T](iterable: Iterable[U], scheduler: Scheduler): Observable[U] = {
-    val thisJava = this.asJavaObservable.asInstanceOf[rx.Observable[U]]
-    toScalaObservable(thisJava.startWith(iterable.asJava, scalaSchedulerToJavaScheduler(scheduler)))
   }
 
   /**
@@ -1419,7 +1383,7 @@ trait Observable[+T]
    * @return an Observable that emits `true` if the specified item is emitted by the source Observable,
    *         or `false` if the source Observable completes without emitting that item
    */
-  def contains(elem: Any): Observable[Boolean] = {
+  def contains[U >: T](elem: U): Observable[Boolean] = {
     exists(_ == elem)
   }
 
@@ -2866,7 +2830,7 @@ trait Observable[+T]
    * <p>
    * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/doOnTerminate.png">
    * <p>
-   * This differs from `finallyDo` in that this happens BEFORE onCompleted/onError are emitted.
+   * This differs from `finallyDo` in that this happens **before** `onCompleted/onError` are emitted.
    *
    * @param onTerminate the action to invoke when the source Observable calls `onCompleted` or `onError`
    * @return the source Observable with the side-effecting behavior applied
