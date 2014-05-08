@@ -21,6 +21,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 import java.util.concurrent.atomic.AtomicLong;
 
 import rx.Scheduler;
@@ -96,7 +97,9 @@ import rx.subscriptions.Subscriptions;
         private static final class Remover implements Subscription {
             final Subscription s;
             final CompositeSubscription parent;
-            volatile boolean unsubscribed;
+            volatile int unsubscribed;
+            private static final AtomicIntegerFieldUpdater<Remover> UNSUBSCRIBED_UPDATER =
+                    AtomicIntegerFieldUpdater.newUpdater(Remover.class, "unsubscribed");
             
             public Remover(Subscription s, CompositeSubscription parent) {
                 this.s = s;
@@ -105,16 +108,14 @@ import rx.subscriptions.Subscriptions;
             
             @Override
             public boolean isUnsubscribed() {
-                return s.isUnsubscribed();
+                return unsubscribed == 1;
             }
             
             @Override
             public void unsubscribe() {
-                if (unsubscribed) { // not really cas but saves memory
-                    return;
+                if (UNSUBSCRIBED_UPDATER.compareAndSet(this, 0, 1)) {
+                    parent.remove(s);
                 }
-                unsubscribed = true;
-                parent.remove(s);
             }
             
         }
@@ -125,7 +126,9 @@ import rx.subscriptions.Subscriptions;
         public static final class ScheduledAction implements Runnable, Subscription {
             final CompositeSubscription cancel;
             final Action0 action;
-            volatile boolean unsubscribed;
+            volatile int unsubscribed;
+            private static final AtomicIntegerFieldUpdater<ScheduledAction> UNSUBSCRIBED_UPDATER =
+                    AtomicIntegerFieldUpdater.newUpdater(ScheduledAction.class, "unsubscribed");
 
             public ScheduledAction(Action0 action) {
                 this.action = action;
@@ -143,16 +146,14 @@ import rx.subscriptions.Subscriptions;
 
             @Override
             public boolean isUnsubscribed() {
-                return cancel.isUnsubscribed();
+                return unsubscribed == 1;
             }
             
             @Override
             public void unsubscribe() {
-                if (unsubscribed) { // not really cas but saves memory
-                    return;
+                if (UNSUBSCRIBED_UPDATER.compareAndSet(this, 0, 1)) {
+                    cancel.unsubscribe();
                 }
-                unsubscribed = true;
-                cancel.unsubscribe();
             }
             public void add(Subscription s) {
                 cancel.add(s);

@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 
 import rx.Subscription;
 import rx.exceptions.CompositeException;
@@ -32,18 +33,8 @@ import rx.exceptions.CompositeException;
  * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.disposables.compositedisposable(v=vs.103).aspx">Rx.Net equivalent CompositeDisposable</a>
  */
 public final class CompositeSubscription implements Subscription {
-    private static final sun.misc.Unsafe UNSAFE;
-    private static final long stateOffset;
-    static {
-        try {
-            Field f = sun.misc.Unsafe.class.getDeclaredField("theUnsafe");
-            f.setAccessible(true);
-            UNSAFE = (sun.misc.Unsafe)f.get(null);
-            stateOffset = UNSAFE.objectFieldOffset(CompositeSubscription.class.getDeclaredField("state"));
-        } catch (Throwable e) {
-            throw new Error(e);
-        }
-    }
+    private static final AtomicReferenceFieldUpdater<CompositeSubscription, State> STATE_UPDATER =
+            AtomicReferenceFieldUpdater.newUpdater(CompositeSubscription.class, State.class, "state");
     private volatile State state;
 
     /** Empty initial state. */
@@ -164,47 +155,47 @@ public final class CompositeSubscription implements Subscription {
     }
 
     public CompositeSubscription() {
-        setState(CLEAR_STATE);
+        state = CLEAR_STATE;
     }
 
     public CompositeSubscription(final Subscription... subscriptions) {
         if (subscriptions.length > 0) {
-            setState(new State(false, subscriptions));
+            state = new State(false, subscriptions);
         } else {
-            setState(CLEAR_STATE);
+            state = CLEAR_STATE;
         }
     }
     
     @Override
     public boolean isUnsubscribed() {
-        return getState().isUnsubscribed;
+        return state.isUnsubscribed;
     }
 
     public void add(final Subscription s) {
         State oldState;
         State newState;
         do {
-            oldState = getState();
+            oldState = state;
             if (oldState.isUnsubscribed) {
                 s.unsubscribe();
                 return;
             } else {
                 newState = oldState.add(s);
             }
-        } while (!casState(oldState, newState));
+        } while (!STATE_UPDATER.compareAndSet(this, oldState, newState));
     }
 
     public void remove(final Subscription s) {
         State oldState;
         State newState;
         do {
-            oldState = getState();
+            oldState = state;
             if (oldState.isUnsubscribed) {
                 return;
             } else {
                 newState = oldState.remove(s);
             }
-        } while (!casState(oldState, newState));
+        } while (!STATE_UPDATER.compareAndSet(this, oldState, newState));
         // if we removed successfully we then need to call unsubscribe on it
         s.unsubscribe();
     }
@@ -213,13 +204,13 @@ public final class CompositeSubscription implements Subscription {
         State oldState;
         State newState;
         do {
-            oldState = getState();
+            oldState = state;
             if (oldState.isUnsubscribed) {
                 return;
             } else {
                 newState = oldState.clear();
             }
-        } while (!casState(oldState, newState));
+        } while (!STATE_UPDATER.compareAndSet(this, oldState, newState));
         // if we cleared successfully we then need to call unsubscribe on all previous
         oldState.unsubscribeAll();
     }
@@ -229,13 +220,13 @@ public final class CompositeSubscription implements Subscription {
         State oldState;
         State newState;
         do {
-            oldState = getState();
+            oldState = state;
             if (oldState.isUnsubscribed) {
                 return;
             } else {
                 newState = oldState.unsubscribe();
             }
-        } while (!casState(oldState, newState));
+        } while (!STATE_UPDATER.compareAndSet(this, oldState, newState));
         oldState.unsubscribeAll();
     }
 
@@ -269,16 +260,6 @@ public final class CompositeSubscription implements Subscription {
         }
     }
     /* Test support. */ int size() {
-        return getState().size();
-    }
-    // ------- Atomics ----------
-    private void setState(State newState) {
-        state = newState;
-    }
-    private State getState() {
-        return state;
-    }
-    private boolean casState(State expected, State newState) {
-        return UNSAFE.compareAndSwapObject(this, stateOffset, expected, newState);
+        return state.size();
     }
 }
