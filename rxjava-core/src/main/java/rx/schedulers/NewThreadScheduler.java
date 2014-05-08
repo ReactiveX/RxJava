@@ -171,7 +171,7 @@ import rx.subscriptions.Subscriptions;
         @Override
         public void unsubscribe() {
             unsubscribed = true;
-            executor.shutdown();
+            executor.shutdownNow();
         }
 
         @Override
