@@ -16,7 +16,6 @@
 package rx.subscriptions;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -74,10 +73,6 @@ public final class CompositeSubscription implements Subscription {
             this.isUnsubscribed = false;
             this.subscriptions = null;
             this.subscriptionSet = s;
-        }
-
-        State unsubscribe() {
-            return CLEAR_STATE_UNSUBSCRIBED;
         }
 
         State add(Subscription s) {
@@ -138,10 +133,12 @@ public final class CompositeSubscription implements Subscription {
             return isUnsubscribed ? CLEAR_STATE_UNSUBSCRIBED : CLEAR_STATE;
         }
         void unsubscribeAll() {
-            if (subscriptions == null) {
-                unsubscribeFromAll(subscriptionSet);
-            } else {
-                unsubscribeFromAll(subscriptions);
+            if (!isUnsubscribed) {
+                if (subscriptions == null) {
+                    unsubscribeFromAll(subscriptionSet);
+                } else {
+                    unsubscribeFromAll(subscriptions);
+                }
             }
         }
         /* test support.*/ int size() {
@@ -218,20 +215,40 @@ public final class CompositeSubscription implements Subscription {
     @Override
     public void unsubscribe() {
         State oldState;
-        State newState;
         do {
             oldState = state;
             if (oldState.isUnsubscribed) {
                 return;
-            } else {
-                newState = oldState.unsubscribe();
             }
-        } while (!STATE_UPDATER.compareAndSet(this, oldState, newState));
+        } while (!STATE_UPDATER.compareAndSet(this, oldState, CLEAR_STATE_UNSUBSCRIBED));
         oldState.unsubscribeAll();
     }
 
     static void unsubscribeFromAll(Object[] subscriptions) {
-        unsubscribeFromAll(Arrays.asList(subscriptions));
+        final List<Throwable> es = new ArrayList<Throwable>();
+        for (Object s : subscriptions) {
+            if (s != null) {
+                try {
+                    ((Subscription)s).unsubscribe();
+                } catch (Throwable e) {
+                    es.add(e);
+                }
+            }
+        }
+        if (!es.isEmpty()) {
+            if (es.size() == 1) {
+                Throwable t = es.get(0);
+                if (t instanceof RuntimeException) {
+                    throw (RuntimeException) t;
+                } else {
+                    throw new CompositeException(
+                            "Failed to unsubscribe to 1 or more subscriptions.", es);
+                }
+            } else {
+                throw new CompositeException(
+                        "Failed to unsubscribe to 2 or more subscriptions.", es);
+            }
+        }
     }
     static void unsubscribeFromAll(Iterable<Object> subscriptions) {
         final List<Throwable> es = new ArrayList<Throwable>();

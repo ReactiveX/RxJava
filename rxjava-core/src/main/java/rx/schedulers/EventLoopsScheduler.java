@@ -80,8 +80,6 @@ import rx.subscriptions.Subscriptions;
         private final SubscriptionQueue directTasks = new SubscriptionQueue();
         /** Delayed tasks are completed randomly. */
         private final CompositeSubscription delayedTasks = new CompositeSubscription();
-        /** Capture exceptions if both are unsubscribed. */
-        private final CompositeSubscription both = new CompositeSubscription(directTasks, delayedTasks);
         private final PoolWorker poolWorker;
 
         EventLoopWorker(PoolWorker poolWorker) {
@@ -91,12 +89,13 @@ import rx.subscriptions.Subscriptions;
 
         @Override
         public void unsubscribe() {
-            both.unsubscribe();
+            delayedTasks.unsubscribe();
+            directTasks.unsubscribe();
         }
 
         @Override
         public boolean isUnsubscribed() {
-            return both.isUnsubscribed();
+            return delayedTasks.isUnsubscribed();
         }
 
         @Override
