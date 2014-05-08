@@ -15,7 +15,6 @@
  */
 package rx.subscriptions;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -35,6 +34,7 @@ import rx.exceptions.CompositeException;
 public final class CompositeSubscription implements Subscription {
     private static final AtomicReferenceFieldUpdater<CompositeSubscription, State> STATE_UPDATER =
             AtomicReferenceFieldUpdater.newUpdater(CompositeSubscription.class, State.class, "state");
+    /** The current state. */
     private volatile State state;
 
     /** Empty initial state. */
