@@ -15,6 +15,7 @@
  */
 package rx.schedulers;
 
+import rx.subscriptions.SubscriptionQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -23,6 +24,7 @@ import rx.Scheduler;
 import rx.Subscription;
 import rx.functions.Action0;
 import rx.schedulers.NewThreadScheduler.NewThreadWorker.ScheduledAction;
+import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.Subscriptions;
 
 /* package */class EventLoopsScheduler extends Scheduler {
@@ -74,7 +76,12 @@ import rx.subscriptions.Subscriptions;
     }
 
     private static class EventLoopWorker extends Scheduler.Worker {
-        private final SubscriptionQueue innerSubscription = new SubscriptionQueue();
+        /** Undelayed tasks are completed mostly sequentially. */
+        private final SubscriptionQueue directTasks = new SubscriptionQueue();
+        /** Delayed tasks are completed randomly. */
+        private final CompositeSubscription delayedTasks = new CompositeSubscription();
+        /** Capture exceptions if both are unsubscribed. */
+        private final CompositeSubscription both = new CompositeSubscription(directTasks, delayedTasks);
         private final PoolWorker poolWorker;
 
         EventLoopWorker(PoolWorker poolWorker) {
@@ -84,28 +91,39 @@ import rx.subscriptions.Subscriptions;
 
         @Override
         public void unsubscribe() {
-            innerSubscription.unsubscribe();
+            both.unsubscribe();
         }
 
         @Override
         public boolean isUnsubscribed() {
-            return innerSubscription.isUnsubscribed();
+            return both.isUnsubscribed();
         }
 
         @Override
         public Subscription schedule(Action0 action) {
-            return schedule(action, 0, null);
+            if (isUnsubscribed()) {
+                // don't schedule, we are unsubscribed
+                return Subscriptions.empty();
+            }
+            
+            ScheduledAction s = poolWorker.scheduleActual(action, 0, null);
+            directTasks.add(s);
+            s.add(directTasks.createDequeuer(s));
+            return s;
         }
         @Override
         public Subscription schedule(Action0 action, long delayTime, TimeUnit unit) {
-            if (innerSubscription.isUnsubscribed()) {
+            if (delayTime <= 0) {
+                return schedule(action);
+            }
+            if (isUnsubscribed()) {
                 // don't schedule, we are unsubscribed
                 return Subscriptions.empty();
             }
             
             ScheduledAction s = poolWorker.scheduleActual(action, delayTime, unit);
-            innerSubscription.add(s);
-            s.add(innerSubscription.createDequeuer(s));
+            delayedTasks.add(s);
+            s.addParent(delayedTasks);
             return s;
         }
     }

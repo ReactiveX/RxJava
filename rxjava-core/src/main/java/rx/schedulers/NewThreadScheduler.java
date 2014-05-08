@@ -96,12 +96,11 @@ import rx.subscriptions.Subscriptions;
         private static final class Remover implements Subscription {
             final Subscription s;
             final CompositeSubscription parent;
-            final AtomicBoolean once;
+            volatile boolean unsubscribed;
             
             public Remover(Subscription s, CompositeSubscription parent) {
                 this.s = s;
                 this.parent = parent;
-                this.once = new AtomicBoolean();
             }
             
             @Override
@@ -111,9 +110,11 @@ import rx.subscriptions.Subscriptions;
             
             @Override
             public void unsubscribe() {
-                if (once.compareAndSet(false, true)) {
-                    parent.remove(s);
+                if (unsubscribed) { // not really cas but saves memory
+                    return;
                 }
+                unsubscribed = true;
+                parent.remove(s);
             }
             
         }
@@ -124,12 +125,11 @@ import rx.subscriptions.Subscriptions;
         public static final class ScheduledAction implements Runnable, Subscription {
             final CompositeSubscription cancel;
             final Action0 action;
-            final AtomicBoolean once;
+            volatile boolean unsubscribed;
 
             public ScheduledAction(Action0 action) {
                 this.action = action;
                 this.cancel = new CompositeSubscription();
-                this.once = new AtomicBoolean();
             }
 
             @Override
@@ -148,9 +148,11 @@ import rx.subscriptions.Subscriptions;
             
             @Override
             public void unsubscribe() {
-                if (once.compareAndSet(false, true)) {
-                    cancel.unsubscribe();
+                if (unsubscribed) { // not really cas but saves memory
+                    return;
                 }
+                unsubscribed = true;
+                cancel.unsubscribe();
             }
             public void add(Subscription s) {
                 cancel.add(s);
@@ -167,8 +169,8 @@ import rx.subscriptions.Subscriptions;
 
         @Override
         public void unsubscribe() {
-            executor.shutdown();
             unsubscribed = true;
+            executor.shutdown();
         }
 
         @Override

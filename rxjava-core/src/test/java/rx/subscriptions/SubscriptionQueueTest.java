@@ -13,7 +13,7 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-package rx.schedulers;
+package rx.subscriptions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +24,6 @@ import org.junit.Before;
 import org.junit.Test;
 import rx.Subscription;
 import rx.functions.Actions;
-import rx.subscriptions.Subscriptions;
 
 public class SubscriptionQueueTest {
     SubscriptionQueue sq;

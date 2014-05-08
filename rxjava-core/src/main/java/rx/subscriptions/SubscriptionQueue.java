@@ -13,12 +13,9 @@
   * License for the specific language governing permissions and limitations under
   * the License.
   */
-package rx.schedulers;
+package rx.subscriptions;
 
-import java.util.ArrayList;
-import java.util.List;
 import rx.Subscription;
-import rx.exceptions.CompositeException;
 
 /**
  * Array-based queue that grows as neccessary, allows identity-based
@@ -118,7 +115,7 @@ public final class SubscriptionQueue implements Subscription {
             head = 0;
             tail = 0;
         }
-        unsubscribeFromAll(a);
+        CompositeSubscription.unsubscribeFromAll(a);
     }
     /**
      * Creates a subscription which dequeues the given
@@ -149,33 +146,6 @@ public final class SubscriptionQueue implements Subscription {
         @Override
         public void unsubscribe() {
             sq.remove(s);
-        }
-    }
-    
-    private static void unsubscribeFromAll(Subscription[] subscriptions) {
-        final List<Throwable> es = new ArrayList<Throwable>();
-        for (Subscription s : subscriptions) {
-            if (s != null) {
-                try {
-                    s.unsubscribe();
-                } catch (Throwable e) {
-                    es.add(e);
-                }
-            }
-        }
-        if (!es.isEmpty()) {
-            if (es.size() == 1) {
-                Throwable t = es.get(0);
-                if (t instanceof RuntimeException) {
-                    throw (RuntimeException) t;
-                } else {
-                    throw new CompositeException(
-                            "Failed to unsubscribe to 1 or more subscriptions.", es);
-                }
-            } else {
-                throw new CompositeException(
-                        "Failed to unsubscribe to 2 or more subscriptions.", es);
-            }
         }
     }
 }
