@@ -34,6 +34,8 @@ object Subscriber extends ObserverFactoryMethods[Subscriber] {
 
   private[scala] def apply[T](subscriber: rx.Subscriber[T]): Subscriber[T] = new Subscriber[T] {
     override val asJavaSubscriber = subscriber
+    override val asJavaObserver: rx.Observer[_ >: T] = asJavaSubscriber
+    override val asJavaSubscription: rx.Subscription = asJavaSubscriber
 
     override def onNext(value: T): Unit = asJavaSubscriber.onNext(value)
     override def onError(error: Throwable): Unit = asJavaSubscriber.onError(error)
