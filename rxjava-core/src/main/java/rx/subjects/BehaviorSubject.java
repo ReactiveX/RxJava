@@ -16,13 +16,12 @@
 package rx.subjects;
 
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 import rx.Observer;
 import rx.Subscriber;
 import rx.functions.Action0;
+import rx.functions.Action1;
 import rx.operators.NotificationLite;
+import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
 import rx.subscriptions.Subscriptions;
 
 /**
@@ -88,151 +87,26 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
         return create(defaultValue, true);
     }
     private static <T> BehaviorSubject<T> create(T defaultValue, boolean hasDefault) {
-        State<T> state = new State<T>();
+        final SubjectSubscriptionManager<T> state = new SubjectSubscriptionManager<T>();
         if (hasDefault) {
             state.set(NotificationLite.instance().next(defaultValue));
         }
-        return new BehaviorSubject<T>(new BehaviorOnSubscribe<T>(state), state); 
+        state.onAdded = new Action1<SubjectObserver<T>>() {
+
+            @Override
+            public void call(SubjectObserver<T> o) {
+                o.emitFirst(state.get());
+            }
+            
+        };
+        state.onTerminated = state.onAdded;
+        return new BehaviorSubject<T>(state, state); 
     }
 
-    static final class State<T> {
-        final AtomicReference<Object> latest = new AtomicReference<Object>();
-        final AtomicReference<BehaviorState> observers = new AtomicReference<BehaviorState>(BehaviorState.EMPTY);
-        boolean active = true;
-        void set(Object value) {
-            this.latest.set(value);
-        }
-        Object get() {
-            return latest.get();
-        }
-        BehaviorObserver<T>[] observers() {
-            return observers.get().observers;
-        }
-        boolean add(BehaviorObserver<T> o) {
-            do {
-                BehaviorState oldState = observers.get();
-                if (oldState.terminated) {
-                    o.emitFirst(get());
-                    return false;
-                }
-                BehaviorState newState = oldState.add(o);
-                if (observers.compareAndSet(oldState, newState)) {
-                    o.emitFirst(get());
-                    return true;
-                }
-            } while (true);
-        }
-        void remove(BehaviorObserver<T> o) {
-            do {
-                BehaviorState oldState = observers.get();
-                if (oldState.terminated) {
-                    return;
-                }
-                BehaviorState newState = oldState.remove(o);
-                if (newState == oldState || observers.compareAndSet(oldState, newState)) {
-                    return;
-                }
-            } while (true);
-        }
-        BehaviorObserver<T>[] next(Object n) {
-            set(n);
-            return observers.get().observers;
-        }
-        BehaviorObserver<T>[] terminate(Object n) {
-            set(n);
-            active = false;
-            do {
-                BehaviorState oldState = observers.get();
-                if (oldState.terminated) {
-                    return BehaviorState.NO_OBSERVERS;
-                }
-                if (observers.compareAndSet(oldState, BehaviorState.TERMINATED)) {
-                    return oldState.observers;
-                }
-            } while (true);
-        }
-    }
-    static final class BehaviorState {
-        final boolean terminated;
-        final BehaviorObserver[] observers;
-        static final BehaviorObserver[] NO_OBSERVERS = new BehaviorObserver[0];
-        static final BehaviorState TERMINATED = new BehaviorState(true, NO_OBSERVERS);
-        static final BehaviorState EMPTY = new BehaviorState(false, NO_OBSERVERS);
-
-        public BehaviorState(boolean terminated, BehaviorObserver[] observers) {
-            this.terminated = terminated;
-            this.observers = observers;
-        }
-        public BehaviorState add(BehaviorObserver o) {
-            int n = observers.length;
-            BehaviorObserver[] a = new BehaviorObserver[n + 1];
-            System.arraycopy(observers, 0, a, 0, n);
-            a[n] = o;
-            return new BehaviorState(terminated, a);
-        }
-        public BehaviorState remove(BehaviorObserver o) {
-            BehaviorObserver[] a = observers;
-            int n = a.length;
-            if (n == 1 && a[0] == o) {
-                return EMPTY;
-            } else
-            if (n == 0) {
-                return this;
-            }
-            BehaviorObserver[] b = new BehaviorObserver[n - 1];
-            int j = 0;
-            for (int i = 0; i < n; i++) {
-                BehaviorObserver ai = a[i];
-                if (ai != o) {
-                    if (j == n - 1) {
-                        return this;
-                    }
-                    b[j++] = ai;
-                }
-            }
-            if (j == 0) {
-                return EMPTY;
-            }
-            if (j < n - 1) {
-                BehaviorObserver[] c = new BehaviorObserver[j];
-                System.arraycopy(b, 0, c, 0, j);
-                b = c;
-            }
-            return new BehaviorState(terminated, b);
-        }
-    }
-    
-    static final class BehaviorOnSubscribe<T> implements OnSubscribe<T> {
-        private final State<T> state;
-
-        public BehaviorOnSubscribe(State<T> state) {
-            this.state = state;
-        }
-
-        @Override
-        public void call(final Subscriber<? super T> child) {
-            BehaviorObserver<T> bo = new BehaviorObserver<T>(child);
-            addUnsubscriber(child, bo);
-            if (state.add(bo) && child.isUnsubscribed()) {
-                state.remove(bo);
-            }
-        }
-    
-        void addUnsubscriber(Subscriber<? super T> child, final BehaviorObserver<T> bo) {
-            child.add(Subscriptions.create(new Action0() {
-                @Override
-                public void call() {
-                    state.remove(bo);
-                }
-            }));
-        }
-    }
-    
-    
-    private final State<T> state;
+    private final SubjectSubscriptionManager<T> state;
     private final NotificationLite<T> nl = NotificationLite.instance();
 
-    protected BehaviorSubject(OnSubscribe<T> onSubscribe, State<T> state) {
+    protected BehaviorSubject(OnSubscribe<T> onSubscribe, SubjectSubscriptionManager<T> state) {
         super(onSubscribe);
         this.state = state;
     }
@@ -242,7 +116,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
         Object last = state.get();
         if (last == null || state.active) {
             Object n = nl.completed();
-            for (BehaviorObserver<T> bo : state.terminate(n)) {
+            for (SubjectObserver<T> bo : state.terminate(n)) {
                 bo.emitNext(n);
             }
         }
@@ -253,7 +127,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
         Object last = state.get();
         if (last == null || state.active) {
             Object n = nl.error(e);
-            for (BehaviorObserver<T> bo : state.terminate(n)) {
+            for (SubjectObserver<T> bo : state.terminate(n)) {
                 bo.emitNext(n);
             }
         }
@@ -264,91 +138,13 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
         Object last = state.get();
         if (last == null || state.active) {
             Object n = nl.next(v);
-            for (BehaviorObserver<T> bo : state.next(n)) {
+            for (SubjectObserver<T> bo : state.next(n)) {
                 bo.emitNext(n);
             }
         }
     }
     
     /* test support */ int subscriberCount() {
-        return state.observers.get().observers.length;
-    }
-    
-    static final class BehaviorObserver<T> {
-        final Observer<? super T> actual;
-        final NotificationLite<T> nl = NotificationLite.instance();
-        /** Guarded by this. */
-        boolean first = true;
-        /** Guarded by this. */
-        boolean emitting;
-        /** Guarded by this. */
-        List<Object> queue;
-        /* volatile */boolean fastPath;
-        public BehaviorObserver(Observer<? super T> actual) {
-            this.actual = actual;
-        }
-        void emitNext(Object n) {
-            if (!fastPath) {
-                synchronized (this) {
-                    first = false;
-                    if (emitting) {
-                        if (queue == null) {
-                            queue = new ArrayList<Object>();
-                        }
-                        queue.add(n);
-                        return;
-                    }
-                }
-                fastPath = true;
-            }
-            nl.accept(actual, n);
-        }
-        void emitFirst(Object n) {
-            synchronized (this) {
-                if (!first || emitting) {
-                    return;
-                }
-                first = false;
-                emitting = true;
-            }
-            emitLoop(null, n);
-        }
-        void emitLoop(List<Object> localQueue, Object current) {
-            boolean once = true;
-            boolean skipFinal = false;
-            try {
-                do {
-                    if (localQueue != null) {
-                        for (Object n : localQueue) {
-                            accept(n);
-                        }
-                    }
-                    if (once) {
-                        once = false;
-                        accept(current);
-                    }
-                    synchronized (this) {
-                        localQueue = queue;
-                        queue = null;
-                        if (localQueue == null) {
-                            emitting = false;
-                            skipFinal = true;
-                            break;
-                        }
-                    }
-                } while (true);
-            } finally {
-                if (!skipFinal) {
-                    synchronized (this) {
-                        emitting = false;
-                    }
-                }
-            }
-        }
-        void accept(Object n) {
-            if (n != null) {
-                nl.accept(actual, n);
-            }
-        }
+        return state.observers().length;
     }
 }

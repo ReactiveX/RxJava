@@ -16,9 +16,9 @@
 package rx.subjects;
 
 import rx.Observer;
+import rx.functions.Action1;
 import rx.operators.NotificationLite;
-import rx.subjects.BehaviorSubject.BehaviorOnSubscribe;
-import rx.subjects.BehaviorSubject.State;
+import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
 
 /**
  * Subject that, once and {@link Observer} has subscribed, publishes all subsequent events to the subscriber.
@@ -46,24 +46,32 @@ import rx.subjects.BehaviorSubject.State;
 public final class PublishSubject<T> extends Subject<T, T> {
 
     public static <T> PublishSubject<T> create() {
-        State<T> state = new State<T>();
-        return new PublishSubject<T>(new BehaviorOnSubscribe<T>(state), state);
+        final SubjectSubscriptionManager<T> state = new SubjectSubscriptionManager<T>();
+        state.onAdded = new Action1<SubjectObserver<T>>() {
+
+            @Override
+            public void call(SubjectObserver<T> o) {
+                o.emitFirst(state.get());
+            }
+            
+        };
+        state.onTerminated = state.onAdded;
+        return new PublishSubject<T>(state, state);
     }
 
-    final State<T> state;
+    final SubjectSubscriptionManager<T> state;
     private final NotificationLite<T> nl = NotificationLite.instance();
     
-    protected PublishSubject(OnSubscribe<T> onSubscribe, State<T> state) {
+    protected PublishSubject(OnSubscribe<T> onSubscribe, SubjectSubscriptionManager<T> state) {
         super(onSubscribe);
         this.state = state;
     }
 
     @Override
     public void onCompleted() {
-        Object last = state.get();
-        if (last == null || state.active) {
+        if (state.active) {
             Object n = nl.completed();
-            for (BehaviorSubject.BehaviorObserver<T> bo : state.terminate(n)) {
+            for (SubjectObserver<T> bo : state.terminate(n)) {
                 bo.emitNext(n);
             }
         }
@@ -72,10 +80,9 @@ public final class PublishSubject<T> extends Subject<T, T> {
 
     @Override
     public void onError(final Throwable e) {
-        Object last = state.get();
-        if (last == null || state.active) {
+        if (state.active) {
             Object n = nl.error(e);
-            for (BehaviorSubject.BehaviorObserver<T> bo : state.terminate(n)) {
+            for (SubjectObserver<T> bo : state.terminate(n)) {
                 bo.emitNext(n);
             }
         }
@@ -83,8 +90,8 @@ public final class PublishSubject<T> extends Subject<T, T> {
 
     @Override
     public void onNext(T v) {
-        for (BehaviorSubject.BehaviorObserver<T> bo : state.observers()) {
-            bo.emitNext(nl.next(v));
+        for (SubjectObserver<T> bo : state.observers()) {
+            bo.onNext(v);
         }
     }
 }

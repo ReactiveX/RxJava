@@ -16,12 +16,10 @@
 package rx.subjects;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import rx.Observer;
-import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.operators.NotificationLite;
 import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
@@ -57,46 +55,33 @@ public final class ReplaySubject<T> extends Subject<T, T> {
     public static <T> ReplaySubject<T> create(int initialCapacity) {
         final SubjectSubscriptionManager<T> subscriptionManager = new SubjectSubscriptionManager<T>();
         final ReplayState<T> state = new ReplayState<T>(initialCapacity);
+        subscriptionManager.onStart = new Action1<SubjectObserver<T>>() {
+            @Override
+            public void call(SubjectObserver<T> o) {
+                // replay history for this observer using the subscribing thread
+                int lastIndex = replayObserverFromIndex(state.history, 0, o);
 
-        OnSubscribe<T> onSubscribe = subscriptionManager.getOnSubscribeFunc(
-                /**
-                 * This function executes at beginning of subscription.
-                 * We want to replay history with the subscribing thread
-                 * before the Observer gets registered.
-                 * 
-                 * This will always run, even if Subject is in terminal state.
-                 */
-                new Action1<SubjectObserver<? super T>>() {
-
-                    @Override
-                    public void call(SubjectObserver<? super T> o) {
-                        // replay history for this observer using the subscribing thread
-                        int lastIndex = replayObserverFromIndex(state.history, 0, o);
-
-                        // now that it is caught up add to observers
-                        state.replayState.put(o, lastIndex);
-                    }
-                },
-                /**
-                 * This function executes if the Subject is terminated.
-                 */
-                new Action1<SubjectObserver<? super T>>() {
-
-                    @Override
-                    public void call(SubjectObserver<? super T> o) {
-                        Integer idx = state.replayState.remove(o);
-                        // we will finish replaying if there is anything left
-                        replayObserverFromIndex(state.history, idx, o);
-                    }
-                },
-                new Action1<SubjectObserver<? super T>>() {
-                    @Override
-                    public void call(SubjectObserver<? super T> o) {
-                        state.replayState.remove(o);
-                    }
-                });
-
-        return new ReplaySubject<T>(onSubscribe, subscriptionManager, state);
+                // now that it is caught up add to observers
+                state.replayState.put(o, lastIndex);
+            }
+        };
+        subscriptionManager.onTerminated = new Action1<SubjectObserver<T>>() {
+            @Override
+            public void call(SubjectObserver<T> o) {
+                Integer idx = state.replayState.remove(o);
+                if (idx == null) {
+                    idx = 0;
+                }
+                replayObserverFromIndex(state.history, idx, o);
+            }
+        };
+        subscriptionManager.onUnsubscribed = new Action1<SubjectObserver<T>>() {
+            @Override
+            public void call(SubjectObserver<T> o) {
+                state.replayState.remove(o);
+            }
+        };
+        return new ReplaySubject<T>(subscriptionManager, subscriptionManager, state);
     }
 
     private static class ReplayState<T> {
@@ -122,15 +107,10 @@ public final class ReplaySubject<T> extends Subject<T, T> {
 
     @Override
     public void onCompleted() {
-        Collection<SubjectObserver<? super T>> observers = subscriptionManager.terminate(new Action0() {
 
-            @Override
-            public void call() {
-                state.history.complete();
-            }
-        });
-        if (observers != null) {
-            for (SubjectObserver<? super T> o : observers) {
+        if (subscriptionManager.active) {
+            state.history.complete();
+            for (SubjectObserver<T> o : subscriptionManager.terminate(NotificationLite.instance().completed())) {
                 if (caughtUp(o)) {
                     o.onCompleted();
                 }
@@ -140,15 +120,9 @@ public final class ReplaySubject<T> extends Subject<T, T> {
 
     @Override
     public void onError(final Throwable e) {
-        Collection<SubjectObserver<? super T>> observers = subscriptionManager.terminate(new Action0() {
-
-            @Override
-            public void call() {
-                state.history.complete(e);
-            }
-        });
-        if (observers != null) {
-            for (SubjectObserver<? super T> o : observers) {
+        if (subscriptionManager.active) {
+            state.history.complete(e);
+            for (SubjectObserver<T> o : subscriptionManager.terminate(NotificationLite.instance().completed())) {
                 if (caughtUp(o)) {
                     o.onError(e);
                 }
@@ -162,7 +136,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
             return;
         }
         state.history.next(v);
-        for (SubjectObserver<? super T> o : subscriptionManager.rawSnapshot()) {
+        for (SubjectObserver<? super T> o : subscriptionManager.observers()) {
             if (caughtUp(o)) {
                 o.onNext(v);
             }
@@ -189,21 +163,20 @@ public final class ReplaySubject<T> extends Subject<T, T> {
 
     private void replayObserver(SubjectObserver<? super T> observer) {
         Integer lastEmittedLink = state.replayState.get(observer);
-        if (lastEmittedLink != null) {
-            int l = replayObserverFromIndex(state.history, lastEmittedLink, observer);
-            state.replayState.put(observer, l);
-        } else {
-            throw new IllegalStateException("failed to find lastEmittedLink for: " + observer);
+        if (lastEmittedLink == null) {
+            lastEmittedLink = 0;
         }
+        int l = replayObserverFromIndex(state.history, lastEmittedLink, observer);
+        state.replayState.put(observer, l);
     }
 
-    private static <T> int replayObserverFromIndex(History<T> history, Integer l, SubjectObserver<? super T> observer) {
-        while (l < history.index.get()) {
-            history.accept(observer, l);
-            l++;
+    static <T> int replayObserverFromIndex(History<T> history, int idx, SubjectObserver<? super T> observer) {
+        while (idx < history.index.get()) {
+            history.accept(observer, idx);
+            idx++;
         }
 
-        return l;
+        return idx;
     }
 
     /**

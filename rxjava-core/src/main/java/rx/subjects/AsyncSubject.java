@@ -15,13 +15,9 @@
  */
 package rx.subjects;
 
-import java.util.Collection;
-import java.util.concurrent.atomic.AtomicReference;
-
-import rx.Notification;
 import rx.Observer;
-import rx.functions.Action0;
 import rx.functions.Action1;
+import rx.operators.NotificationLite;
 import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
 
 /**
@@ -56,88 +52,59 @@ import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
 public final class AsyncSubject<T> extends Subject<T, T> {
 
     public static <T> AsyncSubject<T> create() {
-        final SubjectSubscriptionManager<T> subscriptionManager = new SubjectSubscriptionManager<T>();
-        final AtomicReference<Notification<T>> lastNotification = new AtomicReference<Notification<T>>(Notification.<T>createOnCompleted());
-
-        OnSubscribe<T> onSubscribe = subscriptionManager.getOnSubscribeFunc(
-                /**
-                 * This function executes at beginning of subscription.
-                 * 
-                 * This will always run, even if Subject is in terminal state.
-                 */
-                new Action1<SubjectObserver<? super T>>() {
-
-                    @Override
-                    public void call(SubjectObserver<? super T> o) {
-                        // nothing to do if not terminated
-                    }
-                },
-                /**
-                 * This function executes if the Subject is terminated.
-                 */
-                new Action1<SubjectObserver<? super T>>() {
-
-                    @Override
-                    public void call(SubjectObserver<? super T> o) {
-                        // we want the last value + completed so add this extra logic 
-                        // to send onCompleted if the last value is an onNext
-                        emitValueToObserver(lastNotification.get(), o);
-                    }
-                }, null);
-
-        return new AsyncSubject<T>(onSubscribe, subscriptionManager, lastNotification);
+        final SubjectSubscriptionManager<T> state = new SubjectSubscriptionManager<T>();
+        state.onTerminated = new Action1<SubjectObserver<T>>() {
+            @Override
+            public void call(SubjectObserver<T> o) {
+                Object v = state.get();
+                o.accept(v);
+                o.completeSingle(v);
+            }
+        };
+        return new AsyncSubject<T>(state, state);
     }
 
-    protected static <T> void emitValueToObserver(Notification<T> n, Observer<? super T> o) {
-        n.accept(o);
-        if (n.isOnNext()) {
-            o.onCompleted();
-        }
-    }
+    final SubjectSubscriptionManager<T> state;
+    volatile Object lastValue;
+    private final NotificationLite<T> nl = NotificationLite.instance();
 
-    private final SubjectSubscriptionManager<T> subscriptionManager;
-    final AtomicReference<Notification<T>> lastNotification;
 
-    protected AsyncSubject(OnSubscribe<T> onSubscribe, SubjectSubscriptionManager<T> subscriptionManager, AtomicReference<Notification<T>> lastNotification) {
+    protected AsyncSubject(OnSubscribe<T> onSubscribe, SubjectSubscriptionManager<T> state) {
         super(onSubscribe);
-        this.subscriptionManager = subscriptionManager;
-        this.lastNotification = lastNotification;
+        this.state = state;
     }
 
     @Override
     public void onCompleted() {
-        Collection<SubjectObserver<? super T>> observers = subscriptionManager.terminate(new Action0() {
-
-            @Override
-            public void call() {
+        if (state.active) {
+            Object last = lastValue;
+            if (last == null) {
+                last = nl.completed();
             }
-        });
-        if (observers != null) {
-            for (Observer<? super T> o : observers) {
-                emitValueToObserver(lastNotification.get(), o);
+            for (SubjectObserver<T> bo : state.terminate(last)) {
+                if (last == nl.completed()) {
+                    bo.onCompleted();
+                } else {
+                    bo.onNext(nl.getValue(last));
+                    bo.onCompleted();
+                }
             }
         }
     }
 
     @Override
     public void onError(final Throwable e) {
-        Collection<SubjectObserver<? super T>> observers = subscriptionManager.terminate(new Action0() {
-            @Override
-            public void call() {
-                lastNotification.set(Notification.<T> createOnError(e));
-            }
-        });
-        if (observers != null) {
-            for (Observer<? super T> o : observers) {
-                emitValueToObserver(lastNotification.get(), o);
+        if (state.active) {
+            Object n = nl.error(e);
+            for (SubjectObserver<T> bo : state.terminate(n)) {
+                bo.onError(e);
             }
         }
-
     }
 
     @Override
     public void onNext(T v) {
-        lastNotification.set(Notification.createOnNext(v));
+        lastValue = nl.next(v);
     }
 
 }
