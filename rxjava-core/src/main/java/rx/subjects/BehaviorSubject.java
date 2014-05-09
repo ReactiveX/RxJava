@@ -98,6 +98,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
     static final class State<T> {
         final AtomicReference<Object> latest = new AtomicReference<Object>();
         final AtomicReference<BehaviorState> observers = new AtomicReference<BehaviorState>(BehaviorState.EMPTY);
+        boolean active = true;
         void set(Object value) {
             this.latest.set(value);
         }
@@ -139,6 +140,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
         }
         BehaviorObserver<T>[] terminate(Object n) {
             set(n);
+            active = false;
             do {
                 BehaviorState oldState = observers.get();
                 if (oldState.terminated) {
@@ -148,9 +150,6 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
                     return oldState.observers;
                 }
             } while (true);
-        }
-        boolean isActive() {
-            return !observers.get().terminated;
         }
     }
     static final class BehaviorState {
@@ -241,7 +240,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
     @Override
     public void onCompleted() {
         Object last = state.get();
-        if (last == null || state.isActive()) {
+        if (last == null || state.active) {
             Object n = nl.completed();
             for (BehaviorObserver<T> bo : state.terminate(n)) {
                 bo.emitNext(n);
@@ -252,7 +251,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
     @Override
     public void onError(Throwable e) {
         Object last = state.get();
-        if (last == null || state.isActive()) {
+        if (last == null || state.active) {
             Object n = nl.error(e);
             for (BehaviorObserver<T> bo : state.terminate(n)) {
                 bo.emitNext(n);
@@ -263,7 +262,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
     @Override
     public void onNext(T v) {
         Object last = state.get();
-        if (last == null || state.isActive()) {
+        if (last == null || state.active) {
             Object n = nl.next(v);
             for (BehaviorObserver<T> bo : state.next(n)) {
                 bo.emitNext(n);
@@ -284,8 +283,6 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
         boolean emitting;
         /** Guarded by this. */
         List<Object> queue;
-        /** Accessed only from serialized state. */
-        boolean done;
         /* volatile */boolean fastPath;
         public BehaviorObserver(Observer<? super T> actual) {
             this.actual = actual;
@@ -349,10 +346,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
             }
         }
         void accept(Object n) {
-            if (n != null && !done) {
-                if (nl.isCompleted(n) || nl.isError(n)) {
-                    done = true;
-                }
+            if (n != null) {
                 nl.accept(actual, n);
             }
         }

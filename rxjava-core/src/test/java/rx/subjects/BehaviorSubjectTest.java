@@ -304,11 +304,12 @@ public class BehaviorSubjectTest {
         
         source.onNext(2);
         
+        verify(o, never()).onError(any(Throwable.class));
+
         inOrder.verify(o).onNext(1);
         inOrder.verify(o).onCompleted();
         inOrder.verifyNoMoreInteractions();
         
-        verify(o, never()).onError(any(Throwable.class));
         
     }
     @Test
