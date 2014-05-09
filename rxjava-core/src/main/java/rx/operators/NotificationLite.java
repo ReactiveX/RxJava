@@ -111,17 +111,22 @@ public final class NotificationLite<T> {
      * @throws NullPointerException
      *             if the {@link Observer} is null.
      */
+    @SuppressWarnings("unchecked")
     public void accept(Observer<? super T> o, Object n) {
-        switch (kind(n)) {
-        case OnNext:
-            o.onNext(getValue(n));
-            break;
-        case OnCompleted:
+        if (n == ON_COMPLETED_SENTINEL) {
             o.onCompleted();
-            break;
-        case OnError:
-            o.onError(getError(n));
-            break;
+        } else
+        if (n == ON_NEXT_NULL_SENTINEL) {
+            o.onNext(null);
+        } else
+        if (n != null) {
+            if (n.getClass() == OnErrorSentinel.class) {
+                o.onError(((OnErrorSentinel)n).e);
+            } else {
+                o.onNext((T)n);
+            }
+        } else {
+            throw new IllegalArgumentException("The lite notification can not be null");
         }
     }
 
