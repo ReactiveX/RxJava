@@ -260,7 +260,9 @@ import rx.subscriptions.Subscriptions;
         public void onNext(T v) {
             this.actual.onNext(v);
         }
-
+        Observer<? super T> getActual() {
+            return actual;
+        }
     }
 
 }
