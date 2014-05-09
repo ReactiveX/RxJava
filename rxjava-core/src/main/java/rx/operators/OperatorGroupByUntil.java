@@ -197,7 +197,7 @@ public class OperatorGroupByUntil<T, K, R, D> implements Operator<GroupedObserva
     public static final class GroupSubject<K, R> extends Subscriber<R> {
         
         static <K, R> GroupSubject<K, R> create(K key) {
-            PublishSubject<R> publish = PublishSubject.create();
+            Subject<R, R> publish = BufferUntilSubscriber.create();
             return new GroupSubject<K, R>(key, publish);
         }
         
