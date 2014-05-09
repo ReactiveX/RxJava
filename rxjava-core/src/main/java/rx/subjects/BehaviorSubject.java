@@ -274,7 +274,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
         return state.observers.get().observers.length;
     }
     
-    private static final class BehaviorObserver<T> {
+    static final class BehaviorObserver<T> {
         final Observer<? super T> actual;
         final NotificationLite<T> nl = NotificationLite.instance();
         /** Guarded by this. */
