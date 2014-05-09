@@ -15,6 +15,7 @@
  */
 package rx.subjects;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -349,5 +350,20 @@ public class BehaviorSubjectTest {
         verify(o).onCompleted();
         verify(o, never()).onError(any(Throwable.class));
         verify(o, never()).onNext(any());
+    }
+    
+    @Test
+    public void testTakeOneSubscriber() {
+        BehaviorSubject<Integer> source = BehaviorSubject.create(1);
+        @SuppressWarnings("unchecked")
+        final Observer<Object> o = mock(Observer.class);
+        
+        source.take(1).subscribe(o);
+        
+        verify(o).onNext(1);
+        verify(o).onCompleted();
+        verify(o, never()).onError(any(Throwable.class));
+        
+        assertEquals(0, source.subscriberCount());
     }
 }

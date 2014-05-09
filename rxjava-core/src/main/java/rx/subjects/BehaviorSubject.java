@@ -15,17 +15,15 @@
  */
 package rx.subjects;
 
+
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
-
 import rx.Notification;
 import rx.Observer;
 import rx.Subscriber;
 import rx.functions.Action0;
-import rx.functions.Action1;
-import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
+import rx.subscriptions.Subscriptions;
 
 /**
  * Subject that publishes the most recent and all subsequent events to each subscribed {@link Observer}.
@@ -68,6 +66,7 @@ import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
  * 
  * @param <T>
  */
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public final class BehaviorSubject<T> extends Subject<T, T> {
     /**
      * Create a {@link BehaviorSubject} without a default value.
@@ -89,236 +88,276 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
         return create(defaultValue, true);
     }
     private static <T> BehaviorSubject<T> create(T defaultValue, boolean hasDefault) {
-        final SubjectSubscriptionManager<T> subscriptionManager = new SubjectSubscriptionManager<T>();
-        // set a default value so subscriptions will immediately receive this until a new notification is received
-        final State<T> state = new State<T>();
+        State<T> state = new State<T>();
         if (hasDefault) {
-            state.lastNotification.set(Notification.createOnNext(defaultValue));
+            state.set(Notification.createOnNext(defaultValue));
         }
-
-        final OnSubscribe<T> onSubscribeBase = subscriptionManager.getOnSubscribeFunc(
-                /**
-                 * This function executes at beginning of subscription.
-                 * 
-                 * This will always run, even if Subject is in terminal state.
-                 */
-                new Action1<SubjectObserver<? super T>>() {
-                    @Override
-                    public void call(SubjectObserver<? super T> o) {
-                        /*
-                         * When we subscribe we always emit the latest value to the observer.
-                         * 
-                         * Here we only emit if it's an onNext as terminal states are handled in the next function.
-                         */
-                        state.addPending(o);
-                    }
-                },
-                /**
-                 * This function executes if the Subject is terminated before subscription occurs.
-                 */
-                new Action1<SubjectObserver<? super T>>() {
-                    @Override
-                    public void call(SubjectObserver<? super T> o) {
-                        /*
-                         * If we are already terminated, or termination happens while trying to subscribe
-                         * this will be invoked and we emit whatever the last terminal value was.
-                         */
-                        state.removePending(o);
-                    }
-                }, new Action1<SubjectObserver<? super T>>() {
-                    @Override
-                    public void call(SubjectObserver<? super T> o) {
-                        state.removePending(o);
-                    }
-                    
-                });
-        OnSubscribe<T> onSubscribe = new OnSubscribe<T>() {
-
-            @Override
-            public void call(Subscriber<? super T> t1) {
-                onSubscribeBase.call(t1);
-                state.removePendingSubscriber(t1);
-            }
-        };
-        return new BehaviorSubject<T>(onSubscribe, subscriptionManager, state);
+        return new BehaviorSubject<T>(new BehaviorOnSubscribe<T>(state), state); 
     }
 
     static final class State<T> {
-        final AtomicReference<Notification<T>> lastNotification;
-        /** Guarded by this. */
-        List<Object> pendingSubscriptions;
-        public State() {
-            this.lastNotification = new AtomicReference<Notification<T>>();
+        final AtomicReference<Notification<T>> latest = new AtomicReference<Notification<T>>();
+        final AtomicReference<BehaviorState> observers = new AtomicReference<BehaviorState>(BehaviorState.EMPTY);
+        void set(Notification<T> value) {
+            this.latest.set(value);
         }
-        public void addPending(SubjectObserver<? super T> subscriber) {
-            synchronized (this) {
-                if (pendingSubscriptions == null) {
-                    pendingSubscriptions = new ArrayList<Object>(4);
+        Notification<T> get() {
+            return latest.get();
+        }
+        BehaviorObserver<T>[] observers() {
+            return observers.get().observers;
+        }
+        boolean add(BehaviorObserver<T> o) {
+            do {
+                BehaviorState oldState = observers.get();
+                if (oldState.terminated) {
+                    o.emitFirst(get());
+                    return false;
                 }
-                pendingSubscriptions.add(subscriber);
-                List<Notification<T>> list = new ArrayList<Notification<T>>(4);
-                list.add(lastNotification.get());
-                pendingSubscriptions.add(list);
-            }
+                BehaviorState newState = oldState.add(o);
+                if (observers.compareAndSet(oldState, newState)) {
+                    o.emitFirst(get());
+                    return true;
+                }
+            } while (true);
         }
-        public void bufferValue(Notification<T> value) {
-            synchronized (this) {
-                if (pendingSubscriptions == null) {
+        void remove(BehaviorObserver<T> o) {
+            do {
+                BehaviorState oldState = observers.get();
+                if (oldState.terminated) {
                     return;
                 }
-                for (int i = 1; i < pendingSubscriptions.size(); i += 2) {
-                    @SuppressWarnings("unchecked")
-                    List<Notification<T>> list = (List<Notification<T>>)pendingSubscriptions.get(i);
-                    list.add(value);
-                }
-            }
-        }
-        public void removePending(SubjectObserver<? super T> subscriber) {
-            List<Notification<T>> toCatchUp = null;
-            synchronized (this) {
-                if (pendingSubscriptions == null) {
+                BehaviorState newState = oldState.remove(o);
+                if (newState == oldState || observers.compareAndSet(oldState, newState)) {
                     return;
                 }
-                int idx = pendingSubscriptions.indexOf(subscriber);
-                if (idx >= 0) {
-                    pendingSubscriptions.remove(idx);
-                    @SuppressWarnings("unchecked")
-                    List<Notification<T>> list = (List<Notification<T>>)pendingSubscriptions.remove(idx);
-                    toCatchUp = list;
-                    subscriber.caughtUp = true;
-                    if (pendingSubscriptions.isEmpty()) {
-                        pendingSubscriptions = null;
-                    }
-                }
-            }
-            if (toCatchUp != null) {
-                for (Notification<T> n : toCatchUp) {
-                    if (n != null) {
-                        n.accept(subscriber);
-                    }
-                }
-            }
+            } while (true);
         }
-        public void removePendingSubscriber(Subscriber<? super T> subscriber) {
-            List<Notification<T>> toCatchUp = null;
-            synchronized (this) {
-                if (pendingSubscriptions == null) {
-                    return;
-                }
-                for (int i = 0; i < pendingSubscriptions.size(); i += 2) {
-                    @SuppressWarnings("unchecked")
-                    SubjectObserver<? super T> so = (SubjectObserver<? super T>)pendingSubscriptions.get(i);
-                    if (so.getActual() == subscriber && !so.caughtUp) {
-                        @SuppressWarnings("unchecked")
-                        List<Notification<T>> list = (List<Notification<T>>)pendingSubscriptions.get(i + 1);
-                        toCatchUp = list;
-                        so.caughtUp = true;
-                        pendingSubscriptions.remove(i);
-                        pendingSubscriptions.remove(i);
-                        if (pendingSubscriptions.isEmpty()) {
-                            pendingSubscriptions = null;
-                        }
-                        break;
-                    }
-                }
-            }
-            if (toCatchUp != null) {
-                for (Notification<T> n : toCatchUp) {
-                    if (n != null) {
-                        n.accept(subscriber);
-                    }
-                }
-            }
+        BehaviorObserver<T>[] next(Notification<T> n) {
+            set(n);
+            return observers.get().observers;
         }
-        public void replayAllPending() {
-            List<Object> localPending;
-            synchronized (this) {
-                localPending = pendingSubscriptions;
-                pendingSubscriptions = null;
+        BehaviorObserver<T>[] terminate(Notification<T> n) {
+            set(n);
+            do {
+                BehaviorState oldState = observers.get();
+                if (oldState.terminated) {
+                    return BehaviorState.NO_OBSERVERS;
+                }
+                if (observers.compareAndSet(oldState, BehaviorState.TERMINATED)) {
+                    return oldState.observers;
+                }
+            } while (true);
+        }
+    }
+    static final class BehaviorState {
+        final boolean terminated;
+        final BehaviorObserver[] observers;
+        static final BehaviorObserver[] NO_OBSERVERS = new BehaviorObserver[0];
+        static final BehaviorState TERMINATED = new BehaviorState(true, NO_OBSERVERS);
+        static final BehaviorState EMPTY = new BehaviorState(false, NO_OBSERVERS);
+
+        public BehaviorState(boolean terminated, BehaviorObserver[] observers) {
+            this.terminated = terminated;
+            this.observers = observers;
+        }
+        public BehaviorState add(BehaviorObserver o) {
+            int n = observers.length;
+            BehaviorObserver[] a = new BehaviorObserver[n + 1];
+            System.arraycopy(observers, 0, a, 0, n);
+            a[n] = o;
+            return new BehaviorState(terminated, a);
+        }
+        public BehaviorState remove(BehaviorObserver o) {
+            BehaviorObserver[] a = observers;
+            int n = a.length;
+            if (n == 1 && a[0] == o) {
+                return EMPTY;
+            } else
+            if (n == 0) {
+                return this;
             }
-            if (localPending != null) {
-                for (int i = 0; i < localPending.size(); i += 2) {
-                    @SuppressWarnings("unchecked")
-                    SubjectObserver<? super T> so = (SubjectObserver<? super T>)localPending.get(i);
-                    if (!so.caughtUp) {
-                        @SuppressWarnings("unchecked")
-                        List<Notification<T>> list = (List<Notification<T>>)localPending.get(i + 1);
-                        for (Notification<T> v : list) {
-                            if (v != null) {
-                                v.accept(so);
-                            }
-                        }
-                        so.caughtUp = true;
+            BehaviorObserver[] b = new BehaviorObserver[n - 1];
+            int j = 0;
+            for (int i = 0; i < n; i++) {
+                BehaviorObserver ai = a[i];
+                if (ai != o) {
+                    if (j == n - 1) {
+                        return this;
                     }
+                    b[j++] = ai;
                 }
             }
+            if (j == 0) {
+                return EMPTY;
+            }
+            if (j < n - 1) {
+                BehaviorObserver[] c = new BehaviorObserver[j];
+                System.arraycopy(b, 0, c, 0, j);
+                b = c;
+            }
+            return new BehaviorState(terminated, b);
         }
     }
     
-    private final State<T> state;
-    private final SubjectSubscriptionManager<T> subscriptionManager;
+    static final class BehaviorOnSubscribe<T> implements OnSubscribe<T> {
+        private final State<T> state;
 
-    protected BehaviorSubject(OnSubscribe<T> onSubscribe, SubjectSubscriptionManager<T> subscriptionManager, 
-            State<T> state) {
+        public BehaviorOnSubscribe(State<T> state) {
+            this.state = state;
+        }
+
+        @Override
+        public void call(final Subscriber<? super T> child) {
+            BehaviorObserver<T> bo = new BehaviorObserver<T>(child);
+            addUnsubscriber(child, bo);
+            if (state.add(bo) && child.isUnsubscribed()) {
+                state.remove(bo);
+            }
+        }
+    
+        void addUnsubscriber(Subscriber<? super T> child, final BehaviorObserver<T> bo) {
+            child.add(Subscriptions.create(new Action0() {
+                @Override
+                public void call() {
+                    state.remove(bo);
+                }
+            }));
+        }
+    }
+    
+    
+    private final State<T> state;
+
+    protected BehaviorSubject(OnSubscribe<T> onSubscribe, State<T> state) {
         super(onSubscribe);
-        this.subscriptionManager = subscriptionManager;
         this.state = state;
     }
 
     @Override
     public void onCompleted() {
-        Collection<SubjectObserver<? super T>> observers = subscriptionManager.terminate(new Action0() {
-
-            @Override
-            public void call() {
-                final Notification<T> ne = Notification.<T>createOnCompleted();
-                state.bufferValue(ne);
-                state.lastNotification.set(ne);
-            }
-        });
-        if (observers != null) {
-            state.replayAllPending();
-            for (Observer<? super T> o : observers) {
-                o.onCompleted();
+        Notification<T> last = state.get();
+        if (last == null || last.isOnNext()) {
+            Notification<T> n = Notification.<T>createOnCompleted();
+            for (BehaviorObserver<T> bo : state.terminate(n)) {
+                bo.emitNext(n);
             }
         }
     }
 
     @Override
-    public void onError(final Throwable e) {
-        Collection<SubjectObserver<? super T>> observers = subscriptionManager.terminate(new Action0() {
-
-            @Override
-            public void call() {
-                final Notification<T> ne = Notification.<T>createOnError(e);
-                state.bufferValue(ne);
-                state.lastNotification.set(ne);
-            }
-        });
-        if (observers != null) {
-            state.replayAllPending();
-            for (Observer<? super T> o : observers) {
-                o.onError(e);
+    public void onError(Throwable e) {
+        Notification<T> last = state.get();
+        if (last == null || last.isOnNext()) {
+            Notification<T> n = Notification.<T>createOnError(e);
+            for (BehaviorObserver<T> bo : state.terminate(n)) {
+                bo.emitNext(n);
             }
         }
     }
 
     @Override
     public void onNext(T v) {
-        // do not overwrite a terminal notification
-        // so new subscribers can get them
-        Notification<T> last = state.lastNotification.get();
+        Notification<T> last = state.get();
         if (last == null || last.isOnNext()) {
             Notification<T> n = Notification.createOnNext(v);
-            state.bufferValue(n);
-            state.lastNotification.set(n);
-            
-            for (SubjectObserver<? super T> o : subscriptionManager.rawSnapshot()) {
-                if (o.caughtUp) {
-                    o.onNext(v);
-                } else {
-                    state.removePending(o);
+            for (BehaviorObserver<T> bo : state.next(n)) {
+                bo.emitNext(n);
+            }
+        }
+    }
+    
+    /* test support */ int subscriberCount() {
+        return state.observers.get().observers.length;
+    }
+    
+    private static final class BehaviorObserver<T> {
+        final Observer<? super T> actual;
+        /** Guarded by this. */
+        boolean first = true;
+        /** Guarded by this. */
+        boolean emitting;
+        /** Guarded by this. */
+        List<Notification<T>> queue;
+        /** Accessed only from serialized state. */
+        boolean done;
+        volatile boolean fastPath;
+        public BehaviorObserver(Observer<? super T> actual) {
+            this.actual = actual;
+        }
+        void emitNext(Notification<T> n) {
+            if (fastPath) {
+                accept(n);
+                return;
+            }
+            List<Notification<T>> localQueue;
+            synchronized (this) {
+                first = false;
+                if (emitting) {
+                    if (queue == null) {
+                        queue = new ArrayList<Notification<T>>();
+                    }
+                    queue.add(n);
+                    return;
                 }
+                emitting = true;
+                localQueue = queue;
+                queue = null;
+            }
+            fastPath = true;
+            emitLoop(localQueue, n);
+        }
+        void emitFirst(Notification<T> n) {
+            List<Notification<T>> localQueue;
+            synchronized (this) {
+                if (!first || emitting) {
+                    return;
+                }
+                first = false;
+                emitting = true;
+                localQueue = queue;
+                queue = null;
+            }
+            emitLoop(localQueue, n);
+        }
+        void emitLoop(List<Notification<T>> localQueue, Notification<T> current) {
+            boolean once = true;
+            boolean skipFinal = false;
+            try {
+                do {
+                    if (localQueue != null) {
+                        for (Notification<T> n : localQueue) {
+                            accept(n);
+                        }
+                    }
+                    if (once) {
+                        once = false;
+                        accept(current);
+                    }
+                    synchronized (this) {
+                        localQueue = queue;
+                        queue = null;
+                        if (localQueue == null) {
+                            emitting = false;
+                            skipFinal = true;
+                            break;
+                        }
+                    }
+                } while (true);
+            } finally {
+                if (!skipFinal) {
+                    synchronized (this) {
+                        emitting = false;
+                    }
+                }
+            }
+        }
+        void accept(Notification<T> n) {
+            if (n != null && !done) {
+                if (!n.isOnNext()) {
+                    done = true;
+                }
+                n.accept(actual);
             }
         }
     }
