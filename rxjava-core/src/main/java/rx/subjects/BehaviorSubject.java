@@ -19,10 +19,10 @@ package rx.subjects;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
-import rx.Notification;
 import rx.Observer;
 import rx.Subscriber;
 import rx.functions.Action0;
+import rx.operators.NotificationLite;
 import rx.subscriptions.Subscriptions;
 
 /**
@@ -90,18 +90,18 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
     private static <T> BehaviorSubject<T> create(T defaultValue, boolean hasDefault) {
         State<T> state = new State<T>();
         if (hasDefault) {
-            state.set(Notification.createOnNext(defaultValue));
+            state.set(NotificationLite.instance().next(defaultValue));
         }
         return new BehaviorSubject<T>(new BehaviorOnSubscribe<T>(state), state); 
     }
 
     static final class State<T> {
-        final AtomicReference<Notification<T>> latest = new AtomicReference<Notification<T>>();
+        final AtomicReference<Object> latest = new AtomicReference<Object>();
         final AtomicReference<BehaviorState> observers = new AtomicReference<BehaviorState>(BehaviorState.EMPTY);
-        void set(Notification<T> value) {
+        void set(Object value) {
             this.latest.set(value);
         }
-        Notification<T> get() {
+        Object get() {
             return latest.get();
         }
         BehaviorObserver<T>[] observers() {
@@ -133,11 +133,11 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
                 }
             } while (true);
         }
-        BehaviorObserver<T>[] next(Notification<T> n) {
+        BehaviorObserver<T>[] next(Object n) {
             set(n);
             return observers.get().observers;
         }
-        BehaviorObserver<T>[] terminate(Notification<T> n) {
+        BehaviorObserver<T>[] terminate(Object n) {
             set(n);
             do {
                 BehaviorState oldState = observers.get();
@@ -148,6 +148,9 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
                     return oldState.observers;
                 }
             } while (true);
+        }
+        boolean isActive() {
+            return !observers.get().terminated;
         }
     }
     static final class BehaviorState {
@@ -228,6 +231,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
     
     
     private final State<T> state;
+    private final NotificationLite<T> nl = NotificationLite.instance();
 
     protected BehaviorSubject(OnSubscribe<T> onSubscribe, State<T> state) {
         super(onSubscribe);
@@ -236,9 +240,9 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
 
     @Override
     public void onCompleted() {
-        Notification<T> last = state.get();
-        if (last == null || last.isOnNext()) {
-            Notification<T> n = Notification.<T>createOnCompleted();
+        Object last = state.get();
+        if (last == null || state.isActive()) {
+            Object n = nl.completed();
             for (BehaviorObserver<T> bo : state.terminate(n)) {
                 bo.emitNext(n);
             }
@@ -247,9 +251,9 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
 
     @Override
     public void onError(Throwable e) {
-        Notification<T> last = state.get();
-        if (last == null || last.isOnNext()) {
-            Notification<T> n = Notification.<T>createOnError(e);
+        Object last = state.get();
+        if (last == null || state.isActive()) {
+            Object n = nl.error(e);
             for (BehaviorObserver<T> bo : state.terminate(n)) {
                 bo.emitNext(n);
             }
@@ -258,9 +262,9 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
 
     @Override
     public void onNext(T v) {
-        Notification<T> last = state.get();
-        if (last == null || last.isOnNext()) {
-            Notification<T> n = Notification.createOnNext(v);
+        Object last = state.get();
+        if (last == null || state.isActive()) {
+            Object n = nl.next(v);
             for (BehaviorObserver<T> bo : state.next(n)) {
                 bo.emitNext(n);
             }
@@ -273,60 +277,52 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
     
     private static final class BehaviorObserver<T> {
         final Observer<? super T> actual;
+        final NotificationLite<T> nl = NotificationLite.instance();
         /** Guarded by this. */
         boolean first = true;
         /** Guarded by this. */
         boolean emitting;
         /** Guarded by this. */
-        List<Notification<T>> queue;
+        List<Object> queue;
         /** Accessed only from serialized state. */
         boolean done;
-        volatile boolean fastPath;
+        /* volatile */boolean fastPath;
         public BehaviorObserver(Observer<? super T> actual) {
             this.actual = actual;
         }
-        void emitNext(Notification<T> n) {
-            if (fastPath) {
-                accept(n);
-                return;
-            }
-            List<Notification<T>> localQueue;
-            synchronized (this) {
-                first = false;
-                if (emitting) {
-                    if (queue == null) {
-                        queue = new ArrayList<Notification<T>>();
+        void emitNext(Object n) {
+            if (!fastPath) {
+                synchronized (this) {
+                    first = false;
+                    if (emitting) {
+                        if (queue == null) {
+                            queue = new ArrayList<Object>();
+                        }
+                        queue.add(n);
+                        return;
                     }
-                    queue.add(n);
-                    return;
                 }
-                emitting = true;
-                localQueue = queue;
-                queue = null;
+                fastPath = true;
             }
-            fastPath = true;
-            emitLoop(localQueue, n);
+            nl.accept(actual, n);
         }
-        void emitFirst(Notification<T> n) {
-            List<Notification<T>> localQueue;
+        void emitFirst(Object n) {
             synchronized (this) {
                 if (!first || emitting) {
                     return;
                 }
                 first = false;
                 emitting = true;
-                localQueue = queue;
-                queue = null;
             }
-            emitLoop(localQueue, n);
+            emitLoop(null, n);
         }
-        void emitLoop(List<Notification<T>> localQueue, Notification<T> current) {
+        void emitLoop(List<Object> localQueue, Object current) {
             boolean once = true;
             boolean skipFinal = false;
             try {
                 do {
                     if (localQueue != null) {
-                        for (Notification<T> n : localQueue) {
+                        for (Object n : localQueue) {
                             accept(n);
                         }
                     }
@@ -352,12 +348,12 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
                 }
             }
         }
-        void accept(Notification<T> n) {
+        void accept(Object n) {
             if (n != null && !done) {
-                if (!n.isOnNext()) {
+                if (nl.isCompleted(n) || nl.isError(n)) {
                     done = true;
                 }
-                n.accept(actual);
+                nl.accept(actual, n);
             }
         }
     }
