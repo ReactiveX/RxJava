@@ -15,11 +15,14 @@
  */
 package rx.subjects;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Notification;
 import rx.Observer;
+import rx.Subscriber;
 import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
@@ -66,27 +69,40 @@ import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
  * @param <T>
  */
 public final class BehaviorSubject<T> extends Subject<T, T> {
-
+    /**
+     * Create a {@link BehaviorSubject} without a default value.
+     * @param <T> the value type
+     * @return the constructed {@link BehaviorSubject}
+     */
+    public static <T> BehaviorSubject<T> create() {
+        return create(null, false);
+    }
     /**
      * Creates a {@link BehaviorSubject} which publishes the last and all subsequent events to each {@link Observer} that subscribes to it.
      * 
+     * @param <T> the value type
      * @param defaultValue
      *            the value which will be published to any {@link Observer} as long as the {@link BehaviorSubject} has not yet received any events
      * @return the constructed {@link BehaviorSubject}
      */
     public static <T> BehaviorSubject<T> create(T defaultValue) {
+        return create(defaultValue, true);
+    }
+    private static <T> BehaviorSubject<T> create(T defaultValue, boolean hasDefault) {
         final SubjectSubscriptionManager<T> subscriptionManager = new SubjectSubscriptionManager<T>();
         // set a default value so subscriptions will immediately receive this until a new notification is received
-        final AtomicReference<Notification<T>> lastNotification = new AtomicReference<Notification<T>>(Notification.createOnNext(defaultValue));
+        final State<T> state = new State<T>();
+        if (hasDefault) {
+            state.lastNotification.set(Notification.createOnNext(defaultValue));
+        }
 
-        OnSubscribe<T> onSubscribe = subscriptionManager.getOnSubscribeFunc(
+        final OnSubscribe<T> onSubscribeBase = subscriptionManager.getOnSubscribeFunc(
                 /**
                  * This function executes at beginning of subscription.
                  * 
                  * This will always run, even if Subject is in terminal state.
                  */
                 new Action1<SubjectObserver<? super T>>() {
-
                     @Override
                     public void call(SubjectObserver<? super T> o) {
                         /*
@@ -94,37 +110,159 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
                          * 
                          * Here we only emit if it's an onNext as terminal states are handled in the next function.
                          */
-                        Notification<T> n = lastNotification.get();
-                        if (n.isOnNext()) {
-                            n.accept(o);
-                        }
+                        state.addPending(o);
                     }
                 },
                 /**
                  * This function executes if the Subject is terminated before subscription occurs.
                  */
                 new Action1<SubjectObserver<? super T>>() {
-
                     @Override
                     public void call(SubjectObserver<? super T> o) {
                         /*
                          * If we are already terminated, or termination happens while trying to subscribe
                          * this will be invoked and we emit whatever the last terminal value was.
                          */
-                        lastNotification.get().accept(o);
+                        state.removePending(o);
                     }
-                }, null);
+                }, new Action1<SubjectObserver<? super T>>() {
+                    @Override
+                    public void call(SubjectObserver<? super T> o) {
+                        state.removePending(o);
+                    }
+                    
+                });
+        OnSubscribe<T> onSubscribe = new OnSubscribe<T>() {
 
-        return new BehaviorSubject<T>(onSubscribe, subscriptionManager, lastNotification);
+            @Override
+            public void call(Subscriber<? super T> t1) {
+                onSubscribeBase.call(t1);
+                state.removePendingSubscriber(t1);
+            }
+        };
+        return new BehaviorSubject<T>(onSubscribe, subscriptionManager, state);
     }
 
+    static final class State<T> {
+        final AtomicReference<Notification<T>> lastNotification;
+        /** Guarded by this. */
+        List<Object> pendingSubscriptions;
+        public State() {
+            this.lastNotification = new AtomicReference<Notification<T>>();
+        }
+        public void addPending(SubjectObserver<? super T> subscriber) {
+            synchronized (this) {
+                if (pendingSubscriptions == null) {
+                    pendingSubscriptions = new ArrayList<Object>(4);
+                }
+                pendingSubscriptions.add(subscriber);
+                List<Notification<T>> list = new ArrayList<Notification<T>>(4);
+                list.add(lastNotification.get());
+                pendingSubscriptions.add(list);
+            }
+        }
+        public void bufferValue(Notification<T> value) {
+            synchronized (this) {
+                if (pendingSubscriptions == null) {
+                    return;
+                }
+                for (int i = 1; i < pendingSubscriptions.size(); i += 2) {
+                    @SuppressWarnings("unchecked")
+                    List<Notification<T>> list = (List<Notification<T>>)pendingSubscriptions.get(i);
+                    list.add(value);
+                }
+            }
+        }
+        public void removePending(SubjectObserver<? super T> subscriber) {
+            List<Notification<T>> toCatchUp = null;
+            synchronized (this) {
+                if (pendingSubscriptions == null) {
+                    return;
+                }
+                int idx = pendingSubscriptions.indexOf(subscriber);
+                if (idx >= 0) {
+                    pendingSubscriptions.remove(idx);
+                    @SuppressWarnings("unchecked")
+                    List<Notification<T>> list = (List<Notification<T>>)pendingSubscriptions.remove(idx);
+                    toCatchUp = list;
+                    subscriber.caughtUp = true;
+                    if (pendingSubscriptions.isEmpty()) {
+                        pendingSubscriptions = null;
+                    }
+                }
+            }
+            if (toCatchUp != null) {
+                for (Notification<T> n : toCatchUp) {
+                    if (n != null) {
+                        n.accept(subscriber);
+                    }
+                }
+            }
+        }
+        public void removePendingSubscriber(Subscriber<? super T> subscriber) {
+            List<Notification<T>> toCatchUp = null;
+            synchronized (this) {
+                if (pendingSubscriptions == null) {
+                    return;
+                }
+                for (int i = 0; i < pendingSubscriptions.size(); i += 2) {
+                    @SuppressWarnings("unchecked")
+                    SubjectObserver<? super T> so = (SubjectObserver<? super T>)pendingSubscriptions.get(i);
+                    if (so.getActual() == subscriber && !so.caughtUp) {
+                        @SuppressWarnings("unchecked")
+                        List<Notification<T>> list = (List<Notification<T>>)pendingSubscriptions.get(i + 1);
+                        toCatchUp = list;
+                        so.caughtUp = true;
+                        pendingSubscriptions.remove(i);
+                        pendingSubscriptions.remove(i);
+                        if (pendingSubscriptions.isEmpty()) {
+                            pendingSubscriptions = null;
+                        }
+                        break;
+                    }
+                }
+            }
+            if (toCatchUp != null) {
+                for (Notification<T> n : toCatchUp) {
+                    if (n != null) {
+                        n.accept(subscriber);
+                    }
+                }
+            }
+        }
+        public void replayAllPending() {
+            List<Object> localPending;
+            synchronized (this) {
+                localPending = pendingSubscriptions;
+                pendingSubscriptions = null;
+            }
+            if (localPending != null) {
+                for (int i = 0; i < localPending.size(); i += 2) {
+                    @SuppressWarnings("unchecked")
+                    SubjectObserver<? super T> so = (SubjectObserver<? super T>)localPending.get(i);
+                    if (!so.caughtUp) {
+                        @SuppressWarnings("unchecked")
+                        List<Notification<T>> list = (List<Notification<T>>)localPending.get(i + 1);
+                        for (Notification<T> v : list) {
+                            if (v != null) {
+                                v.accept(so);
+                            }
+                        }
+                        so.caughtUp = true;
+                    }
+                }
+            }
+        }
+    }
+    
+    private final State<T> state;
     private final SubjectSubscriptionManager<T> subscriptionManager;
-    final AtomicReference<Notification<T>> lastNotification;
 
-    protected BehaviorSubject(OnSubscribe<T> onSubscribe, SubjectSubscriptionManager<T> subscriptionManager, AtomicReference<Notification<T>> lastNotification) {
+    protected BehaviorSubject(OnSubscribe<T> onSubscribe, SubjectSubscriptionManager<T> subscriptionManager, 
+            State<T> state) {
         super(onSubscribe);
         this.subscriptionManager = subscriptionManager;
-        this.lastNotification = lastNotification;
+        this.state = state;
     }
 
     @Override
@@ -133,10 +271,13 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
 
             @Override
             public void call() {
-                lastNotification.set(Notification.<T> createOnCompleted());
+                final Notification<T> ne = Notification.<T>createOnCompleted();
+                state.bufferValue(ne);
+                state.lastNotification.set(ne);
             }
         });
         if (observers != null) {
+            state.replayAllPending();
             for (Observer<? super T> o : observers) {
                 o.onCompleted();
             }
@@ -149,10 +290,13 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
 
             @Override
             public void call() {
-                lastNotification.set(Notification.<T> createOnError(e));
+                final Notification<T> ne = Notification.<T>createOnError(e);
+                state.bufferValue(ne);
+                state.lastNotification.set(ne);
             }
         });
         if (observers != null) {
+            state.replayAllPending();
             for (Observer<? super T> o : observers) {
                 o.onError(e);
             }
@@ -163,12 +307,19 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
     public void onNext(T v) {
         // do not overwrite a terminal notification
         // so new subscribers can get them
-        if (lastNotification.get().isOnNext()) {
-            lastNotification.set(Notification.createOnNext(v));
-            for (Observer<? super T> o : subscriptionManager.rawSnapshot()) {
-                o.onNext(v);
+        Notification<T> last = state.lastNotification.get();
+        if (last == null || last.isOnNext()) {
+            Notification<T> n = Notification.createOnNext(v);
+            state.bufferValue(n);
+            state.lastNotification.set(n);
+            
+            for (SubjectObserver<? super T> o : subscriptionManager.rawSnapshot()) {
+                if (o.caughtUp) {
+                    o.onNext(v);
+                } else {
+                    state.removePending(o);
+                }
             }
         }
     }
-
 }

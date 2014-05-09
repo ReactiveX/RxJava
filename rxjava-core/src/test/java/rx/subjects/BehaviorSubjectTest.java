@@ -285,4 +285,69 @@ public class BehaviorSubjectTest {
             verify(o, never()).onError(any(Throwable.class));
         }
     }
+    @Test
+    public void testStartEmpty() {
+        BehaviorSubject<Integer> source = BehaviorSubject.create();
+        @SuppressWarnings("unchecked")
+        final Observer<Object> o = mock(Observer.class);
+        InOrder inOrder = inOrder(o);
+        
+        source.subscribe(o);
+        
+        inOrder.verify(o, never()).onNext(any());
+        inOrder.verify(o, never()).onCompleted();
+        
+        source.onNext(1);
+        
+        source.onCompleted();
+        
+        source.onNext(2);
+        
+        inOrder.verify(o).onNext(1);
+        inOrder.verify(o).onCompleted();
+        inOrder.verifyNoMoreInteractions();
+        
+        verify(o, never()).onError(any(Throwable.class));
+        
+    }
+    @Test
+    public void testStartEmptyThenAddOne() {
+        BehaviorSubject<Integer> source = BehaviorSubject.create();
+        @SuppressWarnings("unchecked")
+        final Observer<Object> o = mock(Observer.class);
+        InOrder inOrder = inOrder(o);
+
+        source.onNext(1);
+
+        source.subscribe(o);
+
+        inOrder.verify(o).onNext(1);
+
+        source.onCompleted();
+
+        source.onNext(2);
+
+        inOrder.verify(o).onCompleted();
+        inOrder.verifyNoMoreInteractions();
+        
+        verify(o, never()).onError(any(Throwable.class));
+        
+    }
+    @Test
+    public void testStartEmptyCompleteWithOne() {
+        BehaviorSubject<Integer> source = BehaviorSubject.create();
+        @SuppressWarnings("unchecked")
+        final Observer<Object> o = mock(Observer.class);
+
+        source.onNext(1);
+        source.onCompleted();
+
+        source.onNext(2);
+
+        source.subscribe(o);
+
+        verify(o).onCompleted();
+        verify(o, never()).onError(any(Throwable.class));
+        verify(o, never()).onNext(any());
+    }
 }
