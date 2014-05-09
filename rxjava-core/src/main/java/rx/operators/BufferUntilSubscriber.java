@@ -19,11 +19,11 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
-import rx.Observable;
 import rx.Observer;
 import rx.Subscriber;
 import rx.functions.Action0;
 import rx.observers.Subscribers;
+import rx.subjects.Subject;
 import rx.subscriptions.Subscriptions;
 
 /**
@@ -44,7 +44,7 @@ import rx.subscriptions.Subscriptions;
  *
  * @param <T>
  */
-public class BufferUntilSubscriber<T> extends Observable<T> implements Observer<T> {
+public class BufferUntilSubscriber<T> extends Subject<T, T> {
 
     public static <T> BufferUntilSubscriber<T> create() {
         State<T> state = new State<T>();
@@ -122,7 +122,7 @@ public class BufferUntilSubscriber<T> extends Observable<T> implements Observer<
      * It will then immediately swap itself out for the actual (after a single notification), but since this is now
      * being done on the same producer thread no further buffering will occur.
      */
-    private static class PassThruObserver<T> extends Subscriber<T> {
+    private static final class PassThruObserver<T> extends Subscriber<T> {
 
         private final Observer<? super T> actual;
         // this assumes single threaded synchronous notifications (the Rx contract for a single Observer)
@@ -166,7 +166,7 @@ public class BufferUntilSubscriber<T> extends Observable<T> implements Observer<
 
     }
 
-    private static class BufferedObserver<T> extends Subscriber<T> {
+    private static final class BufferedObserver<T> extends Subscriber<T> {
         private final ConcurrentLinkedQueue<Object> buffer = new ConcurrentLinkedQueue<Object>();
         private final NotificationLite<T> nl = NotificationLite.instance();
 

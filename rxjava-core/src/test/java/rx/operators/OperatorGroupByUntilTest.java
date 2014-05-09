@@ -31,12 +31,15 @@ import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InOrder;
+import static org.mockito.Matchers.anyInt;
 import org.mockito.Mock;
+import static org.mockito.Mockito.mock;
 import org.mockito.MockitoAnnotations;
 
 import rx.Observable;
 import rx.Observer;
 import rx.Subscriber;
+import rx.exceptions.TestException;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.functions.Functions;
@@ -283,14 +286,44 @@ public class OperatorGroupByUntilTest {
 
         inner.get().subscribe(observer);
 
-        verify(observer, times(1)).onCompleted();
+        verify(observer).onNext(0);
+        verify(observer).onCompleted();
         verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, never()).onNext(any());
+    }
+
+    @Test
+    public void innerEscapeCompletedTwice() {
+        Observable<Integer> source = Observable.from(0);
+
+        final AtomicReference<GroupedObservable<Integer, Integer>> inner = new AtomicReference<GroupedObservable<Integer, Integer>>();
+
+        Func1<GroupedObservable<Integer, Integer>, Observable<Object>> duration = just(Observable.never());
+
+        Observable<GroupedObservable<Integer, Integer>> m = source.groupByUntil(identity, dbl, duration);
+
+        m.subscribe(new Action1<GroupedObservable<Integer, Integer>>() {
+            @Override
+            public void call(GroupedObservable<Integer, Integer> t1) {
+                inner.set(t1);
+            }
+        });
+
+        inner.get().subscribe(observer);
+        
+        @SuppressWarnings("unchecked")
+        Observer<Integer> o2 = mock(Observer.class);
+        
+        inner.get().subscribe(o2);
+
+        verify(o2, never()).onCompleted();
+        verify(o2, never()).onNext(anyInt());
+        verify(o2).onError(any(IllegalStateException.class));
     }
 
     @Test
     public void innerEscapeError() {
-        Observable<Integer> source = Observable.concat(Observable.from(0), Observable.<Integer> error(new RuntimeException("Forced failure")));
+        Observable<Integer> source = Observable.concat(Observable.from(0), Observable.<Integer> error(
+                new TestException("Forced failure")));
 
         final AtomicReference<GroupedObservable<Integer, Integer>> inner = new AtomicReference<GroupedObservable<Integer, Integer>>();
 
@@ -316,8 +349,47 @@ public class OperatorGroupByUntilTest {
 
         inner.get().subscribe(observer);
 
-        verify(observer, times(1)).onError(any(Throwable.class));
+        verify(observer).onNext(0);
+        verify(observer).onError(any(TestException.class));
         verify(observer, never()).onCompleted();
-        verify(observer, never()).onNext(any());
+    }
+    
+    @Test
+    public void innerEscapeErrorTwice() {
+        Observable<Integer> source = Observable.concat(Observable.from(0), Observable.<Integer> error(
+                new TestException("Forced failure")));
+
+        final AtomicReference<GroupedObservable<Integer, Integer>> inner = new AtomicReference<GroupedObservable<Integer, Integer>>();
+
+        Func1<GroupedObservable<Integer, Integer>, Observable<Object>> duration = just(Observable.never());
+
+        Observable<GroupedObservable<Integer, Integer>> m = source.groupByUntil(identity, dbl, duration);
+
+        m.subscribe(new Subscriber<GroupedObservable<Integer, Integer>>() {
+            @Override
+            public void onNext(GroupedObservable<Integer, Integer> t1) {
+                inner.set(t1);
+            }
+
+            @Override
+            public void onError(Throwable e) {
+            }
+
+            @Override
+            public void onCompleted() {
+            }
+
+        });
+
+        inner.get().subscribe(observer);
+
+        @SuppressWarnings("unchecked")
+        Observer<Integer> o2 = mock(Observer.class);
+        
+        inner.get().subscribe(o2);
+
+        verify(o2, never()).onCompleted();
+        verify(o2, never()).onNext(anyInt());
+        verify(o2).onError(any(IllegalStateException.class));
     }
 }
