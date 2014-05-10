@@ -4299,7 +4299,9 @@ public class Observable<T> {
 
     /**
      * Returns a {@link ConnectableObservable} that upon connection causes the source Observable to push results
-     * into the specified subject.
+     * into the specified subject. A Connectable Observable resembles an ordinary Observable, except that it
+     * does not begin emitting items when it is subscribed to, but only when its <code>connect()</code> method
+     * is called.
      * 
      * @param subject
      *            the {@link Subject} for the {@link ConnectableObservable} to push source items into
@@ -4506,8 +4508,9 @@ public class Observable<T> {
     }
 
     /**
-     * Returns a {@link ConnectableObservable}, which waits until its {@link ConnectableObservable#connect connect} method is called before it begins emitting items to those {@link Observer}s that
-     * have subscribed to it.
+     * Returns a {@link ConnectableObservable}, which waits until its
+     * {@link ConnectableObservable#connect connect} method is called before it begins emitting items to those
+     * {@link Observer}s that have subscribed to it.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/publishConnect.png">
      * 
@@ -4569,7 +4572,9 @@ public class Observable<T> {
     }
 
     /**
-     * Returns an Observable that emits {@code initialValue} followed by the items emitted by a {@link ConnectableObservable} that shares a single subscription to the source Observable.
+     * Returns a {@link ConnectableObservable} that emits {@code initialValue} followed by the items emitted by
+     * the source Observable. A Connectable Observable resembles an ordinary Observable, except that it does not
+     * begin emitting items when it is subscribed to, but only when its <code>connect()</code> method is called.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/publishConnect.i.png">
      * 
@@ -4584,6 +4589,8 @@ public class Observable<T> {
 
     /**
      * Returns a {@link ConnectableObservable} that emits only the last item emitted by the source Observable.
+     * A Connectable Observable resembles an ordinary Observable, except that it does not begin emitting items
+     * when it is subscribed to, but only when its <code>connect()</code> method is called. 
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/publishLast.png">
      * 
@@ -4745,7 +4752,9 @@ public class Observable<T> {
 
     /**
      * Returns a {@link ConnectableObservable} that shares a single subscription to the underlying Observable
-     * that will replay all of its items and notifications to any future {@link Observer}.
+     * that will replay all of its items and notifications to any future {@link Observer}. A Connectable
+     * Observable resembles an ordinary Observable, except that it does not begin emitting items when it is
+     * subscribed to, but only when its <code>connect()</code> method is called.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.png">
      * 
@@ -4998,7 +5007,9 @@ public class Observable<T> {
 
     /**
      * Returns a {@link ConnectableObservable} that shares a single subscription to the source Observable that
-     * replays at most {@code bufferSize} items emitted by that Observable.
+     * replays at most {@code bufferSize} items emitted by that Observable. A Connectable Observable resembles
+     * an ordinary Observable, except that it does not begin emitting items when it is subscribed to, but only
+     * when its <code>connect()</code> method is called.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.n.png">
      * 
@@ -5015,7 +5026,9 @@ public class Observable<T> {
 
     /**
      * Returns a {@link ConnectableObservable} that shares a single subscription to the source Observable and
-     * replays at most {@code bufferSize} items that were emitted during a specified time window.
+     * replays at most {@code bufferSize} items that were emitted during a specified time window. A Connectable
+     * Observable resembles an ordinary Observable, except that it does not begin emitting items when it is
+     * subscribed to, but only when its <code>connect()</code> method is called. 
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.nt.png">
      * 
@@ -5036,7 +5049,9 @@ public class Observable<T> {
 
     /**
      * Returns a {@link ConnectableObservable} that shares a single subscription to the source Observable and
-     * that replays a maximum of {@code bufferSize} items that are emitted within a specified time window.
+     * that replays a maximum of {@code bufferSize} items that are emitted within a specified time window. A
+     * Connectable Observable resembles an ordinary Observable, except that it does not begin emitting items
+     * when it is subscribed to, but only when its <code>connect()</code> method is called.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.nts.png">
      * 
@@ -5064,7 +5079,9 @@ public class Observable<T> {
 
     /**
      * Returns a {@link ConnectableObservable} that shares a single subscription to the source Observable and
-     * replays at most {@code bufferSize} items emitted by that Observable.
+     * replays at most {@code bufferSize} items emitted by that Observable. A Connectable Observable resembles
+     * an ordinary Observable, except that it does not begin emitting items when it is subscribed to, but only
+     * when its <code>connect()</code> method is called. 
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.ns.png">
      * 
@@ -5085,7 +5102,9 @@ public class Observable<T> {
 
     /**
      * Returns a {@link ConnectableObservable} that shares a single subscription to the source Observable and
-     * replays all items emitted by that Observable within a specified time window.
+     * replays all items emitted by that Observable within a specified time window. A Connectable Observable
+     * resembles an ordinary Observable, except that it does not begin emitting items when it is subscribed to,
+     * but only when its <code>connect()</code> method is called. 
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.t.png">
      * 
@@ -5104,7 +5123,9 @@ public class Observable<T> {
 
     /**
      * Returns a {@link ConnectableObservable} that shares a single subscription to the source Observable and
-     * replays all items emitted by that Observable within a specified time window.
+     * replays all items emitted by that Observable within a specified time window. A Connectable Observable
+     * resembles an ordinary Observable, except that it does not begin emitting items when it is subscribed to,
+     * but only when its <code>connect()</code> method is called. 
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.ts.png">
      * 
@@ -5125,7 +5146,9 @@ public class Observable<T> {
 
     /**
      * Returns a {@link ConnectableObservable} that shares a single subscription to the source Observable that
-     * will replay all of its items and notifications to any future {@link Observer} on the given {@link Scheduler}.
+     * will replay all of its items and notifications to any future {@link Observer} on the given
+     * {@link Scheduler}. A Connectable Observable resembles an ordinary Observable, except that it does not
+     * begin emitting items when it is subscribed to, but only when its <code>connect()</code> method is called.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.s.png">
      * 
