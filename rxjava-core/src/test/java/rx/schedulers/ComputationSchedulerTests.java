@@ -91,8 +91,6 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
 
     @Test
     public final void testComputationThreadPool1() {
-        final Scheduler scheduler = getScheduler();
-
         Observable<Integer> o1 = Observable.<Integer> from(1, 2, 3, 4, 5);
         Observable<Integer> o2 = Observable.<Integer> from(6, 7, 8, 9, 10);
         Observable<String> o = Observable.<Integer> merge(o1, o2).map(new Func1<Integer, String>() {

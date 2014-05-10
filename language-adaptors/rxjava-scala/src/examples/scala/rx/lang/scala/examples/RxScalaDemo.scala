@@ -25,6 +25,7 @@ import scala.language.implicitConversions
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
+import org.junit.Assert.assertFalse
 import org.junit.Ignore
 import org.junit.Test
 import org.scalatest.junit.JUnitSuite
@@ -296,6 +297,28 @@ class RxScalaDemo extends JUnitSuite {
     shared.connect
   }
 
+  @Test def exampleWithPublish2() {
+    val unshared = Observable.from(1 to 4)
+    val shared = unshared.publish(0)
+    shared.subscribe(n => println(s"subscriber 1 gets $n"))
+    shared.subscribe(n => println(s"subscriber 2 gets $n"))
+    shared.connect
+  }
+
+  @Test def exampleWithPublish3() {
+    val o = Observable.interval(100 millis).take(5).publish((o: Observable[Long]) => o.map(_ * 2))
+    o.subscribe(n => println(s"subscriber 1 gets $n"))
+    o.subscribe(n => println(s"subscriber 2 gets $n"))
+    Thread.sleep(1000)
+  }
+
+  @Test def exampleWithPublish4() {
+    val o = Observable.interval(100 millis).take(5).publish((o: Observable[Long]) => o.map(_ * 2), -1L)
+    o.subscribe(n => println(s"subscriber 1 gets $n"))
+    o.subscribe(n => println(s"subscriber 2 gets $n"))
+    Thread.sleep(1000)
+  }
+
   def doLater(waitTime: Duration, action: () => Unit): Unit = {
     Observable.interval(waitTime).take(1).subscribe(_ => action())
   }
@@ -426,6 +449,15 @@ class RxScalaDemo extends JUnitSuite {
     )
   }
 
+  @Test def dropUntilExample() {
+    val o = List("Alice", "Bob", "Carlos").toObservable.zip(
+      Observable.interval(700 millis, IOScheduler())).map(_._1) // emit every 700 millis
+    val other = List(1).toObservable.delay(1 seconds)
+    println(
+      o.dropUntil(other).toBlockingObservable.toList // output List("Bob", "Carlos")
+    )
+  }
+
   def square(x: Int): Int = {
     println(s"$x*$x is being calculated on thread ${Thread.currentThread().getId}")
     Thread.sleep(100) // calculating a square is heavy work :)
@@ -550,6 +582,26 @@ class RxScalaDemo extends JUnitSuite {
     obs.toBlockingObservable.toIterable.last
   }
 
+  @Test def doOnTerminateExample(): Unit = {
+    val o = List("red", "green", "blue").toObservable.doOnTerminate(() => println("terminate"))
+    o.subscribe(v => println(v), e => e.printStackTrace, () => println("onCompleted"))
+    // red
+    // green
+    // blud
+    // terminate
+    // onCompleted
+  }
+
+  @Test def finallyDoExample(): Unit = {
+    val o = List("red", "green", "blue").toObservable.finallyDo(() => println("finally"))
+    o.subscribe(v => println(v), e => e.printStackTrace, () => println("onCompleted"))
+    // red
+    // green
+    // blud
+    // onCompleted
+    // finally
+  }
+
   @Test def timeoutExample(): Unit = {
     val other = List(100L, 200L, 300L).toObservable
     val result = Observable.interval(100 millis).timeout(50 millis, other).toBlockingObservable.toList
@@ -636,6 +688,24 @@ class RxScalaDemo extends JUnitSuite {
     println(m.toBlockingObservable.single)
   }
 
+  @Test def containsExample(): Unit = {
+    val o1 = List(1, 2, 3).toObservable.contains(2)
+    assertTrue(o1.toBlockingObservable.single)
+
+    val o2 = List(1, 2, 3).toObservable.contains(4)
+    assertFalse(o2.toBlockingObservable.single)
+  }
+
+  @Test def repeatExample1(): Unit = {
+    val o : Observable[String] = List("alice", "bob", "carol").toObservable.repeat().take(6)
+    assertEquals(List("alice", "bob", "carol", "alice", "bob", "carol"), o.toBlockingObservable.toList)
+  }
+
+  @Test def repeatExample2(): Unit = {
+    val o : Observable[String] = List("alice", "bob", "carol").toObservable.repeat(2)
+    assertEquals(List("alice", "bob", "carol", "alice", "bob", "carol"), o.toBlockingObservable.toList)
+  }
+
   @Test def retryExample1(): Unit = {
     val o : Observable[String] = List("alice", "bob", "carol").toObservable
     assertEquals(List("alice", "bob", "carol"), o.retry.toBlockingObservable.toList)
@@ -645,4 +715,79 @@ class RxScalaDemo extends JUnitSuite {
     val o : Observable[String] = List("alice", "bob", "carol").toObservable
     assertEquals(List("alice", "bob", "carol"), o.retry(3).toBlockingObservable.toList)
   }
+
+  @Test def liftExample1(): Unit = {
+    // Add "No. " in front of each item
+    val o = List(1, 2, 3).toObservable.lift {
+      subscriber: Subscriber[String] =>
+        Subscriber[Int](
+          subscriber,
+          (v: Int)  => subscriber.onNext("No. " + v),
+          e => subscriber.onError(e),
+          () => subscriber.onCompleted
+        )
+    }.toBlockingObservable.toList
+    println(o)
+  }
+
+  @Test def liftExample2(): Unit = {
+    // Split the input Strings with " "
+    val splitStringsWithSpace = (subscriber: Subscriber[String]) => {
+      Subscriber[String](
+        subscriber,
+        (v: String) => v.split(" ").foreach(subscriber.onNext(_)),
+        e => subscriber.onError(e),
+        () => subscriber.onCompleted
+      )
+    }
+
+    // Convert the input Strings to Chars
+    val stringsToChars = (subscriber: Subscriber[Char]) => {
+      Subscriber[String](
+        subscriber,
+        (v: String) => v.foreach(subscriber.onNext(_)),
+        e => subscriber.onError(e),
+        () => subscriber.onCompleted
+      )
+    }
+
+    // Skip the first n items. If the length of source is less than n, throw an IllegalArgumentException
+    def skipWithException[T](n: Int) = (subscriber: Subscriber[T]) => {
+      var count = 0
+      Subscriber[T](
+        subscriber,
+        (v: T) => {
+          if (count >= n) subscriber.onNext(v)
+          count += 1
+        },
+        e => subscriber.onError(e),
+        () => if (count < n) subscriber.onError(new IllegalArgumentException("There is no enough items")) else subscriber.onCompleted
+      )
+    }
+
+    val o = List("RxJava – Reactive Extensions for the JVM").toObservable
+      .lift(splitStringsWithSpace)
+      .map(_.toLowerCase)
+      .lift(stringsToChars)
+      .filter(_.isLetter)
+      .lift(skipWithException(100))
+    try {
+      o.toBlockingObservable.toList
+    }
+    catch {
+      case e: IllegalArgumentException => println("IllegalArgumentException from skipWithException")
+    }
+  }
+
+  @Test def startWithExample(): Unit = {
+    val o1 = List(3, 4).toObservable
+    val o2 = 1 +: 2 +: o1
+    assertEquals(List(1, 2, 3, 4), o2.toBlockingObservable.toList)
+  }
+
+  @Test def appendExample(): Unit = {
+    val o = List(1, 2).toObservable :+ 3 :+ 4
+    assertEquals(List(1, 2, 3, 4), o.toBlockingObservable.toList)
+  }
+
 }

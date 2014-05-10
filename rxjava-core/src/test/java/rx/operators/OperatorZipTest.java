@@ -51,7 +51,6 @@ import rx.functions.FuncN;
 import rx.functions.Functions;
 import rx.observers.TestSubscriber;
 import rx.subjects.PublishSubject;
-import rx.subscriptions.Subscriptions;
 
 public class OperatorZipTest {
     Func2<String, String, String> concat2Strings;
@@ -621,25 +620,6 @@ public class OperatorZipTest {
         return zipr;
     }
 
-    private FuncN<String> getConcatZipr() {
-        FuncN<String> zipr = new FuncN<String>() {
-
-            @Override
-            public String call(Object... args) {
-                String returnValue = "";
-                for (Object o : args) {
-                    if (o != null) {
-                        returnValue += getStringValue(o);
-                    }
-                }
-                System.out.println("returning: " + returnValue);
-                return returnValue;
-            }
-
-        };
-        return zipr;
-    }
-
     private Func2<String, Integer, String> getConcatStringIntegerZipr() {
         Func2<String, Integer, String> zipr = new Func2<String, Integer, String>() {
 
@@ -676,15 +656,14 @@ public class OperatorZipTest {
         }
     }
 
-    private static class TestObservable implements Observable.OnSubscribeFunc<String> {
+    private static class TestObservable implements Observable.OnSubscribe<String> {
 
         Observer<? super String> observer;
 
         @Override
-        public Subscription onSubscribe(Observer<? super String> Observer) {
+        public void call(Subscriber<? super String> observer) {
             // just store the variable where it can be accessed so we can manually trigger it
-            this.observer = Observer;
-            return Subscriptions.empty();
+            this.observer = observer;
         }
 
     }

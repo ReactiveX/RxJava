@@ -28,7 +28,7 @@ import org.mockito.InOrder;
 
 import rx.Observable;
 import rx.Observer;
-import rx.operators.OperationSkipTest.CustomException;
+import rx.exceptions.TestException;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
 
@@ -42,6 +42,7 @@ public class OperatorSkipLastTimedTest {
 
         Observable<Integer> result = source.skipLast(1, TimeUnit.SECONDS, scheduler);
 
+        @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
 
         result.subscribe(o);
@@ -80,6 +81,7 @@ public class OperatorSkipLastTimedTest {
 
         Observable<Integer> result = source.skipLast(1, TimeUnit.SECONDS, scheduler);
 
+        @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
 
         result.subscribe(o);
@@ -87,11 +89,11 @@ public class OperatorSkipLastTimedTest {
         source.onNext(1);
         source.onNext(2);
         source.onNext(3);
-        source.onError(new CustomException());
+        source.onError(new TestException());
 
         scheduler.advanceTimeBy(1050, TimeUnit.MILLISECONDS);
 
-        verify(o).onError(any(CustomException.class));
+        verify(o).onError(any(TestException.class));
 
         verify(o, never()).onCompleted();
         verify(o, never()).onNext(any());
@@ -105,6 +107,7 @@ public class OperatorSkipLastTimedTest {
 
         Observable<Integer> result = source.skipLast(1, TimeUnit.SECONDS, scheduler);
 
+        @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
 
         result.subscribe(o);
@@ -133,6 +136,7 @@ public class OperatorSkipLastTimedTest {
 
         Observable<Integer> result = source.skipLast(1, TimeUnit.MILLISECONDS, scheduler);
 
+        @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
 
         result.subscribe(o);

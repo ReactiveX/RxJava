@@ -146,16 +146,26 @@ class ObservableTests extends JUnitSuite {
     assertEquals(l2, l1)
   }
 
-  /*
- @Test def testHead() {
-   val observer = mock(classOf[Observer[Int]])
-   val o = Observable().head
-   val sub = o.subscribe(observer)
+  @Test def testHead() {
+    val o: Observable[String] = List("alice", "bob", "carol").toObservable.head
+    assertEquals(List("alice"), o.toBlockingObservable.toList)
+  }
 
-   verify(observer, never).onNext(any(classOf[Int]))
-   verify(observer, never).onCompleted()
-   verify(observer, times(1)).onError(any(classOf[NoSuchElementException]))
- }
- */
+  @Test(expected = classOf[NoSuchElementException])
+  def testHeadWithEmptyObservable() {
+    val o: Observable[String] = List[String]().toObservable.head
+    o.toBlockingObservable.toList
+  }
 
+  @Test def testTail() {
+    val o: Observable[String] = List("alice", "bob", "carol").toObservable.tail
+    assertEquals(List("bob", "carol"), o.toBlockingObservable.toList)
+    assertEquals(List("bob", "carol"), o.toBlockingObservable.toList)
+  }
+
+  @Test(expected = classOf[UnsupportedOperationException])
+  def testTailWithEmptyObservable() {
+    val o: Observable[String] = List[String]().toObservable.tail
+    o.toBlockingObservable.toList
+  }
 }

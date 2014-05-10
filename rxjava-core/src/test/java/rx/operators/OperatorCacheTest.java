@@ -28,7 +28,7 @@ import org.junit.Test;
 
 import rx.Observable;
 import rx.Observer;
-import rx.Subscription;
+import rx.Subscriber;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.functions.Func2;
@@ -39,18 +39,16 @@ import rx.subjects.BehaviorSubject;
 import rx.subjects.PublishSubject;
 import rx.subjects.ReplaySubject;
 import rx.subjects.Subject;
-import rx.subscriptions.BooleanSubscription;
 
 public class OperatorCacheTest {
 
     @Test
     public void testCache() throws InterruptedException {
         final AtomicInteger counter = new AtomicInteger();
-        Observable<String> o = Observable.create(new Observable.OnSubscribeFunc<String>() {
+        Observable<String> o = Observable.create(new Observable.OnSubscribe<String>() {
 
             @Override
-            public Subscription onSubscribe(final Observer<? super String> observer) {
-                final BooleanSubscription subscription = new BooleanSubscription();
+            public void call(final Subscriber<? super String> observer) {
                 new Thread(new Runnable() {
 
                     @Override
@@ -61,7 +59,6 @@ public class OperatorCacheTest {
                         observer.onCompleted();
                     }
                 }).start();
-                return subscription;
             }
         }).cache();
 

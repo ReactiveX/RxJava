@@ -1,0 +1,30 @@
+apply plugin: 'osgi'
+
+sourceCompatibility = JavaVersion.VERSION_1_6
+targetCompatibility = JavaVersion.VERSION_1_6
+
+dependencies {
+    compile project(':rxjava-core')
+    provided 'junit:junit-dep:4.10'
+    provided 'org.mockito:mockito-core:1.8.5'
+}
+
+javadoc {
+    options {
+        doclet = "org.benjchristensen.doclet.DocletExclude"
+        docletpath = [rootProject.file('./gradle/doclet-exclude.jar')]
+        stylesheetFile = rootProject.file('./gradle/javadocStyleSheet.css')
+        windowTitle = "RxJava Javadoc ${project.version}"
+    }
+    options.addStringOption('top').value = '<h2 class="title" style="padding-top:40px">RxJava</h2>'
+}
+
+jar {
+    manifest {
+        name = 'rxjava-javafx'
+        instruction 'Bundle-Vendor', 'Netflix'
+        instruction 'Bundle-DocURL', 'https://github.com/Netflix/RxJava'
+        instruction 'Import-Package', '!org.junit,!junit.framework,!org.mockito.*,*'
+        instruction 'Fragment-Host', 'com.netflix.rxjava.core'
+    }
+}

@@ -26,8 +26,7 @@ import org.junit.Test;
 import rx.CovarianceTest.HorrorMovie;
 import rx.CovarianceTest.Media;
 import rx.CovarianceTest.Movie;
-import rx.Observable.OnSubscribeFunc;
-import rx.subscriptions.Subscriptions;
+import rx.Observable.OnSubscribe;
 
 public class ConcatTests {
 
@@ -85,6 +84,8 @@ public class ConcatTests {
         Observable<Observable<Media>> os = Observable.from(o1, o2);
 
         List<Media> values = Observable.concat(os).toList().toBlockingObservable().single();
+        
+        assertEquals(4, values.size());
     }
 
     @Test
@@ -95,6 +96,8 @@ public class ConcatTests {
         Observable<Observable<Media>> os = Observable.from(o1, o2);
 
         List<Media> values = Observable.concat(os).toList().toBlockingObservable().single();
+
+        assertEquals(5, values.size());
     }
 
     @Test
@@ -113,15 +116,14 @@ public class ConcatTests {
     @Test
     public void testConcatCovariance4() {
 
-        Observable<Movie> o1 = Observable.create(new OnSubscribeFunc<Movie>() {
+        Observable<Movie> o1 = Observable.create(new OnSubscribe<Movie>() {
 
             @Override
-            public Subscription onSubscribe(Observer<? super Movie> o) {
+            public void call(Subscriber<? super Movie> o) {
                 o.onNext(new HorrorMovie());
                 o.onNext(new Movie());
                 //                o.onNext(new Media()); // correctly doesn't compile
                 o.onCompleted();
-                return Subscriptions.empty();
             }
         });
 

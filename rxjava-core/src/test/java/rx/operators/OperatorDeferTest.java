@@ -15,12 +15,19 @@
  */
 package rx.operators;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.when;
 
 import org.junit.Test;
 
 import rx.Observable;
 import rx.Observer;
+import rx.exceptions.TestException;
 import rx.functions.Func0;
 
 @SuppressWarnings("unchecked")
@@ -65,7 +72,7 @@ public class OperatorDeferTest {
     public void testDeferFunctionThrows() {
         Func0<Observable<String>> factory = mock(Func0.class);
         
-        when(factory.call()).thenThrow(new OperationReduceTest.CustomException());
+        when(factory.call()).thenThrow(new TestException());
         
         Observable<String> result = Observable.defer(factory);
         
@@ -73,7 +80,7 @@ public class OperatorDeferTest {
         
         result.subscribe(o);
         
-        verify(o).onError(any(OperationReduceTest.CustomException.class));
+        verify(o).onError(any(TestException.class));
         verify(o, never()).onNext(any(String.class));
         verify(o, never()).onCompleted();
     }

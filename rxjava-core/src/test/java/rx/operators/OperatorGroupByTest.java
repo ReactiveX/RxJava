@@ -44,13 +44,11 @@ import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Observer;
 import rx.Subscriber;
-import rx.Subscription;
 import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.observables.GroupedObservable;
 import rx.schedulers.Schedulers;
-import rx.subscriptions.Subscriptions;
 
 public class OperatorGroupByTest {
 
@@ -173,10 +171,10 @@ public class OperatorGroupByTest {
         final int count = 100;
         final int groupCount = 2;
 
-        Observable<Event> es = Observable.create(new Observable.OnSubscribeFunc<Event>() {
+        Observable<Event> es = Observable.create(new Observable.OnSubscribe<Event>() {
 
             @Override
-            public Subscription onSubscribe(final Observer<? super Event> observer) {
+            public void call(final Subscriber<? super Event> observer) {
                 System.out.println("*** Subscribing to EventStream ***");
                 subscribeCounter.incrementAndGet();
                 new Thread(new Runnable() {
@@ -193,7 +191,6 @@ public class OperatorGroupByTest {
                     }
 
                 }).start();
-                return Subscriptions.empty();
             }
 
         });

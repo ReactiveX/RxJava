@@ -18,6 +18,7 @@ package rx.subjects;
 import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -27,12 +28,11 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.Test;
 
 import rx.Observable;
-import rx.Observable.OnSubscribeFunc;
-import rx.Observer;
+import rx.Observable.OnSubscribe;
 import rx.Subscriber;
-import rx.Subscription;
 import rx.functions.Action1;
-import rx.subscriptions.Subscriptions;
+import rx.observers.TestSubscriber;
+import rx.schedulers.Schedulers;
 
 public class ReplaySubjectConcurrencyTest {
 
@@ -55,17 +55,16 @@ public class ReplaySubjectConcurrencyTest {
 
             @Override
             public void run() {
-                Observable.create(new OnSubscribeFunc<Long>() {
+                Observable.create(new OnSubscribe<Long>() {
 
                     @Override
-                    public Subscription onSubscribe(Observer<? super Long> o) {
+                    public void call(Subscriber<? super Long> o) {
                         System.out.println("********* Start Source Data ***********");
                         for (long l = 1; l <= 10000; l++) {
                             o.onNext(l);
                         }
                         System.out.println("********* Finished Source Data ***********");
                         o.onCompleted();
-                        return Subscriptions.empty();
                     }
                 }).subscribe(replay);
             }
@@ -165,17 +164,16 @@ public class ReplaySubjectConcurrencyTest {
 
             @Override
             public void run() {
-                Observable.create(new OnSubscribeFunc<Long>() {
+                Observable.create(new OnSubscribe<Long>() {
 
                     @Override
-                    public Subscription onSubscribe(Observer<? super Long> o) {
+                    public void call(Subscriber<? super Long> o) {
                         System.out.println("********* Start Source Data ***********");
                         for (long l = 1; l <= 10000; l++) {
                             o.onNext(l);
                         }
                         System.out.println("********* Finished Source Data ***********");
                         o.onCompleted();
-                        return Subscriptions.empty();
                     }
                 }).subscribe(replay);
             }
@@ -302,6 +300,21 @@ public class ReplaySubjectConcurrencyTest {
             assertEquals("value", t5.value.get());
         }
 
+    }
+    
+    /**
+     * https://github.com/Netflix/RxJava/issues/1147
+     */
+    @Test
+    public void testRaceForTerminalState() {
+        final List<Integer> expected = Arrays.asList(1);
+        for (int i = 0; i < 100000; i++) {
+            TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+            Observable.just(1).subscribeOn(Schedulers.computation()).cache().subscribe(ts);
+            ts.awaitTerminalEvent();
+            ts.assertReceivedOnNext(expected);
+            ts.assertTerminalEvent();
+        }
     }
 
     private static class SubjectObserverThread extends Thread {

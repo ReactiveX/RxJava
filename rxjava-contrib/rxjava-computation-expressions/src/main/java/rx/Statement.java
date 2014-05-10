@@ -18,13 +18,15 @@ package rx;
 import java.util.Map;
 
 import rx.functions.Func0;
-import rx.operators.OperationConditionals;
+import rx.operators.OperatorIfThen;
+import rx.operators.OperatorSwitchCase;
+import rx.operators.OperatorWhileDoWhile;
 
 /**
  * Imperative statements expressed as Observable operators.
  */
-public class Statement {
-
+public final class Statement {
+    private Statement() { throw new IllegalStateException("No instances!"); }
     /**
      * Return a particular one of several possible Observables based on a case
      * selector.
@@ -92,14 +94,14 @@ public class Statement {
      * @param mapOfCases
      *            a map that maps a case key to an Observable
      * @param defaultCase
-     *            the default Observable if the {@code mapOfCases} doesn't contain a value for the key returned by the {@case caseSelector}
+     *            the default Observable if the {@code mapOfCases} doesn't contain a value for the key returned by the {@code caseSelector}
      * @return a particular Observable chosen by key from the map of
      *         Observables, or the default case if no Observable matches the key
      */
     public static <K, R> Observable<R> switchCase(Func0<? extends K> caseSelector,
             Map<? super K, ? extends Observable<? extends R>> mapOfCases,
             Observable<? extends R> defaultCase) {
-        return Observable.create(OperationConditionals.switchCase(caseSelector, mapOfCases, defaultCase));
+        return Observable.create(new OperatorSwitchCase<K, R>(caseSelector, mapOfCases, defaultCase));
     }
 
     /**
@@ -116,8 +118,8 @@ public class Statement {
      *         Observable, and then continues to replay them so long as the post
      *         condition is true
      */
-    public static <T> Observable<T> doWhile(Observable<T> source, Func0<Boolean> postCondition) {
-        return Observable.create(OperationConditionals.doWhile(source, postCondition));
+    public static <T> Observable<T> doWhile(Observable<? extends T> source, Func0<Boolean> postCondition) {
+        return Observable.create(new OperatorWhileDoWhile<T>(source, TRUE, postCondition));
     }
 
     /**
@@ -132,8 +134,8 @@ public class Statement {
      * @return an Observable that replays the emissions from the source
      *         Observable so long as <code>preCondition</code> is true
      */
-    public static <T> Observable<T> whileDo(Observable<T> source, Func0<Boolean> preCondition) {
-        return Observable.create(OperationConditionals.whileDo(source, preCondition));
+    public static <T> Observable<T> whileDo(Observable<? extends T> source, Func0<Boolean> preCondition) {
+        return Observable.create(new OperatorWhileDoWhile<T>(source, preCondition, preCondition));
     }
 
     /**
@@ -200,7 +202,16 @@ public class Statement {
      */
     public static <R> Observable<R> ifThen(Func0<Boolean> condition, Observable<? extends R> then,
             Observable<? extends R> orElse) {
-        return Observable.create(OperationConditionals.ifThen(condition, then, orElse));
+        return Observable.create(new OperatorIfThen<R>(condition, then, orElse));
+    }
+    /** Returns always true. */
+    private static final class Func0True implements Func0<Boolean> {
+        @Override
+        public Boolean call() {
+            return true;
+        }
     }
 
+    /** Returns always true function. */
+    private static final Func0True TRUE = new Func0True();
 }
