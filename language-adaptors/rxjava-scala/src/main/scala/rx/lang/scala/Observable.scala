@@ -48,6 +48,28 @@ import collection.JavaConversions._
  *         the observer
  * @define subscribeObserverParamScheduler 
  *         the [[rx.lang.scala.Scheduler]] on which Observers subscribe to the Observable
+ *
+ * @define subscribeSubscriberMain
+ * Call this method to subscribe an [[Subscriber]] for receiving items and notifications from the [[Observable]].
+ *
+ * A typical implementation of `subscribe` does the following:
+ *
+ * It stores a reference to the Observer in a collection object, such as a `List[T]` object.
+ *
+ * It returns a reference to the [[rx.lang.scala.Subscription]] interface. This enables [[Subscriber]]s to
+ * unsubscribe, that is, to stop receiving items and notifications before the Observable stops
+ * sending them, which also invokes the Subscriber's [[rx.lang.scala.Observer.onCompleted onCompleted]] method.
+ *
+ * An [[Observable]] instance is responsible for accepting all subscriptions
+ * and notifying all [[Subscriber]]s. Unless the documentation for a particular
+ * [[Observable]] implementation indicates otherwise, [[Subscriber]]s should make no
+ * assumptions about the order in which multiple [[Subscriber]]s will receive their notifications.
+ *
+ * @define subscribeSubscriberParamObserver
+ *         the [[Subscriber]]
+ * @define subscribeSubscriberParamScheduler
+ *         the [[rx.lang.scala.Scheduler]] on which [[Subscriber]]s subscribe to the Observable
+ *
  * @define subscribeAllReturn 
  *         a [[rx.lang.scala.Subscription]] reference whose `unsubscribe` method can be called to  stop receiving items
  *         before the Observable has finished sending them
@@ -124,6 +146,39 @@ trait Observable[+T]
    * @return $subscribeAllReturn
    */
   def apply(observer: Observer[T]): Subscription = subscribe(observer)
+
+  /**
+   * $subscribeSubscriberMain
+   *
+   * @param subscriber $subscribeSubscriberParamObserver
+   * @param scheduler $subscribeSubscriberParamScheduler
+   * @return $subscribeAllReturn
+   */
+  def subscribe(subscriber: Subscriber[T], scheduler: Scheduler): Subscription = {
+    // Add the casting to avoid compile error "ambiguous reference to overloaded definition"
+    val thisJava = asJavaObservable.asInstanceOf[rx.Observable[T]]
+    thisJava.subscribe(subscriber.asJavaSubscriber, scheduler)
+  }
+
+  /**
+   * $subscribeSubscriberMain
+   *
+   * @param subscriber $subscribeSubscriberParamObserver
+   * @return $subscribeAllReturn
+   */
+  def subscribe(subscriber: Subscriber[T]): Subscription = {
+    // Add the casting to avoid compile error "ambiguous reference to overloaded definition"
+    val thisJava = asJavaObservable.asInstanceOf[rx.Observable[T]]
+    thisJava.subscribe(subscriber.asJavaSubscriber)
+  }
+
+  /**
+   * $subscribeSubscriberMain
+   *
+   * @param subscriber $subscribeSubscriberParamObserver
+   * @return $subscribeAllReturn
+   */
+  def apply(subscriber: Subscriber[T]): Subscription = subscribe(subscriber)
 
   /**
    * $subscribeCallbacksMainNoNotifications
@@ -2405,8 +2460,7 @@ trait Observable[+T]
 
   /**
    * Perform work in parallel by sharding an `Observable[T]` on a 
-   * [[rx.lang.scala.concurrency.Schedulers.threadPoolForComputation computation]]
-   * [[rx.lang.scala.Scheduler]] and return an `Observable[R]` with the output.
+   * [[rx.lang.scala.schedulers.ComputationScheduler]] and return an `Observable[R]` with the output.
    *
    * @param f
    *            a function that applies Observable operators to `Observable[T]` in parallel and returns an `Observable[R]`
@@ -2636,12 +2690,10 @@ trait Observable[+T]
    *         those emitted by the source Observable
    * @throws IndexOutOfBoundsException
    *             if index is greater than or equal to the number of items emitted by the source
-   *             Observable
-   * @throws IndexOutOfBoundsException
-   *             if index is less than 0
+   *             Observable, or index is less than 0
    * @see `Observable.elementAt`
-   * @deprecated("Use `elementAt`", "0.18.0")
    */
+  @deprecated("Use `elementAt`", "0.18.0")
   def apply(index: Int): Observable[T] = elementAt(index)
 
   /**
@@ -2656,9 +2708,7 @@ trait Observable[+T]
    *         those emitted by the source Observable
    * @throws IndexOutOfBoundsException
    *             if index is greater than or equal to the number of items emitted by the source
-   *             Observable
-   * @throws IndexOutOfBoundsException
-   *             if index is less than 0
+   *             Observable, or index is less than 0
    */
   def elementAt(index: Int): Observable[T] = {
     toScalaObservable[T](asJavaObservable.elementAt(index))

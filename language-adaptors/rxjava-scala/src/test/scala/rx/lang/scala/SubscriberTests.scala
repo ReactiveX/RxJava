@@ -17,6 +17,7 @@ package rx.lang.scala
 
 import org.junit.Test
 import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertTrue
 import org.scalatest.junit.JUnitSuite
 
 class SubscriberTests extends JUnitSuite {
@@ -27,6 +28,18 @@ class SubscriberTests extends JUnitSuite {
     assertNotNull(subscriber.asJavaObserver)
     assertNotNull(subscriber.asJavaSubscription)
     assertNotNull(subscriber.asJavaSubscriber)
+  }
+
+  @Test def testUnsubscribeForSubscriber() {
+    var innerSubscriber: Subscriber[Int] = null
+    val o = Observable[Int](subscriber => {
+      Observable[Int](subscriber => {
+        innerSubscriber = subscriber
+      }).subscribe(subscriber)
+    })
+    o.subscribe().unsubscribe()
+    // If we unsubscribe outside, the inner Subscriber should also be unsubscribed
+    assertTrue(innerSubscriber.isUnsubscribed)
   }
 
 }
