@@ -2872,6 +2872,35 @@ trait Observable[+T]
   }
 
   /**
+   * Returns an Observable that emits records of the time interval between consecutive items emitted by the
+   * source Obsegrvable.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timeInterval.png">
+   *
+   * @return an Observable that emits time interval information items
+   */
+  def timeInterval: Observable[(Duration, T)] = {
+    import scala.concurrent.duration.DurationLong
+    toScalaObservable(asJavaObservable.timeInterval())
+      .map(inv => (inv.getIntervalInMilliseconds millis, inv.getValue))
+  }
+
+  /**
+   * Returns an Observable that emits records of the time interval between consecutive items emitted by the
+   * source Observable, where this interval is computed on a specified Scheduler.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timeInterval.s.png">
+   *
+   * @param scheduler the [[Scheduler]] used to compute time intervals
+   * @return an Observable that emits time interval information items
+   */
+  def timeInterval(scheduler: Scheduler): Observable[(Duration, T)] = {
+    import scala.concurrent.duration.DurationLong
+    toScalaObservable(asJavaObservable.timeInterval(scheduler.asJavaScheduler))
+      .map(inv => (inv.getIntervalInMilliseconds millis, inv.getValue))
+  }
+
+  /**
    * Lift a function to the current Observable and return a new Observable that when subscribed to will pass
    * the values of the current Observable through the function.
    * <p>

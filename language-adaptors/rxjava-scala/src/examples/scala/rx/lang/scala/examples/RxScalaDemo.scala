@@ -828,4 +828,12 @@ class RxScalaDemo extends JUnitSuite {
       .takeRight(2, 300 millis)
     println(o.toBlockingObservable.toList)
   }
+
+  @Test def timeIntervalExample(): Unit = {
+    val o = (1 to 10).toObservable
+      .zip(Observable.interval(100 millis))
+      .map(_._1)
+      .timeInterval
+    println(o.toBlockingObservable.toList)
+  }
 }
