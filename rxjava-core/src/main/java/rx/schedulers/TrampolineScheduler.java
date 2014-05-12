@@ -28,7 +28,7 @@ import rx.subscriptions.Subscriptions;
 /**
  * Schedules work on the current thread but does not execute immediately. Work is put in a queue and executed after the current unit of work is completed.
  */
-public class TrampolineScheduler extends Scheduler {
+public final class TrampolineScheduler extends Scheduler {
     private static final TrampolineScheduler INSTANCE = new TrampolineScheduler();
 
     /* package */static TrampolineScheduler instance() {
