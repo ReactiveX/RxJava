@@ -799,4 +799,12 @@ class RxScalaDemo extends JUnitSuite {
     assertFalse(o1.sequenceEqual(o3).toBlockingObservable.single)
     assertTrue(o1.sequenceEqual(o4).toBlockingObservable.single)
   }
+
+  @Test def takeExample(): Unit = {
+    val o = (1 to 20).toObservable
+      .zip(Observable.interval(300 millis))
+      .map(_._1)
+      .take(2 seconds)
+    println(o.toBlockingObservable.toList)
+  }
 }

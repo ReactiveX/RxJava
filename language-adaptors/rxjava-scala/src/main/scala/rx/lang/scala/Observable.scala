@@ -1458,6 +1458,33 @@ trait Observable[+T]
   }
 
   /**
+   * Returns an Observable that emits those items emitted by source Observable before a specified time runs out.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/take.t.png">
+   *
+   * @param time the length of the time window
+   * @return an Observable that emits those items emitted by the source Observable before the time runs out
+   */
+  def take(time: Duration): Observable[T] = {
+    toScalaObservable[T](asJavaObservable.take(time.length, time.unit))
+  }
+
+  /**
+   * Returns an Observable that emits those items emitted by source Observable before a specified time (on
+   * specified Scheduler) runs out
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/take.ts.png">
+   *
+   * @param time the length of the time window
+   * @param scheduler the Scheduler used for time source
+   * @return an Observable that emits those items emitted by the source Observable before the time runs out,
+   *         according to the specified Scheduler
+   */
+  def take(time: Duration, scheduler: Scheduler) {
+    toScalaObservable[T](asJavaObservable.take(time.length, time.unit, scheduler.asJavaScheduler))
+  }
+
+  /**
    * Returns an Observable that emits items emitted by the source Observable so long as a
    * specified condition is true.
    *
