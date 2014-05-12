@@ -16,6 +16,8 @@
 package rx.lang.scala.examples
 
 import java.io.IOException
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 
 import scala.concurrent.duration.Duration
 import scala.concurrent.duration.DurationInt
@@ -788,6 +790,52 @@ class RxScalaDemo extends JUnitSuite {
   @Test def appendExample(): Unit = {
     val o = List(1, 2).toObservable :+ 3 :+ 4
     assertEquals(List(1, 2, 3, 4), o.toBlockingObservable.toList)
+  }
+
+  @Test def schedulerExample1(): Unit = {
+    val latch = new CountDownLatch(1)
+    val worker = IOScheduler().createWorker
+    worker.schedule {
+      println("Hello from Scheduler")
+      latch.countDown()
+    }
+    latch.await(5, TimeUnit.SECONDS)
+  }
+
+  @Test def schedulerExample2(): Unit = {
+    val latch = new CountDownLatch(1)
+    val worker = IOScheduler().createWorker
+    worker.schedule(
+      {
+        println("Hello from Scheduler after 1 second")
+        latch.countDown()
+      }, 1 seconds)
+    latch.await(5, TimeUnit.SECONDS)
+  }
+
+  @Test def schedulerExample3(): Unit = {
+    val worker = IOScheduler().createWorker
+    var no = 1
+    val subscription = worker.schedulePeriodically(
+      {
+        println(s"Hello(${no}) from Scheduler")
+        no += 1
+      }, initialDelay = 1 seconds, period = 100 millis)
+    TimeUnit.SECONDS.sleep(2)
+    subscription.unsubscribe()
+  }
+
+  @Test def schedulerExample4(): Unit = {
+    val worker = IOScheduler().createWorker
+    var no = 1
+    def hello: Unit = {
+      println(s"Hello(${no}) from Scheduler")
+      no += 1
+      worker.schedule(hello, 100 millis)
+    }
+    val subscription = worker.schedule(hello, 1 seconds)
+    TimeUnit.SECONDS.sleep(2)
+    subscription.unsubscribe()
   }
 
 }
