@@ -807,4 +807,25 @@ class RxScalaDemo extends JUnitSuite {
       .take(2 seconds)
     println(o.toBlockingObservable.toList)
   }
+
+  @Test def takeRightExample(): Unit = {
+    val o = (1 to 6).toObservable.takeRight(3)
+    assertEquals(List(4, 5, 6), o.toBlockingObservable.toList)
+  }
+
+  @Test def takeRightExample2(): Unit = {
+    val o = (1 to 10).toObservable
+      .zip(Observable.interval(100 millis))
+      .map(_._1)
+      .takeRight(300 millis)
+    println(o.toBlockingObservable.toList)
+  }
+
+  @Test def takeRightExample3(): Unit = {
+    val o = (1 to 10).toObservable
+      .zip(Observable.interval(100 millis))
+      .map(_._1)
+      .takeRight(2, 300 millis)
+    println(o.toBlockingObservable.toList)
+  }
 }
