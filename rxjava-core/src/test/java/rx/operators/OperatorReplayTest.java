@@ -22,10 +22,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.InOrder;
 
@@ -33,63 +31,10 @@ import rx.Observable;
 import rx.Observer;
 import rx.functions.Func1;
 import rx.observables.ConnectableObservable;
-import rx.operators.OperatorReplay.VirtualBoundedList;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
 
 public class OperatorReplayTest {
-    @Test
-    public void testBoundedList() {
-        VirtualBoundedList<Integer> list = new VirtualBoundedList<Integer>(3);
-
-        list.add(1); // idx: 0
-        list.add(2); // idx: 1
-        list.add(3); // idx: 2
-
-        Assert.assertEquals(3, list.size());
-
-        list.add(4); // idx: 3
-
-        Assert.assertEquals(3, list.size());
-        Assert.assertEquals(Arrays.asList(2, 3, 4), list.toList());
-
-        Assert.assertEquals(1, list.start());
-        Assert.assertEquals(4, list.end());
-
-        list.removeBefore(3);
-
-        Assert.assertEquals(1, list.size());
-
-        Assert.assertEquals(Arrays.asList(4), list.toList());
-
-        Assert.assertEquals(3, list.start());
-        Assert.assertEquals(4, list.end());
-    }
-
-    @Test(expected = ArrayIndexOutOfBoundsException.class)
-    public void testReadBefore() {
-        VirtualBoundedList<Integer> list = new VirtualBoundedList<Integer>(3);
-
-        list.add(1); // idx: 0
-        list.add(2); // idx: 1
-        list.add(3); // idx: 2
-        list.add(4); // idx: 3
-
-        list.get(0);
-    }
-
-    @Test(expected = ArrayIndexOutOfBoundsException.class)
-    public void testReadAfter() {
-        VirtualBoundedList<Integer> list = new VirtualBoundedList<Integer>(3);
-
-        list.add(1); // idx: 0
-        list.add(2); // idx: 1
-        list.add(3); // idx: 2
-        list.add(4); // idx: 3
-
-        list.get(4);
-    }
-
     @Test
     public void testBufferedReplay() {
         PublishSubject<Integer> source = PublishSubject.create();
