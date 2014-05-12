@@ -64,7 +64,7 @@ public final class SwingScheduler extends Scheduler {
 
         @Override
         public Subscription schedule(final Action0 action, long delayTime, TimeUnit unit) {
-            long delay = unit.toMillis(delayTime);
+            long delay = Math.max(0, unit.toMillis(delayTime));
             assertThatTheDelayIsValidForTheSwingTimer(delay);
             final BooleanSubscription s = BooleanSubscription.create();
             class ExecuteOnceAction implements ActionListener {
