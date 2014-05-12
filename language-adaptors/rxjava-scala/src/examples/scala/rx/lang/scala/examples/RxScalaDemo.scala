@@ -790,4 +790,13 @@ class RxScalaDemo extends JUnitSuite {
     assertEquals(List(1, 2, 3, 4), o.toBlockingObservable.toList)
   }
 
+  @Test def sequenceEqualExampe(): Unit = {
+    val o1 = List(1, 2, 3).toObservable
+    val o2 = List(1, 2, 3).toObservable
+    val o3 = List(1, 2).toObservable
+    val o4 = List(1.0, 2.0, 3.0).toObservable
+    assertTrue(o1.sequenceEqual(o2).toBlockingObservable.single)
+    assertFalse(o1.sequenceEqual(o3).toBlockingObservable.single)
+    assertTrue(o1.sequenceEqual(o4).toBlockingObservable.single)
+  }
 }

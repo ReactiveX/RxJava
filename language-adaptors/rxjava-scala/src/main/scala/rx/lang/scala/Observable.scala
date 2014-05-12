@@ -2747,6 +2747,38 @@ trait Observable[+T]
   }
 
   /**
+   * Returns an Observable that emits a Boolean value that indicates whether `this` and `that` Observable sequences are the
+   * same by comparing the items emitted by each Observable pairwise.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/sequenceEqual.png">
+   *
+   * Note: this method uses `==` to compare elements. It's a bit different from RxJava which uses `Object.equals`.
+   *
+   * @param that the Observable to compare
+   * @return an Observable that emits a `Boolean` value that indicates whether the two sequences are the same
+   */
+  def sequenceEqual[U >: T](that: Observable[U]): Observable[Boolean] = {
+    sequenceEqual(that, (_1: U, _2: U) => _1 == _2)
+  }
+
+  /**
+   * Returns an Observable that emits a Boolean value that indicates whether `this` and `that` Observable sequences are the
+   * same by comparing the items emitted by each Observable pairwise based on the results of a specified `equality` function.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/sequenceEqual.png">
+   *
+   * @param that the Observable to compare
+   * @param equality a function used to compare items emitted by each Observable
+   * @return an Observable that emits a `Boolean` value that indicates whether the two sequences are the same based on the `equality` function.
+   */
+  def sequenceEqual[U >: T](that: Observable[U], equality: (U, U) => Boolean): Observable[Boolean] = {
+    val thisJava: rx.Observable[_ <: U] = this.asJavaObservable
+    val thatJava: rx.Observable[_ <: U] = that.asJavaObservable
+    val equalityJava: Func2[_ >: U, _ >: U, java.lang.Boolean] = equality
+    toScalaObservable[java.lang.Boolean](rx.Observable.sequenceEqual[U](thisJava, thatJava, equalityJava)).map(_.booleanValue)
+  }
+
+  /**
    * Lift a function to the current Observable and return a new Observable that when subscribed to will pass
    * the values of the current Observable through the function.
    * <p>
