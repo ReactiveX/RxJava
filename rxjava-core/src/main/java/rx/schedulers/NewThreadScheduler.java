@@ -20,7 +20,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 import java.util.concurrent.atomic.AtomicLong;
 
 import rx.Scheduler;
@@ -32,7 +32,7 @@ import rx.subscriptions.Subscriptions;
 /**
  * Schedules work on a new thread.
  */
-public class NewThreadScheduler extends Scheduler {
+/* package */final class NewThreadScheduler extends Scheduler {
 
     private final static NewThreadScheduler INSTANCE = new NewThreadScheduler();
     private final static AtomicLong count = new AtomicLong();
@@ -60,8 +60,8 @@ public class NewThreadScheduler extends Scheduler {
     }
 
     /* package */static class NewThreadWorker extends Scheduler.Worker implements Subscription {
-        private final CompositeSubscription innerSubscription = new CompositeSubscription();
         private final ScheduledExecutorService executor;
+        private volatile boolean unsubscribed;
 
         /* package */NewThreadWorker(ThreadFactory threadFactory) {
             executor = Executors.newScheduledThreadPool(1, threadFactory);
@@ -74,14 +74,14 @@ public class NewThreadScheduler extends Scheduler {
 
         @Override
         public Subscription schedule(final Action0 action, long delayTime, TimeUnit unit) {
-            if (innerSubscription.isUnsubscribed()) {
+            if (unsubscribed) {
                 return Subscriptions.empty();
             }
             return scheduleActual(action, delayTime, unit);
         }
 
         /* package */ScheduledAction scheduleActual(final Action0 action, long delayTime, TimeUnit unit) {
-            ScheduledAction run = new ScheduledAction(action, innerSubscription);
+            ScheduledAction run = new ScheduledAction(action);
             Future<?> f;
             if (delayTime <= 0) {
                 f = executor.submit(run);
@@ -92,27 +92,27 @@ public class NewThreadScheduler extends Scheduler {
             
             return run;
         }
-        
         /** Remove a child subscription from a composite when unsubscribing. */
         private static final class Remover implements Subscription {
             final Subscription s;
             final CompositeSubscription parent;
-            final AtomicBoolean once;
+            volatile int unsubscribed;
+            private static final AtomicIntegerFieldUpdater<Remover> UNSUBSCRIBED_UPDATER =
+                    AtomicIntegerFieldUpdater.newUpdater(Remover.class, "unsubscribed");
             
             public Remover(Subscription s, CompositeSubscription parent) {
                 this.s = s;
                 this.parent = parent;
-                this.once = new AtomicBoolean();
             }
             
             @Override
             public boolean isUnsubscribed() {
-                return s.isUnsubscribed();
+                return unsubscribed == 1;
             }
             
             @Override
             public void unsubscribe() {
-                if (once.compareAndSet(false, true)) {
+                if (UNSUBSCRIBED_UPDATER.compareAndSet(this, 0, 1)) {
                     parent.remove(s);
                 }
             }
@@ -125,14 +125,13 @@ public class NewThreadScheduler extends Scheduler {
         public static final class ScheduledAction implements Runnable, Subscription {
             final CompositeSubscription cancel;
             final Action0 action;
-            final CompositeSubscription parent;
-            final AtomicBoolean once;
+            volatile int unsubscribed;
+            private static final AtomicIntegerFieldUpdater<ScheduledAction> UNSUBSCRIBED_UPDATER =
+                    AtomicIntegerFieldUpdater.newUpdater(ScheduledAction.class, "unsubscribed");
 
-            public ScheduledAction(Action0 action, CompositeSubscription parent) {
+            public ScheduledAction(Action0 action) {
                 this.action = action;
-                this.parent = parent;
                 this.cancel = new CompositeSubscription();
-                this.once = new AtomicBoolean();
             }
 
             @Override
@@ -146,14 +145,13 @@ public class NewThreadScheduler extends Scheduler {
 
             @Override
             public boolean isUnsubscribed() {
-                return cancel.isUnsubscribed();
+                return unsubscribed == 1;
             }
             
             @Override
             public void unsubscribe() {
-                if (once.compareAndSet(false, true)) {
+                if (UNSUBSCRIBED_UPDATER.compareAndSet(this, 0, 1)) {
                     cancel.unsubscribe();
-                    parent.remove(this);
                 }
             }
             public void add(Subscription s) {
@@ -165,19 +163,19 @@ public class NewThreadScheduler extends Scheduler {
              * @param parent 
              */
             public void addParent(CompositeSubscription parent) {
-                cancel.add(new Remover(this, parent));
+                add(new Remover(this, parent));
             } 
         }
 
         @Override
         public void unsubscribe() {
-            executor.shutdown();
-            innerSubscription.unsubscribe();
+            unsubscribed = true;
+            executor.shutdownNow();
         }
 
         @Override
         public boolean isUnsubscribed() {
-            return innerSubscription.isUnsubscribed();
+            return unsubscribed;
         }
 
     }

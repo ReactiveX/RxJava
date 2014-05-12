@@ -26,7 +26,7 @@ import rx.functions.Action0;
 import rx.subscriptions.BooleanSubscription;
 import rx.subscriptions.Subscriptions;
 
-public class TestScheduler extends Scheduler {
+public final class TestScheduler extends Scheduler {
     private final Queue<TimedAction> queue = new PriorityQueue<TimedAction>(11, new CompareActionsByTime());
     private static long counter = 0;
 

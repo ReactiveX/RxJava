@@ -16,8 +16,10 @@
 package rx.subscriptions;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 
 import rx.Subscription;
 import rx.exceptions.CompositeException;
@@ -29,47 +31,83 @@ import rx.exceptions.CompositeException;
  * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.disposables.compositedisposable(v=vs.103).aspx">Rx.Net equivalent CompositeDisposable</a>
  */
 public final class CompositeSubscription implements Subscription {
-
-    private final AtomicReference<State> state = new AtomicReference<State>();
+    private static final AtomicReferenceFieldUpdater<CompositeSubscription, State> STATE_UPDATER =
+            AtomicReferenceFieldUpdater.newUpdater(CompositeSubscription.class, State.class, "state");
+    /** The current state. */
+    private volatile State state;
 
     /** Empty initial state. */
     private static final State CLEAR_STATE;
     /** Unsubscribed empty state. */
     private static final State CLEAR_STATE_UNSUBSCRIBED;
+    /** Set mode threshold count. */
+    private static final int SET_MODE_THRESHOLD = 16;
+    /** Array mode threshold count. */
+    private static final int ARRAY_MODE_THRESHOLD = SET_MODE_THRESHOLD * 3 / 4;
     static {
-        Subscription[] s0 = new Subscription[0];
+        Object[] s0 = new Object[0];
         CLEAR_STATE = new State(false, s0);
         CLEAR_STATE_UNSUBSCRIBED = new State(true, s0);
     }
 
     private static final class State {
         final boolean isUnsubscribed;
-        final Subscription[] subscriptions;
+        final Object[] subscriptions;
+        final Set<Object> subscriptionSet;
 
-        State(boolean u, Subscription[] s) {
+        State(boolean u, Object[] s) {
             this.isUnsubscribed = u;
             this.subscriptions = s;
+            this.subscriptionSet = null;
         }
-
-        State unsubscribe() {
-            return CLEAR_STATE_UNSUBSCRIBED;
+        State(Object[] s, Subscription add) {
+            this.isUnsubscribed = false;
+            this.subscriptions = null;
+            this.subscriptionSet = new HashSet<Object>(s.length * 6 / 5);
+            for (Object o : s) {
+                this.subscriptionSet.add(o);
+            }
+            this.subscriptionSet.add(add);
+        }
+        State(Set<Object> s) {
+            this.isUnsubscribed = false;
+            this.subscriptions = null;
+            this.subscriptionSet = s;
         }
 
         State add(Subscription s) {
+            if (subscriptions == null) {
+                synchronized (subscriptionSet) {
+                    subscriptionSet.add(s);
+                    return this;
+                }
+            }
             int idx = subscriptions.length;
-            Subscription[] newSubscriptions = new Subscription[idx + 1];
+            if (idx == SET_MODE_THRESHOLD) {
+                return new State(subscriptions, s);
+            }
+            Object[] newSubscriptions = new Object[idx + 1];
             System.arraycopy(subscriptions, 0, newSubscriptions, 0, idx);
             newSubscriptions[idx] = s;
             return new State(isUnsubscribed, newSubscriptions);
         }
 
         State remove(Subscription s) {
+            if (subscriptions == null) {
+                synchronized (subscriptionSet) {
+                    subscriptionSet.remove(s);
+                    if (subscriptionSet.size() == ARRAY_MODE_THRESHOLD) {
+                        return new State(isUnsubscribed, subscriptionSet.toArray(new Object[subscriptionSet.size()]));
+                    }
+                    return this;
+                }
+            }
             if ((subscriptions.length == 1 && subscriptions[0].equals(s)) || subscriptions.length == 0) {
                 return clear();
             }
-            Subscription[] newSubscriptions = new Subscription[subscriptions.length - 1];
+            Object[] newSubscriptions = new Object[subscriptions.length - 1];
             int idx = 0;
-            for (Subscription _s : subscriptions) {
+            for (Object _s : subscriptions) {
                 if (!_s.equals(s)) {
                     // was not in this composite
                     if (idx == newSubscriptions.length) {
@@ -84,7 +122,7 @@ public final class CompositeSubscription implements Subscription {
             }
             // subscription appeared more than once
             if (idx < newSubscriptions.length) {
-                Subscription[] newSub2 = new Subscription[idx];
+                Object[] newSub2 = new Object[idx];
                 System.arraycopy(newSubscriptions, 0, newSub2, 0, idx);
                 return new State(isUnsubscribed, newSub2);
             }
@@ -94,46 +132,67 @@ public final class CompositeSubscription implements Subscription {
         State clear() {
             return isUnsubscribed ? CLEAR_STATE_UNSUBSCRIBED : CLEAR_STATE;
         }
+        void unsubscribeAll() {
+            if (!isUnsubscribed) {
+                if (subscriptions == null) {
+                    unsubscribeFromAll(subscriptionSet);
+                } else {
+                    unsubscribeFromAll(subscriptions);
+                }
+            }
+        }
+        /* test support.*/ int size() {
+            if (subscriptions == null) {
+                synchronized (subscriptionSet) {
+                    return subscriptionSet.size();
+                }
+            }
+            return subscriptions.length;
+        }
     }
 
     public CompositeSubscription() {
-        state.set(CLEAR_STATE);
+        state = CLEAR_STATE;
     }
 
     public CompositeSubscription(final Subscription... subscriptions) {
-        state.set(new State(false, subscriptions));
+        if (subscriptions.length > 0) {
+            state = new State(false, subscriptions);
+        } else {
+            state = CLEAR_STATE;
+        }
     }
-
+    
     @Override
     public boolean isUnsubscribed() {
-        return state.get().isUnsubscribed;
+        return state.isUnsubscribed;
     }
 
     public void add(final Subscription s) {
         State oldState;
         State newState;
         do {
-            oldState = state.get();
+            oldState = state;
             if (oldState.isUnsubscribed) {
                 s.unsubscribe();
                 return;
             } else {
                 newState = oldState.add(s);
             }
-        } while (!state.compareAndSet(oldState, newState));
+        } while (!STATE_UPDATER.compareAndSet(this, oldState, newState));
     }
 
     public void remove(final Subscription s) {
         State oldState;
         State newState;
         do {
-            oldState = state.get();
+            oldState = state;
             if (oldState.isUnsubscribed) {
                 return;
             } else {
                 newState = oldState.remove(s);
             }
-        } while (!state.compareAndSet(oldState, newState));
+        } while (!STATE_UPDATER.compareAndSet(this, oldState, newState));
         // if we removed successfully we then need to call unsubscribe on it
         s.unsubscribe();
     }
@@ -142,39 +201,38 @@ public final class CompositeSubscription implements Subscription {
         State oldState;
         State newState;
         do {
-            oldState = state.get();
+            oldState = state;
             if (oldState.isUnsubscribed) {
                 return;
             } else {
                 newState = oldState.clear();
             }
-        } while (!state.compareAndSet(oldState, newState));
+        } while (!STATE_UPDATER.compareAndSet(this, oldState, newState));
         // if we cleared successfully we then need to call unsubscribe on all previous
-        unsubscribeFromAll(oldState.subscriptions);
+        oldState.unsubscribeAll();
     }
 
     @Override
     public void unsubscribe() {
         State oldState;
-        State newState;
         do {
-            oldState = state.get();
+            oldState = state;
             if (oldState.isUnsubscribed) {
                 return;
-            } else {
-                newState = oldState.unsubscribe();
             }
-        } while (!state.compareAndSet(oldState, newState));
-        unsubscribeFromAll(oldState.subscriptions);
+        } while (!STATE_UPDATER.compareAndSet(this, oldState, CLEAR_STATE_UNSUBSCRIBED));
+        oldState.unsubscribeAll();
     }
 
-    private static void unsubscribeFromAll(Subscription[] subscriptions) {
+    static void unsubscribeFromAll(Object[] subscriptions) {
         final List<Throwable> es = new ArrayList<Throwable>();
-        for (Subscription s : subscriptions) {
-            try {
-                s.unsubscribe();
-            } catch (Throwable e) {
-                es.add(e);
+        for (Object s : subscriptions) {
+            if (s != null) {
+                try {
+                    ((Subscription)s).unsubscribe();
+                } catch (Throwable e) {
+                    es.add(e);
+                }
             }
         }
         if (!es.isEmpty()) {
@@ -191,5 +249,34 @@ public final class CompositeSubscription implements Subscription {
                         "Failed to unsubscribe to 2 or more subscriptions.", es);
             }
         }
+    }
+    static void unsubscribeFromAll(Iterable<Object> subscriptions) {
+        final List<Throwable> es = new ArrayList<Throwable>();
+        for (Object s : subscriptions) {
+            if (s != null) {
+                try {
+                    ((Subscription)s).unsubscribe();
+                } catch (Throwable e) {
+                    es.add(e);
+                }
+            }
+        }
+        if (!es.isEmpty()) {
+            if (es.size() == 1) {
+                Throwable t = es.get(0);
+                if (t instanceof RuntimeException) {
+                    throw (RuntimeException) t;
+                } else {
+                    throw new CompositeException(
+                            "Failed to unsubscribe to 1 or more subscriptions.", es);
+                }
+            } else {
+                throw new CompositeException(
+                        "Failed to unsubscribe to 2 or more subscriptions.", es);
+            }
+        }
+    }
+    /* Test support. */ int size() {
+        return state.size();
     }
 }
