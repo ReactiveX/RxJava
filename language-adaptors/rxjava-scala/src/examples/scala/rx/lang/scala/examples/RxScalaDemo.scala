@@ -805,22 +805,20 @@ class RxScalaDemo extends JUnitSuite {
   @Test def schedulerExample2(): Unit = {
     val latch = new CountDownLatch(1)
     val worker = IOScheduler().createWorker
-    worker.schedule(
-      {
-        println("Hello from Scheduler after 1 second")
-        latch.countDown()
-      }, 1 seconds)
+    worker.schedule(1 seconds) {
+      println("Hello from Scheduler after 1 second")
+      latch.countDown()
+    }
     latch.await(5, TimeUnit.SECONDS)
   }
 
   @Test def schedulerExample3(): Unit = {
     val worker = IOScheduler().createWorker
     var no = 1
-    val subscription = worker.schedulePeriodically(
-      {
-        println(s"Hello(${no}) from Scheduler")
-        no += 1
-      }, initialDelay = 1 seconds, period = 100 millis)
+    val subscription = worker.schedulePeriodically(initialDelay = 1 seconds, period = 100 millis) {
+      println(s"Hello(${no}) from Scheduler")
+      no += 1
+    }
     TimeUnit.SECONDS.sleep(2)
     subscription.unsubscribe()
   }
@@ -831,9 +829,9 @@ class RxScalaDemo extends JUnitSuite {
     def hello: Unit = {
       println(s"Hello(${no}) from Scheduler")
       no += 1
-      worker.schedule(hello, 100 millis)
+      worker.schedule(100 millis)(hello)
     }
-    val subscription = worker.schedule(hello, 1 seconds)
+    val subscription = worker.schedule(1 seconds)(hello)
     TimeUnit.SECONDS.sleep(2)
     subscription.unsubscribe()
   }

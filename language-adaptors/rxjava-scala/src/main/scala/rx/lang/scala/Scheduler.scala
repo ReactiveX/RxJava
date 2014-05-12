@@ -69,7 +69,7 @@ trait Worker extends Subscription {
    * @param delay time to wait before executing the action
    * @return a subscription to be able to unsubscribe the action (unschedule it if not executed)
    */
-  def schedule(action: => Unit, delay: Duration): Subscription = {
+  def schedule(delay: Duration)(action: => Unit): Subscription = {
     this.asJavaWorker.schedule(
       new Action0 {
         override def call(): Unit = action
@@ -102,7 +102,7 @@ trait Worker extends Subscription {
    * @param period the time interval to wait each time in between executing the action
    * @return a subscription to be able to unsubscribe the action (unschedule it if not executed)
    */
-  def schedulePeriodically(action: => Unit, initialDelay: Duration, period: Duration): Subscription = {
+  def schedulePeriodically(initialDelay: Duration, period: Duration)(action: => Unit): Subscription = {
     this.asJavaWorker.schedulePeriodically(
       new Action0 {
         override def call(): Unit = action
