@@ -222,7 +222,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
     final ReplayState<T, ?> state;
     /** The manager of subscribers. */
     final SubjectSubscriptionManager<T> ssm;
-    public ReplaySubject(OnSubscribe<T> onSubscribe, SubjectSubscriptionManager<T> ssm, ReplayState<T, ?> state) {
+    ReplaySubject(OnSubscribe<T> onSubscribe, SubjectSubscriptionManager<T> ssm, ReplayState<T, ?> state) {
         super(onSubscribe);
         this.ssm = ssm;
         this.state = state;
