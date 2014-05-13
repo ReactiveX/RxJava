@@ -2691,6 +2691,57 @@ trait Observable[+T]
   }
 
   /**
+   * Returns an Observable that delays the emissions of the source Observable via another Observable on a
+   * per-item basis.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/delay.o.png">
+   * <p>
+   * Note: the resulting Observable will immediately propagate any `onError` notification
+   * from the source Observable.
+   *
+   * @param itemDelay a function that returns an Observable for each item emitted by the source Observable, which is
+   *                  then used to delay the emission of that item by the resulting Observable until the Observable
+   *                  returned from `itemDelay` emits an item
+   * @return an Observable that delays the emissions of the source Observable via another Observable on a per-item basis
+   */
+  def delay(itemDelay: T => Observable[Any]): Observable[T] = {
+    val itemDelayJava = new Func1[T, rx.Observable[Any]] {
+      override def call(t: T): rx.Observable[Any] =
+        itemDelay(t).asJavaObservable.asInstanceOf[rx.Observable[Any]]
+    }
+    toScalaObservable[T](asJavaObservable.delay[Any](itemDelayJava))
+  }
+
+  /**
+   * Returns an Observable that delays the subscription to and emissions from the souce Observable via another
+   * Observable on a per-item basis.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/delay.oo.png">
+   * <p>
+   * Note: the resulting Observable will immediately propagate any `onError` notification
+   * from the source Observable.
+   *
+   * @param subscriptionDelay a function that returns an Observable that triggers the subscription to the source Observable
+   *                          once it emits any item
+   * @param itemDelay a function that returns an Observable for each item emitted by the source Observable, which is
+   *                  then used to delay the emission of that item by the resulting Observable until the Observable
+   *                  returned from `itemDelay` emits an item
+   * @return an Observable that delays the subscription and emissions of the source Observable via another
+   *         Observable on a per-item basis
+   */
+  def delay(subscriptionDelay: () => Observable[Any], itemDelay: T => Observable[Any]): Observable[T] = {
+    val subscriptionDelayJava = new Func0[rx.Observable[Any]] {
+      override def call(): rx.Observable[Any] =
+        subscriptionDelay().asJavaObservable.asInstanceOf[rx.Observable[Any]]
+    }
+    val itemDelayJava = new Func1[T, rx.Observable[Any]] {
+      override def call(t: T): rx.Observable[Any] =
+        itemDelay(t).asJavaObservable.asInstanceOf[rx.Observable[Any]]
+    }
+    toScalaObservable[T](asJavaObservable.delay[Any, Any](subscriptionDelayJava, itemDelayJava))
+  }
+
+  /**
    * Return an Observable that delays the subscription to the source Observable by a given amount of time.
    *
    * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/delaySubscription.png">
