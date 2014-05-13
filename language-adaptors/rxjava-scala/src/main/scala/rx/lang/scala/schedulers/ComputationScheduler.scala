@@ -5,13 +5,13 @@ import rx.lang.scala.Scheduler
 
 object ComputationScheduler {
   /**
-   * {@link Scheduler} intended for computational work.
+   * [[rx.lang.scala.Scheduler]] intended for computational work.
    * <p>
    * This can be used for event-loops, processing callbacks and other computational work.
    * <p>
-   * Do not perform IO-bound work on this scheduler. Use {@link IOScheduler()} instead.
+   * Do not perform IO-bound work on this scheduler. Use [[rx.lang.scala.schedulers.IOScheduler]] instead.
    *
-   * @return { @link Scheduler} for computation-bound work.
+   * @return [[rx.lang.scala.Scheduler]] for computation-bound work.
    */
   def apply(): ComputationScheduler = {
     new ComputationScheduler(rx.schedulers.Schedulers.computation())

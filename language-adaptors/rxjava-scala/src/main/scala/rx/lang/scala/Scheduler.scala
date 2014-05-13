@@ -35,7 +35,7 @@ trait Scheduler {
    *
    * @return the scheduler's available degree of parallelism.
    */
-  def degreeOfParallelism: Int =  asJavaScheduler.degreeOfParallelism
+  def parallelism: Int =  asJavaScheduler.parallelism()
 
   /**
    * @return the scheduler's notion of current absolute time in milliseconds.
