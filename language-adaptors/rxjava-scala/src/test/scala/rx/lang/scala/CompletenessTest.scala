@@ -79,6 +79,7 @@ class CompletenessTest extends JUnitSuite {
       "firstOrDefault(T)" -> "firstOrElse(=> U)",
       "firstOrDefault(T, Func1[_ >: T, Boolean])" -> "[use `.filter(condition).firstOrElse(default)`]",
       "groupBy(Func1[_ >: T, _ <: K], Func1[_ >: T, _ <: R])" -> "[use `groupBy` and `map`]",
+      "groupByUntil(Func1[_ >: T, _ <: TKey], Func1[_ >: GroupedObservable[TKey, T], _ <: Observable[_ <: TDuration]])" -> "groupByUntil(T => K, (K, Observable[T]) => Observable[Any])",
       "lift(Operator[_ <: R, _ >: T])" -> "lift(Subscriber[R] => Subscriber[T])",
       "mapWithIndex(Func2[_ >: T, Integer, _ <: R])" -> "[combine `zipWithIndex` with `map` or with a for comprehension]",
       "onErrorResumeNext(Func1[Throwable, _ <: Observable[_ <: T]])" -> "onErrorResumeNext(Throwable => Observable[U])",
@@ -133,22 +134,24 @@ class CompletenessTest extends JUnitSuite {
       "averageDoubles(Observable[Double])" -> averageProblem,
       "averageFloats(Observable[Float])" -> averageProblem,
       "averageLongs(Observable[Long])" -> averageProblem,
-      "create(OnSubscribeFunc[T])" -> "apply(Observer[T] => Subscription)",
+      "create(OnSubscribeFunc[T])" -> "create(Observer[T] => Subscription)",
+      "create(OnSubscribe[T])" -> "apply(Subscriber[T] => Unit)",
       "combineLatest(Observable[_ <: T1], Observable[_ <: T2], Func2[_ >: T1, _ >: T2, _ <: R])" -> "combineLatest(Observable[U])",
       "concat(Observable[_ <: Observable[_ <: T]])" -> "concat(<:<[Observable[T], Observable[Observable[U]]])",
       "defer(Func0[_ <: Observable[_ <: T]])" -> "defer(=> Observable[T])",
-      "from(Array[T])" -> "[use apply(T*)]",
+      "from(Array[T])" -> "[use `items(T*)`]",
       "from(Iterable[_ <: T])" -> "from(Iterable[T])",
       "from(Future[_ <: T])" -> fromFuture,
       "from(Future[_ <: T], Long, TimeUnit)" -> fromFuture,
       "from(Future[_ <: T], Scheduler)" -> fromFuture,
-      "just(T)" -> "[use apply(T*)]",
-      "just(T, Scheduler)" -> "[use apply(T*).subscribeOn(scheduler)]",
+      "just(T)" -> "[use `items(T*)`]",
+      "just(T, Scheduler)" -> "[use `items(T*).subscribeOn(scheduler)`]",
       "merge(Observable[_ <: T], Observable[_ <: T])" -> "merge(Observable[U])",
       "merge(Observable[_ <: Observable[_ <: T]])" -> "flatten(<:<[Observable[T], Observable[Observable[U]]])",
       "mergeDelayError(Observable[_ <: T], Observable[_ <: T])" -> "mergeDelayError(Observable[U])",
       "mergeDelayError(Observable[_ <: Observable[_ <: T]])" -> "flattenDelayError(<:<[Observable[T], Observable[Observable[U]]])",
-      "range(Int, Int)" -> "apply(Range)",
+      "range(Int, Int)" -> "[use `(... until ...).toObservable`]",
+      "range(Int, Int, Scheduler)" -> "[use `from((... until ...), scheduler)`]",
       "sum(Observable[Integer])" -> "sum(Numeric[U])",
       "sumDoubles(Observable[Double])" -> "sum(Numeric[U])",
       "sumFloats(Observable[Float])" -> "sum(Numeric[U])",
@@ -166,7 +169,7 @@ class CompletenessTest extends JUnitSuite {
       "concat(" + _ + ")" -> "[unnecessary because we can use `++` instead or `Observable(o1, o2, ...).concat`]"
   ).drop(1).toMap ++ List.iterate("T", 10)(s => s + ", T").map(
       // all 10 overloads of from:
-      "from(" + _ + ")" -> "[use apply(T*)]"
+      "from(" + _ + ")" -> "[use `items(T*)`]"
   ).toMap ++ (3 to 9).map(i => {
     // zip3-9:
     val obsArgs = (1 to i).map(j => s"Observable[_ <: T$j], ").mkString("")
