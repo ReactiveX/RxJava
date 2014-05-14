@@ -3335,6 +3335,28 @@ object Observable {
     toScalaObservable[java.lang.Long](rx.Observable.timer(initialDelay.toNanos, period.toNanos, duration.NANOSECONDS, scheduler)).map(_.longValue())
   }
 
+  /**
+   * Constructs an Observable that creates a dependent resource object.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/using.png">
+   *
+   * @param resourceFactory the factory function to create a resource object that depends on the Observable
+   * @param observableFactory the factory function to obtain an Observable
+   * @return the Observable whose lifetime controls the lifetime of the dependent resource object
+   */
+  def using[T, Resource <: Subscription](resourceFactory: () => Resource, observableFactory: Resource => Observable[T]): Observable[T] = {
+    class ResourceSubscription(val resource: Resource) extends rx.Subscription {
+      def unsubscribe = resource.unsubscribe
+
+      def isUnsubscribed: Boolean = resource.isUnsubscribed
+    }
+
+    toScalaObservable(rx.Observable.using[T, ResourceSubscription](
+      () => new ResourceSubscription(resourceFactory()),
+      (s: ResourceSubscription) => observableFactory(s.resource).asJavaObservable
+    ))
+  }
+
 }
 
 
