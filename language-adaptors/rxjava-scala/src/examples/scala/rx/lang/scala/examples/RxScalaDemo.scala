@@ -142,6 +142,12 @@ class RxScalaDemo extends JUnitSuite {
     o.buffer(5).subscribe((l: Seq[Int]) => println(l.mkString("[", ", ", "]")))
   }
 
+  @Test def bufferExample() {
+    val o = Observable.from(1 to 18).zip(Observable.interval(100 millis)).map(_._1)
+    val boundary = Observable.interval(500 millis)
+    o.buffer(boundary).toBlockingObservable.foreach((l: Seq[Int]) => println(l.mkString("[", ", ", "]")))
+  }
+
   @Test def windowExample() {
     (for ((o, i) <- Observable.from(1 to 18).window(5).zipWithIndex; n <- o)
       yield s"Observable#$i emits $n"

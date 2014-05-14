@@ -566,6 +566,43 @@ trait Observable[+T]
   }
 
   /**
+   * Returns an Observable that emits non-overlapping buffered items from the source Observable each time the
+   * specified boundary Observable emits an item.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/buffer8.png">
+   * <p>
+   * Completion of either the source or the boundary Observable causes the returned Observable to emit the
+   * latest buffer and complete.
+   *
+   * @param boundary the boundary Observable
+   * @return an Observable that emits buffered items from the source Observable when the boundary Observable
+   *         emits an item
+   */
+  def buffer(boundary: Observable[Any]): Observable[Seq[T]] = {
+    val thisJava = this.asJavaObservable.asInstanceOf[rx.Observable[T]]
+    toScalaObservable(thisJava.buffer(boundary.asJavaObservable)).map(_.asScala)
+  }
+
+  /**
+   * Returns an Observable that emits non-overlapping buffered items from the source Observable each time the
+   * specified boundary Observable emits an item.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/buffer8.png">
+   * <p>
+   * Completion of either the source or the boundary Observable causes the returned Observable to emit the
+   * latest buffer and complete.
+   *
+   * @param boundary the boundary Observable
+   * @param initialCapacity the initial capacity of each buffer chunk
+   * @return an Observable that emits buffered items from the source Observable when the boundary Observable
+   *         emits an item
+   */
+  def buffer(boundary: Observable[Any], initialCapacity: Int): Observable[Seq[T]] = {
+    val thisJava = this.asJavaObservable.asInstanceOf[rx.Observable[T]]
+    toScalaObservable(thisJava.buffer(boundary.asJavaObservable, initialCapacity)).map(_.asScala)
+  }
+
+  /**
    * Creates an Observable which produces windows of collected values. This Observable produces connected
    * non-overlapping windows. The current window is emitted and replaced with a new window when the
    * Observable produced by the specified function produces an object. 
