@@ -346,13 +346,14 @@ public final class ReroutingEventLoopScheduler extends Scheduler {
             Subscription s = Subscriptions.from(worker.submit(myIndex, new Runnable() {
                 @Override
                 public void run() {
+                    Subscription s = sf.get();
                     try {
-                        if(innerSubscription.isUnsubscribed())
+                        if(innerSubscription.isUnsubscribed() || (s != null && s.isUnsubscribed())) {
                             return;
+                        }
                         action.call();
                     }
                     finally {
-                        Subscription s = sf.get();
                         if (s != null) {
                             innerSubscription.remove(s);
                         }
@@ -372,12 +373,13 @@ public final class ReroutingEventLoopScheduler extends Scheduler {
             Subscription s = Subscriptions.from(worker.schedule(myIndex, new Runnable() {
                 @Override
                 public void run() {
+                    Subscription s = sf.get();
                     try {
-                        if (innerSubscription.isUnsubscribed())
+                        if (innerSubscription.isUnsubscribed() || (s != null && s.isUnsubscribed())) {
                             return;
+                        }
                         action.call();
                     } finally {
-                        Subscription s = sf.get();
                         if (s != null) {
                             innerSubscription.remove(s);
                         }

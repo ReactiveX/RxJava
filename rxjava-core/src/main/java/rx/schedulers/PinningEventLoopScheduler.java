@@ -19,8 +19,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Queue;
+import java.util.Random;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Future;
-import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 import java.util.concurrent.atomic.AtomicLong;
@@ -31,9 +33,9 @@ import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
 import rx.Scheduler;
 import rx.Subscription;
 import rx.functions.Action0;
-import rx.schedulers.NewThreadScheduler.NewThreadWorker.ScheduledAction;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.MultipleAssignmentSubscription;
+import rx.subscriptions.SubscriptionQueue;
 import rx.subscriptions.Subscriptions;
 
 public final class PinningEventLoopScheduler extends Scheduler {
@@ -66,13 +68,15 @@ public final class PinningEventLoopScheduler extends Scheduler {
     static final class PinningEventLoopWorker extends Scheduler.Worker {
         static final AtomicIntegerFieldUpdater<PinningEventLoopWorker> PINNED_UPDATER =
                 AtomicIntegerFieldUpdater.newUpdater(PinningEventLoopWorker.class, "pinned");
-        final CompositeSubscription innerSubsription = new CompositeSubscription();
+        final CompositeSubscription delayed = new CompositeSubscription();
+        final SubscriptionQueue direct = new SubscriptionQueue();
         final PinningEventLoopScheduler parent;
         final int initialIndex;
         volatile int pinned = UNPINNED;
         final ReentrantReadWriteLock stealLock;
         final ReentrantReadWriteLock.ReadLock stealRead;
         final ReentrantReadWriteLock.WriteLock stealWrite;
+        volatile boolean unsubscribed;
         
         public PinningEventLoopWorker(PinningEventLoopScheduler parent, int initialIndex) {
             this.parent = parent;
@@ -84,18 +88,29 @@ public final class PinningEventLoopScheduler extends Scheduler {
         
         @Override
         public Subscription schedule(Action0 action) {
-            PinnedAction pa = new PinnedAction(new ScheduledAction(action, innerSubsription), this);
-            innerSubsription.add(pa.action);
+            if (isUnsubscribed()) {
+                return Subscriptions.empty();
+            }
+            PinnedAction pa = new PinnedAction(action, this);
+            direct.add(pa);
+            pa.setUnsubscriber(direct.createDequeuer(pa));
             
             schedule(pa);
             
-            return pa.action;
+            return pa;
         }
 
         @Override
         public Subscription schedule(Action0 action, long delayTime, TimeUnit unit) {
-            final PinnedAction pa = new PinnedAction(new ScheduledAction(action, innerSubsription), this);
-            innerSubsription.add(pa.action);
+            if (delayTime <= 0) {
+                return schedule(action);
+            }
+            if (isUnsubscribed()) {
+                return Subscriptions.empty();
+            }
+            final PinnedAction pa = new PinnedAction(action, this);
+            delayed.add(pa);
+            pa.setUnsubscriber(new Remover(pa, delayed));
             
             final MultipleAssignmentSubscription mas = new MultipleAssignmentSubscription();
             
@@ -103,7 +118,7 @@ public final class PinningEventLoopScheduler extends Scheduler {
 
                 @Override
                 public void run() {
-                    mas.set(pa.action);
+                    mas.set(pa);
                     if (!mas.isUnsubscribed()) {
                         schedule(pa);
                     }
@@ -137,44 +152,103 @@ public final class PinningEventLoopScheduler extends Scheduler {
 
         @Override
         public void unsubscribe() {
-            innerSubsription.unsubscribe();
+            unsubscribed = true;
+            delayed.unsubscribe();
+            direct.unsubscribe();
         }
 
         @Override
         public boolean isUnsubscribed() {
-            return innerSubsription.isUnsubscribed();
+            return unsubscribed;
         }
         public boolean casPinned(int expected, int newValue) {
             return PINNED_UPDATER.compareAndSet(this, expected, newValue);
         }
     }
-    static final class PinnedAction {
-        final ScheduledAction action;
+    static final class PinnedAction implements Action0, Subscription {
+        final Action0 action;
         final PinningEventLoopWorker parent;
-        /** Make sure the action is executed once even if queued multiple times due to steal. */
-        volatile boolean once = true;
+        volatile boolean unsubscribed;
+        final MultipleAssignmentSubscription mas;
 
-        public PinnedAction(ScheduledAction action, PinningEventLoopWorker parent) {
+        public PinnedAction(Action0 action, PinningEventLoopWorker parent) {
             this.action = action;
             this.parent = parent;
+            this.mas = new MultipleAssignmentSubscription();
         }
+
+        @Override
+        public void call() {
+            if (!unsubscribed) {
+                try {
+                    action.call();
+                } finally {
+                    unsubscribe();
+                }
+            }
+        }
+
+        @Override
+        public boolean isUnsubscribed() {
+            return unsubscribed;
+        }
+
+        @Override
+        public void unsubscribe() {
+            unsubscribed = true;
+            mas.unsubscribe();
+        }
+        public void setUnsubscriber(Subscription s) {
+            mas.set(s);
+        }
+    }
+    /** Remove a child subscription from a composite when unsubscribing. */
+    static final class Remover implements Subscription {
+        final Subscription s;
+        final CompositeSubscription parent;
+        volatile boolean once;
+
+        public Remover(Subscription s, CompositeSubscription parent) {
+            this.s = s;
+            this.parent = parent;
+        }
+
+        @Override
+        public boolean isUnsubscribed() {
+            return once;
+        }
+
+        @Override
+        public void unsubscribe() {
+            if (!once) {
+                once = true;
+                parent.remove(s);
+            }
+        }
+
     }
     static final class PinningThread extends Thread {
         final int index;
         final PinningEventLoopScheduler parent;
-        final LinkedBlockingDeque<PinnedAction> queue;
-        final ReentrantLock nonEmpty;
-        final Condition hasItem;
+        final Queue<PinnedAction> queue;
+        final ReentrantLock lock;
+        final Condition condition;
+        final Random random;
+        final int otherCount;
         volatile boolean terminate;
         static final AtomicLong counter = new AtomicLong();
+        static final long PARK_TIME = 1000;
 
         public PinningThread(int index, PinningEventLoopScheduler parent) {
             super("RxPinningThread-" + counter.incrementAndGet());
             this.index = index;
             this.parent = parent;
-            this.queue = new LinkedBlockingDeque<PinnedAction>();
-            this.nonEmpty = new ReentrantLock();
-            this.hasItem = nonEmpty.newCondition();
+            //this.queue = new ConcurrentLinkedQueue<PinnedAction>();
+            this.queue = new ConcurrentLinkedQueue<PinnedAction>();
+            this.lock = new ReentrantLock();
+            this.condition = lock.newCondition();
+            this.random = new Random();
+            this.otherCount = parent.threads.length - 1;
         }
         
         @Override
@@ -186,18 +260,15 @@ public final class PinningEventLoopScheduler extends Scheduler {
                 } catch (InterruptedException ex) {
                     // ignored
                 }
-                actions.clear();
-                takeActions(queue, actions);
-                executeAll(actions);
-                actions.clear();
-                if (queue.isEmpty()) {
-                    for (int i = 0; i < parent.threads.length; i++) {
-                        if (i != index) {
-                            if (stealActions(parent.threads[i])) {
-                                break;
-                            }
-                        }
+                takeActions();
+                if (queue.isEmpty() && otherCount > 0) {
+                    actions.clear();
+                    int k = random.nextInt(otherCount);
+                    if (k >= index) {
+                        k++;
                     }
+                    stealActions(parent.threads[k], actions);
+                    executeAll(actions);
                 }
             }
         }
@@ -209,39 +280,39 @@ public final class PinningEventLoopScheduler extends Scheduler {
                 execute(pa);
             }
         }
-        void takeActions(Queue<PinnedAction> queue, List<PinnedAction> out) {
+        void takeActions() {
             Iterator<PinnedAction> it = queue.iterator();
             while (it.hasNext()) {
                 PinnedAction pa = it.next();
                 int pi = pa.parent.pinned;
-                if (pi == index || pa.parent.casPinned(UNPINNED, index)) {
+                if (pi == index || (pi == UNPINNED && pa.parent.casPinned(UNPINNED, index))) {
                     it.remove();
-                    out.add(pa);
+                    
+                    execute(pa);
                 }
             }
         }
-        boolean stealActions(PinningThread other) {
+        void stealActions(PinningThread other, List<PinnedAction> out) {
             Iterator<PinnedAction> it = other.queue.iterator();
             while (it.hasNext()) {
                 PinnedAction pa = it.next();
                 int pi = pa.parent.pinned;
                 if (pi == UNPINNED && pa.parent.casPinned(UNPINNED, index)) {
-                    steal(other, it, pa);
-                    return true;
+                    steal(other, it, pa, out);
+                    return;
                 }
             }            
-            return false;
         }
-        void steal(PinningThread other, Iterator<PinnedAction> it, PinnedAction pa) {
+        void steal(PinningThread other, Iterator<PinnedAction> it, PinnedAction pa, List<PinnedAction> out) {
             WriteLock wl = pa.parent.stealWrite;
-            List<PinnedAction> out = new ArrayList<PinnedAction>();
+            PinningEventLoopWorker pw = pa.parent;
             wl.lock();
             try {
                 it.remove();
                 out.add(pa);
                 while (it.hasNext()) {
                     pa = it.next();
-                    if (pa.parent.pinned == index) {
+                    if (pa.parent == pw) {
                         it.remove();
                         out.add(pa);
                     }
@@ -249,19 +320,11 @@ public final class PinningEventLoopScheduler extends Scheduler {
             } finally {
                 wl.unlock();
             }
-            // add to the front of the queue
-            for (int i = out.size() - 1; i >= 0; i--) {
-                this.queue.offerFirst(out.get(i));
-            }
         }
         void execute(PinnedAction pa) {
-            if (!pa.once || pa.action.isUnsubscribed()) {
-                return;
-            }
-            pa.once = false;
             try {
                 try {
-                    pa.action.run();
+                    pa.call();
                 } catch (Throwable t) {
                     // ignored
                 }
@@ -275,15 +338,23 @@ public final class PinningEventLoopScheduler extends Scheduler {
         
         public void offer(PinnedAction pa) {
             queue.offer(pa);
-            synchronized (this) {
-                notify();
+            lock.lock();
+            try {
+                if (!queue.isEmpty()) {
+                    condition.signal();
+                }
+            } finally {
+                lock.unlock();
             }
         }
         public void awaitNonEmpty() throws InterruptedException {
-            synchronized (this) {
-                while (queue.isEmpty()) {
-                    wait();
+            lock.lock();
+            try {
+                if (queue.isEmpty()) {
+                    condition.awaitNanos(PARK_TIME);
                 }
+            } finally {
+                lock.unlock();
             }
         }
         public void terminate() {

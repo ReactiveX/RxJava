@@ -67,7 +67,7 @@ public class MultipleObserversOnOneBusyObservable {
 
     @State(Scope.Benchmark)
     public static class Input {
-        @Param({ "50", "500", "5000" })
+        @Param({ "50", "500", "5000", "50000" })
         public int NUM_INTEGERS;
         private final int NUM_CORES = Runtime.getRuntime().availableProcessors();
         private int numObservers;
