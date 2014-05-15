@@ -15,21 +15,17 @@
  */
 package rx.schedulers;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Queue;
 import java.util.Random;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.LockSupport;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock.WriteLock;
 import rx.Scheduler;
 import rx.Subscription;
 import rx.functions.Action0;
@@ -73,17 +69,13 @@ public final class PinningEventLoopScheduler extends Scheduler {
         final PinningEventLoopScheduler parent;
         final int initialIndex;
         volatile int pinned = UNPINNED;
-        final ReentrantReadWriteLock stealLock;
-        final ReentrantReadWriteLock.ReadLock stealRead;
-        final ReentrantReadWriteLock.WriteLock stealWrite;
+        final ReentrantLock stealLock;
         volatile boolean unsubscribed;
         
         public PinningEventLoopWorker(PinningEventLoopScheduler parent, int initialIndex) {
             this.parent = parent;
             this.initialIndex = initialIndex;
-            this.stealLock = new ReentrantReadWriteLock();
-            this.stealRead = stealLock.readLock();
-            this.stealWrite = stealLock.writeLock();
+            this.stealLock = new ReentrantLock();
         }
         
         @Override
@@ -132,22 +124,24 @@ public final class PinningEventLoopScheduler extends Scheduler {
         }
         
         void schedule(PinnedAction pa) {
-            while (true) {
-                int pi = pinned;
-                if (pi == UNPINNED) {
-                    if (stealRead.tryLock()) {
-                        try {
+            do {
+                int pin = pinned;
+                if (pin < 0) {
+                    stealLock.lock();
+                    try {
+                        if (pin == UNPINNED) {
                             parent.threads[initialIndex].offer(pa);
-                        } finally {
-                            stealRead.unlock();
+                            return;
                         }
-                        break;
+                        // otherwise, wait a bit so the steal code can finish
+                    } finally {
+                        stealLock.unlock();
                     }
                 } else {
-                    parent.threads[pi].offer(pa);
-                    break;
+                    parent.threads[pin].offer(pa);
+                    return;
                 }
-            }
+            } while (true);
         }
 
         @Override
@@ -231,11 +225,10 @@ public final class PinningEventLoopScheduler extends Scheduler {
         final int index;
         final PinningEventLoopScheduler parent;
         final Queue<PinnedAction> queue;
-        final ReentrantLock lock;
-        final Condition condition;
         final Random random;
         final int otherCount;
         volatile boolean terminate;
+        volatile boolean parked;
         static final AtomicLong counter = new AtomicLong();
         static final long PARK_TIME = 1000;
 
@@ -245,15 +238,12 @@ public final class PinningEventLoopScheduler extends Scheduler {
             this.parent = parent;
             //this.queue = new ConcurrentLinkedQueue<PinnedAction>();
             this.queue = new ConcurrentLinkedQueue<PinnedAction>();
-            this.lock = new ReentrantLock();
-            this.condition = lock.newCondition();
             this.random = new Random();
             this.otherCount = parent.threads.length - 1;
         }
         
         @Override
         public void run() {
-            List<PinnedAction> actions = new ArrayList<PinnedAction>();
             while (!terminate) {
                 try {
                     awaitNonEmpty();
@@ -262,22 +252,12 @@ public final class PinningEventLoopScheduler extends Scheduler {
                 }
                 takeActions();
                 if (queue.isEmpty() && otherCount > 0) {
-                    actions.clear();
                     int k = random.nextInt(otherCount);
                     if (k >= index) {
                         k++;
                     }
-                    stealActions(parent.threads[k], actions);
-                    executeAll(actions);
+                    stealActions(parent.threads[k]);
                 }
-            }
-        }
-        void executeAll(Iterable<PinnedAction> actions) {
-            for (PinnedAction pa : actions) {
-                if (terminate) {
-                    return;
-                }
-                execute(pa);
             }
         }
         void takeActions() {
@@ -292,69 +272,56 @@ public final class PinningEventLoopScheduler extends Scheduler {
                 }
             }
         }
-        void stealActions(PinningThread other, List<PinnedAction> out) {
+        void stealActions(PinningThread other) {
             Iterator<PinnedAction> it = other.queue.iterator();
             while (it.hasNext()) {
                 PinnedAction pa = it.next();
-                int pi = pa.parent.pinned;
-                if (pi == UNPINNED && pa.parent.casPinned(UNPINNED, index)) {
-                    steal(other, it, pa, out);
+                PinningEventLoopWorker pw = pa.parent;
+                int pi = pw.pinned;
+                if (pi == UNPINNED && pw.casPinned(UNPINNED, -index - 2)) {
+                    Lock wl = pa.parent.stealLock;
+                    wl.lock();
+                    try {
+                        it.remove();
+                        queue.offer(pa);
+                        while (it.hasNext()) {
+                            pa = it.next();
+                            if (pa.parent == pw) {
+                                it.remove();
+                                queue.offer(pa);
+                            }
+                        }
+                        if (!pw.casPinned(-index-2, index)) {
+                            throw new IllegalStateException("Not stealing???");
+                        }
+                    } finally {
+                        wl.unlock();
+                    }
                     return;
                 }
             }            
         }
-        void steal(PinningThread other, Iterator<PinnedAction> it, PinnedAction pa, List<PinnedAction> out) {
-            WriteLock wl = pa.parent.stealWrite;
-            PinningEventLoopWorker pw = pa.parent;
-            wl.lock();
-            try {
-                it.remove();
-                out.add(pa);
-                while (it.hasNext()) {
-                    pa = it.next();
-                    if (pa.parent == pw) {
-                        it.remove();
-                        out.add(pa);
-                    }
-                }
-            } finally {
-                wl.unlock();
-            }
-        }
         void execute(PinnedAction pa) {
             try {
-                try {
-                    pa.call();
-                } catch (Throwable t) {
-                    // ignored
-                }
+                pa.call();
+            } catch (Throwable t) {
+                // ignored
             } finally {
-                // clear interrupt flag
-                if (Thread.currentThread().isInterrupted()) {
-                    Thread.interrupted();
-                }
+                Thread.interrupted();
             }
         }
         
         public void offer(PinnedAction pa) {
             queue.offer(pa);
-            lock.lock();
-            try {
-                if (!queue.isEmpty()) {
-                    condition.signal();
-                }
-            } finally {
-                lock.unlock();
+            if (parked) {
+                LockSupport.unpark(this);
             }
         }
         public void awaitNonEmpty() throws InterruptedException {
-            lock.lock();
-            try {
-                if (queue.isEmpty()) {
-                    condition.awaitNanos(PARK_TIME);
-                }
-            } finally {
-                lock.unlock();
+            if (queue.isEmpty()) {
+                parked = true;
+                LockSupport.parkNanos(PARK_TIME);
+                parked = false;
             }
         }
         public void terminate() {
