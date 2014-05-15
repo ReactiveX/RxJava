@@ -26,6 +26,8 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.os.Build;
 
+import java.lang.ref.WeakReference;
+
 
 public final class AndroidObservable {
 
@@ -41,27 +43,38 @@ public final class AndroidObservable {
         USES_SUPPORT_FRAGMENTS = supportFragmentsAvailable;
     }
 
-    private static final Func1<Activity, Boolean> ACTIVITY_VALIDATOR = new Func1<Activity, Boolean>() {
+    private static final <T> Func1<WeakReference<T>, Boolean> weaken(final Func1<T, Boolean> f) {
+            return new Func1<WeakReference<T>, Boolean>() {
+                @Override
+                public Boolean call(WeakReference<T> boundRef) {
+                    T bound = boundRef.get();
+                    return bound != null && f.call(bound);
+                }
+            };
+    }
+
+    private static final Func1<WeakReference<Activity>, Boolean> ACTIVITY_VALIDATOR = weaken(new Func1<Activity, Boolean>() {
         @Override
         public Boolean call(Activity activity) {
             return !activity.isFinishing();
         }
-    };
+    });
 
-    private static final Func1<Fragment, Boolean> FRAGMENT_VALIDATOR = new Func1<Fragment, Boolean>() {
+    private static final Func1<WeakReference<Fragment>, Boolean> FRAGMENT_VALIDATOR = weaken(new Func1<Fragment, Boolean>() {
         @Override
         public Boolean call(Fragment fragment) {
             return fragment.isAdded() && !fragment.getActivity().isFinishing();
         }
-    };
+    });
 
-    private static final Func1<android.support.v4.app.Fragment, Boolean> FRAGMENTV4_VALIDATOR =
+    private static final Func1<WeakReference<android.support.v4.app.Fragment>, Boolean> FRAGMENTV4_VALIDATOR = weaken(
             new Func1<android.support.v4.app.Fragment, Boolean>() {
                 @Override
                 public Boolean call(android.support.v4.app.Fragment fragment) {
                     return fragment.isAdded() && !fragment.getActivity().isFinishing();
                 }
-            };
+            }
+    );
 
     private AndroidObservable() {
     }
@@ -146,7 +159,7 @@ public final class AndroidObservable {
      */
     public static <T> Observable<T> bindActivity(Activity activity, Observable<T> source) {
         Assertions.assertUiThread();
-        return source.observeOn(mainThread()).lift(new OperatorConditionalBinding<T, Activity>(activity, ACTIVITY_VALIDATOR));
+        return source.observeOn(mainThread()).lift(new OperatorConditionalBinding<T, WeakReference<Activity>>(new WeakReference(activity), ACTIVITY_VALIDATOR));
     }
 
     /**
@@ -168,10 +181,10 @@ public final class AndroidObservable {
         final Observable<T> o = source.observeOn(mainThread());
         if (USES_SUPPORT_FRAGMENTS && fragment instanceof android.support.v4.app.Fragment) {
             android.support.v4.app.Fragment f = (android.support.v4.app.Fragment) fragment;
-            return o.lift(new OperatorConditionalBinding<T, android.support.v4.app.Fragment>(f, FRAGMENTV4_VALIDATOR));
+            return o.lift(new OperatorConditionalBinding<T, WeakReference<android.support.v4.app.Fragment>>(new WeakReference(f), FRAGMENTV4_VALIDATOR));
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB && fragment instanceof Fragment) {
             Fragment f = (Fragment) fragment;
-            return o.lift(new OperatorConditionalBinding<T, Fragment>(f, FRAGMENT_VALIDATOR));
+            return o.lift(new OperatorConditionalBinding<T, WeakReference<Fragment>>(new WeakReference(f), FRAGMENT_VALIDATOR));
         } else {
             throw new IllegalArgumentException("Target fragment is neither a native nor support library Fragment");
         }
