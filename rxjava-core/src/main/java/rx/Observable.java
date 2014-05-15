@@ -144,6 +144,7 @@ public class Observable<T> {
      * @param lift
      * @return an Observable that emits values that are the result of applying the bind function to the values
      *         of the current Observable
+     * @since 0.17
      */
     public final <R> Observable<R> lift(final Operator<? extends R, ? super T> lift) {
         return new Observable<R>(new OnSubscribe<R>() {
@@ -2154,6 +2155,7 @@ public class Observable<T> {
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/nest.png">
      * 
      * @return an Observable that emits a single item: the source Observable
+     * @since 0.17
      */
     public final Observable<Observable<T>> nest() {
         return just(this);
@@ -2247,6 +2249,7 @@ public class Observable<T> {
      * 
      * @param groups
      * @return an Observable containing a stream of nested GroupedObservables with swapped inner-outer keys.
+     * @since 0.17
      */
     public static final <K1, K2, T> Observable<GroupedObservable<K2, GroupedObservable<K1, T>>> pivot(Observable<GroupedObservable<K1, GroupedObservable<K2, T>>> groups) {
         return groups.lift(new OperatorPivot<K1, K2, T>());
@@ -3699,6 +3702,7 @@ public class Observable<T> {
      * @return the source Observable with the side-effecting behavior applied
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#wiki-doonterminate">RxJava Wiki: doOnTerminate()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229804.aspx">MSDN: Observable.Do</a>
+     * @since 0.17
      */
     public final Observable<T> doOnTerminate(final Action0 onTerminate) {
         Observer<T> observer = new Observer<T>() {
@@ -4439,6 +4443,7 @@ public class Observable<T> {
      *            of the error
      * @return the original Observable, with appropriately modified behavior
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Error-Handling-Operators#onerrorflatmap">RxJava Wiki: onErrorFlatMap()</a>
+     * @since 0.17
      */
     public final Observable<T> onErrorFlatMap(final Func1<OnErrorThrowable, ? extends Observable<? extends T>> resumeFunction) {
         return lift(new OperatorOnErrorFlatMap<T>(resumeFunction));
@@ -4724,6 +4729,7 @@ public class Observable<T> {
      *             if {@code count} is less than zero
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#wiki-repeat">RxJava Wiki: repeat()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229428.aspx">MSDN: Observable.Repeat</a>
+     * @since 0.17
      */
     public final Observable<T> repeat(long count) {
         if (count < 0) {
@@ -4745,6 +4751,7 @@ public class Observable<T> {
      * @return an Observable that repeats the sequence of items emitted by the source Observable at most {@code count} times on a particular Scheduler
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#wiki-repeat">RxJava Wiki: repeat()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229428.aspx">MSDN: Observable.Repeat</a>
+     * @since 0.17
      */
     public final Observable<T> repeat(long count, Scheduler scheduler) {
         return nest().lift(new OperatorRepeat<T>(count, scheduler));
@@ -5310,6 +5317,9 @@ public class Observable<T> {
         return lift(new OperatorScan<R, T>(initialValue, accumulator));
     }
 
+    /*
+     * @since 0.17
+     */
     public final Observable<T> serialize() {
         return lift(new OperatorSerialize<T>());
     }
@@ -6127,6 +6137,7 @@ public class Observable<T> {
      * 
      * @param subscriber
      * @return Subscription which is the Subscriber passed in
+     * @since 0.17
      */
     public final Subscription unsafeSubscribe(Subscriber<? super T> subscriber) {
         try {
@@ -7237,6 +7248,7 @@ public class Observable<T> {
      * @param scheduler
      *            the {@link Scheduler} to perform subscription and unsubscription actions on
      * @return the source Observable modified so that its unsubscriptions happen on the specified {@link Scheduler}
+     * @since 0.17
      */
     public final Observable<T> unsubscribeOn(Scheduler scheduler) {
         return lift(new OperatorUnsubscribeOn<T>(scheduler));
