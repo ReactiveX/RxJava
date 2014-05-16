@@ -31,17 +31,26 @@ trait Scheduler {
   /**
    * Parallelism available to a Scheduler.
    *
-   * This defaults to {@code Runtime.getRuntime().availableProcessors()} but can be overridden for use cases such as scheduling work on a computer cluster.
+   * This defaults to `Runtime.getRuntime().availableProcessors()` but can be overridden for use cases such as scheduling work on a computer cluster.
    *
    * @return the scheduler's available degree of parallelism.
    */
-  def degreeOfParallelism: Int =  asJavaScheduler.degreeOfParallelism
+  def parallelism: Int =  asJavaScheduler.parallelism()
 
   /**
    * @return the scheduler's notion of current absolute time in milliseconds.
    */
   def now: Long = this.asJavaScheduler.now()
 
+  /**
+   * Retrieve or create a new [[rx.lang.scala.Worker]] that represents serial execution of actions.
+   * <p>
+   * When work is completed it should be unsubscribed using [[rx.lang.scala.Worker unsubscribe]].
+   * <p>
+   * Work on a [[rx.lang.scala.Worker]] is guaranteed to be sequential.
+   *
+   * @return Inner representing a serial queue of actions to be executed
+   */
   def createWorker: Worker = this.asJavaScheduler.createWorker()
 
 }
@@ -54,24 +63,55 @@ trait Worker extends Subscription {
   private [scala] val asJavaWorker: rx.Scheduler.Worker
 
   /**
-   * Schedules a cancelable action to be executed in delayTime.
+   * Schedules an Action for execution at some point in the future.
+   *
+   * @param action the Action to schedule
+   * @param delay time to wait before executing the action
+   * @return a subscription to be able to unsubscribe the action (unschedule it if not executed)
    */
-  def schedule(action: Unit => Unit, delayTime: Duration): Subscription =
+  def schedule(delay: Duration)(action: => Unit): Subscription = {
     this.asJavaWorker.schedule(
       new Action0 {
-        override def call(): Unit = action()
+        override def call(): Unit = action
       },
-      delayTime.length,
-      delayTime.unit)
+      delay.length,
+      delay.unit)
+  }
 
   /**
-   * Schedules a cancelable action to be executed immediately.
+   * Schedules an Action for execution.
+   *
+   * @param action the Action to schedule
+   * @return a subscription to be able to unsubscribe the action (unschedule it if not executed)
    */
-  def schedule(action: Unit => Unit): Subscription = this.asJavaWorker.schedule(
-    new Action0 {
-      override def call(): Unit = action()
-    }
-  )
+  def schedule(action: => Unit): Subscription = {
+    this.asJavaWorker.schedule(
+      new Action0 {
+        override def call(): Unit = action
+      }
+    )
+  }
+
+  /**
+   * Schedules a cancelable action to be executed periodically. This default implementation schedules
+   * recursively and waits for actions to complete (instead of potentially executing long-running actions
+   * concurrently). Each scheduler that can do periodic scheduling in a better way should override this.
+   *
+   * @param action the Action to execute periodically
+   * @param initialDelay  time to wait before executing the action for the first time
+   * @param period the time interval to wait each time in between executing the action
+   * @return a subscription to be able to unsubscribe the action (unschedule it if not executed)
+   */
+  def schedulePeriodically(initialDelay: Duration, period: Duration)(action: => Unit): Subscription = {
+    this.asJavaWorker.schedulePeriodically(
+      new Action0 {
+        override def call(): Unit = action
+      },
+      initialDelay.toNanos,
+      period.toNanos,
+      duration.NANOSECONDS
+    )
+  }
 
   /**
    * @return the scheduler's notion of current absolute time in milliseconds.
