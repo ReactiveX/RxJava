@@ -51,10 +51,8 @@ public final class SwingSchedulerTest {
         final Worker inner = scheduler.createWorker();
         final Action0 action = mock(Action0.class);
 
-        exception.expect(IllegalArgumentException.class);
         inner.schedulePeriodically(action, -1L, 100L, TimeUnit.SECONDS);
 
-        exception.expect(IllegalArgumentException.class);
         inner.schedulePeriodically(action, 100L, -1L, TimeUnit.SECONDS);
 
         exception.expect(IllegalArgumentException.class);
