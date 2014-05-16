@@ -18,12 +18,13 @@ package rx.operators;
 import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Subscriber;
+import rx.Subscription;
+import rx.functions.Action1;
 import rx.functions.Func0;
 import rx.functions.Func1;
 import rx.observables.ConnectableObservable;
 import rx.observers.SafeSubscriber;
 import rx.subjects.Subject;
-import rx.subscriptions.CompositeSubscription;
 
 /**
  * Returns an observable sequence that contains the elements of a sequence
@@ -63,14 +64,16 @@ public final class OperatorMulticastSelector<TInput, TIntermediate, TResult> imp
             return;
         }
         
-        CompositeSubscription csub = new CompositeSubscription();
-        child.add(csub);
-        
-        SafeSubscriber<TResult> s = new SafeSubscriber<TResult>(child);
+        final SafeSubscriber<TResult> s = new SafeSubscriber<TResult>(child);
         
         observable.unsafeSubscribe(s);
         
-        csub.add(connectable.connect());
+        connectable.connect(new Action1<Subscription>() {
+            @Override
+            public void call(Subscription t1) {
+                s.add(t1);
+            }
+        });
     }
     
 }
