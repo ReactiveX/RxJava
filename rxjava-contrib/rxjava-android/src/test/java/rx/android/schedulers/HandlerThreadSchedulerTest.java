@@ -19,6 +19,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.concurrent.TimeUnit;
 
@@ -28,11 +29,13 @@ import org.mockito.ArgumentCaptor;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
+import rx.Observable;
 import rx.Scheduler;
 import rx.Scheduler.Worker;
 import rx.functions.Action0;
 import rx.functions.Action1;
 import android.os.Handler;
+import android.os.Looper;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(manifest=Config.NONE)
@@ -41,19 +44,21 @@ public class HandlerThreadSchedulerTest {
     @Test
     public void shouldScheduleImmediateActionOnHandlerThread() {
         final Handler handler = mock(Handler.class);
+        final Looper looper = mock(Looper.class);
+        when(handler.getLooper()).thenReturn(looper);
+        when(looper.getThread()).thenReturn(Thread.currentThread());
         @SuppressWarnings("unchecked")
         final Action0 action = mock(Action0.class);
 
-        Scheduler scheduler = new HandlerThreadScheduler(handler);
+        Scheduler scheduler = new HandlerThreadScheduler(handler, true);
         Worker inner = scheduler.createWorker();
         inner.schedule(action);
 
-        // verify that we post to the given Handler
-        ArgumentCaptor<Runnable> runnable = ArgumentCaptor.forClass(Runnable.class);
-        verify(handler).postDelayed(runnable.capture(), eq(0L));
+        // verify that we call action directly
+        verify(handler).getLooper();
+        verify(looper).getThread();
 
         // verify that the given handler delegates to our action
-        runnable.getValue().run();
         verify(action).call();
     }
 

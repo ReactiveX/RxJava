@@ -31,29 +31,46 @@ import android.os.Handler;
 public class HandlerThreadScheduler extends Scheduler {
 
     private final Handler handler;
+    private final boolean immediate;
 
     /**
      * Constructs a {@link HandlerThreadScheduler} using the given {@link Handler}
+     * @param handler
+     *            {@link Handler} to use when scheduling actions
+     * @param immediate
+     *            if true, immediate actions scheduled from the same Thread will be called directly
+     *            without posting to {@link Handler}
+     */
+    public HandlerThreadScheduler(Handler handler, boolean immediate) {
+        this.handler = handler;
+        this.immediate = immediate;
+    }
+
+    /**
+     * Constructs a {@link HandlerThreadScheduler} using the given {@link Handler} and
+     * {@link Handler}
      * 
      * @param handler
      *            {@link Handler} to use when scheduling actions
      */
     public HandlerThreadScheduler(Handler handler) {
-        this.handler = handler;
+        this(handler, false);
     }
 
     @Override
     public Worker createWorker() {
-        return new InnerHandlerThreadScheduler(handler);
+        return new InnerHandlerThreadScheduler(handler, immediate);
     }
     
     private static class InnerHandlerThreadScheduler extends Worker {
 
         private final Handler handler;
+        private final boolean immediate;
         private BooleanSubscription innerSubscription = new BooleanSubscription();
 
-        public InnerHandlerThreadScheduler(Handler handler) {
+        public InnerHandlerThreadScheduler(Handler handler, boolean immediate) {
             this.handler = handler;
+            this.immediate = immediate;
         }
 
         @Override
@@ -91,7 +108,12 @@ public class HandlerThreadScheduler extends Scheduler {
 
         @Override
         public Subscription schedule(final Action0 action) {
-            return schedule(action, 0, TimeUnit.MILLISECONDS);
+            if (immediate && handler.getLooper().getThread() == Thread.currentThread()) {
+                action.call();
+                return Subscriptions.empty();
+            } else {
+                return schedule(action, 0, TimeUnit.MILLISECONDS);
+            }
         }
 
     }
