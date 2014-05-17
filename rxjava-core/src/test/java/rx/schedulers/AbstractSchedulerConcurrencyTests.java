@@ -15,7 +15,10 @@
  */
 package rx.schedulers;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -25,10 +28,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 
 import rx.Observable;
-import rx.Observable.OnSubscribeFunc;
-import rx.Observer;
+import rx.Observable.OnSubscribe;
 import rx.Scheduler;
-import rx.Scheduler.Inner;
+import rx.Scheduler.Worker;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Action0;
@@ -98,16 +100,18 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
         final CountDownLatch latch = new CountDownLatch(1);
         final CountDownLatch unsubscribeLatch = new CountDownLatch(1);
         final AtomicInteger counter = new AtomicInteger();
-        Subscription s = getScheduler().schedule(new Action1<Inner>() {
+        final Worker inner = getScheduler().createWorker();
+
+        inner.schedule(new Action0() {
 
             @Override
-            public void call(final Inner inner) {
-                inner.schedule(new Action1<Inner>() {
+            public void call() {
+                inner.schedule(new Action0() {
 
                     int i = 0;
 
                     @Override
-                    public void call(Inner s) {
+                    public void call() {
                         System.out.println("Run: " + i++);
                         if (i == 10) {
                             latch.countDown();
@@ -131,7 +135,7 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
         });
 
         latch.await();
-        s.unsubscribe();
+        inner.unsubscribe();
         unsubscribeLatch.countDown();
         Thread.sleep(200); // let time pass to see if the scheduler is still doing work
         assertEquals(10, counter.get());
@@ -141,16 +145,17 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
     public void testUnsubscribeRecursiveScheduleFromInside() throws InterruptedException {
         final CountDownLatch unsubscribeLatch = new CountDownLatch(1);
         final AtomicInteger counter = new AtomicInteger();
-        getScheduler().schedule(new Action1<Inner>() {
+        final Worker inner = getScheduler().createWorker();
+        inner.schedule(new Action0() {
 
             @Override
-            public void call(Inner inner) {
-                inner.schedule(new Action1<Inner>() {
+            public void call() {
+                inner.schedule(new Action0() {
 
                     int i = 0;
 
                     @Override
-                    public void call(Inner inner) {
+                    public void call() {
                         System.out.println("Run: " + i++);
                         if (i == 10) {
                             inner.unsubscribe();
@@ -174,16 +179,17 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
         final CountDownLatch latch = new CountDownLatch(1);
         final CountDownLatch unsubscribeLatch = new CountDownLatch(1);
         final AtomicInteger counter = new AtomicInteger();
-        Subscription s = getScheduler().schedule(new Action1<Inner>() {
+        final Worker inner = getScheduler().createWorker();
+        inner.schedule(new Action0() {
 
             @Override
-            public void call(final Inner innerScheduler) {
-                innerScheduler.schedule(new Action1<Inner>() {
+            public void call() {
+                inner.schedule(new Action0() {
 
                     long i = 1L;
 
                     @Override
-                    public void call(Inner s) {
+                    public void call() {
                         if (i++ == 10) {
                             latch.countDown();
                             try {
@@ -198,14 +204,14 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
                         }
 
                         counter.incrementAndGet();
-                        innerScheduler.schedule(this, 10, TimeUnit.MILLISECONDS);
+                        inner.schedule(this, 10, TimeUnit.MILLISECONDS);
                     }
                 }, 10, TimeUnit.MILLISECONDS);
             }
         });
 
         latch.await();
-        s.unsubscribe();
+        inner.unsubscribe();
         unsubscribeLatch.countDown();
         Thread.sleep(200); // let time pass to see if the scheduler is still doing work
         assertEquals(10, counter.get());
@@ -214,12 +220,13 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
     @Test
     public void recursionFromOuterActionAndUnsubscribeInside() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
-        getScheduler().schedule(new Action1<Inner>() {
+        final Worker inner = getScheduler().createWorker();
+        inner.schedule(new Action0() {
 
             int i = 0;
 
             @Override
-            public void call(Inner inner) {
+            public void call() {
                 i++;
                 if (i % 100000 == 0) {
                     System.out.println(i + "  Total Memory: " + Runtime.getRuntime().totalMemory() + "  Free: " + Runtime.getRuntime().freeMemory());
@@ -238,12 +245,13 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
     @Test
     public void testRecursion() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
-        getScheduler().schedule(new Action1<Inner>() {
+        final Worker inner = getScheduler().createWorker();
+        inner.schedule(new Action0() {
 
             private long i = 0;
 
             @Override
-            public void call(Inner inner) {
+            public void call() {
                 i++;
                 if (i % 100000 == 0) {
                     System.out.println(i + "  Total Memory: " + Runtime.getRuntime().totalMemory() + "  Free: " + Runtime.getRuntime().freeMemory());
@@ -265,13 +273,13 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
         final CountDownLatch latch = new CountDownLatch(10);
         final CountDownLatch completionLatch = new CountDownLatch(1);
 
-        Observable<Integer> obs = Observable.create(new OnSubscribeFunc<Integer>() {
+        Observable<Integer> obs = Observable.create(new OnSubscribe<Integer>() {
             @Override
-            public Subscription onSubscribe(final Observer<? super Integer> observer) {
-
-                final Subscription s = getScheduler().schedule(new Action1<Inner>() {
+            public void call(final Subscriber<? super Integer> observer) {
+                final Worker inner = getScheduler().createWorker();
+                inner.schedule(new Action0() {
                     @Override
-                    public void call(Inner inner) {
+                    public void call() {
                         observer.onNext(42);
                         latch.countDown();
 
@@ -280,16 +288,16 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
                     }
                 });
 
-                return Subscriptions.create(new Action0() {
+                observer.add(Subscriptions.create(new Action0() {
 
                     @Override
                     public void call() {
-                        s.unsubscribe();
+                        inner.unsubscribe();
                         observer.onCompleted();
                         completionLatch.countDown();
                     }
 
-                });
+                }));
 
             }
         });

@@ -15,7 +15,7 @@
  */
 package rx.schedulers;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -28,7 +28,7 @@ public class ImmediateSchedulerTest extends AbstractSchedulerTests {
 
     @Override
     protected Scheduler getScheduler() {
-        return ImmediateScheduler.getInstance();
+        return Schedulers.immediate();
     }
 
     @Override

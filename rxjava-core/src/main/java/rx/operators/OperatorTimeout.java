@@ -19,9 +19,8 @@ import java.util.concurrent.TimeUnit;
 
 import rx.Observable;
 import rx.Scheduler;
-import rx.Scheduler.Inner;
 import rx.Subscription;
-import rx.functions.Action1;
+import rx.functions.Action0;
 
 /**
  * Applies a timeout policy for each element in the observable sequence, using
@@ -32,17 +31,14 @@ import rx.functions.Action1;
  */
 public final class OperatorTimeout<T> extends OperatorTimeoutBase<T> {
 
-    public OperatorTimeout(final long timeout, final TimeUnit timeUnit,
-            Observable<? extends T> other, final Scheduler scheduler) {
+    public OperatorTimeout(final long timeout, final TimeUnit timeUnit, Observable<? extends T> other, Scheduler scheduler) {
         super(new FirstTimeoutStub<T>() {
 
             @Override
-            public Subscription call(
-                    final TimeoutSubscriber<T> timeoutSubscriber,
-                    final Long seqId) {
-                return scheduler.schedule(new Action1<Inner>() {
+            public Subscription call(final TimeoutSubscriber<T> timeoutSubscriber, final Long seqId, Scheduler.Worker inner) {
+                return inner.schedule(new Action0() {
                     @Override
-                    public void call(Inner inner) {
+                    public void call() {
                         timeoutSubscriber.onTimeout(seqId);
                     }
                 }, timeout, timeUnit);
@@ -50,16 +46,14 @@ public final class OperatorTimeout<T> extends OperatorTimeoutBase<T> {
         }, new TimeoutStub<T>() {
 
             @Override
-            public Subscription call(
-                    final TimeoutSubscriber<T> timeoutSubscriber,
-                    final Long seqId, T value) {
-                return scheduler.schedule(new Action1<Inner>() {
+            public Subscription call(final TimeoutSubscriber<T> timeoutSubscriber, final Long seqId, T value, Scheduler.Worker inner) {
+                return inner.schedule(new Action0() {
                     @Override
-                    public void call(Inner inner) {
+                    public void call() {
                         timeoutSubscriber.onTimeout(seqId);
                     }
                 }, timeout, timeUnit);
             }
-        }, other);
+        }, other, scheduler);
     }
 }

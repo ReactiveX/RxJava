@@ -15,15 +15,21 @@
  */
 package rx.operators;
 
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -45,7 +51,6 @@ import rx.functions.FuncN;
 import rx.functions.Functions;
 import rx.observers.TestSubscriber;
 import rx.subjects.PublishSubject;
-import rx.subscriptions.Subscriptions;
 
 public class OperatorZipTest {
     Func2<String, String, String> concat2Strings;
@@ -615,25 +620,6 @@ public class OperatorZipTest {
         return zipr;
     }
 
-    private FuncN<String> getConcatZipr() {
-        FuncN<String> zipr = new FuncN<String>() {
-
-            @Override
-            public String call(Object... args) {
-                String returnValue = "";
-                for (Object o : args) {
-                    if (o != null) {
-                        returnValue += getStringValue(o);
-                    }
-                }
-                System.out.println("returning: " + returnValue);
-                return returnValue;
-            }
-
-        };
-        return zipr;
-    }
-
     private Func2<String, Integer, String> getConcatStringIntegerZipr() {
         Func2<String, Integer, String> zipr = new Func2<String, Integer, String>() {
 
@@ -670,15 +656,14 @@ public class OperatorZipTest {
         }
     }
 
-    private static class TestObservable implements Observable.OnSubscribeFunc<String> {
+    private static class TestObservable implements Observable.OnSubscribe<String> {
 
         Observer<? super String> observer;
 
         @Override
-        public Subscription onSubscribe(Observer<? super String> Observer) {
+        public void call(Subscriber<? super String> observer) {
             // just store the variable where it can be accessed so we can manually trigger it
-            this.observer = Observer;
-            return Subscriptions.empty();
+            this.observer = observer;
         }
 
     }
@@ -1034,10 +1019,10 @@ public class OperatorZipTest {
     }
 
     /**
-     * Expect IllegalArgumentException instead of blocking forever as zip should emit onCompleted and no onNext
+     * Expect NoSuchElementException instead of blocking forever as zip should emit onCompleted and no onNext
      * and last() expects at least a single response.
      */
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NoSuchElementException.class)
     public void testZipEmptyListBlocking() {
 
         final Object invoked = new Object();

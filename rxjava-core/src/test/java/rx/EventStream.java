@@ -19,9 +19,9 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import rx.Observable.OnSubscribeFunc;
-import rx.Scheduler.Inner;
-import rx.functions.Action1;
+import rx.Observable.OnSubscribe;
+import rx.Scheduler.Worker;
+import rx.functions.Action0;
 import rx.schedulers.Schedulers;
 
 /**
@@ -30,32 +30,27 @@ import rx.schedulers.Schedulers;
 public class EventStream {
 
     public static Observable<Event> getEventStream(final String type, final int numInstances) {
-        return Observable.create(new OnSubscribeFunc<Event>() {
+        return Observable.create(new OnSubscribe<Event>() {
 
             @Override
-            public Subscription onSubscribe(final Observer<? super Event> observer) {
+            public void call(final Subscriber<? super Event> subscriber) {
+                Worker inner = Schedulers.newThread().createWorker();
+                subscriber.add(inner);
                 // run on a background thread inside the OnSubscribeFunc so unsubscribe works
-                return Schedulers.newThread().schedule(new Action1<Inner>() {
+                inner.schedule(new Action0() {
 
                     @Override
-                    public void call(Inner inner) {
-                        inner.schedule(new Action1<Inner>() {
-
-                            @Override
-                            public void call(Inner inner) {
-                                while (!(inner.isUnsubscribed() || Thread.currentThread().isInterrupted())) {
-                                    observer.onNext(randomEvent(type, numInstances));
-                                    try {
-                                        // slow it down somewhat
-                                        Thread.sleep(50);
-                                    } catch (InterruptedException e) {
-                                        observer.onError(e);
-                                    }
-                                }
-                                observer.onCompleted();
+                    public void call() {
+                        while (!(subscriber.isUnsubscribed() || Thread.currentThread().isInterrupted())) {
+                            subscriber.onNext(randomEvent(type, numInstances));
+                            try {
+                                // slow it down somewhat
+                                Thread.sleep(50);
+                            } catch (InterruptedException e) {
+                                subscriber.onError(e);
                             }
-
-                        });
+                        }
+                        subscriber.onCompleted();
                     }
 
                 });

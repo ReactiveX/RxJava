@@ -15,9 +15,14 @@
  */
 package rx.operators;
 
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -37,6 +42,7 @@ import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Observer;
 import rx.Scheduler;
+import rx.Scheduler.Worker;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Action0;
@@ -61,16 +67,14 @@ public class OperatorMergeTest {
         final Observable<String> o1 = Observable.create(new TestSynchronousObservable());
         final Observable<String> o2 = Observable.create(new TestSynchronousObservable());
 
-        Observable<Observable<String>> observableOfObservables = Observable.create(new Observable.OnSubscribeFunc<Observable<String>>() {
+        Observable<Observable<String>> observableOfObservables = Observable.create(new Observable.OnSubscribe<Observable<String>>() {
 
             @Override
-            public Subscription onSubscribe(Observer<? super Observable<String>> observer) {
+            public void call(Subscriber<? super Observable<String>> observer) {
                 // simulate what would happen in an observable
                 observer.onNext(o1);
                 observer.onNext(o2);
                 observer.onCompleted();
-
-                return Subscriptions.empty();
             }
 
         });
@@ -117,10 +121,10 @@ public class OperatorMergeTest {
         final AtomicBoolean unsubscribed = new AtomicBoolean();
         final CountDownLatch latch = new CountDownLatch(1);
 
-        Observable<Observable<Long>> source = Observable.create(new Observable.OnSubscribeFunc<Observable<Long>>() {
+        Observable<Observable<Long>> source = Observable.create(new Observable.OnSubscribe<Observable<Long>>() {
 
             @Override
-            public Subscription onSubscribe(final Observer<? super Observable<Long>> observer) {
+            public void call(final Subscriber<? super Observable<Long>> observer) {
                 // verbose on purpose so I can track the inside of it
                 final Subscription s = Subscriptions.create(new Action0() {
 
@@ -131,6 +135,7 @@ public class OperatorMergeTest {
                     }
 
                 });
+                observer.add(s);
 
                 new Thread(new Runnable() {
 
@@ -147,8 +152,6 @@ public class OperatorMergeTest {
                         latch.countDown();
                     }
                 }).start();
-
-                return s;
             }
 
             ;
@@ -317,25 +320,41 @@ public class OperatorMergeTest {
         verify(stringObserver, times(0)).onNext("eight");
         verify(stringObserver, times(0)).onNext("nine");
     }
+    
+    @Test
+    public void testThrownErrorHandling() {
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+        Observable<String> o1 = Observable.create(new OnSubscribe<String>() {
 
-    private static class TestSynchronousObservable implements Observable.OnSubscribeFunc<String> {
+            @Override
+            public void call(Subscriber<? super String> s) {
+                throw new RuntimeException("fail");
+            }
+
+        });
+
+        Observable.merge(o1, o1).subscribe(ts);
+        ts.awaitTerminalEvent(1000, TimeUnit.MILLISECONDS);
+        ts.assertTerminalEvent();
+        System.out.println("Error: " + ts.getOnErrorEvents());
+    }
+
+    private static class TestSynchronousObservable implements Observable.OnSubscribe<String> {
 
         @Override
-        public Subscription onSubscribe(Observer<? super String> observer) {
+        public void call(Subscriber<? super String> observer) {
 
             observer.onNext("hello");
             observer.onCompleted();
-
-            return Subscriptions.empty();
         }
     }
 
-    private static class TestASynchronousObservable implements Observable.OnSubscribeFunc<String> {
+    private static class TestASynchronousObservable implements Observable.OnSubscribe<String> {
         Thread t;
         final CountDownLatch onNextBeingSent = new CountDownLatch(1);
 
         @Override
-        public Subscription onSubscribe(final Observer<? super String> observer) {
+        public void call(final Subscriber<? super String> observer) {
             t = new Thread(new Runnable() {
 
                 @Override
@@ -349,12 +368,10 @@ public class OperatorMergeTest {
 
             });
             t.start();
-
-            return Subscriptions.empty();
         }
     }
 
-    private static class TestErrorObservable implements Observable.OnSubscribeFunc<String> {
+    private static class TestErrorObservable implements Observable.OnSubscribe<String> {
 
         String[] valuesToReturn;
 
@@ -363,7 +380,7 @@ public class OperatorMergeTest {
         }
 
         @Override
-        public Subscription onSubscribe(Observer<? super String> observer) {
+        public void call(Subscriber<? super String> observer) {
 
             for (String s : valuesToReturn) {
                 if (s == null) {
@@ -374,8 +391,6 @@ public class OperatorMergeTest {
                 }
             }
             observer.onCompleted();
-
-            return Subscriptions.empty();
         }
     }
 
@@ -472,4 +487,118 @@ public class OperatorMergeTest {
         });
     }
 
+    @Test
+    public void testConcurrency() {
+
+        Observable<Integer> o = Observable.create(new OnSubscribe<Integer>() {
+
+            @Override
+            public void call(final Subscriber<? super Integer> s) {
+                Worker inner = Schedulers.newThread().createWorker();
+                s.add(inner);
+                inner.schedule(new Action0() {
+
+                    @Override
+                    public void call() {
+                        for (int i = 0; i < 10000; i++) {
+                            s.onNext(1);
+                        }
+                        s.onCompleted();
+                    }
+
+                });
+            }
+        });
+
+        for (int i = 0; i < 10; i++) {
+            Observable<Integer> merge = Observable.merge(o, o, o);
+            TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+            merge.subscribe(ts);
+
+            ts.awaitTerminalEvent();
+            assertEquals(1, ts.getOnCompletedEvents().size());
+            List<Integer> onNextEvents = ts.getOnNextEvents();
+            assertEquals(30000, onNextEvents.size());
+            //            System.out.println("onNext: " + onNextEvents.size() + " onCompleted: " + ts.getOnCompletedEvents().size());
+        }
+    }
+
+    @Test
+    public void testConcurrencyWithSleeping() {
+
+        Observable<Integer> o = Observable.create(new OnSubscribe<Integer>() {
+
+            @Override
+            public void call(final Subscriber<? super Integer> s) {
+                Worker inner = Schedulers.newThread().createWorker();
+                s.add(inner);
+                inner.schedule(new Action0() {
+
+                    @Override
+                    public void call() {
+                        for (int i = 0; i < 100; i++) {
+                            s.onNext(1);
+                            try {
+                                Thread.sleep(1);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        s.onCompleted();
+                    }
+
+                });
+            }
+        });
+
+        for (int i = 0; i < 10; i++) {
+            Observable<Integer> merge = Observable.merge(o, o, o);
+            TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+            merge.subscribe(ts);
+
+            ts.awaitTerminalEvent();
+            assertEquals(1, ts.getOnCompletedEvents().size());
+            List<Integer> onNextEvents = ts.getOnNextEvents();
+            assertEquals(300, onNextEvents.size());
+            //            System.out.println("onNext: " + onNextEvents.size() + " onCompleted: " + ts.getOnCompletedEvents().size());
+        }
+    }
+
+    @Test
+    public void testConcurrencyWithBrokenOnCompleteContract() {
+
+        Observable<Integer> o = Observable.create(new OnSubscribe<Integer>() {
+
+            @Override
+            public void call(final Subscriber<? super Integer> s) {
+                Worker inner = Schedulers.newThread().createWorker();
+                s.add(inner);
+                inner.schedule(new Action0() {
+
+                    @Override
+                    public void call() {
+                        for (int i = 0; i < 10000; i++) {
+                            s.onNext(1);
+                        }
+                        s.onCompleted();
+                        s.onCompleted();
+                        s.onCompleted();
+                    }
+
+                });
+            }
+        });
+
+        for (int i = 0; i < 100; i++) {
+            Observable<Integer> merge = Observable.merge(o, o, o);
+            TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+            merge.subscribe(ts);
+
+            ts.awaitTerminalEvent();
+            assertEquals(1, ts.getOnCompletedEvents().size());
+            List<Integer> onNextEvents = ts.getOnNextEvents();
+            assertEquals(30000, onNextEvents.size());
+            //            System.out.println("onNext: " + onNextEvents.size() + " onCompleted: " + ts.getOnCompletedEvents().size());
+        }
+    }
 }

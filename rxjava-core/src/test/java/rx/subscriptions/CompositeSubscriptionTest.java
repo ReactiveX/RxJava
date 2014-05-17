@@ -15,7 +15,10 @@
  */
 package rx.subscriptions;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -320,5 +323,18 @@ public class CompositeSubscriptionTest {
 
         // we should have only unsubscribed once
         assertEquals(1, counter.get());
+    }
+    @Test
+    public void testTryRemoveIfNotIn() {
+        CompositeSubscription csub = new CompositeSubscription();
+        
+        CompositeSubscription csub1 = new CompositeSubscription();
+        CompositeSubscription csub2 = new CompositeSubscription();
+        
+        csub.add(csub1);
+        csub.remove(csub1);
+        csub.add(csub2);
+        
+        csub.remove(csub1); // try removing agian
     }
 }

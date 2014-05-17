@@ -16,11 +16,13 @@
 package rx.operators;
 
 import rx.Observable;
+import rx.Scheduler;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.exceptions.Exceptions;
 import rx.functions.Func0;
 import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 import rx.subscriptions.Subscriptions;
 
 /**
@@ -41,7 +43,7 @@ public class OperatorTimeoutWithSelector<T, U, V> extends
             @Override
             public Subscription call(
                     final TimeoutSubscriber<T> timeoutSubscriber,
-                    final Long seqId) {
+                    final Long seqId, Scheduler.Worker inner) {
                 if (firstTimeoutSelector != null) {
                     Observable<U> o = null;
                     try {
@@ -51,7 +53,7 @@ public class OperatorTimeoutWithSelector<T, U, V> extends
                         timeoutSubscriber.onError(t);
                         return Subscriptions.empty();
                     }
-                    return o.subscribe(new Subscriber<U>() {
+                    return o.unsafeSubscribe(new Subscriber<U>() {
 
                         @Override
                         public void onCompleted() {
@@ -78,7 +80,7 @@ public class OperatorTimeoutWithSelector<T, U, V> extends
             @Override
             public Subscription call(
                     final TimeoutSubscriber<T> timeoutSubscriber,
-                    final Long seqId, T value) {
+                    final Long seqId, T value, Scheduler.Worker inner) {
                 Observable<V> o = null;
                 try {
                     o = timeoutSelector.call(value);
@@ -87,7 +89,7 @@ public class OperatorTimeoutWithSelector<T, U, V> extends
                     timeoutSubscriber.onError(t);
                     return Subscriptions.empty();
                 }
-                return o.subscribe(new Subscriber<V>() {
+                return o.unsafeSubscribe(new Subscriber<V>() {
 
                     @Override
                     public void onCompleted() {
@@ -106,7 +108,7 @@ public class OperatorTimeoutWithSelector<T, U, V> extends
 
                 });
             }
-        }, other);
+        }, other, Schedulers.immediate());
     }
 
 }

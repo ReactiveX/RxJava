@@ -15,7 +15,9 @@
  */
 package rx.plugins;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import org.junit.After;
 import org.junit.Before;
@@ -66,12 +68,12 @@ public class RxJavaPluginsTest {
     // inside test so it is stripped from Javadocs
     public static class RxJavaErrorHandlerTestImpl extends RxJavaErrorHandler {
 
-        @SuppressWarnings("unused")
         private volatile Throwable e;
         private volatile int count = 0;
 
         @Override
         public void handleError(Throwable e) {
+            e.printStackTrace();
             this.e = e;
             count++;
         }
@@ -138,6 +140,7 @@ public class RxJavaPluginsTest {
         RuntimeException re = new RuntimeException("test onError");
         try {
             Observable.error(re).subscribe();
+            fail("should fail");
         } catch (Throwable e) {
             // ignore as we expect it to throw
         }

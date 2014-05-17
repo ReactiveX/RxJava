@@ -134,6 +134,7 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
         };
     }
 
+    static final NotificationLite<Object> on = NotificationLite.instance();
     private static class Zip<R> {
         @SuppressWarnings("rawtypes")
         final Observable[] os;
@@ -141,9 +142,7 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
         final Observer<? super R> observer;
         final FuncN<? extends R> zipFunction;
         final CompositeSubscription childSubscription = new CompositeSubscription();
-
-        static Object NULL_SENTINEL = new Object();
-        static Object COMPLETE_SENTINEL = new Object();
+        
 
         @SuppressWarnings("rawtypes")
         public Zip(Observable[] os, final Subscriber<? super R> observer, FuncN<? extends R> zipFunction) {
@@ -163,7 +162,7 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
         @SuppressWarnings("unchecked")
         public void zip() {
             for (int i = 0; i < os.length; i++) {
-                os[i].subscribe((InnerObserver) observers[i]);
+                os[i].unsafeSubscribe((InnerObserver) observers[i]);
             }
         }
 
@@ -180,23 +179,28 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
         void tick() {
             if (counter.getAndIncrement() == 0) {
                 do {
-                    Object[] vs = new Object[observers.length];
+                    final Object[] vs = new Object[observers.length];
                     boolean allHaveValues = true;
                     for (int i = 0; i < observers.length; i++) {
-                        vs[i] = ((InnerObserver) observers[i]).items.peek();
-                        if (vs[i] == NULL_SENTINEL) {
-                            // special handling for null
-                            vs[i] = null;
-                        } else if (vs[i] == COMPLETE_SENTINEL) {
-                            // special handling for onComplete
+                        Object n = ((InnerObserver) observers[i]).items.peek();
+
+                        if (n == null) {
+                            allHaveValues = false;
+                            continue;
+                        }
+
+                        switch (on.kind(n)) {
+                        case OnNext:
+                            vs[i] = on.getValue(n);
+                            break;
+                        case OnCompleted:
                             observer.onCompleted();
-                            // we need to unsubscribe from all children since children are independently subscribed
+                            // we need to unsubscribe from all children since children are
+                            // independently subscribed
                             childSubscription.unsubscribe();
                             return;
-                        } else if (vs[i] == null) {
-                            allHaveValues = false;
-                            // we continue as there may be an onCompleted on one of the others
-                            continue;
+                        default:
+                            // shouldn't get here
                         }
                     }
                     if (allHaveValues) {
@@ -211,7 +215,7 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
                         for (int i = 0; i < observers.length; i++) {
                             ((InnerObserver) observers[i]).items.poll();
                             // eagerly check if the next item on this queue is an onComplete
-                            if (((InnerObserver) observers[i]).items.peek() == COMPLETE_SENTINEL) {
+                            if (on.isCompleted(((InnerObserver) observers[i]).items.peek())) {
                                 // it is an onComplete so shut down
                                 observer.onCompleted();
                                 // we need to unsubscribe from all children since children are independently subscribed
@@ -235,7 +239,7 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
             @SuppressWarnings("unchecked")
             @Override
             public void onCompleted() {
-                items.add(COMPLETE_SENTINEL);
+                items.add(on.completed());
                 tick();
             }
 
@@ -248,11 +252,7 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
             @SuppressWarnings("unchecked")
             @Override
             public void onNext(Object t) {
-                if (t == null) {
-                    items.add(NULL_SENTINEL);
-                } else {
-                    items.add(t);
-                }
+                items.add(on.next(t));
                 tick();
             }
         };

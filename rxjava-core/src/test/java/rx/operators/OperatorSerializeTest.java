@@ -15,15 +15,17 @@
  */
 package rx.operators;
 
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
-import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -35,7 +37,6 @@ import org.mockito.MockitoAnnotations;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscriber;
-import rx.Subscription;
 
 public class OperatorSerializeTest {
 
@@ -49,8 +50,7 @@ public class OperatorSerializeTest {
 
     @Test
     public void testSingleThreadedBasic() {
-        Subscription s = mock(Subscription.class);
-        TestSingleThreadedObservable onSubscribe = new TestSingleThreadedObservable(s, "one", "two", "three");
+        TestSingleThreadedObservable onSubscribe = new TestSingleThreadedObservable("one", "two", "three");
         Observable<String> w = Observable.create(onSubscribe);
 
         w.serialize().subscribe(observer);
@@ -68,8 +68,7 @@ public class OperatorSerializeTest {
 
     @Test
     public void testMultiThreadedBasic() {
-        Subscription s = mock(Subscription.class);
-        TestMultiThreadedObservable onSubscribe = new TestMultiThreadedObservable(s, "one", "two", "three");
+        TestMultiThreadedObservable onSubscribe = new TestMultiThreadedObservable("one", "two", "three");
         Observable<String> w = Observable.create(onSubscribe);
 
         BusyObserver busyobserver = new BusyObserver();
@@ -92,8 +91,7 @@ public class OperatorSerializeTest {
 
     @Test
     public void testMultiThreadedWithNPE() {
-        Subscription s = mock(Subscription.class);
-        TestMultiThreadedObservable onSubscribe = new TestMultiThreadedObservable(s, "one", "two", "three", null);
+        TestMultiThreadedObservable onSubscribe = new TestMultiThreadedObservable("one", "two", "three", null);
         Observable<String> w = Observable.create(onSubscribe);
 
         BusyObserver busyobserver = new BusyObserver();
@@ -122,8 +120,7 @@ public class OperatorSerializeTest {
 
     @Test
     public void testMultiThreadedWithNPEinMiddle() {
-        Subscription s = mock(Subscription.class);
-        TestMultiThreadedObservable onSubscribe = new TestMultiThreadedObservable(s, "one", "two", "three", null, "four", "five", "six", "seven", "eight", "nine");
+        TestMultiThreadedObservable onSubscribe = new TestMultiThreadedObservable("one", "two", "three", null, "four", "five", "six", "seven", "eight", "nine");
         Observable<String> w = Observable.create(onSubscribe);
 
         BusyObserver busyobserver = new BusyObserver();
@@ -213,111 +210,20 @@ public class OperatorSerializeTest {
         onCompleted, onError, onNext
     }
 
-    private static class TestConcurrencyobserver extends Subscriber<String> {
-
-        /**
-         * used to store the order and number of events received
-         */
-        private final LinkedBlockingQueue<TestConcurrencyobserverEvent> events = new LinkedBlockingQueue<TestConcurrencyobserverEvent>();
-        private final int waitTime;
-
-        @SuppressWarnings("unused")
-        public TestConcurrencyobserver(int waitTimeInNext) {
-            this.waitTime = waitTimeInNext;
-        }
-
-        public TestConcurrencyobserver() {
-            this.waitTime = 0;
-        }
-
-        @Override
-        public void onCompleted() {
-            events.add(TestConcurrencyobserverEvent.onCompleted);
-        }
-
-        @Override
-        public void onError(Throwable e) {
-            events.add(TestConcurrencyobserverEvent.onError);
-        }
-
-        @Override
-        public void onNext(String args) {
-            events.add(TestConcurrencyobserverEvent.onNext);
-            // do some artificial work to make the thread scheduling/timing vary
-            int s = 0;
-            for (int i = 0; i < 20; i++) {
-                s += s * i;
-            }
-
-            if (waitTime > 0) {
-                try {
-                    Thread.sleep(waitTime);
-                } catch (InterruptedException e) {
-                    // ignore
-                }
-            }
-        }
-
-        /**
-         * Assert the order of events is correct and return the number of onNext executions.
-         * 
-         * @param expectedEndingEvent
-         * @return int count of onNext calls
-         * @throws IllegalStateException
-         *             If order of events was invalid.
-         */
-        public int assertEvents(TestConcurrencyobserverEvent expectedEndingEvent) throws IllegalStateException {
-            int nextCount = 0;
-            boolean finished = false;
-            for (TestConcurrencyobserverEvent e : events) {
-                if (e == TestConcurrencyobserverEvent.onNext) {
-                    if (finished) {
-                        // already finished, we shouldn't get this again
-                        throw new IllegalStateException("Received onNext but we're already finished.");
-                    }
-                    nextCount++;
-                } else if (e == TestConcurrencyobserverEvent.onError) {
-                    if (finished) {
-                        // already finished, we shouldn't get this again
-                        throw new IllegalStateException("Received onError but we're already finished.");
-                    }
-                    if (expectedEndingEvent != null && TestConcurrencyobserverEvent.onError != expectedEndingEvent) {
-                        throw new IllegalStateException("Received onError ending event but expected " + expectedEndingEvent);
-                    }
-                    finished = true;
-                } else if (e == TestConcurrencyobserverEvent.onCompleted) {
-                    if (finished) {
-                        // already finished, we shouldn't get this again
-                        throw new IllegalStateException("Received onCompleted but we're already finished.");
-                    }
-                    if (expectedEndingEvent != null && TestConcurrencyobserverEvent.onCompleted != expectedEndingEvent) {
-                        throw new IllegalStateException("Received onCompleted ending event but expected " + expectedEndingEvent);
-                    }
-                    finished = true;
-                }
-            }
-
-            return nextCount;
-        }
-
-    }
-
     /**
      * This spawns a single thread for the subscribe execution
      */
-    private static class TestSingleThreadedObservable implements Observable.OnSubscribeFunc<String> {
+    private static class TestSingleThreadedObservable implements Observable.OnSubscribe<String> {
 
-        final Subscription s;
         final String[] values;
         private Thread t = null;
 
-        public TestSingleThreadedObservable(final Subscription s, final String... values) {
-            this.s = s;
+        public TestSingleThreadedObservable(final String... values) {
             this.values = values;
 
         }
 
-        public Subscription onSubscribe(final Observer<? super String> observer) {
+        public void call(final Subscriber<? super String> observer) {
             System.out.println("TestSingleThreadedObservable subscribed to ...");
             t = new Thread(new Runnable() {
 
@@ -339,7 +245,6 @@ public class OperatorSerializeTest {
             System.out.println("starting TestSingleThreadedObservable thread");
             t.start();
             System.out.println("done starting TestSingleThreadedObservable thread");
-            return s;
         }
 
         public void waitToFinish() {
@@ -355,23 +260,20 @@ public class OperatorSerializeTest {
     /**
      * This spawns a thread for the subscription, then a separate thread for each onNext call.
      */
-    private static class TestMultiThreadedObservable implements Observable.OnSubscribeFunc<String> {
-
-        final Subscription s;
+    private static class TestMultiThreadedObservable implements Observable.OnSubscribe<String> {
         final String[] values;
         Thread t = null;
         AtomicInteger threadsRunning = new AtomicInteger();
         AtomicInteger maxConcurrentThreads = new AtomicInteger();
         ExecutorService threadPool;
 
-        public TestMultiThreadedObservable(Subscription s, String... values) {
-            this.s = s;
+        public TestMultiThreadedObservable(String... values) {
             this.values = values;
             this.threadPool = Executors.newCachedThreadPool();
         }
 
         @Override
-        public Subscription onSubscribe(final Observer<? super String> observer) {
+        public void call(final Subscriber<? super String> observer) {
             System.out.println("TestMultiThreadedObservable subscribed to ...");
             t = new Thread(new Runnable() {
 
@@ -426,7 +328,6 @@ public class OperatorSerializeTest {
             System.out.println("starting TestMultiThreadedObservable thread");
             t.start();
             System.out.println("done starting TestMultiThreadedObservable thread");
-            return s;
         }
 
         public void waitToFinish() {
@@ -495,70 +396,6 @@ public class OperatorSerializeTest {
                     maxConcurrentThreads.compareAndSet(maxThreads, concurrentThreads);
                 }
                 threadsRunning.decrementAndGet();
-            }
-        }
-
-    }
-
-    private static class ExternalBusyThread extends Thread {
-
-        private BusyObserver observer;
-        private Object lock;
-        private int lockTimes;
-        private int waitTime;
-        public volatile boolean fail;
-
-        public ExternalBusyThread(BusyObserver observer, Object lock, int lockTimes, int waitTime) {
-            this.observer = observer;
-            this.lock = lock;
-            this.lockTimes = lockTimes;
-            this.waitTime = waitTime;
-            this.fail = false;
-        }
-
-        @Override
-        public void run() {
-            Random r = new Random();
-            for (int i = 0; i < lockTimes; i++) {
-                synchronized (lock) {
-                    int oldOnNextCount = observer.onNextCount.get();
-                    boolean oldOnCompleted = observer.onCompleted;
-                    boolean oldOnError = observer.onError;
-                    try {
-                        Thread.sleep(r.nextInt(waitTime));
-                    } catch (InterruptedException e) {
-                        // ignore
-                    }
-                    // Since we own the lock, onNextCount, onCompleted and
-                    // onError must not be changed.
-                    int newOnNextCount = observer.onNextCount.get();
-                    boolean newOnCompleted = observer.onCompleted;
-                    boolean newOnError = observer.onError;
-                    if (oldOnNextCount != newOnNextCount) {
-                        System.out.println(">>> ExternalBusyThread received different onNextCount: "
-                                + oldOnNextCount
-                                + " -> "
-                                + newOnNextCount);
-                        fail = true;
-                        break;
-                    }
-                    if (oldOnCompleted != newOnCompleted) {
-                        System.out.println(">>> ExternalBusyThread received different onCompleted: "
-                                + oldOnCompleted
-                                + " -> "
-                                + newOnCompleted);
-                        fail = true;
-                        break;
-                    }
-                    if (oldOnError != newOnError) {
-                        System.out.println(">>> ExternalBusyThread received different onError: "
-                                + oldOnError
-                                + " -> "
-                                + newOnError);
-                        fail = true;
-                        break;
-                    }
-                }
             }
         }
 

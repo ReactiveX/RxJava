@@ -322,7 +322,7 @@ def class ObservableTests {
         
         Observable.from("one", "two", "three", "four", "five", "six")
         .groupBy({String s -> s.length()})
-        .mapMany({
+        .flatMap({
             groupObservable ->
             
             return groupObservable.map({

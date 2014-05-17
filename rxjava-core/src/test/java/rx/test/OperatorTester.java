@@ -15,11 +15,7 @@
  */
 package rx.test;
 
-import java.util.concurrent.TimeUnit;
-
 import rx.Scheduler;
-import rx.Subscription;
-import rx.functions.Action1;
 
 /**
  * Common utility functions for testing operator implementations.
@@ -56,13 +52,8 @@ public class OperatorTester {
         }
 
         @Override
-        public Subscription schedule(Action1<Inner> action) {
-            return underlying.schedule(action);
-        }
-
-        @Override
-        public Subscription schedule(Action1<Inner> action, long delayTime, TimeUnit unit) {
-            return underlying.schedule(action, delayTime, unit);
+        public Worker createWorker() {
+            return underlying.createWorker();
         }
 
     }

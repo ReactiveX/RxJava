@@ -20,6 +20,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Notification;
 import rx.Observer;
+import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
 
@@ -95,31 +96,33 @@ public final class PublishSubject<T> extends Subject<T, T> {
 
     @Override
     public void onCompleted() {
-        subscriptionManager.terminate(new Action1<Collection<SubjectObserver<? super T>>>() {
-
+        Collection<SubjectObserver<? super T>> observers = subscriptionManager.terminate(new Action0() {
             @Override
-            public void call(Collection<SubjectObserver<? super T>> observers) {
+            public void call() {
                 lastNotification.set(Notification.<T> createOnCompleted());
-                for (Observer<? super T> o : observers) {
-                    o.onCompleted();
-                }
             }
         });
+        if (observers != null) {
+            for (Observer<? super T> o : observers) {
+                o.onCompleted();
+            }
+        }
     }
 
     @Override
     public void onError(final Throwable e) {
-        subscriptionManager.terminate(new Action1<Collection<SubjectObserver<? super T>>>() {
+        Collection<SubjectObserver<? super T>> observers = subscriptionManager.terminate(new Action0() {
 
             @Override
-            public void call(Collection<SubjectObserver<? super T>> observers) {
-                lastNotification.set(Notification.<T>createOnError(e));
-                for (Observer<? super T> o : observers) {
-                    o.onError(e);
-                }
+            public void call() {
+                lastNotification.set(Notification.<T> createOnError(e));
             }
         });
-
+        if (observers != null) {
+            for (Observer<? super T> o : observers) {
+                o.onError(e);
+            }
+        }
     }
 
     @Override

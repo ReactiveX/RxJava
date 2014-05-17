@@ -16,13 +16,46 @@
 
 package rx.schedulers;
 
+import static org.junit.Assert.assertTrue;
+
+import org.junit.Test;
+
+import rx.Observable;
 import rx.Scheduler;
+import rx.functions.Action1;
+import rx.functions.Func1;
 
 public class NewThreadSchedulerTest extends AbstractSchedulerConcurrencyTests {
 
     @Override
     protected Scheduler getScheduler() {
-        return NewThreadScheduler.getInstance();
+        return Schedulers.newThread();
+    }
+
+    /**
+     * IO scheduler defaults to using NewThreadScheduler
+     */
+    @Test
+    public final void testIOScheduler() {
+
+        Observable<Integer> o1 = Observable.<Integer> from(1, 2, 3, 4, 5);
+        Observable<Integer> o2 = Observable.<Integer> from(6, 7, 8, 9, 10);
+        Observable<String> o = Observable.<Integer> merge(o1, o2).map(new Func1<Integer, String>() {
+
+            @Override
+            public String call(Integer t) {
+                assertTrue(Thread.currentThread().getName().startsWith("RxNewThreadScheduler"));
+                return "Value_" + t + "_Thread_" + Thread.currentThread().getName();
+            }
+        });
+
+        o.subscribeOn(Schedulers.io()).toBlockingObservable().forEach(new Action1<String>() {
+
+            @Override
+            public void call(String t) {
+                System.out.println("t: " + t);
+            }
+        });
     }
 
 }

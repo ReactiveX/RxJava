@@ -14,7 +14,6 @@ import rx.Observer;
  *            Context type that is returned from start and passed to either complete or error.
  * @see DebugHook
  */
-@SuppressWarnings("unused")
 public abstract class DebugNotificationListener<C> {
     /**
      * Override this to change the default behavior of returning the encapsulated value. This will
@@ -29,7 +28,7 @@ public abstract class DebugNotificationListener<C> {
      * 
      * @param n
      *            {@link DebugNotification} containing the data and context about what is happening.
-     * @return
+     * @return the notification's value
      */
     public <T> T onNext(DebugNotification<T> n) {
         return n.getValue();
@@ -43,8 +42,8 @@ public abstract class DebugNotificationListener<C> {
      * @param n
      *            {@link DebugNotification} containing the data and context about what is happening.
      * @return
-     *         A contextual object that the listener can use in the {@link #complete(C)} or
-     *         {@link #error(C, Throwable)} after the actual operation has ended.
+     *         A contextual object that the listener can use in the {@link #complete(Object) } or
+     *         {@link #error(Object, Throwable)} after the actual operation has ended.
      */
     public <T> C start(DebugNotification<T> n) {
         return null;
@@ -64,6 +63,7 @@ public abstract class DebugNotificationListener<C> {
      * this is invoked
      * 
      * @param context
+     * @param e
      */
     public void error(C context, Throwable e) {
     }

@@ -20,6 +20,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Notification;
 import rx.Observer;
+import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
 
@@ -56,7 +57,7 @@ public final class AsyncSubject<T> extends Subject<T, T> {
 
     public static <T> AsyncSubject<T> create() {
         final SubjectSubscriptionManager<T> subscriptionManager = new SubjectSubscriptionManager<T>();
-        final AtomicReference<Notification<T>> lastNotification = new AtomicReference<Notification<T>>(new Notification<T>());
+        final AtomicReference<Notification<T>> lastNotification = new AtomicReference<Notification<T>>(Notification.<T>createOnCompleted());
 
         OnSubscribe<T> onSubscribe = subscriptionManager.getOnSubscribeFunc(
                 /**
@@ -105,35 +106,38 @@ public final class AsyncSubject<T> extends Subject<T, T> {
 
     @Override
     public void onCompleted() {
-        subscriptionManager.terminate(new Action1<Collection<SubjectObserver<? super T>>>() {
+        Collection<SubjectObserver<? super T>> observers = subscriptionManager.terminate(new Action0() {
 
             @Override
-            public void call(Collection<SubjectObserver<? super T>> observers) {
-                for (Observer<? super T> o : observers) {
-                    emitValueToObserver(lastNotification.get(), o);
-                }
+            public void call() {
             }
         });
+        if (observers != null) {
+            for (Observer<? super T> o : observers) {
+                emitValueToObserver(lastNotification.get(), o);
+            }
+        }
     }
 
     @Override
     public void onError(final Throwable e) {
-        subscriptionManager.terminate(new Action1<Collection<SubjectObserver<? super T>>>() {
-
+        Collection<SubjectObserver<? super T>> observers = subscriptionManager.terminate(new Action0() {
             @Override
-            public void call(Collection<SubjectObserver<? super T>> observers) {
-                lastNotification.set(new Notification<T>(e));
-                for (Observer<? super T> o : observers) {
-                    emitValueToObserver(lastNotification.get(), o);
-                }
+            public void call() {
+                lastNotification.set(Notification.<T> createOnError(e));
             }
         });
+        if (observers != null) {
+            for (Observer<? super T> o : observers) {
+                emitValueToObserver(lastNotification.get(), o);
+            }
+        }
 
     }
 
     @Override
     public void onNext(T v) {
-        lastNotification.set(new Notification<T>(v));
+        lastNotification.set(Notification.createOnNext(v));
     }
 
 }

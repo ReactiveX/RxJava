@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,12 +18,11 @@ package rx.swing.sources;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import rx.Scheduler.Inner;
-import rx.schedulers.SwingScheduler;
+import rx.Scheduler.Worker;
 import rx.functions.Action0;
-import rx.functions.Action1;
+import rx.schedulers.SwingScheduler;
 
-/* package-private */ final class SwingTestHelper { // only for test
+/* package-private */final class SwingTestHelper { // only for test
 
     private final CountDownLatch latch = new CountDownLatch(1);
     private volatile Throwable error;
@@ -36,10 +35,11 @@ import rx.functions.Action1;
     }
 
     public SwingTestHelper runInEventDispatchThread(final Action0 action) {
-        SwingScheduler.getInstance().schedule(new Action1<Inner>() {
+        Worker inner = SwingScheduler.getInstance().createWorker();
+        inner.schedule(new Action0() {
 
             @Override
-            public void call(Inner inner) {
+            public void call() {
                 try {
                     action.call();
                 } catch (Throwable e) {

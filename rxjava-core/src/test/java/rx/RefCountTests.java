@@ -15,7 +15,7 @@
  */
 package rx;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
@@ -25,11 +25,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.InOrder;
 import org.mockito.MockitoAnnotations;
+import rx.Observable.OnSubscribe;
 
 import rx.functions.Action0;
 import rx.functions.Action1;
+import rx.observers.Subscribers;
 import rx.schedulers.TestScheduler;
+import rx.subjects.ReplaySubject;
 import rx.subscriptions.Subscriptions;
 
 public class RefCountTests {
@@ -43,19 +47,20 @@ public class RefCountTests {
     public void onlyFirstShouldSubscribeAndLastUnsubscribe() {
         final AtomicInteger subscriptionCount = new AtomicInteger();
         final AtomicInteger unsubscriptionCount = new AtomicInteger();
-        Observable<Integer> observable = Observable.create(new Observable.OnSubscribeFunc<Integer>() {
+        Observable<Integer> observable = Observable.create(new OnSubscribe<Integer>() {
             @Override
-            public Subscription onSubscribe(Observer<? super Integer> observer) {
+            public void call(Subscriber<? super Integer> observer) {
                 subscriptionCount.incrementAndGet();
-                return Subscriptions.create(new Action0() {
+                observer.add(Subscriptions.create(new Action0() {
                     @Override
                     public void call() {
                         unsubscriptionCount.incrementAndGet();
                     }
-                });
+                }));
             }
         });
         Observable<Integer> refCounted = observable.publish().refCount();
+        @SuppressWarnings("unchecked")
         Observer<Integer> observer = mock(Observer.class);
         Subscription first = refCounted.subscribe(observer);
         assertEquals(1, subscriptionCount.get());
@@ -136,7 +141,7 @@ public class RefCountTests {
         // subscribing a new one should start over because the source should have been unsubscribed
         // subscribe list3
         final List<Long> list3 = new ArrayList<Long>();
-        Subscription s3 = interval.subscribe(new Action1<Long>() {
+        interval.subscribe(new Action1<Long>() {
 
             @Override
             public void call(Long t1) {
@@ -150,5 +155,51 @@ public class RefCountTests {
         assertEquals(0L, list3.get(0).longValue());
         assertEquals(1L, list3.get(1).longValue());
 
+    }
+    
+    @Test
+    public void testAlreadyUnsubscribedClient() {
+        Subscriber<Integer> done = Subscribers.empty();
+        done.unsubscribe();
+        
+        @SuppressWarnings("unchecked")
+        Observer<Integer> o = mock(Observer.class);
+        
+        Observable<Integer> result = Observable.just(1).publish().refCount();
+        
+        result.subscribe(done);
+        
+        result.subscribe(o);
+        
+        verify(o).onNext(1);
+        verify(o).onCompleted();
+        verify(o, never()).onError(any(Throwable.class));
+    }
+    @Test
+    public void testAlreadyUnsubscribedInterleavesWithClient() {
+        ReplaySubject<Integer> source = ReplaySubject.create();
+
+        Subscriber<Integer> done = Subscribers.empty();
+        done.unsubscribe();
+        
+        @SuppressWarnings("unchecked")
+        Observer<Integer> o = mock(Observer.class);
+        InOrder inOrder = inOrder(o);
+        
+        Observable<Integer> result = source.publish().refCount();
+        
+        result.subscribe(o);
+        
+        source.onNext(1);
+        
+        result.subscribe(done);
+        
+        source.onNext(2);
+        source.onCompleted();
+        
+        inOrder.verify(o).onNext(1);
+        inOrder.verify(o).onNext(2);
+        inOrder.verify(o).onCompleted();
+        verify(o, never()).onError(any(Throwable.class));
     }
 }

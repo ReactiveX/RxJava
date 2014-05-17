@@ -16,7 +16,7 @@
 package rx.lang.scala
 
 import scala.concurrent.duration.Duration
-import rx.functions.Action1
+import rx.functions.Action0
 import rx.lang.scala.schedulers._
 import scala.concurrent.duration
 import rx.lang.scala.JavaConversions._
@@ -31,11 +31,11 @@ trait Scheduler {
   /**
    * Parallelism available to a Scheduler.
    *
-   * This defaults to {@code Runtime.getRuntime().availableProcessors()} but can be overridden for use cases such as scheduling work on a computer cluster.
+   * This defaults to `Runtime.getRuntime().availableProcessors()` but can be overridden for use cases such as scheduling work on a computer cluster.
    *
    * @return the scheduler's available degree of parallelism.
    */
-  def degreeOfParallelism: Int =  asJavaScheduler.degreeOfParallelism
+  def parallelism: Int =  asJavaScheduler.parallelism()
 
   /**
    * @return the scheduler's notion of current absolute time in milliseconds.
@@ -43,74 +43,80 @@ trait Scheduler {
   def now: Long = this.asJavaScheduler.now()
 
   /**
-   * Schedules a cancelable action to be executed.
+   * Retrieve or create a new [[rx.lang.scala.Worker]] that represents serial execution of actions.
+   * <p>
+   * When work is completed it should be unsubscribed using [[rx.lang.scala.Worker unsubscribe]].
+   * <p>
+   * Work on a [[rx.lang.scala.Worker]] is guaranteed to be sequential.
    *
-   * @param action Action to schedule.
-   * @return a subscription to be able to unsubscribe from action.
+   * @return Inner representing a serial queue of actions to be executed
    */
-  def schedule(action: Inner => Unit): Subscription = this.asJavaScheduler.schedule(action)
+  def createWorker: Worker = this.asJavaScheduler.createWorker()
 
-  /**
-   * Schedules a cancelable action to be executed periodically.
-   * This default implementation schedules recursively and waits for actions to complete (instead of potentially executing
-   * long-running actions concurrently). Each scheduler that can do periodic scheduling in a better way should override this.
-   *
-   * @param action
-   * The action to execute periodically.
-   * @param initialDelay
-   * Time to wait before executing the action for the first time.
-   * @param period
-   * The time interval to wait each time in between executing the action.
-   * @return A subscription to be able to unsubscribe from action.
-   */
-  def schedulePeriodically(action: Inner => Unit, initialDelay: Duration, period: Duration): Subscription =
-     this.asJavaScheduler.schedulePeriodically (
-       new Action1[rx.Scheduler.Inner] {
-         override def call(inner: rx.Scheduler.Inner): Unit = action(javaInnerToScalaInner(inner))
-       },
-       initialDelay.toNanos,
-       period.toNanos,
-       duration.NANOSECONDS
-     )
-
-  def scheduleRec(work: (=>Unit)=>Unit): Subscription = {
-    Subscription(asJavaScheduler.schedule(new Action1[rx.Scheduler.Inner] {
-      override def call(inner: rx.Scheduler.Inner): Unit =  work{ inner.schedule(this) }
-    }))
-  }
 }
 
-object Inner {
-  def apply(inner: rx.Scheduler.Inner): Inner = new Inner { private[scala] val asJavaInner = inner }
+object Worker {
+  def apply(worker: rx.Scheduler.Worker): Worker = new Worker { private[scala] val asJavaWorker = worker }
 }
 
-trait Inner extends Subscription {
-  private [scala] val asJavaInner: rx.Scheduler.Inner
+trait Worker extends Subscription {
+  private [scala] val asJavaWorker: rx.Scheduler.Worker
 
   /**
-   * Schedules a cancelable action to be executed in delayTime.
+   * Schedules an Action for execution at some point in the future.
+   *
+   * @param action the Action to schedule
+   * @param delay time to wait before executing the action
+   * @return a subscription to be able to unsubscribe the action (unschedule it if not executed)
    */
-  def schedule(action: Inner => Unit, delayTime: Duration): Unit =
-    this.asJavaInner.schedule(
-      new Action1[rx.Scheduler.Inner] {
-        override def call(inner: rx.Scheduler.Inner): Unit = action(javaInnerToScalaInner(inner))
+  def schedule(delay: Duration)(action: => Unit): Subscription = {
+    this.asJavaWorker.schedule(
+      new Action0 {
+        override def call(): Unit = action
       },
-      delayTime.length,
-      delayTime.unit)
+      delay.length,
+      delay.unit)
+  }
 
   /**
-   * Schedules a cancelable action to be executed immediately.
+   * Schedules an Action for execution.
+   *
+   * @param action the Action to schedule
+   * @return a subscription to be able to unsubscribe the action (unschedule it if not executed)
    */
-  def schedule(action: Inner=>Unit): Unit = this.asJavaInner.schedule(
-    new Action1[rx.Scheduler.Inner]{
-      override def call(inner: rx.Scheduler.Inner): Unit = action(javaInnerToScalaInner(inner))
-    }
-  )
+  def schedule(action: => Unit): Subscription = {
+    this.asJavaWorker.schedule(
+      new Action0 {
+        override def call(): Unit = action
+      }
+    )
+  }
+
+  /**
+   * Schedules a cancelable action to be executed periodically. This default implementation schedules
+   * recursively and waits for actions to complete (instead of potentially executing long-running actions
+   * concurrently). Each scheduler that can do periodic scheduling in a better way should override this.
+   *
+   * @param action the Action to execute periodically
+   * @param initialDelay  time to wait before executing the action for the first time
+   * @param period the time interval to wait each time in between executing the action
+   * @return a subscription to be able to unsubscribe the action (unschedule it if not executed)
+   */
+  def schedulePeriodically(initialDelay: Duration, period: Duration)(action: => Unit): Subscription = {
+    this.asJavaWorker.schedulePeriodically(
+      new Action0 {
+        override def call(): Unit = action
+      },
+      initialDelay.toNanos,
+      period.toNanos,
+      duration.NANOSECONDS
+    )
+  }
 
   /**
    * @return the scheduler's notion of current absolute time in milliseconds.
    */
-  def now: Long = this.asJavaInner.now()
+  def now: Long = this.asJavaWorker.now()
 }
 
 

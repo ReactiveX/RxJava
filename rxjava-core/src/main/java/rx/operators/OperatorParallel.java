@@ -34,7 +34,7 @@ public final class OperatorParallel<T, R> implements Operator<R, T> {
     public OperatorParallel(Func1<Observable<T>, Observable<R>> f, Scheduler scheduler) {
         this.scheduler = scheduler;
         this.f = f;
-        this.degreeOfParallelism = scheduler.degreeOfParallelism();
+        this.degreeOfParallelism = scheduler.parallelism();
     }
 
     @Override

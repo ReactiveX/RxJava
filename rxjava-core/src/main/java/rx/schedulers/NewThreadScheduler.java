@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,17 +15,17 @@
  */
 package rx.schedulers;
 
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Scheduler;
 import rx.Subscription;
-import rx.functions.Action1;
+import rx.functions.Action0;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.Subscriptions;
 
@@ -46,15 +46,6 @@ public class NewThreadScheduler extends Scheduler {
         }
     };
 
-    /**
-     * @deprecated Use Schedulers.newThread();
-     * @return
-     */
-    @Deprecated
-    public static NewThreadScheduler getInstance() {
-        return INSTANCE;
-    }
-
     /* package */static NewThreadScheduler instance() {
         return INSTANCE;
     }
@@ -64,92 +55,123 @@ public class NewThreadScheduler extends Scheduler {
     }
 
     @Override
-    public Subscription schedule(Action1<Scheduler.Inner> action) {
-        EventLoopScheduler innerScheduler = new EventLoopScheduler();
-        innerScheduler.schedule(action);
-        return innerScheduler.innerSubscription;
+    public Worker createWorker() {
+        return new NewThreadWorker(THREAD_FACTORY);
     }
 
-    @Override
-    public Subscription schedule(Action1<Inner> action, long delayTime, TimeUnit unit) {
-        EventLoopScheduler innerScheduler = new EventLoopScheduler();
-        innerScheduler.schedule(action, delayTime, unit);
-        return innerScheduler.innerSubscription;
-    }
-
-    private class EventLoopScheduler extends Scheduler.Inner implements Subscription {
+    /* package */static class NewThreadWorker extends Scheduler.Worker implements Subscription {
         private final CompositeSubscription innerSubscription = new CompositeSubscription();
-        private final ExecutorService executor;
-        private final Inner _inner = this;
+        private final ScheduledExecutorService executor;
 
-        private EventLoopScheduler() {
-            executor = Executors.newSingleThreadExecutor(THREAD_FACTORY);
+        /* package */NewThreadWorker(ThreadFactory threadFactory) {
+            executor = Executors.newScheduledThreadPool(1, threadFactory);
         }
 
         @Override
-        public void schedule(final Action1<Scheduler.Inner> action) {
+        public Subscription schedule(final Action0 action) {
+            return schedule(action, 0, null);
+        }
+
+        @Override
+        public Subscription schedule(final Action0 action, long delayTime, TimeUnit unit) {
             if (innerSubscription.isUnsubscribed()) {
-                // don't schedule, we are unsubscribed
-                return;
+                return Subscriptions.empty();
+            }
+            return scheduleActual(action, delayTime, unit);
+        }
+
+        /* package */ScheduledAction scheduleActual(final Action0 action, long delayTime, TimeUnit unit) {
+            ScheduledAction run = new ScheduledAction(action, innerSubscription);
+            Future<?> f;
+            if (delayTime <= 0) {
+                f = executor.submit(run);
+            } else {
+                f = executor.schedule(run, delayTime, unit);
+            }
+            run.add(Subscriptions.from(f));
+            
+            return run;
+        }
+        
+        /** Remove a child subscription from a composite when unsubscribing. */
+        private static final class Remover implements Subscription {
+            final Subscription s;
+            final CompositeSubscription parent;
+            final AtomicBoolean once;
+            
+            public Remover(Subscription s, CompositeSubscription parent) {
+                this.s = s;
+                this.parent = parent;
+                this.once = new AtomicBoolean();
+            }
+            
+            @Override
+            public boolean isUnsubscribed() {
+                return s.isUnsubscribed();
+            }
+            
+            @Override
+            public void unsubscribe() {
+                if (once.compareAndSet(false, true)) {
+                    parent.remove(s);
+                }
+            }
+            
+        }
+        /** 
+         * A runnable that executes an Action0 and can be cancelled
+         * The analogue is the Subscriber in respect of an Observer.
+         */
+        public static final class ScheduledAction implements Runnable, Subscription {
+            final CompositeSubscription cancel;
+            final Action0 action;
+            final CompositeSubscription parent;
+            final AtomicBoolean once;
+
+            public ScheduledAction(Action0 action, CompositeSubscription parent) {
+                this.action = action;
+                this.parent = parent;
+                this.cancel = new CompositeSubscription();
+                this.once = new AtomicBoolean();
             }
 
-            final AtomicReference<Subscription> sf = new AtomicReference<Subscription>();
-            Subscription s = Subscriptions.from(executor.submit(new Runnable() {
-
-                @Override
-                public void run() {
-                    try {
-                        if (innerSubscription.isUnsubscribed()) {
-                            return;
-                        }
-                        action.call(_inner);
-                    } finally {
-                        // remove the subscription now that we're completed
-                        Subscription s = sf.get();
-                        if (s != null) {
-                            innerSubscription.remove(s);
-                        }
-                    }
+            @Override
+            public void run() {
+                try {
+                    action.call();
+                } finally {
+                    unsubscribe();
                 }
-            }));
+            }
 
-            sf.set(s);
-            innerSubscription.add(s);
-        }
-
-        @Override
-        public void schedule(final Action1<Inner> action, long delayTime, TimeUnit unit) {
-            final AtomicReference<Subscription> sf = new AtomicReference<Subscription>();
-            // we will use the system scheduler since it doesn't make sense to launch a new Thread and then sleep
-            // we will instead schedule the event then launch the thread after the delay has passed
-            ScheduledFuture<?> f = GenericScheduledExecutorService.getInstance().schedule(new Runnable() {
-
-                @Override
-                public void run() {
-                    try {
-                        if (innerSubscription.isUnsubscribed()) {
-                            return;
-                        }
-                        // now that the delay is past schedule the work to be done for real on the UI thread
-                        schedule(action);
-                    } finally {
-                        // remove the subscription now that we're completed
-                        Subscription s = sf.get();
-                        if (s != null) {
-                            innerSubscription.remove(s);
-                        }
-                    }
+            @Override
+            public boolean isUnsubscribed() {
+                return cancel.isUnsubscribed();
+            }
+            
+            @Override
+            public void unsubscribe() {
+                if (once.compareAndSet(false, true)) {
+                    cancel.unsubscribe();
+                    parent.remove(this);
                 }
-            }, delayTime, unit);
-
-            // add the ScheduledFuture as a subscription so we can cancel the scheduled action if an unsubscribe happens
-            Subscription s = Subscriptions.from(f);
-            sf.set(s);
-            innerSubscription.add(s);
+            }
+            public void add(Subscription s) {
+                cancel.add(s);
+            }
+            /** 
+             * Adds a parent to this ScheduledAction so when it is 
+             * cancelled or terminates, it can remove itself from this parent.
+             * @param parent 
+             */
+            public void addParent(CompositeSubscription parent) {
+                cancel.add(new Remover(this, parent));
+            } 
         }
 
         @Override
         public void unsubscribe() {
+            executor.shutdown();
             innerSubscription.unsubscribe();
         }
 
@@ -159,5 +181,4 @@ public class NewThreadScheduler extends Scheduler {
         }
 
     }
-
 }

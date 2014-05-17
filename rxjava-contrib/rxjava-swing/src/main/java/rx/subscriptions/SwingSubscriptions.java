@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,10 @@ package rx.subscriptions;
 
 import javax.swing.SwingUtilities;
 
-import rx.Scheduler.Inner;
+import rx.Scheduler.Worker;
 import rx.Subscription;
-import rx.schedulers.SwingScheduler;
 import rx.functions.Action0;
-import rx.functions.Action1;
+import rx.schedulers.SwingScheduler;
 
 public final class SwingSubscriptions {
 
@@ -42,10 +41,12 @@ public final class SwingSubscriptions {
                 if (SwingUtilities.isEventDispatchThread()) {
                     unsubscribe.call();
                 } else {
-                    SwingScheduler.getInstance().schedule(new Action1<Inner>() {
+                    final Worker inner = SwingScheduler.getInstance().createWorker();
+                    inner.schedule(new Action0() {
                         @Override
-                        public void call(Inner inner) {
+                        public void call() {
                             unsubscribe.call();
+                            inner.unsubscribe();
                         }
                     });
                 }

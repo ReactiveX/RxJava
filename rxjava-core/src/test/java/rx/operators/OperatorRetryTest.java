@@ -15,20 +15,32 @@
  */
 package rx.operators;
 
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 import org.mockito.InOrder;
+import org.mockito.Mockito;
 
 import rx.Observable;
-import rx.Observable.OnSubscribeFunc;
+import rx.Observable.OnSubscribe;
 import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
+import rx.functions.Action0;
 import rx.functions.Action1;
+import rx.observers.TestSubscriber;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.Subscriptions;
 
@@ -108,8 +120,52 @@ public class OperatorRetryTest {
         inOrder.verify(observer, times(1)).onCompleted();
         inOrder.verifyNoMoreInteractions();
     }
+    
+    /**
+     * Checks in a simple and synchronous way that retry resubscribes
+     * after error. This test fails against 0.16.1-0.17.4, hangs on 0.17.5 and
+     * passes in 0.17.6 thanks to fix for issue #1027.
+     */
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testRetrySubscribesAgainAfterError() {
 
-    public static class FuncWithErrors implements Observable.OnSubscribeFunc<String> {
+        // record emitted values with this action
+        Action1<Integer> record = mock(Action1.class);
+        InOrder inOrder = inOrder(record);
+
+        // always throw an exception with this action
+        Action1<Integer> throwException = mock(Action1.class);
+        doThrow(new RuntimeException()).when(throwException).call(Mockito.anyInt());
+        
+        // create a retrying observable based on a PublishSubject
+        PublishSubject<Integer> subject = PublishSubject.create();
+        subject
+        // record item
+        .doOnNext(record)
+        // throw a RuntimeException
+                .doOnNext(throwException)
+                // retry on error
+                .retry()
+                // subscribe and ignore
+                .subscribe();
+
+        inOrder.verifyNoMoreInteractions();
+
+        subject.onNext(1);
+        inOrder.verify(record).call(1);
+
+        subject.onNext(2);
+        inOrder.verify(record).call(2);
+
+        subject.onNext(3);
+        inOrder.verify(record).call(3);
+
+        inOrder.verifyNoMoreInteractions();
+    }
+
+
+    public static class FuncWithErrors implements Observable.OnSubscribe<String> {
 
         private final int numFailures;
         private final AtomicInteger count = new AtomicInteger(0);
@@ -119,7 +175,7 @@ public class OperatorRetryTest {
         }
 
         @Override
-        public Subscription onSubscribe(Observer<? super String> o) {
+        public void call(Subscriber<? super String> o) {
             o.onNext("beginningEveryTime");
             if (count.incrementAndGet() <= numFailures) {
                 o.onError(new RuntimeException("forced failure: " + count.get()));
@@ -127,7 +183,6 @@ public class OperatorRetryTest {
                 o.onNext("onSuccessOnly");
                 o.onCompleted();
             }
-            return Subscriptions.empty();
         }
     }
 
@@ -148,13 +203,13 @@ public class OperatorRetryTest {
     }
 
     @Test
-    public void testRetryAllowsSubscriptionAfterAllSubscriptionsUnsubsribed() throws InterruptedException {
+    public void testRetryAllowsSubscriptionAfterAllSubscriptionsUnsubscribed() throws InterruptedException {
         final AtomicInteger subsCount = new AtomicInteger(0);
-        OnSubscribeFunc<String> onSubscribe = new OnSubscribeFunc<String>() {
+        OnSubscribe<String> onSubscribe = new OnSubscribe<String>() {
             @Override
-            public Subscription onSubscribe(Observer<? super String> observer) {
+            public void call(Subscriber<? super String> s) {
                 subsCount.incrementAndGet();
-                return new Subscription() {
+                s.add(new Subscription() {
                     boolean unsubscribed = false;
 
                     @Override
@@ -167,7 +222,7 @@ public class OperatorRetryTest {
                     public boolean isUnsubscribed() {
                         return unsubscribed;
                     }
-                };
+                });
             }
         };
         Observable<String> stream = Observable.create(onSubscribe);
@@ -179,4 +234,173 @@ public class OperatorRetryTest {
         streamWithRetry.subscribe();
         assertEquals(1, subsCount.get());
     }
+
+    @Test
+    public void testSourceObservableCallsUnsubscribe() throws InterruptedException {
+        final AtomicInteger subsCount = new AtomicInteger(0);
+
+        final TestSubscriber<String> ts = new TestSubscriber<String>();
+
+        OnSubscribe<String> onSubscribe = new OnSubscribe<String>() {
+            @Override
+            public void call(Subscriber<? super String> s) {
+                // if isUnsubscribed is true that means we have a bug such as https://github.com/Netflix/RxJava/issues/1024
+                if (!s.isUnsubscribed()) {
+                    subsCount.incrementAndGet();
+                    s.onError(new RuntimeException("failed"));
+                    // it unsubscribes the child directly
+                    // this simulates various error/completion scenarios that could occur
+                    // or just a source that proactively triggers cleanup
+                    s.unsubscribe();
+                }
+            }
+        };
+
+        Observable.create(onSubscribe).retry(3).subscribe(ts);
+        assertEquals(4, subsCount.get()); // 1 + 3 retries
+    }
+
+    class SlowObservable implements Observable.OnSubscribe<Long> {
+
+        private AtomicInteger efforts = new AtomicInteger(0);
+        private AtomicInteger active = new AtomicInteger(0), maxActive = new AtomicInteger(0);
+        private AtomicInteger nextBeforeFailure;
+
+        private final int emitDelay;
+
+        public SlowObservable(int emitDelay, int countNext) {
+            this.emitDelay = emitDelay;
+            this.nextBeforeFailure = new AtomicInteger(countNext);
+        }
+
+        public void call(final Subscriber<? super Long> subscriber) {
+            final AtomicBoolean terminate = new AtomicBoolean(false);
+            efforts.getAndIncrement();
+            active.getAndIncrement();
+            maxActive.set(Math.max(active.get(), maxActive.get()));
+            final Thread thread = new Thread() {
+                @Override
+                public void run() {
+                    long nr = 0;
+                    try {
+                        while (!terminate.get()) {
+                            Thread.sleep(emitDelay);
+                            if (nextBeforeFailure.getAndDecrement() > 0) {
+                                subscriber.onNext(nr++);
+                            }
+                            else {
+                                subscriber.onError(new RuntimeException("expected-failed"));
+                            }
+                        }
+                    }
+                    catch (InterruptedException t) {
+                    }
+                }
+            };
+            thread.start();
+            subscriber.add(Subscriptions.create(new Action0() {
+                @Override
+                public void call() {
+                    terminate.set(true);
+                    active.decrementAndGet();
+                }
+            }));
+        }
+    }
+
+    /** Observer for listener on seperate thread */
+    class AsyncObserver<T> implements Observer<T> {
+
+        protected CountDownLatch latch = new CountDownLatch(1);
+
+        protected Observer<T> target;
+
+        /** Wrap existing Observer */
+        public AsyncObserver(Observer<T> target) {
+            this.target = target;
+        }
+
+        /** Wait */
+        public void await() {
+            try {
+                latch.await();
+            } catch (InterruptedException e) {
+                fail("Test interrupted");
+            }
+        }
+
+        // Observer implementation
+
+        @Override
+        public void onCompleted() {
+            target.onCompleted();
+            latch.countDown();
+        }
+
+        @Override
+        public void onError(Throwable t) {
+            target.onError(t);
+            latch.countDown();
+        }
+
+        @Override
+        public void onNext(T v) {
+            target.onNext(v);
+        }
+    }
+
+    @Test(timeout = 1000)
+    public void testUnsubscribeAfterError() {
+
+        @SuppressWarnings("unchecked")
+        Observer<Long> observer = mock(Observer.class);
+
+        // Observable that always fails after 100ms
+        SlowObservable so = new SlowObservable(100, 0);
+        Observable<Long> o = Observable
+                .create(so)
+                .retry(5);
+
+        AsyncObserver<Long> async = new AsyncObserver<Long>(observer);
+
+        o.subscribe(async);
+
+        async.await();
+
+        InOrder inOrder = inOrder(observer);
+        // Should fail once
+        inOrder.verify(observer, times(1)).onError(any(Throwable.class));
+        inOrder.verify(observer, never()).onCompleted();
+
+        assertEquals("Start 6 threads, retry 5 then fail on 6", 6, so.efforts.get());
+        assertEquals("Only 1 active subscription", 1, so.maxActive.get());
+    }
+
+    @Test(timeout = 1000)
+    public void testTimeoutWithRetry() {
+
+        @SuppressWarnings("unchecked")
+        Observer<Long> observer = mock(Observer.class);
+
+        // Observable that sends every 100ms (timeout fails instead)
+        SlowObservable so = new SlowObservable(100, 10);
+        Observable<Long> o = Observable
+                .create(so)
+                .timeout(80, TimeUnit.MILLISECONDS)
+                .retry(5);
+
+        AsyncObserver<Long> async = new AsyncObserver<Long>(observer);
+
+        o.subscribe(async);
+
+        async.await();
+
+        InOrder inOrder = inOrder(observer);
+        // Should fail once
+        inOrder.verify(observer, times(1)).onError(any(Throwable.class));
+        inOrder.verify(observer, never()).onCompleted();
+
+        assertEquals("Start 6 threads, retry 5 then fail on 6", 6, so.efforts.get());
+    }
+    
 }

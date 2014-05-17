@@ -53,43 +53,6 @@ public class Notification<T> {
     }
 
     /**
-     * A constructor used to represent an onNext notification.
-     * 
-     * @param value
-     *            The data passed to the onNext method.
-     */
-    @Deprecated
-    public Notification(T value) {
-        this.value = value;
-        this.throwable = null;
-        this.kind = Kind.OnNext;
-    }
-
-    /**
-     * A constructor used to represent an onError notification.
-     * 
-     * @param exception
-     *            The exception passed to the onError notification.
-     * @deprecated Because type Throwable can't disambiguate the constructors if both onNext and onError are type "Throwable"
-     */
-    @Deprecated
-    public Notification(Throwable exception) {
-        this.throwable = exception;
-        this.value = null;
-        this.kind = Kind.OnError;
-    }
-
-    /**
-     * A constructor used to represent an onCompleted notification.
-     */
-    @Deprecated
-    public Notification() {
-        this.throwable = null;
-        this.value = null;
-        this.kind = Kind.OnCompleted;
-    }
-
-    /**
      * Retrieves the exception associated with an onError notification.
      * 
      * @return Throwable associated with an onError notification.

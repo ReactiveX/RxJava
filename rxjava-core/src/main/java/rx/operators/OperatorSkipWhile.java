@@ -15,15 +15,8 @@
  */
 package rx.operators;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import rx.Observable;
-import rx.Observable.OnSubscribeFunc;
 import rx.Observable.Operator;
-import rx.Observer;
 import rx.Subscriber;
-import rx.Subscription;
 import rx.functions.Func1;
 import rx.functions.Func2;
 

@@ -15,7 +15,11 @@
  */
 package rx.observers;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -23,6 +27,7 @@ import org.junit.Test;
 
 import rx.Subscriber;
 import rx.exceptions.CompositeException;
+import rx.exceptions.OnErrorFailedException;
 import rx.exceptions.OnErrorNotImplementedException;
 import rx.functions.Action0;
 import rx.subscriptions.Subscriptions;
@@ -215,7 +220,8 @@ public class SafeObserverTest {
             assertEquals("failed", onError.get().getMessage());
 
             // now assert the exception that was thrown
-            assertTrue(e instanceof SafeObserverTestException);
+            OnErrorFailedException onErrorFailedException = (OnErrorFailedException) e;
+            assertTrue(onErrorFailedException.getCause() instanceof SafeObserverTestException);
             assertEquals("failure from unsubscribe", e.getMessage());
         }
     }

@@ -15,9 +15,12 @@
  */
 package rx.operators;
 
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicReference;
@@ -32,20 +35,18 @@ import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Func1;
 import rx.observers.TestSubscriber;
-import rx.subscriptions.Subscriptions;
 
 public class OperatorOnErrorResumeNextViaFunctionTest {
 
     @Test
     public void testResumeNextWithSynchronousExecution() {
         final AtomicReference<Throwable> receivedException = new AtomicReference<Throwable>();
-        Observable<String> w = Observable.create(new Observable.OnSubscribeFunc<String>() {
+        Observable<String> w = Observable.create(new Observable.OnSubscribe<String>() {
 
             @Override
-            public Subscription onSubscribe(Observer<? super String> observer) {
+            public void call(Subscriber<? super String> observer) {
                 observer.onNext("one");
                 observer.onError(new Throwable("injected failure"));
-                return Subscriptions.empty();
             }
         });
 
@@ -226,7 +227,7 @@ public class OperatorOnErrorResumeNextViaFunctionTest {
         ts.assertReceivedOnNext(Arrays.asList("success"));
     }
 
-    private static class TestObservable implements Observable.OnSubscribeFunc<String> {
+    private static class TestObservable implements Observable.OnSubscribe<String> {
 
         final Subscription s;
         final String[] values;
@@ -238,8 +239,9 @@ public class OperatorOnErrorResumeNextViaFunctionTest {
         }
 
         @Override
-        public Subscription onSubscribe(final Observer<? super String> observer) {
+        public void call(final Subscriber<? super String> observer) {
             System.out.println("TestObservable subscribed to ...");
+            observer.add(s);
             t = new Thread(new Runnable() {
 
                 @Override
@@ -260,7 +262,6 @@ public class OperatorOnErrorResumeNextViaFunctionTest {
             System.out.println("starting TestObservable thread");
             t.start();
             System.out.println("done starting TestObservable thread");
-            return s;
         }
 
     }

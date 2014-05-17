@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,14 +19,13 @@ import java.awt.EventQueue;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
 
 import javax.swing.Timer;
 
 import rx.Scheduler;
 import rx.Subscription;
 import rx.functions.Action0;
-import rx.functions.Action1;
+import rx.subscriptions.BooleanSubscription;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.Subscriptions;
 
@@ -45,24 +44,12 @@ public final class SwingScheduler extends Scheduler {
     }
 
     @Override
-    public Subscription schedule(Action1<Inner> action) {
-        InnerSwingScheduler inner = new InnerSwingScheduler();
-        inner.schedule(action);
-        return inner;
+    public Worker createWorker() {
+        return new InnerSwingScheduler();
     }
 
-    @Override
-    public Subscription schedule(Action1<Inner> action, long delayTime, TimeUnit unit) {
-        long delay = unit.toMillis(delayTime);
-        assertThatTheDelayIsValidForTheSwingTimer(delay);
-        InnerSwingScheduler inner = new InnerSwingScheduler();
-        inner.schedule(action, delayTime, unit);
-        return inner;
-    }
+    private static class InnerSwingScheduler extends Worker {
 
-    private static class InnerSwingScheduler extends Inner {
-
-        private final Inner _inner = this;
         private final CompositeSubscription innerSubscription = new CompositeSubscription();
 
         @Override
@@ -76,12 +63,10 @@ public final class SwingScheduler extends Scheduler {
         }
 
         @Override
-        public void schedule(final Action1<Inner> action, long delayTime, TimeUnit unit) {
-            final AtomicReference<Subscription> sub = new AtomicReference<Subscription>();
-            long delay = unit.toMillis(delayTime);
+        public Subscription schedule(final Action0 action, long delayTime, TimeUnit unit) {
+            long delay = Math.max(0, unit.toMillis(delayTime));
             assertThatTheDelayIsValidForTheSwingTimer(delay);
-
-            final AtomicReference<Subscription> sf = new AtomicReference<Subscription>();
+            final BooleanSubscription s = BooleanSubscription.create();
             class ExecuteOnceAction implements ActionListener {
                 private Timer timer;
 
@@ -92,14 +77,11 @@ public final class SwingScheduler extends Scheduler {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     timer.stop();
-                    if (innerSubscription.isUnsubscribed()) {
+                    if (innerSubscription.isUnsubscribed() || s.isUnsubscribed()) {
                         return;
                     }
-                    action.call(_inner);
-                    Subscription s = sf.get();
-                    if (s != null) {
-                        innerSubscription.remove(s);
-                    }
+                    action.call();
+                    innerSubscription.remove(s);
                 }
             }
 
@@ -108,53 +90,46 @@ public final class SwingScheduler extends Scheduler {
             executeOnce.setTimer(timer);
             timer.start();
 
-            Subscription s = Subscriptions.create(new Action0() {
+            innerSubscription.add(s);
+
+            // wrap for returning so it also removes it from the 'innerSubscription'
+            return Subscriptions.create(new Action0() {
+
                 @Override
                 public void call() {
                     timer.stop();
-
-                    Subscription subscription = sub.get();
-                    if (subscription != null) {
-                        subscription.unsubscribe();
-                    }
+                    s.unsubscribe();
+                    innerSubscription.remove(s);
                 }
-            });
 
-            sf.set(s);
-            innerSubscription.add(s);
+            });
         }
 
         @Override
-        public void schedule(final Action1<Inner> action) {
-            final AtomicReference<Subscription> sub = new AtomicReference<Subscription>();
-
-            final AtomicReference<Subscription> sf = new AtomicReference<Subscription>();
+        public Subscription schedule(final Action0 action) {
+            final BooleanSubscription s = BooleanSubscription.create();
             EventQueue.invokeLater(new Runnable() {
                 @Override
                 public void run() {
-                    if (innerSubscription.isUnsubscribed()) {
+                    if (innerSubscription.isUnsubscribed() || s.isUnsubscribed()) {
                         return;
                     }
-                    action.call(_inner);
-                    Subscription s = sf.get();
-                    if (s != null) {
-                        innerSubscription.remove(s);
-                    }
+                    action.call();
+                    innerSubscription.remove(s);
                 }
             });
 
-            Subscription s = Subscriptions.create(new Action0() {
+            innerSubscription.add(s);
+            // wrap for returning so it also removes it from the 'innerSubscription'
+            return Subscriptions.create(new Action0() {
+
                 @Override
                 public void call() {
-                    Subscription subscription = sub.get();
-                    if (subscription != null) {
-                        subscription.unsubscribe();
-                    }
+                    s.unsubscribe();
+                    innerSubscription.remove(s);
                 }
-            });
 
-            sf.set(s);
-            innerSubscription.add(s);
+            });
         }
 
     }

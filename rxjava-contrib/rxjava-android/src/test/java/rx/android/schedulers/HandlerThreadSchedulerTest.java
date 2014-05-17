@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,8 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
 import rx.Scheduler;
-import rx.Scheduler.Inner;
+import rx.Scheduler.Worker;
+import rx.functions.Action0;
 import rx.functions.Action1;
 import android.os.Handler;
 
@@ -41,10 +42,11 @@ public class HandlerThreadSchedulerTest {
     public void shouldScheduleImmediateActionOnHandlerThread() {
         final Handler handler = mock(Handler.class);
         @SuppressWarnings("unchecked")
-        final Action1<Inner> action = mock(Action1.class);
+        final Action0 action = mock(Action0.class);
 
         Scheduler scheduler = new HandlerThreadScheduler(handler);
-        scheduler.schedule(action);
+        Worker inner = scheduler.createWorker();
+        inner.schedule(action);
 
         // verify that we post to the given Handler
         ArgumentCaptor<Runnable> runnable = ArgumentCaptor.forClass(Runnable.class);
@@ -52,17 +54,18 @@ public class HandlerThreadSchedulerTest {
 
         // verify that the given handler delegates to our action
         runnable.getValue().run();
-        verify(action).call(any(Inner.class));
+        verify(action).call();
     }
 
     @Test
     public void shouldScheduleDelayedActionOnHandlerThread() {
         final Handler handler = mock(Handler.class);
         @SuppressWarnings("unchecked")
-        final Action1<Inner> action = mock(Action1.class);
+        final Action0 action = mock(Action0.class);
 
         Scheduler scheduler = new HandlerThreadScheduler(handler);
-        scheduler.schedule(action, 1L, TimeUnit.SECONDS);
+        Worker inner = scheduler.createWorker();
+        inner.schedule(action, 1L, TimeUnit.SECONDS);
 
         // verify that we post to the given Handler
         ArgumentCaptor<Runnable> runnable = ArgumentCaptor.forClass(Runnable.class);
@@ -70,6 +73,6 @@ public class HandlerThreadSchedulerTest {
 
         // verify that the given handler delegates to our action
         runnable.getValue().run();
-        verify(action).call(any(Inner.class));
+        verify(action).call();
     }
 }

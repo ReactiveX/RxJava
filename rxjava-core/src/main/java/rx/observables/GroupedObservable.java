@@ -16,6 +16,7 @@
 package rx.observables;
 
 import rx.Observable;
+import rx.Subscriber;
 import rx.functions.Func1;
 
 /**
@@ -30,6 +31,16 @@ import rx.functions.Func1;
  */
 public class GroupedObservable<K, T> extends Observable<T> {
     private final K key;
+
+    public static <K, T> GroupedObservable<K, T> from(K key, final Observable<T> o) {
+        return new GroupedObservable<K, T>(key, new OnSubscribe<T>() {
+
+            @Override
+            public void call(Subscriber<? super T> s) {
+                o.unsafeSubscribe(s);
+            }
+        });
+    }
 
     public GroupedObservable(K key, OnSubscribe<T> onSubscribe) {
         super(onSubscribe);

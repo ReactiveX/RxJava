@@ -15,14 +15,17 @@
  */
 package rx.operators;
 
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import org.junit.Test;
 import org.mockito.Mockito;
 
 import rx.Observable;
 import rx.Observer;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.observers.SafeSubscriber;
 import rx.observers.TestSubscriber;
@@ -34,7 +37,7 @@ public class SafeSubscriberTest {
      */
     @Test
     public void testOnNextAfterOnError() {
-        TestObservable t = new TestObservable(null);
+        TestObservable t = new TestObservable();
         Observable<String> st = Observable.create(t);
 
         @SuppressWarnings("unchecked")
@@ -56,7 +59,7 @@ public class SafeSubscriberTest {
      */
     @Test
     public void testOnCompletedAfterOnError() {
-        TestObservable t = new TestObservable(null);
+        TestObservable t = new TestObservable();
         Observable<String> st = Observable.create(t);
 
         @SuppressWarnings("unchecked")
@@ -78,7 +81,7 @@ public class SafeSubscriberTest {
      */
     @Test
     public void testOnNextAfterOnCompleted() {
-        TestObservable t = new TestObservable(null);
+        TestObservable t = new TestObservable();
         Observable<String> st = Observable.create(t);
 
         @SuppressWarnings("unchecked")
@@ -101,7 +104,7 @@ public class SafeSubscriberTest {
      */
     @Test
     public void testOnErrorAfterOnCompleted() {
-        TestObservable t = new TestObservable(null);
+        TestObservable t = new TestObservable();
         Observable<String> st = Observable.create(t);
 
         @SuppressWarnings("unchecked")
@@ -121,12 +124,9 @@ public class SafeSubscriberTest {
     /**
      * A Observable that doesn't do the right thing on UnSubscribe/Error/etc in that it will keep sending events down the pipe regardless of what happens.
      */
-    private static class TestObservable implements Observable.OnSubscribeFunc<String> {
+    private static class TestObservable implements Observable.OnSubscribe<String> {
 
         Observer<? super String> observer = null;
-
-        public TestObservable(Subscription s) {
-        }
 
         /* used to simulate subscription */
         public void sendOnCompleted() {
@@ -144,9 +144,9 @@ public class SafeSubscriberTest {
         }
 
         @Override
-        public Subscription onSubscribe(final Observer<? super String> observer) {
+        public void call(Subscriber<? super String> observer) {
             this.observer = observer;
-            return new Subscription() {
+            observer.add(new Subscription() {
 
                 @Override
                 public void unsubscribe() {
@@ -159,7 +159,7 @@ public class SafeSubscriberTest {
                     return false;
                 }
 
-            };
+            });
         }
 
     }

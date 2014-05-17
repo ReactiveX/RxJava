@@ -137,7 +137,7 @@ public class AssertObservable {
             }
         };
 
-        Observable<Void> outcomeObservable = Observable.zip(expected.materialize(), actual.materialize(), zipFunction).aggregate(accumulator).map(new Func1<Notification<String>, Notification<Void>>() {
+        Observable<Void> outcomeObservable = Observable.zip(expected.materialize(), actual.materialize(), zipFunction).reduce(accumulator).map(new Func1<Notification<String>, Notification<Void>>() {
             @Override
             public Notification<Void> call(Notification<String> outcome) {
                 if (outcome.isOnError()) {

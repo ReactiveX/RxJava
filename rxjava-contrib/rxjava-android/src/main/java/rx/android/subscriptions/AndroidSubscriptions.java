@@ -15,7 +15,7 @@
  */
 package rx.android.subscriptions;
 
-import rx.Scheduler.Inner;
+import rx.Scheduler.Worker;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action0;
@@ -42,10 +42,12 @@ public final class AndroidSubscriptions {
                 if (Looper.getMainLooper() == Looper.myLooper()) {
                     unsubscribe.call();
                 } else {
-                    AndroidSchedulers.mainThread().schedule(new Action1<Inner>() {
+                    final Worker inner = AndroidSchedulers.mainThread().createWorker();
+                    inner.schedule(new Action0() {
                         @Override
-                        public void call(Inner inner) {
+                        public void call() {
                             unsubscribe.call();
+                            inner.unsubscribe();
                         }
                     });
                 }

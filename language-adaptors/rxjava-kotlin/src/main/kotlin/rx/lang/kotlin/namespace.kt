@@ -21,14 +21,19 @@ import rx.Observable
 import rx.Observable.OnSubscribe
 import rx.Subscription
 import rx.Observable.OnSubscribeFunc
+import rx.Subscriber
 
 
-public fun<T> Function1<Observer<in T>, Unit>.asObservable(): Observable<T> {
-    return Observable.create(OnSubscribe<T>{ t1 ->
-        this(t1!!)
+public fun<T> Function1<Subscriber<in T>, Unit>.asObservable(): Observable<T> {
+    return Observable.create(object:OnSubscribe<T> {
+        override fun call(t1: Subscriber<in T>?) {
+            this@asObservable(t1!!)
+        }
+
     })!!
 }
 
+[deprecated("Use Function1<Subscriber<in T>, Unit>.asObservable()")]
 public fun<T> Function1<Observer<in T>, Subscription>.asObservableFunc(): Observable<T> {
     return Observable.create(OnSubscribeFunc<T>{ op ->
         this(op!!)

@@ -15,6 +15,9 @@
  */
 package rx.functions;
 
-public interface Func0<R> extends Function {
+import java.util.concurrent.Callable;
+
+public interface Func0<R> extends Function, Callable<R> {
+    @Override
     public R call();
 }

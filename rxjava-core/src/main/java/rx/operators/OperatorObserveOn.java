@@ -15,14 +15,14 @@
  */
 package rx.operators;
 
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 import rx.Observable.Operator;
 import rx.Scheduler;
-import rx.Scheduler.Inner;
 import rx.Subscriber;
-import rx.functions.Action1;
+import rx.functions.Action0;
 import rx.schedulers.ImmediateScheduler;
 import rx.schedulers.TrampolineScheduler;
 
@@ -51,105 +51,102 @@ public class OperatorObserveOn<T> implements Operator<T, T> {
             // avoid overhead, execute directly
             return child;
         } else {
-            return new ObserveOnSubscriber(child);
-        }
-    }
-
-    private static class Sentinel {
-
-    }
-
-    private static Sentinel NULL_SENTINEL = new Sentinel();
-    private static Sentinel COMPLETE_SENTINEL = new Sentinel();
-
-    private static class ErrorSentinel extends Sentinel {
-        final Throwable e;
-
-        ErrorSentinel(Throwable e) {
-            this.e = e;
+            return new ObserveOnSubscriber<T>(scheduler, child);
         }
     }
 
     /** Observe through individual queue per observer. */
-    private class ObserveOnSubscriber extends Subscriber<T> {
+    private static class ObserveOnSubscriber<T> extends Subscriber<T> {
+        private final NotificationLite<T> on = NotificationLite.instance();
         final Subscriber<? super T> observer;
-        private volatile Scheduler.Inner recursiveScheduler;
+        private final Scheduler.Worker recursiveScheduler;
 
-        private final ConcurrentLinkedQueue<Object> queue = new ConcurrentLinkedQueue<Object>();
+        private FastList queue = new FastList();
         final AtomicLong counter = new AtomicLong(0);
 
-        public ObserveOnSubscriber(Subscriber<? super T> observer) {
-            super(observer);
-            this.observer = observer;
+        public ObserveOnSubscriber(Scheduler scheduler, Subscriber<? super T> subscriber) {
+            super(subscriber);
+            this.observer = subscriber;
+            this.recursiveScheduler = scheduler.createWorker();
+            subscriber.add(recursiveScheduler);
         }
 
         @Override
         public void onNext(final T t) {
-            if (t == null) {
-                queue.offer(NULL_SENTINEL);
-            } else {
-                queue.offer(t);
+            synchronized (this) {
+                queue.add(on.next(t));
             }
             schedule();
         }
 
         @Override
         public void onCompleted() {
-            queue.offer(COMPLETE_SENTINEL);
+            synchronized (this) {
+                queue.add(on.completed());
+            }
             schedule();
         }
 
         @Override
         public void onError(final Throwable e) {
-            queue.offer(new ErrorSentinel(e));
+            synchronized (this) {
+                queue.add(on.error(e));
+            }
             schedule();
         }
 
         protected void schedule() {
             if (counter.getAndIncrement() == 0) {
-                if (recursiveScheduler == null) {
-                    add(scheduler.schedule(new Action1<Inner>() {
+                recursiveScheduler.schedule(new Action0() {
 
-                        @Override
-                        public void call(Inner inner) {
-                            recursiveScheduler = inner;
-                            pollQueue();
-                        }
+                    @Override
+                    public void call() {
+                        pollQueue();
+                    }
 
-                    }));
-                } else {
-                    recursiveScheduler.schedule(new Action1<Inner>() {
-
-                        @Override
-                        public void call(Inner inner) {
-                            pollQueue();
-                        }
-
-                    });
-                }
+                });
             }
         }
 
-        @SuppressWarnings("unchecked")
         private void pollQueue() {
             do {
-                Object v = queue.poll();
-                if (v != null) {
-                    if (v instanceof Sentinel) {
-                        if (v == NULL_SENTINEL) {
-                            observer.onNext(null);
-                        } else if (v == COMPLETE_SENTINEL) {
-                            observer.onCompleted();
-                        } else if (v instanceof ErrorSentinel) {
-                            observer.onError(((ErrorSentinel) v).e);
-                        }
-                    } else {
-                        observer.onNext((T) v);
-                    }
+                FastList vs;
+                synchronized (this) {
+                    vs = queue;
+                    queue = new FastList();
                 }
-            } while (counter.decrementAndGet() > 0);
+                for (Object v : vs.array) {
+                    if (v == null) {
+                        break;
+                    }
+                    on.accept(observer, v);
+                }
+                if (counter.addAndGet(-vs.size) == 0) {
+                    break;
+                }
+            } while (true);
         }
 
     }
 
+    static final class FastList {
+        Object[] array;
+        int size;
+
+        public void add(Object o) {
+            int s = size;
+            Object[] a = array;
+            if (a == null) {
+                a = new Object[16];
+                array = a;
+            } else if (s == a.length) {
+                Object[] array2 = new Object[s + (s >> 2)];
+                System.arraycopy(a, 0, array2, 0, s);
+                a = array2;
+                array = a;
+            }
+            a[s] = o;
+            size = s + 1;
+        }
+    }
 }

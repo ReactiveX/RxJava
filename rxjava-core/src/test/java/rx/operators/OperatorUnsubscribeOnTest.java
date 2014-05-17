@@ -1,10 +1,26 @@
+/**
+ * Copyright 2014 Netflix, Inc.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package rx.operators;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
@@ -15,7 +31,6 @@ import rx.Scheduler;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Action0;
-import rx.functions.Action1;
 import rx.observers.TestObserver;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.Subscriptions;
@@ -138,22 +153,24 @@ public class OperatorUnsubscribeOnTest {
 
     public static class UIEventLoopScheduler extends Scheduler {
 
-        private final Scheduler.Inner eventLoop;
+        private final Scheduler.Worker eventLoop;
         private final Subscription s;
         private volatile Thread t;
 
         public UIEventLoopScheduler() {
+
+            eventLoop = Schedulers.newThread().createWorker();
+            s = eventLoop;
+
             /*
              * DON'T DO THIS IN PRODUCTION CODE
              */
-            final AtomicReference<Scheduler.Inner> innerScheduler = new AtomicReference<Scheduler.Inner>();
             final CountDownLatch latch = new CountDownLatch(1);
-            s = Schedulers.newThread().schedule(new Action1<Inner>() {
+            eventLoop.schedule(new Action0() {
 
                 @Override
-                public void call(Inner inner) {
+                public void call() {
                     t = Thread.currentThread();
-                    innerScheduler.set(inner);
                     latch.countDown();
                 }
 
@@ -161,21 +178,13 @@ public class OperatorUnsubscribeOnTest {
             try {
                 latch.await();
             } catch (InterruptedException e) {
-                throw new RuntimeException("failed to initialize and get inner scheduler");
+                throw new RuntimeException("failed to initialize and get inner thread");
             }
-            eventLoop = innerScheduler.get();
         }
-
+        
         @Override
-        public Subscription schedule(Action1<Inner> action) {
-            eventLoop.schedule(action);
-            return Subscriptions.empty();
-        }
-
-        @Override
-        public Subscription schedule(Action1<Inner> action, long delayTime, TimeUnit unit) {
-            eventLoop.schedule(action);
-            return Subscriptions.empty();
+        public Worker createWorker() {
+            return eventLoop;
         }
 
         public void shutdown() {

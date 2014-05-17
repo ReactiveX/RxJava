@@ -15,7 +15,8 @@
  */
 package rx.observables;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -27,13 +28,10 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import rx.Observable;
-import rx.Observer;
 import rx.Subscriber;
-import rx.Subscription;
+import rx.exceptions.TestException;
 import rx.functions.Action1;
 import rx.functions.Func1;
-import rx.subscriptions.BooleanSubscription;
-import rx.subscriptions.Subscriptions;
 
 public class BlockingObservableTest {
 
@@ -52,7 +50,7 @@ public class BlockingObservableTest {
         assertEquals("three", obs.last());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NoSuchElementException.class)
     public void testLastEmptyObservable() {
         BlockingObservable<Object> obs = BlockingObservable.from(Observable.empty());
         obs.last();
@@ -175,7 +173,7 @@ public class BlockingObservableTest {
         observable.single();
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NoSuchElementException.class)
     public void testSingleWrongPredicate() {
         BlockingObservable<Integer> observable = BlockingObservable.from(Observable.from(-1));
         observable.single(new Func1<Integer, Boolean>() {
@@ -260,13 +258,12 @@ public class BlockingObservableTest {
 
     @Test(expected = TestException.class)
     public void testToIterableWithException() {
-        BlockingObservable<String> obs = BlockingObservable.from(Observable.create(new Observable.OnSubscribeFunc<String>() {
+        BlockingObservable<String> obs = BlockingObservable.from(Observable.create(new Observable.OnSubscribe<String>() {
 
             @Override
-            public Subscription onSubscribe(Observer<? super String> observer) {
+            public void call(Subscriber<? super String> observer) {
                 observer.onNext("one");
                 observer.onError(new TestException());
-                return Subscriptions.empty();
             }
         }));
 
@@ -283,11 +280,10 @@ public class BlockingObservableTest {
     @Test
     public void testForEachWithError() {
         try {
-            BlockingObservable.from(Observable.create(new Observable.OnSubscribeFunc<String>() {
+            BlockingObservable.from(Observable.create(new Observable.OnSubscribe<String>() {
 
                 @Override
-                public Subscription onSubscribe(final Observer<? super String> observer) {
-                    final BooleanSubscription subscription = new BooleanSubscription();
+                public void call(final Subscriber<? super String> observer) {
                     new Thread(new Runnable() {
 
                         @Override
@@ -298,7 +294,6 @@ public class BlockingObservableTest {
                             observer.onCompleted();
                         }
                     }).start();
-                    return subscription;
                 }
             })).forEach(new Action1<String>() {
 
@@ -319,7 +314,7 @@ public class BlockingObservableTest {
         assertEquals("one", observable.first());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NoSuchElementException.class)
     public void testFirstWithEmpty() {
         BlockingObservable.from(Observable.<String> empty()).first();
     }
@@ -336,7 +331,7 @@ public class BlockingObservableTest {
         assertEquals("three", first);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NoSuchElementException.class)
     public void testFirstWithPredicateAndEmpty() {
         BlockingObservable<String> observable = BlockingObservable.from(Observable.from("one", "two", "three"));
         observable.first(new Func1<String, Boolean>() {
@@ -381,9 +376,5 @@ public class BlockingObservableTest {
             }
         });
         assertEquals("default", first);
-    }
-
-    private static class TestException extends RuntimeException {
-        private static final long serialVersionUID = 1L;
     }
 }

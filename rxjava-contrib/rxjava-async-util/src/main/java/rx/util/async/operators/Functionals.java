@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package rx.util.async.operators;
 
-import rx.Scheduler.Inner;
+import rx.Scheduler.Worker;
 import rx.functions.Action0;
 import rx.functions.Action1;
 
@@ -66,23 +66,29 @@ public final class Functionals {
      * @param run the Runnable to run when the Action0 is called
      * @return the Action0 wrapping the Runnable
      */
-    public static Action1<Inner> fromRunnable(Runnable run) {
+    public static Action0 fromRunnable(Runnable run, Worker inner) {
         if (run == null) {
             throw new NullPointerException("run");
         }
-        return new ActionWrappingRunnable(run);
+        return new ActionWrappingRunnable(run, inner);
     }
     /** An Action1 which wraps and calls a Runnable. */
-    private static final class ActionWrappingRunnable implements Action1<Inner> {
+    private static final class ActionWrappingRunnable implements Action0 {
         final Runnable run;
+        final Worker inner;
 
-        public ActionWrappingRunnable(Runnable run) {
+        public ActionWrappingRunnable(Runnable run, Worker inner) {
             this.run = run;
+            this.inner = inner;
         }
 
         @Override
-        public void call(Inner inner) {
-            run.run();
+        public void call() {
+            try {
+                run.run();
+            } finally {
+                inner.unsubscribe();
+            }
         }
         
     }

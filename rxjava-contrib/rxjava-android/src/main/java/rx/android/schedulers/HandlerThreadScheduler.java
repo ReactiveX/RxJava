@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,10 @@ import java.util.concurrent.TimeUnit;
 
 import rx.Scheduler;
 import rx.Subscription;
+import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.subscriptions.BooleanSubscription;
+import rx.subscriptions.Subscriptions;
 import android.os.Handler;
 
 /**
@@ -40,43 +42,15 @@ public class HandlerThreadScheduler extends Scheduler {
         this.handler = handler;
     }
 
-    /**
-     * Calls {@link HandlerThreadScheduler#schedule(Object, rx.functions.Func2, long, java.util.concurrent.TimeUnit)} with a delay of zero milliseconds.
-     * 
-     * See {@link #schedule(Object, rx.functions.Func2, long, java.util.concurrent.TimeUnit)}
-     */
     @Override
-    public Subscription schedule(Action1<Inner> action) {
-        InnerHandlerThreadScheduler inner = new InnerHandlerThreadScheduler(handler);
-        inner.schedule(action);
-        return inner;
+    public Worker createWorker() {
+        return new InnerHandlerThreadScheduler(handler);
     }
-
-    /**
-     * Calls {@link Handler#postDelayed(Runnable, long)} with a runnable that executes the given action.
-     * 
-     * @param state
-     *            State to pass into the action.
-     * @param action
-     *            Action to schedule.
-     * @param delayTime
-     *            Time the action is to be delayed before executing.
-     * @param unit
-     *            Time unit of the delay time.
-     * @return A Subscription from which one can unsubscribe from.
-     */
-    @Override
-    public Subscription schedule(Action1<Inner> action, long delayTime, TimeUnit unit) {
-        InnerHandlerThreadScheduler inner = new InnerHandlerThreadScheduler(handler);
-        inner.schedule(action, delayTime, unit);
-        return inner;
-    }
-
-    private static class InnerHandlerThreadScheduler extends Inner {
+    
+    private static class InnerHandlerThreadScheduler extends Worker {
 
         private final Handler handler;
         private BooleanSubscription innerSubscription = new BooleanSubscription();
-        private Inner _inner = this;
 
         public InnerHandlerThreadScheduler(Handler handler) {
             this.handler = handler;
@@ -93,31 +67,31 @@ public class HandlerThreadScheduler extends Scheduler {
         }
 
         @Override
-        public void schedule(final Action1<Inner> action, long delayTime, TimeUnit unit) {
-            handler.postDelayed(new Runnable() {
+        public Subscription schedule(final Action0 action, long delayTime, TimeUnit unit) {
+            final Runnable runnable = new Runnable() {
                 @Override
                 public void run() {
-                    if (_inner.isUnsubscribed()) {
+                    if (isUnsubscribed()) {
                         return;
                     }
-                    action.call(_inner);
+                    action.call();
                 }
-            }, unit.toMillis(delayTime));
+            };
+            handler.postDelayed(runnable, unit.toMillis(delayTime));
+            return Subscriptions.create(new Action0() {
+
+                @Override
+                public void call() {
+                    handler.removeCallbacks(runnable);
+                    
+                }
+                
+            });
         }
 
         @Override
-        public void schedule(final Action1<Inner> action) {
-            handler.postDelayed(new Runnable() {
-
-                @Override
-                public void run() {
-                    if (_inner.isUnsubscribed()) {
-                        return;
-                    }
-                    action.call(_inner);
-                }
-
-            }, 0L);
+        public Subscription schedule(final Action0 action) {
+            return schedule(action, 0, TimeUnit.MILLISECONDS);
         }
 
     }

@@ -15,8 +15,13 @@
  */
 package rx.subjects;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -69,7 +74,7 @@ public class PublishSubjectTest {
         Observer<Object> observerC = mock(Observer.class);
 
         Subscription a = channel.subscribe(observerA);
-        Subscription b = channel.subscribe(observerB);
+        channel.subscribe(observerB);
 
         InOrder inOrderA = inOrder(observerA);
         InOrder inOrderB = inOrder(observerB);
@@ -91,7 +96,7 @@ public class PublishSubjectTest {
 
         inOrderB.verify(observerB).onCompleted();
 
-        Subscription c = channel.subscribe(observerC);
+        channel.subscribe(observerC);
 
         inOrderC.verify(observerC).onCompleted();
 
@@ -265,6 +270,7 @@ public class PublishSubjectTest {
     public void testReSubscribe() {
         final PublishSubject<Integer> ps = PublishSubject.create();
 
+        @SuppressWarnings("unchecked")
         Observer<Integer> o1 = mock(Observer.class);
         Subscription s1 = ps.subscribe(o1);
 
@@ -282,6 +288,7 @@ public class PublishSubjectTest {
         // emit again but nothing will be there to receive it
         ps.onNext(2);
 
+        @SuppressWarnings("unchecked")
         Observer<Integer> o2 = mock(Observer.class);
         Subscription s2 = ps.subscribe(o2);
 
@@ -309,7 +316,7 @@ public class PublishSubjectTest {
             String v = "" + i;
             System.out.printf("Turn: %d%n", i);
             src.first()
-                .flatMap(new rx.util.functions.Func1<String, Observable<String>>() {
+                .flatMap(new Func1<String, Observable<String>>() {
 
                     @Override
                     public Observable<String> call(String t1) {

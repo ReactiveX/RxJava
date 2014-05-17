@@ -15,6 +15,9 @@
  */
 package rx.exceptions;
 
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import org.junit.Test;
 
 import rx.Observable;
@@ -132,6 +135,36 @@ public class ExceptionsTest {
             }
 
         });
+    }
+
+    /**
+     * https://github.com/Netflix/RxJava/issues/969
+     */
+    @Test
+    public void testOnErrorExceptionIsThrown() {
+        try {
+            Observable.error(new IllegalArgumentException("original exception")).subscribe(new Observer<Object>() {
+                @Override
+                public void onCompleted() {
+
+                }
+
+                @Override
+                public void onError(Throwable e) {
+                    throw new IllegalStateException("This should be thrown");
+                }
+
+                @Override
+                public void onNext(Object o) {
+
+                }
+            });
+            fail("expecting an exception to be thrown");
+        } catch (CompositeException t) {
+            CompositeException ce = (CompositeException) t;
+            assertTrue(ce.getExceptions().get(0) instanceof IllegalArgumentException);
+            assertTrue(ce.getExceptions().get(1) instanceof IllegalStateException);
+        }
     }
 
 }

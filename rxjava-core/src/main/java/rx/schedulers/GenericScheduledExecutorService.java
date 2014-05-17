@@ -40,7 +40,7 @@ import rx.Scheduler;
 
     private GenericScheduledExecutorService() {
         int count = Runtime.getRuntime().availableProcessors();
-        if (count > 8) {
+        if (count > 4) {
             count = count / 2;
         }
         // we don't need more than 8 to handle just scheduling and doing no work

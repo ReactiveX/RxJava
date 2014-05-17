@@ -15,9 +15,14 @@
  */
 package rx.operators;
 
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertFalse;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.isA;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
@@ -34,6 +39,7 @@ import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Observer;
 import rx.Subscriber;
+import rx.exceptions.TestException;
 import rx.functions.Func0;
 import rx.functions.Func1;
 import rx.observers.TestSubscriber;
@@ -132,7 +138,7 @@ public class OperatorTimeoutWithSelectorTest {
         Func0<Observable<Integer>> firstTimeoutFunc = new Func0<Observable<Integer>>() {
             @Override
             public Observable<Integer> call() {
-                throw new OperationReduceTest.CustomException();
+                throw new TestException();
             }
         };
 
@@ -143,7 +149,7 @@ public class OperatorTimeoutWithSelectorTest {
 
         source.timeout(firstTimeoutFunc, timeoutFunc, other).subscribe(o);
 
-        verify(o).onError(any(OperationReduceTest.CustomException.class));
+        verify(o).onError(any(TestException.class));
         verify(o, never()).onNext(any());
         verify(o, never()).onCompleted();
 
@@ -157,7 +163,7 @@ public class OperatorTimeoutWithSelectorTest {
         Func1<Integer, Observable<Integer>> timeoutFunc = new Func1<Integer, Observable<Integer>>() {
             @Override
             public Observable<Integer> call(Integer t1) {
-                throw new OperationReduceTest.CustomException();
+                throw new TestException();
             }
         };
 
@@ -179,7 +185,7 @@ public class OperatorTimeoutWithSelectorTest {
         source.onNext(1);
 
         inOrder.verify(o).onNext(1);
-        inOrder.verify(o).onError(any(OperationReduceTest.CustomException.class));
+        inOrder.verify(o).onError(any(TestException.class));
         verify(o, never()).onCompleted();
 
     }
@@ -199,7 +205,7 @@ public class OperatorTimeoutWithSelectorTest {
         Func0<Observable<Integer>> firstTimeoutFunc = new Func0<Observable<Integer>>() {
             @Override
             public Observable<Integer> call() {
-                return Observable.<Integer> error(new OperationReduceTest.CustomException());
+                return Observable.<Integer> error(new TestException());
             }
         };
 
@@ -210,7 +216,7 @@ public class OperatorTimeoutWithSelectorTest {
 
         source.timeout(firstTimeoutFunc, timeoutFunc, other).subscribe(o);
 
-        verify(o).onError(any(OperationReduceTest.CustomException.class));
+        verify(o).onError(any(TestException.class));
         verify(o, never()).onNext(any());
         verify(o, never()).onCompleted();
 
@@ -224,7 +230,7 @@ public class OperatorTimeoutWithSelectorTest {
         Func1<Integer, Observable<Integer>> timeoutFunc = new Func1<Integer, Observable<Integer>>() {
             @Override
             public Observable<Integer> call(Integer t1) {
-                return Observable.<Integer> error(new OperationReduceTest.CustomException());
+                return Observable.<Integer> error(new TestException());
             }
         };
 
@@ -246,7 +252,7 @@ public class OperatorTimeoutWithSelectorTest {
         source.onNext(1);
 
         inOrder.verify(o).onNext(1);
-        inOrder.verify(o).onError(any(OperationReduceTest.CustomException.class));
+        inOrder.verify(o).onError(any(TestException.class));
         verify(o, never()).onCompleted();
 
     }

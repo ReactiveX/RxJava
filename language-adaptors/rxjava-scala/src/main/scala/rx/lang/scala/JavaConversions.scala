@@ -39,8 +39,8 @@ object JavaConversions {
   implicit def scalaSchedulerToJavaScheduler(s: Scheduler): rx.Scheduler = s.asJavaScheduler
   implicit def javaSchedulerToScalaScheduler(s: rx.Scheduler): Scheduler = Scheduler(s)
 
-  implicit def scalaInnerToJavaInner(s: Inner): rx.Scheduler.Inner = s.asJavaInner
-  implicit def javaInnerToScalaInner(s: rx.Scheduler.Inner): Inner = Inner(s)
+  implicit def scalaWorkerToJavaWorker(s: Worker): rx.Scheduler.Worker = s.asJavaWorker
+  implicit def javaWorkerToScalaWorker(s: rx.Scheduler.Worker): Worker = Worker(s)
 
 
   implicit def toJavaObserver[T](s: Observer[T]): rx.Observer[_ >: T] = s.asJavaObserver
@@ -52,6 +52,14 @@ object JavaConversions {
   implicit def toScalaObservable[T](observable: rx.Observable[_ <: T]): Observable[T] = {
     new Observable[T]{
       val asJavaObservable = observable
+    }
+  }
+
+  implicit def toJavaOperator[T, R](operator: Subscriber[R] => Subscriber[T]): rx.Observable.Operator[R, T] = {
+    new rx.Observable.Operator[R, T] {
+      override def call(subscriber: rx.Subscriber[_ >: R]): rx.Subscriber[_ >: T] = {
+        toJavaSubscriber[T](operator(toScalaSubscriber[R](subscriber)))
+      }
     }
   }
 }

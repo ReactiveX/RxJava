@@ -15,9 +15,15 @@
  */
 package rx.operators;
 
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.isA;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
+import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -265,5 +271,90 @@ public class OperatorTimeoutTests {
         inOrder.verifyNoMoreInteractions();
 
         exit.countDown(); // exit the thread
+    }
+
+    @Test
+    public void shouldUnsubscribeFromUnderlyingSubscriptionOnTimeout() throws InterruptedException {
+        // From https://github.com/Netflix/RxJava/pull/951
+        final Subscription s = mock(Subscription.class);
+
+        Observable<String> never = Observable.create(new OnSubscribe<String>() {
+            public void call(Subscriber<? super String> subscriber) {
+                subscriber.add(s);
+            }
+        });
+
+        TestScheduler testScheduler = new TestScheduler();
+        Observable<String> observableWithTimeout = never.timeout(1000, TimeUnit.MILLISECONDS, testScheduler);
+
+        @SuppressWarnings("unchecked")
+        Observer<String> observer = mock(Observer.class);
+        observableWithTimeout.subscribe(observer);
+
+        testScheduler.advanceTimeBy(2000, TimeUnit.MILLISECONDS);
+
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer).onError(isA(TimeoutException.class));
+        inOrder.verifyNoMoreInteractions();
+
+        verify(s, times(1)).unsubscribe();
+    }
+
+    @Test
+    public void shouldUnsubscribeFromUnderlyingSubscriptionOnImmediatelyComplete() {
+        // From https://github.com/Netflix/RxJava/pull/951
+        final Subscription s = mock(Subscription.class);
+
+        Observable<String> immediatelyComplete = Observable.create(new OnSubscribe<String>() {
+            public void call(Subscriber<? super String> subscriber) {
+                subscriber.add(s);
+                subscriber.onCompleted();
+            }
+        });
+
+        TestScheduler testScheduler = new TestScheduler();
+        Observable<String> observableWithTimeout = immediatelyComplete.timeout(1000, TimeUnit.MILLISECONDS,
+                testScheduler);
+
+        @SuppressWarnings("unchecked")
+        Observer<String> observer = mock(Observer.class);
+        observableWithTimeout.subscribe(observer);
+
+        testScheduler.advanceTimeBy(2000, TimeUnit.MILLISECONDS);
+
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer).onCompleted();
+        inOrder.verifyNoMoreInteractions();
+
+        verify(s, times(1)).unsubscribe();
+    }
+
+    @Test
+    public void shouldUnsubscribeFromUnderlyingSubscriptionOnImmediatelyErrored() throws InterruptedException {
+        // From https://github.com/Netflix/RxJava/pull/951
+        final Subscription s = mock(Subscription.class);
+
+        Observable<String> immediatelyError = Observable.create(new OnSubscribe<String>() {
+            public void call(Subscriber<? super String> subscriber) {
+                subscriber.add(s);
+                subscriber.onError(new IOException("Error"));
+            }
+        });
+
+        TestScheduler testScheduler = new TestScheduler();
+        Observable<String> observableWithTimeout = immediatelyError.timeout(1000, TimeUnit.MILLISECONDS,
+                testScheduler);
+
+        @SuppressWarnings("unchecked")
+        Observer<String> observer = mock(Observer.class);
+        observableWithTimeout.subscribe(observer);
+
+        testScheduler.advanceTimeBy(2000, TimeUnit.MILLISECONDS);
+
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer).onError(isA(IOException.class));
+        inOrder.verifyNoMoreInteractions();
+
+        verify(s, times(1)).unsubscribe();
     }
 }

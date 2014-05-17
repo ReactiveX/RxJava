@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Netflix, Inc.
+ * Copyright 2014 Netflix, Inc.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,11 +39,13 @@ import rx.functions.Func2;
 public class StringObservable {
     /**
      * Reads from the bytes from a source {@link InputStream} and outputs {@link Observable} of
-     * {@link byte[]}s
+     * {@code byte[]}s
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/St.from.png">
      * 
      * @param i
      *            Source {@link InputStream}
-     * @return
+     * @return the Observable containing read byte arrays from the input
      */
     public static Observable<byte[]> from(final InputStream i) {
         return from(i, 8 * 1024);
@@ -51,13 +53,15 @@ public class StringObservable {
 
     /**
      * Reads from the bytes from a source {@link InputStream} and outputs {@link Observable} of
-     * {@link byte[]}s
+     * {@code byte[]}s
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/St.from.png">
      * 
      * @param i
      *            Source {@link InputStream}
      * @param size
      *            internal buffer size
-     * @return
+     * @return the Observable containing read byte arrays from the input
      */
     public static Observable<byte[]> from(final InputStream i, final int size) {
         return Observable.create(new OnSubscribe<byte[]>() {
@@ -86,10 +90,12 @@ public class StringObservable {
     /**
      * Reads from the characters from a source {@link Reader} and outputs {@link Observable} of
      * {@link String}s
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/St.from.png">
      * 
      * @param i
      *            Source {@link Reader}
-     * @return
+     * @return the Observable of Strings read from the source
      */
     public static Observable<String> from(final Reader i) {
         return from(i, 8 * 1024);
@@ -98,12 +104,14 @@ public class StringObservable {
     /**
      * Reads from the characters from a source {@link Reader} and outputs {@link Observable} of
      * {@link String}s
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/St.from.png">
      * 
      * @param i
      *            Source {@link Reader}
      * @param size
      *            internal buffer size
-     * @return
+     * @return the Observable of Strings read from the source
      */
     public static Observable<String> from(final Reader i, final int size) {
         return Observable.create(new OnSubscribe<String>() {
@@ -132,10 +140,12 @@ public class StringObservable {
     /**
      * Decodes a stream the multibyte chunks into a stream of strings that works on infinite streams
      * and where handles when a multibyte character spans two chunks.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/St.decode.png">
      * 
      * @param src
      * @param charsetName
-     * @return
+     * @return the Observable returning a stream of decoded strings
      */
     public static Observable<String> decode(Observable<byte[]> src, String charsetName) {
         return decode(src, Charset.forName(charsetName));
@@ -144,10 +154,12 @@ public class StringObservable {
     /**
      * Decodes a stream the multibyte chunks into a stream of strings that works on infinite streams
      * and where handles when a multibyte character spans two chunks.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/St.decode.png">
      * 
      * @param src
      * @param charset
-     * @return
+     * @return the Observable returning a stream of decoded strings
      */
     public static Observable<String> decode(Observable<byte[]> src, Charset charset) {
         return decode(src, charset.newDecoder().onMalformedInput(CodingErrorAction.REPLACE).onUnmappableCharacter(CodingErrorAction.REPLACE));
@@ -157,10 +169,12 @@ public class StringObservable {
      * Decodes a stream the multibyte chunks into a stream of strings that works on infinite streams
      * and where it handles when a multibyte character spans two chunks.
      * This method allows for more control over how malformed and unmappable characters are handled.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/St.decode.png">
      * 
      * @param src
      * @param charsetDecoder
-     * @return
+     * @return the Observable returning a stream of decoded strings
      */
     public static Observable<String> decode(final Observable<byte[]> src, final CharsetDecoder charsetDecoder) {
         return src.lift(new Operator<String, byte[]>() {
@@ -246,10 +260,12 @@ public class StringObservable {
 
     /**
      * Encodes a possible infinite stream of strings into a Observable of byte arrays.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/St.encode.png">
      * 
      * @param src
      * @param charsetName
-     * @return
+     * @return the Observable with a stream of encoded byte arrays
      */
     public static Observable<byte[]> encode(Observable<String> src, String charsetName) {
         return encode(src, Charset.forName(charsetName));
@@ -257,10 +273,12 @@ public class StringObservable {
 
     /**
      * Encodes a possible infinite stream of strings into a Observable of byte arrays.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/St.encode.png">
      * 
      * @param src
      * @param charset
-     * @return
+     * @return the Observable with a stream of encoded byte arrays
      */
     public static Observable<byte[]> encode(Observable<String> src, Charset charset) {
         return encode(src, charset.newEncoder().onMalformedInput(CodingErrorAction.REPLACE).onUnmappableCharacter(CodingErrorAction.REPLACE));
@@ -269,10 +287,12 @@ public class StringObservable {
     /**
      * Encodes a possible infinite stream of strings into a Observable of byte arrays.
      * This method allows for more control over how malformed and unmappable characters are handled.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/St.encode.png">
      * 
      * @param src
      * @param charsetEncoder
-     * @return
+     * @return the Observable with a stream of encoded byte arrays
      */
     public static Observable<byte[]> encode(Observable<String> src, final CharsetEncoder charsetEncoder) {
         return src.map(new Func1<String, byte[]>() {
@@ -293,9 +313,11 @@ public class StringObservable {
     /**
      * Gather up all of the strings in to one string to be able to use it as one message. Don't use
      * this on infinite streams.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/St.stringConcat.png">
      * 
      * @param src
-     * @return
+     * @return the Observable returing all strings concatenated as a single string
      */
     public static Observable<String> stringConcat(Observable<String> src) {
         return src.reduce(new Func2<String, String, String>() {
@@ -315,10 +337,12 @@ public class StringObservable {
      * </pre>
      * 
      * See {@link Pattern}
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/St.split.png">
      * 
      * @param src
      * @param regex
-     * @return
+     * @return the Observable streaming the split values
      */
     public static Observable<String> split(final Observable<String> src, String regex) {
         final Pattern pattern = Pattern.compile(regex);
@@ -383,6 +407,8 @@ public class StringObservable {
     /**
      * Concatenates the sequence of values by adding a separator
      * between them and emitting the result once the source completes.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/St.join.png">
      * <p>
      * The conversion from the value type to String is performed via
      * {@link java.lang.String#valueOf(java.lang.Object)} calls.
@@ -487,9 +513,11 @@ public class StringObservable {
 
     /**
      * Splits the {@link Observable} of Strings by lines and numbers them (zero based index)
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/St.byLine.png">
      * 
      * @param source
-     * @return
+     * @return the Observable conaining the split lines of the source
      */
     public static Observable<Line> byLine(Observable<String> source) {
         return split(source, System.getProperty("line.separator")).map(new Func1<String, Line>() {

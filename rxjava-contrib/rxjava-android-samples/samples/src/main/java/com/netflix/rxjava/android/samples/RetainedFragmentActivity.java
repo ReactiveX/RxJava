@@ -14,10 +14,11 @@ import org.json.JSONObject;
 
 import rx.Observable;
 import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.subscriptions.Subscriptions;
+
+import static rx.android.observables.AndroidObservable.bindFragment;
 
 /**
  * Problem:
@@ -68,9 +69,10 @@ public class RetainedFragmentActivity extends Activity {
             super.onCreate(savedInstanceState);
 
             // simulate fetching a JSON document with a latency of 2 seconds
-            strings = SampleObservables.fakeApiCall(2000).map(PARSE_JSON)
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .cache();
+            // in retained fragments, it's sufficient to bind the fragment in onCreate, since
+            // Android takes care of detaching the Activity for us, and holding a reference for
+            // the duration of the observable does not harm.
+            strings = bindFragment(this, SampleObservables.fakeApiCall(2000).map(PARSE_JSON).cache());
         }
 
         @Override

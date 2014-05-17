@@ -18,7 +18,8 @@ package rx.observables;
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
-import rx.operators.OperationRefCount;
+import rx.functions.Action1;
+import rx.operators.OperatorRefCount;
 
 /**
  * A ConnectableObservable resembles an ordinary {@link Observable}, except that it does not begin
@@ -44,9 +45,28 @@ public abstract class ConnectableObservable<T> extends Observable<T> {
     /**
      * Call a ConnectableObservable's connect() method to instruct it to begin emitting the
      * items from its underlying {@link Observable} to its {@link Subscriber}s.
+     * <p>To disconnect from a synchronous source, use the {@link #connect(rx.functions.Action1)}
+     * method.
+     * @return the subscription representing the connection
      */
-    public abstract Subscription connect();
-
+    public final Subscription connect() {
+        final Subscription[] out = new Subscription[1];
+        connect(new Action1<Subscription>() {
+            @Override
+            public void call(Subscription t1) {
+                out[0] = t1;
+            }
+        });
+        return out[0];
+    }
+    /**
+     * Call a ConnectableObservable's connect() method to instruct it to begin emitting the
+     * items from its underlying {@link Observable} to its {@link Subscriber}s.
+     * @param connection the action that receives the connection subscription
+     * before the subscription to source happens allowing the caller
+     * to synchronously disconnect a synchronous source.
+     */
+    public abstract void connect(Action1<? super Subscription> connection);
     /**
      * Returns an observable sequence that stays connected to the source as long
      * as there is at least one subscription to the observable sequence.
@@ -54,6 +74,6 @@ public abstract class ConnectableObservable<T> extends Observable<T> {
      * @return a {@link Observable}
      */
     public Observable<T> refCount() {
-        return Observable.create(OperationRefCount.refCount(this));
+        return create(new OperatorRefCount<T>(this));
     }
 }

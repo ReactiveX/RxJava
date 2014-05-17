@@ -15,7 +15,7 @@
  */
 package rx.operators;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
@@ -29,7 +29,7 @@ import rx.Observable.OnSubscribe;
 import rx.Scheduler;
 import rx.Subscriber;
 import rx.Subscription;
-import rx.functions.Action1;
+import rx.functions.Action0;
 import rx.observers.TestObserver;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
@@ -77,6 +77,36 @@ public class OperatorSubscribeOnTest {
         assertEquals(0, observer.getOnErrorEvents().size());
         assertEquals(1, observer.getOnCompletedEvents().size());
     }
+    
+    @Test
+    public void testThrownErrorHandling() {
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+        Observable.create(new OnSubscribe<String>() {
+
+            @Override
+            public void call(Subscriber<? super String> s) {
+                throw new RuntimeException("fail");
+            }
+
+        }).subscribeOn(Schedulers.computation()).subscribe(ts);
+        ts.awaitTerminalEvent(1000, TimeUnit.MILLISECONDS);
+        ts.assertTerminalEvent();
+    }
+    
+    @Test
+    public void testOnError() {
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+        Observable.create(new OnSubscribe<String>() {
+
+            @Override
+            public void call(Subscriber<? super String> s) {
+                s.onError(new RuntimeException("fail"));
+            }
+
+        }).subscribeOn(Schedulers.computation()).subscribe(ts);
+        ts.awaitTerminalEvent(1000, TimeUnit.MILLISECONDS);
+        ts.assertTerminalEvent();
+    }
 
     public static class SlowScheduler extends Scheduler {
         final Scheduler actual;
@@ -94,16 +124,42 @@ public class OperatorSubscribeOnTest {
         }
 
         @Override
-        public Subscription schedule(final Action1<Scheduler.Inner> action) {
-            return actual.schedule(action, delay, unit);
+        public Worker createWorker() {
+            return new SlowInner(actual.createWorker());
         }
 
-        @Override
-        public Subscription schedule(final Action1<Scheduler.Inner> action, final long delayTime, final TimeUnit delayUnit) {
-            TimeUnit common = delayUnit.compareTo(unit) < 0 ? delayUnit : unit;
-            long t = common.convert(delayTime, delayUnit) + common.convert(delay, unit);
-            return actual.schedule(action, t, common);
+        private class SlowInner extends Worker {
+
+            private final Scheduler.Worker actualInner;
+
+            private SlowInner(Worker actual) {
+                this.actualInner = actual;
+            }
+
+            @Override
+            public void unsubscribe() {
+                actualInner.unsubscribe();
+            }
+
+            @Override
+            public boolean isUnsubscribed() {
+                return actualInner.isUnsubscribed();
+            }
+
+            @Override
+            public Subscription schedule(final Action0 action) {
+                return actualInner.schedule(action, delay, unit);
+            }
+
+            @Override
+            public Subscription schedule(final Action0 action, final long delayTime, final TimeUnit delayUnit) {
+                TimeUnit common = delayUnit.compareTo(unit) < 0 ? delayUnit : unit;
+                long t = common.convert(delayTime, delayUnit) + common.convert(delay, unit);
+                return actualInner.schedule(action, t, common);
+            }
+
         }
+
     }
 
     @Test(timeout = 5000)

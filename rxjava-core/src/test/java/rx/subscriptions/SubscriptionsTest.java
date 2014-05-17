@@ -15,8 +15,10 @@
  */
 package rx.subscriptions;
 
-import static org.mockito.Mockito.*;
-import static rx.subscriptions.Subscriptions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static rx.subscriptions.Subscriptions.create;
 
 import org.junit.Test;
 

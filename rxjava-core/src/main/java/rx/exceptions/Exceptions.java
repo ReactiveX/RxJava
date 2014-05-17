@@ -44,6 +44,13 @@ public class Exceptions {
     public static void throwIfFatal(Throwable t) {
         if (t instanceof OnErrorNotImplementedException) {
             throw (OnErrorNotImplementedException) t;
+        } else if (t instanceof OnErrorFailedException) {
+            Throwable cause = ((OnErrorFailedException) t).getCause();
+            if (cause instanceof RuntimeException) {
+                throw (RuntimeException) cause;
+            } else {
+                throw (OnErrorFailedException) t;
+            }
         }
         // values here derived from https://github.com/Netflix/RxJava/issues/748#issuecomment-32471495
         else if (t instanceof StackOverflowError) {

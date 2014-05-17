@@ -15,17 +15,21 @@
  */
 package rx.subjects;
 
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
-import rx.Observable;
 
+import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
-import rx.util.functions.Func1;
+import rx.functions.Func1;
 
 public class BehaviorSubjectTest {
 
@@ -133,7 +137,7 @@ public class BehaviorSubjectTest {
         Observer<Object> observerC = mock(Observer.class);
 
         Subscription a = channel.subscribe(observerA);
-        Subscription b = channel.subscribe(observerB);
+        channel.subscribe(observerB);
 
         InOrder inOrderA = inOrder(observerA);
         InOrder inOrderB = inOrder(observerB);
@@ -158,7 +162,7 @@ public class BehaviorSubjectTest {
 
         inOrderB.verify(observerB).onCompleted();
 
-        Subscription c = channel.subscribe(observerC);
+        channel.subscribe(observerC);
 
         inOrderC.verify(observerC).onCompleted();
 
@@ -207,6 +211,7 @@ public class BehaviorSubjectTest {
         verify(observer, never()).onNext("two");
         verify(observer, never()).onCompleted();
 
+        @SuppressWarnings("unchecked")
         Observer<Object> o2 = mock(Observer.class);
         subject.subscribe(o2);
         verify(o2, times(1)).onError(testException);
@@ -233,6 +238,7 @@ public class BehaviorSubjectTest {
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, never()).onNext("two");
 
+        @SuppressWarnings("unchecked")
         Observer<Object> o2 = mock(Observer.class);
         subject.subscribe(o2);
         verify(o2, times(1)).onCompleted();

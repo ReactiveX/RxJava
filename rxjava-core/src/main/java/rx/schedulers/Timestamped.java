@@ -50,6 +50,9 @@ public final class Timestamped<T> {
         if (this == obj) {
             return true;
         }
+        if (obj == null) {
+            return false;
+        }
         if (!(obj instanceof Timestamped)) {
             return false;
         }
@@ -71,7 +74,7 @@ public final class Timestamped<T> {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + (int) (timestampMillis ^ (timestampMillis));
+        result = prime * result + (int) (timestampMillis ^ (timestampMillis >>> 32));
         result = prime * result + ((value == null) ? 0 : value.hashCode());
         return result;
     }

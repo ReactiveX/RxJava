@@ -73,7 +73,7 @@
                           (instance? rx.Observable action)
                             (rx/on-next observer
                                         (.finallyDo ^rx.Observable action
-                                                    (reify rx.util.functions.Action0
+                                                    (reify rx.functions.Action0
                                                               (call [this]
                                                                 (swap! state-atom update-in [:in-flight] disj action)
                                                                 (advance! state-atom)))))))

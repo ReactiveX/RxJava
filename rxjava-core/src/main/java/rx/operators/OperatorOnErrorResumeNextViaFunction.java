@@ -60,7 +60,7 @@ public final class OperatorOnErrorResumeNextViaFunction<T> implements Operator<T
             public void onError(Throwable e) {
                 try {
                     Observable<? extends T> resume = resumeFunction.call(e);
-                    resume.subscribe(child);
+                    resume.unsafeSubscribe(child);
                 } catch (Throwable e2) {
                     child.onError(e2);
                 }

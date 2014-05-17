@@ -10,20 +10,10 @@ buildscript {
     repositories {
         mavenLocal()
         mavenCentral()
-        maven {
-            //FIXME: waiting for https://github.com/johnrengelman/shadow/pull/38 to merge
-            name 'Shadow'
-            url 'http://dl.bintray.com/content/gvsmirnov/gradle-plugins'
-        }
         jcenter()
     }
 
-    dependencies {
-        // Required for benchmarks
-        classpath 'com.github.jengelman.gradle.plugins:shadow:0.8.1'
-    }
-
-    apply from: file('gradle/buildscript.gradle'), to: buildscript 
+    apply from: file('gradle/buildscript.gradle'), to: buildscript
 }
 
 allprojects {
@@ -37,12 +27,15 @@ allprojects {
 
 subprojects {
     apply plugin: 'java'
+    apply plugin: 'shadow'
     group = "com.netflix.rxjava"
 
     // make 'examples' use the same classpath
     configurations { 
         examplesCompile.extendsFrom compile
         examplesRuntime.extendsFrom runtime
+        perfCompile.extendsFrom compile
+        perfRuntime.extendsFrom runtime
     }
 
 
@@ -52,19 +45,29 @@ subprojects {
 
     sourceSets {
         examples
-        perf
+        perf {
+            compileClasspath += sourceSets.main.output
+        }
     }
 
     tasks.build { 
         //include 'examples' in build task
         dependsOn(examplesClasses)
+        dependsOn(perfClasses)
+    }
+
+    task perfJar(type: Jar, dependsOn: perfClasses) {
+        from sourceSets.perf.output + sourceSets.main.output
     }
 
     dependencies {
         perfCompile 'org.openjdk.jmh:jmh-core:0.5.3'
         perfCompile 'org.openjdk.jmh:jmh-generator-annprocess:0.5.3'
+        //perfCompile project
+    }
 
-        perfCompile project
+    artifacts {
+        perfRuntime perfJar
     }
     
     eclipse {  
@@ -83,28 +86,59 @@ subprojects {
         }
     }
 
-    task perfJar(type: Jar, dependsOn: perfClasses) {
-        from sourceSets.perf.output + sourceSets.main.output
+    /**
+     * By default: Run without arguments this will execute all benchmarks that are found (can take a long time).
+     *
+     * Optionally pass arguments for custom execution. Example:
+     *
+     *  ../gradlew benchmarks '-Pjmh=-f 1 -tu ns -bm avgt -wi 5 -i 5 -r 1 .*OperatorSerializePerf.*'
+     *
+     * To see all options:
+     *
+     *  ../gradlew benchmarks '-Pjmh=-h'
+     */
+    task benchmarks(type: JavaExec) {
+        main = 'org.openjdk.jmh.Main'
+        classpath = sourceSets.perf.runtimeClasspath + sourceSets.main.output
+        maxHeapSize = "512m"
+
+        if (project.hasProperty('jmh')) {
+            args(jmh.split(' '))
+        } else {
+            //args '-h' // help output
+            args '-f' // fork
+            args '1'
+            args '-tu' // time unit
+            args 'ns'
+            args '-bm' // benchmark mode
+            args 'avgt'
+            args '-wi' // warmup iterations
+            args '5'
+            args '-i' // test iterations
+            args '5'
+            args '-r' // time per execution in seconds
+            args '5'
+            //args '-prof' // profilers
+            //args 'HS_GC' // HotSpot (tm) memory manager (GC) profiling via implementation-specific MBeans
+            //args 'HS_RT' // HotSpot (tm) runtime profiling via implementation-specific MBeans
+            //args 'HS_THR' // HotSpot (tm) threading subsystem via implementation-specific MBeans
+            //args 'HS_COMP' // HotSpot (tm) JIT compiler profiling via implementation-specific MBeans
+            //args 'HS_CL' // HotSpot (tm) classloader profiling via implementation-specific MBeans
+            //args 'STACK' // Simple and naive Java stack profiler
+            args '.*OperatorSerializePerf.*' // for running only a specific test
+        }
     }
 
-    task benchmarks(dependsOn: perfJar) {
+    shadow {
+        classifier = "benchmarks"
+        includeDependenciesFor = ["runtime", "perfRuntime"]
 
-        apply plugin: "shadow"
-
-        shadow {
-            classifier = "benchmarks"
-            includeDependenciesFor = ["runtime", "perfRuntime"]
-
-            transformer(com.github.jengelman.gradle.plugins.shadow.transformers.ManifestResourceTransformer) {
-                mainClass = "org.openjdk.jmh.Main"
-            }
+        transformer(com.github.jengelman.gradle.plugins.shadow.transformers.ManifestResourceTransformer) {
+            mainClass = "org.openjdk.jmh.Main"
         }
-
-        doLast {
-            shadowJar.execute()
-        }
-
     }
+
+    shadowJar.dependsOn perfJar
 }
 
 project(':rxjava-core') {

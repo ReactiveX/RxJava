@@ -16,19 +16,14 @@
 
 package rx.lang.kotlin
 
-import org.mockito.Mock
 import rx.Observable
-import org.junit.Before
-import org.mockito.MockitoAnnotations
 import org.junit.Test
-import rx.subscriptions.Subscriptions
 import org.mockito.Mockito.*
 import org.mockito.Matchers.*
-import rx.Observer
 import org.junit.Assert.*
 import rx.Notification
-import rx.Subscription
 import kotlin.concurrent.thread
+import rx.Subscriber
 
 /**
  * This class contains tests using the extension functions provided by the language adaptor.
@@ -39,11 +34,10 @@ public class ExtensionTests : KotlinTests() {
     [Test]
     public fun testCreate() {
 
-        {(observer: Observer<in String>) ->
-            observer.onNext("Hello")
-            observer.onCompleted()
-            Subscriptions.empty()!!
-        }.asObservableFunc().subscribe { result ->
+        {(subscriber: Subscriber<in String>) ->
+            subscriber.onNext("Hello")
+            subscriber.onCompleted()
+        }.asObservable().subscribe { result ->
             a!!.received(result)
         }
 
@@ -216,7 +210,7 @@ public class ExtensionTests : KotlinTests() {
 
     [Test]
     public fun testForEach() {
-        asyncObservable.asObservableFunc().toBlockingObservable()!!.forEach(received())
+        asyncObservable.asObservable().toBlockingObservable()!!.forEach(received())
         verify(a, times(1))!!.received(1)
         verify(a, times(1))!!.received(2)
         verify(a, times(1))!!.received(3)
@@ -224,7 +218,7 @@ public class ExtensionTests : KotlinTests() {
 
     [Test(expected = javaClass<RuntimeException>())]
     public fun testForEachWithError() {
-        asyncObservable.asObservableFunc().toBlockingObservable()!!.forEach { throw RuntimeException("err") }
+        asyncObservable.asObservable().toBlockingObservable()!!.forEach { throw RuntimeException("err") }
         fail("we expect an exception to be thrown")
     }
 
@@ -259,21 +253,19 @@ public class ExtensionTests : KotlinTests() {
         assertEquals(listOf(3, 6, 9), values[2])
     }
 
-    val funOnSubscribe: (Int, Observer<in String>) -> Subscription = { counter, observer ->
-        observer.onNext("hello_$counter")
-        observer.onCompleted()
-        Subscriptions.empty()!!
+    val funOnSubscribe: (Int, Subscriber<in String>) -> Unit = { counter, subscriber ->
+        subscriber.onNext("hello_$counter")
+        subscriber.onCompleted()
     }
 
-    val asyncObservable: (Observer<in Int>) -> Subscription = { observer ->
+    val asyncObservable: (Subscriber<in Int>) -> Unit = { subscriber ->
         thread {
             Thread.sleep(50)
-            observer.onNext(1)
-            observer.onNext(2)
-            observer.onNext(3)
-            observer.onCompleted()
+            subscriber.onNext(1)
+            subscriber.onNext(2)
+            subscriber.onNext(3)
+            subscriber.onCompleted()
         }
-        Subscriptions.empty()!!
     }
 
     /**
@@ -283,7 +275,7 @@ public class ExtensionTests : KotlinTests() {
         return {(p2: P2) -> this(p1, p2) }
     }
 
-    inner public class TestFactory(){
+    inner public class TestFactory() {
         var counter = 1
 
         val numbers: Observable<Int>
@@ -291,14 +283,14 @@ public class ExtensionTests : KotlinTests() {
                 return listOf(1, 3, 2, 5, 4).asObservable()
             }
 
-        val onSubscribe: (Observer<in String>) -> Subscription
+        val onSubscribe: (Subscriber<in String>) -> Unit
             get(){
                 return funOnSubscribe.partially1(counter++)
             }
 
         val observable: Observable<String>
             get(){
-                return onSubscribe.asObservableFunc()
+                return onSubscribe.asObservable()
             }
 
     }

@@ -21,10 +21,11 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import rx.Observable;
 import rx.Observable.Operator;
+import rx.Scheduler;
 import rx.Subscriber;
 import rx.Subscription;
-import rx.functions.Func2;
 import rx.functions.Func3;
+import rx.functions.Func4;
 import rx.observers.SerializedSubscriber;
 import rx.subscriptions.SerialSubscription;
 
@@ -36,7 +37,7 @@ class OperatorTimeoutBase<T> implements Operator<T, T> {
      * @param <T>
      */
     /* package-private */static interface FirstTimeoutStub<T> extends
-            Func2<TimeoutSubscriber<T>, Long, Subscription> {
+            Func3<TimeoutSubscriber<T>, Long, Scheduler.Worker, Subscription> {
     }
 
     /**
@@ -45,23 +46,25 @@ class OperatorTimeoutBase<T> implements Operator<T, T> {
      * @param <T>
      */
     /* package-private */static interface TimeoutStub<T> extends
-            Func3<TimeoutSubscriber<T>, Long, T, Subscription> {
+            Func4<TimeoutSubscriber<T>, Long, T, Scheduler.Worker, Subscription> {
     }
 
     private final FirstTimeoutStub<T> firstTimeoutStub;
     private final TimeoutStub<T> timeoutStub;
     private final Observable<? extends T> other;
+    private final Scheduler scheduler;
 
-    /* package-private */OperatorTimeoutBase(
-            FirstTimeoutStub<T> firstTimeoutStub, TimeoutStub<T> timeoutStub,
-            Observable<? extends T> other) {
+    /* package-private */OperatorTimeoutBase(FirstTimeoutStub<T> firstTimeoutStub, TimeoutStub<T> timeoutStub, Observable<? extends T> other, Scheduler scheduler) {
         this.firstTimeoutStub = firstTimeoutStub;
         this.timeoutStub = timeoutStub;
         this.other = other;
+        this.scheduler = scheduler;
     }
 
     @Override
     public Subscriber<? super T> call(Subscriber<? super T> subscriber) {
+        Scheduler.Worker inner = scheduler.createWorker();
+        subscriber.add(inner);
         final SerialSubscription serial = new SerialSubscription();
         subscriber.add(serial);
         // Use SynchronizedSubscriber for safe memory access
@@ -69,9 +72,8 @@ class OperatorTimeoutBase<T> implements Operator<T, T> {
         // scheduler or other Observables.
         final SerializedSubscriber<T> synchronizedSubscriber = new SerializedSubscriber<T>(subscriber);
 
-        TimeoutSubscriber<T> timeoutSubscriber = new TimeoutSubscriber<T>(
-                synchronizedSubscriber, timeoutStub, serial, other);
-        serial.set(firstTimeoutStub.call(timeoutSubscriber, 0L));
+        TimeoutSubscriber<T> timeoutSubscriber = new TimeoutSubscriber<T>(synchronizedSubscriber, timeoutStub, serial, other, inner);
+        serial.set(firstTimeoutStub.call(timeoutSubscriber, 0L, inner));
         return timeoutSubscriber;
     }
 
@@ -88,15 +90,19 @@ class OperatorTimeoutBase<T> implements Operator<T, T> {
         private final TimeoutStub<T> timeoutStub;
 
         private final Observable<? extends T> other;
+        private final Scheduler.Worker inner;
 
         private TimeoutSubscriber(
                 SerializedSubscriber<T> serializedSubscriber,
                 TimeoutStub<T> timeoutStub, SerialSubscription serial,
-                Observable<? extends T> other) {
+                Observable<? extends T> other,
+                Scheduler.Worker inner) {
+            super(serializedSubscriber);
             this.serializedSubscriber = serializedSubscriber;
             this.timeoutStub = timeoutStub;
             this.serial = serial;
             this.other = other;
+            this.inner = inner;
         }
 
         @Override
@@ -110,7 +116,7 @@ class OperatorTimeoutBase<T> implements Operator<T, T> {
             }
             if (onNextWins) {
                 serializedSubscriber.onNext(value);
-                serial.set(timeoutStub.call(this, actual.get(), value));
+                serial.set(timeoutStub.call(this, actual.get(), value, inner));
             }
         }
 
@@ -154,7 +160,8 @@ class OperatorTimeoutBase<T> implements Operator<T, T> {
                 if (other == null) {
                     serializedSubscriber.onError(new TimeoutException());
                 } else {
-                    serial.set(other.subscribe(serializedSubscriber));
+                    other.unsafeSubscribe(serializedSubscriber);
+                    serial.set(serializedSubscriber);
                 }
             }
         }

@@ -15,8 +15,14 @@
  */
 package rx.subjects;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
@@ -24,8 +30,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
-import rx.Observable;
 
+import rx.Observable;
 import rx.Observer;
 import rx.Subscriber;
 import rx.Subscription;
@@ -74,7 +80,7 @@ public class ReplaySubjectTest {
         Observer<Object> observerD = mock(Observer.class);
 
         Subscription a = channel.subscribe(observerA);
-        Subscription b = channel.subscribe(observerB);
+        channel.subscribe(observerB);
 
         InOrder inOrderA = inOrder(observerA);
         InOrder inOrderB = inOrder(observerB);
@@ -102,7 +108,7 @@ public class ReplaySubjectTest {
         // B is subscribed so should receive onCompleted
         inOrderB.verify(observerB).onCompleted();
 
-        Subscription c = channel.subscribe(observerC);
+        channel.subscribe(observerC);
 
         // when C subscribes it should receive 42, 4711, onCompleted
         inOrderC.verify(observerC).onNext(42);
@@ -116,7 +122,7 @@ public class ReplaySubjectTest {
         channel.onError(new RuntimeException());
 
         // a new subscription should only receive what was emitted prior to terminal state onCompleted
-        Subscription d = channel.subscribe(observerD);
+        channel.subscribe(observerD);
 
         inOrderD.verify(observerD).onNext(42);
         inOrderD.verify(observerD).onNext(4711);
@@ -306,14 +312,14 @@ public class ReplaySubjectTest {
         };
 
         ReplaySubject<String> subject = ReplaySubject.create();
-        Subscription s1 = subject.subscribe(observer1);
+        subject.subscribe(observer1);
         subject.onNext("one");
         assertEquals("one", lastValueForObserver1.get());
         subject.onNext("two");
         assertEquals("two", lastValueForObserver1.get());
 
         // use subscribeOn to make this async otherwise we deadlock as we are using CountDownLatches
-        Subscription s2 = subject.subscribeOn(Schedulers.newThread()).subscribe(observer2);
+        subject.subscribeOn(Schedulers.newThread()).subscribe(observer2);
 
         System.out.println("before waiting for one");
 
@@ -397,4 +403,38 @@ public class ReplaySubjectTest {
             inOrder.verify(o).onCompleted();
             verify(o, never()).onError(any(Throwable.class));
         }
-    }}
+    }
+    @Test
+    public void testTerminateOnce() {
+        ReplaySubject<Integer> source = ReplaySubject.create();
+        source.onNext(1);
+        source.onNext(2);
+        source.onCompleted();
+        
+        @SuppressWarnings("unchecked")
+        final Observer<Integer> o = mock(Observer.class);
+        
+        source.unsafeSubscribe(new Subscriber<Integer>() {
+
+            @Override
+            public void onNext(Integer t) {
+                o.onNext(t);
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                o.onError(e);
+            }
+
+            @Override
+            public void onCompleted() {
+                o.onCompleted();
+            }
+        });
+        
+        verify(o).onNext(1);
+        verify(o).onNext(2);
+        verify(o).onCompleted();
+        verify(o, never()).onError(any(Throwable.class));
+    }
+}

@@ -1,5 +1,192 @@
 # RxJava Releases #
 
+### Version 0.18.3 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.18.3%22)) ###
+
+* [Pull 1161] (https://github.com/Netflix/RxJava/pull/1161) Removed use of deprecated API from tests & operators
+* [Pull 1162] (https://github.com/Netflix/RxJava/pull/1162) fix to remove drift from schedulePeriodic
+* [Pull 1159] (https://github.com/Netflix/RxJava/pull/1159) Rxscala improvement
+* [Pull 1164] (https://github.com/Netflix/RxJava/pull/1164) JMH Perf Tests for Schedulers.computation
+* [Pull 1158] (https://github.com/Netflix/RxJava/pull/1158) Scheduler correctness improvements.
+
+### Version 0.18.2 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.18.2%22)) ###
+
+
+* [Pull 1150] (https://github.com/Netflix/RxJava/pull/1150) Fix ReplaySubject Terminal State Race Condition
+* [Pull 1144] (https://github.com/Netflix/RxJava/pull/1144) Operator Delay rebase & fixes
+* [Pull 1142] (https://github.com/Netflix/RxJava/pull/1142) Update 'contains' signature to 'contains(Object)'
+* [Pull 1134] (https://github.com/Netflix/RxJava/pull/1134) OperatorTakeLast
+* [Pull 1135] (https://github.com/Netflix/RxJava/pull/1135) OperatorTakeUntil
+* [Pull 1137] (https://github.com/Netflix/RxJava/pull/1137) Random fixes to operators multicast, sample, refCount
+* [Pull 1138] (https://github.com/Netflix/RxJava/pull/1138) Operator Window and other changes
+* [Pull 1131] (https://github.com/Netflix/RxJava/pull/1131) Operator TakeTimed
+* [Pull 1130] (https://github.com/Netflix/RxJava/pull/1130) Operator Switch
+* [Pull 1129] (https://github.com/Netflix/RxJava/pull/1129) Conditional statements contribution to Operator
+* [Pull 1128] (https://github.com/Netflix/RxJava/pull/1128) Fix for SerializedObserverTest
+* [Pull 1126] (https://github.com/Netflix/RxJava/pull/1126) Operator When
+* [Pull 1125] (https://github.com/Netflix/RxJava/pull/1125) Operator contrib math
+* [Pull 1124] (https://github.com/Netflix/RxJava/pull/1124) Add lift to rxscala
+* [Pull 1122] (https://github.com/Netflix/RxJava/pull/1122) OperatorSkipUntil
+* [Pull 1121] (https://github.com/Netflix/RxJava/pull/1121) OperatorSkipTimed
+* [Pull 1120] (https://github.com/Netflix/RxJava/pull/1120) OperatorSequenceEqual
+* [Pull 1119] (https://github.com/Netflix/RxJava/pull/1119) OperatorRefCount
+* [Pull 1118] (https://github.com/Netflix/RxJava/pull/1118) Operator ParallelMerge
+* [Pull 1117] (https://github.com/Netflix/RxJava/pull/1117) Operator OnExceptionResumeNextViaObservable
+* [Pull 1115] (https://github.com/Netflix/RxJava/pull/1115) OperatorTakeWhile
+* [Pull 1112] (https://github.com/Netflix/RxJava/pull/1112) OperatorThrottleFirst
+* [Pull 1111] (https://github.com/Netflix/RxJava/pull/1111) OperatorTimeInterval
+* [Pull 1110] (https://github.com/Netflix/RxJava/pull/1110) OperatorOnErrorReturn
+* [Pull 1109] (https://github.com/Netflix/RxJava/pull/1109) OperatorOnErrorResumeNextViaObservable
+* [Pull 1108] (https://github.com/Netflix/RxJava/pull/1108) OperatorMulticastAndReplay
+* [Pull 1107] (https://github.com/Netflix/RxJava/pull/1107) Fix ReplaySubject's double termination problem.
+* [Pull 1106] (https://github.com/Netflix/RxJava/pull/1106) OperatorMergeMaxConcurrent
+* [Pull 1104] (https://github.com/Netflix/RxJava/pull/1104) Operator merge delay error
+* [Pull 1103] (https://github.com/Netflix/RxJava/pull/1103) OperatorJoin
+* [Pull 1101] (https://github.com/Netflix/RxJava/pull/1101) Operator async
+* [Pull 1100] (https://github.com/Netflix/RxJava/pull/1100) OperatorUsing
+* [Pull 1099] (https://github.com/Netflix/RxJava/pull/1099) OperatorToMap
+* [Pull 1098] (https://github.com/Netflix/RxJava/pull/1098) OperatorTimerAndSample
+* [Pull 1097] (https://github.com/Netflix/RxJava/pull/1097) OperatorToMultimap
+* [Pull 1096] (https://github.com/Netflix/RxJava/pull/1096) OperatorGroupJoin
+* [Pull 1095] (https://github.com/Netflix/RxJava/pull/1095) OperatorGroupByUntil
+* [Pull 1094] (https://github.com/Netflix/RxJava/pull/1094) Operator debounce
+
+
+### Version 0.18.1 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.18.1%22)) ###
+
+* [Pull 1065] (https://github.com/Netflix/RxJava/pull/1065) Optimize OperatorSkipLastTimed
+* [Pull 1073] (https://github.com/Netflix/RxJava/pull/1073) OperatorBuffer
+* [Pull 1074] (https://github.com/Netflix/RxJava/pull/1074) OperatorConcat
+* [Pull 1088] (https://github.com/Netflix/RxJava/pull/1088) OperatorToObservableFuture
+* [Pull 1087] (https://github.com/Netflix/RxJava/pull/1087) OperatorMergeMap
+* [Pull 1086] (https://github.com/Netflix/RxJava/pull/1086) OperatorFinallyDo
+* [Pull 1085] (https://github.com/Netflix/RxJava/pull/1085) OperatorDistinctUntilChanged
+* [Pull 1084] (https://github.com/Netflix/RxJava/pull/1084) OperatorDistinct
+* [Pull 1083] (https://github.com/Netflix/RxJava/pull/1083) OperatorDematerialize
+* [Pull 1081] (https://github.com/Netflix/RxJava/pull/1081) OperatorDefer
+* [Pull 1080] (https://github.com/Netflix/RxJava/pull/1080) OperatorDefaultIfEmpty
+* [Pull 1079] (https://github.com/Netflix/RxJava/pull/1079) OperatorCombineLatest
+* [Pull 1074] (https://github.com/Netflix/RxJava/pull/1074) OperatorConcat
+* [Pull 1073] (https://github.com/Netflix/RxJava/pull/1073) OperatorBuffer
+* [Pull 1091] (https://github.com/Netflix/RxJava/pull/1091) Handle Thrown Errors with UnsafeSubscribe
+* [Pull 1092] (https://github.com/Netflix/RxJava/pull/1092) Restore ObservableExecutionHook.onCreate
+
+### Version 0.18.0 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.18.0%22)) ###
+
+This release takes us a step closer to [1.0](https://github.com/Netflix/RxJava/issues/1001) by completing some of the remaining work on the roadmap.
+
+##### Scheduler
+
+The first is simplifying the [Scheduler API](https://github.com/Netflix/RxJava/issues/997). 
+
+The Scheduler API is now simplified to this:
+
+```java
+class Scheduler {
+    public abstract Worker createWorker(); 
+    public int parallelism();
+    public long now();
+
+    public abstract static class Worker implements Subscription {
+        public abstract Subscription schedule(Action0 action, long delayTime, TimeUnit unit);
+        public abstract Subscription schedule(Action0 action);
+        public Subscription schedulePeriodically(Action0 action, long initialDelay, long period, TimeUnit unit);
+        public long now();
+    }
+}
+```
+
+This is a breaking change if you have a custom `Scheduler` implementation or use a `Scheduler` directly. If you only ever pass in a `Scheduler` via the `Schedulers` factory methods, this change does not affect you.
+
+Additionally, the `ExecutionScheduler` was removed because a general threadpool does not meet the requirements of sequential execution for an `Observable`. It was replaced with `rx.schedulers.EventLoopScheduler` which is the new default for `Schedulers.computation()`. It is a pool of event loops.
+
+##### rx.joins
+
+The `rx.joins` package and associated `when`, `and` and `then` operators were moved out of rxjava-core into a new module rxjava-joins. This is done as the rx.joins API was not yet matured and is not going to happen before 1.0. It was determined low priority and not worth blocking a 1.0 release. If the API matures inside the separate module to the point where it makes sense to bring it back into the core it can be done in the 1.x series.
+
+##### Deprecation Cleanup
+
+This releases removes many of the classes and methods that have been deprecated in previous releases. Most of the removed functionality was migrated in previous releases to contrib modules such as rxjava-math, rxjava-async and rxjava-computation-expressions.
+
+A handful of deprecated items still remain but can not yet be removed until all internal operators are finished migrating to using the `lift`/`Subscriber` design changes done in 0.17.0.
+
+
+The full list of changes in 0.18.0:
+
+* [Pull 1047] (https://github.com/Netflix/RxJava/pull/1047) Scheduler Simplification
+* [Pull 1072] (https://github.com/Netflix/RxJava/pull/1072) Scheduler.Inner -> Scheduler.Worker
+* [Pull 1053] (https://github.com/Netflix/RxJava/pull/1053) Deprecation Cleanup
+* [Pull 1052] (https://github.com/Netflix/RxJava/pull/1052) Scheduler Cleanup
+* [Pull 1048] (https://github.com/Netflix/RxJava/pull/1048) Remove ExecutorScheduler - New ComputationScheduler
+* [Pull 1049] (https://github.com/Netflix/RxJava/pull/1049) Move rx.joins to rxjava-joins module
+* [Pull 1068] (https://github.com/Netflix/RxJava/pull/1068) add synchronous test of resubscribe after error
+* [Pull 1066] (https://github.com/Netflix/RxJava/pull/1066) CompositeSubscription fix
+* [Pull 1071] (https://github.com/Netflix/RxJava/pull/1071) Manual Merge of AsObservable
+* [Pull 1063] (https://github.com/Netflix/RxJava/pull/1063) Fix bugs in equals and hashCode of Timestamped
+* [Pull 1070] (https://github.com/Netflix/RxJava/pull/1070) OperationAny -> OperatorAny
+* [Pull 1069] (https://github.com/Netflix/RxJava/pull/1069) OperationAll -> OperatorAll
+* [Pull 1058] (https://github.com/Netflix/RxJava/pull/1058) Typo in javadoc
+* [Pull 1056] (https://github.com/Netflix/RxJava/pull/1056) Add drop(skip) and dropRight(skipLast) to rxscala
+* [Pull 1057] (https://github.com/Netflix/RxJava/pull/1057) Fix: Retry in Scala adaptor is ambiguous
+* [Pull 1055] (https://github.com/Netflix/RxJava/pull/1055) Fix: Missing Quasar instrumentation on Observable$2.call
+* [Pull 1050] (https://github.com/Netflix/RxJava/pull/1050) Reimplement the 'SkipLast' operator 
+* [Pull 967] (https://github.com/Netflix/RxJava/pull/967) Reimplement the 'single' operator
+
+
+
+### Version 0.17.6 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.17.6%22)) ###
+
+* [Pull 1031] (https://github.com/Netflix/RxJava/pull/1031) Fix NPE in SubjectSubscriptionManager
+* [Pull 1030] (https://github.com/Netflix/RxJava/pull/1030) Benchmarking: Add JMH benchmark for ReplaySubject
+* [Pull 1033] (https://github.com/Netflix/RxJava/pull/1033) isolate subscriber used for retries, cleanup tests
+* [Pull 1021] (https://github.com/Netflix/RxJava/pull/1021) OperatorWeakBinding to not use WeakReferences anymore
+* [Pull 1005] (https://github.com/Netflix/RxJava/pull/1005) add toMap from Java Observable
+* [Pull 1040] (https://github.com/Netflix/RxJava/pull/1040) Fixed deadlock in Subjects + OperatorCache
+* [Pull 1042] (https://github.com/Netflix/RxJava/pull/1042) Kotlin M7 and full compatibility with 0.17.0
+* [Pull 1035] (https://github.com/Netflix/RxJava/pull/1035) Scala cleanup
+* [Pull 1009] (https://github.com/Netflix/RxJava/pull/1009) Android - Adding a new RetainedFragment example
+* [Pull 1020] (https://github.com/Netflix/RxJava/pull/1020) Upgrade Gradle wrapper for Android samples to Gradle 1.11
+* [Pull 1038] (https://github.com/Netflix/RxJava/pull/1038) rxjava-android: parameterize OperatorViewClick by concrete view type
+
+### Version 0.17.5 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.17.5%22)) ###
+
+* [Pull 1010] (https://github.com/Netflix/RxJava/pull/1010) Observable.unsafeSubscribe
+* [Pull 1015] (https://github.com/Netflix/RxJava/pull/1015) Remove Redundant protectivelyWrap Method
+* [Pull 1019] (https://github.com/Netflix/RxJava/pull/1019) Fix: retry() never unsubscribes from source until operator completes 
+
+### Version 0.17.4 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.17.4%22)) ###
+
+* [Pull 990] (https://github.com/Netflix/RxJava/pull/990) Quasar Lightweight Threads/Fibers Contrib Module
+* [Pull 1012] (https://github.com/Netflix/RxJava/pull/1012) SerializedObserver: Removed window between the two synchronized blocks
+
+
+### Version 0.17.3 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.17.3%22)) ###
+
+* [Pull 991] (https://github.com/Netflix/RxJava/pull/991) JMH Benchmark Build Config
+* [Pull 993] (https://github.com/Netflix/RxJava/pull/993) JMH Perf Tests
+* [Pull 995] (https://github.com/Netflix/RxJava/pull/995) Support Custom JMH Args
+* [Pull 996] (https://github.com/Netflix/RxJava/pull/996) JMH Perfshadowjar
+* [Pull 1003] (https://github.com/Netflix/RxJava/pull/1003) Func0 can transparently implement java.util.concurrent.Callable
+* [Pull 999] (https://github.com/Netflix/RxJava/pull/999) New Implementation of SerializedObserver
+
+### Version 0.17.2 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.17.2%22)) ###
+
+* [Pull 963](https://github.com/Netflix/RxJava/pull/963) A more robust JMH benchmarking set-up 
+* [Pull 964](https://github.com/Netflix/RxJava/pull/964) SubjectSubscriptionManager fix.
+* [Pull 970](https://github.com/Netflix/RxJava/pull/970) Notifications for the allocation averse.
+* [Pull 973](https://github.com/Netflix/RxJava/pull/973) Merge - Handle Bad Observables
+* [Pull 974](https://github.com/Netflix/RxJava/pull/974) TestSubject, TestObserver and TestScheduler Improvements
+* [Pull 975](https://github.com/Netflix/RxJava/pull/975) GroupBy & Time Gap Fixes
+* [Pull 976](https://github.com/Netflix/RxJava/pull/976) parallel-merge unit test assertions
+* [Pull 977](https://github.com/Netflix/RxJava/pull/977) Dematerialize - handle non-materialized terminal events
+* [Pull 982](https://github.com/Netflix/RxJava/pull/982) Pivot Operator
+* [Pull 984](https://github.com/Netflix/RxJava/pull/984) Tests and Javadoc for Pivot
+* [Pull 966](https://github.com/Netflix/RxJava/pull/966) Reimplement the ElementAt operator and add it to rxjava-scala
+* [Pull 965](https://github.com/Netflix/RxJava/pull/965) BugFix: Chain Subscription in TimeoutSubscriber and SerializedSubscriber
+* [Pull 986](https://github.com/Netflix/RxJava/pull/986) Fix SynchronizedObserver.runConcurrencyTest
+* [Pull 987](https://github.com/Netflix/RxJava/pull/987) Fix Non-Deterministic Pivot Test
+* [Pull 988](https://github.com/Netflix/RxJava/pull/988) OnErrorFailedException
+
+
 ### Version 0.17.1 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.17.1%22)) ###
 
 * [Pull 953](https://github.com/Netflix/RxJava/pull/953) Make ObserveOnTest.testNonBlockingOuterWhileBlockingOnNext deterministic

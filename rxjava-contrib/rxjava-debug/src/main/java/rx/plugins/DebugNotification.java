@@ -19,6 +19,7 @@ public class DebugNotification<T> {
     private final Operator<?, ? super T> to;
     private final Throwable throwable;
     private final T value;
+    @SuppressWarnings("rawtypes")
     private final Observer observer;
 
     @SuppressWarnings("unchecked")
@@ -29,13 +30,14 @@ public class DebugNotification<T> {
             o = ((SafeSubscriber<T>) o).getActual();
         }
         if (o instanceof DebugSubscriber) {
+            @SuppressWarnings("rawtypes")
             final DebugSubscriber ds = (DebugSubscriber) o;
             to = ds.getTo();
             from = ds.getFrom();
             o = ds.getActual();
         }
         if (sourceFunc instanceof DebugHook.DebugOnSubscribe) {
-            sourceFunc = (OnSubscribe<T>) ((SafeSubscriber) sourceFunc).getActual();
+            sourceFunc = (OnSubscribe<T>) ((SafeSubscriber<T>) sourceFunc).getActual();
         }
         return new DebugNotification<T>(o, from, Kind.Subscribe, null, null, to, source, sourceFunc);
     }
@@ -56,6 +58,7 @@ public class DebugNotification<T> {
         return new DebugNotification<T>(o, from, Kind.Unsubscribe, null, null, to, null, null);
     }
 
+    @SuppressWarnings("rawtypes")
     private DebugNotification(Observer o, Operator<? extends T, ?> from, Kind kind, T value, Throwable throwable, Operator<?, ? super T> to, Observable<? extends T> source, OnSubscribe<T> sourceFunc) {
         this.observer = (o instanceof SafeSubscriber) ? ((SafeSubscriber) o).getActual() : o;
         this.from = from;
@@ -67,6 +70,7 @@ public class DebugNotification<T> {
         this.sourceFunc = sourceFunc;
     }
 
+    @SuppressWarnings("rawtypes")
     public Observer getObserver() {
         return observer;
     }
