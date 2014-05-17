@@ -995,7 +995,7 @@ public class ObservableTests {
     }
     
     @Test
-    public void testLiftWithFunction() {
+    public void testLiftWithToOperator() {
         //This test provides coverage of the Observable.lift(function) method. Detailed testing of this method
         //is in OperationToOoperatorTest.java
         
@@ -1009,7 +1009,7 @@ public class ObservableTests {
         };
         List<Integer> list = Observable.range(1, 3)
                 // surround the source with 0 and 100
-                .lift(surround)
+                .lift(Observable.toOperator(surround))
                 //get as a list
                 .toList().toBlockingObservable().single();
         assertEquals(Arrays.asList(0,1,2,3,100), list);

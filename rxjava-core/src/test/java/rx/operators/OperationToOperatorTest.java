@@ -93,7 +93,7 @@ public class OperationToOperatorTest {
         PublishSubject<Integer> subject = PublishSubject.create();
         Recorder recorder1 = new Recorder();
         Recorder recorder2 = new Recorder();
-        Observable<Integer> source = subject.lift(square);
+        Observable<Integer> source = subject.lift(Observable.toOperator(square));
         source.subscribe(recorder1);
         source.subscribe(recorder2);
         subject.onNext(1);
@@ -114,7 +114,7 @@ public class OperationToOperatorTest {
         PublishSubject<Integer> subject = PublishSubject.create();
         Recorder recorder1 = new Recorder();
         Recorder recorder2 = new Recorder();
-        Observable<Integer> source = subject.lift(square);
+        Observable<Integer> source = subject.lift(Observable.toOperator(square));
         source.subscribe(recorder1);
         source.subscribe(recorder2);
         subject.onNext(1);
