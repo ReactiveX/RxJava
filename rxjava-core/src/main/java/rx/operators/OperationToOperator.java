@@ -15,12 +15,15 @@
  */
 package rx.operators;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicReference;
+
 import rx.Observable;
 import rx.Observable.Operator;
+import rx.Observer;
 import rx.Subscriber;
 import rx.functions.Func1;
 import rx.observers.Subscribers;
-import rx.subjects.PublishSubject;
 
 /**
  * Converts a function converting one Observable into another into an
@@ -61,12 +64,39 @@ public class OperationToOperator<R, T> implements Operator<R, T> {
     }
 
     @Override
-    public Subscriber<? super T> call(Subscriber<? super R> subscriber) {
-        final PublishSubject<T> subject = PublishSubject.create();
-        Subscriber<T> result = Subscribers.from(subject);
-        subscriber.add(result);
-        function.call(subject).unsafeSubscribe(subscriber);
-        return result;
+    public Subscriber<? super T> call(final Subscriber<? super R> subscriber) {
+        
+        final AtomicReference<Subscriber<T>> result = new AtomicReference<Subscriber<T>>();
+        Observable<T> observable = Observable.create(new Observable.OnSubscribe<T>() {
+
+            @Override
+            public void call(final Subscriber<? super T> sub) {
+                Observer<T> observer = new Observer<T>() {
+
+                    @Override
+                    public void onCompleted() {
+                        sub.onCompleted();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        sub.onError(e);
+                    }
+
+                    @Override
+                    public void onNext(T t) {
+                        sub.onNext(t);
+                    }
+                };
+                result.set(Subscribers.from(observer));
+                subscriber.add(result.get());
+            }
+        });
+        function.call(observable).unsafeSubscribe(subscriber);
+        //because of subscribe command above the result should have been set
+        return result.get();
     }
 
+
 }
+
