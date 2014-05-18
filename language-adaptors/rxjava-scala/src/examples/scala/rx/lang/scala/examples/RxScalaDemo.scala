@@ -555,11 +555,10 @@ class RxScalaDemo extends JUnitSuite {
    * all elements are calculated.
    */
   @Test def createExampleBad() {
-    val o = Observable.create[String](observer => {
+    val o = Observable[String](observer => {
       observer.onNext(calculateElement(0))
       observer.onNext(calculateElement(1))
       observer.onCompleted()
-      Subscription {}
     })
     o.take(1).subscribe(println(_))
   }
