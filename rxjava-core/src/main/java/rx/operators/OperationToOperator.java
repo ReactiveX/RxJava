@@ -65,8 +65,9 @@ public class OperationToOperator<R, T> implements Operator<R, T> {
 
     @Override
     public Subscriber<? super T> call(final Subscriber<? super R> subscriber) {
-        
+
         final AtomicReference<Subscriber<T>> result = new AtomicReference<Subscriber<T>>();
+        final CountDownLatch latch = new CountDownLatch(1);
         Observable<T> observable = Observable.create(new Observable.OnSubscribe<T>() {
 
             @Override
@@ -89,14 +90,20 @@ public class OperationToOperator<R, T> implements Operator<R, T> {
                     }
                 };
                 result.set(Subscribers.from(observer));
-                subscriber.add(result.get());
+                latch.countDown();
             }
         });
         function.call(observable).unsafeSubscribe(subscriber);
-        //because of subscribe command above the result should have been set
+        try {
+            // wait for subscription to have happened because the function may
+            // have involved a subscribeOn call to make the subscription
+            // asynchronous
+            latch.await();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        subscriber.add(result.get());
         return result.get();
     }
 
-
 }
-
