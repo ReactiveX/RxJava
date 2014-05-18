@@ -20,7 +20,7 @@ import rx.lang.scala.Scheduler
 object NewThreadScheduler {
 
   /**
-   * Returns a [[rx.lang.scala.Scheduler]] that creates a new {@link Thread} for each unit of work.
+   * Returns a [[rx.lang.scala.Scheduler]] that creates a new `java.lang.Thread` for each unit of work.
    */
   def apply(): NewThreadScheduler =  {
     new NewThreadScheduler(rx.schedulers.Schedulers.newThread())

@@ -19,15 +19,15 @@ import rx.lang.scala.Scheduler
 
 object IOScheduler {
   /**
-   * {@link Scheduler} intended for IO-bound work.
+   * [[rx.lang.scala.Scheduler]] intended for IO-bound work.
    * <p>
-   * The implementation is backed by an {@link Executor} thread-pool that will grow as needed.
+   * The implementation is backed by an `Executor` thread-pool that will grow as needed.
    * <p>
    * This can be used for asynchronously performing blocking IO.
    * <p>
-   * Do not perform computational work on this scheduler. Use {@link ComputationScheduler()} instead.
+   * Do not perform computational work on this scheduler. Use [[rx.lang.scala.schedulers.ComputationScheduler]] instead.
    *
-   * @return { @link ExecutorScheduler} for IO-bound work.
+   * @return [[rx.lang.scala.Scheduler]] for IO-bound work
    */
   def apply(): IOScheduler = {
     new IOScheduler(rx.schedulers.Schedulers.io)
