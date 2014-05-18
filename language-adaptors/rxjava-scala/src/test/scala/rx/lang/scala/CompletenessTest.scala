@@ -45,6 +45,7 @@ class CompletenessTest extends JUnitSuite {
   val commentForFirstWithPredicate = "[use `.filter(condition).first`]"
   val fromFuture = "[TODO: Decide how Scala Futures should relate to Observables. Should there be a " +
      "common base interface for Future and Observable? And should Futures also have an unsubscribe method?]"
+  val commentForTakeLastBuffer = "[use `takeRight(...).toSeq`]"
 
   /**
    * Maps each method from the Java Observable to its corresponding method in the Scala Observable
@@ -71,8 +72,14 @@ class CompletenessTest extends JUnitSuite {
       "all(Func1[_ >: T, Boolean])" -> "forall(T => Boolean)",
       "buffer(Long, Long, TimeUnit)" -> "buffer(Duration, Duration)",
       "buffer(Long, Long, TimeUnit, Scheduler)" -> "buffer(Duration, Duration, Scheduler)",
+      "buffer(Func0[_ <: Observable[_ <: TClosing]])" -> "buffer(() => Observable[Any])",
+      "buffer(Observable[B])" -> "buffer(Observable[Any])",
+      "buffer(Observable[B], Int)" -> "buffer(Observable[Any], Int)",
+      "buffer(Observable[_ <: TOpening], Func1[_ >: TOpening, _ <: Observable[_ <: TClosing]])" -> "buffer(Observable[Opening], Opening => Observable[Any])",
       "contains(T)" -> "contains(Any)",
       "count()" -> "length",
+      "delay(Func0[_ <: Observable[U]], Func1[_ >: T, _ <: Observable[V]])" -> "delay(() => Observable[Any], T => Observable[Any])",
+      "delay(Func1[_ >: T, _ <: Observable[U]])" -> "delay(T => Observable[Any])",
       "dematerialize()" -> "dematerialize(<:<[Observable[T], Observable[Notification[U]]])",
       "elementAt(Int)" -> "[use `.drop(index).first`]",
       "elementAtOrDefault(Int, T)" -> "[use `.drop(index).firstOrElse(default)`]",
@@ -116,6 +123,15 @@ class CompletenessTest extends JUnitSuite {
       "takeFirst()" -> "first",
       "takeFirst(Func1[_ >: T, Boolean])" -> commentForFirstWithPredicate,
       "takeLast(Int)" -> "takeRight(Int)",
+      "takeLast(Long, TimeUnit)" -> "takeRight(Duration)",
+      "takeLast(Long, TimeUnit, Scheduler)" -> "takeRight(Duration, Scheduler)",
+      "takeLast(Int, Long, TimeUnit)" -> "takeRight(Int, Duration)",
+      "takeLast(Int, Long, TimeUnit, Scheduler)" -> "takeRight(Int, Duration, Scheduler)",
+      "takeLastBuffer(Int)" -> commentForTakeLastBuffer,
+      "takeLastBuffer(Int, Long, TimeUnit)" -> commentForTakeLastBuffer,
+      "takeLastBuffer(Int, Long, TimeUnit, Scheduler)" -> commentForTakeLastBuffer,
+      "takeLastBuffer(Long, TimeUnit)" -> commentForTakeLastBuffer,
+      "takeLastBuffer(Long, TimeUnit, Scheduler)" -> commentForTakeLastBuffer,
       "takeWhileWithIndex(Func2[_ >: T, _ >: Integer, Boolean])" -> "[use `.zipWithIndex.takeWhile{case (elem, index) => condition}.map(_._1)`]",
       "timeout(Func0[_ <: Observable[U]], Func1[_ >: T, _ <: Observable[V]], Observable[_ <: T])" -> "timeout(() => Observable[U], T => Observable[V], Observable[O])",
       "timeout(Func1[_ >: T, _ <: Observable[V]], Observable[_ <: T])" -> "timeout(() => Observable[U], T => Observable[V])",
@@ -154,8 +170,8 @@ class CompletenessTest extends JUnitSuite {
       "range(Int, Int)" -> "apply(Range)",
       "repeat()" -> "repeat()",
       "retry()" -> "retry()",
-      "sequenceEqual(Observable[_ <: T], Observable[_ <: T])" -> "[use `(first zip second) map (p => p._1 == p._2)`]",
-      "sequenceEqual(Observable[_ <: T], Observable[_ <: T], Func2[_ >: T, _ >: T, Boolean])" -> "[use `(first zip second) map (p => equality(p._1, p._2))`]",
+      "sequenceEqual(Observable[_ <: T], Observable[_ <: T])" -> "sequenceEqual(Observable[U])",
+      "sequenceEqual(Observable[_ <: T], Observable[_ <: T], Func2[_ >: T, _ >: T, Boolean])" -> "sequenceEqual(Observable[U], (U, U) => Boolean)",
       "sum(Observable[Integer])" -> "sum(Numeric[U])",
       "sumDoubles(Observable[Double])" -> "sum(Numeric[U])",
       "sumFloats(Observable[Float])" -> "sum(Numeric[U])",
