@@ -3,16 +3,16 @@ package rx.lang.scala
 trait Subscriber[-T] extends Observer[T] with Subscription {
 
   self =>
-  
-  private [scala] override val asJavaObserver: rx.Observer[_ >: T] = asJavaSubscriber
-  private [scala] override val asJavaSubscription: rx.Subscription = asJavaSubscriber
-  
+
   private [scala] val asJavaSubscriber: rx.Subscriber[_ >: T] = new rx.Subscriber[T] {
     def onNext(value: T): Unit = self.onNext(value)
     def onError(error: Throwable): Unit = self.onError(error)
     def onCompleted(): Unit = self.onCompleted()
   }
-  
+
+  private [scala] override val asJavaObserver: rx.Observer[_ >: T] = asJavaSubscriber
+  private [scala] override val asJavaSubscription: rx.Subscription = asJavaSubscriber
+
   /**
    * Used to register an unsubscribe callback.
    */
