@@ -15,21 +15,22 @@
  */
 package rx.subjects;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
+import static junit.framework.Assert.assertEquals;
 
 import org.junit.Test;
 import org.mockito.InOrder;
+import static org.mockito.Matchers.any;
 import org.mockito.Mockito;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 import rx.Observable;
 import rx.Observer;
@@ -37,6 +38,7 @@ import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
+import rx.schedulers.TestScheduler;
 
 public class ReplaySubjectTest {
 
@@ -436,5 +438,155 @@ public class ReplaySubjectTest {
         verify(o).onNext(2);
         verify(o).onCompleted();
         verify(o, never()).onError(any(Throwable.class));
+    }
+    @Test
+    public void testNodeListSimpleAddRemove() {
+        ReplaySubject.NodeList<Integer> list = new ReplaySubject.NodeList<Integer>();
+        
+        assertEquals(0, list.size());
+        
+        // add and remove one
+        
+        list.addLast(1);
+
+        assertEquals(1, list.size());
+        
+        assertEquals((Integer)1, list.removeFirst());
+
+        assertEquals(0, list.size());
+
+        // add and remove one again
+        
+        list.addLast(1);
+
+        assertEquals(1, list.size());
+        
+        assertEquals((Integer)1, list.removeFirst());
+
+        // add and remove two items
+        
+        list.addLast(1);
+        list.addLast(2);
+
+        assertEquals(2, list.size());
+
+        assertEquals((Integer)1, list.removeFirst());
+        assertEquals((Integer)2, list.removeFirst());
+
+        assertEquals(0, list.size());
+        // clear two items
+        
+        list.addLast(1);
+        list.addLast(2);
+
+        assertEquals(2, list.size());
+        
+        list.clear();
+
+        assertEquals(0, list.size());
+    }
+    @Test
+    public void testReplay1AfterTermination() {
+        ReplaySubject<Integer> source = ReplaySubject.createWithSize(1);
+        
+        source.onNext(1);
+        source.onNext(2);
+        source.onCompleted();
+        
+        for (int i = 0; i < 1; i++) {
+            @SuppressWarnings("unchecked")
+            Observer<Integer> o = mock(Observer.class);
+
+            source.subscribe(o);
+
+            verify(o, never()).onNext(1);
+            verify(o).onNext(2);
+            verify(o).onCompleted();
+            verify(o, never()).onError(any(Throwable.class));
+        }
+    }
+    @Test
+    public void testReplay1Directly() {
+        ReplaySubject<Integer> source = ReplaySubject.createWithSize(1);
+
+        @SuppressWarnings("unchecked")
+        Observer<Integer> o = mock(Observer.class);
+
+        source.onNext(1);
+        source.onNext(2);
+
+        source.subscribe(o);
+
+        source.onNext(3);
+        source.onCompleted();
+
+        verify(o, never()).onNext(1);
+        verify(o).onNext(2);
+        verify(o).onNext(3);
+        verify(o).onCompleted();
+        verify(o, never()).onError(any(Throwable.class));
+    }
+    
+    @Test
+    public void testReplayTimestampedAfterTermination() {
+        TestScheduler scheduler = new TestScheduler();
+        ReplaySubject<Integer> source = ReplaySubject.createWithTime(1, TimeUnit.SECONDS, scheduler);
+        
+        source.onNext(1);
+        
+        scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+        
+        source.onNext(2);
+
+        scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+
+        source.onNext(3);
+        source.onCompleted();
+
+        scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+
+        @SuppressWarnings("unchecked")
+        Observer<Integer> o = mock(Observer.class);
+
+        source.subscribe(o);
+        
+        verify(o, never()).onNext(1);
+        verify(o, never()).onNext(2);
+        verify(o).onNext(3);
+        verify(o).onCompleted();
+        verify(o, never()).onError(any(Throwable.class));
+    }
+    
+    @Test
+    public void testReplayTimestampedDirectly() {
+        TestScheduler scheduler = new TestScheduler();
+        ReplaySubject<Integer> source = ReplaySubject.createWithTime(1, TimeUnit.SECONDS, scheduler);
+
+        source.onNext(1);
+        
+        scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+
+        @SuppressWarnings("unchecked")
+        Observer<Integer> o = mock(Observer.class);
+
+        source.subscribe(o);
+
+        source.onNext(2);
+        
+        scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+        
+        source.onNext(3);
+        
+        scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+        
+        source.onCompleted();
+        
+        scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+        
+        verify(o, never()).onError(any(Throwable.class));
+        verify(o, never()).onNext(1);
+        verify(o).onNext(2);
+        verify(o).onNext(3);
+        verify(o).onCompleted();
     }
 }
