@@ -71,11 +71,12 @@ public abstract class Scheduler {
 
         /**
          * Schedules an Action for execution at some point in the future.
-         * 
+         * <p>Note to implementors: non-positive {@code delayTime} should be regarded as
+         * undelayed schedule, i.e., as if the {@link #schedule(rx.functions.Action0)} was called.
          * @param action
          *            the Action to schedule
          * @param delayTime
-         *            time to wait before executing the action
+         *            time to wait before executing the action, non-positive values indicate an undelayed schedule
          * @param unit
          *            the time unit the delay time is given in
          * @return a subscription to be able to unsubscribe the action (unschedule it if not executed)
@@ -86,13 +87,17 @@ public abstract class Scheduler {
          * Schedules a cancelable action to be executed periodically. This default implementation schedules
          * recursively and waits for actions to complete (instead of potentially executing long-running actions
          * concurrently). Each scheduler that can do periodic scheduling in a better way should override this.
+         * <p>Note to implementors: non-positive {@code initialTime} and {@code period} should be regarded as
+         * undelayed scheduling of the first and any subsequent executions.
          * 
          * @param action
          *            the Action to execute periodically
          * @param initialDelay
-         *            time to wait before executing the action for the first time
+         *            time to wait before executing the action for the first time, 
+         *            non-positive values indicate an undelayed schedule
          * @param period
-         *            the time interval to wait each time in between executing the action
+         *            the time interval to wait each time in between executing the action,
+         *            non-positive values indicate no delay between repeated schedules
          * @param unit
          *            the time unit the interval above is given in
          * @return a subscription to be able to unsubscribe the action (unschedule it if not executed)

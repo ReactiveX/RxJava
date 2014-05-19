@@ -23,12 +23,16 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.util.concurrent.TimeUnit;
-
+import java.util.concurrent.atomic.AtomicInteger;
+import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 import org.mockito.InOrder;
 
+
 import rx.Observable;
 import rx.Observer;
+import rx.functions.Action0;
+import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.observables.ConnectableObservable;
 import rx.schedulers.TestScheduler;
@@ -413,6 +417,52 @@ public class OperatorReplayTest {
             inOrder.verify(observer1, times(1)).onError(any(RuntimeException.class));
             inOrder.verifyNoMoreInteractions();
             verify(observer1, never()).onCompleted();
+        }
+    }
+    @Test
+    public void testSynchronousDisconnect() {
+        final AtomicInteger effectCounter = new AtomicInteger();
+        Observable<Integer> source = Observable.from(1, 2, 3, 4)
+        .doOnNext(new Action1<Integer>() {
+            @Override
+            public void call(Integer v) {
+                effectCounter.incrementAndGet();
+                System.out.println("Sideeffect #" + v);
+            }
+        });
+        
+        Observable<Integer> result = source.replay(
+        new Func1<Observable<Integer>, Observable<Integer>>() {
+            @Override
+            public Observable<Integer> call(Observable<Integer> o) {
+                return o.take(2);
+            }
+        });
+        
+        for (int i = 1; i < 3; i++) {
+            effectCounter.set(0);
+            System.out.printf("- %d -%n", i);
+            result.subscribe(new Action1<Integer>() {
+
+                @Override
+                public void call(Integer t1) {
+                    System.out.println(t1);
+                }
+                
+            }, new Action1<Throwable>() {
+
+                @Override
+                public void call(Throwable t1) {
+                    t1.printStackTrace();
+                }
+            }, 
+            new Action0() {
+                @Override
+                public void call() {
+                    System.out.println("Done");
+                }
+            });
+            assertEquals(2, effectCounter.get());
         }
     }
 }
