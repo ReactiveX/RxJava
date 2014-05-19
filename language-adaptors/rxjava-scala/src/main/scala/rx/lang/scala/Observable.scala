@@ -21,7 +21,6 @@ import rx.Observable.OnSubscribeFunc
 import rx.lang.scala.observables.ConnectableObservable
 import scala.concurrent.duration
 import java.util
-import java.util.concurrent.TimeUnit
 import collection.JavaConversions._
 
 
@@ -80,7 +79,7 @@ trait Observable[+T]
 {
   import scala.collection.JavaConverters._
   import scala.collection.Seq
-  import scala.concurrent.duration.{Duration, TimeUnit}
+  import scala.concurrent.duration.{Duration, TimeUnit, MILLISECONDS}
   import rx.functions._
   import rx.lang.scala.observables.BlockingObservable
   import ImplicitFunctionConversions._
@@ -2970,7 +2969,7 @@ trait Observable[+T]
    */
   def timeInterval: Observable[(Duration, T)] = {
     toScalaObservable(asJavaObservable.timeInterval())
-      .map(inv => (Duration(inv.getIntervalInMilliseconds, TimeUnit.MILLISECONDS), inv.getValue))
+      .map(inv => (Duration(inv.getIntervalInMilliseconds, MILLISECONDS), inv.getValue))
   }
 
   /**
@@ -2984,7 +2983,7 @@ trait Observable[+T]
    */
   def timeInterval(scheduler: Scheduler): Observable[(Duration, T)] = {
     toScalaObservable(asJavaObservable.timeInterval(scheduler.asJavaScheduler))
-      .map(inv => (Duration(inv.getIntervalInMilliseconds, TimeUnit.MILLISECONDS), inv.getValue))
+      .map(inv => (Duration(inv.getIntervalInMilliseconds, MILLISECONDS), inv.getValue))
   }
 
   /**
