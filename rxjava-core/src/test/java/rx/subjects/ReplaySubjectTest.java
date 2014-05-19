@@ -440,8 +440,8 @@ public class ReplaySubjectTest {
         verify(o, never()).onError(any(Throwable.class));
     }
     @Test
-    public void testWeakLinkedListSimpleAddRemove() {
-        ReplaySubject.WeakLinkedList<Integer> list = new ReplaySubject.WeakLinkedList<Integer>();
+    public void testNodeListSimpleAddRemove() {
+        ReplaySubject.NodeList<Integer> list = new ReplaySubject.NodeList<Integer>();
         
         assertEquals(0, list.size());
         

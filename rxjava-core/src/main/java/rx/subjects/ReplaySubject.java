@@ -15,7 +15,6 @@
  */
 package rx.subjects;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
@@ -31,7 +30,7 @@ import rx.functions.Func1;
 import rx.functions.Functions;
 import rx.operators.NotificationLite;
 import rx.schedulers.Timestamped;
-import rx.subjects.ReplaySubject.WeakLinkedList.Node;
+import rx.subjects.ReplaySubject.NodeList.Node;
 import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
 
 /**
@@ -55,11 +54,18 @@ import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
 
   } </pre>
  * 
- * @param <T>
+ * @param <T> the input and output type
  */
 public final class ReplaySubject<T> extends Subject<T, T> {
     /**
-     * Create an unbounded replay subject with an initial buffer capacity of 16.
+     * Create an unbounded replay subject.
+     * <p>The internal buffer is backed by an {@link ArrayList} and starts with
+     * an initial capacity of 16. Once the number of elements reaches this capacity,
+     * it will grow as necessary (usually by 50%). However, as the number of
+     * elements grows, this causes frequent array reallocation and copying, and
+     * may hurt performance and latency. This can be avoided with the {@link #create(int)}
+     * overload which takes an initial capacity parameter and can be tuned to
+     * reduce the array reallocation frequency as needed.
      * @param <T> The input and output types
      * @return the created subject
      */
@@ -68,6 +74,12 @@ public final class ReplaySubject<T> extends Subject<T, T> {
     }
     /**
      * Create an unbounded replay subject with the specified initial buffer capacity.
+     * <p>Use this method to avoid excessive array reallocation while the internal
+     * buffer grows to accomodate new elements. For example, if it is known that the
+     * buffer will hold 32k elements, one can ask the ReplaySubject to preallocate
+     * it internal array with a capacity to hold that many elements. Once the elements
+     * start to arrive, the internal array won't need to grow, creating less garbage and
+     * no overhead due to frequent array-copying.
      * @param <T> The input and output types
      * @param capacity the initial buffer capacity
      * @return the created subject
@@ -119,8 +131,13 @@ public final class ReplaySubject<T> extends Subject<T, T> {
     }
     /**
      * Create an unbounded replay subject with the bounded-implementation for testing purposes.
+     * <p>This variant behaves like the regular unbounded ReplaySubject created via {@link #create()}
+     * but uses the structures of the bounded-implementation. This is by no means intended
+     * for the replacement of the original, array-backed and unbounded ReplaySubject due to
+     * the additional overhead of the linked-list based internal buffer. The sole purpose
+     * is to allow testing and reasoning about the behavior of the bounded implementations
+     * without the interference of the eviction policies.
      * @param <T> the input and output types
-     * @param size the maximum buffer size
      * @return the created subject
      */
     /* public */ static <T> ReplaySubject<T> createUnbounded() {
@@ -133,6 +150,15 @@ public final class ReplaySubject<T> extends Subject<T, T> {
     }
     /**
      * Create a size-bounded replay subject.
+     * <p>In this setting, the ReplaySubject holds at most {@code size} elements in its
+     * internal buffer and discards the oldest element. 
+     * <p>When observers subscribe to a terminated
+     * ReplaySubject, they are guaranteed to see at most {@code size} onNext events followed by 
+     * a termination event. 
+     * <p>In case an observer subscribes while the ReplaySubject is active, it
+     * will receive all events from within the buffer at that point in time and each event afterwards,
+     * even if the buffer evicts elements due to the size constraint in the mean time. 
+     * In other terms, once an Observer subscribes, it will receive events without gaps in the sequence.
      * @param <T> the input and output types
      * @param size the maximum number of buffered items
      * @return the created subject
@@ -147,6 +173,21 @@ public final class ReplaySubject<T> extends Subject<T, T> {
     }
     /**
      * Create a time-bounded replay subject.
+     * <p>In this setting, the ReplaySubject tags each received onNext event internally with a timestamp
+     * value supplied by the {@link Scheduler} and keeps only those whose age is less than
+     * the supplied time value converted to milliseconds. For example, a value arrives at T=0 and the max age
+     * is set to 5; at T&gt;=5 this first value is then evicted by any subsequent value or termination event, 
+     * leaving the buffer empty. 
+     * <p>Once the subject is terminated, observers subscribing to it will receive events that
+     * remained in the buffer after the terminal event, regardless of their age. 
+     * <p>In case an observer subscribes while the ReplaySubject is active, it
+     * will receive only those events from within the buffer, which have age less than the specified time and
+     * each event afterwards, even if the buffer evicts elements due to the time constraint in the mean time. 
+     * In other terms, once an Observer subscribes, it receives events without gaps in the sequence except the outdated events
+     * at the beginning of the sequence.
+     * <p>Note that terminal events (onError and onCompleted) trigger eviction as well. For example, with a max age of
+     * 5, the first value arrives at T=0, then an onCompleted arrives at T=10. If an observer subscribes at T=11, it will
+     * find an empty ReplaySubject with just an onCompleted event.
      * @param <T> the input and output types
      * @param time the maximum age of the contained items
      * @param unit the time unit
@@ -163,6 +204,21 @@ public final class ReplaySubject<T> extends Subject<T, T> {
     }
     /**
      * Create a time- and size-bounded replay subject.
+     * <p>In this setting, the ReplaySubject tags each received onNext event internally with a timestamp
+     * value supplied by the {@link Scheduler} and holds at most {@code size} elements in the internal buffer.
+     * Elements are evicted from the start of the buffer if their age becomes less-than or equal 
+     * to the supplied age in milliseconds or the buffer reaches its {@code size} limit.
+     * <p>When observers subscribe to a terminated ReplaySubject, receive the events that
+     * remained in the buffer after the terminal event, regardless of their age, but at most
+     * {@code size} elements.
+     * <p>In case an observer subscribes while the ReplaySubject is active, it
+     * will receive only those events from within the buffer, which have age less than the specified time and
+     * each event afterwards, even if the buffer evicts elements due to the time constraint in the mean time. 
+     * In other terms, once an Observer subscribes, it receives events without gaps in the sequence except the outdated events
+     * at the beginning of the sequence.
+     * <p>Note that terminal events (onError and onCompleted) trigger eviction as well. For example, with a max age of
+     * 5, the first value arrives at T=0, then an onCompleted arrives at T=10. If an observer subscribes at T=11, it will
+     * find an empty ReplaySubject with just an onCompleted event.
      * @param <T> the input and output types
      * @param time the maximum age of the contained items
      * @param unit the time unit
@@ -182,7 +238,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         return createWithState(state, new TimedOnAdd<T>(state, scheduler));
     }
     /**
-     * Create a bounded replay subject wiht the given state shared between the subject
+     * Create a bounded replay subject with the given state shared between the subject
      * and the OnSubscribe functions.
      * @param <T> the result value type
      * @param state the shared state
@@ -199,7 +255,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
 
                 @Override
                 public void call(SubjectObserver<? super T> t1) {
-                    WeakLinkedList.Node<Object> l = state.removeState(t1);
+                    NodeList.Node<Object> l = state.removeState(t1);
                     state.replayObserverFromIndex(l, t1);
                 }
 
@@ -391,10 +447,10 @@ public final class ReplaySubject<T> extends Subject<T, T> {
      * The bounded replay state. 
      * @param <T> the input and output type
      */
-    static final class BoundedState<T> implements ReplayState<T, WeakLinkedList.Node<Object>> {
-        final WeakLinkedList<Object> list;
-        final AtomicReference<WeakLinkedList.Node<Object>> tail;
-        final ConcurrentHashMap<Observer<? super T>, WeakLinkedList.Node<Object>> replayState;
+    static final class BoundedState<T> implements ReplayState<T, NodeList.Node<Object>> {
+        final NodeList<Object> list;
+        final AtomicReference<NodeList.Node<Object>> tail;
+        final ConcurrentHashMap<Observer<? super T>, NodeList.Node<Object>> replayState;
         final EvictionPolicy evictionPolicy;
         final Func1<Object, Object> enterTransform;
         final Func1<Object, Object> leaveTransform;
@@ -402,9 +458,9 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         volatile boolean terminated;
         public BoundedState(EvictionPolicy evictionPolicy, Func1<Object, Object> enterTransform, 
                 Func1<Object, Object> leaveTransform) {
-            this.list = new WeakLinkedList<Object>();
-            this.tail = new AtomicReference<WeakLinkedList.Node<Object>>(list.tail);
-            this.replayState = new ConcurrentHashMap<Observer<? super T>, WeakLinkedList.Node<Object>>();
+            this.list = new NodeList<Object>();
+            this.tail = new AtomicReference<NodeList.Node<Object>>(list.tail);
+            this.replayState = new ConcurrentHashMap<Observer<? super T>, NodeList.Node<Object>>();
             this.evictionPolicy = evictionPolicy;
             this.enterTransform = enterTransform;
             this.leaveTransform = leaveTransform;
@@ -440,8 +496,8 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                 tail.set(list.tail);
             }
         }
-        public void accept(Observer<? super T> o, WeakLinkedList.Node<Object> node) {
-            nl.accept(o, leaveTransform.call(node.value()));
+        public void accept(Observer<? super T> o, NodeList.Node<Object> node) {
+            nl.accept(o, leaveTransform.call(node.value));
         }
         /**
          * Accept only non-stale nodes.
@@ -449,8 +505,8 @@ public final class ReplaySubject<T> extends Subject<T, T> {
          * @param node the node to accept or reject
          * @param now the current time
          */
-        public void acceptTest(Observer<? super T> o, WeakLinkedList.Node<Object> node, long now) {
-            Object v = node.value();
+        public void acceptTest(Observer<? super T> o, NodeList.Node<Object> node, long now) {
+            Object v = node.value;
             if (!evictionPolicy.test(v, now)) {
                 nl.accept(o, leaveTransform.call(v));
             }
@@ -474,14 +530,14 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         }
         @Override
         public void replayObserver(SubjectObserver<? super T> observer) {
-            WeakLinkedList.Node<Object> lastEmittedLink = replayState.get(observer);
-            WeakLinkedList.Node<Object> l = replayObserverFromIndex(lastEmittedLink, observer);
+            NodeList.Node<Object> lastEmittedLink = replayState.get(observer);
+            NodeList.Node<Object> l = replayObserverFromIndex(lastEmittedLink, observer);
             addState(observer, l);
         }
 
         @Override
-        public WeakLinkedList.Node<Object> replayObserverFromIndex(
-                WeakLinkedList.Node<Object> l, SubjectObserver<? super T> observer) {
+        public NodeList.Node<Object> replayObserverFromIndex(
+                NodeList.Node<Object> l, SubjectObserver<? super T> observer) {
             while (l != tail()) {
                 accept(observer, l.next);
                 l = l.next;
@@ -489,8 +545,8 @@ public final class ReplaySubject<T> extends Subject<T, T> {
             return l;
         }
         @Override
-        public WeakLinkedList.Node<Object> replayObserverFromIndexTest(
-                WeakLinkedList.Node<Object> l, SubjectObserver<? super T> observer, long now) {
+        public NodeList.Node<Object> replayObserverFromIndexTest(
+                NodeList.Node<Object> l, SubjectObserver<? super T> observer, long now) {
             while (l != tail()) {
                 acceptTest(observer, l.next, now);
                 l = l.next;
@@ -571,7 +627,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
          * Evict values from the list
          * @param list 
          */
-        void evict(WeakLinkedList<Object> list);
+        void evict(NodeList<Object> list);
     }
 
     
@@ -590,7 +646,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         }
         
         @Override
-        public void evict(WeakLinkedList<Object> t1) {
+        public void evict(NodeList<Object> t1) {
             while (t1.size() > maxSize) {
                 t1.removeFirst();
             }
@@ -615,11 +671,11 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         }
         
         @Override
-        public void evict(WeakLinkedList<Object> t1) {
+        public void evict(NodeList<Object> t1) {
             long now = scheduler.now();
             while (!t1.isEmpty()) {
-                WeakLinkedList.Node<Object> n = t1.head.next;
-                if (test(n.value(), now)) {
+                NodeList.Node<Object> n = t1.head.next;
+                if (test(n.value, now)) {
                     t1.removeFirst();
                 } else {
                     break;
@@ -647,7 +703,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         }
         
         @Override
-        public void evict(WeakLinkedList<Object> t1) {
+        public void evict(NodeList<Object> t1) {
             first.evict(t1);
             second.evict(t1);
         }
@@ -692,7 +748,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         
         @Override
         public void call(SubjectObserver<? super T> t1) {
-            WeakLinkedList.Node<Object> l = state.replayObserverFromIndex(state.head(), t1);
+            NodeList.Node<Object> l = state.replayObserverFromIndex(state.head(), t1);
             state.addState(t1, l);
         }
         
@@ -712,7 +768,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         
         @Override
         public void call(SubjectObserver<? super T> t1) {
-            WeakLinkedList.Node<Object> l;
+            NodeList.Node<Object> l;
             if (!state.terminated) {
                 // ignore stale entries if still active
                 l = state.replayObserverFromIndexTest(state.head(), t1, scheduler.now());
@@ -725,10 +781,10 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         
     }
     /**
-     * A doubly-linked list that has a weak reference backwards.
+     * A singly-linked list with volatile next node pointer.
      * @param <T> the value type
      */
-    static final class WeakLinkedList<T> {
+    static final class NodeList<T> {
         /**
          * The node containing the value and references to neighbours.
          * @param <T> the value type
@@ -736,30 +792,14 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         static final class Node<T> {
             /** The managed value. */
             final T value;
-            /**
-             * The weak reference back to the previous node. If that node is not
-             * hard-referenced, it will be eventually GCd.
-             */
-            final WeakReference<Node<T>> previous;
             /** The hard reference to the next node. */
             volatile Node<T> next;
-            Node(T value, Node<T> previous) {
+            Node(T value) {
                 this.value = value;
-                this.previous = new WeakReference<Node<T>>(previous);
-            }
-            /**
-             * @return returns the next node in the list or null if this is the last node up to now
-             */
-            public Node<T> next() {
-                return next;
-            }
-            /** @return the managed value. */
-            public T value() {
-                return value;
             }
         }
         /** The head of the list. */
-        final Node<T> head = new Node<T>(null, null);
+        final Node<T> head = new Node<T>(null);
         /** The tail of the list. */
         Node<T> tail = head;
         /** The number of elements in the list. */
@@ -767,7 +807,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         
         public void addLast(T value) {
             Node<T> t = tail;
-            Node<T> t2 = new Node<T>(value, t);
+            Node<T> t2 = new Node<T>(value);
             t.next = t2;
             tail = t2;
             size++;
@@ -782,7 +822,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                 tail = head;
             }
             size--;
-            return t.value();
+            return t.value;
         }
         public boolean isEmpty() {
             return size == 0;
@@ -802,7 +842,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
             return true;
         }
         @Override
-        public void evict(WeakLinkedList<Object> list) {
+        public void evict(NodeList<Object> list) {
         }
         
     }    
