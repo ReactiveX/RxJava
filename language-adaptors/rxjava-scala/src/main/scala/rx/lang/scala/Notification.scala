@@ -137,7 +137,7 @@ object Notification {
      * @param notification
      *                     The [[rx.lang.scala.Notification]] to be deconstructed
      * @return
-     *         The [[java.lang.Throwable]] value contained in this notification.
+     *         The `java.lang.Throwable` value contained in this notification.
      */
     def unapply[U](notification: Notification[U]): Option[Throwable] = notification match {
       case onError: OnError[U] => Some(onError.error)
