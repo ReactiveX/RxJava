@@ -385,7 +385,7 @@ trait Observable[+T]
    * is the minumum of the number of `onNext` invocations of `this` and `that`. 
    */
   def zip[U](that: Observable[U]): Observable[(T, U)] = {
-    zip(that, (t: T, u: U) => (t, u))
+    zipWith(that, (t: T, u: U) => (t, u))
   }
 
   /**
@@ -393,10 +393,8 @@ trait Observable[+T]
    * corresponding elements using the selector function.
    * The number of `onNext` invocations of the resulting `Observable[(T, U)]`
    * is the minumum of the number of `onNext` invocations of `this` and `that`.
-   *
-   * Note that this function is private because Scala collections don't have such a function.
    */
-  private def zip[U, R](that: Observable[U], selector: (T,U) => R): Observable[R] = {
+  def zipWith[U, R](that: Observable[U], selector: (T,U) => R): Observable[R] = {
     toScalaObservable[R](rx.Observable.zip[T, U, R](this.asJavaObservable, that.asJavaObservable, selector))
   }
 
