@@ -993,5 +993,26 @@ public class ObservableTests {
 
         assertEquals("1-2-3", value);
     }
+    
+    @Test
+    public void testLiftWithToOperator() {
+        //This test provides coverage of the Observable.lift(function) method. Detailed testing of this method
+        //is in OperationToOoperatorTest.java
+        
+        //puts 0 before and 100 after an observable
+        Func1<Observable<Integer>,Observable<Integer>> surround = new Func1<Observable<Integer>,Observable<Integer>>() {
+
+            @Override
+            public Observable<Integer> call(Observable<Integer> source) {
+                return Observable.concat(Observable.just(0), source,Observable.just(100));
+            }
+        };
+        List<Integer> list = Observable.range(1, 3)
+                // surround the source with 0 and 100
+                .lift(Observable.toOperator(surround))
+                //get as a list
+                .toList().toBlockingObservable().single();
+        assertEquals(Arrays.asList(0,1,2,3,100), list);
+    }
 
 }

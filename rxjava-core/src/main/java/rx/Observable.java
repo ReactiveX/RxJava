@@ -21,10 +21,12 @@ import rx.exceptions.*;
 import rx.functions.*;
 import rx.observables.*;
 import rx.observers.SafeSubscriber;
+
 import rx.operators.*;
 import rx.plugins.*;
 import rx.schedulers.*;
 import rx.subjects.*;
+
 import rx.subscriptions.Subscriptions;
 
 /**
@@ -163,6 +165,16 @@ public class Observable<T> {
                 }
             }
         });
+    }
+    
+    /**
+     * Returns an {@link Operator} version of the given <code>function</code>.
+     * 
+     * @param function transforms a source Observable into another Observable
+     * @return an {@link Operator} version of function
+     */
+    public static <T,R> Operator<R,T> toOperator(Func1<? super Observable<T>,? extends Observable<R>> function) {
+            return OperationToOperator.toOperator(function);
     }
 
     /* *********************************************************************************************************
