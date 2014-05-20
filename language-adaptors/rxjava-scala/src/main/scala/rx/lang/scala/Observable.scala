@@ -407,8 +407,7 @@ trait Observable[+T]
    *         their index. Indices start at 0.
    */
   def zipWithIndex: Observable[(T, Int)] = {
-    var n = 0;
-    this.map(x => { val result = (x,n); n += 1; result })
+    zip((0 until Int.MaxValue).toObservable)
   }
 
   /**

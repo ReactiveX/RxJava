@@ -168,4 +168,12 @@ class ObservableTests extends JUnitSuite {
     val o: Observable[String] = List[String]().toObservable.tail
     o.toBlockingObservable.toList
   }
+
+  @Test
+  def testZipWithIndex() {
+    val o = List("alice", "bob", "carol").toObservable.zipWithIndex.map(_._2)
+    assertEquals(List(0, 1, 2), o.toBlockingObservable.toList)
+    assertEquals(List(0, 1, 2), o.toBlockingObservable.toList)
+  }
+
 }
