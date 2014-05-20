@@ -4118,6 +4118,26 @@ public class Observable<T> {
     }
 
     /**
+     * Returns an Observable that emits only the first {@code num} items emitted by the source Observable.
+     * <p>
+     * Alias of {@link #take(int)} to match Java 8 Stream API naming convention.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/take.png">
+     * <p>
+     * This method returns an Observable that will invoke a subscribing {@link Observer}'s {@link Observer#onNext onNext} function a maximum of {@code num} times before invoking
+     * {@link Observer#onCompleted onCompleted}.
+     * 
+     * @param num
+     *            the maximum number of items to emit
+     * @return an Observable that emits only the first {@code num} items emitted by the source Observable, or
+     *         all of the items from the source Observable if that Observable emits fewer than {@code num} items
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#wiki-take">RxJava Wiki: take()</a>
+     */
+    public final Observable<T> limit(int num) {
+        return take(num);
+    }
+    
+    /**
      * Returns an Observable that counts the total number of items emitted by the source Observable and emits
      * this count as a 64-bit Long.
      * <p>
