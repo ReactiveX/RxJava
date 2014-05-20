@@ -16,9 +16,11 @@
 package rx;
 
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import rx.functions.Action0;
 import rx.schedulers.Schedulers;
+import rx.subscriptions.Subscriptions;
 
 /**
  * Represents an object that schedules units of work.
@@ -106,18 +108,23 @@ public abstract class Scheduler {
             final long periodInNanos = unit.toNanos(period);
             final long startInNanos = TimeUnit.MILLISECONDS.toNanos(now()) + unit.toNanos(initialDelay);
 
+            final StampedSubscription stamp = new StampedSubscription();
+            
             final Action0 recursiveAction = new Action0() {
                 long count = 0;
                 @Override
                 public void call() {
-                    if (!isUnsubscribed()) {
+                    if (!stamp.isUnsubscribed()) {
                         action.call();
                         long nextTick = startInNanos + (++count * periodInNanos);
-                        schedule(this, nextTick - TimeUnit.MILLISECONDS.toNanos(now()), TimeUnit.NANOSECONDS);
+                        Subscription s = schedule(this, nextTick - TimeUnit.MILLISECONDS.toNanos(now()), TimeUnit.NANOSECONDS);
+                        stamp.setNext(s);
                     }
                 }
             };
-            return schedule(recursiveAction, initialDelay, unit);
+            Subscription s = schedule(recursiveAction, initialDelay, unit);
+            stamp.setFirst(s);
+            return stamp;
         }
 
         /**
@@ -126,8 +133,101 @@ public abstract class Scheduler {
         public long now() {
             return System.currentTimeMillis();
         }
-    }
+        /** 
+         * Contains a subscription and prevents overwriting a subsequent subscription by the first subscription.
+         * This is used by the schedulePeriodic to capture the first schedule subscription and make
+         * sure it does not replace a newer subscription in case the scheduled action completes before the
+         * outer would set the first reference. This implies that calling setNext should happen sequentially
+         * in respect to each other.
+         */
+        static final class StampedSubscription implements Subscription {
+            static final class State {
+                final boolean unsubscribed;
+                final boolean subsequent;
+                final Subscription subscription;
 
+                public State(boolean unsubscribed, boolean subsequent, Subscription subscription) {
+                    this.unsubscribed = unsubscribed;
+                    this.subsequent = subsequent;
+                    this.subscription = subscription;
+                }
+                public State unsubscribe() {
+                    return new State(true, subsequent, subscription);
+                }
+                public State setNext(Subscription s) {
+                    return new State(unsubscribed, true, s);
+                }
+            }
+            final AtomicReference<State> state = new AtomicReference<State>(new State(false, false, Subscriptions.empty()));
+
+            @Override
+            public void unsubscribe() {
+                do {
+                    State s = state.get();
+                    if (s.unsubscribed) {
+                        return;
+                    }
+                    State s2 = s.unsubscribe();
+                    if (state.compareAndSet(s, s2)) {
+                        s2.subscription.unsubscribe();
+                        return;
+                    }
+                } while (true);
+                
+            }
+            /**
+             * Tries to set the first subscription and giving up
+             * if a newer subscription was already set.
+             * @param s the first subscription to set
+             */
+            public void setFirst(Subscription s) {
+                do {
+                    State oldState = state.get();
+                    if (oldState.unsubscribed) {
+                        s.unsubscribe();
+                        return;
+                    }
+                    if (oldState.subsequent) {
+                        return;
+                    }
+                    State newState = oldState.setNext(s);
+                    if (state.compareAndSet(oldState, newState)) {
+                        return;
+                    }
+                } while (true);
+            }
+            /**
+             * Sets a new subscription.
+             * Make sure this is called sequentially.
+             * @param s the next subscription to set
+             */
+            public void setNext(Subscription s) {
+                do {
+                    State oldState = state.get();
+                    if (oldState.unsubscribed) {
+                        s.unsubscribe();
+                        return;
+                    }
+                    State newState = oldState.setNext(s);
+                    if (state.compareAndSet(oldState, newState)) {
+                        return;
+                    }
+                } while (true);
+            }
+            /**
+             * @return the current subscription
+             */
+            public Subscription get() {
+                return state.get().subscription;
+            }
+
+            @Override
+            public boolean isUnsubscribed() {
+                return state.get().unsubscribed;
+            }
+            
+        }
+    }
     /**
      * Parallelism available to a Scheduler.
      * <p>

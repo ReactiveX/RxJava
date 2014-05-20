@@ -16,14 +16,22 @@
 
 package rx.schedulers;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
 import rx.Observable;
 import rx.Scheduler;
+import rx.Scheduler.Worker;
+import rx.Subscription;
+import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Func1;
+import rx.subscriptions.CompositeSubscription;
 
 public class NewThreadSchedulerTest extends AbstractSchedulerConcurrencyTests {
 
@@ -57,5 +65,41 @@ public class NewThreadSchedulerTest extends AbstractSchedulerConcurrencyTests {
             }
         });
     }
+    @Test(timeout = 10000)
+    public void testPeriodicCanBeUnsubscribed() throws InterruptedException {
+        final Worker w = getScheduler().createWorker();
+        
+        final AtomicInteger counter = new AtomicInteger();
+        
+        final CompositeSubscription csub = new CompositeSubscription();
+        final CountDownLatch cdl = new CountDownLatch(1);
+        
+        Subscription s = w.schedulePeriodically(new Action0() {
 
+            @Override
+            public void call() {
+                try {
+                    cdl.await();
+                } catch (InterruptedException ex) {
+                    throw new RuntimeException(ex);
+                }
+                int c = counter.incrementAndGet();
+                if (c == 3) {
+                    csub.unsubscribe();
+                    return;
+                }
+                if (c == 6) {
+                    w.unsubscribe();
+                }
+            }
+            
+        }, 100, 100, TimeUnit.MILLISECONDS);
+        csub.add(s);
+        
+        cdl.countDown();
+        
+        Thread.sleep(1500);
+        
+        assertEquals(3, counter.get());
+    }
 }
