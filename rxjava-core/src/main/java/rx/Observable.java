@@ -3916,7 +3916,8 @@ public class Observable<T> {
      * @throws IllegalArgumentException
      *             if {@code onComplete} is null
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable#wiki-onnext-oncompleted-and-onerror">RxJava Wiki: onNext, onCompleted, and onError</a>
-     * */
+     * @since 0.19
+     */
     public final void forEach(final Action1<? super T> onNext) {
         subscribe(onNext);
     }
@@ -3937,7 +3938,8 @@ public class Observable<T> {
      * @throws IllegalArgumentException
      *             if {@code onComplete} is null
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable#wiki-onnext-oncompleted-and-onerror">RxJava Wiki: onNext, onCompleted, and onError</a>
-     * */
+     * @since 0.19
+     */
     public final void forEach(final Action1<? super T> onNext, final Action1<Throwable> onError) {
         subscribe(onNext, onError);
     }
@@ -3960,7 +3962,8 @@ public class Observable<T> {
      * @throws IllegalArgumentException
      *             if {@code onComplete} is null
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable#wiki-onnext-oncompleted-and-onerror">RxJava Wiki: onNext, onCompleted, and onError</a>
-     * */
+     * @since 0.19
+     */
     public final void forEach(final Action1<? super T> onNext, final Action1<Throwable> onError, final Action0 onComplete) {
         subscribe(onNext, onError, onComplete);
     }
@@ -4195,6 +4198,7 @@ public class Observable<T> {
      * @return an Observable that emits only the first {@code num} items emitted by the source Observable, or
      *         all of the items from the source Observable if that Observable emits fewer than {@code num} items
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#wiki-take">RxJava Wiki: take()</a>
+     * @since 0.19
      */
     public final Observable<T> limit(int num) {
         return take(num);
