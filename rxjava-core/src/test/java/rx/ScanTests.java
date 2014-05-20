@@ -40,7 +40,7 @@ public class ScanTests {
 
                 })
                 .take(10)
-                .toBlockingObservable().forEach(new Action1<Map<String, String>>() {
+                .toBlocking().forEach(new Action1<Map<String, String>>() {
 
                     @Override
                     public void call(Map<String, String> v) {

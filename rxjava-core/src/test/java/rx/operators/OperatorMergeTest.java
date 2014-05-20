@@ -159,7 +159,7 @@ public class OperatorMergeTest {
         });
 
         final AtomicInteger count = new AtomicInteger();
-        Observable.merge(source).take(6).toBlockingObservable().forEach(new Action1<Long>() {
+        Observable.merge(source).take(6).toBlocking().forEach(new Action1<Long>() {
 
             @Override
             public void call(Long v) {

@@ -60,7 +60,7 @@ public class OperatorParallelTest {
                         });
                     }
                 })
-                .toBlockingObservable().forEach(new Action1<Integer[]>() {
+                .toBlocking().forEach(new Action1<Integer[]>() {
 
                     @Override
                     public void call(Integer[] v) {
@@ -94,7 +94,7 @@ public class OperatorParallelTest {
 
                         });
                     }
-                }).toBlockingObservable().forEach(new Action1<String>() {
+                }).toBlocking().forEach(new Action1<String>() {
 
             @Override
             public void call(String v) {

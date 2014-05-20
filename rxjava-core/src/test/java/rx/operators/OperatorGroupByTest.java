@@ -137,7 +137,7 @@ public class OperatorGroupByTest {
 
         final ConcurrentHashMap<K, Collection<V>> result = new ConcurrentHashMap<K, Collection<V>>();
 
-        observable.toBlockingObservable().forEach(new Action1<GroupedObservable<K, V>>() {
+        observable.toBlocking().forEach(new Action1<GroupedObservable<K, V>>() {
 
             @Override
             public void call(final GroupedObservable<K, V> o) {
@@ -640,7 +640,7 @@ public class OperatorGroupByTest {
                 }
             }
 
-        }).toBlockingObservable().forEach(new Action1<String>() {
+        }).toBlocking().forEach(new Action1<String>() {
 
             @Override
             public void call(String s) {
@@ -732,7 +732,7 @@ public class OperatorGroupByTest {
                 System.err.println("outer notification => " + t1);
             }
 
-        }).toBlockingObservable().forEach(new Action1<String>() {
+        }).toBlocking().forEach(new Action1<String>() {
 
             @Override
             public void call(String s) {
@@ -809,7 +809,7 @@ public class OperatorGroupByTest {
                 }
             }
 
-        }).toBlockingObservable().forEach(new Action1<String>() {
+        }).toBlocking().forEach(new Action1<String>() {
 
             @Override
             public void call(String s) {
@@ -865,7 +865,7 @@ public class OperatorGroupByTest {
                 System.out.println("notification => " + t1);
             }
 
-        }).toBlockingObservable().forEach(new Action1<String>() {
+        }).toBlocking().forEach(new Action1<String>() {
 
             @Override
             public void call(String s) {
@@ -913,7 +913,7 @@ public class OperatorGroupByTest {
                 });
             }
 
-        }).toBlockingObservable().forEach(new Action1<String>() {
+        }).toBlocking().forEach(new Action1<String>() {
 
             @Override
             public void call(String s) {

@@ -53,7 +53,7 @@ public class OperatorMergeMaxConcurrentTest {
             os.add(Observable.from("one", "two", "three", "four", "five").subscribeOn(Schedulers.newThread()));
 
             List<String> expected = Arrays.asList("one", "two", "three", "four", "five", "one", "two", "three", "four", "five", "one", "two", "three", "four", "five");
-            Iterator<String> iter = Observable.merge(os, 1).toBlockingObservable().toIterable().iterator();
+            Iterator<String> iter = Observable.merge(os, 1).toBlocking().toIterable().iterator();
             List<String> actual = new ArrayList<String>();
             while (iter.hasNext()) {
                 actual.add(iter.next());
@@ -78,7 +78,7 @@ public class OperatorMergeMaxConcurrentTest {
                 os.add(Observable.create(sco));
             }
 
-            Iterator<String> iter = Observable.merge(os, maxConcurrent).toBlockingObservable().toIterable().iterator();
+            Iterator<String> iter = Observable.merge(os, maxConcurrent).toBlocking().toIterable().iterator();
             List<String> actual = new ArrayList<String>();
             while (iter.hasNext()) {
                 actual.add(iter.next());
@@ -134,7 +134,7 @@ public class OperatorMergeMaxConcurrentTest {
         for (int i = 0; i < n; i++) {
             sourceList.add(Observable.just(i));
         }
-        Iterator<Integer> it = Observable.merge(Observable.from(sourceList), 1).toBlockingObservable().getIterator();
+        Iterator<Integer> it = Observable.merge(Observable.from(sourceList), 1).toBlocking().getIterator();
         int j = 0;
         while (it.hasNext()) {
             assertEquals((Integer)j, it.next());
@@ -149,7 +149,7 @@ public class OperatorMergeMaxConcurrentTest {
         for (int i = 0; i < n; i++) {
             sourceList.add(Observable.just(i));
         }
-        Iterator<Integer> it = Observable.merge(Observable.from(sourceList), 1).take(n / 2).toBlockingObservable().getIterator();
+        Iterator<Integer> it = Observable.merge(Observable.from(sourceList), 1).take(n / 2).toBlocking().getIterator();
         int j = 0;
         while (it.hasNext()) {
             assertEquals((Integer)j, it.next());

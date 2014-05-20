@@ -48,7 +48,7 @@ public class AssertObservable {
      *            Observable with actual values
      */
     public static <T> void assertObservableEqualsBlocking(String message, Observable<T> expected, Observable<T> actual) {
-        assertObservableEquals(expected, actual).toBlockingObservable().lastOrDefault(null);
+        assertObservableEquals(expected, actual).toBlocking().lastOrDefault(null);
     }
 
     /**

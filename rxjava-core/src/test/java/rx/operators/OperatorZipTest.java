@@ -1036,7 +1036,7 @@ public class OperatorZipTest {
             }
         });
 
-        o.toBlockingObservable().last();
+        o.toBlocking().last();
     }
 
     Observable<Integer> OBSERVABLE_OF_5_INTEGERS = OBSERVABLE_OF_5_INTEGERS(new AtomicInteger());

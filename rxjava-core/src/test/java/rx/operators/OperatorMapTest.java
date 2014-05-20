@@ -193,7 +193,7 @@ public class OperatorMapTest {
                     public Integer call(Integer arg0) {
                         throw new IllegalArgumentException("any error");
                     }
-                }).toBlockingObservable().single();
+                }).toBlocking().single();
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -210,7 +210,7 @@ public class OperatorMapTest {
                 });
 
         // block for response, expecting exception thrown
-        m.toBlockingObservable().last();
+        m.toBlocking().last();
     }
 
     /**
@@ -225,7 +225,7 @@ public class OperatorMapTest {
                 return i;
             }
 
-        }).toBlockingObservable().single();
+        }).toBlocking().single();
     }
 
     /**
@@ -240,7 +240,7 @@ public class OperatorMapTest {
                 return i;
             }
 
-        }).toBlockingObservable().single();
+        }).toBlocking().single();
     }
 
     /**
@@ -256,7 +256,7 @@ public class OperatorMapTest {
                 return i / 0;
             }
 
-        }).toBlockingObservable().single();
+        }).toBlocking().single();
     }
 
     @Test(expected = OnErrorNotImplementedException.class)

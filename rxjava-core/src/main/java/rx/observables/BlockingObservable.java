@@ -35,7 +35,7 @@ import rx.operators.BlockingOperatorToIterator;
  * An extension of {@link Observable} that provides blocking operators.
  * <p>
  * You construct a <code>BlockingObservable</code> from an
- * <code>Observable</code> with {@link #from(Observable)} or {@link Observable#toBlockingObservable()} <p>
+ * <code>Observable</code> with {@link #from(Observable)} or {@link Observable#toBlocking()} <p>
  * The documentation for this interface makes use of a form of marble diagram
  * that has been modified to illustrate blocking operators. The following legend
  * explains these marble diagrams:

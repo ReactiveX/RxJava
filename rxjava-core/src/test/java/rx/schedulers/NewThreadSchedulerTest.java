@@ -49,7 +49,7 @@ public class NewThreadSchedulerTest extends AbstractSchedulerConcurrencyTests {
             }
         });
 
-        o.subscribeOn(Schedulers.io()).toBlockingObservable().forEach(new Action1<String>() {
+        o.subscribeOn(Schedulers.io()).toBlocking().forEach(new Action1<String>() {
 
             @Override
             public void call(String t) {
