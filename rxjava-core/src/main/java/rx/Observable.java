@@ -5325,6 +5325,23 @@ public class Observable<T> {
     }
 
     /**
+     * Returns a new {@link Observable} that multicasts (shares) the original {@link Observable}. 
+     * As long as there is more than 1 {@link Subscriber} this {@link Observable} will be subscribed and emitting data. 
+     * When all subscribers have unsubscribed it will unsubscribe from the source {@link Observable}. 
+     * <p>
+     * This is an alias for {@link #publish().refCount()}.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/publishConnect.png">
+     * 
+     * @return a {@link Observable} that upon connection causes the source Observable to emit items
+     *         to its {@link Observer}s
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Connectable-Observable-Operators#wiki-observablepublish-and-observablemulticast">RxJava Wiki: publish()</a>
+     */
+    public final Observable<T> share() {
+        return publish().refCount();
+    }
+    
+    /**
      * If the source Observable completes after emitting a single item, return an Observable that emits that
      * item. If the source Observable emits more than one item or no items, throw an {@code NoSuchElementException}.
      * <p>
