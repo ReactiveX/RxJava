@@ -46,7 +46,7 @@ public class MergeTests {
 
         Observable<Observable<Media>> os = Observable.from(o1, o2);
 
-        List<Media> values = Observable.merge(os).toList().toBlockingObservable().single();
+        List<Media> values = Observable.merge(os).toList().toBlocking().single();
         
         assertEquals(4, values.size());
     }
@@ -58,7 +58,7 @@ public class MergeTests {
 
         Observable<Observable<Media>> os = Observable.from(o1, o2);
 
-        List<Media> values = Observable.merge(os).toList().toBlockingObservable().single();
+        List<Media> values = Observable.merge(os).toList().toBlocking().single();
 
         assertEquals(5, values.size());
     }
@@ -68,7 +68,7 @@ public class MergeTests {
         Observable<Movie> o1 = Observable.from(new HorrorMovie(), new Movie());
         Observable<Media> o2 = Observable.from(new Media(), new HorrorMovie());
 
-        List<Media> values = Observable.merge(o1, o2).toList().toBlockingObservable().single();
+        List<Media> values = Observable.merge(o1, o2).toList().toBlocking().single();
 
         assertTrue(values.get(0) instanceof HorrorMovie);
         assertTrue(values.get(1) instanceof Movie);
@@ -92,7 +92,7 @@ public class MergeTests {
 
         Observable<Media> o2 = Observable.from(new Media(), new HorrorMovie());
 
-        List<Media> values = Observable.merge(o1, o2).toList().toBlockingObservable().single();
+        List<Media> values = Observable.merge(o1, o2).toList().toBlocking().single();
 
         assertTrue(values.get(0) instanceof HorrorMovie);
         assertTrue(values.get(1) instanceof Movie);

@@ -121,7 +121,7 @@ public class OperatorTakeWhileTest {
             public Boolean call(String s) {
                 return false;
             }
-        }).toBlockingObservable().lastOrDefault("");
+        }).toBlocking().lastOrDefault("");
     }
 
     @Test

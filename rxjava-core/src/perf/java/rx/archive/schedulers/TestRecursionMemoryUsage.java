@@ -66,6 +66,6 @@ public class TestRecursionMemoryUsage {
                     }
                 });
             }
-        }).toBlockingObservable().last();
+        }).toBlocking().last();
     }
 }

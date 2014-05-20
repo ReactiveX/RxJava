@@ -35,20 +35,20 @@ public class OperatorLastTest {
     @Test
     public void testLastWithElements() {
         Observable<Integer> last = Observable.from(1, 2, 3).last();
-        assertEquals(3, last.toBlockingObservable().single().intValue());
+        assertEquals(3, last.toBlocking().single().intValue());
     }
 
     @Test(expected = NoSuchElementException.class)
     public void testLastWithNoElements() {
         Observable<?> last = Observable.empty().last();
-        last.toBlockingObservable().single();
+        last.toBlocking().single();
     }
 
     @Test
     public void testLastMultiSubscribe() {
         Observable<Integer> last = Observable.from(1, 2, 3).last();
-        assertEquals(3, last.toBlockingObservable().single().intValue());
-        assertEquals(3, last.toBlockingObservable().single().intValue());
+        assertEquals(3, last.toBlocking().single().intValue());
+        assertEquals(3, last.toBlocking().single().intValue());
     }
 
     @Test

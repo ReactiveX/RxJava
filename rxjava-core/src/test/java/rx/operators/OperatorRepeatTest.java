@@ -48,7 +48,7 @@ public class OperatorRepeatTest {
                 o.onNext(count.incrementAndGet());
                 o.onCompleted();
             }
-        }).repeat(Schedulers.computation()).take(NUM).toBlockingObservable().last();
+        }).repeat(Schedulers.computation()).take(NUM).toBlocking().last();
 
         assertEquals(NUM, value);
     }
@@ -56,13 +56,13 @@ public class OperatorRepeatTest {
     @Test(timeout = 2000)
     public void testRepeatTake() {
         Observable<Integer> xs = Observable.from(1, 2);
-        Object[] ys = xs.repeat(Schedulers.newThread()).take(4).toList().toBlockingObservable().last().toArray();
+        Object[] ys = xs.repeat(Schedulers.newThread()).take(4).toList().toBlocking().last().toArray();
         assertArrayEquals(new Object[] { 1, 2, 1, 2 }, ys);
     }
 
     @Test(timeout = 20000)
     public void testNoStackOverFlow() {
-        Observable.from(1).repeat(Schedulers.newThread()).take(100000).toBlockingObservable().last();
+        Observable.from(1).repeat(Schedulers.newThread()).take(100000).toBlocking().last();
     }
 
     @Test
@@ -92,7 +92,7 @@ public class OperatorRepeatTest {
                 return t1;
             }
 
-        }).take(4).toList().toBlockingObservable().last().toArray();
+        }).take(4).toList().toBlocking().last().toArray();
 
         assertEquals(2, counter.get());
         assertArrayEquals(new Object[] { 1, 2, 1, 2 }, ys);

@@ -235,7 +235,7 @@ public class OperatorObserveOnTest {
             }
 
         }).observeOn(Schedulers.newThread())
-                .toBlockingObservable().forEach(new Action1<Integer>() {
+                .toBlocking().forEach(new Action1<Integer>() {
 
                     @Override
                     public void call(Integer t1) {
@@ -262,7 +262,7 @@ public class OperatorObserveOnTest {
             }
 
         }).observeOn(Schedulers.computation())
-                .toBlockingObservable().forEach(new Action1<Integer>() {
+                .toBlocking().forEach(new Action1<Integer>() {
 
                     @Override
                     public void call(Integer t1) {
@@ -302,7 +302,7 @@ public class OperatorObserveOnTest {
             }
 
         }).observeOn(Schedulers.computation())
-                .toBlockingObservable().forEach(new Action1<Integer>() {
+                .toBlocking().forEach(new Action1<Integer>() {
 
                     @Override
                     public void call(Integer t1) {

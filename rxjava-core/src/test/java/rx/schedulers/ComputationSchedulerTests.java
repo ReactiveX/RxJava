@@ -102,7 +102,7 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
             }
         });
 
-        o.subscribeOn(Schedulers.computation()).toBlockingObservable().forEach(new Action1<String>() {
+        o.subscribeOn(Schedulers.computation()).toBlocking().forEach(new Action1<String>() {
 
             @Override
             public void call(String t) {
@@ -129,7 +129,7 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
             }
         });
 
-        o.toBlockingObservable().forEach(new Action1<String>() {
+        o.toBlocking().forEach(new Action1<String>() {
 
             @Override
             public void call(String t) {

@@ -69,7 +69,7 @@ public class ZipTests {
                     }
                 })
                 .take(10)
-                .toBlockingObservable().forEach(new Action1<Map<String, String>>() {
+                .toBlocking().forEach(new Action1<Map<String, String>>() {
 
                     @Override
                     public void call(Map<String, String> v) {
@@ -89,11 +89,11 @@ public class ZipTests {
         Observable<HorrorMovie> horrors = Observable.from(new HorrorMovie());
         Observable<CoolRating> ratings = Observable.from(new CoolRating());
 
-        Observable.<Movie, CoolRating, Result> zip(horrors, ratings, combine).toBlockingObservable().forEach(action);
-        Observable.<Movie, CoolRating, Result> zip(horrors, ratings, combine).toBlockingObservable().forEach(action);
-        Observable.<Media, Rating, ExtendedResult> zip(horrors, ratings, combine).toBlockingObservable().forEach(extendedAction);
-        Observable.<Media, Rating, Result> zip(horrors, ratings, combine).toBlockingObservable().forEach(action);
-        Observable.<Media, Rating, ExtendedResult> zip(horrors, ratings, combine).toBlockingObservable().forEach(action);
+        Observable.<Movie, CoolRating, Result> zip(horrors, ratings, combine).toBlocking().forEach(action);
+        Observable.<Movie, CoolRating, Result> zip(horrors, ratings, combine).toBlocking().forEach(action);
+        Observable.<Media, Rating, ExtendedResult> zip(horrors, ratings, combine).toBlocking().forEach(extendedAction);
+        Observable.<Media, Rating, Result> zip(horrors, ratings, combine).toBlocking().forEach(action);
+        Observable.<Media, Rating, ExtendedResult> zip(horrors, ratings, combine).toBlocking().forEach(action);
 
         Observable.<Movie, CoolRating, Result> zip(horrors, ratings, combine);
     }
@@ -120,7 +120,7 @@ public class ZipTests {
             }
         });
 
-        assertSame(invoked, result.toBlockingObservable().last());
+        assertSame(invoked, result.toBlocking().last());
     }
 
     Func2<Media, Rating, ExtendedResult> combine = new Func2<Media, Rating, ExtendedResult>() {

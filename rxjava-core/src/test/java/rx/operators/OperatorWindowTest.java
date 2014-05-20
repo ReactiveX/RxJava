@@ -62,7 +62,7 @@ public class OperatorWindowTest {
                 return xs.toList();
             }
         }))
-                .toBlockingObservable()
+                .toBlocking()
                 .forEach(new Action1<List<T>>() {
                     @Override
                     public void call(List<T> xs) {

@@ -38,7 +38,7 @@ public class GroupByTests {
                     }
 
                 }).take(1)
-                .toBlockingObservable().forEach(new Action1<GroupedObservable<String, Event>>() {
+                .toBlocking().forEach(new Action1<GroupedObservable<String, Event>>() {
 
                     @Override
                     public void call(GroupedObservable<String, Event> g) {
@@ -79,7 +79,7 @@ public class GroupByTests {
 
                 })
                 .take(20)
-                .toBlockingObservable().forEach(new Action1<String>() {
+                .toBlocking().forEach(new Action1<String>() {
 
                     @Override
                     public void call(String v) {

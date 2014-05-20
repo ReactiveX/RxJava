@@ -74,9 +74,9 @@ public class ObservableTests {
     @Test
     public void fromArray() {
         String[] items = new String[] { "one", "two", "three" };
-        assertEquals(new Integer(3), Observable.from(items).count().toBlockingObservable().single());
-        assertEquals("two", Observable.from(items).skip(1).take(1).toBlockingObservable().single());
-        assertEquals("three", Observable.from(items).takeLast(1).toBlockingObservable().single());
+        assertEquals(new Integer(3), Observable.from(items).count().toBlocking().single());
+        assertEquals("two", Observable.from(items).skip(1).take(1).toBlocking().single());
+        assertEquals("three", Observable.from(items).takeLast(1).toBlocking().single());
     }
 
     @Test
@@ -86,26 +86,26 @@ public class ObservableTests {
         items.add("two");
         items.add("three");
 
-        assertEquals(new Integer(3), Observable.from(items).count().toBlockingObservable().single());
-        assertEquals("two", Observable.from(items).skip(1).take(1).toBlockingObservable().single());
-        assertEquals("three", Observable.from(items).takeLast(1).toBlockingObservable().single());
+        assertEquals(new Integer(3), Observable.from(items).count().toBlocking().single());
+        assertEquals("two", Observable.from(items).skip(1).take(1).toBlocking().single());
+        assertEquals("three", Observable.from(items).takeLast(1).toBlocking().single());
     }
 
     @Test
     public void fromArityArgs3() {
         Observable<String> items = Observable.from("one", "two", "three");
 
-        assertEquals(new Integer(3), items.count().toBlockingObservable().single());
-        assertEquals("two", items.skip(1).take(1).toBlockingObservable().single());
-        assertEquals("three", items.takeLast(1).toBlockingObservable().single());
+        assertEquals(new Integer(3), items.count().toBlocking().single());
+        assertEquals("two", items.skip(1).take(1).toBlocking().single());
+        assertEquals("three", items.takeLast(1).toBlocking().single());
     }
 
     @Test
     public void fromArityArgs1() {
         Observable<String> items = Observable.from("one");
 
-        assertEquals(new Integer(1), items.count().toBlockingObservable().single());
-        assertEquals("one", items.takeLast(1).toBlockingObservable().single());
+        assertEquals(new Integer(1), items.count().toBlocking().single());
+        assertEquals("one", items.takeLast(1).toBlocking().single());
     }
 
     @Test
@@ -253,7 +253,7 @@ public class ObservableTests {
                 return t1 + t2;
             }
 
-        }).toBlockingObservable().forEach(new Action1<Integer>() {
+        }).toBlocking().forEach(new Action1<Integer>() {
 
             @Override
             public void call(Integer t1) {
@@ -279,7 +279,7 @@ public class ObservableTests {
                 return t1 + t2;
             }
 
-        }).toBlockingObservable().last();
+        }).toBlocking().last();
 
         assertEquals(1, value);
     }
@@ -970,7 +970,7 @@ public class ObservableTests {
             public void call(List<Integer> list, Integer v) {
                 list.add(v);
             }
-        }).toBlockingObservable().last();
+        }).toBlocking().last();
 
         assertEquals(3, list.size());
         assertEquals(1, list.get(0).intValue());
@@ -989,7 +989,7 @@ public class ObservableTests {
                 }
                 sb.append(v);
             }
-        }).toBlockingObservable().last().toString();
+        }).toBlocking().last().toString();
 
         assertEquals("1-2-3", value);
     }

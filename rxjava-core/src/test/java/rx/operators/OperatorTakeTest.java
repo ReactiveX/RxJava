@@ -83,7 +83,7 @@ public class OperatorTakeTest {
             public Integer call(Integer t1) {
                 throw new IllegalArgumentException("some error");
             }
-        }).toBlockingObservable().single();
+        }).toBlocking().single();
     }
 
     @Test
@@ -237,7 +237,7 @@ public class OperatorTakeTest {
                 }
             }
 
-        }).take(100).take(1).toBlockingObservable().forEach(new Action1<Integer>() {
+        }).take(100).take(1).toBlocking().forEach(new Action1<Integer>() {
 
             @Override
             public void call(Integer t1) {

@@ -79,7 +79,7 @@ public class BlockingOperatorMostRecentTest {
     @Test(timeout = 1000)
     public void testSingleSourceManyIterators() {
         TestScheduler scheduler = new TestScheduler();
-        BlockingObservable<Long> source = Observable.interval(1, TimeUnit.SECONDS, scheduler).take(10).toBlockingObservable();
+        BlockingObservable<Long> source = Observable.interval(1, TimeUnit.SECONDS, scheduler).take(10).toBlocking();
 
         Iterable<Long> iter = source.mostRecent(-1L);
 
