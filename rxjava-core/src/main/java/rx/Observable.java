@@ -7061,6 +7061,7 @@ public class Observable<T> {
      *
      * @return a {@code BlockingObservable} version of this Observable
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Blocking-Observable-Operators">RxJava Wiki: Blocking Observable Observers</a>
+     * @since 0.19
      */
     public final BlockingObservable<T> toBlocking() {
         return BlockingObservable.from(this);
