@@ -3903,6 +3903,69 @@ public class Observable<T> {
     }
 
     /**
+     * Subscribes to the {@link Observable} and receives notifications for each element.
+     * <p>
+     * Alias to {@link #subscribe(Action1)}
+     * 
+     * @param onNext
+     *            {@link Action1} to execute for each item.
+     * @throws IllegalArgumentException
+     *             if {@code onNext} is null
+     * @throws IllegalArgumentException
+     *             if {@code onError} is null
+     * @throws IllegalArgumentException
+     *             if {@code onComplete} is null
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable#wiki-onnext-oncompleted-and-onerror">RxJava Wiki: onNext, onCompleted, and onError</a>
+     * */
+    public final void forEach(final Action1<? super T> onNext) {
+        subscribe(onNext);
+    }
+    
+    /**
+     * Subscribes to the {@link Observable} and receives notifications for each element and error events.
+     * <p>
+     * Alias to {@link #subscribe(Action1, Action1)}
+     * 
+     * @param onNext
+     *            {@link Action1} to execute for each item.
+     * @param onError
+     *            {@link Action1} to execute when an error is emitted.
+     * @throws IllegalArgumentException
+     *             if {@code onNext} is null
+     * @throws IllegalArgumentException
+     *             if {@code onError} is null
+     * @throws IllegalArgumentException
+     *             if {@code onComplete} is null
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable#wiki-onnext-oncompleted-and-onerror">RxJava Wiki: onNext, onCompleted, and onError</a>
+     * */
+    public final void forEach(final Action1<? super T> onNext, final Action1<Throwable> onError) {
+        subscribe(onNext, onError);
+    }
+    
+    /**
+     * Subscribes to the {@link Observable} and receives notifications for each element and the terminal events.
+     * <p>
+     * Alias to {@link #subscribe(Action1, Action1, Action0)}
+     * 
+     * @param onNext
+     *            {@link Action1} to execute for each item.
+     * @param onError
+     *            {@link Action1} to execute when an error is emitted.
+     * @param onComplete
+     *            {@link Action0} to execute when completion is signalled.
+     * @throws IllegalArgumentException
+     *             if {@code onNext} is null
+     * @throws IllegalArgumentException
+     *             if {@code onError} is null
+     * @throws IllegalArgumentException
+     *             if {@code onComplete} is null
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable#wiki-onnext-oncompleted-and-onerror">RxJava Wiki: onNext, onCompleted, and onError</a>
+     * */
+    public final void forEach(final Action1<? super T> onNext, final Action1<Throwable> onError, final Action0 onComplete) {
+        subscribe(onNext, onError, onComplete);
+    }
+    
+    /**
      * Groups the items emitted by an Observable according to a specified criterion, and emits these grouped
      * items as {@link GroupedObservable}s, one {@code GroupedObservable} per group.
      * <p>
@@ -4117,6 +4180,26 @@ public class Observable<T> {
         return filter(predicate).takeLast(1).singleOrDefault(defaultValue);
     }
 
+    /**
+     * Returns an Observable that emits only the first {@code num} items emitted by the source Observable.
+     * <p>
+     * Alias of {@link #take(int)} to match Java 8 Stream API naming convention.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/take.png">
+     * <p>
+     * This method returns an Observable that will invoke a subscribing {@link Observer}'s {@link Observer#onNext onNext} function a maximum of {@code num} times before invoking
+     * {@link Observer#onCompleted onCompleted}.
+     * 
+     * @param num
+     *            the maximum number of items to emit
+     * @return an Observable that emits only the first {@code num} items emitted by the source Observable, or
+     *         all of the items from the source Observable if that Observable emits fewer than {@code num} items
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#wiki-take">RxJava Wiki: take()</a>
+     */
+    public final Observable<T> limit(int num) {
+        return take(num);
+    }
+    
     /**
      * Returns an Observable that counts the total number of items emitted by the source Observable and emits
      * this count as a 64-bit Long.
