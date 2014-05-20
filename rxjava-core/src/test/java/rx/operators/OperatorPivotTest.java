@@ -16,6 +16,7 @@
 
 package rx.operators;
 
+import java.util.Random;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -239,12 +240,16 @@ public class OperatorPivotTest {
             @Override
             public Observable<String> call(final GroupedObservable<Boolean, GroupedObservable<String, Integer>> outerGroup) {
                 return outerGroup.flatMap(new Func1<GroupedObservable<String, Integer>, Observable<String>>() {
-
                     @Override
                     public Observable<String> call(final GroupedObservable<String, Integer> innerGroup) {
                         final AtomicInteger threadsPerGroup = new AtomicInteger();
                         return innerGroup.take(100).map(new Func1<Integer, String>() {
-
+                            final ThreadLocal<Random> tlr = new ThreadLocal<Random>() {
+                                @Override
+                                protected Random initialValue() {
+                                    return new Random();
+                                }
+                            };
                             @Override
                             public String call(Integer i) {
                                 int outerThreadCount = outerThreads.incrementAndGet();
@@ -256,7 +261,11 @@ public class OperatorPivotTest {
                                     throw new RuntimeException("more than 1 thread for this group [" + innerGroup.getKey() + "]: " + innerThreadCount + " (before)");
                                 }
                                 try {
+                                    // give the other threads a shot.
+                                    Thread.sleep(tlr.get().nextInt(10) + 1);
                                     return (outerGroup.getKey() ? "Even" : "Odd ") + " => from source: " + innerGroup.getKey() + " Value: " + i;
+                                } catch (InterruptedException ex) {
+                                    throw new RuntimeException("Interrupted [" + innerGroup.getKey() + "]: " + i);
                                 } finally {
                                     int outerThreadCountAfter = outerThreads.decrementAndGet();
                                     setMaxConcurrency(maxOuterConcurrency, outerThreadCountAfter);

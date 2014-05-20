@@ -17,7 +17,7 @@ package rx.lang.scala.subjects
 
 import rx.lang.scala.Subject
 
-private [scala] object PublishSubject {
+object PublishSubject {
   def apply[T](): PublishSubject[T] =  new PublishSubject[T](rx.subjects.PublishSubject.create[T]())
 }
 

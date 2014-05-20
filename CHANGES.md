@@ -1,5 +1,13 @@
 # RxJava Releases #
 
+### Version 0.18.3 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.18.3%22)) ###
+
+* [Pull 1161] (https://github.com/Netflix/RxJava/pull/1161) Removed use of deprecated API from tests & operators
+* [Pull 1162] (https://github.com/Netflix/RxJava/pull/1162) fix to remove drift from schedulePeriodic
+* [Pull 1159] (https://github.com/Netflix/RxJava/pull/1159) Rxscala improvement
+* [Pull 1164] (https://github.com/Netflix/RxJava/pull/1164) JMH Perf Tests for Schedulers.computation
+* [Pull 1158] (https://github.com/Netflix/RxJava/pull/1158) Scheduler correctness improvements.
+
 ### Version 0.18.2 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.18.2%22)) ###
 
 

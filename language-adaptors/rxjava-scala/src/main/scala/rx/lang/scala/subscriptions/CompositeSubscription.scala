@@ -50,9 +50,9 @@ class CompositeSubscription private[scala] (override val asJavaSubscription: rx.
 
   /**
    * Adds a subscription to the group,
-   * or unsubscribes immediately is the [[rx.subscriptions.CompositeSubscription]] is unsubscribed.
+   * or unsubscribes immediately is the [[rx.lang.scala.subscriptions.CompositeSubscription]] is unsubscribed.
    * @param subscription the subscription to be added.
-   * @return the [[rx.subscriptions.CompositeSubscription]] itself.
+   * @return the [[rx.lang.scala.subscriptions.CompositeSubscription]] itself.
    */
   def +=(subscription: Subscription): this.type = {
     asJavaSubscription.add(subscription.asJavaSubscription)
@@ -62,7 +62,7 @@ class CompositeSubscription private[scala] (override val asJavaSubscription: rx.
   /**
    * Removes and unsubscribes a subscription to the group,
    * @param subscription the subscription be removed.
-   * @return the [[rx.subscriptions.CompositeSubscription]] itself.
+   * @return the [[rx.lang.scala.subscriptions.CompositeSubscription]] itself.
    */
   def -=(subscription: Subscription): this.type = {
     asJavaSubscription.remove(subscription.asJavaSubscription)
