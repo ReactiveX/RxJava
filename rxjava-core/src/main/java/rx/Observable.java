@@ -3903,6 +3903,69 @@ public class Observable<T> {
     }
 
     /**
+     * Subscribes to the {@link Observable} and receives notifications for each element.
+     * <p>
+     * Alias to {@link #subscribe(Action1)}
+     * 
+     * @param onNext
+     *            {@link Action1} to execute for each item.
+     * @throws IllegalArgumentException
+     *             if {@code onNext} is null
+     * @throws IllegalArgumentException
+     *             if {@code onError} is null
+     * @throws IllegalArgumentException
+     *             if {@code onComplete} is null
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable#wiki-onnext-oncompleted-and-onerror">RxJava Wiki: onNext, onCompleted, and onError</a>
+     * */
+    public final void forEach(final Action1<? super T> onNext) {
+        subscribe(onNext);
+    }
+    
+    /**
+     * Subscribes to the {@link Observable} and receives notifications for each element and error events.
+     * <p>
+     * Alias to {@link #subscribe(Action1, Action1)}
+     * 
+     * @param onNext
+     *            {@link Action1} to execute for each item.
+     * @param onError
+     *            {@link Action1} to execute when an error is emitted.
+     * @throws IllegalArgumentException
+     *             if {@code onNext} is null
+     * @throws IllegalArgumentException
+     *             if {@code onError} is null
+     * @throws IllegalArgumentException
+     *             if {@code onComplete} is null
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable#wiki-onnext-oncompleted-and-onerror">RxJava Wiki: onNext, onCompleted, and onError</a>
+     * */
+    public final void forEach(final Action1<? super T> onNext, final Action1<Throwable> onError) {
+        subscribe(onNext, onError);
+    }
+    
+    /**
+     * Subscribes to the {@link Observable} and receives notifications for each element and the terminal events.
+     * <p>
+     * Alias to {@link #subscribe(Action1, Action1, Action0)}
+     * 
+     * @param onNext
+     *            {@link Action1} to execute for each item.
+     * @param onError
+     *            {@link Action1} to execute when an error is emitted.
+     * @param onComplete
+     *            {@link Action0} to execute when completion is signalled.
+     * @throws IllegalArgumentException
+     *             if {@code onNext} is null
+     * @throws IllegalArgumentException
+     *             if {@code onError} is null
+     * @throws IllegalArgumentException
+     *             if {@code onComplete} is null
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable#wiki-onnext-oncompleted-and-onerror">RxJava Wiki: onNext, onCompleted, and onError</a>
+     * */
+    public final void forEach(final Action1<? super T> onNext, final Action1<Throwable> onError, final Action0 onComplete) {
+        subscribe(onNext, onError, onComplete);
+    }
+    
+    /**
      * Groups the items emitted by an Observable according to a specified criterion, and emits these grouped
      * items as {@link GroupedObservable}s, one {@code GroupedObservable} per group.
      * <p>
