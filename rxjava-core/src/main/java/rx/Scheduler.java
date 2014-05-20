@@ -104,16 +104,37 @@ public abstract class Scheduler {
          */
         public Subscription schedulePeriodically(final Action0 action, long initialDelay, long period, TimeUnit unit) {
             final long periodInNanos = unit.toNanos(period);
-            final long startInNanos = TimeUnit.MILLISECONDS.toNanos(now()) + unit.toNanos(initialDelay);
+            final long startInMillis = now();
+
+            // do math on millis and nanos separately to support dates and runtimes after the year 2261
+            // using millis ensures support for 292million years, while keeping the remainder in nanos 
+            // allows high resolution.
+            final long initialOffsetInMillis = TimeUnit.MILLISECONDS.toMillis(initialDelay);
+            final long initialRemainderInNanos = unit.toNanos(initialDelay) - TimeUnit.MILLISECONDS.toNanos(initialOffsetInMillis);
+            final long periodOffsetInMillis = TimeUnit.MILLISECONDS.toMillis(period);
+            final long periodRemainderInNanos = unit.toNanos(period) - TimeUnit.MILLISECONDS.toNanos(periodOffsetInMillis);
 
             final Action0 recursiveAction = new Action0() {
-                long count = 0;
+                long accumulatedInMillis = startInMillis + initialOffsetInMillis;
+                long accumulatedRemainderInNanos = initialRemainderInNanos;
+
                 @Override
                 public void call() {
                     if (!isUnsubscribed()) {
                         action.call();
-                        long nextTick = startInNanos + (++count * periodInNanos);
-                        schedule(this, nextTick - TimeUnit.MILLISECONDS.toNanos(now()), TimeUnit.NANOSECONDS);
+
+                        // move to next absolute time
+                        accumulatedInMillis += periodOffsetInMillis;
+                        accumulatedRemainderInNanos += periodRemainderInNanos;
+
+                        // move nanos to millis to keep nanos values small
+                        long adjustmentInMillis = TimeUnit.NANOSECONDS.toMillis(accumulatedRemainderInNanos);
+                        accumulatedInMillis += adjustmentInMillis;
+                        accumulatedRemainderInNanos -= TimeUnit.MILLISECONDS.toNanos(adjustmentInMillis);
+
+                        // the delay can be negative if action took longer than the period
+                        long delayForNextTickInNanos = TimeUnit.MILLISECONDS.toNanos(accumulatedInMillis - now()) + accumulatedRemainderInNanos;
+                        schedule(this, delayForNextTickInNanos, TimeUnit.NANOSECONDS);
                     }
                 }
             };
