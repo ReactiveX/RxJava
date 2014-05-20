@@ -15,11 +15,12 @@
  */
 package rx.operators;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import rx.Observable.Operator;
 import rx.Subscriber;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Returns an Observable that emits a single item, a list composed of all the items emitted by the
@@ -41,7 +42,7 @@ public final class OperatorToObservableList<T> implements Operator<List<T>, T> {
     public Subscriber<? super T> call(final Subscriber<? super List<T>> o) {
         return new Subscriber<T>(o) {
 
-            final List<T> list = new ArrayList<T>();
+            final List<T> list = new LinkedList<T>();
 
             @Override
             public void onCompleted() {
