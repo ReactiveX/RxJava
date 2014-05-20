@@ -33,7 +33,7 @@ public class BlockingOperatorLatestTest {
     public void testSimple() {
         TestScheduler scheduler = new TestScheduler();
 
-        BlockingObservable<Long> source = Observable.interval(1, TimeUnit.SECONDS, scheduler).take(10).toBlockingObservable();
+        BlockingObservable<Long> source = Observable.interval(1, TimeUnit.SECONDS, scheduler).take(10).toBlocking();
 
         Iterable<Long> iter = source.latest();
 
@@ -57,7 +57,7 @@ public class BlockingOperatorLatestTest {
     public void testSameSourceMultipleIterators() {
         TestScheduler scheduler = new TestScheduler();
 
-        BlockingObservable<Long> source = Observable.interval(1, TimeUnit.SECONDS, scheduler).take(10).toBlockingObservable();
+        BlockingObservable<Long> source = Observable.interval(1, TimeUnit.SECONDS, scheduler).take(10).toBlocking();
 
         Iterable<Long> iter = source.latest();
 
@@ -81,7 +81,7 @@ public class BlockingOperatorLatestTest {
 
     @Test(timeout = 1000, expected = NoSuchElementException.class)
     public void testEmpty() {
-        BlockingObservable<Long> source = Observable.<Long> empty().toBlockingObservable();
+        BlockingObservable<Long> source = Observable.<Long> empty().toBlocking();
 
         Iterable<Long> iter = source.latest();
 
@@ -96,7 +96,7 @@ public class BlockingOperatorLatestTest {
     public void testSimpleJustNext() {
         TestScheduler scheduler = new TestScheduler();
 
-        BlockingObservable<Long> source = Observable.interval(1, TimeUnit.SECONDS, scheduler).take(10).toBlockingObservable();
+        BlockingObservable<Long> source = Observable.interval(1, TimeUnit.SECONDS, scheduler).take(10).toBlocking();
 
         Iterable<Long> iter = source.latest();
 
@@ -115,7 +115,7 @@ public class BlockingOperatorLatestTest {
     public void testHasNextThrows() {
         TestScheduler scheduler = new TestScheduler();
 
-        BlockingObservable<Long> source = Observable.<Long> error(new RuntimeException("Forced failure!"), scheduler).toBlockingObservable();
+        BlockingObservable<Long> source = Observable.<Long> error(new RuntimeException("Forced failure!"), scheduler).toBlocking();
 
         Iterable<Long> iter = source.latest();
 
@@ -130,7 +130,7 @@ public class BlockingOperatorLatestTest {
     public void testNextThrows() {
         TestScheduler scheduler = new TestScheduler();
 
-        BlockingObservable<Long> source = Observable.<Long> error(new RuntimeException("Forced failure!"), scheduler).toBlockingObservable();
+        BlockingObservable<Long> source = Observable.<Long> error(new RuntimeException("Forced failure!"), scheduler).toBlocking();
 
         Iterable<Long> iter = source.latest();
         Iterator<Long> it = iter.iterator();
@@ -143,7 +143,7 @@ public class BlockingOperatorLatestTest {
     @Test(timeout = 1000)
     public void testFasterSource() {
         PublishSubject<Integer> source = PublishSubject.create();
-        BlockingObservable<Integer> blocker = source.toBlockingObservable();
+        BlockingObservable<Integer> blocker = source.toBlocking();
 
         Iterable<Integer> iter = blocker.latest();
         Iterator<Integer> it = iter.iterator();

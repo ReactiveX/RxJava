@@ -130,7 +130,7 @@ public abstract class AbstractSchedulerTests {
 
         });
 
-        List<String> strings = m.toList().toBlockingObservable().last();
+        List<String> strings = m.toList().toBlocking().last();
 
         assertEquals(4, strings.size());
         // because flatMap does a merge there is no guarantee of order
@@ -333,7 +333,7 @@ public abstract class AbstractSchedulerTests {
         });
 
         final AtomicInteger lastValue = new AtomicInteger();
-        obs.toBlockingObservable().forEach(new Action1<Integer>() {
+        obs.toBlocking().forEach(new Action1<Integer>() {
 
             @Override
             public void call(Integer v) {

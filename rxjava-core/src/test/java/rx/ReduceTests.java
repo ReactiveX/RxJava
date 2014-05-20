@@ -34,7 +34,7 @@ public class ReduceTests {
             public Integer call(Integer t1, Integer t2) {
                 return t1 + t2;
             }
-        }).toBlockingObservable().single();
+        }).toBlocking().single();
 
         assertEquals(6, value);
     }

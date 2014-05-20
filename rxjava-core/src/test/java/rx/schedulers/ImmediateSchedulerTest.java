@@ -68,7 +68,7 @@ public class ImmediateSchedulerTest extends AbstractSchedulerTests {
             }
         });
 
-        o.toBlockingObservable().forEach(new Action1<String>() {
+        o.toBlocking().forEach(new Action1<String>() {
 
             @Override
             public void call(String t) {
@@ -93,7 +93,7 @@ public class ImmediateSchedulerTest extends AbstractSchedulerTests {
             }
         });
 
-        o.toBlockingObservable().forEach(new Action1<String>() {
+        o.toBlocking().forEach(new Action1<String>() {
 
             @Override
             public void call(String t) {

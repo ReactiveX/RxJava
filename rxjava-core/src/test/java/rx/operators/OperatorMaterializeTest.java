@@ -89,8 +89,8 @@ public class OperatorMaterializeTest {
 
         Observable<Notification<String>> m = Observable.create(o).materialize();
 
-        assertEquals(3, m.toList().toBlockingObservable().toFuture().get().size());
-        assertEquals(3, m.toList().toBlockingObservable().toFuture().get().size());
+        assertEquals(3, m.toList().toBlocking().toFuture().get().size());
+        assertEquals(3, m.toList().toBlocking().toFuture().get().size());
     }
 
     private static class TestObserver extends Subscriber<Notification<String>> {

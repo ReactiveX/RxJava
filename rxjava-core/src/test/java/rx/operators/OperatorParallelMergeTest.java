@@ -44,9 +44,9 @@ public class OperatorParallelMergeTest {
         Observable<Observable<String>> twoStreams = Observable.parallelMerge(fourStreams, 2);
         Observable<Observable<String>> threeStreams = Observable.parallelMerge(fourStreams, 3);
 
-        List<? super Observable<String>> fourList = fourStreams.toList().toBlockingObservable().last();
-        List<? super Observable<String>> threeList = threeStreams.toList().toBlockingObservable().last();
-        List<? super Observable<String>> twoList = twoStreams.toList().toBlockingObservable().last();
+        List<? super Observable<String>> fourList = fourStreams.toList().toBlocking().last();
+        List<? super Observable<String>> threeList = threeStreams.toList().toBlocking().last();
+        List<? super Observable<String>> twoList = twoStreams.toList().toBlocking().last();
 
         System.out.println("two list: " + twoList);
         System.out.println("three list: " + threeList);
@@ -71,7 +71,7 @@ public class OperatorParallelMergeTest {
                         return o.observeOn(Schedulers.newThread());
                     }
                 })
-                .toBlockingObservable().forEach(new Action1<String>() {
+                .toBlocking().forEach(new Action1<String>() {
 
                     @Override
                     public void call(String o) {
@@ -90,7 +90,7 @@ public class OperatorParallelMergeTest {
         // now we parallelMerge into 3 streams and observeOn for each
         // we expect 3 threads in the output
         Observable.merge(Observable.parallelMerge(getStreams(), 3, Schedulers.newThread()))
-                .toBlockingObservable().forEach(new Action1<String>() {
+                .toBlocking().forEach(new Action1<String>() {
 
                     @Override
                     public void call(String o) {
