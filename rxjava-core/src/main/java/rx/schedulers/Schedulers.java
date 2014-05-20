@@ -43,7 +43,7 @@ public final class Schedulers {
         if (io != null) {
             ioScheduler = io;
         } else {
-            ioScheduler = NewThreadScheduler.instance(); // defaults to new thread
+            ioScheduler = new CachedThreadScheduler();
         }
 
         Scheduler nt = RxJavaPlugins.getInstance().getDefaultSchedulers().getNewThreadScheduler();

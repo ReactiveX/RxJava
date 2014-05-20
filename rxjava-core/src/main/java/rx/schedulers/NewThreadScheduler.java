@@ -15,19 +15,15 @@
  */
 package rx.schedulers;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicLong;
-
 import rx.Scheduler;
 import rx.Subscription;
 import rx.functions.Action0;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.Subscriptions;
+
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Schedules work on a new thread.
@@ -162,7 +158,7 @@ public class NewThreadScheduler extends Scheduler {
             /** 
              * Adds a parent to this ScheduledAction so when it is 
              * cancelled or terminates, it can remove itself from this parent.
-             * @param parent 
+             * @param parent composite subscription that holds this subscription as a child subscription
              */
             public void addParent(CompositeSubscription parent) {
                 cancel.add(new Remover(this, parent));
