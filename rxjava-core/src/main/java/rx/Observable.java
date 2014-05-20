@@ -5318,6 +5318,17 @@ public class Observable<T> {
     }
 
     /*
+     * Forces an Observable to make synchronous calls and to be well-behaved.
+     * <p>
+     * It is possible for an Observable to invoke its Subscribers' methods asynchronously, perhaps in different
+     * threads. This could make an Observable poorly-behaved, in that it might invoke {@code onCompleted} or
+     * {@code onError} before one of its {@code onNext} invocations. You can force such an Observable to be
+     * well-behaved and synchronous by applying the {@code serialize()} method to it.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/synchronize.png">
+     *
+     * @return a {@link Observable} that is guaranteed to be well-behaved and synchronous
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#serialize">RxJava Wiki: serialize()</a>
      * @since 0.17
      */
     public final Observable<T> serialize() {
@@ -5325,17 +5336,18 @@ public class Observable<T> {
     }
 
     /**
-     * Returns a new {@link Observable} that multicasts (shares) the original {@link Observable}. 
-     * As long as there is more than 1 {@link Subscriber} this {@link Observable} will be subscribed and emitting data. 
+     * Returns a new {@link Observable} that multicasts (shares) the original {@link Observable}. As long as
+     * there is more than 1 {@link Subscriber} this {@link Observable} will be subscribed and emitting data. 
      * When all subscribers have unsubscribed it will unsubscribe from the source {@link Observable}. 
      * <p>
      * This is an alias for {@link #publish().refCount()}.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/publishConnect.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/publishRefCount.png">
      * 
      * @return a {@link Observable} that upon connection causes the source Observable to emit items
      *         to its {@link Observer}s
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Connectable-Observable-Operators#wiki-observablepublish-and-observablemulticast">RxJava Wiki: publish()</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Connectable-Observable-Operators#connectableobservablerefcount">RxJava Wiki: refCount()</a>
+     * @since 0.19
      */
     public final Observable<T> share() {
         return publish().refCount();
