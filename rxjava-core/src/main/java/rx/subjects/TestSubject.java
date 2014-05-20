@@ -15,15 +15,13 @@
  */
 package rx.subjects;
 
-import java.util.Collection;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
 
-import rx.Notification;
 import rx.Observer;
 import rx.Scheduler;
 import rx.functions.Action0;
 import rx.functions.Action1;
+import rx.operators.NotificationLite;
 import rx.schedulers.TestScheduler;
 import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
 
@@ -53,49 +51,27 @@ import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
 public final class TestSubject<T> extends Subject<T, T> {
 
     public static <T> TestSubject<T> create(TestScheduler scheduler) {
-        final SubjectSubscriptionManager<T> subscriptionManager = new SubjectSubscriptionManager<T>();
-        // set a default value so subscriptions will immediately receive this until a new notification is received
-        final AtomicReference<Notification<T>> lastNotification = new AtomicReference<Notification<T>>();
+        final SubjectSubscriptionManager<T> state = new SubjectSubscriptionManager<T>();
 
-        OnSubscribe<T> onSubscribe = subscriptionManager.getOnSubscribeFunc(
-                /**
-                 * This function executes at beginning of subscription.
-                 * 
-                 * This will always run, even if Subject is in terminal state.
-                 */
-                new Action1<SubjectObserver<? super T>>() {
+        state.onAdded = new Action1<SubjectObserver<T>>() {
 
-                    @Override
-                    public void call(SubjectObserver<? super T> o) {
-                        // nothing onSubscribe unless in terminal state which is the next function
-                    }
-                },
-                /**
-                 * This function executes if the Subject is terminated before subscription occurs.
-                 */
-                new Action1<SubjectObserver<? super T>>() {
+            @Override
+            public void call(SubjectObserver<T> o) {
+                o.emitFirst(state.get());
+            }
+            
+        };
+        state.onTerminated = state.onAdded;
 
-                    @Override
-                    public void call(SubjectObserver<? super T> o) {
-                        /*
-                         * If we are already terminated, or termination happens while trying to subscribe
-                         * this will be invoked and we emit whatever the last terminal value was.
-                         */
-                        lastNotification.get().accept(o);
-                    }
-                }, null);
-
-        return new TestSubject<T>(onSubscribe, subscriptionManager, lastNotification, scheduler);
+        return new TestSubject<T>(state, state, scheduler);
     }
 
-    private final SubjectSubscriptionManager<T> subscriptionManager;
-    private final AtomicReference<Notification<T>> lastNotification;
+    private final SubjectSubscriptionManager<T> state;
     private final Scheduler.Worker innerScheduler;
 
-    protected TestSubject(OnSubscribe<T> onSubscribe, SubjectSubscriptionManager<T> subscriptionManager, AtomicReference<Notification<T>> lastNotification, TestScheduler scheduler) {
+    protected TestSubject(OnSubscribe<T> onSubscribe, SubjectSubscriptionManager<T> state, TestScheduler scheduler) {
         super(onSubscribe);
-        this.subscriptionManager = subscriptionManager;
-        this.lastNotification = lastNotification;
+        this.state = state;
         this.innerScheduler = scheduler.createWorker();
     }
 
@@ -105,16 +81,9 @@ public final class TestSubject<T> extends Subject<T, T> {
     }
 
     private void _onCompleted() {
-        Collection<SubjectObserver<? super T>> observers = subscriptionManager.terminate(new Action0() {
-
-            @Override
-            public void call() {
-                lastNotification.set(Notification.<T> createOnCompleted());
-            }
-        });
-        if (observers != null) {
-            for (Observer<? super T> o : observers) {
-                o.onCompleted();
+        if (state.active) {
+            for (SubjectObserver<T> bo : state.terminate(NotificationLite.instance().completed())) {
+                bo.onCompleted();
             }
         }
     }
@@ -136,19 +105,11 @@ public final class TestSubject<T> extends Subject<T, T> {
     }
 
     private void _onError(final Throwable e) {
-        Collection<SubjectObserver<? super T>> observers = subscriptionManager.terminate(new Action0() {
-
-            @Override
-            public void call() {
-                lastNotification.set(Notification.<T> createOnError(e));
-            }
-        });
-        if (observers != null) {
-            for (Observer<? super T> o : observers) {
-                o.onError(e);
+        if (state.active) {
+            for (SubjectObserver<T> bo : state.terminate(NotificationLite.instance().error(e))) {
+                bo.onError(e);
             }
         }
-
     }
 
     public void onError(final Throwable e, long timeInMilliseconds) {
@@ -168,7 +129,7 @@ public final class TestSubject<T> extends Subject<T, T> {
     }
 
     private void _onNext(T v) {
-        for (Observer<? super T> o : subscriptionManager.rawSnapshot()) {
+        for (Observer<? super T> o : state.observers()) {
             o.onNext(v);
         }
     }
