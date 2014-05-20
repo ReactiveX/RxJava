@@ -76,19 +76,18 @@ class CompletenessTest extends JUnitSuite {
       "buffer(Observable[B])" -> "buffer(Observable[Any])",
       "buffer(Observable[B], Int)" -> "buffer(Observable[Any], Int)",
       "buffer(Observable[_ <: TOpening], Func1[_ >: TOpening, _ <: Observable[_ <: TClosing]])" -> "buffer(Observable[Opening], Opening => Observable[Any])",
-      "contains(T)" -> "contains(Any)",
+      "contains(Any)" -> "contains(U)",
       "count()" -> "length",
       "delay(Func0[_ <: Observable[U]], Func1[_ >: T, _ <: Observable[V]])" -> "delay(() => Observable[Any], T => Observable[Any])",
       "delay(Func1[_ >: T, _ <: Observable[U]])" -> "delay(T => Observable[Any])",
       "dematerialize()" -> "dematerialize(<:<[Observable[T], Observable[Notification[U]]])",
-      "elementAt(Int)" -> "[use `.drop(index).first`]",
-      "elementAtOrDefault(Int, T)" -> "[use `.drop(index).firstOrElse(default)`]",
+      "elementAtOrDefault(Int, T)" -> "elementAtOrDefault(Int, U)",
       "first(Func1[_ >: T, Boolean])" -> commentForFirstWithPredicate,
       "firstOrDefault(T)" -> "firstOrElse(=> U)",
-      "firstOrDefault(Func1[_ >: T, Boolean], T)" -> "[use `.filter(condition).firstOrElse(default)`]",
+      "firstOrDefault(T, Func1[_ >: T, Boolean])" -> "[use `.filter(condition).firstOrElse(default)`]",
       "groupBy(Func1[_ >: T, _ <: K], Func1[_ >: T, _ <: R])" -> "[use `groupBy` and `map`]",
+      "groupByUntil(Func1[_ >: T, _ <: TKey], Func1[_ >: GroupedObservable[TKey, T], _ <: Observable[_ <: TDuration]])" -> "groupByUntil(T => K, (K, Observable[T]) => Observable[Any])",
       "lift(Operator[_ <: R, _ >: T])" -> "lift(Subscriber[R] => Subscriber[T])",
-      "mapMany(Func1[_ >: T, _ <: Observable[_ <: R]])" -> "flatMap(T => Observable[R])",
       "mapWithIndex(Func2[_ >: T, Integer, _ <: R])" -> "[combine `zipWithIndex` with `map` or with a for comprehension]",
       "onErrorResumeNext(Func1[Throwable, _ <: Observable[_ <: T]])" -> "onErrorResumeNext(Throwable => Observable[U])",
       "onErrorResumeNext(Observable[_ <: T])" -> "onErrorResumeNext(Observable[U])",
@@ -102,6 +101,7 @@ class CompletenessTest extends JUnitSuite {
       "publish(Func1[_ >: Observable[T], _ <: Observable[R]], T)" -> "publish(Observable[U] => Observable[R], U)",
       "reduce(Func2[T, T, T])" -> "reduce((U, U) => U)",
       "reduce(R, Func2[R, _ >: T, R])" -> "foldLeft(R)((R, T) => R)",
+      "repeat()" -> "repeat()",
       "retry()" -> "retry()",
       "scan(Func2[T, T, T])" -> unnecessary,
       "scan(R, Func2[R, _ >: T, R])" -> "scan(R)((R, T) => R)",
@@ -120,8 +120,8 @@ class CompletenessTest extends JUnitSuite {
       "skipLast(Int)" -> "dropRight(Int)",
       "skipLast(Long, TimeUnit)" -> "dropRight(Duration)",
       "skipLast(Long, TimeUnit, Scheduler)" -> "dropRight(Duration, Scheduler)",
-      "takeFirst()" -> "first",
-      "takeFirst(Func1[_ >: T, Boolean])" -> commentForFirstWithPredicate,
+      "subscribe()" -> "subscribe()",
+      "takeFirst(Func1[_ >: T, Boolean])" -> "[use `filter(condition).take(1)`]",
       "takeLast(Int)" -> "takeRight(Int)",
       "takeLast(Long, TimeUnit)" -> "takeRight(Duration)",
       "takeLast(Long, TimeUnit, Scheduler)" -> "takeRight(Duration, Scheduler)",
@@ -142,7 +142,6 @@ class CompletenessTest extends JUnitSuite {
       "toList()" -> "toSeq",
       "toSortedList()" -> "[Sorting is already done in Scala's collection library, use `.toSeq.map(_.sorted)`]",
       "toSortedList(Func2[_ >: T, _ >: T, Integer])" -> "[Sorting is already done in Scala's collection library, use `.toSeq.map(_.sortWith(f))`]",
-      "where(Func1[_ >: T, Boolean])" -> "filter(T => Boolean)",
       "window(Long, Long, TimeUnit)" -> "window(Duration, Duration)",
       "window(Long, Long, TimeUnit, Scheduler)" -> "window(Duration, Duration, Scheduler)",
 
@@ -151,32 +150,30 @@ class CompletenessTest extends JUnitSuite {
       "averageDoubles(Observable[Double])" -> averageProblem,
       "averageFloats(Observable[Float])" -> averageProblem,
       "averageLongs(Observable[Long])" -> averageProblem,
-      "create(OnSubscribeFunc[T])" -> "apply(Observer[T] => Subscription)",
+      "create(OnSubscribeFunc[T])" -> "create(Observer[T] => Subscription)",
+      "create(OnSubscribe[T])" -> "apply(Subscriber[T] => Unit)",
       "combineLatest(Observable[_ <: T1], Observable[_ <: T2], Func2[_ >: T1, _ >: T2, _ <: R])" -> "combineLatest(Observable[U])",
       "concat(Observable[_ <: Observable[_ <: T]])" -> "concat(<:<[Observable[T], Observable[Observable[U]]])",
       "defer(Func0[_ <: Observable[_ <: T]])" -> "defer(=> Observable[T])",
-      "empty()" -> "apply(T*)",
-      "error(Throwable)" -> "apply(Throwable)",
-      "from(Array[T])" -> "apply(T*)",
-      "from(Iterable[_ <: T])" -> "apply(T*)",
+      "from(Array[T])" -> "[use `items(T*)`]",
+      "from(Iterable[_ <: T])" -> "from(Iterable[T])",
       "from(Future[_ <: T])" -> fromFuture,
       "from(Future[_ <: T], Long, TimeUnit)" -> fromFuture,
       "from(Future[_ <: T], Scheduler)" -> fromFuture,
-      "just(T)" -> "apply(T*)",
+      "just(T)" -> "[use `items(T*)`]",
+      "just(T, Scheduler)" -> "[use `items(T*).subscribeOn(scheduler)`]",
       "merge(Observable[_ <: T], Observable[_ <: T])" -> "merge(Observable[U])",
       "merge(Observable[_ <: Observable[_ <: T]])" -> "flatten(<:<[Observable[T], Observable[Observable[U]]])",
       "mergeDelayError(Observable[_ <: T], Observable[_ <: T])" -> "mergeDelayError(Observable[U])",
       "mergeDelayError(Observable[_ <: Observable[_ <: T]])" -> "flattenDelayError(<:<[Observable[T], Observable[Observable[U]]])",
-      "range(Int, Int)" -> "apply(Range)",
-      "repeat()" -> "repeat()",
-      "retry()" -> "retry()",
       "sequenceEqual(Observable[_ <: T], Observable[_ <: T])" -> "sequenceEqual(Observable[U])",
       "sequenceEqual(Observable[_ <: T], Observable[_ <: T], Func2[_ >: T, _ >: T, Boolean])" -> "sequenceEqual(Observable[U], (U, U) => Boolean)",
+      "range(Int, Int)" -> "[use `(start until (start + count)).toObservable` instead of `range(start, count)`]",
+      "range(Int, Int, Scheduler)" -> "[use `(start until (start + count)).toObservable.subscribeOn(scheduler)` instead of `range(start, count, scheduler)`]`]",
       "sum(Observable[Integer])" -> "sum(Numeric[U])",
       "sumDoubles(Observable[Double])" -> "sum(Numeric[U])",
       "sumFloats(Observable[Float])" -> "sum(Numeric[U])",
       "sumLongs(Observable[Long])" -> "sum(Numeric[U])",
-      "synchronize(Observable[T])" -> "synchronize",
       "switchDo(Observable[_ <: Observable[_ <: T]])" -> deprecated,
       "switchOnNext(Observable[_ <: Observable[_ <: T]])" -> "switch(<:<[Observable[T], Observable[Observable[U]]])",
       "zip(Observable[_ <: T1], Observable[_ <: T2], Func2[_ >: T1, _ >: T2, _ <: R])" -> "[use instance method `zip` and `map`]",
@@ -190,7 +187,7 @@ class CompletenessTest extends JUnitSuite {
       "concat(" + _ + ")" -> "[unnecessary because we can use `++` instead or `Observable(o1, o2, ...).concat`]"
   ).drop(1).toMap ++ List.iterate("T", 10)(s => s + ", T").map(
       // all 10 overloads of from:
-      "from(" + _ + ")" -> "apply(T*)"
+      "from(" + _ + ")" -> "[use `items(T*)`]"
   ).toMap ++ (3 to 9).map(i => {
     // zip3-9:
     val obsArgs = (1 to i).map(j => s"Observable[_ <: T$j], ").mkString("")
@@ -232,6 +229,8 @@ class CompletenessTest extends JUnitSuite {
     // TODO how can we filter out instance methods which were put into companion because
     // of extends AnyVal in a way which does not depend on implementation-chosen name '$extension'?
     .filter(! _.contains("$extension"))
+    // `access$000` is public. How to distinguish it from others without hard-code?
+    .filter(! _.contains("access$000"))
   }
 
   // also applicable for Java types
@@ -389,7 +388,10 @@ class CompletenessTest extends JUnitSuite {
     def escape(s: String) = s.replaceAllLiterally("[", "&lt;").replaceAllLiterally("]", "&gt;")
 
     println("""
-## Comparison of Scala Observable and Java Observable
+---
+layout: comparison
+title: Comparison of Scala Observable and Java Observable
+---
 
 Note:
 *    This table contains both static methods and instance methods.
