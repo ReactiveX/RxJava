@@ -429,7 +429,6 @@ public class OperatorGroupByTest {
         assertEquals(37, sentEventCounter.get());
     }
 
-    @Ignore // ignore until https://github.com/Netflix/RxJava/issues/1011 is fixed
     @Test
     public void testStaggeredCompletion() throws InterruptedException {
         final AtomicInteger eventCounter = new AtomicInteger();
