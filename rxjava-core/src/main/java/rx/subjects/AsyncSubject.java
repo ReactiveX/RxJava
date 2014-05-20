@@ -58,7 +58,10 @@ public final class AsyncSubject<T> extends Subject<T, T> {
             public void call(SubjectObserver<T> o) {
                 Object v = state.get();
                 o.accept(v);
-                o.completeSingle(v);
+                NotificationLite<T> nl = NotificationLite.instance();
+                if (v == null || (!nl.isCompleted(v) && !nl.isError(v))) {
+                    o.onCompleted();
+                }
             }
         };
         return new AsyncSubject<T>(state, state);

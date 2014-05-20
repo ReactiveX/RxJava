@@ -314,16 +314,6 @@ import rx.subscriptions.Subscriptions;
             }
         }
         
-        /**
-         * Emit an OnCompleted event if the value object is 
-         * an OnNext NotificationLite object or null.
-         * @param value
-         */
-        protected void completeSingle(Object value) {
-            if (value == null || (!nl.isCompleted(value) && !nl.isError(value))) {
-                actual.onCompleted();
-            }
-        }
         /** @return the actual Observer. */
         protected Observer<? super T> getActual() {
             return actual;
