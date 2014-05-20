@@ -48,7 +48,7 @@ public abstract class Scheduler {
      * <p>
      * Work on a {@link Scheduler.Worker} is guaranteed to be sequential.
      * 
-     * @return Inner representing a serial queue of actions to be executed
+     * @return Worker representing a serial queue of actions to be executed
      */
     public abstract Worker createWorker();
 
