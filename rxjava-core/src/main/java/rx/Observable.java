@@ -6027,76 +6027,6 @@ public class Observable<T> {
     }
 
     /**
-     * An {@link Observer} must call an Observable's {@code subscribe} method in order to receive items and
-     * notifications from the Observable.
-     * 
-     * @param onNext
-     *            FIXME FIXME FIXME
-     * @param onError
-     *            FIXME FIXME FIXME
-     * @param onComplete
-     *            FIXME FIXME FIXME
-     * @param scheduler
-     *            FIXME FIXME FIXME
-     * @return a {@link Subscription} reference with which the {@link Observer} can stop receiving items before
-     *         the Observable has finished sending them
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable#wiki-onnext-oncompleted-and-onerror">RxJava Wiki: onNext, onCompleted, and onError</a>
-     */
-    public final Subscription subscribe(final Action1<? super T> onNext, final Action1<Throwable> onError, final Action0 onComplete, Scheduler scheduler) {
-        return subscribeOn(scheduler).subscribe(onNext, onError, onComplete);
-    }
-
-    /**
-     * An {@link Observer} must call an Observable's {@code subscribe} method in order to receive items and
-     * notifications from the Observable.
-     * 
-     * @param onNext
-     *            FIXME FIXME FIXME
-     * @param onError
-     *            FIXME FIXME FIXME
-     * @param scheduler
-     *            FIXME FIXME FIXME
-     * @return a {@link Subscription} reference with which the {@link Observer} can stop receiving items before
-     *         the Observable has finished sending them
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable#wiki-onnext-oncompleted-and-onerror">RxJava Wiki: onNext, onCompleted, and onError</a>
-     */
-    public final Subscription subscribe(final Action1<? super T> onNext, final Action1<Throwable> onError, Scheduler scheduler) {
-        return subscribeOn(scheduler).subscribe(onNext, onError);
-    }
-
-    /**
-     * An {@link Observer} must call an Observable's {@code subscribe} method in order to receive items and
-     * notifications from the Observable.
-     * 
-     * @param onNext
-     *            FIXME FIXME FIXME
-     * @param scheduler
-     *            FIXME FIXME FIXME
-     * @return a {@link Subscription} reference with which the {@link Observer} can stop receiving items before
-     *         the Observable has finished sending them
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable#wiki-onnext-oncompleted-and-onerror">RxJava Wiki: onNext, onCompleted, and onError</a>
-     */
-    public final Subscription subscribe(final Action1<? super T> onNext, Scheduler scheduler) {
-        return subscribeOn(scheduler).subscribe(onNext);
-    }
-
-    /**
-     * An {@link Observer} must subscribe to an Observable in order to receive items and notifications from the
-     * Observable.
-     *
-     * @param observer
-     *            FIXME FIXME FIXME
-     * @param scheduler
-     *            FIXME FIXME FIXME
-     * @return a {@link Subscription} reference with which the {@link Observer} can stop receiving items before
-     *         the Observable has finished sending them
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable#wiki-onnext-oncompleted-and-onerror">RxJava Wiki: onNext, onCompleted, and onError</a>
-     */
-    public final Subscription subscribe(final Observer<? super T> observer, Scheduler scheduler) {
-        return subscribeOn(scheduler).subscribe(observer);
-    }
-
-    /**
      * An {@link Observer} must subscribe to an Observable in order to receive items and notifications from the
      * Observable.
      *
@@ -6239,38 +6169,6 @@ public class Observable<T> {
             }
             return Subscriptions.empty();
         }
-    }
-
-    /**
-     * A {@link Subscriber} must call an Observable's {@code subscribe} method in order to receive items and
-     * notifications from the Observable.
-     * <p>
-     * A typical implementation of {@code subscribe} does the following:
-     * <ol>
-     * <li>It stores a reference to the Subscriber in a collection object, such as a {@code List<T>} object.</li>
-     * <li>It returns a reference to the {@link Subscription} interface. This enables Observers to unsubscribe,
-     * that is, to stop receiving items and notifications before the Observable stops sending them, which also
-     * invokes the Observer's {@link Observer#onCompleted onCompleted} method.</li>
-     * </ol><p>
-     * An {@code Observable<T>} instance is responsible for accepting all subscriptions and notifying all
-     * Subscribers. Unless the documentation for a particular {@code Observable<T>} implementation indicates
-     * otherwise, Subscribers should make no assumptions about the order in which multiple Subscribers will
-     * receive their notifications.
-     * <p>
-     * For more information see the
-     * <a href="https://github.com/Netflix/RxJava/wiki/Observable">RxJava Wiki</a>
-     * 
-     * @param observer
-     *            the {@link Subscriber}
-     * @param scheduler
-     *            the {@link Scheduler} on which Subscribers subscribe to the Observable
-     * @return a {@link Subscription} reference with which Subscribers that are {@link Observer}s can
-     *         unsubscribe from the Observable
-     * @throws IllegalArgumentException
-     *             if an argument to {@code subscribe()} is {@code null}
-     */
-    public final Subscription subscribe(Subscriber<? super T> observer, Scheduler scheduler) {
-        return subscribeOn(scheduler).subscribe(observer);
     }
 
     /**

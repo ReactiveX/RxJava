@@ -122,17 +122,6 @@ trait Observable[+T]
    * $subscribeObserverMain
    *
    * @param observer $subscribeObserverParamObserver
-   * @param scheduler $subscribeObserverParamScheduler
-   * @return $subscribeAllReturn
-   */
-  def subscribe(observer: Observer[T], scheduler: Scheduler): Subscription = {
-    asJavaObservable.subscribe(observer.asJavaObserver, scheduler)
-  }
-
-  /**
-   * $subscribeObserverMain
-   *
-   * @param observer $subscribeObserverParamObserver
    * @return $subscribeAllReturn
    */
   def subscribe(observer: Observer[T]): Subscription = {
@@ -146,19 +135,6 @@ trait Observable[+T]
    * @return $subscribeAllReturn
    */
   def apply(observer: Observer[T]): Subscription = subscribe(observer)
-
-  /**
-   * $subscribeSubscriberMain
-   *
-   * @param subscriber $subscribeSubscriberParamObserver
-   * @param scheduler $subscribeSubscriberParamScheduler
-   * @return $subscribeAllReturn
-   */
-  def subscribe(subscriber: Subscriber[T], scheduler: Scheduler): Subscription = {
-    // Add the casting to avoid compile error "ambiguous reference to overloaded definition"
-    val thisJava = asJavaObservable.asInstanceOf[rx.Observable[T]]
-    thisJava.subscribe(subscriber.asJavaSubscriber, scheduler)
-  }
 
   /**
    * $subscribeSubscriberMain
@@ -218,48 +194,6 @@ trait Observable[+T]
       scalaFunction1ProducingUnitToAction1(onError), 
       scalaFunction0ProducingUnitToAction0(onCompleted)
     )
-  }
-
-  /**
-   * $subscribeCallbacksMainWithNotifications
-   *
-   * @param onNext $subscribeCallbacksParamOnNext
-   * @param onError $subscribeCallbacksParamOnError
-   * @param onCompleted $subscribeCallbacksParamOnComplete
-   * @param scheduler $subscribeCallbacksParamScheduler
-   * @return $subscribeAllReturn
-   */
-  def subscribe(onNext: T => Unit, onError: Throwable => Unit, onCompleted: () => Unit, scheduler: Scheduler): Subscription = {
-    asJavaObservable.subscribe(scalaFunction1ProducingUnitToAction1(onNext),
-      scalaFunction1ProducingUnitToAction1(onError),
-      scalaFunction0ProducingUnitToAction0(onCompleted),
-      scheduler)
-  }
-
-  /**
-   * $subscribeCallbacksMainWithNotifications
-   *
-   * @param onNext $subscribeCallbacksParamOnNext
-   * @param onError $subscribeCallbacksParamOnError
-   * @param scheduler $subscribeCallbacksParamScheduler
-   * @return $subscribeAllReturn
-   */
-  def subscribe(onNext: T => Unit, onError: Throwable => Unit, scheduler: Scheduler): Subscription = {
-    asJavaObservable.subscribe(
-      scalaFunction1ProducingUnitToAction1(onNext),
-      scalaFunction1ProducingUnitToAction1(onError),
-      scheduler)
-  }
-
-  /**
-   * $subscribeCallbacksMainNoNotifications
-   *
-   * @param onNext $subscribeCallbacksParamOnNext
-   * @param scheduler $subscribeCallbacksParamScheduler
-   * @return $subscribeAllReturn
-   */
-  def subscribe(onNext: T => Unit, scheduler: Scheduler): Subscription = {
-    asJavaObservable.subscribe(scalaFunction1ProducingUnitToAction1(onNext), scheduler)
   }
 
   /**
