@@ -371,7 +371,7 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
         final CountDownLatch latch = new CountDownLatch(5);
         final CountDownLatch first = new CountDownLatch(1);
 
-        o1.subscribe(new Action1<Integer>() {
+        o1.subscribeOn(scheduler).subscribe(new Action1<Integer>() {
 
             @Override
             public void call(Integer t) {
@@ -388,7 +388,7 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
                 count.incrementAndGet();
                 latch.countDown();
             }
-        }, scheduler);
+        });
 
         // assert we are async
         assertEquals(0, count.get());
