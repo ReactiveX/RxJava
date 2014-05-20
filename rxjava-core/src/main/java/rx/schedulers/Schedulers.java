@@ -15,10 +15,10 @@
  */
 package rx.schedulers;
 
-import java.util.concurrent.Executor;
-
 import rx.Scheduler;
 import rx.plugins.RxJavaPlugins;
+
+import java.util.concurrent.Executor;
 
 /**
  * Static factory methods for creating Schedulers.
@@ -43,7 +43,7 @@ public final class Schedulers {
         if (io != null) {
             ioScheduler = io;
         } else {
-            ioScheduler = NewThreadScheduler.instance(); // defaults to new thread
+            ioScheduler = new CachedThreadScheduler();
         }
 
         Scheduler nt = RxJavaPlugins.getInstance().getDefaultSchedulers().getNewThreadScheduler();
