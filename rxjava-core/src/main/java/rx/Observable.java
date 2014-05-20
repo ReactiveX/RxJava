@@ -4821,7 +4821,7 @@ public class Observable<T> {
         return create(new OperatorMulticastSelector<T, T, R>(this, new Func0<Subject<T, T>>() {
             @Override
             public final Subject<T, T> call() {
-                return OperatorReplay.replayBuffered(bufferSize);
+                return ReplaySubject.<T>createWithSize(bufferSize);
             }
         }, selector));
     }
@@ -4889,7 +4889,7 @@ public class Observable<T> {
         return create(new OperatorMulticastSelector<T, T, R>(this, new Func0<Subject<T, T>>() {
             @Override
             public final Subject<T, T> call() {
-                return OperatorReplay.replayWindowed(time, unit, bufferSize, scheduler);
+                return ReplaySubject.<T>createWithTimeAndSize(time, unit, bufferSize, scheduler);
             }
         }, selector));
     }
@@ -4920,7 +4920,7 @@ public class Observable<T> {
         return create(new OperatorMulticastSelector<T, T, R>(this, new Func0<Subject<T, T>>() {
             @Override
             public final Subject<T, T> call() {
-                return OperatorReplay.<T> createScheduledSubject(OperatorReplay.<T> replayBuffered(bufferSize), scheduler);
+                return OperatorReplay.<T> createScheduledSubject(ReplaySubject.<T>createWithSize(bufferSize), scheduler);
             }
         }, selector));
     }
@@ -4979,7 +4979,7 @@ public class Observable<T> {
         return create(new OperatorMulticastSelector<T, T, R>(this, new Func0<Subject<T, T>>() {
             @Override
             public final Subject<T, T> call() {
-                return OperatorReplay.replayWindowed(time, unit, -1, scheduler);
+                return ReplaySubject.<T>createWithTime(time, unit, scheduler);
             }
         }, selector));
     }
@@ -5028,7 +5028,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211976.aspx">MSDN: Observable.Replay</a>
      */
     public final ConnectableObservable<T> replay(int bufferSize) {
-        return new OperatorMulticast<T, T>(this, OperatorReplay.<T> replayBuffered(bufferSize));
+        return new OperatorMulticast<T, T>(this, ReplaySubject.<T>createWithSize(bufferSize));
     }
 
     /**
@@ -5081,7 +5081,7 @@ public class Observable<T> {
         if (bufferSize < 0) {
             throw new IllegalArgumentException("bufferSize < 0");
         }
-        return new OperatorMulticast<T, T>(this, OperatorReplay.<T> replayWindowed(time, unit, bufferSize, scheduler));
+        return new OperatorMulticast<T, T>(this, ReplaySubject.<T>createWithTimeAndSize(time, unit, bufferSize, scheduler));
     }
 
     /**
@@ -5104,7 +5104,7 @@ public class Observable<T> {
     public final ConnectableObservable<T> replay(int bufferSize, Scheduler scheduler) {
         return new OperatorMulticast<T, T>(this,
                 OperatorReplay.createScheduledSubject(
-                        OperatorReplay.<T> replayBuffered(bufferSize), scheduler));
+                        ReplaySubject.<T>createWithSize(bufferSize), scheduler));
     }
 
     /**
@@ -5148,7 +5148,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211811.aspx">MSDN: Observable.Replay</a>
      */
     public final ConnectableObservable<T> replay(long time, TimeUnit unit, Scheduler scheduler) {
-        return new OperatorMulticast<T, T>(this, OperatorReplay.<T> replayWindowed(time, unit, -1, scheduler));
+        return new OperatorMulticast<T, T>(this, ReplaySubject.<T>createWithTime(time, unit, scheduler));
     }
 
     /**

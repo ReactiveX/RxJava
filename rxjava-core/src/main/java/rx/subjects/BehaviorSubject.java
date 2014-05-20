@@ -17,12 +17,9 @@ package rx.subjects;
 
 
 import rx.Observer;
-import rx.Subscriber;
-import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.operators.NotificationLite;
 import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
-import rx.subscriptions.Subscriptions;
 
 /**
  * Subject that publishes the most recent and all subsequent events to each subscribed {@link Observer}.
