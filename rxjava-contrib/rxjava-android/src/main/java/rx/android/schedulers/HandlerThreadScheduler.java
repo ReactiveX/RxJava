@@ -71,21 +71,15 @@ public class HandlerThreadScheduler extends Scheduler {
             final Runnable runnable = new Runnable() {
                 @Override
                 public void run() {
-                    if (isUnsubscribed()) {
-                        return;
-                    }
                     action.call();
                 }
             };
             handler.postDelayed(runnable, unit.toMillis(delayTime));
             return Subscriptions.create(new Action0() {
-
                 @Override
                 public void call() {
                     handler.removeCallbacks(runnable);
-                    
                 }
-                
             });
         }
 
