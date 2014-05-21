@@ -15,7 +15,9 @@
  */
 package rx.observers;
 
+import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 import rx.Observer;
+import rx.operators.NotificationLite;
 
 /**
  * Enforce single-threaded, serialized, ordered execution of onNext, onCompleted, onError.
@@ -29,178 +31,146 @@ import rx.Observer;
  * 
  * @param <T>
  */
-public class SerializedObserver<T> implements Observer<T> {
-    private final Observer<? super T> actual;
-
-    private boolean emitting = false;
-    private boolean terminated = false;
-    private FastList queue;
-
-    private static final int MAX_DRAIN_ITERATION = Integer.MAX_VALUE;
-    private static final Object NULL_SENTINEL = new Object();
-    private static final Object COMPLETE_SENTINEL = new Object();
-
-    static final class FastList {
-        Object[] array;
-        int size;
-
-        public void add(Object o) {
-            int s = size;
-            Object[] a = array;
-            if (a == null) {
-                a = new Object[16];
-                array = a;
-            } else if (s == a.length) {
-                Object[] array2 = new Object[s + (s >> 2)];
-                System.arraycopy(a, 0, array2, 0, s);
-                a = array2;
-                array = a;
-            }
-            a[s] = o;
-            size = s + 1;
-        }
-    }
-
-    private static final class ErrorSentinel {
-        final Throwable e;
-
-        ErrorSentinel(Throwable e) {
-            this.e = e;
-        }
-    }
-
+public final class SerializedObserver<T> implements Observer<T> {
+    /** The actual observer that receives the values. */
+    private final Observer<Object> actual;
+    /** The queue in case of concurrent access. */
+    final MpscPaddedQueue<Object> queue;
+    /** Number of queued events. */
+    final PaddedAtomicInteger wip;
+    /** 
+     * Adaptively enable and disable fast path. 0 means fast path enabled, 1 means fast path disabled,
+     * 2 means the observer is terminated.
+     */
+    volatile int fastpath;
+    /**
+     * Atomic updater for the fastpath variable.
+     */
+    @SuppressWarnings("rawtypes")
+    static final AtomicIntegerFieldUpdater<SerializedObserver> FASTPATH_UPDATER
+            = AtomicIntegerFieldUpdater.newUpdater(SerializedObserver.class, "fastpath");
+    /** Lightweight notification transformation. */
+    static final NotificationLite<Object> nl = NotificationLite.instance();
+    /**
+     * Constructor, takes the actual observer and initializes the queue and
+     * work counters.
+     * @param s the actual observer to wrap
+     */
+    @SuppressWarnings("unchecked")
     public SerializedObserver(Observer<? super T> s) {
-        this.actual = s;
+        this.actual = (Observer<Object>)s;
+        this.queue = new MpscPaddedQueue<Object>();
+        this.wip = new PaddedAtomicInteger();
     }
 
     @Override
     public void onCompleted() {
-        FastList list;
-        synchronized (this) {
-            if (terminated) {
-                return;
-            }
-            terminated = true;
-            if (emitting) {
-                if (queue == null) {
-                    queue = new FastList();
-                }
-                queue.add(COMPLETE_SENTINEL);
-                return;
-            }
-            emitting = true;
-            list = queue;
-            queue = null;
+        int n = fastpath;
+        // let's try the fast path
+        if (n == 0 && wip.compareAndSet(0, 1)) {
+            FASTPATH_UPDATER.lazySet(this, 2);
+            actual.onCompleted();
+            // just return since nooen else will be able to 
+            // put anything else into the queue at this point
+            return;
         }
-        drainQueue(list);
-        actual.onCompleted();
+        if (n == 2) {
+            return;
+        }
+        queue.offer(nl.completed());
+        if (wip.getAndIncrement() == 0) {
+            n = fastpath; // re-read fastpath
+            if (n == 2) {
+                queue.clear();
+                return;
+            }
+            FASTPATH_UPDATER.lazySet(this, 2);
+            do {
+                if (nl.accept2(actual, queue.poll())) {
+                    queue.clear();
+                    return;
+                }
+            } while (wip.decrementAndGet() > 0);
+        }
     }
 
     @Override
     public void onError(final Throwable e) {
-        FastList list;
-        synchronized (this) {
-            if (terminated) {
-                return;
-            }
-            terminated = true;
-            if (emitting) {
-                if (queue == null) {
-                    queue = new FastList();
-                }
-                queue.add(new ErrorSentinel(e));
-                return;
-            }
-            emitting = true;
-            list = queue;
-            queue = null;
+        int n = fastpath;
+        // let's try the fast path
+        if (n == 0 && wip.compareAndSet(0, 1)) {
+            FASTPATH_UPDATER.lazySet(this, 2);
+            actual.onError(e);
+            // just return since nooen else will be able to 
+            // put anything else into the queue at this point
+            return;
         }
-        drainQueue(list);
-        actual.onError(e);
+        // or are we terminated?
+        if (n == 2) {
+            return;
+        }
+        queue.offer(nl.error(e));
+        if (wip.getAndIncrement() == 0) {
+            n = fastpath; // re-read fastpath
+            if (n == 2) { // are we terminated now?
+                queue.clear();
+                return;
+            }
+            FASTPATH_UPDATER.lazySet(this, 2);
+            do {
+                if (nl.accept2(actual, queue.poll())) {
+                    queue.clear();
+                    return;
+                }
+            } while (wip.decrementAndGet() > 0);
+        }
     }
 
     @Override
-    public void onNext(T t) {
-        FastList list;
-
-        synchronized (this) {
-            if (terminated) {
-                return;
-            }
-            if (emitting) {
-                if (queue == null) {
-                    queue = new FastList();
-                }
-                queue.add(t != null ? t : NULL_SENTINEL);
-                // another thread is emitting so we add to the queue and return
-                return;
-            }
-            // we can emit
-            emitting = true;
-            // reference to the list to drain before emitting our value
-            list = queue;
-            queue = null;
-        }
-
-        // we only get here if we won the right to emit, otherwise we returned in the if(emitting) block above
-        boolean skipFinal = false;
-        try {
-            int iter = MAX_DRAIN_ITERATION;
-            do {
-                drainQueue(list);
-                if (iter == MAX_DRAIN_ITERATION) {
-                    // after the first draining we emit our own value
-                    actual.onNext(t);
-                }
-                --iter;
-                if (iter > 0) {
-                    synchronized (this) {
-                        list = queue;
-                        queue = null;
-                        if (list == null) {
-                            emitting = false;
-                            skipFinal = true;
-                            return;
-                        }
-                    }
-                }
-            } while (iter > 0);
-        } finally {
-            if (!skipFinal) {
-                synchronized (this) {
-                    if (terminated) {
-                        list = queue;
-                        queue = null;
-                    } else {
-                        emitting = false;
-                        list = null;
-                    }
-                }
-            }
-        }
-        
-        // this will only drain if terminated (done here outside of synchronized block)
-        drainQueue(list);
-    }
-    
-    void drainQueue(FastList list) {
-        if (list == null || list.size == 0) {
-            return;
-        }
-        for (Object v : list.array) {
-            if (v == null) {
-                break;
-            }
-            if (v == NULL_SENTINEL) {
-                actual.onNext(null);
-            } else if (v == COMPLETE_SENTINEL) {
-                actual.onCompleted();
-            } else if (v.getClass() == ErrorSentinel.class) {
-                actual.onError(((ErrorSentinel) v).e);
-            } else {
-                @SuppressWarnings("unchecked")
-                T t = (T)v;
+    public void onNext(final T t) {
+        int n = fastpath;
+        if (n == 0 && wip.compareAndSet(0, 1)) {
+            int w;
+            try {
                 actual.onNext(t);
+            } finally {
+                w = wip.decrementAndGet();
+            }
+            if (w == 0) {
+                return;
+            }
+            FASTPATH_UPDATER.lazySet(this, 0);
+        } else {
+            if (n == 2) {
+                return;
+            }
+            queue.offer(nl.next(t));
+            if (wip.getAndIncrement() != 0) {
+                return;
+            }
+            n = fastpath; // we won the emission race, are we done btw?
+            if (n == 2) {
+                return;
+            }
+        }
+        int c = 0;
+        boolean endRegular = false;
+        try {
+            do {
+                if (nl.accept2(actual, queue.poll())) {
+                    FASTPATH_UPDATER.lazySet(this, 2);
+                    queue.clear();
+                    return;
+                }
+                c++;
+            } while (wip.decrementAndGet() > 0);
+            endRegular = true;
+            if (c < 3) {
+                FASTPATH_UPDATER.lazySet(this, 1);
+            }
+        } finally {
+            if (!endRegular) {
+                wip.set(0); // allow onError to enter
             }
         }
     }
