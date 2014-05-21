@@ -62,7 +62,7 @@ public class OperatorFromEnumerationTest {
         src.add("one");
         src.add("two");
         src.add("three");
-        Observable<String> observable = Observable.from(new Func0<Enumeration<String>>() {
+        Observable<String> observable = Observable.fromEnumeration(new Func0<Enumeration<String>>() {
             @Override
             public Enumeration<String> call() {
                 return src.elements();
