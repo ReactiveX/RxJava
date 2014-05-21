@@ -170,13 +170,15 @@ public final class CompositeSubscription implements Subscription {
         unsubscribeFromAll(oldState.subscriptions);
     }
 
-    private static void unsubscribeFromAll(Subscription[] subscriptions) {
+    static void unsubscribeFromAll(Subscription[] subscriptions) {
         final List<Throwable> es = new ArrayList<Throwable>();
         for (Subscription s : subscriptions) {
-            try {
-                s.unsubscribe();
-            } catch (Throwable e) {
-                es.add(e);
+            if (s != null) {
+                try {
+                    s.unsubscribe();
+                } catch (Throwable e) {
+                    es.add(e);
+                }
             }
         }
         if (!es.isEmpty()) {

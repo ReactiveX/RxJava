@@ -15,6 +15,10 @@
  */
 package rx.schedulers;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -29,6 +33,7 @@ import org.junit.Test;
 
 import rx.Observable;
 import rx.Observable.OnSubscribe;
+import rx.Observer;
 import rx.Scheduler;
 import rx.Scheduler.Worker;
 import rx.Subscriber;
@@ -399,5 +404,63 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
         latch.await();
         assertEquals(5, count.get());
     }
+    @Test(timeout = 20000)
+    public void noThreadHops() throws InterruptedException {
+        Scheduler scheduler = getScheduler();
+        int ncpu = Runtime.getRuntime().availableProcessors();
+        int nobservers = 10;
+        int nvalues = 5000;
 
+        Observable<Integer> source = Observable.range(0, nvalues);
+        List<ThreadWatchingObserver> twos = new ArrayList<ThreadWatchingObserver>();
+        CountDownLatch cdl = new CountDownLatch(ncpu * nobservers);
+        
+        for (int i = 0; i < ncpu * nobservers; i++) {
+            ThreadWatchingObserver two = new ThreadWatchingObserver(cdl);
+            twos.add(two);
+            source.subscribeOn(scheduler).observeOn(scheduler).subscribe(two);
+        }
+        
+        cdl.await();
+        
+        for (ThreadWatchingObserver two : twos) {
+            assertEquals(nvalues, two.count);
+            assertEquals(nvalues - 1, two.value);
+            if (two.threadNames.size() != 1) {
+                fail("Thread hop detected: " + two.threadNames);
+            }
+        }
+    }
+    static final class ThreadWatchingObserver implements Observer<Integer> {
+        final Set<String> threadNames;
+        final CountDownLatch latch;
+        int value;
+        int count;
+
+        public ThreadWatchingObserver(CountDownLatch latch) {
+            this.threadNames = new HashSet<String>();
+            this.latch = latch;
+        }
+
+        @Override
+        public void onNext(Integer t) {
+            threadNames.add(Thread.currentThread().getName());
+            value = t;
+            count++;
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            threadNames.add(Thread.currentThread().getName());
+            e.printStackTrace();
+            latch.countDown();
+        }
+
+        @Override
+        public void onCompleted() {
+            threadNames.add(Thread.currentThread().getName());
+            latch.countDown();
+        }
+        
+    }
 }
