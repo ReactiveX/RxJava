@@ -620,6 +620,34 @@ class RxScalaDemo extends JUnitSuite {
     o.take(1).subscribe(println(_))
   }
 
+  @Test def createExampleGood2() {
+    import scala.io.{Codec, Source}
+
+    val rxscala = Observable[String](subscriber => {
+      try {
+        val input = new java.net.URL("http://rxscala.github.io/").openStream()
+        subscriber.add(Subscription {
+          input.close()
+        })
+        Source.fromInputStream(input)(Codec.UTF8).getLines()
+          .takeWhile(_ => !subscriber.isUnsubscribed)
+          .foreach(subscriber.onNext(_))
+        if (!subscriber.isUnsubscribed) {
+          subscriber.onCompleted()
+        }
+      }
+      catch {
+        case e: Throwable => if (!subscriber.isUnsubscribed) subscriber.onError(e)
+      }
+    }).subscribeOn(IOScheduler())
+
+    val count = rxscala.flatMap(_.split("\\W+").toSeq.toObservable)
+      .map(_.toLowerCase)
+      .filter(_ == "rxscala")
+      .size
+    println(s"RxScala appears ${count.toBlockingObservable.single} times in http://rxscala.github.io/")
+  }
+
   def output(s: String): Unit = println(s)
 
   /** Subscribes to obs and waits until obs has completed. Note that if you subscribe to

@@ -3330,10 +3330,19 @@ object Observable {
    * Write the function you pass so that it behaves as an Observable: It should invoke the
    * Subscriber's `onNext`, `onError`, and `onCompleted` methods appropriately.
    *
+   * You can `add` custom [[Subscription]]s to [[Subscriber]]. These [[Subscription]]s will be called
+   * <ul>
+   *   <li>when someone calls `unsubscribe`.</li>
+   *   <li>after `onCompleted` or `onError`.</li>
+   * </ul>
+   *
    * See <a href="http://go.microsoft.com/fwlink/?LinkID=205219">Rx Design Guidelines (PDF)</a> for detailed
    * information.
    *
-   * @tparam T
+   * See `<a href="https://github.com/Netflix/RxJava/blob/master/language-adaptors/rxjava-scala/src/examples/scala/rx/lang/scala/examples/RxScalaDemo.scala">RxScalaDemo</a>.createExampleGood`
+   * and `<a href="https://github.com/Netflix/RxJava/blob/master/language-adaptors/rxjava-scala/src/examples/scala/rx/lang/scala/examples/RxScalaDemo.scala">RxScalaDemo</a>.createExampleGood2`.
+   *
+   * @param T
    *            the type of the items that this Observable emits
    * @param f
    *            a function that accepts a `Subscriber[T]`, and invokes its `onNext`,
