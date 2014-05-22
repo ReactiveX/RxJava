@@ -6255,16 +6255,7 @@ public class Observable<T> {
                 subscriber = new SafeSubscriber<T>(subscriber);
             }
             onSubscribeFunction.call(subscriber);
-            final Subscription returnSubscription = hook.onSubscribeReturn(subscriber);
-            // we return it inside a Subscription so it can't be cast back to Subscriber
-            return Subscriptions.create(new Action0() {
-
-                @Override
-                public void call() {
-                    returnSubscription.unsubscribe();
-                }
-
-            });
+            return hook.onSubscribeReturn(subscriber);
         } catch (Throwable e) {
             // special handling for certain Throwable/Error/Exception types
             Exceptions.throwIfFatal(e);
