@@ -25,7 +25,7 @@ import org.mockito.Mockito;
 
 import rx.Observable;
 import rx.Observer;
-import rx.functions.Func0;
+import rx.functions.Enumerable;
 
 import java.util.Enumeration;
 import java.util.Vector;
@@ -39,9 +39,9 @@ public class OperatorFromEnumerationTest {
         src.add("two");
         src.add("three");
         Observable<String> observable = Observable.create(new OnSubscribeFromEnumeration<String>(
-                new Func0<Enumeration<String>>() {
+                new Enumerable<String>() {
                     @Override
-                    public Enumeration<String> call() {
+                    public Enumeration<String> elements() {
                         return src.elements();
                     }
                 }));
@@ -62,9 +62,9 @@ public class OperatorFromEnumerationTest {
         src.add("one");
         src.add("two");
         src.add("three");
-        Observable<String> observable = Observable.fromEnumeration(new Func0<Enumeration<String>>() {
+        Observable<String> observable = Observable.from(new Enumerable<String>() {
             @Override
-            public Enumeration<String> call() {
+            public Enumeration<String> elements() {
                 return src.elements();
             }
         });

@@ -1086,7 +1086,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#wiki-from">RxJava Wiki: from()</a>
      * @since 0.19
      */
-    public final static <T> Observable<T> fromEnumeration(Func0<? extends Enumeration<T>> enumerable) {
+    public final static <T> Observable<T> from(Enumerable<? extends T> enumerable) {
         return create(new OnSubscribeFromEnumeration<T>(enumerable));
     }
 
@@ -1109,7 +1109,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh212140.aspx">MSDN: Observable.ToObservable</a>
      * @since 0.19
      */
-    public final static <T> Observable<T> fromEnumeration(Func0<? extends Enumeration<T>> enumerable, Scheduler scheduler) {
+    public final static <T> Observable<T> from(Enumerable<? extends T> enumerable, Scheduler scheduler) {
         return create(new OnSubscribeFromEnumeration<T>(enumerable)).subscribeOn(scheduler);
     }
 

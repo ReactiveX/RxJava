@@ -15,11 +15,11 @@
  */
 package rx.operators;
 
-import java.util.Enumeration;
-
 import rx.Observable.OnSubscribe;
 import rx.Subscriber;
-import rx.functions.Func0;
+import rx.functions.Enumerable;
+
+import java.util.Enumeration;
 
 /**
  * Converts an Enumeration sequence into an Observable.
@@ -31,15 +31,15 @@ import rx.functions.Func0;
  */
 public final class OnSubscribeFromEnumeration<T> implements OnSubscribe<T> {
 
-    final Func0<? extends Enumeration<T>> enumerable;
+    final Enumerable<? extends T> enumerable;
 
-    public OnSubscribeFromEnumeration(Func0<? extends Enumeration<T>> enumerable) {
+    public OnSubscribeFromEnumeration(Enumerable<? extends T> enumerable) {
         this.enumerable = enumerable;
     }
 
     @Override
     public void call(Subscriber<? super T> o) {
-        Enumeration<T> enumeration = enumerable.call();
+        Enumeration<? extends T> enumeration = enumerable.elements();
 
         while (enumeration.hasMoreElements()) {
             T i = enumeration.nextElement();
