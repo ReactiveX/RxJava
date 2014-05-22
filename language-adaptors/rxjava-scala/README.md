@@ -5,14 +5,14 @@ This adaptor allows to use RxJava in Scala with anonymous functions, e.g.
 ```scala
 val o = Observable.interval(200 millis).take(5)
 o.subscribe(n => println("n = " + n))
-Observable(1, 2, 3, 4).reduce(_ + _)
+Observable.items(1, 2, 3, 4).reduce(_ + _)
 ```
 
 For-comprehensions are also supported:
 
 ```scala
-val first = Observable(10, 11, 12)
-val second = Observable(10, 11, 12)
+val first = Observable.items(10, 11, 12)
+val second = Observable.items(10, 11, 12)
 val booleans = for ((n1, n2) <- (first zip second)) yield (n1 == n2)
 ```
 
