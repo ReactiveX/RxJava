@@ -1084,10 +1084,8 @@ public class Observable<T> {
      * @return an Observable that emits the item
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#wiki-from">RxJava Wiki: from()</a>
      */
-    // suppress unchecked because we are using varargs inside the method
-    @SuppressWarnings("unchecked")
     public final static <T> Observable<T> from(T t1) {
-        return from(Arrays.asList(t1));
+        return just(t1);
     }
 
     /**
