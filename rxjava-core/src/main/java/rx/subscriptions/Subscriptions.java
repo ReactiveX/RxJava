@@ -16,7 +16,7 @@
 package rx.subscriptions;
 
 import java.util.concurrent.Future;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 
 import rx.Subscription;
 import rx.functions.Action0;
@@ -49,27 +49,32 @@ public final class Subscriptions {
      * Subscription that delegates the unsubscription action to an Action0 instance
      */
     private static final class ActionSubscription implements Subscription {
-        private final AtomicReference<Action0> actual;
+        volatile Action0 actual;
+        static final AtomicReferenceFieldUpdater<ActionSubscription, Action0> ACTUAL_UPDATER
+                = AtomicReferenceFieldUpdater.newUpdater(ActionSubscription.class, Action0.class, "actual");
         public ActionSubscription(Action0 action) {
-            this.actual = new AtomicReference<Action0>(action != null ? action : Actions.empty());
+            ACTUAL_UPDATER.lazySet(this, action != null ? action : Actions.empty());
         }
         @Override
         public boolean isUnsubscribed() {
-            return actual.get() == UNSUBSCRIBED_ACTION;
+            return actual == UNSUBSCRIBED_ACTION;
         }
         @Override
         public void unsubscribe() {
-            Action0 a = actual.getAndSet(UNSUBSCRIBED_ACTION);
+            Action0 a = ACTUAL_UPDATER.getAndSet(this, UNSUBSCRIBED_ACTION);
             a.call();
         }
         /** The no-op unique action indicating an unsubscribed state. */
-        private static final Action0 UNSUBSCRIBED_ACTION = new Action0() {
+        private static final Unsubscribed UNSUBSCRIBED_ACTION = new Unsubscribed();
+        /** Naming classes helps with debugging. */
+        private static final class Unsubscribed implements Action0 {
             @Override
             public void call() {
-                
+
             }
-        };
+        }
     }
+    
 
     /**
      * A {@link Subscription} that wraps a {@link Future} and cancels it when unsubscribed.
@@ -80,19 +85,24 @@ public final class Subscriptions {
      * @return {@link Subscription}
      */
     public static Subscription from(final Future<?> f) {
-        return new Subscription() {
+        return new FutureSubscription(f);
+    }
+        /** Naming classes helps with debugging. */
+    private static final class FutureSubscription implements Subscription {
+        final Future<?> f;
 
-            @Override
-            public void unsubscribe() {
-                f.cancel(true);
-            }
+        public FutureSubscription(Future<?> f) {
+            this.f = f;
+        }
+        @Override
+        public void unsubscribe() {
+            f.cancel(true);
+        }
 
-            @Override
-            public boolean isUnsubscribed() {
-                return f.isCancelled();
-            }
-
-        };
+        @Override
+        public boolean isUnsubscribed() {
+            return f.isCancelled();
+        }
     }
 
     /**
@@ -110,7 +120,10 @@ public final class Subscriptions {
     /**
      * A {@link Subscription} that does nothing when its unsubscribe method is called.
      */
-    private static Subscription EMPTY = new Subscription() {
+    private static final Empty EMPTY = new Empty();
+        /** Naming classes helps with debugging. */
+    private static final class Empty implements Subscription {
+        @Override
         public void unsubscribe() {
         }
 
@@ -118,5 +131,5 @@ public final class Subscriptions {
         public boolean isUnsubscribed() {
             return false;
         }
-    };
+    }
 }

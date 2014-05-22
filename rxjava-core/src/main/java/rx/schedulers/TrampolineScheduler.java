@@ -17,7 +17,7 @@ package rx.schedulers;
 
 import java.util.PriorityQueue;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 import rx.Scheduler;
 import rx.Subscription;
@@ -28,7 +28,7 @@ import rx.subscriptions.Subscriptions;
 /**
  * Schedules work on the current thread but does not execute immediately. Work is put in a queue and executed after the current unit of work is completed.
  */
-public class TrampolineScheduler extends Scheduler {
+public final class TrampolineScheduler extends Scheduler {
     private static final TrampolineScheduler INSTANCE = new TrampolineScheduler();
 
     /* package */static TrampolineScheduler instance() {
@@ -45,7 +45,9 @@ public class TrampolineScheduler extends Scheduler {
 
     private static final ThreadLocal<PriorityQueue<TimedAction>> QUEUE = new ThreadLocal<PriorityQueue<TimedAction>>();
 
-    private final AtomicInteger counter = new AtomicInteger(0);
+    volatile int counter;
+    static final AtomicIntegerFieldUpdater<TrampolineScheduler> COUNTER_UPDATER
+            = AtomicIntegerFieldUpdater.newUpdater(TrampolineScheduler.class, "counter");
 
     private class InnerCurrentThreadScheduler extends Scheduler.Worker implements Subscription {
 
@@ -75,7 +77,7 @@ public class TrampolineScheduler extends Scheduler {
                 QUEUE.set(queue);
             }
 
-            final TimedAction timedAction = new TimedAction(action, execTime, counter.incrementAndGet());
+            final TimedAction timedAction = new TimedAction(action, execTime, COUNTER_UPDATER.incrementAndGet(TrampolineScheduler.this));
             queue.add(timedAction);
 
             if (exec) {

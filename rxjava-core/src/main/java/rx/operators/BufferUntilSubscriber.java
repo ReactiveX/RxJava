@@ -16,8 +16,8 @@
 package rx.operators;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
+import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 
 import rx.Observer;
 import rx.Subscriber;
@@ -53,12 +53,28 @@ public class BufferUntilSubscriber<T> extends Subject<T, T> {
 
     /** The common state. */
     static final class State<T> {
-        /** Lite notifications of type T. */
-        final NotificationLite<T> nl = NotificationLite.instance();
         /** The first observer or the one which buffers until the first arrives. */
-        final AtomicReference<Observer<? super T>> observerRef = new AtomicReference<Observer<? super T>>(new BufferedObserver<T>());
+        volatile Observer<? super T> observerRef = new BufferedObserver<T>();
         /** Allow a single subscriber only. */
-        final AtomicBoolean first = new AtomicBoolean();
+        volatile int first;
+        /** Field updater for observerRef. */
+        @SuppressWarnings("rawtypes")
+        static final AtomicReferenceFieldUpdater<State, Observer> OBSERVER_UPDATER
+                = AtomicReferenceFieldUpdater.newUpdater(State.class, Observer.class, "observerRef");
+        /** Field updater for first. */
+        @SuppressWarnings("rawtypes")
+        static final AtomicIntegerFieldUpdater<State> FIRST_UPDATER
+                = AtomicIntegerFieldUpdater.newUpdater(State.class, "first");
+        
+        boolean casFirst(int expected, int next) {
+            return FIRST_UPDATER.compareAndSet(this, expected, next);
+        }
+        void setObserverRef(Observer<? super T> o) {
+            OBSERVER_UPDATER.lazySet(this, o);
+        }
+        boolean casObserverRef(Observer<? super T> expected, Observer<? super T> next) {
+            return OBSERVER_UPDATER.compareAndSet(this, expected, next);
+        }
     }
     
     static final class OnSubscribeAction<T> implements OnSubscribe<T> {
@@ -70,20 +86,21 @@ public class BufferUntilSubscriber<T> extends Subject<T, T> {
 
         @Override
         public void call(final Subscriber<? super T> s) {
-            if (state.first.compareAndSet(false, true)) {
+            if (state.casFirst(0, 1)) {
+                final NotificationLite<T> nl = NotificationLite.instance();
                 // drain queued notifications before subscription
                 // we do this here before PassThruObserver so the consuming thread can do this before putting itself in the line of the producer
-                BufferedObserver<? super T> buffered = (BufferedObserver<? super T>)state.observerRef.get();
+                BufferedObserver<? super T> buffered = (BufferedObserver<? super T>)state.observerRef;
                 Object o;
                 while ((o = buffered.buffer.poll()) != null) {
-                    state.nl.accept(s, o);
+                    nl.accept(s, o);
                 }
                 // register real observer for pass-thru ... and drain any further events received on first notification
-                state.observerRef.set(new PassThruObserver<T>(s, buffered.buffer, state.observerRef));
+                state.setObserverRef(new PassThruObserver<T>(s, buffered.buffer, state));
                 s.add(Subscriptions.create(new Action0() {
                     @Override
                     public void call() {
-                        state.observerRef.set(Subscribers.empty());
+                        state.setObserverRef(Subscribers.empty());
                     }
                 }));
             } else {
@@ -101,17 +118,17 @@ public class BufferUntilSubscriber<T> extends Subject<T, T> {
 
     @Override
     public void onCompleted() {
-        state.observerRef.get().onCompleted();
+        state.observerRef.onCompleted();
     }
 
     @Override
     public void onError(Throwable e) {
-        state.observerRef.get().onError(e);
+        state.observerRef.onError(e);
     }
 
     @Override
     public void onNext(T t) {
-        state.observerRef.get().onNext(t);
+        state.observerRef.onNext(t);
     }
 
     /**
@@ -127,13 +144,13 @@ public class BufferUntilSubscriber<T> extends Subject<T, T> {
         private final Observer<? super T> actual;
         // this assumes single threaded synchronous notifications (the Rx contract for a single Observer)
         private final ConcurrentLinkedQueue<Object> buffer;
-        private final AtomicReference<Observer<? super T>> observerRef;
-        private final NotificationLite<T> nl = NotificationLite.instance();
+        private final State<T> state;
 
-        PassThruObserver(Observer<? super T> actual, ConcurrentLinkedQueue<Object> buffer, AtomicReference<Observer<? super T>> observerRef) {
+        PassThruObserver(Observer<? super T> actual, ConcurrentLinkedQueue<Object> buffer, 
+                State<T> state) {
             this.actual = actual;
             this.buffer = buffer;
-            this.observerRef = observerRef;
+            this.state = state;
         }
 
         @Override
@@ -155,20 +172,21 @@ public class BufferUntilSubscriber<T> extends Subject<T, T> {
         }
 
         private void drainIfNeededAndSwitchToActual() {
+            final NotificationLite<T> nl = NotificationLite.instance();
             Object o;
             while ((o = buffer.poll()) != null) {
                 nl.accept(this, o);
             }
             // now we can safely change over to the actual and get rid of the pass-thru
             // but only if not unsubscribed
-            observerRef.compareAndSet(this, actual);
+            state.casObserverRef(this, actual);
         }
 
     }
 
     private static final class BufferedObserver<T> extends Subscriber<T> {
         private final ConcurrentLinkedQueue<Object> buffer = new ConcurrentLinkedQueue<Object>();
-        private final NotificationLite<T> nl = NotificationLite.instance();
+        private static final NotificationLite<Object> nl = NotificationLite.instance();
 
         @Override
         public void onCompleted() {

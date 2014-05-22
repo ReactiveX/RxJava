@@ -15,7 +15,7 @@
  */
 package rx.subscriptions;
 
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 import rx.Observable;
 import rx.Subscription;
@@ -28,8 +28,10 @@ import rx.functions.Action0;
  */
 public final class BooleanSubscription implements Subscription {
 
-    private final AtomicBoolean unsubscribed = new AtomicBoolean(false);
     private final Action0 action;
+    volatile int unsubscribed;
+    static final AtomicIntegerFieldUpdater<BooleanSubscription> UNSUBSCRIBED_UPDATER
+            = AtomicIntegerFieldUpdater.newUpdater(BooleanSubscription.class, "unsubscribed");
 
     public BooleanSubscription() {
         action = null;
@@ -47,13 +49,14 @@ public final class BooleanSubscription implements Subscription {
         return new BooleanSubscription(onUnsubscribe);
     }
 
+    @Override
     public boolean isUnsubscribed() {
-        return unsubscribed.get();
+        return unsubscribed != 0;
     }
 
     @Override
     public final void unsubscribe() {
-        if (unsubscribed.compareAndSet(false, true)) {
+        if (UNSUBSCRIBED_UPDATER.compareAndSet(this, 0, 1)) {
             if (action != null) {
                 action.call();
             }

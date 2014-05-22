@@ -16,8 +16,7 @@
 package rx.operators;
 
 import java.util.Iterator;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -79,39 +78,43 @@ public final class BlockingOperatorMostRecent {
     }
 
     private static class MostRecentObserver<T> extends Subscriber<T> {
-        private final AtomicBoolean completed = new AtomicBoolean(false);
-        private final AtomicReference<T> value;
-        private final AtomicReference<Throwable> exception = new AtomicReference<Throwable>();
-
+        static final NotificationLite<Object> nl = NotificationLite.instance();
+        volatile Object value;
+        @SuppressWarnings("rawtypes")
+        static final AtomicReferenceFieldUpdater<MostRecentObserver, Object> VALUE_UPDATER
+                = AtomicReferenceFieldUpdater.newUpdater(MostRecentObserver.class, Object.class, "value");
+        
         private MostRecentObserver(T value) {
-            this.value = new AtomicReference<T>(value);
+            VALUE_UPDATER.lazySet(this, nl.next(value));
         }
 
         @Override
         public void onCompleted() {
-            completed.set(true);
+            VALUE_UPDATER.lazySet(this, nl.completed());
         }
 
         @Override
         public void onError(Throwable e) {
-            exception.set(e);
+            VALUE_UPDATER.lazySet(this, nl.error(e));
         }
 
         @Override
         public void onNext(T args) {
-            value.set(args);
+            VALUE_UPDATER.lazySet(this, nl.next(args));
         }
 
         private boolean isCompleted() {
-            return completed.get();
+            return nl.isCompleted(value);
         }
 
         private Throwable getThrowable() {
-            return exception.get();
+            Object v = value;
+            return nl.isError(v) ? nl.getError(v) : null;
         }
 
+        @SuppressWarnings("unchecked")
         private T getRecentValue() {
-            return value.get();
+            return (T)value;
         }
 
     }

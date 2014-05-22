@@ -16,8 +16,8 @@
 package rx.operators;
 
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
+import java.util.concurrent.atomic.AtomicLongFieldUpdater;
 
 import rx.Observable;
 import rx.Observable.Operator;
@@ -80,8 +80,6 @@ class OperatorTimeoutBase<T> implements Operator<T, T> {
     /* package-private */static class TimeoutSubscriber<T> extends
             Subscriber<T> {
 
-        private final AtomicBoolean terminated = new AtomicBoolean(false);
-        private final AtomicLong actual = new AtomicLong(0L);
         private final SerialSubscription serial;
         private final Object gate = new Object();
 
@@ -91,6 +89,16 @@ class OperatorTimeoutBase<T> implements Operator<T, T> {
 
         private final Observable<? extends T> other;
         private final Scheduler.Worker inner;
+        
+        volatile int terminated;
+        volatile long actual;
+        
+        @SuppressWarnings("rawtypes")
+        static final AtomicIntegerFieldUpdater<TimeoutSubscriber> TERMINATED_UPDATER
+                = AtomicIntegerFieldUpdater.newUpdater(TimeoutSubscriber.class, "terminated");
+        @SuppressWarnings("rawtypes")
+        static final AtomicLongFieldUpdater<TimeoutSubscriber> ACTUAL_UPDATER
+                = AtomicLongFieldUpdater.newUpdater(TimeoutSubscriber.class, "actual");
 
         private TimeoutSubscriber(
                 SerializedSubscriber<T> serializedSubscriber,
@@ -109,14 +117,14 @@ class OperatorTimeoutBase<T> implements Operator<T, T> {
         public void onNext(T value) {
             boolean onNextWins = false;
             synchronized (gate) {
-                if (!terminated.get()) {
-                    actual.incrementAndGet();
+                if (terminated == 0) {
+                    ACTUAL_UPDATER.incrementAndGet(this);
                     onNextWins = true;
                 }
             }
             if (onNextWins) {
                 serializedSubscriber.onNext(value);
-                serial.set(timeoutStub.call(this, actual.get(), value, inner));
+                serial.set(timeoutStub.call(this, actual, value, inner));
             }
         }
 
@@ -124,7 +132,7 @@ class OperatorTimeoutBase<T> implements Operator<T, T> {
         public void onError(Throwable error) {
             boolean onErrorWins = false;
             synchronized (gate) {
-                if (!terminated.getAndSet(true)) {
+                if (TERMINATED_UPDATER.getAndSet(this, 1) == 0) {
                     onErrorWins = true;
                 }
             }
@@ -138,7 +146,7 @@ class OperatorTimeoutBase<T> implements Operator<T, T> {
         public void onCompleted() {
             boolean onCompletedWins = false;
             synchronized (gate) {
-                if (!terminated.getAndSet(true)) {
+                if (TERMINATED_UPDATER.getAndSet(this, 1) == 0) {
                     onCompletedWins = true;
                 }
             }
@@ -152,7 +160,7 @@ class OperatorTimeoutBase<T> implements Operator<T, T> {
             long expected = seqId;
             boolean timeoutWins = false;
             synchronized (gate) {
-                if (expected == actual.get() && !terminated.getAndSet(true)) {
+                if (expected == actual && TERMINATED_UPDATER.getAndSet(this, 1) == 0) {
                     timeoutWins = true;
                 }
             }

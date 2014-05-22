@@ -15,7 +15,7 @@
  */
 package rx.operators;
 
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 import rx.Observable;
 import rx.Observable.OnSubscribe;
@@ -43,7 +43,10 @@ import rx.subjects.Subject;
 public final class OperatorCache<T> implements OnSubscribe<T> {
     protected final Observable<? extends T> source;
     protected final Subject<? super T, ? extends T> cache;
-    protected final AtomicBoolean sourceSubscribed;
+    volatile int sourceSubscribed;
+    @SuppressWarnings("rawtypes")
+    static final AtomicIntegerFieldUpdater<OperatorCache> SRC_SUBSCRIBED_UPDATER
+            = AtomicIntegerFieldUpdater.newUpdater(OperatorCache.class, "sourceSubscribed");
 
     public OperatorCache(Observable<? extends T> source) {
         this(source, ReplaySubject.<T> create());
@@ -52,12 +55,11 @@ public final class OperatorCache<T> implements OnSubscribe<T> {
     /* accessible to tests */OperatorCache(Observable<? extends T> source, Subject<? super T, ? extends T> cache) {
         this.source = source;
         this.cache = cache;
-        this.sourceSubscribed = new AtomicBoolean();
     }
 
     @Override
     public void call(Subscriber<? super T> s) {
-        if (sourceSubscribed.compareAndSet(false, true)) {
+        if (SRC_SUBSCRIBED_UPDATER.compareAndSet(this, 0, 1)) {
             source.unsafeSubscribe(Subscribers.from(cache));
             /*
              * Note that we will never unsubscribe from 'source' as we want to receive and cache all of its values.

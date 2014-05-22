@@ -15,7 +15,7 @@
  */
 package rx.subscriptions;
 
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 
 import rx.Subscription;
 
@@ -26,8 +26,10 @@ import rx.Subscription;
  * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.disposables.serialdisposable(v=vs.103).aspx">Rx.Net equivalent SerialDisposable</a>
  */
 public final class SerialSubscription implements Subscription {
-
-    private final AtomicReference<State> state = new AtomicReference<State>(new State(false, Subscriptions.empty()));
+    static final State EMPTY_STATE = new State(false, Subscriptions.empty());
+    volatile State state = EMPTY_STATE;
+    static final AtomicReferenceFieldUpdater<SerialSubscription, State> STATE_UPDATER
+            = AtomicReferenceFieldUpdater.newUpdater(SerialSubscription.class, State.class, "state");
 
     private static final class State {
         final boolean isUnsubscribed;
@@ -48,8 +50,9 @@ public final class SerialSubscription implements Subscription {
 
     }
 
+    @Override
     public boolean isUnsubscribed() {
-        return state.get().isUnsubscribed;
+        return state.isUnsubscribed;
     }
 
     @Override
@@ -57,13 +60,13 @@ public final class SerialSubscription implements Subscription {
         State oldState;
         State newState;
         do {
-            oldState = state.get();
+            oldState = state;
             if (oldState.isUnsubscribed) {
                 return;
             } else {
                 newState = oldState.unsubscribe();
             }
-        } while (!state.compareAndSet(oldState, newState));
+        } while (!STATE_UPDATER.compareAndSet(this, oldState, newState));
         oldState.subscription.unsubscribe();
     }
 
@@ -74,19 +77,19 @@ public final class SerialSubscription implements Subscription {
         State oldState;
         State newState;
         do {
-            oldState = state.get();
+            oldState = state;
             if (oldState.isUnsubscribed) {
                 s.unsubscribe();
                 return;
             } else {
                 newState = oldState.set(s);
             }
-        } while (!state.compareAndSet(oldState, newState));
+        } while (!STATE_UPDATER.compareAndSet(this, oldState, newState));
         oldState.subscription.unsubscribe();
     }
 
     public Subscription get() {
-        return state.get().subscription;
+        return state.subscription;
     }
 
 }

@@ -15,8 +15,8 @@
  */
 package rx.subscriptions;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
+import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 
 import rx.Subscription;
 
@@ -28,7 +28,10 @@ import rx.Subscription;
  */
 public final class RefCountSubscription implements Subscription {
     private final Subscription actual;
-    private final AtomicReference<State> state = new AtomicReference<State>(new State(false, 0));
+    static final State EMPTY_STATE = new State(false, 0);
+    volatile State state = EMPTY_STATE;
+    static final AtomicReferenceFieldUpdater<RefCountSubscription, State> STATE_UPDATER
+            = AtomicReferenceFieldUpdater.newUpdater(RefCountSubscription.class, State.class, "state");
 
     private static final class State {
         final boolean isUnsubscribed;
@@ -66,28 +69,27 @@ public final class RefCountSubscription implements Subscription {
     }
 
     /**
-     * Returns a new sub-subscription.
+     * Returns a new sub-subscription
+     * @return a new sub-subscription.
      */
     public Subscription get() {
         State oldState;
         State newState;
         do {
-            oldState = state.get();
+            oldState = state;
             if (oldState.isUnsubscribed) {
                 return Subscriptions.empty();
             } else {
                 newState = oldState.addChild();
             }
-        } while (!state.compareAndSet(oldState, newState));
+        } while (!STATE_UPDATER.compareAndSet(this, oldState, newState));
 
-        return new InnerSubscription();
+        return new InnerSubscription(this);
     }
 
-    /**
-     * Check if this subscription is already unsubscribed.
-     */
+    @Override
     public boolean isUnsubscribed() {
-        return state.get().isUnsubscribed;
+        return state.isUnsubscribed;
     }
 
     @Override
@@ -95,12 +97,12 @@ public final class RefCountSubscription implements Subscription {
         State oldState;
         State newState;
         do {
-            oldState = state.get();
+            oldState = state;
             if (oldState.isUnsubscribed) {
                 return;
             }
             newState = oldState.unsubscribe();
-        } while (!state.compareAndSet(oldState, newState));
+        } while (!STATE_UPDATER.compareAndSet(this, oldState, newState));
         unsubscribeActualIfApplicable(newState);
     }
 
@@ -109,27 +111,35 @@ public final class RefCountSubscription implements Subscription {
             actual.unsubscribe();
         }
     }
+    void unsubscribeAChild() {
+        State oldState;
+        State newState;
+        do {
+            oldState = state;
+            newState = oldState.removeChild();
+        } while (!STATE_UPDATER.compareAndSet(this, oldState, newState));
+        unsubscribeActualIfApplicable(newState);
+    }
 
     /** The individual sub-subscriptions. */
-    private final class InnerSubscription implements Subscription {
-        final AtomicBoolean innerDone = new AtomicBoolean();
-
+    private static final class InnerSubscription implements Subscription {
+        final RefCountSubscription parent;
+        volatile int innerDone;
+        static final AtomicIntegerFieldUpdater<InnerSubscription> INNER_DONE_UPDATER
+                = AtomicIntegerFieldUpdater.newUpdater(InnerSubscription.class, "innerDone");
+        public InnerSubscription(RefCountSubscription parent) {
+            this.parent = parent;
+        }
         @Override
         public void unsubscribe() {
-            if (innerDone.compareAndSet(false, true)) {
-                State oldState;
-                State newState;
-                do {
-                    oldState = state.get();
-                    newState = oldState.removeChild();
-                } while (!state.compareAndSet(oldState, newState));
-                unsubscribeActualIfApplicable(newState);
+            if (INNER_DONE_UPDATER.compareAndSet(this, 0, 1)) {
+                parent.unsubscribeAChild();
             }
         }
 
         @Override
         public boolean isUnsubscribed() {
-            return innerDone.get();
+            return innerDone != 0;
         }
     };
 }

@@ -17,7 +17,7 @@ package rx.subjects;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 import rx.Observable.OnSubscribe;
 
 import rx.Observer;
@@ -35,9 +35,13 @@ import rx.subscriptions.Subscriptions;
 @SuppressWarnings({"unchecked", "rawtypes"})
 /* package */final class SubjectSubscriptionManager<T> implements OnSubscribe<T> {
     /** Contains the unsubscription flag and the array of active subscribers. */
-    private final AtomicReference<State<T>> state = new AtomicReference<State<T>>(State.EMPTY);
+    volatile State<T> state = State.EMPTY;
+    static final AtomicReferenceFieldUpdater<SubjectSubscriptionManager, State> STATE_UPDATER
+            = AtomicReferenceFieldUpdater.newUpdater(SubjectSubscriptionManager.class, State.class, "state");
     /** Stores the latest value or the terminal value for some Subjects. */
-    final AtomicReference<Object> latest = new AtomicReference<Object>();
+    volatile Object latest;
+    static final AtomicReferenceFieldUpdater<SubjectSubscriptionManager, Object> LATEST_UPDATER
+            = AtomicReferenceFieldUpdater.newUpdater(SubjectSubscriptionManager.class, Object.class, "latest");
     /** Indicates that the subject is active (cheaper than checking the state).*/
     boolean active = true;
     /** Action called when a new subscriber subscribes but before it is added to the state. */
@@ -70,15 +74,15 @@ import rx.subscriptions.Subscriptions;
     }    
     /** Set the latest NotificationLite value. */
     void set(Object value) {
-        this.latest.set(value);
+        LATEST_UPDATER.lazySet(this, value);
     }
     /** @return Retrieve the latest NotificationLite value */
     Object get() {
-        return latest.get();
+        return latest;
     }
     /** @return the array of active subscribers, don't write into the array! */
     SubjectObserver<T>[] observers() {
-        return state.get().observers;
+        return state.observers;
     }
     /**
      * Try to atomically add a SubjectObserver to the active state.
@@ -87,13 +91,13 @@ import rx.subscriptions.Subscriptions;
      */
     boolean add(SubjectObserver<T> o) {
         do {
-            State oldState = state.get();
+            State oldState = state;
             if (oldState.terminated) {
                 onTerminated.call(o);
                 return false;
             }
             State newState = oldState.add(o);
-            if (state.compareAndSet(oldState, newState)) {
+            if (STATE_UPDATER.compareAndSet(this, oldState, newState)) {
                 onAdded.call(o);
                 return true;
             }
@@ -105,12 +109,12 @@ import rx.subscriptions.Subscriptions;
      */
     void remove(SubjectObserver<T> o) {
         do {
-            State oldState = state.get();
+            State oldState = state;
             if (oldState.terminated) {
                 return;
             }
             State newState = oldState.remove(o);
-            if (newState == oldState || state.compareAndSet(oldState, newState)) {
+            if (newState == oldState || STATE_UPDATER.compareAndSet(this, oldState, newState)) {
                 return;
             }
         } while (true);
@@ -122,7 +126,7 @@ import rx.subscriptions.Subscriptions;
      */
     SubjectObserver<T>[] next(Object n) {
         set(n);
-        return state.get().observers;
+        return state.observers;
     }
     /**
      * Atomically set the terminal NotificationLite value (which could be any of the 3),
@@ -133,15 +137,12 @@ import rx.subscriptions.Subscriptions;
     SubjectObserver<T>[] terminate(Object n) {
         set(n);
         active = false;
-        do {
-            State<T> oldState = state.get();
-            if (oldState.terminated) {
-                return State.NO_OBSERVERS;
-            }
-            if (state.compareAndSet(oldState, State.TERMINATED)) {
-                return oldState.observers;
-            }
-        } while (true);
+
+        State<T> oldState = state;
+        if (oldState.terminated) {
+            return State.NO_OBSERVERS;
+        }
+        return STATE_UPDATER.getAndSet(this, State.TERMINATED).observers;
     }
 
     /** State-machine representing the termination state and active SubjectObservers. */

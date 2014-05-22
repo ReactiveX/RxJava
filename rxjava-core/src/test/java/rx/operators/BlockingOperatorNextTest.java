@@ -304,12 +304,12 @@ public class BlockingOperatorNextTest {
 
             for (long i = 0; i < 9; i++) {
                 // hasNext has to set the waiting to true, otherwise, all onNext will be skipped
-                it.setWaiting(true);
+                it.setWaiting(1);
                 ps.onNext(i);
                 Assert.assertEquals(true, it.hasNext());
                 Assert.assertEquals(j + "th iteration", Long.valueOf(i), it.next());
             }
-            it.setWaiting(true);
+            it.setWaiting(1);
             ps.onNext(9L);
 
             Assert.assertEquals(j + "th iteration", false, it.hasNext());

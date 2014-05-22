@@ -15,8 +15,8 @@
  */
 package rx.operators;
 
-import java.util.concurrent.atomic.AtomicLong;
 
+import java.util.concurrent.atomic.AtomicLongFieldUpdater;
 import rx.Observable;
 import rx.Scheduler;
 import rx.functions.Func1;
@@ -32,14 +32,8 @@ public final class OperatorParallelMerge {
 
     public static <T> Observable<Observable<T>> parallelMerge(final Observable<Observable<T>> source, final int parallelObservables, final Scheduler scheduler) {
 
-        return source.groupBy(new Func1<Observable<T>, Integer>() {
-            final AtomicLong rollingCount = new AtomicLong();
-
-            @Override
-            public Integer call(Observable<T> o) {
-                return (int) rollingCount.incrementAndGet() % parallelObservables;
-            }
-        }).map(new Func1<GroupedObservable<Integer, Observable<T>>, Observable<T>>() {
+        return source.groupBy(new StrideMapper<T>(parallelObservables))
+        .map(new Func1<GroupedObservable<Integer, Observable<T>>, Observable<T>>() {
 
             @Override
             public Observable<T> call(GroupedObservable<Integer, Observable<T>> o) {
@@ -47,7 +41,24 @@ public final class OperatorParallelMerge {
             }
 
         });
-
     }
+    /** Maps source observables in a round-robin fashion to streaming groups. */
+    static final class StrideMapper<T> implements Func1<Observable<T>, Integer> {
+        final int parallelObservables;
+        
+        volatile long rollingCount;
+        @SuppressWarnings("rawtypes")
+        static final AtomicLongFieldUpdater<StrideMapper> ROLLING_COUNT_UPDATER
+                = AtomicLongFieldUpdater.newUpdater(StrideMapper.class, "rollingCount");
 
+        public StrideMapper(int parallelObservables) {
+            this.parallelObservables = parallelObservables;
+        }
+        
+        @Override
+        public Integer call(Observable<T> t1) {
+            return (int)ROLLING_COUNT_UPDATER.incrementAndGet(this) % parallelObservables;
+        }
+        
+    }
 }

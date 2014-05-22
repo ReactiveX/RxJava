@@ -19,8 +19,6 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import rx.Scheduler;
 
@@ -33,8 +31,11 @@ import rx.Scheduler;
  * the work asynchronously on the appropriate {@link Scheduler} implementation. This means for example that you would not use this approach
  * along with {@link TrampolineScheduler} or {@link ImmediateScheduler}.
  */
-/* package */class GenericScheduledExecutorService {
+/* package */final class GenericScheduledExecutorService {
 
+    private static final String THREAD_NAME_PREFIX = "RxScheduledExecutorPool-";
+    private static final NewThreadScheduler.RxThreadFactory THREAD_FACTORY = new NewThreadScheduler.RxThreadFactory(THREAD_NAME_PREFIX);
+    
     private final static GenericScheduledExecutorService INSTANCE = new GenericScheduledExecutorService();
     private final ScheduledExecutorService executor;
 
@@ -47,18 +48,7 @@ import rx.Scheduler;
         if (count > 8) {
             count = 8;
         }
-        executor = Executors.newScheduledThreadPool(count, new ThreadFactory() {
-
-            final AtomicInteger counter = new AtomicInteger();
-
-            @Override
-            public Thread newThread(Runnable r) {
-                Thread t = new Thread(r, "RxScheduledExecutorPool-" + counter.incrementAndGet());
-                t.setDaemon(true);
-                return t;
-            }
-
-        });
+        executor = Executors.newScheduledThreadPool(count, THREAD_FACTORY);
     }
 
     /**
