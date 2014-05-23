@@ -68,24 +68,22 @@ public class HandlerThreadScheduler extends Scheduler {
 
         @Override
         public Subscription schedule(final Action0 action, long delayTime, TimeUnit unit) {
+            if (innerSubscription.isUnsubscribed()) {
+                // don't schedule, we are unsubscribed
+                return Subscriptions.empty();
+            }
             final Runnable runnable = new Runnable() {
                 @Override
                 public void run() {
-                    if (isUnsubscribed()) {
-                        return;
-                    }
                     action.call();
                 }
             };
             handler.postDelayed(runnable, unit.toMillis(delayTime));
             return Subscriptions.create(new Action0() {
-
                 @Override
                 public void call() {
                     handler.removeCallbacks(runnable);
-                    
                 }
-                
             });
         }
 
