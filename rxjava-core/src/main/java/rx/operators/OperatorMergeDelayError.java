@@ -67,7 +67,7 @@ public final class OperatorMergeDelayError<T> implements Operator<T, Observable<
             super(s);
             this.s = s;
             this.csub = csub;
-            WIP_UPDATER.lazySet(this, 1);
+            this.wip = 1;
         }
         
         @Override

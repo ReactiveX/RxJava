@@ -15,7 +15,7 @@
  */
 package rx.plugins;
 
-import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Registry for plugin implementations that allows global override and handles the retrieval of correct implementation based on order of precedence:
@@ -29,17 +29,10 @@ import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 public class RxJavaPlugins {
     private final static RxJavaPlugins INSTANCE = new RxJavaPlugins();
 
-    volatile RxJavaErrorHandler errorHandler;
-    volatile RxJavaObservableExecutionHook observableExecutionHook;
-    volatile RxJavaDefaultSchedulers schedulerOverrides;
+    private final AtomicReference<RxJavaErrorHandler> errorHandler = new AtomicReference<RxJavaErrorHandler>();
+    private final AtomicReference<RxJavaObservableExecutionHook> observableExecutionHook = new AtomicReference<RxJavaObservableExecutionHook>();
+    private final AtomicReference<RxJavaDefaultSchedulers> schedulerOverrides = new AtomicReference<RxJavaDefaultSchedulers>();
 
-    static final AtomicReferenceFieldUpdater<RxJavaPlugins, RxJavaErrorHandler> ERROR_HANDLER_UPDATER
-            = AtomicReferenceFieldUpdater.newUpdater(RxJavaPlugins.class, RxJavaErrorHandler.class, "errorHandler");
-    static final AtomicReferenceFieldUpdater<RxJavaPlugins, RxJavaObservableExecutionHook> EXECUTION_HOOK_UPDATER
-            = AtomicReferenceFieldUpdater.newUpdater(RxJavaPlugins.class, RxJavaObservableExecutionHook.class, "observableExecutionHook");
-    static final AtomicReferenceFieldUpdater<RxJavaPlugins, RxJavaDefaultSchedulers> SCHEDULER_OVERRIDE_UPDATER
-            = AtomicReferenceFieldUpdater.newUpdater(RxJavaPlugins.class, RxJavaDefaultSchedulers.class, "schedulerOverrides");
-    
     public static RxJavaPlugins getInstance() {
         return INSTANCE;
     }
@@ -48,9 +41,9 @@ public class RxJavaPlugins {
 
     }
 
-    /* package accessible for unit tests */void reset() {
-        ERROR_HANDLER_UPDATER.lazySet(this, null);
-        EXECUTION_HOOK_UPDATER.lazySet(this, null);
+    /* package accessible for ujnit tests */void reset() {
+        INSTANCE.errorHandler.set(null);
+        INSTANCE.observableExecutionHook.set(null);
     }
 
     /**
@@ -62,19 +55,19 @@ public class RxJavaPlugins {
      * @return {@link RxJavaErrorHandler} implementation to use
      */
     public RxJavaErrorHandler getErrorHandler() {
-        if (errorHandler == null) {
+        if (errorHandler.get() == null) {
             // check for an implementation from System.getProperty first
             Object impl = getPluginImplementationViaProperty(RxJavaErrorHandler.class);
             if (impl == null) {
                 // nothing set via properties so initialize with default 
-                ERROR_HANDLER_UPDATER.compareAndSet(this, null, RxJavaErrorHandlerDefault.getInstance());
+                errorHandler.compareAndSet(null, RxJavaErrorHandlerDefault.getInstance());
                 // we don't return from here but call get() again in case of thread-race so the winner will always get returned
             } else {
                 // we received an implementation from the system property so use it
-                ERROR_HANDLER_UPDATER.compareAndSet(this, null, (RxJavaErrorHandler) impl);
+                errorHandler.compareAndSet(null, (RxJavaErrorHandler) impl);
             }
         }
-        return errorHandler;
+        return errorHandler.get();
     }
 
     /**
@@ -86,8 +79,8 @@ public class RxJavaPlugins {
      *             if called more than once or after the default was initialized (if usage occurs before trying to register)
      */
     public void registerErrorHandler(RxJavaErrorHandler impl) {
-        if (!ERROR_HANDLER_UPDATER.compareAndSet(this, null, impl)) {
-            throw new IllegalStateException("Another strategy was already registered: " + errorHandler);
+        if (!errorHandler.compareAndSet(null, impl)) {
+            throw new IllegalStateException("Another strategy was already registered: " + errorHandler.get());
         }
     }
 
@@ -100,19 +93,19 @@ public class RxJavaPlugins {
      * @return {@link RxJavaObservableExecutionHook} implementation to use
      */
     public RxJavaObservableExecutionHook getObservableExecutionHook() {
-        if (observableExecutionHook == null) {
+        if (observableExecutionHook.get() == null) {
             // check for an implementation from System.getProperty first
             Object impl = getPluginImplementationViaProperty(RxJavaObservableExecutionHook.class);
             if (impl == null) {
                 // nothing set via properties so initialize with default 
-                EXECUTION_HOOK_UPDATER.compareAndSet(this, null, RxJavaObservableExecutionHookDefault.getInstance());
+                observableExecutionHook.compareAndSet(null, RxJavaObservableExecutionHookDefault.getInstance());
                 // we don't return from here but call get() again in case of thread-race so the winner will always get returned
             } else {
                 // we received an implementation from the system property so use it
-                EXECUTION_HOOK_UPDATER.compareAndSet(this, null, (RxJavaObservableExecutionHook) impl);
+                observableExecutionHook.compareAndSet(null, (RxJavaObservableExecutionHook) impl);
             }
         }
-        return observableExecutionHook;
+        return observableExecutionHook.get();
     }
 
     /**
@@ -124,8 +117,8 @@ public class RxJavaPlugins {
      *             if called more than once or after the default was initialized (if usage occurs before trying to register)
      */
     public void registerObservableExecutionHook(RxJavaObservableExecutionHook impl) {
-        if (!EXECUTION_HOOK_UPDATER.compareAndSet(this, null, impl)) {
-            throw new IllegalStateException("Another strategy was already registered: " + observableExecutionHook);
+        if (!observableExecutionHook.compareAndSet(null, impl)) {
+            throw new IllegalStateException("Another strategy was already registered: " + observableExecutionHook.get());
         }
     }
 
@@ -168,19 +161,19 @@ public class RxJavaPlugins {
      * @return {@link RxJavaErrorHandler} implementation to use
      */
     public RxJavaDefaultSchedulers getDefaultSchedulers() {
-        if (schedulerOverrides == null) {
+        if (schedulerOverrides.get() == null) {
             // check for an implementation from System.getProperty first
             Object impl = getPluginImplementationViaProperty(RxJavaDefaultSchedulers.class);
             if (impl == null) {
                 // nothing set via properties so initialize with default 
-                SCHEDULER_OVERRIDE_UPDATER.compareAndSet(this, null, RxJavaDefaultSchedulersDefault.getInstance());
+                schedulerOverrides.compareAndSet(null, RxJavaDefaultSchedulersDefault.getInstance());
                 // we don't return from here but call get() again in case of thread-race so the winner will always get returned
             } else {
                 // we received an implementation from the system property so use it
-                SCHEDULER_OVERRIDE_UPDATER.compareAndSet(this, null, (RxJavaDefaultSchedulers) impl);
+                schedulerOverrides.compareAndSet(null, (RxJavaDefaultSchedulers) impl);
             }
         }
-        return schedulerOverrides;
+        return schedulerOverrides.get();
     }
 
     /**
@@ -192,8 +185,8 @@ public class RxJavaPlugins {
      *             if called more than once or after the default was initialized (if usage occurs before trying to register)
      */
     public void registerDefaultSchedulers(RxJavaDefaultSchedulers impl) {
-        if (!SCHEDULER_OVERRIDE_UPDATER.compareAndSet(this, null, impl)) {
-            throw new IllegalStateException("Another strategy was already registered: " + schedulerOverrides);
+        if (!schedulerOverrides.compareAndSet(null, impl)) {
+            throw new IllegalStateException("Another strategy was already registered: " + schedulerOverrides.get());
         }
     }
 }

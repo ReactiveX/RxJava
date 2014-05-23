@@ -70,7 +70,7 @@ public class BufferUntilSubscriber<T> extends Subject<T, T> {
             return FIRST_UPDATER.compareAndSet(this, expected, next);
         }
         void setObserverRef(Observer<? super T> o) {
-            OBSERVER_UPDATER.lazySet(this, o);
+            observerRef = o;
         }
         boolean casObserverRef(Observer<? super T> expected, Observer<? super T> next) {
             return OBSERVER_UPDATER.compareAndSet(this, expected, next);

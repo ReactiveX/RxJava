@@ -71,7 +71,7 @@ public final class OperatorMergeMapTransform<T, R> implements Operator<R, T> {
             this.onNext = onNext;
             this.onError = onError;
             this.onCompleted = onCompleted;
-            WIP_UPDATER.lazySet(this, 1);
+            this.wip = 1;
         }
         
         @Override

@@ -53,7 +53,7 @@ public final class Subscriptions {
         static final AtomicReferenceFieldUpdater<ActionSubscription, Action0> ACTUAL_UPDATER
                 = AtomicReferenceFieldUpdater.newUpdater(ActionSubscription.class, Action0.class, "actual");
         public ActionSubscription(Action0 action) {
-            ACTUAL_UPDATER.lazySet(this, action != null ? action : Actions.empty());
+            this.actual = action != null ? action : Actions.empty();
         }
         @Override
         public boolean isUnsubscribed() {

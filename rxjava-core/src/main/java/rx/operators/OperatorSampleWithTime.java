@@ -72,7 +72,7 @@ public final class OperatorSampleWithTime<T> implements Operator<T, T> {
         }
         @Override
         public void onNext(T t) {
-            VALUE_UPDATER.lazySet(this, t);
+            value = t;
         }
 
         @Override

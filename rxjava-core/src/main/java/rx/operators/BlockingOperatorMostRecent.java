@@ -16,7 +16,6 @@
 package rx.operators;
 
 import java.util.Iterator;
-import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -80,27 +79,24 @@ public final class BlockingOperatorMostRecent {
     private static class MostRecentObserver<T> extends Subscriber<T> {
         static final NotificationLite<Object> nl = NotificationLite.instance();
         volatile Object value;
-        @SuppressWarnings("rawtypes")
-        static final AtomicReferenceFieldUpdater<MostRecentObserver, Object> VALUE_UPDATER
-                = AtomicReferenceFieldUpdater.newUpdater(MostRecentObserver.class, Object.class, "value");
         
         private MostRecentObserver(T value) {
-            VALUE_UPDATER.lazySet(this, nl.next(value));
+            this.value = nl.next(value);
         }
 
         @Override
         public void onCompleted() {
-            VALUE_UPDATER.lazySet(this, nl.completed());
+            value = nl.completed();
         }
 
         @Override
         public void onError(Throwable e) {
-            VALUE_UPDATER.lazySet(this, nl.error(e));
+            value = nl.error(e);
         }
 
         @Override
         public void onNext(T args) {
-            VALUE_UPDATER.lazySet(this, nl.next(args));
+            value = nl.next(args);
         }
 
         private boolean isCompleted() {

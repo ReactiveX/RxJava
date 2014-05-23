@@ -178,7 +178,7 @@ public final class BlockingOperatorNext {
             return buf.take();
         }
         void setWaiting(int value) {
-            WAITING_UPDATER.lazySet(this, value);
+            waiting = value;
         }
     }
 }

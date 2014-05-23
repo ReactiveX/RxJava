@@ -17,7 +17,6 @@ package rx.subscriptions;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 
 import rx.Subscription;
@@ -103,11 +102,11 @@ public final class CompositeSubscription implements Subscription {
     public CompositeSubscription() {
         // this creates only a store-store barrier which is generally faster when
         // CompositeSubscriptions are created in a tight loop.
-        STATE_UPDATER.lazySet(this, CLEAR_STATE);
+        state = CLEAR_STATE;
     }
 
     public CompositeSubscription(final Subscription... subscriptions) {
-        STATE_UPDATER.lazySet(this, new State(false, subscriptions));
+        state = new State(false, subscriptions);
     }
 
     @Override

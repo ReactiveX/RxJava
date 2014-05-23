@@ -72,7 +72,7 @@ public final class OperatorMergeMaxConcurrent<T> implements Operator<T, Observab
             this.csub = csub;
             this.guard = new Object();
             this.queue = new LinkedList<Observable<? extends T>>();
-            WIP_UPDATER.lazySet(this, 1);
+            this.wip = 1;
         }
         
         @Override

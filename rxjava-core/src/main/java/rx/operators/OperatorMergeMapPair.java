@@ -79,7 +79,7 @@ public final class OperatorMergeMapPair<T, U, R> implements Operator<R, T> {
             this.csub = csub;
             this.collectionSelector = collectionSelector;
             this.resultSelector = resultSelector;
-            WIP_UPDATER.lazySet(this, 1);
+            this.wip = 1;
         }
         
         @Override

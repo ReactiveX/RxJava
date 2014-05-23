@@ -57,7 +57,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
             super(actual);
             this.actual = actual;
             this.childrenSubscriptions = childrenSubscriptions;
-            WIP_UPDATER.lazySet(this, 1);
+            this.wip = 1;
         }
 
         @Override

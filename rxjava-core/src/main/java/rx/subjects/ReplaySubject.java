@@ -427,14 +427,11 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         final NotificationLite<T> nl = NotificationLite.instance();
         volatile boolean terminated;
         volatile NodeList.Node<Object> tail;
-        @SuppressWarnings("rawtypes")
-        static final AtomicReferenceFieldUpdater<BoundedState, NodeList.Node> TAIL_UPDATER
-                = AtomicReferenceFieldUpdater.newUpdater(BoundedState.class, NodeList.Node.class, "tail");
         
         public BoundedState(EvictionPolicy evictionPolicy, Func1<Object, Object> enterTransform, 
                 Func1<Object, Object> leaveTransform) {
             this.list = new NodeList<Object>();
-            TAIL_UPDATER.lazySet(this, list.tail);
+            this.tail = list.tail;
             this.replayState = new ConcurrentHashMap<Observer<? super T>, NodeList.Node<Object>>();
             this.evictionPolicy = evictionPolicy;
             this.enterTransform = enterTransform;
@@ -445,7 +442,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
             if (!terminated) {
                 list.addLast(enterTransform.call(nl.next(value)));
                 evictionPolicy.evict(list);
-                TAIL_UPDATER.lazySet(this, list.tail);
+                tail = list.tail;
             }
         }
         @Override
@@ -456,7 +453,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                 evictionPolicy.evict(list);
                 // so add it later
                 list.addLast(enterTransform.call(nl.completed()));
-                TAIL_UPDATER.lazySet(this, list.tail);
+                tail = list.tail;
             }
             
         }
@@ -468,7 +465,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                 evictionPolicy.evict(list);
                 // so add it later
                 list.addLast(enterTransform.call(nl.error(e)));
-                TAIL_UPDATER.lazySet(this, list.tail);
+                tail = list.tail;
             }
         }
         public void accept(Observer<? super T> o, NodeList.Node<Object> node) {

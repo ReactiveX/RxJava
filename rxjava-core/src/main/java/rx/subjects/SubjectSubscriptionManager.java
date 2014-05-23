@@ -74,7 +74,7 @@ import rx.subscriptions.Subscriptions;
     }    
     /** Set the latest NotificationLite value. */
     void set(Object value) {
-        LATEST_UPDATER.lazySet(this, value);
+        latest = value;
     }
     /** @return Retrieve the latest NotificationLite value */
     Object get() {
