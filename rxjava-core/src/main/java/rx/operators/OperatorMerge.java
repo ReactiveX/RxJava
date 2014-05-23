@@ -49,6 +49,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
         final Subscriber<T> actual;
         final CompositeSubscription childrenSubscriptions;
         volatile int wip;
+        volatile boolean completed;
         @SuppressWarnings("rawtypes")
         static final AtomicIntegerFieldUpdater<MergeSubscriber> WIP_UPDATER
                 = AtomicIntegerFieldUpdater.newUpdater(MergeSubscriber.class, "wip");
@@ -57,7 +58,6 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
             super(actual);
             this.actual = actual;
             this.childrenSubscriptions = childrenSubscriptions;
-            this.wip = 1;
         }
 
         @Override
@@ -76,11 +76,20 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
 
         @Override
         public void onCompleted() {
-            if (WIP_UPDATER.decrementAndGet(this) == 0) {
+            completed = true;
+            if (wip == 0) {
                 actual.onCompleted();
             }
         }
-        
+        void completeInner(InnerSubscriber<T> s) {
+            try {
+                if (WIP_UPDATER.decrementAndGet(this) == 0 && completed) {
+                    actual.onCompleted();
+                }
+            } finally {
+                childrenSubscriptions.remove(s);
+            }
+        }
     }
     static final class InnerSubscriber<T> extends Subscriber<T> {
         final Subscriber<? super T> actual;
@@ -110,11 +119,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
         @Override
         public void onCompleted() {
             if (ONCE_UPDATER.compareAndSet(this, 0, 1)) {
-                try {
-                    parent.onCompleted();
-                } finally {
-                    parent.childrenSubscriptions.remove(this);
-                }
+                parent.completeInner(this);
             }
         }
         
