@@ -155,7 +155,7 @@ class CompletenessTest extends JUnitSuite {
       "window(Long, Long, TimeUnit)" -> "window(Duration, Duration)",
       "window(Long, Long, TimeUnit, Scheduler)" -> "window(Duration, Duration, Scheduler)",
       "zip(Observable[_ <: T2], Func2[_ >: T, _ >: T2, _ <: R])" -> "zipWith(Observable[U], (T, U) => R)",
-      "zip(Iterable[_ <: T2], Func2[_ >: T, _ >: T2, _ <: R])" -> "zip(Iterable[U], (T, U) => R)",
+      "zip(Iterable[_ <: T2], Func2[_ >: T, _ >: T2, _ <: R])" -> "zipWith(Iterable[U], (T, U) => R)",
 
       // manually added entries for Java static methods
       "average(Observable[Integer])" -> averageProblem,
