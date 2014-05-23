@@ -43,10 +43,14 @@ public final class OperatorZipIterable<T1, T2, R> implements Operator<R, T1> {
         } catch (Throwable e) {
             subscriber.onError(e);
         }
-        return new Subscriber<T1>() {
-
+        return new Subscriber<T1>(subscriber) {
+            boolean once;
             @Override
             public void onCompleted() {
+                if (once) {
+                    return;
+                }
+                once = true;
                 subscriber.onCompleted();
             }
 
