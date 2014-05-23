@@ -453,8 +453,8 @@ public abstract class AbstractSchedulerTests {
 
         @Override
         public void onError(Throwable e) {
-            completed.countDown();
             error.set(e);
+            completed.countDown();
         }
 
         @Override
