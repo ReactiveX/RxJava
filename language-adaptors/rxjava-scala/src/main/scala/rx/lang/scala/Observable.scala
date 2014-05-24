@@ -1512,6 +1512,40 @@ trait Observable[+T]
     toScalaObservable[R](thisJava.publish(fJava, initialValue))
   }
 
+  /**
+   * Returns a [[ConnectableObservable]] that emits only the last item emitted by the source Observable.
+   * A [[ConnectableObservable]] resembles an ordinary Observable, except that it does not begin emitting items
+   * when it is subscribed to, but only when its `connect` method is called.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/publishLast.png">
+   *
+   * @return a [[ConnectableObservable]] that emits only the last item emitted by the source Observable
+   */
+  def publishLast: ConnectableObservable[T] = {
+    new ConnectableObservable[T](asJavaObservable.publishLast())
+  }
+
+  /**
+   * Returns an Observable that emits an item that results from invoking a specified selector on the last item
+   * emitted by a [[ConnectableObservable]] that shares a single subscription to the source Observable.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/publishLast.f.png">
+   *
+   * @param selector a function that can use the multicasted source sequence as many times as needed, without
+   *                 causing multiple subscriptions to the source Observable. Subscribers to the source will only
+   *                 receive the last item emitted by the source.
+   * @return an Observable that emits an item that is the result of invoking the selector on a [[ConnectableObservable]]
+   *         that shares a single subscription to the source Observable
+   */
+  def publishLast[R](selector: Observable[T] => Observable[R]): Observable[R] = {
+    val thisJava = this.asJavaObservable.asInstanceOf[rx.Observable[T]]
+    val fJava = new rx.functions.Func1[rx.Observable[T], rx.Observable[R]]() {
+      override def call(jo: rx.Observable[T]): rx.Observable[R] =
+        selector(toScalaObservable[T](jo)).asJavaObservable.asInstanceOf[rx.Observable[R]]
+    }
+    toScalaObservable[R](thisJava.publishLast(fJava))
+  }
+
   // TODO add Scala-like aggregate function
 
   /**

@@ -1012,4 +1012,40 @@ class RxScalaDemo extends JUnitSuite {
     subscription.unsubscribe()
   }
 
+  def createAHotObservable: Observable[String] = {
+    var first = true
+    Observable[String] {
+      subscriber =>
+        if (first) {
+          subscriber.onNext("1st: First")
+          subscriber.onNext("1st: Last")
+          first = false
+        }
+        else {
+          subscriber.onNext("2nd: First")
+          subscriber.onNext("2nd: Last")
+        }
+        subscriber.onCompleted()
+    }
+  }
+
+  @Test def withoutPublishLastExample() {
+    val hot = createAHotObservable
+    hot.takeRight(1).subscribe(n => println(s"subscriber 1 gets $n"))
+    hot.takeRight(1).subscribe(n => println(s"subscriber 2 gets $n"))
+  }
+
+  @Test def publishLastExample() {
+    val hot = createAHotObservable
+    val o = hot.publishLast
+    o.subscribe(n => println(s"subscriber 1 gets $n"))
+    o.subscribe(n => println(s"subscriber 2 gets $n"))
+    o.connect
+  }
+
+  @Test def publishLastExample2() {
+    val hot = createAHotObservable
+    val o = hot.publishLast(co => co ++ co) // "++" subscribes "co" twice
+    o.subscribe(n => println(s"subscriber gets $n"))
+  }
 }
