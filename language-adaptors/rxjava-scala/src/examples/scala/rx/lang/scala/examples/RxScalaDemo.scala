@@ -1048,4 +1048,16 @@ class RxScalaDemo extends JUnitSuite {
     val o = hot.publishLast(co => co ++ co) // "++" subscribes "co" twice
     o.subscribe(n => println(s"subscriber gets $n"))
   }
+
+  @Test def unsubscribeOnExample() {
+    val o = Observable[String] {
+      subscriber =>
+        subscriber.add(Subscription {
+          println("unsubscribe on " + Thread.currentThread().getName())
+        })
+        subscriber.onNext("RxScala")
+        subscriber.onCompleted()
+    }
+    o.unsubscribeOn(NewThreadScheduler()).subscribe(println(_))
+  }
 }

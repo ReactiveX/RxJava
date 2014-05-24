@@ -950,6 +950,17 @@ trait Observable[+T]
   }
 
   /**
+   * Asynchronously unsubscribes on the specified [[Scheduler]].
+   *
+   * @param scheduler the [[Scheduler]] to perform subscription and unsubscription actions on
+   * @return the source Observable modified so that its unsubscriptions happen on the specified [[Scheduler]]
+   * @since 0.17
+   */
+  def unsubscribeOn(scheduler: Scheduler): Observable[T] = {
+    toScalaObservable[T](asJavaObservable.unsubscribeOn(scheduler))
+  }
+
+  /**
    * Asynchronously notify [[rx.lang.scala.Observer]]s on the specified [[rx.lang.scala.Scheduler]].
    *
    * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/observeOn.png">
