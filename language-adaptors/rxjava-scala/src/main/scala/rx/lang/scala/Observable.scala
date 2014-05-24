@@ -3819,6 +3819,32 @@ object Observable {
   }
 
   /**
+   * Returns an Observable that emits `0L` after a specified delay, and then completes.
+   *
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timer.png">
+   *
+   * @param delay the initial delay before emitting a single `0L`
+   * @return Observable that emits `0L` after a specified delay, and then completes
+   */
+  def timer(delay: Duration): Observable[Long] = {
+    toScalaObservable[java.lang.Long](rx.Observable.timer(delay.length, delay.unit)).map(_.longValue())
+  }
+
+  /**
+   * Returns an Observable that emits `0L` after a specified delay, on a specified Scheduler, and then
+   * completes.
+   *
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timer.s.png">
+   *
+   * @param delay the initial delay before emitting a single `0L`
+   * @param scheduler the Scheduler to use for scheduling the item
+   * @return Observable that emits `0L` after a specified delay, on a specified Scheduler, and then completes
+   */
+  def timer(delay: Duration, scheduler: Scheduler): Observable[Long] = {
+    toScalaObservable[java.lang.Long](rx.Observable.timer(delay.length, delay.unit, scheduler)).map(_.longValue())
+  }
+
+  /**
    * Constructs an Observable that creates a dependent resource object.
    * <p>
    * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/using.png">
