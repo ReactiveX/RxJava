@@ -1070,4 +1070,17 @@ class RxScalaDemo extends JUnitSuite {
     assertEquals(10, o2.size.toBlockingObservable.single)
     assertEquals(1000, o2.flatten.size.toBlockingObservable.single)
   }
+
+  @Test def debounceExample() {
+    val o = Observable.interval(100 millis).take(20).debounce {
+      n =>
+        if (n % 2 == 0) {
+          Observable.interval(50 millis)
+        }
+        else {
+          Observable.interval(150 millis)
+        }
+    }
+    o.toBlockingObservable.foreach(println(_))
+  }
 }

@@ -2300,6 +2300,23 @@ trait Observable[+T]
   }
 
   /**
+   * Return an Observable that mirrors the source Observable, except that it drops items emitted by the source
+   * Observable that are followed by another item within a computed debounce duration.
+   *
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/debounce.f.png">
+   *
+   * @param debounceSelector function to retrieve a sequence that indicates the throttle duration for each item
+   * @return an Observable that omits items emitted by the source Observable that are followed by another item
+   *         within a computed debounce duration
+   */
+  def debounce(debounceSelector: T => Observable[Any]): Observable[T] = {
+    val fJava = new rx.functions.Func1[T, rx.Observable[Any]] {
+      override def call(t: T) = debounceSelector(t).asJavaObservable.asInstanceOf[rx.Observable[Any]]
+    }
+    toScalaObservable[T](asJavaObservable.debounce[Any](fJava))
+  }
+
+  /**
    * Debounces by dropping all values that are followed by newer values before the timeout value expires. The timer resets on each `onNext` call.
    *
    * NOTE: If events keep firing faster than the timeout then no data will be emitted.
