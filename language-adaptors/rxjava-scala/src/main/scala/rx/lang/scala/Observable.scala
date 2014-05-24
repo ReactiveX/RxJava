@@ -3866,6 +3866,18 @@ object Observable {
     ))
   }
 
+  /**
+   * Mirror the one Observable in an Iterable of several Observables that first emits an item.
+   *
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/amb.png">
+   *
+   * @param sources an Iterable of Observable sources competing to react first
+   * @return an Observable that emits the same sequence of items as whichever of the source Observables
+   *         first emitted an item
+   */
+  def amb[T](sources: Iterable[Observable[T]]): Observable[T] = {
+    toScalaObservable[T](rx.Observable.amb(sources.map(_.asJavaObservable.asInstanceOf[rx.Observable[T]]).asJava))
+  }
 }
 
 
