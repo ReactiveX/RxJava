@@ -1458,6 +1458,22 @@ trait Observable[+T]
   }
 
   /**
+   * Returns a new [[Observable]] that multicasts (shares) the original [[Observable]]. As long a
+   * there is more than 1 [[Subscriber]], this [[Observable]] will be subscribed and emitting data.
+   * When all subscribers have unsubscribed it will unsubscribe from the source [[Observable]].
+   *
+   * This is an alias for `publish().refCount()`
+   *
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/publishRefCount.png">
+   *
+   * @return a [[Observable]] that upon connection causes the source Observable to emit items to its [[Subscriber]]s
+   * @since 0.19
+   */
+  def share: Observable[T] = {
+    toScalaObservable[T](asJavaObservable.share())
+  }
+
+  /**
    * Returns an Observable that emits a Boolean that indicates whether the source Observable emitted a
    * specified item.
    *
