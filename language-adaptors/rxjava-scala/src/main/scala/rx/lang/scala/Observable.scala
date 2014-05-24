@@ -2926,13 +2926,26 @@ trait Observable[+T]
   }
 
   /**
-   * Converts an Observable into a [[rx.lang.scala.observables.BlockingObservable]] (an Observable with blocking
-   * operators).
+   * Converts an Observable into a [[BlockingObservable]] (an Observable with blocking operators).
    *
+   * @return a [[BlockingObservable]] version of this Observable
    * @see <a href="https://github.com/Netflix/RxJava/wiki/Blocking-Observable-Operators">Blocking Observable Operators</a>
    */
+  @deprecated("Use `toBlocking` instead", "0.19")
   def toBlockingObservable: BlockingObservable[T] = {
-    new BlockingObservable[T](asJavaObservable.toBlockingObservable)
+    new BlockingObservable[T](asJavaObservable.toBlocking)
+  }
+
+  /**
+   * Converts an Observable into a [[BlockingObservable]] (an Observable with blocking
+   * operators).
+   *
+   * @return a [[BlockingObservable]] version of this Observable
+   * @see <a href="https://github.com/Netflix/RxJava/wiki/Blocking-Observable-Operators">Blocking Observable Operators</a>
+   * @since 0.19
+   */
+  def toBlocking: BlockingObservable[T] = {
+    new BlockingObservable[T](asJavaObservable.toBlocking)
   }
 
   /**
