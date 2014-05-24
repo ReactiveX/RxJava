@@ -1060,4 +1060,14 @@ class RxScalaDemo extends JUnitSuite {
     }
     o.unsubscribeOn(NewThreadScheduler()).subscribe(println(_))
   }
+
+  @Test def parallelMergeExample() {
+    val o: Observable[Observable[Int]] = (1 to 100).toObservable.map(_ => (1 to 10).toObservable)
+    assertEquals(100, o.size.toBlockingObservable.single)
+    assertEquals(1000, o.flatten.size.toBlockingObservable.single)
+
+    val o2: Observable[Observable[Int]] = o.parallelMerge(10, ComputationScheduler())
+    assertEquals(10, o2.size.toBlockingObservable.single)
+    assertEquals(1000, o2.flatten.size.toBlockingObservable.single)
+  }
 }

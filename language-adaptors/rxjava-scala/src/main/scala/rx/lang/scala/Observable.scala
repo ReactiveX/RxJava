@@ -2947,6 +2947,53 @@ trait Observable[+T]
     toScalaObservable(asJavaObservable.asInstanceOf[rx.Observable[T]].parallel[R](fJava, scheduler))
   }
 
+  /**
+   * Converts an `Observable[Observable[T]]` into another `Observable[Observable[T]]` whose
+   * emitted Observables emit the same items, but the number of such Observables is restricted by `parallelObservables`.
+   *
+   * For example, if the original `Observable[Observable[T]]` emits 100 Observables and `parallelObservables` is 8,
+   * the items emitted by the 100 original Observables will be distributed among 8 Observables emitted by the resulting Observable.
+   *
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/parallelMerge.png">
+   *
+   * This is a mechanism for efficiently processing `n` number of Observables on a smaller `m` number of resources (typically CPU cores).
+   *
+   * @param parallelObservables the number of Observables to merge into
+   * @return an Observable of Observables constrained in number by `parallelObservables`
+   */
+  def parallelMerge[U](parallelObservables: Int)(implicit evidence: Observable[T] <:< Observable[Observable[U]]): Observable[Observable[U]] = {
+    val o2: Observable[Observable[U]] = this
+    val o3: Observable[rx.Observable[U]] = o2.map(_.asJavaObservable.asInstanceOf[rx.Observable[U]])
+    val o4: rx.Observable[rx.Observable[U]] = o3.asJavaObservable.asInstanceOf[rx.Observable[rx.Observable[U]]]
+    val o5: rx.Observable[rx.Observable[U]] = rx.Observable.parallelMerge[U](o4, parallelObservables)
+    toScalaObservable(o5).map(toScalaObservable[U](_))
+  }
+
+  /**
+   * Converts an `Observable[Observable[T]]` into another `Observable[Observable[T]]` whose
+   * emitted Observables emit the same items, but the number of such Observables is restricted by `parallelObservables`,
+   * and each runs on a defined Scheduler.
+   *
+   * For example, if the original Observable[Observable[T]]` emits 100 Observables and `parallelObservables` is 8,
+   * the items emitted by the 100 original Observables will be distributed among 8 Observables emitted by the resulting Observable.
+   *
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/parallelMerge.png">
+   *
+   * This is a mechanism for efficiently processing n` number of Observables on a smaller `m`
+   * number of resources (typically CPU cores).
+   *
+   * @param parallelObservables the number of Observables to merge into
+   * @param scheduler the [[Scheduler]] to run each Observable on
+   * @return an Observable of Observables constrained in number by `parallelObservables`
+   */
+  def parallelMerge[U](parallelObservables: Int, scheduler: Scheduler)(implicit evidence: Observable[T] <:< Observable[Observable[U]]): Observable[Observable[U]] = {
+    val o2: Observable[Observable[U]] = this
+    val o3: Observable[rx.Observable[U]] = o2.map(_.asJavaObservable.asInstanceOf[rx.Observable[U]])
+    val o4: rx.Observable[rx.Observable[U]] = o3.asJavaObservable.asInstanceOf[rx.Observable[rx.Observable[U]]]
+    val o5: rx.Observable[rx.Observable[U]] = rx.Observable.parallelMerge[U](o4, parallelObservables, scheduler)
+    toScalaObservable(o5).map(toScalaObservable[U](_))
+  }
+
   /** Tests whether a predicate holds for some of the elements of this `Observable`.
     *
     *  @param   p     the predicate used to test elements.
