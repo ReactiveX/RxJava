@@ -149,6 +149,22 @@ trait Observable[+T]
   }
 
   /**
+   * Subscribe to Observable and invoke `OnSubscribe` function without any
+   * contract protection, error handling, unsubscribe, or execution hooks.
+   *
+   * This should only be used for implementing an `Operator` that requires nested subscriptions.
+   *
+   * Normal use should use [[Observable.subscribe]] which ensures the Rx contract and other functionality.
+   *
+   * @param subscriber
+   * @return [[Subscription]] which is the Subscriber passed in
+   * @since 0.17
+   */
+  def unsafeSubscribe(subscriber: Subscriber[T]): Subscription = {
+    asJavaObservable.unsafeSubscribe(subscriber.asJavaSubscriber)
+  }
+
+  /**
    * $subscribeSubscriberMain
    *
    * @param subscriber $subscribeSubscriberParamObserver
