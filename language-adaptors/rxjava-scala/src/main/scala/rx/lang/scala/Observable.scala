@@ -2651,10 +2651,20 @@ trait Observable[+T]
    *         if the source Observable completes without emitting any item.
    */
   def firstOrElse[U >: T](default: => U): Observable[U] = {
-    this.take(1).foldLeft[Option[U]](None)((v: Option[U], e: U) => Some(e)).map({
-      case Some(element) => element
-      case None => default
-    })
+    take(1).singleOrElse(default)
+  }
+
+  /**
+   * Returns an Observable that emits only an `Option` with the very first item emitted by the source Observable,
+   * or `None` if the source Observable is empty.
+   *
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/firstOrDefault.png">
+   *
+   * @return an Observable that emits only an `Option` with the very first item from the source, or `None`
+   *         if the source Observable completes without emitting any item.
+   */
+  def headOption: Observable[Option[T]] = {
+    take(1).singleOption
   }
 
   /**
@@ -2737,6 +2747,34 @@ trait Observable[+T]
   }
 
   /**
+   * Returns an Observable that emits only an `Option` with the last item emitted by the source Observable,
+   * or `None` if the source Observable completes without emitting any items.
+   *
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/lastOrDefault.png">
+   *
+   * @return an Observable that emits only an `Option` with the last item emitted by the source Observable,
+   *         or `None` if the source Observable is empty
+   */
+  def lastOption: Observable[Option[T]] = {
+    takeRight(1).singleOption
+  }
+
+  /**
+   * Returns an Observable that emits only the last item emitted by the source Observable, or a default item
+   * if the source Observable completes without emitting any items.
+   *
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/lastOrDefault.png">
+   *
+   * @param default the default item to emit if the source Observable is empty.
+   *                This is a by-name parameter, so it is only evaluated if the source Observable doesn't emit anything.
+   * @return an Observable that emits only the last item emitted by the source Observable, or a default item
+   *         if the source Observable is empty
+   */
+  def lastOrElse[U >: T](default: => U): Observable[U] = {
+    takeRight(1).singleOrElse(default)
+  }
+
+  /**
    * If the source Observable completes after emitting a single item, return an Observable that emits that
    * item. If the source Observable emits more than one item or no items, throw an `NoSuchElementException`.
    * 
@@ -2750,6 +2788,42 @@ trait Observable[+T]
    */
   def single: Observable[T] = {
     toScalaObservable[T](asJavaObservable.single)
+  }
+
+  /**
+   * If the source Observable completes after emitting a single item, return an Observable that emits an `Option`
+   * with that item; if the source Observable is empty, return an Observable that emits `None`.
+   * If the source Observable emits more than one item, throw an `IllegalArgumentException`.
+   *
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/singleOrDefault.png">
+   *
+   * @return an Observable that emits an `Option` with the single item emitted by the source Observable, or
+   *         `None` if the source Observable is empty
+   * @throws IllegalArgumentException if the source Observable emits more than one item
+   */
+  def singleOption: Observable[Option[T]] = {
+    val jObservableOption = map(Some(_)).asJavaObservable.asInstanceOf[rx.Observable[Option[T]]]
+    toScalaObservable[Option[T]](jObservableOption.singleOrDefault(None))
+  }
+
+  /**
+   * If the source Observable completes after emitting a single item, return an Observable that emits that
+   * item; if the source Observable is empty, return an Observable that emits a default item. If the source
+   * Observable emits more than one item, throw an `IllegalArgumentException`.
+   *
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/singleOrDefault.png">
+   *
+   * @param default a default value to emit if the source Observable emits no item.
+   *                This is a by-name parameter, so it is only evaluated if the source Observable doesn't emit anything.
+   * @return an Observable that emits the single item emitted by the source Observable, or a default item if
+   *         the source Observable is empty
+   * @throws IllegalArgumentException if the source Observable emits more than one item
+   */
+  def singleOrElse[U >: T](default: => U): Observable[U] = {
+    singleOption.map {
+      case Some(element) => element
+      case None => default
+    }
   }
 
   /**

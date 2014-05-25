@@ -89,6 +89,9 @@ class CompletenessTest extends JUnitSuite {
       "groupBy(Func1[_ >: T, _ <: K], Func1[_ >: T, _ <: R])" -> "[use `groupBy` and `map`]",
       "groupByUntil(Func1[_ >: T, _ <: TKey], Func1[_ >: GroupedObservable[TKey, T], _ <: Observable[_ <: TDuration]])" -> "groupByUntil(T => K, (K, Observable[T]) => Observable[Any])",
       "ignoreElements()" -> "[use `filter(_ => false)`]",
+      "last(Func1[_ >: T, Boolean])" -> "[use `filter(predicate).last`]",
+      "lastOrDefault(T)" -> "lastOrElse(=> U)",
+      "lastOrDefault(T, Func1[_ >: T, Boolean])" -> "[use `filter(predicate).lastOrElse(default)`]",
       "lift(Operator[_ <: R, _ >: T])" -> "lift(Subscriber[R] => Subscriber[T])",
       "limit(Int)" -> "take(Int)",
       "mapWithIndex(Func2[_ >: T, Integer, _ <: R])" -> "[combine `zipWithIndex` with `map` or with a for comprehension]",
@@ -117,13 +120,15 @@ class CompletenessTest extends JUnitSuite {
       "sample(Observable[U])" -> "sample(Observable[Any])",
       "scan(Func2[T, T, T])" -> unnecessary,
       "scan(R, Func2[R, _ >: T, R])" -> "scan(R)((R, T) => R)",
+      "single(Func1[_ >: T, Boolean])" -> "[use `filter(predicate).single`]",
+      "singleOrDefault(T)" -> "singleOrElse(=> U)",
+      "singleOrDefault(T, Func1[_ >: T, Boolean])" -> "[use `filter(predicate).singleOrElse(default)`]",
       "skip(Int)" -> "drop(Int)",
       "skip(Long, TimeUnit)" -> "drop(Duration)",
       "skip(Long, TimeUnit, Scheduler)" -> "drop(Duration, Scheduler)",
       "skipWhile(Func1[_ >: T, Boolean])" -> "dropWhile(T => Boolean)",
       "skipWhileWithIndex(Func2[_ >: T, Integer, Boolean])" -> unnecessary,
       "skipUntil(Observable[U])" -> "dropUntil(Observable[E])",
-      "single(Func1[_ >: T, Boolean])" -> "[use `filter(predicate).single`]",
       "startWith(T)" -> "[use `item +: o`]",
       "startWith(Array[T])" -> "[use `Observable.items(items) ++ o`]",
       "startWith(Array[T], Scheduler)" -> "[use `Observable.items(items).subscribeOn(scheduler) ++ o`]",
@@ -159,8 +164,6 @@ class CompletenessTest extends JUnitSuite {
       "window(Observable[_ <: TOpening], Func1[_ >: TOpening, _ <: Observable[_ <: TClosing]])" -> "window(Observable[Opening], Opening => Observable[Any])",
       "window(Long, Long, TimeUnit)" -> "window(Duration, Duration)",
       "window(Long, Long, TimeUnit, Scheduler)" -> "window(Duration, Duration, Scheduler)",
-      "zip(Observable[_ <: T2], Func2[_ >: T, _ >: T2, _ <: R])" -> "zipWith(Observable[U], (T, U) => R)",
-      "zip(Iterable[_ <: T2], Func2[_ >: T, _ >: T2, _ <: R])" -> "zipWith(Iterable[U], (T, U) => R)",
 
       // manually added entries for Java static methods
       "average(Observable[Integer])" -> averageProblem,
@@ -197,7 +200,9 @@ class CompletenessTest extends JUnitSuite {
       "switchOnNext(Observable[_ <: Observable[_ <: T]])" -> "switch(<:<[Observable[T], Observable[Observable[U]]])",
       "zip(Observable[_ <: T1], Observable[_ <: T2], Func2[_ >: T1, _ >: T2, _ <: R])" -> "[use instance method `zip` and `map`]",
       "zip(Observable[_ <: Observable[_]], FuncN[_ <: R])" -> "[use `zip` in companion object and `map`]",
-      "zip(Iterable[_ <: Observable[_]], FuncN[_ <: R])" -> "[use `zip` in companion object and `map`]"
+      "zip(Iterable[_ <: Observable[_]], FuncN[_ <: R])" -> "[use `zip` in companion object and `map`]",
+      "zip(Observable[_ <: T2], Func2[_ >: T, _ >: T2, _ <: R])" -> "zipWith(Observable[U], (T, U) => R)",
+      "zip(Iterable[_ <: T2], Func2[_ >: T, _ >: T2, _ <: R])" -> "zipWith(Iterable[U], (T, U) => R)"
   ) ++ List.iterate("T, T", 8)(s => s + ", T").map(
       // all 9 overloads of startWith:
       "startWith(" + _ + ")" -> "[use `Observable.items(...) ++ o`]"
@@ -345,6 +350,7 @@ class CompletenessTest extends JUnitSuite {
     println(  "----------------------------------------------\n")
 
     val actualMethods = getPublicInstanceAndCompanionMethods(typeOf[rx.lang.scala.Observable[_]]).toSet
+    actualMethods.toList.sorted.foreach(println)
     var good = 0
     var bad = 0
     for ((javaM, scalaM) <- SortedMap(correspondence.toSeq :_*)) {
