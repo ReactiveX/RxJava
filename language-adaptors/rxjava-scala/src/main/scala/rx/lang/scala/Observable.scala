@@ -656,21 +656,20 @@ trait Observable[+T]
 
   /**
    * Creates an Observable which produces windows of collected values. This Observable produces connected
-   * non-overlapping windows. The current window is emitted and replaced with a new window when the
-   * Observable produced by the specified function produces an object. 
-   * The function will then be used to create a new Observable to listen for the end of the next
-   * window.
+   * non-overlapping windows. The boundary of each window is determined by the items emitted from a specified
+   * boundary-governing Observable.
    *
-   * @param closings
-   *            The function which is used to produce an [[rx.lang.scala.Observable]] for every window created.
-   *            When this [[rx.lang.scala.Observable]] produces an object, the associated window
-   *            is emitted and replaced with a new one.
-   * @return
-   *         An [[rx.lang.scala.Observable]] which produces connected non-overlapping windows, which are emitted
-   *         when the current [[rx.lang.scala.Observable]] created with the function argument produces an object.
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/window8.png" />
+   *
+   * @param boundary an Observable whose emitted items close and open windows. Note: This is a by-name parameter,
+   *                 so it is only evaluated when someone subscribes to the returned Observable.
+   * @return An Observable which produces connected non-overlapping windows. The boundary of each window is
+   *         determined by the items emitted from a specified boundary-governing Observable.
    */
-  def window(closings: () => Observable[Any]): Observable[Observable[T]] = {
-    val func : Func0[_ <: rx.Observable[_ <: Any]] = closings().asJavaObservable
+  def window(boundary: => Observable[Any]): Observable[Observable[T]] = {
+    val func = new Func0[rx.Observable[_ <: Any]]() {
+      override def call(): rx.Observable[_ <: Any] = boundary.asJavaObservable
+    }
     val o1: rx.Observable[_ <: rx.Observable[_]] = asJavaObservable.window[Any](func)
     val o2 = Observable.items(o1).map((x: rx.Observable[_]) => {
       val x2 = x.asInstanceOf[rx.Observable[_ <: T]]

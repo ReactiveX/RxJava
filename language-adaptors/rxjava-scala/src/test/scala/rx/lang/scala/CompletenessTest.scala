@@ -160,7 +160,8 @@ class CompletenessTest extends JUnitSuite {
       "toList()" -> "toSeq",
       "toSortedList()" -> "[Sorting is already done in Scala's collection library, use `.toSeq.map(_.sorted)`]",
       "toSortedList(Func2[_ >: T, _ >: T, Integer])" -> "[Sorting is already done in Scala's collection library, use `.toSeq.map(_.sortWith(f))`]",
-      "window(Func0[_ <: Observable[_ <: TClosing]])" -> "window(() => Observable[Any])",
+      "window(Observable[U])" -> "window(=> Observable[Any])",
+      "window(Func0[_ <: Observable[_ <: TClosing]])" -> "window(=> Observable[Any])",
       "window(Observable[_ <: TOpening], Func1[_ >: TOpening, _ <: Observable[_ <: TClosing]])" -> "window(Observable[Opening], Opening => Observable[Any])",
       "window(Long, Long, TimeUnit)" -> "window(Duration, Duration)",
       "window(Long, Long, TimeUnit, Scheduler)" -> "window(Duration, Duration, Scheduler)",
@@ -350,7 +351,6 @@ class CompletenessTest extends JUnitSuite {
     println(  "----------------------------------------------\n")
 
     val actualMethods = getPublicInstanceAndCompanionMethods(typeOf[rx.lang.scala.Observable[_]]).toSet
-    actualMethods.toList.sorted.foreach(println)
     var good = 0
     var bad = 0
     for ((javaM, scalaM) <- SortedMap(correspondence.toSeq :_*)) {
