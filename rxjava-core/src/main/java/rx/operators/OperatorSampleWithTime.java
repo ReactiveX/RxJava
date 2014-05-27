@@ -16,7 +16,7 @@
 package rx.operators;
 
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 import rx.Observable.Operator;
 import rx.Scheduler;
 import rx.Scheduler.Worker;
@@ -61,14 +61,18 @@ public final class OperatorSampleWithTime<T> implements Operator<T, T> {
         private final Subscriber<? super T> subscriber;
         /** Indicates that no value is available. */
         private static final Object EMPTY_TOKEN = new Object();
-        final AtomicReference<Object> value;
+        /** The shared value between the observer and the timed action. */
+        volatile Object value = EMPTY_TOKEN;
+        /** Updater for the value field. */
+        @SuppressWarnings("rawtypes")
+        static final AtomicReferenceFieldUpdater<SamplerSubscriber, Object> VALUE_UPDATER
+                = AtomicReferenceFieldUpdater.newUpdater(SamplerSubscriber.class, Object.class, "value");
         public SamplerSubscriber(Subscriber<? super T> subscriber) {
             this.subscriber = subscriber;
-            this.value = new AtomicReference<Object>(EMPTY_TOKEN);
         }
         @Override
         public void onNext(T t) {
-            value.set(t);
+            value = t;
         }
 
         @Override
@@ -85,7 +89,7 @@ public final class OperatorSampleWithTime<T> implements Operator<T, T> {
 
         @Override
         public void call() {
-            Object localValue = value.getAndSet(EMPTY_TOKEN);
+            Object localValue = VALUE_UPDATER.getAndSet(this, EMPTY_TOKEN);
             if (localValue != EMPTY_TOKEN) {
                 try {
                     @SuppressWarnings("unchecked")

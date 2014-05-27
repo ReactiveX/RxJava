@@ -17,29 +17,22 @@ package rx.schedulers;
 
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import rx.Scheduler;
 import rx.Subscription;
 import rx.functions.Action0;
 import rx.schedulers.NewThreadScheduler.NewThreadWorker.ScheduledAction;
+import rx.schedulers.NewThreadScheduler.RxThreadFactory;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.Subscriptions;
 
 /* package */class EventLoopsScheduler extends Scheduler {
     /** Manages a fixed number of workers. */
+    private static final String THREAD_NAME_PREFIX = "RxComputationThreadPool-";
+    private static final RxThreadFactory THREAD_FACTORY = new RxThreadFactory(THREAD_NAME_PREFIX);
+    
     static final class FixedSchedulerPool {
         final int cores;
-        final ThreadFactory factory = new ThreadFactory() {
-            final AtomicInteger counter = new AtomicInteger();
-
-            @Override
-            public Thread newThread(Runnable r) {
-                Thread t = new Thread(r, "RxComputationThreadPool-" + counter.incrementAndGet());
-                t.setDaemon(true);
-                return t;
-            }
-        };
 
         final PoolWorker[] eventLoops;
         long n;
@@ -49,7 +42,7 @@ import rx.subscriptions.Subscriptions;
             this.cores = Runtime.getRuntime().availableProcessors();
             this.eventLoops = new PoolWorker[cores];
             for (int i = 0; i < cores; i++) {
-                this.eventLoops[i] = new PoolWorker(factory);
+                this.eventLoops[i] = new PoolWorker(THREAD_FACTORY);
             }
         }
 

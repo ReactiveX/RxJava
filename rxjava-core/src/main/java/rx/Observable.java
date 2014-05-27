@@ -5425,7 +5425,7 @@ public class Observable<T> {
      * there is more than 1 {@link Subscriber} this {@link Observable} will be subscribed and emitting data. 
      * When all subscribers have unsubscribed it will unsubscribe from the source {@link Observable}. 
      * <p>
-     * This is an alias for {@link #publish().refCount()}.
+     * This is an alias for {@link #publish()}.{@link ConnectableObservable#refCount()}.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/publishRefCount.png">
      * 

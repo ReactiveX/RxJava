@@ -15,7 +15,7 @@
  */
 package rx.subscriptions;
 
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 
 import rx.Observable;
 import rx.Subscription;
@@ -26,9 +26,12 @@ import rx.Subscription;
  * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.disposables.multipleassignmentdisposable">Rx.Net equivalent MultipleAssignmentDisposable</a>
  */
 public final class MultipleAssignmentSubscription implements Subscription {
-
-    private final AtomicReference<State> state = new AtomicReference<State>(new State(false, Subscriptions.empty()));
-
+    /** The shared empty state. */
+    static final State EMPTY_STATE = new State(false, Subscriptions.empty());
+    volatile State state = EMPTY_STATE;
+    static final AtomicReferenceFieldUpdater<MultipleAssignmentSubscription, State> STATE_UPDATER
+            = AtomicReferenceFieldUpdater.newUpdater(MultipleAssignmentSubscription.class, State.class, "state");
+    
     private static final class State {
         final boolean isUnsubscribed;
         final Subscription subscription;
@@ -47,9 +50,9 @@ public final class MultipleAssignmentSubscription implements Subscription {
         }
 
     }
-
+    @Override
     public boolean isUnsubscribed() {
-        return state.get().isUnsubscribed;
+        return state.isUnsubscribed;
     }
 
     @Override
@@ -57,13 +60,13 @@ public final class MultipleAssignmentSubscription implements Subscription {
         State oldState;
         State newState;
         do {
-            oldState = state.get();
+            oldState = state;
             if (oldState.isUnsubscribed) {
                 return;
             } else {
                 newState = oldState.unsubscribe();
             }
-        } while (!state.compareAndSet(oldState, newState));
+        } while (!STATE_UPDATER.compareAndSet(this, oldState, newState));
         oldState.subscription.unsubscribe();
     }
 
@@ -74,18 +77,18 @@ public final class MultipleAssignmentSubscription implements Subscription {
         State oldState;
         State newState;
         do {
-            oldState = state.get();
+            oldState = state;
             if (oldState.isUnsubscribed) {
                 s.unsubscribe();
                 return;
             } else {
                 newState = oldState.set(s);
             }
-        } while (!state.compareAndSet(oldState, newState));
+        } while (!STATE_UPDATER.compareAndSet(this, oldState, newState));
     }
 
     public Subscription get() {
-        return state.get().subscription;
+        return state.subscription;
     }
 
 }

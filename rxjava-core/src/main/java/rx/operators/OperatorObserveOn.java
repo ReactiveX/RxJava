@@ -15,9 +15,7 @@
  */
 package rx.operators;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicLongFieldUpdater;
 
 import rx.Observable.Operator;
 import rx.Scheduler;
@@ -30,8 +28,10 @@ import rx.schedulers.TrampolineScheduler;
  * Delivers events on the specified Scheduler asynchronously via an unbounded buffer.
  * 
  * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/observeOn.png">
+ * 
+ * @param <T> the transmitted value type
  */
-public class OperatorObserveOn<T> implements Operator<T, T> {
+public final class OperatorObserveOn<T> implements Operator<T, T> {
 
     private final Scheduler scheduler;
 
@@ -56,13 +56,17 @@ public class OperatorObserveOn<T> implements Operator<T, T> {
     }
 
     /** Observe through individual queue per observer. */
-    private static class ObserveOnSubscriber<T> extends Subscriber<T> {
-        private final NotificationLite<T> on = NotificationLite.instance();
+    private static final class ObserveOnSubscriber<T> extends Subscriber<T> {
         final Subscriber<? super T> observer;
         private final Scheduler.Worker recursiveScheduler;
-
+        final NotificationLite<T> on = NotificationLite.instance();
+        /** Guarded by this. */
         private FastList queue = new FastList();
-        final AtomicLong counter = new AtomicLong(0);
+        
+        volatile long counter;
+        @SuppressWarnings("rawtypes")
+        static final AtomicLongFieldUpdater<ObserveOnSubscriber> COUNTER_UPDATER
+                = AtomicLongFieldUpdater.newUpdater(ObserveOnSubscriber.class, "counter");
 
         public ObserveOnSubscriber(Scheduler scheduler, Subscriber<? super T> subscriber) {
             super(subscriber);
@@ -96,7 +100,7 @@ public class OperatorObserveOn<T> implements Operator<T, T> {
         }
 
         protected void schedule() {
-            if (counter.getAndIncrement() == 0) {
+            if (COUNTER_UPDATER.getAndIncrement(this) == 0) {
                 recursiveScheduler.schedule(new Action0() {
 
                     @Override
@@ -121,7 +125,7 @@ public class OperatorObserveOn<T> implements Operator<T, T> {
                     }
                     on.accept(observer, v);
                 }
-                if (counter.addAndGet(-vs.size) == 0) {
+                if (COUNTER_UPDATER.addAndGet(this, -vs.size) == 0) {
                     break;
                 }
             } while (true);

@@ -16,7 +16,7 @@
 package rx.operators;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicLongFieldUpdater;
 
 import rx.Observable;
 import rx.Observable.Operator;
@@ -48,6 +48,7 @@ import rx.subscriptions.CompositeSubscription;
  * <p>
  * The resulting Observable returned from zip will invoke <code>onNext</code> as many times as the
  * number of <code>onNext</code> invocations of the source Observable that emits the fewest items.
+ * @param <R> the result type
  */
 public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
     /*
@@ -135,14 +136,17 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
     }
 
     static final NotificationLite<Object> on = NotificationLite.instance();
-    private static class Zip<R> {
+    private static final class Zip<R> {
         @SuppressWarnings("rawtypes")
         final Observable[] os;
         final Object[] observers;
         final Observer<? super R> observer;
         final FuncN<? extends R> zipFunction;
         final CompositeSubscription childSubscription = new CompositeSubscription();
-        
+        volatile long counter;
+        @SuppressWarnings("rawtypes")
+        static final AtomicLongFieldUpdater<Zip> COUNTER_UPDATER
+                = AtomicLongFieldUpdater.newUpdater(Zip.class, "counter");
 
         @SuppressWarnings("rawtypes")
         public Zip(Observable[] os, final Subscriber<? super R> observer, FuncN<? extends R> zipFunction) {
@@ -166,8 +170,6 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
             }
         }
 
-        final AtomicLong counter = new AtomicLong(0);
-
         /**
          * check if we have values for each and emit if we do
          * 
@@ -177,7 +179,7 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
          */
         @SuppressWarnings("unchecked")
         void tick() {
-            if (counter.getAndIncrement() == 0) {
+            if (COUNTER_UPDATER.getAndIncrement(this) == 0) {
                 do {
                     final Object[] vs = new Object[observers.length];
                     boolean allHaveValues = true;
@@ -212,10 +214,11 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
                             return;
                         }
                         // now remove them
-                        for (int i = 0; i < observers.length; i++) {
-                            ((InnerObserver) observers[i]).items.poll();
+                        for (Object obj : observers) {
+                            InnerObserver io = (InnerObserver)obj;
+                            io.items.poll();
                             // eagerly check if the next item on this queue is an onComplete
-                            if (on.isCompleted(((InnerObserver) observers[i]).items.peek())) {
+                            if (on.isCompleted(io.items.peek())) {
                                 // it is an onComplete so shut down
                                 observer.onCompleted();
                                 // we need to unsubscribe from all children since children are independently subscribed
@@ -224,7 +227,7 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
                             }
                         }
                     }
-                } while (counter.decrementAndGet() > 0);
+                } while (COUNTER_UPDATER.decrementAndGet(this) > 0);
             }
 
         }

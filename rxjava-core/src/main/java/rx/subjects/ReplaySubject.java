@@ -18,8 +18,8 @@ package rx.subjects;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
+import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 
 import rx.Observer;
 import rx.Scheduler;
@@ -331,14 +331,16 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         /** Each Observer is tracked here for what events they have received. */
         final ConcurrentHashMap<Observer<? super T>, Integer> replayState;
         private final NotificationLite<T> nl = NotificationLite.instance();
-        /** The size of the buffer. */
-        private final AtomicInteger index;
         /** The buffer. */
         private final ArrayList<Object> list;
         /** The termination flag. */
         private volatile boolean terminated;
+        /** The size of the buffer. */
+        volatile int index;
+        @SuppressWarnings("rawtypes")
+        static final AtomicIntegerFieldUpdater<UnboundedReplayState> INDEX_UPDATER
+                = AtomicIntegerFieldUpdater.newUpdater(UnboundedReplayState.class, "index");
         public UnboundedReplayState(int initialCapacity) {
-            index = new AtomicInteger(0);
             list = new ArrayList<Object>(initialCapacity);
             replayState = new ConcurrentHashMap<Observer<? super T>, Integer>();
         }
@@ -347,7 +349,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         public void next(T n) {
             if (!terminated) {
                 list.add(nl.next(n));
-                index.getAndIncrement();
+                INDEX_UPDATER.getAndIncrement(this);
             }
         }
 
@@ -360,7 +362,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
             if (!terminated) {
                 terminated = true;
                 list.add(nl.completed());
-                index.getAndIncrement();
+                INDEX_UPDATER.getAndIncrement(this);
             }
         }
         @Override
@@ -368,7 +370,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
             if (!terminated) {
                 terminated = true;
                 list.add(nl.error(e));
-                index.getAndIncrement();
+                INDEX_UPDATER.getAndIncrement(this);
             }
         }
 
@@ -391,7 +393,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         @Override
         public Integer replayObserverFromIndex(Integer idx, SubjectObserver<? super T> observer) {
             int i = idx;
-            while (i < index.get()) {
+            while (i < index) {
                 accept(observer, i);
                 i++;
             }
@@ -418,17 +420,18 @@ public final class ReplaySubject<T> extends Subject<T, T> {
      */
     static final class BoundedState<T> implements ReplayState<T, NodeList.Node<Object>> {
         final NodeList<Object> list;
-        final AtomicReference<NodeList.Node<Object>> tail;
         final ConcurrentHashMap<Observer<? super T>, NodeList.Node<Object>> replayState;
         final EvictionPolicy evictionPolicy;
         final Func1<Object, Object> enterTransform;
         final Func1<Object, Object> leaveTransform;
         final NotificationLite<T> nl = NotificationLite.instance();
         volatile boolean terminated;
+        volatile NodeList.Node<Object> tail;
+        
         public BoundedState(EvictionPolicy evictionPolicy, Func1<Object, Object> enterTransform, 
                 Func1<Object, Object> leaveTransform) {
             this.list = new NodeList<Object>();
-            this.tail = new AtomicReference<NodeList.Node<Object>>(list.tail);
+            this.tail = list.tail;
             this.replayState = new ConcurrentHashMap<Observer<? super T>, NodeList.Node<Object>>();
             this.evictionPolicy = evictionPolicy;
             this.enterTransform = enterTransform;
@@ -439,7 +442,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
             if (!terminated) {
                 list.addLast(enterTransform.call(nl.next(value)));
                 evictionPolicy.evict(list);
-                tail.set(list.tail);
+                tail = list.tail;
             }
         }
         @Override
@@ -450,7 +453,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                 evictionPolicy.evict(list);
                 // so add it later
                 list.addLast(enterTransform.call(nl.completed()));
-                tail.set(list.tail);
+                tail = list.tail;
             }
             
         }
@@ -462,7 +465,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                 evictionPolicy.evict(list);
                 // so add it later
                 list.addLast(enterTransform.call(nl.error(e)));
-                tail.set(list.tail);
+                tail = list.tail;
             }
         }
         public void accept(Observer<? super T> o, NodeList.Node<Object> node) {
@@ -484,7 +487,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
             return list.head;
         }
         public Node<Object> tail() {
-            return tail.get();
+            return tail;
         }
         public Node<Object> removeState(SubjectObserver<? super T> o) {
             return replayState.remove(o);

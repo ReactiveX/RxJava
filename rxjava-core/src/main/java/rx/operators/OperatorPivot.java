@@ -20,7 +20,7 @@ import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Observable.OnSubscribe;
@@ -31,12 +31,12 @@ import rx.observables.GroupedObservable;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.Subscriptions;
 
-public class OperatorPivot<K1, K2, T> implements Operator<GroupedObservable<K2, GroupedObservable<K1, T>>, GroupedObservable<K1, GroupedObservable<K2, T>>> {
+public final class OperatorPivot<K1, K2, T> implements Operator<GroupedObservable<K2, GroupedObservable<K1, T>>, GroupedObservable<K1, GroupedObservable<K2, T>>> {
 
     @Override
     public Subscriber<? super GroupedObservable<K1, GroupedObservable<K2, T>>> call(final Subscriber<? super GroupedObservable<K2, GroupedObservable<K1, T>>> child) {
         final AtomicReference<State> state = new AtomicReference<State>(State.create());
-        final OperatorPivot<K1, K2, T>.PivotSubscriber pivotSubscriber = new PivotSubscriber(new CompositeSubscription(), child, state);
+        final PivotSubscriber<K1, K2, T> pivotSubscriber = new PivotSubscriber<K1, K2, T>(new CompositeSubscription(), child, state);
         child.add(Subscriptions.create(new Action0() {
 
             @Override
@@ -60,7 +60,7 @@ public class OperatorPivot<K1, K2, T> implements Operator<GroupedObservable<K2, 
         return pivotSubscriber;
     }
 
-    private final class PivotSubscriber extends Subscriber<GroupedObservable<K1, GroupedObservable<K2, T>>> {
+    private static final class PivotSubscriber<K1, K2, T> extends Subscriber<GroupedObservable<K1, GroupedObservable<K2, T>>> {
         /*
          * needs to decouple the subscription as the inner subscriptions need a separate lifecycle
          * and will unsubscribe on this parent if they are all unsubscribed
@@ -155,12 +155,17 @@ public class OperatorPivot<K1, K2, T> implements Operator<GroupedObservable<K2, 
 
     }
 
-    private static class GroupState<K1, K2, T> {
+    private static final class GroupState<K1, K2, T> {
         private final ConcurrentHashMap<KeyPair<K1, K2>, Inner<K1, K2, T>> innerSubjects = new ConcurrentHashMap<KeyPair<K1, K2>, Inner<K1, K2, T>>();
         private final ConcurrentHashMap<K2, Outer<K1, K2, T>> outerSubjects = new ConcurrentHashMap<K2, Outer<K1, K2, T>>();
-        private final AtomicBoolean completeEmitted = new AtomicBoolean();
         private final CompositeSubscription parentSubscription;
         private final Subscriber<? super GroupedObservable<K2, GroupedObservable<K1, T>>> child;
+        /** Indicates a terminal state. */
+        volatile int completed;
+        /** Field updater for completed. */
+        @SuppressWarnings("rawtypes")
+        static final AtomicIntegerFieldUpdater<GroupState> COMPLETED_UPDATER
+                = AtomicIntegerFieldUpdater.newUpdater(GroupState.class, "completed");
 
         public GroupState(CompositeSubscription parentSubscription, Subscriber<? super GroupedObservable<K2, GroupedObservable<K1, T>>> child) {
             this.parentSubscription = parentSubscription;
@@ -169,7 +174,7 @@ public class OperatorPivot<K1, K2, T> implements Operator<GroupedObservable<K2, 
 
         public void startK1Group(AtomicReference<State> state, K1 key) {
             State current;
-            State newState = null;
+            State newState;
             do {
                 current = state.get();
                 newState = current.addK1(key);
@@ -191,7 +196,7 @@ public class OperatorPivot<K1, K2, T> implements Operator<GroupedObservable<K2, 
 
         public void startK1K2Group(AtomicReference<State> state, KeyPair<K1, K2> keyPair) {
             State current;
-            State newState = null;
+            State newState;
             do {
                 current = state.get();
                 newState = current.addK1k2(keyPair);
@@ -212,7 +217,7 @@ public class OperatorPivot<K1, K2, T> implements Operator<GroupedObservable<K2, 
         }
 
         public void completeAll(State state) {
-            if (completeEmitted.compareAndSet(false, true)) {
+            if (COMPLETED_UPDATER.compareAndSet(this, 0, 1)) {
                 /*
                  * after we are completely done emitting we can now shut down the groups
                  */
@@ -284,7 +289,7 @@ public class OperatorPivot<K1, K2, T> implements Operator<GroupedObservable<K2, 
         }
     }
 
-    private static class Inner<K1, K2, T> {
+    private static final class Inner<K1, K2, T> {
 
         private final BufferUntilSubscriber<T> subscriber;
         private final GroupedObservable<K1, T> group;
@@ -336,7 +341,7 @@ public class OperatorPivot<K1, K2, T> implements Operator<GroupedObservable<K2, 
         }
     }
 
-    private static class Outer<K1, K2, T> {
+    private static final class Outer<K1, K2, T> {
 
         private final BufferUntilSubscriber<GroupedObservable<K1, T>> subscriber;
         private final GroupedObservable<K2, GroupedObservable<K1, T>> group;
@@ -380,7 +385,7 @@ public class OperatorPivot<K1, K2, T> implements Operator<GroupedObservable<K2, 
         }
     }
 
-    private static class State {
+    private static final class State {
         private final boolean unsubscribed;
         private final boolean completed;
         private final Set<Object> k1Keys;
@@ -430,11 +435,11 @@ public class OperatorPivot<K1, K2, T> implements Operator<GroupedObservable<K2, 
         }
 
         public boolean shouldComplete() {
-            if (k1Keys.size() == 0 && completed) {
+            if (k1Keys.isEmpty() && completed) {
                 return true;
             } else if (unsubscribed) {
                 // if unsubscribed and all groups are completed/unsubscribed we can complete
-                return k1k2Keys.size() == 0;
+                return k1k2Keys.isEmpty();
             } else {
                 return false;
             }
@@ -446,7 +451,7 @@ public class OperatorPivot<K1, K2, T> implements Operator<GroupedObservable<K2, 
         }
     }
 
-    private static class KeyPair<K1, K2> {
+    private static final class KeyPair<K1, K2> {
         private final K1 k1;
         private final K2 k2;
 
