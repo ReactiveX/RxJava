@@ -1781,8 +1781,6 @@ public class Observable<T> {
      *            an Observable to be merged
      * @param t8
      *            an Observable to be merged
-     * @return an Observable that emits items that are the result of flattening
-     *         the items emitted by the {@code source} Observables
      * @return an Observable that emits all of the items emitted by the source Observables
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge</a>
      */
@@ -2265,8 +2263,6 @@ public class Observable<T> {
      * @return an Observable that emits a range of sequential Integers
      * @throws IllegalArgumentException
      *             if {@code count} is less than zero
-     * @throws IllegalArgumentException
-     *             if {@code start} + {@code count} exceeds {@code Integer.MAX_VALUE}
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#wiki-range">RxJava Wiki: range()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229460.aspx">MSDN: Observable.Range</a>
      */
@@ -3165,10 +3161,8 @@ public class Observable<T> {
      * <p>
      * 
      * @param state
-     *            FIXME FIXME FIXME
      * @param collector
-     *            FIXME FIXME FIXME
-     * @return FIXME FIXME FIXME
+     * @return
      */
     public final <R> Observable<R> collect(R state, final Action2<R, ? super T> collector) {
         Func2<R, T, R> accumulator = new Func2<R, T, R>() {
@@ -3473,7 +3467,7 @@ public class Observable<T> {
      * 
      * @return an Observable that emits the items and notifications embedded in the {@link Notification} objects
      *         emitted by the source Observable
-     * @throws Throwable
+     * @throws OnErrorNotImplementedException
      *             if the source Observable is not of type {@code Observable<Notification<T>>}
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#wiki-dematerialize">RxJava Wiki: dematerialize()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229047.aspx">MSDN: Observable.dematerialize</a>
@@ -3735,8 +3729,7 @@ public class Observable<T> {
      *         those emitted by the source Observable
      * @throws IndexOutOfBoundsException
      *             if {@code index} is greater than or equal to the number of items emitted by the source
-     *             Observable
-     * @throws IndexOutOfBoundsException
+     *             Observable, or
      *             if {@code index} is less than 0
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#wiki-elementat">RxJava Wiki: elementAt()</a>
      */
@@ -3908,10 +3901,8 @@ public class Observable<T> {
      * @param onNext
      *            {@link Action1} to execute for each item.
      * @throws IllegalArgumentException
-     *             if {@code onNext} is null
-     * @throws IllegalArgumentException
-     *             if {@code onError} is null
-     * @throws IllegalArgumentException
+     *             if {@code onNext} is null, or
+     *             if {@code onError} is null, or
      *             if {@code onComplete} is null
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable#wiki-onnext-oncompleted-and-onerror">RxJava Wiki: onNext, onCompleted, and onError</a>
      * @since 0.19
@@ -3930,10 +3921,8 @@ public class Observable<T> {
      * @param onError
      *            {@link Action1} to execute when an error is emitted.
      * @throws IllegalArgumentException
-     *             if {@code onNext} is null
-     * @throws IllegalArgumentException
-     *             if {@code onError} is null
-     * @throws IllegalArgumentException
+     *             if {@code onNext} is null, or
+     *             if {@code onError} is null, or
      *             if {@code onComplete} is null
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable#wiki-onnext-oncompleted-and-onerror">RxJava Wiki: onNext, onCompleted, and onError</a>
      * @since 0.19
@@ -3954,10 +3943,8 @@ public class Observable<T> {
      * @param onComplete
      *            {@link Action0} to execute when completion is signalled.
      * @throws IllegalArgumentException
-     *             if {@code onNext} is null
-     * @throws IllegalArgumentException
-     *             if {@code onError} is null
-     * @throws IllegalArgumentException
+     *             if {@code onNext} is null, or
+     *             if {@code onError} is null, or
      *             if {@code onComplete} is null
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable#wiki-onnext-oncompleted-and-onerror">RxJava Wiki: onNext, onCompleted, and onError</a>
      * @since 0.19
@@ -6011,7 +5998,6 @@ public class Observable<T> {
      * items and notifications from the Observable.
      * 
      * @param onNext
-     *            FIXME FIXME FIXME
      * @return a {@link Subscription} reference with which the {@link Observer} can stop receiving items before
      *         the Observable has finished sending them
      * @throws IllegalArgumentException
@@ -6050,15 +6036,12 @@ public class Observable<T> {
      * notifications from the Observable.
      * 
      * @param onNext
-     *            FIXME FIXME FIXME
      * @param onError
-     *            FIXME FIXME FIXME
      * @return a {@link Subscription} reference with which the {@link Observer} can stop receiving items before
      *         the Observable has finished sending them
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable#wiki-onnext-oncompleted-and-onerror">RxJava Wiki: onNext, onCompleted, and onError</a>
      * @throws IllegalArgumentException
-     *             if {@code onNext} is null
-     * @throws IllegalArgumentException
+     *             if {@code onNext} is null, or
      *             if {@code onError} is null
      */
     public final Subscription subscribe(final Action1<? super T> onNext, final Action1<Throwable> onError) {
@@ -6094,18 +6077,13 @@ public class Observable<T> {
      * notifications from the Observable.
      * 
      * @param onNext
-     *            FIXME FIXME FIXME
      * @param onError
-     *            FIXME FIXME FIXME
      * @param onComplete
-     *            FIXME FIXME FIXME
      * @return a {@link Subscription} reference with which the {@link Observer} can stop receiving items before
      *         the Observable has finished sending them
      * @throws IllegalArgumentException
-     *             if {@code onNext} is null
-     * @throws IllegalArgumentException
-     *             if {@code onError} is null
-     * @throws IllegalArgumentException
+     *             if {@code onNext} is null, or
+     *             if {@code onError} is null, or
      *             if {@code onComplete} is null
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable#wiki-onnext-oncompleted-and-onerror">RxJava Wiki: onNext, onCompleted, and onError</a>
      */
@@ -6145,7 +6123,6 @@ public class Observable<T> {
      * Observable.
      *
      * @param observer
-     *            FIXME FIXME FIXME
      * @return a {@link Subscription} reference with which the {@link Observer} can stop receiving items before
      *         the Observable has finished sending them
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable#wiki-onnext-oncompleted-and-onerror">RxJava Wiki: onNext, onCompleted, and onError</a>
@@ -7590,7 +7567,6 @@ public class Observable<T> {
                  * 
                  * @param observer
                  *            an {@link Observer} of this Observable
-                 * @return a reference to the subscription
                  */
                 @Override
                 public void call(Subscriber<? super T> observer) {
