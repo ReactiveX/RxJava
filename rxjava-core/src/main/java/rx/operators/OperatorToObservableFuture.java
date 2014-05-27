@@ -62,6 +62,10 @@ public class OperatorToObservableFuture {
                 }
             }));
             try {
+                //don't block or propagate CancellationException if already unsubscribed
+                if (subscriber.isUnsubscribed()) {
+                    return;
+                }
                 T value = (unit == null) ? (T) that.get() : (T) that.get(time, unit);
                 subscriber.onNext(value);
                 subscriber.onCompleted();
