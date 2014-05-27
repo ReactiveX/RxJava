@@ -62,6 +62,10 @@ public class OnSubscribeToObservableFuture {
                 }
             }));
             try {
+                //don't block or propagate CancellationException if already unsubscribed
+                if (subscriber.isUnsubscribed()) {
+                    return;
+                }
                 T value = (unit == null) ? (T) that.get() : (T) that.get(time, unit);
                 subscriber.onNext(value);
                 subscriber.onCompleted();
@@ -71,6 +75,10 @@ public class OnSubscribeToObservableFuture {
                 // since it's already subscribed.
                 // If the Future is canceled in other place, CancellationException will be still
                 // passed to the final Subscriber.
+                if (subscriber.isUnsubscribed()) {
+                    //refuse to emit onError if already unsubscribed
+                    return;
+                }
                 subscriber.onError(e);
             }
         }
