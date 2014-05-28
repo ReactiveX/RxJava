@@ -23,7 +23,7 @@ import rx.subscriptions.Subscriptions;
 
 import java.util.Iterator;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 /* package */class CachedThreadScheduler extends Scheduler {
     private static final String WORKER_THREAD_NAME_PREFIX = "RxCachedThreadScheduler-";
@@ -109,7 +109,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
     private static class EventLoopWorker extends Scheduler.Worker {
         private final CompositeSubscription innerSubscription = new CompositeSubscription();
         private final PoolWorker poolWorker;
-        private final AtomicBoolean releasePoolWorkerOnce = new AtomicBoolean(false);
+        volatile int once;
+        static final AtomicIntegerFieldUpdater<EventLoopWorker> ONCE_UPDATER
+                = AtomicIntegerFieldUpdater.newUpdater(EventLoopWorker.class, "once");
 
         EventLoopWorker(PoolWorker poolWorker) {
             this.poolWorker = poolWorker;
@@ -117,7 +119,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
         @Override
         public void unsubscribe() {
-            if (releasePoolWorkerOnce.compareAndSet(false, true)) {
+            if (ONCE_UPDATER.compareAndSet(this, 0, 1)) {
                 // unsubscribe should be idempotent, so only do this once
                 CachedWorkerPool.INSTANCE.release(poolWorker);
             }
