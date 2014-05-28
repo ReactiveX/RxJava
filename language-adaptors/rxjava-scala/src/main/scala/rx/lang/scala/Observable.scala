@@ -2862,13 +2862,14 @@ trait Observable[+T]
 
   /**
    * If the source Observable completes after emitting a single item, return an Observable that emits that
-   * item. If the source Observable emits more than one item or no items, throw an `NoSuchElementException`.
+   * item. If the source Observable emits more than one item or no items, notify of an `IllegalArgumentException`
+   * or `NoSuchElementException` respectively.
    * 
    * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/single.png">
    * 
    * @return an Observable that emits the single item emitted by the source Observable
-   * @throws NoSuchElementException
-   *             if the source emits more than one item or no items
+   * @throws IllegalArgumentException if the source emits more than one item
+   * @throws NoSuchElementException if the source emits no items
    * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#wiki-single-and-singleordefault">RxJava Wiki: single()</a>
    * @see "MSDN: Observable.singleAsync()"
    */
@@ -3093,7 +3094,7 @@ trait Observable[+T]
    */
   @deprecated("Use `toBlocking` instead", "0.19")
   def toBlockingObservable: BlockingObservable[T] = {
-    new BlockingObservable[T](asJavaObservable.toBlocking)
+    new BlockingObservable[T](this)
   }
 
   /**
@@ -3105,7 +3106,7 @@ trait Observable[+T]
    * @since 0.19
    */
   def toBlocking: BlockingObservable[T] = {
-    new BlockingObservable[T](asJavaObservable.toBlocking)
+    new BlockingObservable[T](this)
   }
 
   /**
