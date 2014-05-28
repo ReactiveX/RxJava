@@ -5393,6 +5393,23 @@ public class Observable<T> {
     }
 
     /**
+     * Returns an Observable that mirrors the source Observable, resubscribing to it if it calls {@code onError}
+     * and the predicate returns true for that specific exception and retry count.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/retry.png">
+     *
+     * @param predicate
+     *            the predicate that determines if a resubscription may happen in case of a specific exception
+     *            and retry count
+     * @return the source Observable modified with retry logic
+     * @see #retry()
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Error-Handling-Operators#wiki-retry">RxJava Wiki: retry()</a>
+     */
+    public final Observable<T> retry(Func2<Integer, Throwable, Boolean> predicate) {
+        return nest().lift(new OperatorRetryWithPredicate<T>(predicate));
+    }
+    
+    /**
      * Returns an Observable that emits the most recently emitted item (if any) emitted by the source Observable
      * within periodic time intervals.
      * <p>
