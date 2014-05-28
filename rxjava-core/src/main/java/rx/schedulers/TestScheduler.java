@@ -27,7 +27,8 @@ import rx.subscriptions.BooleanSubscription;
 import rx.subscriptions.Subscriptions;
 
 /**
- * @warn javadoc class description missing
+ * The {@code TestScheduler} is useful for debugging. It allows you to test schedules of events by manually
+ * advancing the clock at whatever pace you choose.
  */
 public class TestScheduler extends Scheduler {
     private final Queue<TimedAction> queue = new PriorityQueue<TimedAction>(11, new CompareActionsByTime());
@@ -72,14 +73,24 @@ public class TestScheduler extends Scheduler {
     }
 
     /**
-     * @warn javadoc missing
+     * Moves the Scheduler's clock forward by a specified amount of time.
+     *
+     * @param delayTime
+     *          the amount of time to move the Scheduler's clock forward
+     * @param unit
+     *          the units of time that {@code delayTime} is expressed in
      */
     public void advanceTimeBy(long delayTime, TimeUnit unit) {
         advanceTimeTo(time + unit.toNanos(delayTime), TimeUnit.NANOSECONDS);
     }
 
     /**
-     * @warn javadoc missing
+     * Moves the Scheduler's clock to a particular moment in time.
+     *
+     * @param delayTime
+     *          the point in time to move the Scheduler's clock to
+     * @param unit
+     *          the units of time that {@code delayTime} is expressed in
      */
     public void advanceTimeTo(long delayTime, TimeUnit unit) {
         long targetTime = unit.toNanos(delayTime);
@@ -87,7 +98,8 @@ public class TestScheduler extends Scheduler {
     }
 
     /**
-     * @warn javadoc missing
+     * Triggers any actions that have not yet been triggered and that are scheduled to be triggered at or
+     * before this Scheduler's present time.
      */
     public void triggerActions() {
         triggerActions(time);

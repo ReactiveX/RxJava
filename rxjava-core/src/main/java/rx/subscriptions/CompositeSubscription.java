@@ -114,7 +114,13 @@ public final class CompositeSubscription implements Subscription {
     }
 
     /**
-     * @warn javadoc missing
+     * Adds a new {@link Subscription} to this {@code CompositeSubscription} if the
+     * {@code CompositeSubscription} is not yet unsubscribed. If the {@code CompositeSubscription} <em>is</em>
+     * unsubscribed, {@code add} will indicate this by explicitly unsubscribing the new {@code Subscription} as
+     * well.
+     *
+     * @param s
+     *          the {@link Subscription} to add
      */
     public void add(final Subscription s) {
         State oldState;
@@ -131,7 +137,11 @@ public final class CompositeSubscription implements Subscription {
     }
 
     /**
-     * @warn javadoc missing
+     * Removes a {@link Subscription} from this {@code CompositeSubscription}, and unsubscribes the
+     * {@link Subscription}.
+     *
+     * @param s
+     *          the {@link Subscription} to remove
      */
     public void remove(final Subscription s) {
         State oldState;
@@ -149,7 +159,9 @@ public final class CompositeSubscription implements Subscription {
     }
 
     /**
-     * @warn javadoc missing
+     * Unsubscribes any subscriptions that are currently part of this {@code CompositeSubscription} and remove
+     * them from the {@code CompositeSubscription} so that the {@code CompositeSubscription} is empty and in
+     * an unoperative state.
      */
     public void clear() {
         State oldState;

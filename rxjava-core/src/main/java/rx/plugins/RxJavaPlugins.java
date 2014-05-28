@@ -34,8 +34,9 @@ public class RxJavaPlugins {
     private final AtomicReference<RxJavaDefaultSchedulers> schedulerOverrides = new AtomicReference<RxJavaDefaultSchedulers>();
 
     /**
-     * @warn javadoc missing
-     * @return
+     * Retrieves the single {@code RxJavaPlugins} instance.
+     *
+     * @return the single {@code RxJavaPlugins} instance
      */
     public static RxJavaPlugins getInstance() {
         return INSTANCE;

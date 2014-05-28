@@ -46,8 +46,10 @@ public class OnErrorThrowable extends RuntimeException {
     }
 
     /**
-     * @warn javadoc missing
-     * @return
+     * Indicates whether or not there is a value associated with this {@code OnErrorThrowable}
+     *
+     * @return {@code true} if there is a value associated with this {@code OnErrorThrowable}, otherwise
+     *         {@code false}
      */
     public boolean isValueNull() {
         return hasValue;

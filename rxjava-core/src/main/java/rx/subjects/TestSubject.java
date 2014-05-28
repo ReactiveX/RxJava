@@ -48,6 +48,7 @@ import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
  * 
  * @param <T>
  *          the type of item observed by and emitted by the subject
+ * @warn javadoc seems misleading
  */
 public final class TestSubject<T> extends Subject<T, T> {
 

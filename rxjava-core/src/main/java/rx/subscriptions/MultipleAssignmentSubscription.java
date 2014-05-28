@@ -73,6 +73,8 @@ public final class MultipleAssignmentSubscription implements Subscription {
 
     /**
      * @warn javadoc missing
+     * @param s
+     * @throws IllegalArgumentException
      */
     public void set(Subscription s) {
         if (s == null) {

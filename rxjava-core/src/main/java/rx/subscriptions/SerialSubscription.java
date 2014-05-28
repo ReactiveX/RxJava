@@ -71,7 +71,12 @@ public final class SerialSubscription implements Subscription {
     }
 
     /**
-     * @warn javadoc missing
+     * Swaps out the old {@link Subscription} for the specified {@code Subscription}.
+     *
+     * @param s
+     *          the new {@code Subscription} to swap in
+     * @throws IllegalArgumentException
+     *          if {@code s} is {@code null}
      */
     public void set(Subscription s) {
         if (s == null) {
@@ -92,8 +97,9 @@ public final class SerialSubscription implements Subscription {
     }
 
     /**
-     * @warn javadoc missing
-     * @return
+     * Retrieves the current {@link Subscription} that is being represented by this {@code SerialSubscription}.
+     * 
+     * @return the current {@link Subscription} that is being represented by this {@code SerialSubscription}
      */
     public Subscription get() {
         return state.subscription;

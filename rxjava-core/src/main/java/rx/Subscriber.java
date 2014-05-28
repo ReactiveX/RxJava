@@ -63,8 +63,9 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
     }
 
     /**
-     * @warn javadoc missing
-     * @return
+     * Indicates whether this Subscriber has unsubscribed from its Observable.
+     * 
+     * @return {@code true} if this Subscriber has unsubscribed from its Observable, {@code false} otherwise
      */
     public final boolean isUnsubscribed() {
         return cs.isUnsubscribed();

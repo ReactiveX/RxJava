@@ -26,14 +26,23 @@ public class OnErrorFailedException extends RuntimeException {
     private static final long serialVersionUID = -419289748403337611L;
 
     /**
-     * @warn javadoc missing
+     * Customizes the {@code Throwable} with a custom message and wraps it before it is to be re-thrown as an
+     * {@code OnErrorFailedException}.
+     *
+     * @param message
+     *          the message to assign to the {@code Throwable} to re-throw
+     * @param e
+     *          the {@code Throwable} to re-throw
      */
     public OnErrorFailedException(String message, Throwable e) {
         super(message, e);
     }
 
     /**
-     * @warn javadoc missing
+     * Wraps the {@code Throwable} before it is to be re-thrown as an {@code OnErrorFailedException}.
+     *
+     * @param e
+     *          the {@code Throwable} to re-throw
      */
     public OnErrorFailedException(Throwable e) {
         super(e.getMessage(), e);

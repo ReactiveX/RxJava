@@ -33,14 +33,23 @@ public class OnErrorNotImplementedException extends RuntimeException {
     private static final long serialVersionUID = -6298857009889503852L;
 
     /**
-     * @warn javadoc missing
+     * Customizes the {@code Throwable} with a custom message and wraps it before it is to be re-thrown as an
+     * {@code OnErrorNotImplementedException}.
+     *
+     * @param message
+     *          the message to assign to the {@code Throwable} to re-throw
+     * @param e
+     *          the {@code Throwable} to re-throw
      */
     public OnErrorNotImplementedException(String message, Throwable e) {
         super(message, e);
     }
 
     /**
-     * @warn javadoc missing
+     * Wraps the {@code Throwable} before it is to be re-thrown as an {@code OnErrorNotImplementedException}.
+     *
+     * @param e
+     *          the {@code Throwable} to re-throw
      */
     public OnErrorNotImplementedException(Throwable e) {
         super(e.getMessage(), e);

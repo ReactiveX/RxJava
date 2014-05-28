@@ -111,8 +111,10 @@ public final class Schedulers {
     }
 
     /**
-     * @warn javadoc missing
-     * @return
+     * Creates and returns a {@code TestScheduler}, which is useful for debugging. It allows you to test
+     * schedules of events by manually advancing the clock at whatever pace you choose.
+     *
+     * @return a {@code TestScheduler} meant for debugging
      */
     public static TestScheduler test() {
         return new TestScheduler();

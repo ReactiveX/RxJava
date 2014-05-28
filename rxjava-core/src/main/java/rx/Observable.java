@@ -3214,16 +3214,18 @@ public class Observable<T> {
     }
 
     /**
-     * Collects values emitted by the source Observable into a single mutable data structure and returns an
+     * Collects items emitted by the source Observable into a single mutable data structure and returns an
      * Observable that emits this structure.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/collect.png">
      * <p>
      * This is a simplified version of {@code reduce} that does not need to return the state on each pass.
      * 
-     * @warn javadocs incomplete; no marble diagram for this operator
      * @param state
-     * @warn javadocs incomplete; "state" parameter not described
+     *           the mutable data structure that will collect the items
      * @param collector
-     * @warn javadocs incomplete; "collector" parameter not described
+     *           a function that accepts the {@code state} and an emitted item, and modifies {@code state}
+     *           accordingly
      * @return an Observable that emits the result of collecting the values emitted by the source Observable
      *         into a single mutable data structure
      */
@@ -5502,7 +5504,7 @@ public class Observable<T> {
      * It is possible for an Observable to invoke its Subscribers' methods asynchronously, perhaps from
      * different threads. This could make such an Observable poorly-behaved, in that it might try to invoke
      * {@code onCompleted} or {@code onError} before one of its {@code onNext} invocations, or it might call
-     * {@code onNext} from two different threads simultaneously. You can force such an Observable to be
+     * {@code onNext} from two different threads concurrently. You can force such an Observable to be
      * well-behaved and sequential by applying the {@code serialize} method to it.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/synchronize.png">
