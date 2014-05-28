@@ -411,26 +411,6 @@ trait Observable[+T]
   /**
    * Creates an Observable which produces buffers of collected values.
    *
-   * This Observable produces connected non-overlapping buffers. The current buffer is
-   * emitted and replaced with a new buffer when the Observable produced by the specified function produces an object. The function will then
-   * be used to create a new Observable to listen for the end of the next buffer.
-   *
-   * @param closings
-   *            The function which is used to produce an [[rx.lang.scala.Observable]] for every buffer created.
-   *            When this [[rx.lang.scala.Observable]] produces an object, the associated buffer
-   *            is emitted and replaced with a new one.
-   * @return
-   *         An [[rx.lang.scala.Observable]] which produces connected non-overlapping buffers, which are emitted
-   *         when the current [[rx.lang.scala.Observable]] created with the function argument produces an object.
-   */
-  def buffer(closings: () => Observable[Any]) : Observable[Seq[T]] = {
-    val f: Func0[_ <: rx.Observable[_ <: Any]] = closings().asJavaObservable
-    val jObs: rx.Observable[_ <: java.util.List[_]] = asJavaObservable.buffer[Any](f)
-    Observable.jObsOfListToScObsOfSeq(jObs.asInstanceOf[rx.Observable[_ <: java.util.List[T]]])
-  }
-  /**
-   * Creates an Observable which produces buffers of collected values.
-   *
    * This Observable produces buffers. Buffers are created when the specified `openings`
    * Observable produces an object. That object is used to construct an Observable to emit buffers, feeding it into `closings` function.
    * Buffers are emitted when the created Observable produces an object.
@@ -626,13 +606,16 @@ trait Observable[+T]
    * Completion of either the source or the boundary Observable causes the returned Observable to emit the
    * latest buffer and complete.
    *
-   * @param boundary the boundary Observable
+   * @param boundary the boundary Observable. Note: This is a by-name parameter,
+   *                 so it is only evaluated when someone subscribes to the returned Observable.
    * @return an Observable that emits buffered items from the source Observable when the boundary Observable
    *         emits an item
    */
-  def buffer(boundary: Observable[Any]): Observable[Seq[T]] = {
-    val thisJava = this.asJavaObservable.asInstanceOf[rx.Observable[T]]
-    toScalaObservable(thisJava.buffer(boundary.asJavaObservable)).map(_.asScala)
+  def buffer(boundary: => Observable[Any]): Observable[Seq[T]] = {
+    val f = new Func0[rx.Observable[_ <: Any]]() {
+      override def call(): rx.Observable[_ <: Any] = boundary.asJavaObservable
+    }
+    toScalaObservable(asJavaObservable.buffer[Any](f)).map(_.asScala)
   }
 
   /**
@@ -670,7 +653,7 @@ trait Observable[+T]
     val func = new Func0[rx.Observable[_ <: Any]]() {
       override def call(): rx.Observable[_ <: Any] = boundary.asJavaObservable
     }
-    val jo: rx.Observable[rx.Observable[T]] = asJavaObservable.asInstanceOf[rx.Observable[T]].window[Any](func)
+    val jo: rx.Observable[_ <: rx.Observable[_ <: T]] = asJavaObservable.window[Any](func)
     toScalaObservable(jo).map(toScalaObservable[T](_))
   }
 
