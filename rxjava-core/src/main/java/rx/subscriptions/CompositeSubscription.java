@@ -17,7 +17,7 @@ package rx.subscriptions;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 
 import rx.Subscription;
 import rx.exceptions.CompositeException;
@@ -29,8 +29,11 @@ import rx.exceptions.CompositeException;
  * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.disposables.compositedisposable(v=vs.103).aspx">Rx.Net equivalent CompositeDisposable</a>
  */
 public final class CompositeSubscription implements Subscription {
-
-    private final AtomicReference<State> state = new AtomicReference<State>();
+    /** The atomic state updater. */
+    static final AtomicReferenceFieldUpdater<CompositeSubscription, State> STATE_UPDATER
+            = AtomicReferenceFieldUpdater.newUpdater(CompositeSubscription.class, State.class, "state");
+    /** The subscription state. */
+    volatile State state;
 
     /** Empty initial state. */
     private static final State CLEAR_STATE;
@@ -97,43 +100,45 @@ public final class CompositeSubscription implements Subscription {
     }
 
     public CompositeSubscription() {
-        state.set(CLEAR_STATE);
+        // this creates only a store-store barrier which is generally faster when
+        // CompositeSubscriptions are created in a tight loop.
+        state = CLEAR_STATE;
     }
 
     public CompositeSubscription(final Subscription... subscriptions) {
-        state.set(new State(false, subscriptions));
+        state = new State(false, subscriptions);
     }
 
     @Override
     public boolean isUnsubscribed() {
-        return state.get().isUnsubscribed;
+        return state.isUnsubscribed;
     }
 
     public void add(final Subscription s) {
         State oldState;
         State newState;
         do {
-            oldState = state.get();
+            oldState = state;
             if (oldState.isUnsubscribed) {
                 s.unsubscribe();
                 return;
             } else {
                 newState = oldState.add(s);
             }
-        } while (!state.compareAndSet(oldState, newState));
+        } while (!STATE_UPDATER.compareAndSet(this, oldState, newState));
     }
 
     public void remove(final Subscription s) {
         State oldState;
         State newState;
         do {
-            oldState = state.get();
+            oldState = state;
             if (oldState.isUnsubscribed) {
                 return;
             } else {
                 newState = oldState.remove(s);
             }
-        } while (!state.compareAndSet(oldState, newState));
+        } while (!STATE_UPDATER.compareAndSet(this, oldState, newState));
         // if we removed successfully we then need to call unsubscribe on it
         s.unsubscribe();
     }
@@ -142,29 +147,25 @@ public final class CompositeSubscription implements Subscription {
         State oldState;
         State newState;
         do {
-            oldState = state.get();
+            oldState = state;
             if (oldState.isUnsubscribed) {
                 return;
             } else {
                 newState = oldState.clear();
             }
-        } while (!state.compareAndSet(oldState, newState));
+        } while (!STATE_UPDATER.compareAndSet(this, oldState, newState));
         // if we cleared successfully we then need to call unsubscribe on all previous
         unsubscribeFromAll(oldState.subscriptions);
     }
 
     @Override
     public void unsubscribe() {
-        State oldState;
-        State newState;
-        do {
-            oldState = state.get();
-            if (oldState.isUnsubscribed) {
-                return;
-            } else {
-                newState = oldState.unsubscribe();
-            }
-        } while (!state.compareAndSet(oldState, newState));
+        State oldState = state;
+        if (oldState.isUnsubscribed) {
+            return;
+        }
+        // intrinsics may make this a single instruction and may prevent concurrent add/remove faster
+        oldState = STATE_UPDATER.getAndSet(this, oldState.unsubscribe());
         unsubscribeFromAll(oldState.subscriptions);
     }
 

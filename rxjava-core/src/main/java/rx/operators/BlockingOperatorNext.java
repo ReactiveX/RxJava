@@ -19,7 +19,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 import rx.Notification;
 import rx.Observable;
@@ -61,10 +61,16 @@ public final class BlockingOperatorNext {
             this.observer = observer;
         }
 
+        
         // in tests, set the waiting flag without blocking for the next value to 
         // allow lockstepping instead of multi-threading
-        void setWaiting(boolean value) {
-            observer.waiting.set(value);
+        /**
+         * In tests, set the waiting flag without blocking for the next value to 
+         * allow lockstepping instead of multi-threading
+         * @param value use 1 to enter into the waiting state
+         */
+        void setWaiting(int value) {
+            observer.setWaiting(value);
         }
         
         @Override
@@ -135,7 +141,10 @@ public final class BlockingOperatorNext {
 
     private static class NextObserver<T> extends Subscriber<Notification<? extends T>> {
         private final BlockingQueue<Notification<? extends T>> buf = new ArrayBlockingQueue<Notification<? extends T>>(1);
-        private final AtomicBoolean waiting = new AtomicBoolean(false);
+        volatile int waiting;
+        @SuppressWarnings("rawtypes")
+        static final AtomicIntegerFieldUpdater<NextObserver> WAITING_UPDATER
+                = AtomicIntegerFieldUpdater.newUpdater(NextObserver.class, "waiting");
 
         @Override
         public void onCompleted() {
@@ -150,7 +159,7 @@ public final class BlockingOperatorNext {
         @Override
         public void onNext(Notification<? extends T> args) {
 
-            if (waiting.getAndSet(false) || !args.isOnNext()) {
+            if (WAITING_UPDATER.getAndSet(this, 0) == 1 || !args.isOnNext()) {
                 Notification<? extends T> toOffer = args;
                 while (!buf.offer(toOffer)) {
                     Notification<? extends T> concurrentItem = buf.poll();
@@ -165,9 +174,11 @@ public final class BlockingOperatorNext {
         }
 
         public Notification<? extends T> takeNext() throws InterruptedException {
-            waiting.set(true);
+            setWaiting(1);
             return buf.take();
         }
-
+        void setWaiting(int value) {
+            waiting = value;
+        }
     }
 }

@@ -337,6 +337,42 @@ trait Observable[+T]
   }
 
   /**
+   * Returns an Observable formed from `this` Observable and `other` Iterable by combining
+   * corresponding elements in pairs.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/zip.i.png">
+   * <p>
+   * Note that the `other` Iterable is evaluated as items are observed from the source Observable; it is
+   * not pre-consumed. This allows you to zip infinite streams on either side.
+   *
+   * @param other the Iterable sequence
+   * @return an Observable that pairs up values from the source Observable and the `other` Iterable.
+   */
+  def zip[U](other: Iterable[U]): Observable[(T, U)] = {
+    zipWith(other, (t: T, u: U) => (t, u))
+  }
+
+  /**
+   * Returns an Observable that emits items that are the result of applying a specified function to pairs of
+   * values, one each from the source Observable and a specified Iterable sequence.
+   * <p>
+   * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/zip.i.png">
+   * <p>
+   * Note that the `other` Iterable is evaluated as items are observed from the source Observable; it is
+   * not pre-consumed. This allows you to zip infinite streams on either side.
+   *
+   * @param other the Iterable sequence
+   * @param selector a function that combines the pairs of items from the Observable and the Iterable to generate
+   *                 the items to be emitted by the resulting Observable
+   * @return an Observable that pairs up values from the source Observable and the `other` Iterable
+   *         sequence and emits the results of `selector` applied to these pairs
+   */
+  def zipWith[U, R](other: Iterable[U], selector: (T, U) => R): Observable[R] = {
+    val thisJava = asJavaObservable.asInstanceOf[rx.Observable[T]]
+    toScalaObservable[R](thisJava.zip(other.asJava, selector))
+  }
+
+  /**
    * Returns an Observable formed from this Observable and another Observable by combining
    * corresponding elements using the selector function.
    * The number of `onNext` invocations of the resulting `Observable[(T, U)]`
@@ -353,7 +389,7 @@ trait Observable[+T]
    *         their index. Indices start at 0.
    */
   def zipWithIndex: Observable[(T, Int)] = {
-    zip((0 until Int.MaxValue).toObservable)
+    zip(0 until Int.MaxValue)
   }
 
   /**
@@ -3330,10 +3366,19 @@ object Observable {
    * Write the function you pass so that it behaves as an Observable: It should invoke the
    * Subscriber's `onNext`, `onError`, and `onCompleted` methods appropriately.
    *
+   * You can `add` custom [[Subscription]]s to [[Subscriber]]. These [[Subscription]]s will be called
+   * <ul>
+   *   <li>when someone calls `unsubscribe`.</li>
+   *   <li>after `onCompleted` or `onError`.</li>
+   * </ul>
+   *
    * See <a href="http://go.microsoft.com/fwlink/?LinkID=205219">Rx Design Guidelines (PDF)</a> for detailed
    * information.
    *
-   * @tparam T
+   * See `<a href="https://github.com/Netflix/RxJava/blob/master/language-adaptors/rxjava-scala/src/examples/scala/rx/lang/scala/examples/RxScalaDemo.scala">RxScalaDemo</a>.createExampleGood`
+   * and `<a href="https://github.com/Netflix/RxJava/blob/master/language-adaptors/rxjava-scala/src/examples/scala/rx/lang/scala/examples/RxScalaDemo.scala">RxScalaDemo</a>.createExampleGood2`.
+   *
+   * @param T
    *            the type of the items that this Observable emits
    * @param f
    *            a function that accepts a `Subscriber[T]`, and invokes its `onNext`,

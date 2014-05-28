@@ -25,6 +25,7 @@ import rx.Observable;
 import rx.Subscriber;
 import rx.functions.Action1;
 import rx.functions.Func1;
+import rx.functions.Functions;
 import rx.operators.BlockingOperatorLatest;
 import rx.operators.BlockingOperatorMostRecent;
 import rx.operators.BlockingOperatorNext;
@@ -381,17 +382,7 @@ public class BlockingObservable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.singleordefault.aspx">MSDN: Observable.SingleOrDefault</a>
      */
     public T singleOrDefault(T defaultValue) {
-        Iterator<? extends T> it = this.toIterable().iterator();
-
-        if (!it.hasNext()) {
-            return defaultValue;
-        }
-
-        T result = it.next();
-        if (it.hasNext()) {
-            throw new IllegalArgumentException("Sequence contains too many elements");
-        }
-        return result;
+        return from(o.map(Functions.<T>identity()).singleOrDefault(defaultValue)).single();
     }
 
     /**

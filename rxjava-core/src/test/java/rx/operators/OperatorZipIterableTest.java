@@ -23,6 +23,8 @@ import static org.mockito.Mockito.verify;
 
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.concurrent.atomic.AtomicInteger;
+import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -31,6 +33,8 @@ import org.mockito.InOrder;
 import rx.Observable;
 import rx.Observer;
 import rx.exceptions.TestException;
+import rx.functions.Action1;
+import rx.functions.Func1;
 import rx.functions.Func2;
 import rx.functions.Func3;
 import rx.subjects.PublishSubject;
@@ -345,5 +349,33 @@ public class OperatorZipIterableTest {
         verify(o, never()).onNext(any(String.class));
         verify(o, never()).onCompleted();
 
+    }
+    
+    Action1<String> printer = new Action1<String>() {
+        @Override
+        public void call(String t1) {
+            System.out.println(t1);
+        }
+    };
+
+    static final class SquareStr implements Func1<Integer, String> {
+        final AtomicInteger counter = new AtomicInteger();
+        @Override
+        public String call(Integer t1) {
+            counter.incrementAndGet();
+            System.out.println("Omg I'm calculating so hard: " + t1 + "*" + t1 + "=" + (t1*t1));
+            return " " + (t1*t1);
+        }
+    }
+
+    @Test public void testTake2() {
+        Observable<Integer> o = Observable.from(1, 2, 3, 4, 5);
+        Iterable<String> it = Arrays.asList("a", "b", "c", "d", "e");
+        
+        SquareStr squareStr = new SquareStr();
+        
+        o.map(squareStr).zip(it, concat2Strings).take(2).subscribe(printer);
+        
+        assertEquals(2, squareStr.counter.get());
     }
 }

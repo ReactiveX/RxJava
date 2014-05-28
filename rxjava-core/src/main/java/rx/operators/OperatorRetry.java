@@ -31,7 +31,7 @@ package rx.operators;
  * limitations under the License.
  */
 
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 import rx.Observable;
 import rx.Observable.Operator;
@@ -41,7 +41,7 @@ import rx.functions.Action0;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.SerialSubscription;
 
-public class OperatorRetry<T> implements Operator<T, Observable<T>> {
+public final class OperatorRetry<T> implements Operator<T, Observable<T>> {
 
     private static final int INFINITE_RETRY = -1;
 
@@ -65,10 +65,31 @@ public class OperatorRetry<T> implements Operator<T, Observable<T>> {
         final SerialSubscription serialSubscription = new SerialSubscription();
         // add serialSubscription so it gets unsubscribed if child is unsubscribed
         child.add(serialSubscription);
-        return new Subscriber<Observable<T>>(child) {
-            final AtomicInteger attempts = new AtomicInteger(0);
+        
+        return new SourceSubscriber<T>(child, retryCount, inner, serialSubscription);
+    }
+    
+    static final class SourceSubscriber<T> extends Subscriber<Observable<T>> {
+        final Subscriber<? super T> child;
+        final int retryCount;
+        final Scheduler.Worker inner;
+        final SerialSubscription serialSubscription;
+        
+        volatile int attempts;
+        @SuppressWarnings("rawtypes")
+        static final AtomicIntegerFieldUpdater<SourceSubscriber> ATTEMPTS_UPDATER
+                = AtomicIntegerFieldUpdater.newUpdater(SourceSubscriber.class, "attempts");
 
-            @Override
+        public SourceSubscriber(Subscriber<? super T> child, int retryCount, Scheduler.Worker inner, 
+                SerialSubscription serialSubscription) {
+            this.child = child;
+            this.retryCount = retryCount;
+            this.inner = inner;
+            this.serialSubscription = serialSubscription;
+        }
+        
+        
+        @Override
             public void onCompleted() {
                 // ignore as we expect a single nested Observable<T>
             }
@@ -85,7 +106,7 @@ public class OperatorRetry<T> implements Operator<T, Observable<T>> {
                     @Override
                     public void call() {
                         final Action0 _self = this;
-                        attempts.incrementAndGet();
+                        ATTEMPTS_UPDATER.incrementAndGet(SourceSubscriber.this);
 
                         // new subscription each time so if it unsubscribes itself it does not prevent retries
                         // by unsubscribing the child subscription
@@ -98,7 +119,7 @@ public class OperatorRetry<T> implements Operator<T, Observable<T>> {
 
                             @Override
                             public void onError(Throwable e) {
-                                if ((retryCount == INFINITE_RETRY || attempts.get() <= retryCount) && !inner.isUnsubscribed()) {
+                                if ((retryCount == INFINITE_RETRY || attempts <= retryCount) && !inner.isUnsubscribed()) {
                                     // retry again
                                     inner.schedule(_self);
                                 } else {
@@ -119,7 +140,5 @@ public class OperatorRetry<T> implements Operator<T, Observable<T>> {
                     }
                 });
             }
-
-        };
     }
 }

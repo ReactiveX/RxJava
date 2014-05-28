@@ -16,7 +16,7 @@
 package rx.operators;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 import rx.Observable;
 import rx.Observable.Operator;
 import rx.Subscriber;
@@ -30,30 +30,32 @@ import rx.subscriptions.Subscriptions;
  * other.
  * <p>
  * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/concat.png">
+ * @param <T> the source and result value type
  */
 public final class OperatorConcat<T> implements Operator<T, Observable<? extends T>> {
-    final NotificationLite<Observable<? extends T>> nl = NotificationLite.instance();
     @Override
     public Subscriber<? super Observable<? extends T>> call(final Subscriber<? super T> child) {
         final SerializedSubscriber<T> s = new SerializedSubscriber<T>(child);
         final SerialSubscription current = new SerialSubscription();
         child.add(current);
-        return new ConcatSubscriber(s, current);
+        return new ConcatSubscriber<T>(s, current);
     }
     
-    final class ConcatSubscriber extends Subscriber<Observable<? extends T>> {
-        
+    static final class ConcatSubscriber<T> extends Subscriber<Observable<? extends T>> {
+        final NotificationLite<Observable<? extends T>> nl = NotificationLite.instance();
         private final Subscriber<T> s;
         private final SerialSubscription current;
         final ConcurrentLinkedQueue<Object> queue;
-        final AtomicInteger wip;
+        volatile int wip;
+        @SuppressWarnings("rawtypes")
+        static final AtomicIntegerFieldUpdater<ConcatSubscriber> WIP_UPDATER
+                = AtomicIntegerFieldUpdater.newUpdater(ConcatSubscriber.class, "wip");
         
         public ConcatSubscriber(Subscriber<T> s, SerialSubscription current) {
             super(s);
             this.s = s;
             this.current = current;
             this.queue = new ConcurrentLinkedQueue<Object>();
-            this.wip = new AtomicInteger();
             add(Subscriptions.create(new Action0() {
                 @Override
                 public void call() {
@@ -65,7 +67,7 @@ public final class OperatorConcat<T> implements Operator<T, Observable<? extends
         @Override
         public void onNext(Observable<? extends T> t) {
             queue.add(nl.next(t));
-            if (wip.getAndIncrement() == 0) {
+            if (WIP_UPDATER.getAndIncrement(this) == 0) {
                 subscribeNext();
             }
         }
@@ -79,11 +81,15 @@ public final class OperatorConcat<T> implements Operator<T, Observable<? extends
         @Override
         public void onCompleted() {
             queue.add(nl.completed());
-            if (wip.getAndIncrement() == 0) {
+            if (WIP_UPDATER.getAndIncrement(this) == 0) {
                 subscribeNext();
             }
         }
-        
+        void completeInner() {
+            if (WIP_UPDATER.decrementAndGet(this) > 0) {
+                subscribeNext();
+            }
+        }
         void subscribeNext() {
             Object o = queue.poll();
             if (nl.isCompleted(o)) {
@@ -105,9 +111,7 @@ public final class OperatorConcat<T> implements Operator<T, Observable<? extends
 
                     @Override
                     public void onCompleted() {
-                        if (wip.decrementAndGet() > 0) {
-                            subscribeNext();
-                        }
+                        completeInner();
                     }
 
                 };

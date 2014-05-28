@@ -15,7 +15,7 @@
  */
 package rx.operators;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 import rx.Observable;
 import rx.Observable.Operator;
@@ -30,6 +30,8 @@ import rx.subscriptions.CompositeSubscription;
  * <p>
  * You can combine the items emitted by multiple Observables so that they act like a single
  * Observable, by using the merge operation.
+ * 
+ * @param <T> the source and merged value type
  */
 public final class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
 
@@ -39,73 +41,87 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
         final Subscriber<T> o = new SerializedSubscriber<T>(outerOperation);
         final CompositeSubscription childrenSubscriptions = new CompositeSubscription();
         outerOperation.add(childrenSubscriptions);
+        
+        return new MergeSubscriber<T>(o, childrenSubscriptions);
 
-        return new Subscriber<Observable<? extends T>>(outerOperation) {
+    }
+    static final class MergeSubscriber<T> extends Subscriber<Observable<? extends T>> {
+        final Subscriber<T> actual;
+        final CompositeSubscription childrenSubscriptions;
+        volatile int wip;
+        volatile boolean completed;
+        @SuppressWarnings("rawtypes")
+        static final AtomicIntegerFieldUpdater<MergeSubscriber> WIP_UPDATER
+                = AtomicIntegerFieldUpdater.newUpdater(MergeSubscriber.class, "wip");
+        
+        public MergeSubscriber(Subscriber<T> actual, CompositeSubscription childrenSubscriptions) {
+            super(actual);
+            this.actual = actual;
+            this.childrenSubscriptions = childrenSubscriptions;
+        }
 
-            private volatile boolean completed = false;
-            private final AtomicInteger runningCount = new AtomicInteger();
+        @Override
+        public void onNext(Observable<? extends T> t) {
+            WIP_UPDATER.incrementAndGet(this);
+            Subscriber<T> i = new InnerSubscriber<T>(this);
+            childrenSubscriptions.add(i);
+            t.unsafeSubscribe(i);
+        }
 
-            @Override
-            public void onCompleted() {
-                completed = true;
-                if (runningCount.get() == 0) {
-                    o.onCompleted();
-                }
+        @Override
+        public void onError(Throwable e) {
+            actual.onError(e);
+            unsubscribe();
+        }
+
+        @Override
+        public void onCompleted() {
+            completed = true;
+            if (wip == 0) {
+                actual.onCompleted();
             }
-
-            @Override
-            public void onError(Throwable e) {
-                o.onError(e);
+        }
+        void completeInner(InnerSubscriber<T> s) {
+            try {
+                if (WIP_UPDATER.decrementAndGet(this) == 0 && completed) {
+                    actual.onCompleted();
+                }
+            } finally {
+                childrenSubscriptions.remove(s);
             }
+        }
+    }
+    static final class InnerSubscriber<T> extends Subscriber<T> {
+        final Subscriber<? super T> actual;
+        final MergeSubscriber<T> parent;
+        /** Make sure the inner termination events are delivered only once. */
+        volatile int once;
+        @SuppressWarnings("rawtypes")
+        static final AtomicIntegerFieldUpdater<InnerSubscriber> ONCE_UPDATER
+                = AtomicIntegerFieldUpdater.newUpdater(InnerSubscriber.class, "once");
+        
+        public InnerSubscriber(MergeSubscriber<T> parent) {
+            this.parent = parent;
+            this.actual = parent.actual;
+        }
+        @Override
+        public void onNext(T t) {
+            actual.onNext(t);
+        }
 
-            @Override
-            public void onNext(Observable<? extends T> innerObservable) {
-                runningCount.incrementAndGet();
-                Subscriber<T> i = new InnerObserver();
-                childrenSubscriptions.add(i);
-                innerObservable.unsafeSubscribe(i);
+        @Override
+        public void onError(Throwable e) {
+            if (ONCE_UPDATER.compareAndSet(this, 0, 1)) {
+                parent.onError(e);
             }
+        }
 
-            final class InnerObserver extends Subscriber<T> {
-
-                private boolean innerCompleted = false;
-
-                public InnerObserver() {
-                }
-
-                @Override
-                public void onCompleted() {
-                    if (!innerCompleted) {
-                        // we check if already completed otherwise a misbehaving Observable that emits onComplete more than once
-                        // will cause the runningCount to decrement multiple times.
-                        innerCompleted = true;
-                        if (runningCount.decrementAndGet() == 0 && completed) {
-                            o.onCompleted();
-                        }
-                        cleanup();
-                    }
-                }
-
-                @Override
-                public void onError(Throwable e) {
-                    o.onError(e);
-                    cleanup();
-                }
-
-                @Override
-                public void onNext(T a) {
-                    o.onNext(a);
-                }
-
-                private void cleanup() {
-                    // remove subscription onCompletion so it cleans up immediately and doesn't memory leak
-                    // see https://github.com/Netflix/RxJava/issues/897
-                    childrenSubscriptions.remove(this);
-                }
-
-            };
-
-        };
-
+        @Override
+        public void onCompleted() {
+            if (ONCE_UPDATER.compareAndSet(this, 0, 1)) {
+                parent.completeInner(this);
+            }
+        }
+        
     }
 }

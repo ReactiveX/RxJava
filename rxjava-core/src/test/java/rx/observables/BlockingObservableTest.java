@@ -16,10 +16,13 @@
 package rx.observables;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -28,10 +31,14 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import rx.Observable;
+import rx.Observable.OnSubscribe;
 import rx.Subscriber;
 import rx.exceptions.TestException;
+import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Func1;
+import rx.schedulers.Schedulers;
+import rx.subscriptions.Subscriptions;
 
 public class BlockingObservableTest {
 
@@ -376,5 +383,31 @@ public class BlockingObservableTest {
             }
         });
         assertEquals("default", first);
+    }
+
+    @Test
+    public void testSingleOrDefaultUnsubscribe() throws InterruptedException {
+        final CountDownLatch unsubscribe = new CountDownLatch(1);
+        Observable<Integer> o = Observable.create(new OnSubscribe<Integer>() {
+            @Override
+            public void call(Subscriber<? super Integer> subscriber) {
+                subscriber.add(Subscriptions.create(new Action0() {
+                    @Override
+                    public void call() {
+                        unsubscribe.countDown();
+                    }
+                }));
+                subscriber.onNext(1);
+                subscriber.onNext(2);
+                // Don't call `onCompleted` to emulate an infinite stream
+            }
+        }).subscribeOn(Schedulers.newThread());
+        try {
+            o.toBlocking().singleOrDefault(-1);
+            fail("Expected IllegalArgumentException because there are 2 elements");
+        } catch (IllegalArgumentException e) {
+            // Expected
+        }
+        assertTrue("Timeout means `unsubscribe` is not called", unsubscribe.await(30, TimeUnit.SECONDS));
     }
 }

@@ -448,6 +448,31 @@ class RxScalaDemo extends JUnitSuite {
       .toBlockingObservable.foreach(println(_))
   }
 
+  /**
+   * This is a bad way of using `zip` with an `Iterable`: even if the consumer unsubscribes,
+   * some elements may still be pulled from `Iterable`.
+   */
+  @Test def zipWithIterableBadExample() {
+    val o1 = Observable.interval(100 millis, IOScheduler()).map(_ * 100).take(3)
+    val o2 = Observable.from(0 until Int.MaxValue).doOnEach(i => println(i + " from o2"))
+    o1.zip(o2).toBlockingObservable.foreach(println(_))
+  }
+
+  /**
+   * This is a good way of using `zip` with an `Iterable`: if the consumer unsubscribes,
+   * no more elements will be pulled from `Iterable`.
+   */
+  @Test def zipWithIterableGoodExample() {
+    val o1 = Observable.interval(100 millis, IOScheduler()).map(_ * 100).take(3)
+    val iter = (0 until Int.MaxValue).view.map {
+      i => {
+        println(i + " from iter")
+        i
+      }
+    }
+    o1.zip(iter).toBlockingObservable.foreach(println(_))
+  }
+
   @Test def takeFirstWithCondition() {
     val condition: Int => Boolean = _ >= 3
     assertEquals(3, List(1, 2, 3, 4).toObservable.filter(condition).first.toBlockingObservable.single)
@@ -618,6 +643,34 @@ class RxScalaDemo extends JUnitSuite {
       if (!subscriber.isUnsubscribed) subscriber.onCompleted()
     })
     o.take(1).subscribe(println(_))
+  }
+
+  @Test def createExampleGood2() {
+    import scala.io.{Codec, Source}
+
+    val rxscala = Observable[String](subscriber => {
+      try {
+        val input = new java.net.URL("http://rxscala.github.io/").openStream()
+        subscriber.add(Subscription {
+          input.close()
+        })
+        Source.fromInputStream(input)(Codec.UTF8).getLines()
+          .takeWhile(_ => !subscriber.isUnsubscribed)
+          .foreach(subscriber.onNext(_))
+        if (!subscriber.isUnsubscribed) {
+          subscriber.onCompleted()
+        }
+      }
+      catch {
+        case e: Throwable => if (!subscriber.isUnsubscribed) subscriber.onError(e)
+      }
+    }).subscribeOn(IOScheduler())
+
+    val count = rxscala.flatMap(_.split("\\W+").toSeq.toObservable)
+      .map(_.toLowerCase)
+      .filter(_ == "rxscala")
+      .size
+    println(s"RxScala appears ${count.toBlockingObservable.single} times in http://rxscala.github.io/")
   }
 
   def output(s: String): Unit = println(s)
