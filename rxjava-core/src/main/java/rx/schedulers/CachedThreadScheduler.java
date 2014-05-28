@@ -36,12 +36,12 @@ import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
     private static final class CachedWorkerPool {
         private final long keepAliveTime;
-        private final ConcurrentLinkedQueue<PoolWorker> expiringQueue;
+        private final ConcurrentLinkedQueue<ThreadWorker> expiringWorkerQueue;
         private final ScheduledExecutorService evictExpiredWorkerExecutor;
 
         CachedWorkerPool(long keepAliveTime, TimeUnit unit) {
             this.keepAliveTime = unit.toNanos(keepAliveTime);
-            this.expiringQueue = new ConcurrentLinkedQueue<PoolWorker>();
+            this.expiringWorkerQueue = new ConcurrentLinkedQueue<ThreadWorker>();
 
             evictExpiredWorkerExecutor = Executors.newScheduledThreadPool(1, EVICTOR_THREAD_FACTORY);
             evictExpiredWorkerExecutor.scheduleWithFixedDelay(
@@ -58,35 +58,35 @@ import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
                 60L, TimeUnit.SECONDS
         );
 
-        PoolWorker get() {
-            while (!expiringQueue.isEmpty()) {
-                PoolWorker poolWorker = expiringQueue.poll();
-                if (poolWorker != null) {
-                    return poolWorker;
+        ThreadWorker get() {
+            while (!expiringWorkerQueue.isEmpty()) {
+                ThreadWorker threadWorker = expiringWorkerQueue.poll();
+                if (threadWorker != null) {
+                    return threadWorker;
                 }
             }
 
             // No cached worker found, so create a new one.
-            return new PoolWorker(WORKER_THREAD_FACTORY);
+            return new ThreadWorker(WORKER_THREAD_FACTORY);
         }
 
-        void release(PoolWorker poolWorker) {
+        void release(ThreadWorker threadWorker) {
             // Refresh expire time before putting worker back in pool
-            poolWorker.setExpirationTime(now() + keepAliveTime);
+            threadWorker.setExpirationTime(now() + keepAliveTime);
 
-            expiringQueue.add(poolWorker);
+            expiringWorkerQueue.offer(threadWorker);
         }
 
         void evictExpiredWorkers() {
-            if (!expiringQueue.isEmpty()) {
+            if (!expiringWorkerQueue.isEmpty()) {
                 long currentTimestamp = now();
 
-                Iterator<PoolWorker> poolWorkerIterator = expiringQueue.iterator();
-                while (poolWorkerIterator.hasNext()) {
-                    PoolWorker poolWorker = poolWorkerIterator.next();
-                    if (poolWorker.getExpirationTime() <= currentTimestamp) {
-                        poolWorkerIterator.remove();
-                        poolWorker.unsubscribe();
+                Iterator<ThreadWorker> threadWorkerIterator = expiringWorkerQueue.iterator();
+                while (threadWorkerIterator.hasNext()) {
+                    ThreadWorker threadWorker = threadWorkerIterator.next();
+                    if (threadWorker.getExpirationTime() <= currentTimestamp) {
+                        threadWorkerIterator.remove();
+                        threadWorker.unsubscribe();
                     } else {
                         // Queue is ordered with the worker that will expire first in the beginning, so when we
                         // find a non-expired worker we can stop evicting.
@@ -108,20 +108,20 @@ import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
     private static class EventLoopWorker extends Scheduler.Worker {
         private final CompositeSubscription innerSubscription = new CompositeSubscription();
-        private final PoolWorker poolWorker;
+        private final ThreadWorker threadWorker;
         volatile int once;
         static final AtomicIntegerFieldUpdater<EventLoopWorker> ONCE_UPDATER
                 = AtomicIntegerFieldUpdater.newUpdater(EventLoopWorker.class, "once");
 
-        EventLoopWorker(PoolWorker poolWorker) {
-            this.poolWorker = poolWorker;
+        EventLoopWorker(ThreadWorker threadWorker) {
+            this.threadWorker = threadWorker;
         }
 
         @Override
         public void unsubscribe() {
             if (ONCE_UPDATER.compareAndSet(this, 0, 1)) {
                 // unsubscribe should be idempotent, so only do this once
-                CachedWorkerPool.INSTANCE.release(poolWorker);
+                CachedWorkerPool.INSTANCE.release(threadWorker);
             }
             innerSubscription.unsubscribe();
         }
@@ -143,17 +143,17 @@ import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
                 return Subscriptions.empty();
             }
 
-            NewThreadScheduler.NewThreadWorker.ScheduledAction s = poolWorker.scheduleActual(action, delayTime, unit);
+            NewThreadScheduler.NewThreadWorker.ScheduledAction s = threadWorker.scheduleActual(action, delayTime, unit);
             innerSubscription.add(s);
             s.addParent(innerSubscription);
             return s;
         }
     }
 
-    private static final class PoolWorker extends NewThreadScheduler.NewThreadWorker {
+    private static final class ThreadWorker extends NewThreadScheduler.NewThreadWorker {
         private long expirationTime;
 
-        PoolWorker(ThreadFactory threadFactory) {
+        ThreadWorker(ThreadFactory threadFactory) {
             super(threadFactory);
             this.expirationTime = 0L;
         }
