@@ -24,21 +24,17 @@ import rx.subscriptions.Subscriptions;
 import java.util.Iterator;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /* package */class CachedThreadScheduler extends Scheduler {
+    private static final String WORKER_THREAD_NAME_PREFIX = "RxCachedThreadScheduler-";
+    private static final NewThreadScheduler.RxThreadFactory WORKER_THREAD_FACTORY =
+            new NewThreadScheduler.RxThreadFactory(WORKER_THREAD_NAME_PREFIX);
+
+    private static final String EVICTOR_THREAD_NAME_PREFIX = "RxCachedWorkerPoolEvictor-";
+    private static final NewThreadScheduler.RxThreadFactory EVICTOR_THREAD_FACTORY =
+            new NewThreadScheduler.RxThreadFactory(EVICTOR_THREAD_NAME_PREFIX);
+
     private static final class CachedWorkerPool {
-        final ThreadFactory factory = new ThreadFactory() {
-            final AtomicInteger counter = new AtomicInteger();
-
-            @Override
-            public Thread newThread(Runnable r) {
-                Thread t = new Thread(r, "RxCachedThreadScheduler-" + counter.incrementAndGet());
-                t.setDaemon(true);
-                return t;
-            }
-        };
-
         private final long keepAliveTime;
         private final ConcurrentLinkedQueue<PoolWorker> expiringQueue;
         private final ScheduledExecutorService evictExpiredWorkerExecutor;
@@ -47,16 +43,7 @@ import java.util.concurrent.atomic.AtomicInteger;
             this.keepAliveTime = unit.toNanos(keepAliveTime);
             this.expiringQueue = new ConcurrentLinkedQueue<PoolWorker>();
 
-            evictExpiredWorkerExecutor = Executors.newScheduledThreadPool(1, new ThreadFactory() {
-                final AtomicInteger counter = new AtomicInteger();
-
-                @Override
-                public Thread newThread(Runnable r) {
-                    Thread t = new Thread(r, "RxCachedWorkerPoolEvictor-" + counter.incrementAndGet());
-                    t.setDaemon(true);
-                    return t;
-                }
-            });
+            evictExpiredWorkerExecutor = Executors.newScheduledThreadPool(1, EVICTOR_THREAD_FACTORY);
             evictExpiredWorkerExecutor.scheduleWithFixedDelay(
                     new Runnable() {
                         @Override
@@ -80,7 +67,7 @@ import java.util.concurrent.atomic.AtomicInteger;
             }
 
             // No cached worker found, so create a new one.
-            return new PoolWorker(factory);
+            return new PoolWorker(WORKER_THREAD_FACTORY);
         }
 
         void release(PoolWorker poolWorker) {
