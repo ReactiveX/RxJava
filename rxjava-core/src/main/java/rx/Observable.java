@@ -2301,7 +2301,7 @@ public class Observable<T> {
      *            the number of sequential Integers to generate
      * @return an Observable that emits a range of sequential Integers
      * @throws IllegalArgumentException
-     *             if {@code count} is less than zero
+     *             if {@code count} is less than zero, or if {@code start} + {@code count} - 1 exceeds {@code Integer.MAX_VALUE}
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#wiki-range">RxJava Wiki: range()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229460.aspx">MSDN: Observable.Range</a>
      */
@@ -2309,7 +2309,10 @@ public class Observable<T> {
         if (count < 0) {
             throw new IllegalArgumentException("Count can not be negative");
         }
-        if ((start + count) > Integer.MAX_VALUE) {
+        if (count == 0) {
+            return Observable.empty();
+        }
+        if (start > Integer.MAX_VALUE - count + 1) {
             throw new IllegalArgumentException("start + count can not exceed Integer.MAX_VALUE");
         }
         return Observable.create(new OnSubscribeRange(start, start + (count - 1)));
