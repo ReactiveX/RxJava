@@ -670,12 +670,8 @@ trait Observable[+T]
     val func = new Func0[rx.Observable[_ <: Any]]() {
       override def call(): rx.Observable[_ <: Any] = boundary.asJavaObservable
     }
-    val o1: rx.Observable[_ <: rx.Observable[_]] = asJavaObservable.window[Any](func)
-    val o2 = Observable.items(o1).map((x: rx.Observable[_]) => {
-      val x2 = x.asInstanceOf[rx.Observable[_ <: T]]
-      toScalaObservable[T](x2)
-    })
-    o2
+    val jo: rx.Observable[rx.Observable[T]] = asJavaObservable.asInstanceOf[rx.Observable[T]].window[Any](func)
+    toScalaObservable(jo).map(toScalaObservable[T](_))
   }
 
   /**
@@ -3948,8 +3944,8 @@ object Observable {
    * @return an Observable that emits the same sequence of items as whichever of the source Observables
    *         first emitted an item
    */
-  def amb[T](sources: Iterable[Observable[T]]): Observable[T] = {
-    toScalaObservable[T](rx.Observable.amb(sources.map(_.asJavaObservable.asInstanceOf[rx.Observable[T]]).asJava))
+  def amb[T](sources: Observable[T]*): Observable[T] = {
+    toScalaObservable[T](rx.Observable.amb[T](sources.map(_.asJavaObservable).asJava))
   }
 }
 

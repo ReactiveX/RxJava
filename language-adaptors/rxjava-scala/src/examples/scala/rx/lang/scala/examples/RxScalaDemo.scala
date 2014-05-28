@@ -156,6 +156,14 @@ class RxScalaDemo extends JUnitSuite {
     ).subscribe(output(_))
   }
 
+  @Test def windowExample2() {
+    val windowObservable = Observable.interval(500 millis)
+    val o = Observable.from(1 to 20).zip(Observable.interval(100 millis)).map(_._1)
+    (for ((o, i) <- o.window(windowObservable).zipWithIndex; n <- o)
+      yield s"Observable#$i emits $n"
+    ).toBlocking.foreach(println)
+  }
+
   @Test def testReduce() {
     assertEquals(10, List(1, 2, 3, 4).toObservable.reduce(_ + _).toBlockingObservable.single)
   }
@@ -728,6 +736,23 @@ class RxScalaDemo extends JUnitSuite {
     val o1 = List(100L, 200L, 300L).toObservable.delay(4 seconds)
     val o2 = List(1000L, 2000L, 3000L).toObservable.delay(2 seconds)
     val result = o1.amb(o2).toBlockingObservable.toList
+    println(result)
+  }
+
+  @Test def ambWithVarargsExample(): Unit = {
+    val o1 = List(100L, 200L, 300L).toObservable.delay(4 seconds)
+    val o2 = List(1000L, 2000L, 3000L).toObservable.delay(2 seconds)
+    val o3 = List(10000L, 20000L, 30000L).toObservable.delay(4 seconds)
+    val result = Observable.amb(o1, o2, o3).toBlocking.toList
+    println(result)
+  }
+
+  @Test def ambWithSeqExample(): Unit = {
+    val o1 = List(100L, 200L, 300L).toObservable.delay(4 seconds)
+    val o2 = List(1000L, 2000L, 3000L).toObservable.delay(2 seconds)
+    val o3 = List(10000L, 20000L, 30000L).toObservable.delay(4 seconds)
+    val o = Seq(o1, o2, o3)
+    val result = Observable.amb(o: _*).toBlocking.toList
     println(result)
   }
 
