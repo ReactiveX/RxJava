@@ -25,7 +25,7 @@ import java.util.Iterator;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
-/* package */class CachedThreadScheduler extends Scheduler {
+/* package */final class CachedThreadScheduler extends Scheduler {
     private static final String WORKER_THREAD_NAME_PREFIX = "RxCachedThreadScheduler-";
     private static final NewThreadScheduler.RxThreadFactory WORKER_THREAD_FACTORY =
             new NewThreadScheduler.RxThreadFactory(WORKER_THREAD_NAME_PREFIX);
@@ -106,7 +106,7 @@ import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
         return new EventLoopWorker(CachedWorkerPool.INSTANCE.get());
     }
 
-    private static class EventLoopWorker extends Scheduler.Worker {
+    private static final class EventLoopWorker extends Scheduler.Worker {
         private final CompositeSubscription innerSubscription = new CompositeSubscription();
         private final ThreadWorker threadWorker;
         volatile int once;
