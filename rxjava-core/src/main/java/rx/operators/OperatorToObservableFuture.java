@@ -75,6 +75,10 @@ public class OperatorToObservableFuture {
                 // since it's already subscribed.
                 // If the Future is canceled in other place, CancellationException will be still
                 // passed to the final Subscriber.
+                if (subscriber.isUnsubscribed()) {
+                    //refuse to emit onError if already unsubscribed
+                    return;
+                }
                 subscriber.onError(e);
             }
         }
