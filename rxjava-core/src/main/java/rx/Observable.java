@@ -5389,7 +5389,18 @@ public class Observable<T> {
     public final Observable<T> retry(int retryCount) {
         return nest().lift(new OperatorRetry<T>(retryCount));
     }
-
+    /**
+     * Returns an Observable that mirrors the source Observable, resubscribing to it if it calls {@code onError}
+     * and the predicate returns true for that specific exception and retry count.
+     * @param predicate the predicate that determines if a resubscription may happen in case of a specific exception and retry
+     * count
+     * @return the Observable modified with retry logic
+     * @see #retry()
+     */
+    public final Observable<T> retry(Func2<Integer, Throwable, Boolean> predicate) {
+        return nest().lift(new OperatorRetryWithPredicate<T>(predicate));
+    }
+    
     /**
      * Returns an Observable that emits the most recently emitted item (if any) emitted by the source Observable
      * within periodic time intervals.
