@@ -33,12 +33,14 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Test;
 import org.mockito.InOrder;
+import static org.mockito.Matchers.anyInt;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import rx.Observable;
 import rx.Observer;
 import rx.Scheduler;
+import rx.exceptions.TestException;
 import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Func1;
@@ -364,5 +366,27 @@ public class OperatorObserveOnTest {
         x ^= (x >>> 35);
         x ^= (x << 4);
         return Math.abs((int) x % 100);
+    }
+    
+    @Test
+    public void testDelayedErrorDeliveryWhenSafeSubscriberUnsubscribes() {
+        TestScheduler testScheduler = new TestScheduler();
+        
+        Observable<Integer> source = Observable.concat(Observable.<Integer>error(new TestException()), Observable.just(1));
+        
+        
+        @SuppressWarnings("unchecked")
+        Observer<Integer> o = mock(Observer.class);
+        InOrder inOrder = inOrder(o);
+        
+        source.observeOn(testScheduler).subscribe(o);
+        
+        inOrder.verify(o, never()).onError(any(TestException.class));
+        
+        testScheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+        
+        inOrder.verify(o).onError(any(TestException.class));
+        inOrder.verify(o, never()).onNext(anyInt());
+        inOrder.verify(o, never()).onCompleted();
     }
 }

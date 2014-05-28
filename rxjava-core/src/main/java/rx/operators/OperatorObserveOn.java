@@ -15,11 +15,13 @@
  */
 package rx.operators;
 
+import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 import java.util.concurrent.atomic.AtomicLongFieldUpdater;
 
 import rx.Observable.Operator;
 import rx.Scheduler;
 import rx.Subscriber;
+import rx.Subscription;
 import rx.functions.Action0;
 import rx.schedulers.ImmediateScheduler;
 import rx.schedulers.TrampolineScheduler;
@@ -59,6 +61,7 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
     private static final class ObserveOnSubscriber<T> extends Subscriber<T> {
         final Subscriber<? super T> observer;
         private final Scheduler.Worker recursiveScheduler;
+        private final ScheduledUnsubscribe scheduledUnsubscribe;
         final NotificationLite<T> on = NotificationLite.instance();
         /** Guarded by this. */
         private FastList queue = new FastList();
@@ -72,11 +75,15 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
             super(subscriber);
             this.observer = subscriber;
             this.recursiveScheduler = scheduler.createWorker();
-            subscriber.add(recursiveScheduler);
+            this.scheduledUnsubscribe = new ScheduledUnsubscribe(recursiveScheduler);
+            subscriber.add(scheduledUnsubscribe);
         }
 
         @Override
         public void onNext(final T t) {
+            if (scheduledUnsubscribe.isUnsubscribed()) {
+                return;
+            }
             synchronized (this) {
                 queue.add(on.next(t));
             }
@@ -85,6 +92,9 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
 
         @Override
         public void onCompleted() {
+            if (scheduledUnsubscribe.isUnsubscribed()) {
+                return;
+            }
             synchronized (this) {
                 queue.add(on.completed());
             }
@@ -93,6 +103,9 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
 
         @Override
         public void onError(final Throwable e) {
+            if (scheduledUnsubscribe.isUnsubscribed()) {
+                return;
+            }
             synchronized (this) {
                 queue.add(on.error(e));
             }
@@ -152,5 +165,33 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
             a[s] = o;
             size = s + 1;
         }
+    }
+    static final class ScheduledUnsubscribe implements Subscription {
+        final Scheduler.Worker worker;
+        volatile int once;
+        static final AtomicIntegerFieldUpdater<ScheduledUnsubscribe> ONCE_UPDATER
+                = AtomicIntegerFieldUpdater.newUpdater(ScheduledUnsubscribe.class, "once");
+
+        public ScheduledUnsubscribe(Scheduler.Worker worker) {
+            this.worker = worker;
+        }
+
+        @Override
+        public boolean isUnsubscribed() {
+            return once != 0;
+        }
+
+        @Override
+        public void unsubscribe() {
+            if (ONCE_UPDATER.getAndSet(this, 1) == 0) {
+                worker.schedule(new Action0() {
+                    @Override
+                    public void call() {
+                        worker.unsubscribe();
+                    }
+                });
+            }
+        }
+        
     }
 }
