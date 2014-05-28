@@ -16,6 +16,7 @@
 package rx.operators;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -66,5 +67,30 @@ public class OnSubscribeRangeTest {
         verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
         verify(observer, times(1)).onCompleted();
         assertEquals(3, count.get());
+    }
+
+    @Test
+    public void testRangeWithOverflow() {
+        Observable.range(1, 0);
+    }
+
+    @Test
+    public void testRangeWithOverflow2() {
+        Observable.range(Integer.MAX_VALUE, 0);
+    }
+
+    @Test
+    public void testRangeWithOverflow3() {
+        Observable.range(1, Integer.MAX_VALUE);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testRangeWithOverflow4() {
+        Observable.range(2, Integer.MAX_VALUE);
+    }
+
+    @Test
+    public void testRangeWithOverflow5() {
+        assertFalse(Observable.range(Integer.MIN_VALUE, 0).toBlocking().getIterator().hasNext());
     }
 }

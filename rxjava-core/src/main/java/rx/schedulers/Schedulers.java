@@ -117,4 +117,15 @@ public final class Schedulers {
     public static TestScheduler test() {
         return new TestScheduler();
     }
+
+    /**
+     * Converts an {@link Executor} into a new Scheduler instance.
+     *
+     * @param executor
+     *          the executor to wrap
+     * @return the new Scheduler wrapping the Executor
+     */
+    public static Scheduler newExecutor(Executor executor) {
+        return new ExecutorScheduler(executor);
+    }
 }
