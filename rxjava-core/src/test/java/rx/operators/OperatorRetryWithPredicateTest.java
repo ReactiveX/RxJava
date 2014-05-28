@@ -59,7 +59,7 @@ public class OperatorRetryWithPredicateTest {
         Observer<Integer> o = mock(Observer.class);
         InOrder inOrder = inOrder(o);
         
-        source.retryIf(retryTwice).subscribe(o);
+        source.retry(retryTwice).subscribe(o);
         
         inOrder.verify(o).onNext(0);
         inOrder.verify(o).onNext(1);
@@ -90,7 +90,7 @@ public class OperatorRetryWithPredicateTest {
         Observer<Integer> o = mock(Observer.class);
         InOrder inOrder = inOrder(o);
         
-        source.retryIf(retryTwice).subscribe(o);
+        source.retry(retryTwice).subscribe(o);
 
         inOrder.verify(o).onNext(0);
         inOrder.verify(o).onNext(1);
@@ -117,7 +117,7 @@ public class OperatorRetryWithPredicateTest {
         Observer<Integer> o = mock(Observer.class);
         InOrder inOrder = inOrder(o);
         
-        source.retryIf(retryTwice).subscribe(o);
+        source.retry(retryTwice).subscribe(o);
 
         inOrder.verify(o).onNext(0);
         inOrder.verify(o).onNext(1);
@@ -152,7 +152,7 @@ public class OperatorRetryWithPredicateTest {
         Observer<Integer> o = mock(Observer.class);
         InOrder inOrder = inOrder(o);
         
-        source.retryIf(retryOnTestException).subscribe(o);
+        source.retry(retryOnTestException).subscribe(o);
 
         inOrder.verify(o).onNext(0);
         inOrder.verify(o).onNext(1);
@@ -188,7 +188,7 @@ public class OperatorRetryWithPredicateTest {
         Observer<Integer> o = mock(Observer.class);
         InOrder inOrder = inOrder(o);
         
-        source.retryIf(retryOnTestException).subscribe(o);
+        source.retry(retryOnTestException).subscribe(o);
 
         inOrder.verify(o).onNext(0);
         inOrder.verify(o).onNext(1);
@@ -205,7 +205,7 @@ public class OperatorRetryWithPredicateTest {
     public void testUnsubscribeFromRetry() {
         PublishSubject<Integer> subject = PublishSubject.create();
         final AtomicInteger count = new AtomicInteger(0);
-        Subscription sub = subject.retryIf(retryTwice).subscribe(new Action1<Integer>() {
+        Subscription sub = subject.retry(retryTwice).subscribe(new Action1<Integer>() {
             @Override
             public void call(Integer n) {
                 count.incrementAndGet();
@@ -227,7 +227,7 @@ public class OperatorRetryWithPredicateTest {
         OperatorRetryTest.SlowObservable so = new OperatorRetryTest.SlowObservable(100, 0);
         Observable<Long> o = Observable
                 .create(so)
-                .retryIf(retry5);
+                .retry(retry5);
 
         OperatorRetryTest.AsyncObserver<Long> async = new OperatorRetryTest.AsyncObserver<Long>(observer);
 
@@ -255,7 +255,7 @@ public class OperatorRetryWithPredicateTest {
         Observable<Long> o = Observable
                 .create(so)
                 .timeout(80, TimeUnit.MILLISECONDS)
-                .retryIf(retry5);
+                .retry(retry5);
 
         OperatorRetryTest.AsyncObserver<Long> async = new OperatorRetryTest.AsyncObserver<Long>(observer);
 

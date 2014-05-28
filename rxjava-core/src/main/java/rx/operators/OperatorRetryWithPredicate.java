@@ -20,16 +20,12 @@ import rx.Observable;
 import rx.Scheduler;
 import rx.Subscriber;
 import rx.functions.Action0;
-import rx.functions.Func1;
 import rx.functions.Func2;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.SerialSubscription;
 
 public final class OperatorRetryWithPredicate<T> implements Observable.Operator<T, Observable<T>> {
     final Func2<Integer, Throwable, Boolean> predicate;
-    public OperatorRetryWithPredicate(Func1<Throwable, Boolean> predicate) {
-        this.predicate = new IgnoreIndexPredicate(predicate);
-    }
     public OperatorRetryWithPredicate(Func2<Integer, Throwable, Boolean> predicate) {
         this.predicate = predicate;
     }
@@ -44,21 +40,6 @@ public final class OperatorRetryWithPredicate<T> implements Observable.Operator<
         child.add(serialSubscription);
         
         return new SourceSubscriber<T>(child, predicate, inner, serialSubscription);
-    }
-    
-    /** Ignore the index parameter and call a Func1 predicate with the throwable only. */
-    static final class IgnoreIndexPredicate implements Func2<Integer, Throwable, Boolean> {
-        final Func1<Throwable, Boolean> predicate;
-
-        public IgnoreIndexPredicate(Func1<Throwable, Boolean> predicate) {
-            this.predicate = predicate;
-        }
-
-        @Override
-        public Boolean call(Integer t1, Throwable t2) {
-            return predicate.call(t2);
-        }
-        
     }
     
     static final class SourceSubscriber<T> extends Subscriber<Observable<T>> {

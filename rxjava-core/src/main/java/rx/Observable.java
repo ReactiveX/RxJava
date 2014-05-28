@@ -5390,25 +5390,13 @@ public class Observable<T> {
     }
     /**
      * Returns an Observable that mirrors the source Observable, resubscribing to it if it calls {@code onError}
-     * and the predicate returns true for that specific exception.
-     * @param predicate the predicate that determines if a resubscription may happen in case of a specific exception
-     * @return the Observable modified with retry logic
-     * @see #retry()
-     * @see #retryIf(rx.functions.Func2) 
-     */
-    public final Observable<T> retry(Func1<Throwable, Boolean> predicate) {
-        return nest().lift(new OperatorRetryWithPredicate<T>(predicate));
-    }
-    /**
-     * Returns an Observable that mirrors the source Observable, resubscribing to it if it calls {@code onError}
      * and the predicate returns true for that specific exception and retry count.
      * @param predicate the predicate that determines if a resubscription may happen in case of a specific exception and retry
      * count
      * @return the Observable modified with retry logic
      * @see #retry()
-     * @see #retry(rx.functions.Func1) 
      */
-    public final Observable<T> retryIf(Func2<Integer, Throwable, Boolean> predicate) {
+    public final Observable<T> retry(Func2<Integer, Throwable, Boolean> predicate) {
         return nest().lift(new OperatorRetryWithPredicate<T>(predicate));
     }
     
