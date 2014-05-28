@@ -260,11 +260,11 @@ public class OperatorRetryTest {
         assertEquals(4, subsCount.get()); // 1 + 3 retries
     }
 
-    class SlowObservable implements Observable.OnSubscribe<Long> {
+    static final class SlowObservable implements Observable.OnSubscribe<Long> {
 
-        private AtomicInteger efforts = new AtomicInteger(0);
-        private AtomicInteger active = new AtomicInteger(0), maxActive = new AtomicInteger(0);
-        private AtomicInteger nextBeforeFailure;
+        final AtomicInteger efforts = new AtomicInteger(0);
+        final AtomicInteger active = new AtomicInteger(0), maxActive = new AtomicInteger(0);
+        final AtomicInteger nextBeforeFailure;
 
         private final int emitDelay;
 
@@ -273,6 +273,7 @@ public class OperatorRetryTest {
             this.nextBeforeFailure = new AtomicInteger(countNext);
         }
 
+        @Override
         public void call(final Subscriber<? super Long> subscriber) {
             final AtomicBoolean terminate = new AtomicBoolean(false);
             efforts.getAndIncrement();
@@ -309,7 +310,7 @@ public class OperatorRetryTest {
     }
 
     /** Observer for listener on seperate thread */
-    class AsyncObserver<T> implements Observer<T> {
+    static final class AsyncObserver<T> implements Observer<T> {
 
         protected CountDownLatch latch = new CountDownLatch(1);
 
