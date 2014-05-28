@@ -18,17 +18,23 @@ package rx.exceptions;
 import rx.Subscriber;
 
 /**
- * Used for re-throwing errors thrown from {@link Subscriber#onError(Throwable)}.
- * 
- * https://github.com/Netflix/RxJava/issues/969
+ * Used to re-throw errors thrown from {@link Subscriber#onError(Throwable)}.
+ * <p>
+ * @see <a href="https://github.com/Netflix/RxJava/issues/969">RxJava issue #969</a>
  */
 public class OnErrorFailedException extends RuntimeException {
     private static final long serialVersionUID = -419289748403337611L;
 
+    /**
+     * @warn javadoc missing
+     */
     public OnErrorFailedException(String message, Throwable e) {
         super(message, e);
     }
 
+    /**
+     * @warn javadoc missing
+     */
     public OnErrorFailedException(Throwable e) {
         super(e.getMessage(), e);
     }

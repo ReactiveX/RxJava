@@ -18,7 +18,7 @@ package rx;
 /**
  * An object representing a notification sent to an {@link Observable}.
  * 
- * For the Microsoft Rx equivalent see: http://msdn.microsoft.com/en-us/library/hh229462(v=vs.103).aspx
+ * @see <a href="http://msdn.microsoft.com/en-us/library/hh229462.aspx">the Microsoft Rx equivalent</a>
  */
 public class Notification<T> {
 
@@ -28,19 +28,42 @@ public class Notification<T> {
 
     private static final Notification<Void> ON_COMPLETED = new Notification<Void>(Kind.OnCompleted, null, null);
 
+    /**
+     * Creates and returns a {@code Notification} of variety {@code Kind.OnNext}, and assigns it a value.
+     *
+     * @param t
+     *          the item to assign to the notification as its value
+     * @return an {@code OnNext} variety of {@code Notification}
+     */
     public static <T> Notification<T> createOnNext(T t) {
         return new Notification<T>(Kind.OnNext, t, null);
     }
 
+    /**
+     * Creates and returns a {@code Notification} of variety {@code Kind.OnError}, and assigns it an exception.
+     *
+     * @param e
+     *          the exception to assign to the notification
+     * @return an {@code OnError} variety of {@code Notification}
+     */
     public static <T> Notification<T> createOnError(Throwable e) {
         return new Notification<T>(Kind.OnError, null, e);
     }
 
+    /**
+     * Creates and returns a {@code Notification} of variety {@code Kind.OnCompleted}.
+     *
+     * @return an {@code OnCompleted} variety of {@code Notification}
+     */
     @SuppressWarnings("unchecked")
     public static <T> Notification<T> createOnCompleted() {
         return (Notification<T>) ON_COMPLETED;
     }
 
+    /**
+     * @warn javadoc missing
+     * @return
+     */
     @SuppressWarnings("unchecked")
     public static <T> Notification<T> createOnCompleted(Class<T> type) {
         return (Notification<T>) ON_COMPLETED;
@@ -53,62 +76,81 @@ public class Notification<T> {
     }
 
     /**
-     * Retrieves the exception associated with an onError notification.
+     * Retrieves the exception associated with this (onError) notification.
      * 
-     * @return Throwable associated with an onError notification.
+     * @return the Throwable associated with this (onError) notification
      */
     public Throwable getThrowable() {
         return throwable;
     }
 
     /**
-     * Retrieves the data associated with an onNext notification.
+     * Retrieves the item associated with this (onNext) notification.
      * 
-     * @return The data associated with an onNext notification.
+     * @return the item associated with this (onNext) notification
      */
     public T getValue() {
         return value;
     }
 
     /**
-     * Retrieves a value indicating whether this notification has a value.
+     * Indicates whether this notification has an item associated with it.
      * 
-     * @return a value indicating whether this notification has a value.
+     * @return a boolean indicating whether or not this notification has an item associated with it
      */
     public boolean hasValue() {
         return isOnNext() && value != null;
+// isn't "null" a valid item?
     }
 
     /**
-     * Retrieves a value indicating whether this notification has an exception.
+     * Indicates whether this notification has an exception associated with it.
      * 
-     * @return a value indicating whether this notification has an exception.
+     * @return a boolean indicating whether this notification has an exception associated with it
      */
     public boolean hasThrowable() {
         return isOnError() && throwable != null;
     }
 
     /**
-     * Retrieves the kind of the notification: OnNext, OnError, OnCompleted
+     * Retrieves the kind of this notification: {@code OnNext}, {@code OnError}, or {@code OnCompleted}
      * 
-     * @return the kind of the notification: OnNext, OnError, OnCompleted
+     * @return the kind of the notification: {@code OnNext}, {@code OnError}, or {@code OnCompleted}
      */
     public Kind getKind() {
         return kind;
     }
 
+    /**
+     * Indicates whether this notification represents an {@code onError} event.
+     * 
+     * @return a boolean indicating whether this notification represents an {@code onError} event
+     */
     public boolean isOnError() {
         return getKind() == Kind.OnError;
     }
 
+    /**
+     * Indicates whether this notification represents an {@code onCompleted} event.
+     * 
+     * @return a boolean indicating whether this notification represents an {@code onCompleted} event
+     */
     public boolean isOnCompleted() {
         return getKind() == Kind.OnCompleted;
     }
 
+    /**
+     * Indicates whether this notification represents an {@code onNext} event.
+     * 
+     * @return a boolean indicating whether this notification represents an {@code onNext} event
+     */
     public boolean isOnNext() {
         return getKind() == Kind.OnNext;
     }
 
+    /**
+     * @warn javadoc missing
+     */
     public void accept(Observer<? super T> observer) {
         if (isOnNext()) {
             observer.onNext(getValue());

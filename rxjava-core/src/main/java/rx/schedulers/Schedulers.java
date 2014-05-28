@@ -55,47 +55,48 @@ public final class Schedulers {
     }
 
     /**
-     * {@link Scheduler} that executes work immediately on the current thread.
+     * Creates and returns a {@link Scheduler} that executes work immediately on the current thread.
      * 
-     * @return {@link ImmediateScheduler} instance
+     * @return an {@link ImmediateScheduler} instance
      */
     public static Scheduler immediate() {
         return ImmediateScheduler.instance();
     }
 
     /**
-     * {@link Scheduler} that queues work on the current thread to be executed after the current work completes.
+     * Creates and returns a {@link Scheduler} that queues work on the current thread to be executed after the
+     * current work completes.
      * 
-     * @return {@link TrampolineScheduler} instance
+     * @return a {@link TrampolineScheduler} instance
      */
     public static Scheduler trampoline() {
         return TrampolineScheduler.instance();
     }
 
     /**
-     * {@link Scheduler} that creates a new {@link Thread} for each unit of work.
+     * Creates and returns a {@link Scheduler} that creates a new {@link Thread} for each unit of work.
      * 
-     * @return {@link NewThreadScheduler} instance
+     * @return a {@link NewThreadScheduler} instance
      */
     public static Scheduler newThread() {
         return INSTANCE.newThreadScheduler;
     }
 
     /**
-     * {@link Scheduler} intended for computational work.
+     * Creates and returns a {@link Scheduler} intended for computational work.
      * <p>
      * This can be used for event-loops, processing callbacks and other computational work.
      * <p>
      * Do not perform IO-bound work on this scheduler. Use {@link #io()} instead.
      * 
-     * @return {@link Scheduler} for computation-bound work
+     * @return a {@link Scheduler} meant for computation-bound work
      */
     public static Scheduler computation() {
         return INSTANCE.computationScheduler;
     }
 
     /**
-     * {@link Scheduler} intended for IO-bound work.
+     * Creates and returns a {@link Scheduler} intended for IO-bound work.
      * <p>
      * The implementation is backed by an {@link Executor} thread-pool that will grow as needed.
      * <p>
@@ -103,12 +104,16 @@ public final class Schedulers {
      * <p>
      * Do not perform computational work on this scheduler. Use {@link #computation()} instead.
      * 
-     * @return {@link Scheduler} for IO-bound work
+     * @return a {@link Scheduler} meant for IO-bound work
      */
     public static Scheduler io() {
         return INSTANCE.ioScheduler;
     }
 
+    /**
+     * @warn javadoc missing
+     * @return
+     */
     public static TestScheduler test() {
         return new TestScheduler();
     }

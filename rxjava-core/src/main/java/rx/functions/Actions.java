@@ -91,13 +91,13 @@ public final class Actions {
     }
     
     /**
-     * Extracts a method reference to the observer's onNext method
-     * in the form of an Action1.
+     * Extracts a method reference to the Observer's {@link Observer#onNext onNext} method in the form of an
+     * {@link Action1}.
      * <p>Java 8: observer::onNext</p>
      * 
      * @param observer
-     *            the observer to use
-     * @return an action which calls the observer's onNext method.
+     *            the {@link Observer} to use
+     * @return an action which calls observer's {@code onNext} method.
      */
     public static <T> Action1<T> onNextFrom(final Observer<T> observer) {
         return new Action1<T>() {
@@ -109,13 +109,13 @@ public final class Actions {
     }
 
     /**
-     * Extracts a method reference to the observer's onError method
-     * in the form of an Action1.
+     * Extracts a method reference to the Observer's {@link Observer#onError(java.lang.Throwable) onError}
+     * method in the form of an {@link Action1}.
      * <p>Java 8: observer::onError</p>
      * 
      * @param observer
-     *            the observer to use
-     * @return an action which calls the observer's onError method.
+     *            the {@link Observer} to use
+     * @return an action which calls observer's {@code onError} method.
      */
     public static <T> Action1<Throwable> onErrorFrom(final Observer<T> observer) {
         return new Action1<Throwable>() {
@@ -127,13 +127,13 @@ public final class Actions {
     }
 
     /**
-     * Extracts a method reference to the observer's onCompleted method
-     * in the form of an Action0.
+     * Extracts a method reference to the Observer's {@link Observer#onCompleted() onCompleted} method in the
+     * form of an {@link Action0}.
      * <p>Java 8: observer::onCompleted</p>
      * 
      * @param observer
-     *            the observer to use
-     * @return an action which calls the observer's onCompleted method.
+     *            the {@link Observer} to use
+     * @return an action which calls observer's {@code onCompleted} method.
      */
     public static <T> Action0 onCompletedFrom(final Observer<T> observer) {
         return new Action0() {
@@ -145,66 +145,66 @@ public final class Actions {
     }
 
     /**
-     * Convert an action to a function which calls
-     * the action returns Void (null).
+     * Converts an {@link Action0} to a function that calls the action and returns {@code null}.
      * 
      * @param action
-     * @return {@link Func0}
+     *            the {@link Action0} to convert
+     * @return a {@link Func0} that calls {@code action} and returns {@code null}
      */
     public static Func0<Void> toFunc(final Action0 action) {
         return toFunc(action, (Void) null);
     }
 
     /**
-     * Convert an action to a function which calls
-     * the action returns Void (null).
+     * Converts an {@link Action1} to a function that calls the action and returns {@code null}.
      * 
      * @param action
-     * @return {@link Func0}
+     *            the {@link Action1} to convert
+     * @return a {@link Func1} that calls {@code action} and returns {@code null}
      */
     public static <T1> Func1<T1, Void> toFunc(final Action1<T1> action) {
         return toFunc(action, (Void) null);
     }
 
     /**
-     * Convert an action to a function which calls
-     * the action returns Void (null).
+     * Converts an {@link Action2} to a function that calls the action and returns {@code null}.
      * 
      * @param action
-     * @return {@link Func0}
+     *            the {@link Action2} to convert
+     * @return a {@link Func2} that calls {@code action} and returns {@code null}
      */
     public static <T1, T2> Func2<T1, T2, Void> toFunc(final Action2<T1, T2> action) {
         return toFunc(action, (Void) null);
     }
 
     /**
-     * Convert an action to a function which calls
-     * the action returns Void (null).
+     * Converts an {@link Action3} to a function that calls the action and returns {@code null}.
      * 
      * @param action
-     * @return {@link Func0}
+     *            the {@link Action3} to convert
+     * @return a {@link Func3} that calls {@code action} and returns {@code null}
      */
     public static <T1, T2, T3> Func3<T1, T2, T3, Void> toFunc(final Action3<T1, T2, T3> action) {
         return toFunc(action, (Void) null);
     }
 
     /**
-     * Convert an action to a function which calls
-     * the action returns Void (null).
+     * Converts an {@link Action4} to a function that calls the action and returns {@code null}.
      * 
      * @param action
-     * @return {@link Func0}
+     *            the {@link Action4} to convert
+     * @return a {@link Func4} that calls {@code action} and returns {@code null}
      */
     public static <T1, T2, T3, T4> Func4<T1, T2, T3, T4, Void> toFunc(final Action4<T1, T2, T3, T4> action) {
         return toFunc(action, (Void) null);
     }
 
     /**
-     * Convert an action to a function which calls
-     * the action returns Void (null).
+     * Converts an {@link Action5} to a function that calls the action and returns {@code null}.
      * 
      * @param action
-     * @return {@link Func0}
+     *            the {@link Action5} to convert
+     * @return a {@link Func5} that calls {@code action} and returns {@code null}
      */
     public static <T1, T2, T3, T4, T5> Func5<T1, T2, T3, T4, T5, Void> toFunc(
             final Action5<T1, T2, T3, T4, T5> action) {
@@ -212,11 +212,11 @@ public final class Actions {
     }
 
     /**
-     * Convert an action to a function which calls
-     * the action returns Void (null).
+     * Converts an {@link Action6} to a function that calls the action and returns {@code null}.
      * 
      * @param action
-     * @return {@link Func0}
+     *            the {@link Action6} to convert
+     * @return a {@link Func6} that calls {@code action} and returns {@code null}
      */
     public static <T1, T2, T3, T4, T5, T6> Func6<T1, T2, T3, T4, T5, T6, Void> toFunc(
             final Action6<T1, T2, T3, T4, T5, T6> action) {
@@ -224,11 +224,11 @@ public final class Actions {
     }
 
     /**
-     * Convert an action to a function which calls
-     * the action returns Void (null).
+     * Converts an {@link Action7} to a function that calls the action and returns {@code null}.
      * 
      * @param action
-     * @return {@link Func0}
+     *            the {@link Action7} to convert
+     * @return a {@link Func7} that calls {@code action} and returns {@code null}
      */
     public static <T1, T2, T3, T4, T5, T6, T7> Func7<T1, T2, T3, T4, T5, T6, T7, Void> toFunc(
             final Action7<T1, T2, T3, T4, T5, T6, T7> action) {
@@ -236,11 +236,11 @@ public final class Actions {
     }
 
     /**
-     * Convert an action to a function which calls
-     * the action returns Void (null).
+     * Converts an {@link Action8} to a function that calls the action and returns {@code null}.
      * 
      * @param action
-     * @return {@link Func0}
+     *            the {@link Action8} to convert
+     * @return a {@link Func8} that calls {@code action} and returns {@code null}
      */
     public static <T1, T2, T3, T4, T5, T6, T7, T8> Func8<T1, T2, T3, T4, T5, T6, T7, T8, Void> toFunc(
             final Action8<T1, T2, T3, T4, T5, T6, T7, T8> action) {
@@ -248,11 +248,11 @@ public final class Actions {
     }
 
     /**
-     * Convert an action to a function which calls
-     * the action returns Void (null).
+     * Converts an {@link Action9} to a function that calls the action and returns {@code null}.
      * 
      * @param action
-     * @return {@link Func0}
+     *            the {@link Action9} to convert
+     * @return a {@link Func9} that calls {@code action} and returns {@code null}
      */
     public static <T1, T2, T3, T4, T5, T6, T7, T8, T9> Func9<T1, T2, T3, T4, T5, T6, T7, T8, T9, Void> toFunc(
             final Action9<T1, T2, T3, T4, T5, T6, T7, T8, T9> action) {
@@ -260,11 +260,11 @@ public final class Actions {
     }
 
     /**
-     * Convert an action to a function which calls
-     * the action returns Void (null).
+     * Converts an {@link ActionN} to a function that calls the action and returns {@code null}.
      * 
      * @param action
-     * @return {@link Func0}
+     *            the {@link ActionN} to convert
+     * @return a {@link FuncN} that calls {@code action} and returns {@code null}
      */
     public static FuncN<Void> toFunc(
             final ActionN action) {
@@ -272,12 +272,13 @@ public final class Actions {
     }
 
     /**
-     * Convert an action to a function which calls
-     * the action returns the given result.
+     * Converts an {@link Action0} to a function that calls the action and returns a specified value.
      * 
      * @param action
+     *            the {@link Action0} to convert
      * @param result
-     * @return {@link Func0}
+     *            the value to return from the function call
+     * @return a {@link Func0} that calls {@code action} and returns {@code result}
      */
     public static <R> Func0<R> toFunc(final Action0 action, final R result) {
         return new Func0<R>() {
@@ -290,12 +291,13 @@ public final class Actions {
     }
 
     /**
-     * Convert an action to a function which calls
-     * the action returns Void (null).
+     * Converts an {@link Action1} to a function that calls the action and returns a specified value.
      * 
      * @param action
+     *            the {@link Action1} to convert
      * @param result
-     * @return {@link Func0}
+     *            the value to return from the function call
+     * @return a {@link Func1} that calls {@code action} and returns {@code result}
      */
     public static <T1, R> Func1<T1, R> toFunc(final Action1<T1> action, final R result) {
         return new Func1<T1, R>() {
@@ -308,12 +310,13 @@ public final class Actions {
     }
 
     /**
-     * Convert an action to a function which calls
-     * the action returns Void (null).
+     * Converts an {@link Action2} to a function that calls the action and returns a specified value.
      * 
      * @param action
+     *            the {@link Action2} to convert
      * @param result
-     * @return {@link Func0}
+     *            the value to return from the function call
+     * @return a {@link Func2} that calls {@code action} and returns {@code result}
      */
     public static <T1, T2, R> Func2<T1, T2, R> toFunc(final Action2<T1, T2> action, final R result) {
         return new Func2<T1, T2, R>() {
@@ -326,12 +329,13 @@ public final class Actions {
     }
 
     /**
-     * Convert an action to a function which calls
-     * the action returns Void (null).
+     * Converts an {@link Action3} to a function that calls the action and returns a specified value.
      * 
      * @param action
+     *            the {@link Action3} to convert
      * @param result
-     * @return {@link Func0}
+     *            the value to return from the function call
+     * @return a {@link Func3} that calls {@code action} and returns {@code result}
      */
     public static <T1, T2, T3, R> Func3<T1, T2, T3, R> toFunc(final Action3<T1, T2, T3> action, final R result) {
         return new Func3<T1, T2, T3, R>() {
@@ -344,12 +348,13 @@ public final class Actions {
     }
 
     /**
-     * Convert an action to a function which calls
-     * the action returns Void (null).
+     * Converts an {@link Action4} to a function that calls the action and returns a specified value.
      * 
      * @param action
+     *            the {@link Action4} to convert
      * @param result
-     * @return {@link Func0}
+     *            the value to return from the function call
+     * @return a {@link Func4} that calls {@code action} and returns {@code result}
      */
     public static <T1, T2, T3, T4, R> Func4<T1, T2, T3, T4, R> toFunc(final Action4<T1, T2, T3, T4> action, final R result) {
         return new Func4<T1, T2, T3, T4, R>() {
@@ -362,12 +367,13 @@ public final class Actions {
     }
 
     /**
-     * Convert an action to a function which calls
-     * the action returns Void (null).
+     * Converts an {@link Action5} to a function that calls the action and returns a specified value.
      * 
      * @param action
+     *            the {@link Action5} to convert
      * @param result
-     * @return {@link Func0}
+     *            the value to return from the function call
+     * @return a {@link Func5} that calls {@code action} and returns {@code result}
      */
     public static <T1, T2, T3, T4, T5, R> Func5<T1, T2, T3, T4, T5, R> toFunc(
             final Action5<T1, T2, T3, T4, T5> action, final R result) {
@@ -381,12 +387,13 @@ public final class Actions {
     }
 
     /**
-     * Convert an action to a function which calls
-     * the action returns Void (null).
+     * Converts an {@link Action6} to a function that calls the action and returns a specified value.
      * 
      * @param action
+     *            the {@link Action6} to convert
      * @param result
-     * @return {@link Func0}
+     *            the value to return from the function call
+     * @return a {@link Func6} that calls {@code action} and returns {@code result}
      */
     public static <T1, T2, T3, T4, T5, T6, R> Func6<T1, T2, T3, T4, T5, T6, R> toFunc(
             final Action6<T1, T2, T3, T4, T5, T6> action, final R result) {
@@ -400,12 +407,13 @@ public final class Actions {
     }
 
     /**
-     * Convert an action to a function which calls
-     * the action returns Void (null).
+     * Converts an {@link Action7} to a function that calls the action and returns a specified value.
      * 
      * @param action
+     *            the {@link Action7} to convert
      * @param result
-     * @return {@link Func0}
+     *            the value to return from the function call
+     * @return a {@link Func7} that calls {@code action} and returns {@code result}
      */
     public static <T1, T2, T3, T4, T5, T6, T7, R> Func7<T1, T2, T3, T4, T5, T6, T7, R> toFunc(
             final Action7<T1, T2, T3, T4, T5, T6, T7> action, final R result) {
@@ -419,12 +427,13 @@ public final class Actions {
     }
 
     /**
-     * Convert an action to a function which calls
-     * the action returns Void (null).
+     * Converts an {@link Action8} to a function that calls the action and returns a specified value.
      * 
      * @param action
+     *            the {@link Action8} to convert
      * @param result
-     * @return {@link Func0}
+     *            the value to return from the function call
+     * @return a {@link Func8} that calls {@code action} and returns {@code result}
      */
     public static <T1, T2, T3, T4, T5, T6, T7, T8, R> Func8<T1, T2, T3, T4, T5, T6, T7, T8, R> toFunc(
             final Action8<T1, T2, T3, T4, T5, T6, T7, T8> action, final R result) {
@@ -438,12 +447,13 @@ public final class Actions {
     }
 
     /**
-     * Convert an action to a function which calls
-     * the action returns Void (null).
+     * Converts an {@link Action9} to a function that calls the action and returns a specified value.
      * 
      * @param action
+     *            the {@link Action9} to convert
      * @param result
-     * @return {@link Func0}
+     *            the value to return from the function call
+     * @return a {@link Func9} that calls {@code action} and returns {@code result}
      */
     public static <T1, T2, T3, T4, T5, T6, T7, T8, T9, R> Func9<T1, T2, T3, T4, T5, T6, T7, T8, T9, R> toFunc(
             final Action9<T1, T2, T3, T4, T5, T6, T7, T8, T9> action, final R result) {
@@ -457,12 +467,13 @@ public final class Actions {
     }
 
     /**
-     * Convert an action to a function which calls
-     * the action returns Void (null).
+     * Converts an {@link ActionN} to a function that calls the action and returns a specified value.
      * 
      * @param action
+     *            the {@link ActionN} to convert
      * @param result
-     * @return {@link Func0}
+     *            the value to return from the function call
+     * @return a {@link FuncN} that calls {@code action} and returns {@code result}
      */
     public static <R> FuncN<R> toFunc(
             final ActionN action, final R result) {

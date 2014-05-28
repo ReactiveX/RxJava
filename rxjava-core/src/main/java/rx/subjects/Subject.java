@@ -18,6 +18,9 @@ package rx.subjects;
 import rx.Observable;
 import rx.Observer;
 
+/**
+ * @warn javadoc class description missing
+ */
 public abstract class Subject<T, R> extends Observable<R> implements Observer<T> {
     protected Subject(OnSubscribe<R> onSubscribe) {
         super(onSubscribe);

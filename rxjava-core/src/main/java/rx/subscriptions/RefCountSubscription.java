@@ -21,10 +21,10 @@ import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 import rx.Subscription;
 
 /**
- * Keeps track of the sub-subscriptions and unsubscribes the underlying
- * subscription once all sub-subscriptions have unsubscribed.
+ * Keeps track of the sub-subscriptions and unsubscribes the underlying subscription once all sub-subscriptions
+ * have unsubscribed.
  * 
- * @see <a href='http://msdn.microsoft.com/en-us/library/system.reactive.disposables.refcountdisposable.aspx'>MSDN RefCountDisposable</a>
+ * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.disposables.refcountdisposable.aspx">MSDN RefCountDisposable</a>
  */
 public final class RefCountSubscription implements Subscription {
     private final Subscription actual;
@@ -57,9 +57,12 @@ public final class RefCountSubscription implements Subscription {
     }
 
     /**
-     * Create a RefCountSubscription by wrapping the given non-null Subscription.
+     * Creates a {@code RefCountSubscription} by wrapping the given non-null {@code Subscription}.
      * 
      * @param s
+     *          the {@link Subscription} to wrap
+     * @throws IllegalArgumentException
+     *          if {@code s} is {@code null}
      */
     public RefCountSubscription(Subscription s) {
         if (s == null) {
@@ -70,6 +73,7 @@ public final class RefCountSubscription implements Subscription {
 
     /**
      * Returns a new sub-subscription
+     *
      * @return a new sub-subscription.
      */
     public Subscription get() {

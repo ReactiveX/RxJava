@@ -25,7 +25,7 @@ import java.util.Set;
 /**
  * Exception that is a composite of 1 or more other exceptions.
  * <p>
- * The <code>getMessage()</code> will return a concatenation of the composite exceptions.
+ * Use <code>getMessage()</code> to retrieve a concatenation of the composite exceptions.
  */
 public final class CompositeException extends RuntimeException {
 
@@ -53,15 +53,26 @@ public final class CompositeException extends RuntimeException {
         this(null, errors);
     }
 
+    /**
+     * @warn javadoc missing
+     */
     public List<Throwable> getExceptions() {
         return exceptions;
     }
 
+    /**
+     * Returns a concatenation of the composite exceptions.
+     *
+     * @warn return value undocumented (e.g. how are multiple exceptions delimited?)
+     */
     @Override
     public String getMessage() {
         return message;
     }
 
+    /**
+     * @warn javadoc missing
+     */
     @Override
     public synchronized Throwable getCause() {
         return cause;

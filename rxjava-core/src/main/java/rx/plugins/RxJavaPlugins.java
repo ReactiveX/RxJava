@@ -20,11 +20,11 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * Registry for plugin implementations that allows global override and handles the retrieval of correct implementation based on order of precedence:
  * <ol>
- * <li>plugin registered globally via <code>register</code> methods in this class</li>
+ * <li>plugin registered globally via {@code register} methods in this class</li>
  * <li>plugin registered and retrieved using {@link java.lang.System#getProperty(String)} (see get methods for property names)</li>
  * <li>default implementation</li>
  * </ol>
- * See the RxJava GitHub Wiki for more information: <a href="https://github.com/Netflix/RxJava/wiki/Plugins">https://github.com/Netflix/RxJava/wiki/Plugins</a>.
+ * @see <a href="https://github.com/Netflix/RxJava/wiki/Plugins">RxJava Wiki: Plugins</a>
  */
 public class RxJavaPlugins {
     private final static RxJavaPlugins INSTANCE = new RxJavaPlugins();
@@ -33,6 +33,10 @@ public class RxJavaPlugins {
     private final AtomicReference<RxJavaObservableExecutionHook> observableExecutionHook = new AtomicReference<RxJavaObservableExecutionHook>();
     private final AtomicReference<RxJavaDefaultSchedulers> schedulerOverrides = new AtomicReference<RxJavaDefaultSchedulers>();
 
+    /**
+     * @warn javadoc missing
+     * @return
+     */
     public static RxJavaPlugins getInstance() {
         return INSTANCE;
     }
@@ -41,16 +45,17 @@ public class RxJavaPlugins {
 
     }
 
-    /* package accessible for ujnit tests */void reset() {
+    /* package accessible for unit tests */void reset() {
         INSTANCE.errorHandler.set(null);
         INSTANCE.observableExecutionHook.set(null);
     }
 
     /**
-     * Retrieve instance of {@link RxJavaErrorHandler} to use based on order of precedence as defined in {@link RxJavaPlugins} class header.
+     * Retrieves an instance of {@link RxJavaErrorHandler} to use based on order of precedence as defined in
+     * {@link RxJavaPlugins} class header.
      * <p>
-     * Override default by using {@link #registerErrorHandler(RxJavaErrorHandler)} or setting property: <code>rxjava.plugin.RxJavaErrorHandler.implementation</code> with the full classname to
-     * load.
+     * Override the default by calling {@link #registerErrorHandler(RxJavaErrorHandler)} or by setting the
+     * property {@code rxjava.plugin.RxJavaErrorHandler.implementation} with the full classname to load.
      * 
      * @return {@link RxJavaErrorHandler} implementation to use
      */
@@ -71,12 +76,14 @@ public class RxJavaPlugins {
     }
 
     /**
-     * Register a {@link RxJavaErrorHandler} implementation as a global override of any injected or default implementations.
+     * Registers an {@link RxJavaErrorHandler} implementation as a global override of any injected or default
+     * implementations.
      * 
      * @param impl
      *            {@link RxJavaErrorHandler} implementation
      * @throws IllegalStateException
-     *             if called more than once or after the default was initialized (if usage occurs before trying to register)
+     *             if called more than once or after the default was initialized (if usage occurs before trying
+     *             to register)
      */
     public void registerErrorHandler(RxJavaErrorHandler impl) {
         if (!errorHandler.compareAndSet(null, impl)) {
@@ -85,10 +92,12 @@ public class RxJavaPlugins {
     }
 
     /**
-     * Retrieve instance of {@link RxJavaObservableExecutionHook} to use based on order of precedence as defined in {@link RxJavaPlugins} class header.
+     * Retrieves the instance of {@link RxJavaObservableExecutionHook} to use based on order of precedence as
+     * defined in {@link RxJavaPlugins} class header.
      * <p>
-     * Override default by using {@link #registerObservableExecutionHook(RxJavaObservableExecutionHook)} or setting property: <code>rxjava.plugin.RxJavaObservableExecutionHook.implementation</code>
-     * with the full classname to load.
+     * Override the default by calling {@link #registerObservableExecutionHook(RxJavaObservableExecutionHook)}
+     * or by setting the property {@code rxjava.plugin.RxJavaObservableExecutionHook.implementation} with the
+     * full classname to load.
      * 
      * @return {@link RxJavaObservableExecutionHook} implementation to use
      */
@@ -109,12 +118,14 @@ public class RxJavaPlugins {
     }
 
     /**
-     * Register a {@link RxJavaObservableExecutionHook} implementation as a global override of any injected or default implementations.
+     * Register an {@link RxJavaObservableExecutionHook} implementation as a global override of any injected or
+     * default implementations.
      * 
      * @param impl
      *            {@link RxJavaObservableExecutionHook} implementation
      * @throws IllegalStateException
-     *             if called more than once or after the default was initialized (if usage occurs before trying to register)
+     *             if called more than once or after the default was initialized (if usage occurs before trying
+     *             to register)
      */
     public void registerObservableExecutionHook(RxJavaObservableExecutionHook impl) {
         if (!observableExecutionHook.compareAndSet(null, impl)) {
@@ -127,8 +138,8 @@ public class RxJavaPlugins {
         /*
          * Check system properties for plugin class.
          * <p>
-         * This will only happen during system startup thus it's okay to use the synchronized System.getProperties
-         * as it will never get called in normal operations.
+         * This will only happen during system startup thus it's okay to use the synchronized
+         * System.getProperties as it will never get called in normal operations.
          */
         String implementingClass = System.getProperty("rxjava.plugin." + classSimpleName + ".implementation");
         if (implementingClass != null) {
@@ -152,10 +163,11 @@ public class RxJavaPlugins {
     }
 
     /**
-     * Retrieve instance of {@link RxJavaDefaultSchedulers} to use based on order of precedence as defined in {@link RxJavaPlugins} class header.
+     * Retrieves the instance of {@link RxJavaDefaultSchedulers} to use based on order of precedence as defined
+     * in the {@link RxJavaPlugins} class header.
      * <p>
-     * Override default by using {@link #registerDefaultSchedulers(RxJavaDefaultSchedulers)} or setting property: <code>rxjava.plugin.RxJavaDefaultSchedulers.implementation</code> with the full
-     * classname to
+     * Override the default by calling {@link #registerDefaultSchedulers(RxJavaDefaultSchedulers)} or by setting
+     * the property {@code rxjava.plugin.RxJavaDefaultSchedulers.implementation} with the full classname to
      * load.
      * 
      * @return {@link RxJavaErrorHandler} implementation to use
@@ -177,12 +189,14 @@ public class RxJavaPlugins {
     }
 
     /**
-     * Register a {@link RxJavaDefaultSchedulers} implementation as a global override of any injected or default implementations.
+     * Registers an {@link RxJavaDefaultSchedulers} implementation as a global override of any injected or
+     * default implementations.
      * 
      * @param impl
      *            {@link RxJavaDefaultSchedulers} implementation
      * @throws IllegalStateException
-     *             if called more than once or after the default was initialized (if usage occurs before trying to register)
+     *             if called more than once or after the default was initialized (if usage occurs before trying
+     *             to register)
      */
     public void registerDefaultSchedulers(RxJavaDefaultSchedulers impl) {
         if (!schedulerOverrides.compareAndSet(null, impl)) {

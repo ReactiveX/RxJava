@@ -26,6 +26,9 @@ import rx.functions.Action0;
 import rx.subscriptions.BooleanSubscription;
 import rx.subscriptions.Subscriptions;
 
+/**
+ * @warn javadoc class description missing
+ */
 public class TestScheduler extends Scheduler {
     private final Queue<TimedAction> queue = new PriorityQueue<TimedAction>(11, new CompareActionsByTime());
     private static long counter = 0;
@@ -68,15 +71,24 @@ public class TestScheduler extends Scheduler {
         return TimeUnit.NANOSECONDS.toMillis(time);
     }
 
+    /**
+     * @warn javadoc missing
+     */
     public void advanceTimeBy(long delayTime, TimeUnit unit) {
         advanceTimeTo(time + unit.toNanos(delayTime), TimeUnit.NANOSECONDS);
     }
 
+    /**
+     * @warn javadoc missing
+     */
     public void advanceTimeTo(long delayTime, TimeUnit unit) {
         long targetTime = unit.toNanos(delayTime);
         triggerActions(targetTime);
     }
 
+    /**
+     * @warn javadoc missing
+     */
     public void triggerActions() {
         triggerActions(time);
     }

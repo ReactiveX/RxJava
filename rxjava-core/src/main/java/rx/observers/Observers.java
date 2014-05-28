@@ -20,6 +20,9 @@ import rx.exceptions.OnErrorNotImplementedException;
 import rx.functions.Action0;
 import rx.functions.Action1;
 
+/**
+ * @warn javadoc class description missing
+ */
 public class Observers {
 
     private static final Observer<Object> EMPTY = new Observer<Object>() {
@@ -41,13 +44,30 @@ public class Observers {
 
     };
 
+    /**
+     * Returns an inert {@link Observer} that does nothing in response to the emissions or notifications from
+     * any {@code Observable} it subscribes to. This is different, however, from an {@link EmptyObserver}, in
+     * that it will throw an exception if its {@link Observer#onError onError} method is called (whereas
+     * {@code EmptyObserver} will swallow the error in such a case).
+     *
+     * @return an inert {@code Observer}
+     */
     @SuppressWarnings("unchecked")
     public static <T> Observer<T> empty() {
         return (Observer<T>) EMPTY;
     }
 
     /**
-     * Create an Observer that receives `onNext` and ignores `onError` and `onCompleted`.
+     * Creates an {@link Observer} that receives the emissions of any {@code Observable} it subscribes to via
+     * {@link Observer#onNext onNext} but ignores {@link Observer#onError onError} and
+     * {@link Observer#onCompleted onCompleted} notifications.
+     *
+     * @param onNext
+     *          a function that handles each item emitted by an {@code Observable}
+     * @throws IllegalArgument Exception
+     *          if {@code onNext} is {@code null}
+     * @return an {@code Observer} that calls {@code onNext} for each emitted item from the {@code Observable}
+     *         the {@code Observer} subscribes to
      */
     public static final <T> Observer<T> create(final Action1<? super T> onNext) {
         if (onNext == null) {
@@ -75,8 +95,19 @@ public class Observers {
     }
 
     /**
-     * Create an Observer that receives `onNext` and `onError` and ignores `onCompleted`.
+     * Creates an {@link Observer} that receives the emissions of any {@code Observable} it subscribes to via
+     * {@link Observer#onNext onNext} and handles any {@link Observer#onError onError} notification but ignores
+     * an {@link Observer#onCompleted onCompleted} notification.
      * 
+     * @param onNext
+     *          a function that handles each item emitted by an {@code Observable}
+     * @param onError
+     *          a function that handles an error notification if one is sent by an {@code Observable}
+     * @throws IllegalArgument Exception
+     *          if either {@code onNext} or {@code onError} are {@code null}
+     * @return an {@code Observer} that calls {@code onNext} for each emitted item from the {@code Observable}
+     *         the {@code Observer} subscribes to, and calls {@code onError} if the {@code Observable} notifies
+     *         of an error
      */
     public static final <T> Observer<T> create(final Action1<? super T> onNext, final Action1<Throwable> onError) {
         if (onNext == null) {
@@ -107,8 +138,22 @@ public class Observers {
     }
 
     /**
-     * Create an Observer that receives `onNext`, `onError` and `onCompleted`.
+     * Creates an {@link Observer} that receives the emissions of any {@code Observable} it subscribes to via
+     * {@link Observer#onNext onNext} and handles any {@link Observer#onError onError} or
+     * {@link Observer#onCompleted onCompleted} notifications.
      * 
+     * @param onNext
+     *          a function that handles each item emitted by an {@code Observable}
+     * @param onError
+     *          a function that handles an error notification if one is sent by an {@code Observable}
+     * @param onComplete
+     *          a function that handles a sequence complete notification if one is sent by an {@code Observable}
+     * @throws IllegalArgument Exception
+     *          if either {@code onNext}, {@code onError}, or {@code onComplete} are {@code null}
+     * @return an {@code Observer} that calls {@code onNext} for each emitted item from the {@code Observable}
+     *         the {@code Observer} subscribes to, calls {@code onError} if the {@code Observable} notifies
+     *         of an error, and calls {@code onComplete} if the {@code Observable} notifies that the observable
+     *         sequence is complete
      */
     public static final <T> Observer<T> create(final Action1<? super T> onNext, final Action1<Throwable> onError, final Action0 onComplete) {
         if (onNext == null) {

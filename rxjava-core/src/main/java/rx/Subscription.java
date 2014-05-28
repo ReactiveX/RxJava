@@ -20,19 +20,26 @@ import rx.subscriptions.Subscriptions;
 /**
  * Subscription returns from {@link Observable#subscribe(Subscriber)} to allow unsubscribing.
  * <p>
- * See utilities in {@link Subscriptions} and implementations in the {@code rx.subscriptions} package.
+ * See the utilities in {@link Subscriptions} and the implementations in the {@code rx.subscriptions} package.
  * <p>
  * This interface is the RxJava equivalent of {@code IDisposable} in Microsoft's Rx implementation.
  */
 public interface Subscription {
 
     /**
-     * Stop receiving notifications on the {@link Subscriber} that was registered when this Subscription was received.
+     * Stops the receipt of notifications on the {@link Subscriber} that was registered when this Subscription
+     * was received.
      * <p>
-     * This allows unregistering an {@link Subscriber} before it has finished receiving all events (ie. before onCompleted is called).
+     * This allows unregistering an {@link Subscriber} before it has finished receiving all events (i.e. before
+     * onCompleted is called).
      */
     public void unsubscribe();
-    
+
+    /**
+     * Indicates whether this {@code Subscription} is currently unsubscribed.
+     *
+     * @return {@code true} if this {@code Subscription} is currently unsubscribed, {@code false} otherwise
+     */
     public boolean isUnsubscribed();
 
 }

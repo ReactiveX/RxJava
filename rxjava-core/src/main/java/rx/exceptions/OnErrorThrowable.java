@@ -15,6 +15,9 @@
  */
 package rx.exceptions;
 
+/**
+ * @warn javadoc class description missing
+ */
 public class OnErrorThrowable extends RuntimeException {
 
     private static final long serialVersionUID = -569558213262703934L;
@@ -34,14 +37,29 @@ public class OnErrorThrowable extends RuntimeException {
         this.value = value;
     }
 
+    /**
+     * @warn javadoc missing
+     * @return
+     */
     public Object getValue() {
         return value;
     }
 
+    /**
+     * @warn javadoc missing
+     * @return
+     */
     public boolean isValueNull() {
         return hasValue;
     }
 
+    /**
+     * Converts a {@link Throwable} into an {@link OnErrorThrowable}.
+     *
+     * @param t
+     *          the {@code Throwable} to convert
+     * @return an {@code OnErrorThrowable} representation of {@code t}
+     */
     public static OnErrorThrowable from(Throwable t) {
         Throwable cause = Exceptions.getFinalCause(t);
         if (cause instanceof OnErrorThrowable.OnNextValue) {
@@ -52,11 +70,15 @@ public class OnErrorThrowable extends RuntimeException {
     }
 
     /**
-     * Adds the given value as the final cause of the given Throwable wrapped in OnNextValue RuntimeException..
+     * Adds the given value as the final cause of the given {@code Throwable} wrapped in
+     * {@code OnNextValue}/{@code RuntimeException}.
      * 
      * @param e
+     *          the {@link Throwable} to which you want to add a cause
      * @param value
-     * @return Throwable e passed in
+     *          the cause you want to add to {@code e}
+     * @return the same {@code Throwable} ({@code e}) that was passed in, with {@code value} added to it as a
+     *         cause
      */
     public static Throwable addValueAsLastCause(Throwable e, Object value) {
         Throwable lastCause = Exceptions.getFinalCause(e);
@@ -71,16 +93,26 @@ public class OnErrorThrowable extends RuntimeException {
         return e;
     }
 
+    /**
+     * @warn javadoc class description missing
+     */
     public static class OnNextValue extends RuntimeException {
 
         private static final long serialVersionUID = -3454462756050397899L;
         private final Object value;
 
+        /**
+         * @warn javadoc missing
+         */
         public OnNextValue(Object value) {
             super("OnError while emitting onNext value: " + value);
             this.value = value;
         }
 
+        /**
+         * @warn javadoc missing
+         * @return
+         */
         public Object getValue() {
             return value;
         }

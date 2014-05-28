@@ -27,16 +27,16 @@ import rx.functions.Actions;
  */
 public final class Subscriptions {
     /**
-     * A {@link Subscription} that does nothing.
+     * Returns a {@link Subscription} that does nothing.
      * 
-     * @return {@link Subscription}
+     * @return a {@link Subscription} that does nothing
      */
     public static Subscription empty() {
         return EMPTY;
     }
 
     /**
-     * A {@link Subscription} which invokes the given {@link Action0} when unsubscribed.
+     * Creates and returns a {@link Subscription} that invokes the given {@link Action0} when unsubscribed.
      * 
      * @param unsubscribe
      *            Action to invoke on unsubscribe.
@@ -77,16 +77,16 @@ public final class Subscriptions {
     
 
     /**
-     * A {@link Subscription} that wraps a {@link Future} and cancels it when unsubscribed.
-     * 
+     * Converts a {@link Future} into a {@link Subscription} and cancels it when unsubscribed.
      * 
      * @param f
-     *            {@link Future}
-     * @return {@link Subscription}
+     *            the {@link Future} to convert
+     * @return a {@link Subscription} that wraps {@code f}
      */
     public static Subscription from(final Future<?> f) {
         return new FutureSubscription(f);
     }
+
         /** Naming classes helps with debugging. */
     private static final class FutureSubscription implements Subscription {
         final Future<?> f;
@@ -106,11 +106,12 @@ public final class Subscriptions {
     }
 
     /**
-     * A {@link Subscription} that groups multiple Subscriptions together and unsubscribes from all of them together.
+     * Converts a set of {@link Subscription}s into a {@link CompositeSubscription} that groups the multiple
+     * Subscriptions together and unsubscribes from all of them together.
      * 
      * @param subscriptions
-     *            Subscriptions to group together
-     * @return {@link Subscription}
+     *            the Subscriptions to group together
+     * @return a {@link CompositeSubscription} representing the {@code subscriptions} set
      */
 
     public static CompositeSubscription from(Subscription... subscriptions) {

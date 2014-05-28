@@ -21,16 +21,16 @@ import rx.operators.NotificationLite;
 import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
 
 /**
- * Subject that publishes only the last event to each {@link Observer} that has subscribed when the
- * sequence completes.
+ * Subject that publishes only the last item observed to each {@link Observer} that has subscribed, when the
+ * source {@code Observable} completes.
  * <p>
  * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/S.AsyncSubject.png">
  * <p>
  * Example usage:
  * <p>
  * <pre> {@code
- * 
- * // observer will receive no onNext events because the subject.onCompleted() isn't called.
+
+  // observer will receive no onNext events because the subject.onCompleted() isn't called.
   AsyncSubject<Object> subject = AsyncSubject.create();
   subject.subscribe(observer);
   subject.onNext("one");
@@ -48,9 +48,14 @@ import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
   } </pre>
  * 
  * @param <T>
+ *          the type of item expected to be observed by the Subject
  */
 public final class AsyncSubject<T> extends Subject<T, T> {
 
+    /**
+     * @warn javadoc missing
+     * @return
+     */
     public static <T> AsyncSubject<T> create() {
         final SubjectSubscriptionManager<T> state = new SubjectSubscriptionManager<T>();
         state.onTerminated = new Action1<SubjectObserver<T>>() {
@@ -70,7 +75,6 @@ public final class AsyncSubject<T> extends Subject<T, T> {
     final SubjectSubscriptionManager<T> state;
     volatile Object lastValue;
     private final NotificationLite<T> nl = NotificationLite.instance();
-
 
     protected AsyncSubject(OnSubscribe<T> onSubscribe, SubjectSubscriptionManager<T> state) {
         super(onSubscribe);

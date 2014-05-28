@@ -26,7 +26,7 @@ import rx.schedulers.TestScheduler;
 import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
 
 /**
- * Subject that, once and {@link Observer} has subscribed, publishes all subsequent events to the subscriber.
+ * Subject that, once an {@link Observer} has subscribed, publishes all subsequent events to the subscriber.
  * <p>
  * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/S.PublishSubject.png">
  * <p>
@@ -34,7 +34,7 @@ import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
  * <p>
  * <pre> {@code
 
- * PublishSubject<Object> subject = PublishSubject.create();
+  PublishSubject<Object> subject = PublishSubject.create();
   // observer1 will receive all onNext and onCompleted events
   subject.subscribe(observer1);
   subject.onNext("one");
@@ -47,9 +47,14 @@ import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
   } </pre>
  * 
  * @param <T>
+ *          the type of item observed by and emitted by the subject
  */
 public final class TestSubject<T> extends Subject<T, T> {
 
+    /**
+     * @warn javadoc missing
+     * @return
+     */
     public static <T> TestSubject<T> create(TestScheduler scheduler) {
         final SubjectSubscriptionManager<T> state = new SubjectSubscriptionManager<T>();
 
@@ -88,6 +93,9 @@ public final class TestSubject<T> extends Subject<T, T> {
         }
     }
 
+    /**
+     * @warn javadoc missing
+     */
     public void onCompleted(long timeInMilliseconds) {
         innerScheduler.schedule(new Action0() {
 
@@ -112,6 +120,9 @@ public final class TestSubject<T> extends Subject<T, T> {
         }
     }
 
+    /**
+     * @warn javadoc missing
+     */
     public void onError(final Throwable e, long timeInMilliseconds) {
         innerScheduler.schedule(new Action0() {
 
@@ -134,6 +145,9 @@ public final class TestSubject<T> extends Subject<T, T> {
         }
     }
 
+    /**
+     * @warn javadoc missing
+     */
     public void onNext(final T v, long timeInMilliseconds) {
         innerScheduler.schedule(new Action0() {
 

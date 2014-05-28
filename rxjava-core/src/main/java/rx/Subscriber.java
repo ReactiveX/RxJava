@@ -20,13 +20,14 @@ import rx.subscriptions.CompositeSubscription;
 /**
  * Provides a mechanism for receiving push-based notifications.
  * <p>
- * After an Observer calls an {@link Observable}'s <code>Observable.subscribe</code> method, the {@link Observable} calls the
- * Observer's <code>onNext</code> method to provide notifications. A well-behaved {@link Observable} will call an Observer's
- * <code>onCompleted</code> closure exactly once or the Observer's <code>onError</code> closure exactly once.
- * <p>
- * For more information see the <a href="https://github.com/Netflix/RxJava/wiki/Observable">RxJava Wiki</a>
+ * After a Subscriber calls an {@link Observable}'s {@link Observable#subscribe subscribe} method, the
+ * {@link Observable} calls the Subscriber's {@link #onNext} method to emit items. A well-behaved
+ * {@link Observable} will call a Subscriber's {@link #onCompleted} method exactly once or the Subscriber's
+ * {@link #onError} method exactly once.
  * 
+ * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable">RxJava Wiki: Observable</a>
  * @param <T>
+ *          the type of items the Subscriber expects to observe
  */
 public abstract class Subscriber<T> implements Observer<T>, Subscription {
 
@@ -48,7 +49,9 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
     }
 
     /**
-     * Used to register an unsubscribe callback.
+     * Registers an unsubscribe callback.
+     *
+     * @warn param "s" undescribed
      */
     public final void add(Subscription s) {
         cs.add(s);
@@ -59,6 +62,10 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
         cs.unsubscribe();
     }
 
+    /**
+     * @warn javadoc missing
+     * @return
+     */
     public final boolean isUnsubscribed() {
         return cs.isUnsubscribed();
     }

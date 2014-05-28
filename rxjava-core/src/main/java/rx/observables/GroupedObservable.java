@@ -20,18 +20,30 @@ import rx.Subscriber;
 import rx.functions.Func1;
 
 /**
- * An {@link Observable} that has been grouped by a key whose value can be obtained using {@link #getKey()} <p>
+ * An {@link Observable} that has been grouped by key, the value of which can be obtained with
+ * {@link #getKey()}.
  * 
  * @see Observable#groupBy(Func1)
+ * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#groupby-and-groupbyuntil">RxJava Wiki: groupBy() and groupByUntil()</a>
+ * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#pivot">RxJava Wiki: pivot()</a>
  * 
  * @param <K>
  *            the type of the key
  * @param <T>
- *            the type of the elements in the group
+ *            the type of the items emitted by the {@code GroupedObservable}
  */
 public class GroupedObservable<K, T> extends Observable<T> {
     private final K key;
 
+    /**
+     * Converts an {@link Observable} into a {@code GroupedObservable} with a particular key.
+     *
+     * @param key
+     *          the key to identify the group of items emitted by this {@code GroupedObservable}
+     * @param o
+     *          the {@link Observable} to convert
+     * @return a {@code GroupedObservable} representation of {@code o}, with key {@code key}
+     */
     public static <K, T> GroupedObservable<K, T> from(K key, final Observable<T> o) {
         return new GroupedObservable<K, T>(key, new OnSubscribe<T>() {
 
@@ -48,9 +60,9 @@ public class GroupedObservable<K, T> extends Observable<T> {
     }
 
     /**
-     * Returns the key the elements in this observable were grouped by.
+     * Returns the key that identifies the group of items emited by this {@code GroupedObservable}
      * 
-     * @return the key the elements in this observable were grouped by
+     * @return the key that the items emitted by this {@code GroupedObservable} were grouped by
      */
     public K getKey() {
         return key;

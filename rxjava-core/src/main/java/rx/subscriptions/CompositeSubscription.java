@@ -23,8 +23,7 @@ import rx.Subscription;
 import rx.exceptions.CompositeException;
 
 /**
- * Subscription that represents a group of Subscriptions that are unsubscribed
- * together.
+ * Subscription that represents a group of Subscriptions that are unsubscribed together.
  * 
  * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.disposables.compositedisposable(v=vs.103).aspx">Rx.Net equivalent CompositeDisposable</a>
  */
@@ -114,6 +113,9 @@ public final class CompositeSubscription implements Subscription {
         return state.isUnsubscribed;
     }
 
+    /**
+     * @warn javadoc missing
+     */
     public void add(final Subscription s) {
         State oldState;
         State newState;
@@ -128,6 +130,9 @@ public final class CompositeSubscription implements Subscription {
         } while (!STATE_UPDATER.compareAndSet(this, oldState, newState));
     }
 
+    /**
+     * @warn javadoc missing
+     */
     public void remove(final Subscription s) {
         State oldState;
         State newState;
@@ -143,6 +148,9 @@ public final class CompositeSubscription implements Subscription {
         s.unsubscribe();
     }
 
+    /**
+     * @warn javadoc missing
+     */
     public void clear() {
         State oldState;
         State newState;

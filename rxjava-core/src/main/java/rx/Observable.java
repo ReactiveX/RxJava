@@ -2892,19 +2892,16 @@ public class Observable<T> {
     /**
      * Returns an Observable that emits buffers of items it collects from the source Observable. The resulting
      * Observable emits connected, non-overlapping buffers. It emits the current buffer and replaces it with a
-     * new buffer when the Observable produced by the specified {@code bufferClosingSelector} emits an item. It
-     * then uses the {@code bufferClosingSelector} to create a new Observable to observe to indicate the end of
-     * the next buffer.
+     * new buffer whenever the Observable produced by the specified {@code bufferClosingSelector} emits an item.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/buffer1.png">
      * 
      * @param bufferClosingSelector
-     *            a {@link Func0} that produces an Observable for each buffer created. When this
-     *            {@code Observable} emits an item, {@code buffer} emits the associated buffer and replaces it
-     *            with a new one
+     *            a {@link Func0} that produces an Observable that governs the boundary between buffers.
+     *            Whenever this {@code Observable} emits an item, {@code buffer} emits the current buffer and
+     *            begins to fill a new one
      * @return an Observable that emits a connected, non-overlapping buffer of items from the source Observable
-     *         each time the current Observable created with the {@code bufferClosingSelector} argument emits an
-     *         item
+     *         each time the Observable created with the {@code bufferClosingSelector} argument emits an item
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#wiki-buffer">RxJava Wiki: buffer()</a>
      */
     public final <TClosing> Observable<List<T>> buffer(Func0<? extends Observable<? extends TClosing>> bufferClosingSelector) {
@@ -5495,16 +5492,19 @@ public class Observable<T> {
     }
 
     /*
-     * Forces an Observable to make synchronous calls and to be well-behaved.
+     * Forces an Observable's emissions and notifications to be serialized and for it to obey the Rx contract
+     * in other ways.
      * <p>
-     * It is possible for an Observable to invoke its Subscribers' methods asynchronously, perhaps in different
-     * threads. This could make an Observable poorly-behaved, in that it might invoke {@code onCompleted} or
-     * {@code onError} before one of its {@code onNext} invocations. You can force such an Observable to be
-     * well-behaved and synchronous by applying the {@code serialize} method to it.
+     * It is possible for an Observable to invoke its Subscribers' methods asynchronously, perhaps from
+     * different threads. This could make such an Observable poorly-behaved, in that it might try to invoke
+     * {@code onCompleted} or {@code onError} before one of its {@code onNext} invocations, or it might call
+     * {@code onNext} from two different threads simultaneously. You can force such an Observable to be
+     * well-behaved and sequential by applying the {@code serialize} method to it.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/synchronize.png">
      *
-     * @return a {@link Observable} that is guaranteed to be well-behaved and synchronous
+     * @return an {@link Observable} that is guaranteed to be well-behaved and to make only serialized calls to
+     *         its observers
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#serialize">RxJava Wiki: serialize()</a>
      * @since 0.17
      */
@@ -7379,17 +7379,17 @@ public class Observable<T> {
 
     /**
      * Returns an Observable that emits windows of items it collects from the source Observable. The resulting
-     * Observable emits connected, non-overlapping windows. It emits the current window and opens a new one when
-     * the Observable produced by the specified {@code closingSelector} emits an item. The
-     * {@code closingSelector} then creates a new Observable to generate the closer of the next window.
+     * Observable emits connected, non-overlapping windows. It emits the current window and opens a new one
+     * whenever the Observable produced by the specified {@code closingSelector} emits an item.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/window1.png">
      * 
      * @param closingSelector
-     *            a {@link Func0} that produces an Observable for every window created. When this Observable
-     *            emits an item, {@code window} emits the associated window and begins a new one.
+     *            a {@link Func0} that returns an {@code Observable} that governs the boundary between windows.
+     *            When this {@code Observable} emits an item, {@code window} emits the current window and begins
+     *            a new one.
      * @return an Observable that emits connected, non-overlapping windows of items from the source Observable
-     *         when {@code closingSelector} emits an item
+     *         whenever {@code closingSelector} emits an item
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#wiki-window">RxJava Wiki: window()</a>
      */
     public final <TClosing> Observable<Observable<T>> window(Func0<? extends Observable<? extends TClosing>> closingSelector) {

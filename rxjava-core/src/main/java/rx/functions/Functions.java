@@ -18,10 +18,12 @@ package rx.functions;
 public class Functions {
 
     /**
-     * Convert a function to FuncN to allow heterogeneous handling of functions with different arities.
+     * Converts a {@link Func0} to a {@link FuncN} to allow heterogeneous handling of functions with different
+     * arities.
      * 
      * @param f
-     * @return {@link FuncN}
+     *          the {@code Func0} to convert
+     * @return a {@link FuncN} representation of {@code f}
      */
     public static <R> FuncN<R> fromFunc(final Func0<? extends R> f) {
         return new FuncN<R>() {
@@ -38,10 +40,12 @@ public class Functions {
     }
 
     /**
-     * Convert a function to FuncN to allow heterogeneous handling of functions with different arities.
+     * Converts a {@link Func1} to a {@link FuncN} to allow heterogeneous handling of functions with different
+     * arities.
      * 
      * @param f
-     * @return {@link FuncN}
+     *          the {@code Func1} to convert
+     * @return a {@link FuncN} representation of {@code f}
      */
     public static <T0, R> FuncN<R> fromFunc(final Func1<? super T0, ? extends R> f) {
         return new FuncN<R>() {
@@ -59,10 +63,12 @@ public class Functions {
     }
 
     /**
-     * Convert a function to FuncN to allow heterogeneous handling of functions with different arities.
+     * Converts a {@link Func2} to a {@link FuncN} to allow heterogeneous handling of functions with different
+     * arities.
      * 
      * @param f
-     * @return {@link FuncN}
+     *          the {@code Func2} to convert
+     * @return a {@link FuncN} representation of {@code f}
      */
     public static <T0, T1, R> FuncN<R> fromFunc(final Func2<? super T0, ? super T1, ? extends R> f) {
         return new FuncN<R>() {
@@ -80,10 +86,12 @@ public class Functions {
     }
 
     /**
-     * Convert a function to FuncN to allow heterogeneous handling of functions with different arities.
+     * Converts a {@link Func3} to a {@link FuncN} to allow heterogeneous handling of functions with different
+     * arities.
      * 
      * @param f
-     * @return {@link FuncN}
+     *          the {@code Func3} to convert
+     * @return a {@link FuncN} representation of {@code f}
      */
     public static <T0, T1, T2, R> FuncN<R> fromFunc(final Func3<? super T0, ? super T1, ? super T2, ? extends R> f) {
         return new FuncN<R>() {
@@ -101,10 +109,12 @@ public class Functions {
     }
 
     /**
-     * Convert a function to FuncN to allow heterogeneous handling of functions with different arities.
+     * Converts a {@link Func4} to a {@link FuncN} to allow heterogeneous handling of functions with different
+     * arities.
      * 
      * @param f
-     * @return {@link FuncN}
+     *          the {@code Func4} to convert
+     * @return a {@link FuncN} representation of {@code f}
      */
     public static <T0, T1, T2, T3, R> FuncN<R> fromFunc(final Func4<? super T0, ? super T1, ? super T2, ? super T3, ? extends R> f) {
         return new FuncN<R>() {
@@ -122,10 +132,12 @@ public class Functions {
     }
 
     /**
-     * Convert a function to FuncN to allow heterogeneous handling of functions with different arities.
+     * Converts a {@link Func5} to a {@link FuncN} to allow heterogeneous handling of functions with different
+     * arities.
      * 
      * @param f
-     * @return {@link FuncN}
+     *          the {@code Func5} to convert
+     * @return a {@link FuncN} representation of {@code f}
      */
     public static <T0, T1, T2, T3, T4, R> FuncN<R> fromFunc(final Func5<? super T0, ? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
         return new FuncN<R>() {
@@ -143,10 +155,12 @@ public class Functions {
     }
 
     /**
-     * Convert a function to FuncN to allow heterogeneous handling of functions with different arities.
+     * Converts a {@link Func6} to a {@link FuncN} to allow heterogeneous handling of functions with different
+     * arities.
      * 
      * @param f
-     * @return {@link FuncN}
+     *          the {@code Func6} to convert
+     * @return a {@link FuncN} representation of {@code f}
      */
     public static <T0, T1, T2, T3, T4, T5, R> FuncN<R> fromFunc(final Func6<? super T0, ? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
         return new FuncN<R>() {
@@ -164,10 +178,12 @@ public class Functions {
     }
 
     /**
-     * Convert a function to FuncN to allow heterogeneous handling of functions with different arities.
+     * Converts a {@link Func7} to a {@link FuncN} to allow heterogeneous handling of functions with different
+     * arities.
      * 
      * @param f
-     * @return {@link FuncN}
+     *          the {@code Func7} to convert
+     * @return a {@link FuncN} representation of {@code f}
      */
     public static <T0, T1, T2, T3, T4, T5, T6, R> FuncN<R> fromFunc(final Func7<? super T0, ? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
         return new FuncN<R>() {
@@ -185,10 +201,12 @@ public class Functions {
     }
 
     /**
-     * Convert a function to FuncN to allow heterogeneous handling of functions with different arities.
+     * Converts a {@link Func8} to a {@link FuncN} to allow heterogeneous handling of functions with different
+     * arities.
      * 
      * @param f
-     * @return {@link FuncN}
+     *          the {@code Func8} to convert
+     * @return a {@link FuncN} representation of {@code f}
      */
     public static <T0, T1, T2, T3, T4, T5, T6, T7, R> FuncN<R> fromFunc(final Func8<? super T0, ? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
         return new FuncN<R>() {
@@ -206,10 +224,12 @@ public class Functions {
     }
 
     /**
-     * Convert a function to FuncN to allow heterogeneous handling of functions with different arities.
+     * Converts a {@link Func9} to a {@link FuncN} to allow heterogeneous handling of functions with different
+     * arities.
      * 
      * @param f
-     * @return {@link FuncN}
+     *          the {@code Func9} to convert
+     * @return a {@link FuncN} representation of {@code f}
      */
     public static <T0, T1, T2, T3, T4, T5, T6, T7, T8, R> FuncN<R> fromFunc(final Func9<? super T0, ? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
         return new FuncN<R>() {
@@ -227,10 +247,12 @@ public class Functions {
     }
 
     /**
-     * Convert a function to FuncN to allow heterogeneous handling of functions with different arities.
+     * Converts an {@link Action0} to a {@link FuncN} to allow heterogeneous handling of functions with
+     * different arities.
      * 
      * @param f
-     * @return {@link FuncN}
+     *          the {@code Action0} to convert
+     * @return a {@link FuncN} representation of {@code f}
      */
     public static FuncN<Void> fromAction(final Action0 f) {
         return new FuncN<Void>() {
@@ -248,10 +270,12 @@ public class Functions {
     }
 
     /**
-     * Convert a function to FuncN to allow heterogeneous handling of functions with different arities.
+     * Converts an {@link Action1} to a {@link FuncN} to allow heterogeneous handling of functions with
+     * different arities.
      * 
      * @param f
-     * @return {@link FuncN}
+     *          the {@code Action1} to convert
+     * @return a {@link FuncN} representation of {@code f}
      */
     public static <T0> FuncN<Void> fromAction(final Action1<? super T0> f) {
         return new FuncN<Void>() {
@@ -270,10 +294,12 @@ public class Functions {
     }
 
     /**
-     * Convert a function to FuncN to allow heterogeneous handling of functions with different arities.
+     * Converts an {@link Action2} to a {@link FuncN} to allow heterogeneous handling of functions with
+     * different arities.
      * 
      * @param f
-     * @return {@link FuncN}
+     *          the {@code Action2} to convert
+     * @return a {@link FuncN} representation of {@code f}
      */
     public static <T0, T1> FuncN<Void> fromAction(final Action2<? super T0, ? super T1> f) {
         return new FuncN<Void>() {
@@ -292,10 +318,12 @@ public class Functions {
     }
 
     /**
-     * Convert a function to FuncN to allow heterogeneous handling of functions with different arities.
+     * Converts an {@link Action3} to a {@link FuncN} to allow heterogeneous handling of functions with
+     * different arities.
      * 
      * @param f
-     * @return {@link FuncN}
+     *          the {@code Action3} to convert
+     * @return a {@link FuncN} representation of {@code f}
      */
     public static <T0, T1, T2> FuncN<Void> fromAction(final Action3<? super T0, ? super T1, ? super T2> f) {
         return new FuncN<Void>() {
@@ -314,24 +342,41 @@ public class Functions {
     }
 
     /**
-     * Constructs a predicate that returns true for each input that the source
-     * predicate returns false for and vice versa.
+     * Constructs a predicate that returns true for each input for which the source predicate returns false, and
+     * vice versa.
      * 
      * @param predicate
-     *            The source predicate to negate.
+     *            the source predicate to negate
+     * @return a function that returns a Boolean that represents an inversion of the logical effect of
+     *         {@code predicate}
      */
     public static <T> Func1<T, Boolean> not(Func1<? super T, Boolean> predicate) {
         return new Not<T>(predicate);
     }
 
+    /**
+     * Returns a function that always returns {@code true}.
+     *
+     * @return a {@link Func1} that accepts an Object and returns the Boolean {@code true}
+     */
     public static <T> Func1<? super T, Boolean> alwaysTrue() {
         return AlwaysTrue.INSTANCE;
     }
 
+    /**
+     * Returns a function that always returns {@code false}.
+     *
+     * @return a {@link Func1} that accepts an Object and returns the Boolean {@code false}
+     */
     public static <T> Func1<? super T, Boolean> alwaysFalse() {
         return AlwaysFalse.INSTANCE;
     }
 
+    /**
+     * Returns a function that always returns the Object it is passed.
+     *
+     * @return a {@link Func1} that accepts an Object and returns the same Object
+     */
     public static <T> Func1<T, T> identity() {
         return new Func1<T, T>() {
             @Override
@@ -359,6 +404,11 @@ public class Functions {
         }
     }
 
+    /**
+     * Returns a function that merely returns {@code null}, without side effects.
+     *
+     * @return a function that returns {@code null}
+     */
     @SuppressWarnings("unchecked")
     public static <T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, R> NullFunction<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, R> returnNull() {
         return (NullFunction<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, R>) NULL_FUNCTION;

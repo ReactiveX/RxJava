@@ -21,7 +21,8 @@ import rx.Observable;
 import rx.Subscription;
 
 /**
- * Subscription that can be checked for status such as in a loop inside an {@link Observable} to exit the loop if unsubscribed.
+ * Subscription that can be checked for status such as in a loop inside an {@link Observable} to exit the loop
+ * if unsubscribed.
  * 
  * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.disposables.multipleassignmentdisposable">Rx.Net equivalent MultipleAssignmentDisposable</a>
  */
@@ -70,6 +71,9 @@ public final class MultipleAssignmentSubscription implements Subscription {
         oldState.subscription.unsubscribe();
     }
 
+    /**
+     * @warn javadoc missing
+     */
     public void set(Subscription s) {
         if (s == null) {
             throw new IllegalArgumentException("Subscription can not be null");
@@ -87,6 +91,10 @@ public final class MultipleAssignmentSubscription implements Subscription {
         } while (!STATE_UPDATER.compareAndSet(this, oldState, newState));
     }
 
+    /**
+     * @warn javadoc missing
+     * @return
+     */
     public Subscription get() {
         return state.subscription;
     }

@@ -15,6 +15,9 @@
  */
 package rx.schedulers;
 
+/**
+ * @warn javadoc class description missing
+ */
 public class TimeInterval<T> {
     private final long intervalInMilliseconds;
     private final T value;
@@ -25,18 +28,17 @@ public class TimeInterval<T> {
     }
 
     /**
-     * Returns the interval in milliseconds.
+     * Returns the interval, expressed in milliseconds.
      * 
-     * @return interval in milliseconds
+     * @return the interval in milliseconds
      */
     public long getIntervalInMilliseconds() {
         return intervalInMilliseconds;
     }
 
     /**
-     * Returns the value.
-     * 
-     * @return the value
+     * @warn javadoc missing
+     * @return
      */
     public T getValue() {
         return value;

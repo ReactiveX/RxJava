@@ -28,7 +28,7 @@ public final class Timestamped<T> {
     }
 
     /**
-     * Returns time timestamp, in milliseconds.
+     * Returns the timestamp, expressed in milliseconds.
      * 
      * @return timestamp in milliseconds
      */
@@ -37,7 +37,7 @@ public final class Timestamped<T> {
     }
 
     /**
-     * Returns the value.
+     * Returns the value embedded in the {@code Timestamped} object.
      * 
      * @return the value
      */

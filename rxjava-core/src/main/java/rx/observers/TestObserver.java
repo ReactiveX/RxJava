@@ -46,6 +46,12 @@ public class TestObserver<T> implements Observer<T> {
         delegate.onCompleted();
     }
 
+    /**
+     * Get the {@link Notification}s representing each time this observer was notified of sequence completion
+     * via {@link #onCompleted}, as a {@link List}.
+     *
+     * @return a list of Notifications representing calls to this observer's {@link #onCompleted} method
+     */
     public List<Notification<T>> getOnCompletedEvents() {
         return Collections.unmodifiableList(onCompletedEvents);
     }
@@ -56,6 +62,11 @@ public class TestObserver<T> implements Observer<T> {
         delegate.onError(e);
     }
 
+    /**
+     * Get the {@link Throwable}s this observer was notified of via {@link #onError} as a {@link List}.
+     *
+     * @return a list of Throwables passed to this observer's {@link #onError} method
+     */
     public List<Throwable> getOnErrorEvents() {
         return Collections.unmodifiableList(onErrorEvents);
     }
@@ -66,10 +77,23 @@ public class TestObserver<T> implements Observer<T> {
         delegate.onNext(t);
     }
 
+    /**
+     * Get the sequence of items observed by this observer, as an ordered {@link List}.
+     *
+     * @return a list of items observed by this observer, in the order in which they were observed
+     */
     public List<T> getOnNextEvents() {
         return Collections.unmodifiableList(onNextEvents);
     }
 
+    /**
+     * Get a list containing all of the items and notifications received by this observer, where the items
+     * will be given as-is, any error notifications will be represented by their {@code Throwable}s, and any
+     * sequence-complete notifications will be represented by their {@code Notification} objects.
+     *
+     * @return a {@link List} containing one item for each item or notification received by this observer, in
+     *         the order in which they were observed or received
+     */
     public List<Object> getEvents() {
         ArrayList<Object> events = new ArrayList<Object>();
         events.add(onNextEvents);
@@ -78,6 +102,14 @@ public class TestObserver<T> implements Observer<T> {
         return Collections.unmodifiableList(events);
     }
 
+    /**
+     * Assert that a particular sequence of items was received in order.
+     *
+     * @param items
+     *          the sequence of items expected to have been observed
+     * @throws AssertionError
+     *          if the sequence of items observed does not exactly match {@code items}
+     */
     public void assertReceivedOnNext(List<T> items) {
         if (onNextEvents.size() != items.size()) {
             throw new AssertionError("Number of items does not match. Provided: " + items.size() + "  Actual: " + onNextEvents.size());
@@ -98,7 +130,10 @@ public class TestObserver<T> implements Observer<T> {
     }
 
     /**
-     * Assert that a single terminal event occurred, either onCompleted or onError.
+     * Assert that a single terminal event occurred, either {@link #onCompleted} or {@link #onError}.
+     *
+     * @throws AssertionError
+     *          if not exactly one terminal event notification was received
      */
     public void assertTerminalEvent() {
         if (onErrorEvents.size() > 1) {

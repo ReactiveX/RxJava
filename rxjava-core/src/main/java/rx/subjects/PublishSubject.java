@@ -21,7 +21,8 @@ import rx.operators.NotificationLite;
 import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
 
 /**
- * Subject that, once and {@link Observer} has subscribed, publishes all subsequent events to the subscriber.
+ * Subject that, once an {@link Observer} has subscribed, emits all subsequently observed items to the
+ * subscriber.
  * <p>
  * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/S.PublishSubject.png">
  * <p>
@@ -29,7 +30,7 @@ import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
  * <p>
  * <pre> {@code
 
- * PublishSubject<Object> subject = PublishSubject.create();
+  PublishSubject<Object> subject = PublishSubject.create();
   // observer1 will receive all onNext and onCompleted events
   subject.subscribe(observer1);
   subject.onNext("one");
@@ -42,9 +43,14 @@ import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
   } </pre>
  * 
  * @param <T>
+ *          the type of items observed and emitted by the Subject
  */
 public final class PublishSubject<T> extends Subject<T, T> {
 
+    /**
+     * @warn javadoc missing
+     * @return
+     */
     public static <T> PublishSubject<T> create() {
         final SubjectSubscriptionManager<T> state = new SubjectSubscriptionManager<T>();
         state.onAdded = new Action1<SubjectObserver<T>>() {

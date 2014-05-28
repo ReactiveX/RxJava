@@ -22,7 +22,8 @@ import rx.operators.NotificationLite;
 import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
 
 /**
- * Subject that publishes the most recent and all subsequent events to each subscribed {@link Observer}.
+ * Subject that emits the most recent item it has observed and all subsequent observed items to each subscribed
+ * {@link Observer}.
  * <p>
  * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/S.BehaviorSubject.png">
  * <p>
@@ -30,7 +31,7 @@ import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
  * <p>
  * <pre> {@code
 
- * / observer will receive all events.
+  // observer will receive all events.
   BehaviorSubject<Object> subject = BehaviorSubject.create("default");
   subject.subscribe(observer);
   subject.onNext("one");
@@ -61,23 +62,29 @@ import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
   } </pre>
  * 
  * @param <T>
+ *          the type of item expected to be observed by the Subject
  */
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public final class BehaviorSubject<T> extends Subject<T, T> {
     /**
-     * Create a {@link BehaviorSubject} without a default value.
-     * @param <T> the value type
+     * Creates a {@link BehaviorSubject} without a default item.
+     *
+     * @param <T>
+     *            the type of item the Subject will emit
      * @return the constructed {@link BehaviorSubject}
      */
     public static <T> BehaviorSubject<T> create() {
         return create(null, false);
     }
     /**
-     * Creates a {@link BehaviorSubject} which publishes the last and all subsequent events to each {@link Observer} that subscribes to it.
+     * Creates a {@link BehaviorSubject} that emits the last item it observed and all subsequent items to each
+     * {@link Observer} that subscribes to it.
      * 
-     * @param <T> the value type
+     * @param <T>
+     *            the type of item the Subject will emit
      * @param defaultValue
-     *            the value which will be published to any {@link Observer} as long as the {@link BehaviorSubject} has not yet received any events
+     *            the item that will be emitted first to any {@link Observer} as long as the
+     *            {@link BehaviorSubject} has not yet observed any items from its source {@code Observable}
      * @return the constructed {@link BehaviorSubject}
      */
     public static <T> BehaviorSubject<T> create(T defaultValue) {

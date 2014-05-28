@@ -20,8 +20,8 @@ import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 import rx.Subscription;
 
 /**
- * Represents a subscription whose underlying subscription can be swapped for another subscription
- * which causes the previous underlying subscription to be unsubscribed.
+ * Represents a subscription whose underlying subscription can be swapped for another subscription which causes
+ * the previous underlying subscription to be unsubscribed.
  * 
  * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.disposables.serialdisposable(v=vs.103).aspx">Rx.Net equivalent SerialDisposable</a>
  */
@@ -70,6 +70,9 @@ public final class SerialSubscription implements Subscription {
         oldState.subscription.unsubscribe();
     }
 
+    /**
+     * @warn javadoc missing
+     */
     public void set(Subscription s) {
         if (s == null) {
             throw new IllegalArgumentException("Subscription can not be null");
@@ -88,6 +91,10 @@ public final class SerialSubscription implements Subscription {
         oldState.subscription.unsubscribe();
     }
 
+    /**
+     * @warn javadoc missing
+     * @return
+     */
     public Subscription get() {
         return state.subscription;
     }

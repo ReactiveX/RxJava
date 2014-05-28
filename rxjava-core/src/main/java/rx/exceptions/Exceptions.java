@@ -18,13 +18,20 @@ package rx.exceptions;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * @warn javadoc class description missing
+ */
 public class Exceptions {
     private Exceptions() {
 
     }
 
+    /**
+     * @warn javadoc missing
+     * @return
+     */
     public static RuntimeException propagate(Throwable t) {
-        /**
+        /*
          * The return type of RuntimeException is a trick for code to be like this:
          * 
          * throw Exceptions.propagate(e);
@@ -41,6 +48,9 @@ public class Exceptions {
         }
     }
 
+    /**
+     * @warn javadoc missing
+     */
     public static void throwIfFatal(Throwable t) {
         if (t instanceof OnErrorNotImplementedException) {
             throw (OnErrorNotImplementedException) t;
@@ -66,6 +76,9 @@ public class Exceptions {
 
     private static final int MAX_DEPTH = 25;
 
+    /**
+     * @warn javadoc missing
+     */
     public static void addCause(Throwable e, Throwable cause) {
         Set<Throwable> seenCauses = new HashSet<Throwable>();
 
@@ -92,6 +105,10 @@ public class Exceptions {
         }
     }
 
+    /**
+     * @warn javadoc missing
+     * @return
+     */
     public static Throwable getFinalCause(Throwable e) {
         int i = 0;
         while (e.getCause() != null) {

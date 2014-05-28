@@ -19,16 +19,18 @@ import rx.Observer;
 import rx.Subscriber;
 
 /**
- * Enforce single-threaded, serialized, ordered execution of onNext, onCompleted, onError.
+ * Enforces single-threaded, serialized, ordered execution of {@link #onNext}, {@link #onCompleted}, and
+ * {@link #onError}.
  * <p>
- * When multiple threads are notifying they will be serialized by:
- * <p>
+ * When multiple threads are emitting and/or notifying they will be serialized by:
+ * </p><ul>
  * <li>Allowing only one thread at a time to emit</li>
  * <li>Adding notifications to a queue if another thread is already emitting</li>
  * <li>Not holding any locks or blocking any threads while emitting</li>
- * <p>
+ * </ul>
  * 
  * @param <T>
+ *          the type of items expected to be emitted to the {@code Subscriber}
  */
 public class SerializedSubscriber<T> extends Subscriber<T> {
 

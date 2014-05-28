@@ -24,7 +24,8 @@ import rx.Observer;
 import rx.Subscriber;
 
 /**
- * Observer usable for unit testing to perform assertions, inspect received events or wrap a mocked Observer.
+ * Subscriber usable for unit testing to perform assertions, inspect received events or wrap a mocked
+ * Subscriber.
  */
 public class TestSubscriber<T> extends Subscriber<T> {
 
@@ -71,6 +72,12 @@ public class TestSubscriber<T> extends Subscriber<T> {
         }
     }
 
+    /**
+     * Get the {@link Notification}s representing each time this subscriber was notified of sequence completion
+     * via {@link #onCompleted}, as a {@link List}.
+     *
+     * @return a list of Notifications representing calls to this subscriber's {@link #onCompleted} method
+     */
     public List<Notification<T>> getOnCompletedEvents() {
         return testObserver.getOnCompletedEvents();
     }
@@ -85,6 +92,11 @@ public class TestSubscriber<T> extends Subscriber<T> {
         }
     }
 
+    /**
+     * Get the {@link Throwable}s this subscriber was notified of via {@link #onError} as a {@link List}.
+     *
+     * @return a list of Throwables passed to this subscriber's {@link #onError} method
+     */
     public List<Throwable> getOnErrorEvents() {
         return testObserver.getOnErrorEvents();
     }
@@ -95,27 +107,52 @@ public class TestSubscriber<T> extends Subscriber<T> {
         testObserver.onNext(t);
     }
 
+    /**
+     * Get the sequence of items observed by this subscriber, as an ordered {@link List}.
+     *
+     * @return a list of items observed by this subscriber, in the order in which they were observed
+     */
     public List<T> getOnNextEvents() {
         return testObserver.getOnNextEvents();
     }
 
+    /**
+     * Assert that a particular sequence of items was received in order.
+     *
+     * @param items
+     *          the sequence of items expected to have been observed
+     * @throws AssertionError
+     *          if the sequence of items observed does not exactly match {@code items}
+     */
     public void assertReceivedOnNext(List<T> items) {
         testObserver.assertReceivedOnNext(items);
     }
 
     /**
-     * Assert that a single terminal event occurred, either onCompleted or onError.
+     * Assert that a single terminal event occurred, either {@link #onCompleted} or {@link #onError}.
+     *
+     * @throws AssertionError
+     *          if not exactly one terminal event notification was received
      */
     public void assertTerminalEvent() {
         testObserver.assertTerminalEvent();
     }
 
+    /**
+     * Assert that this {@code Subscriber} is unsubscribed.
+     *
+     * @throws AssertionError
+     *          if this {@code Subscriber} is not unsubscribed
+     */
     public void assertUnsubscribed() {
         if (!isUnsubscribed()) {
             throw new AssertionError("Not unsubscribed.");
         }
     }
 
+    /**
+     * @warn javadoc missing
+     */
     public void awaitTerminalEvent() {
         try {
             latch.await();
@@ -124,6 +161,9 @@ public class TestSubscriber<T> extends Subscriber<T> {
         }
     }
 
+    /**
+     * @warn javadoc missing
+     */
     public void awaitTerminalEvent(long timeout, TimeUnit unit) {
         try {
             latch.await(timeout, unit);
@@ -132,6 +172,9 @@ public class TestSubscriber<T> extends Subscriber<T> {
         }
     }
 
+    /**
+     * @warn javadoc missing
+     */
     public void awaitTerminalEventAndUnsubscribeOnTimeout(long timeout, TimeUnit unit) {
         try {
             awaitTerminalEvent(timeout, unit);
@@ -140,6 +183,9 @@ public class TestSubscriber<T> extends Subscriber<T> {
         }
     }
 
+    /**
+     * @warn javadoc missing
+     */
     public Thread getLastSeenThread() {
         return lastSeenThread;
     }
