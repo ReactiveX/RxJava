@@ -27,7 +27,6 @@ import rx.exceptions.OnErrorThrowable;
 import rx.functions.Action0;
 import rx.functions.Func1;
 import rx.observables.GroupedObservable;
-import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.Subscriptions;
 
 /**
@@ -46,9 +45,9 @@ public final class OperatorGroupBy<K, T> implements Operator<GroupedObservable<K
 
     @Override
     public Subscriber<? super T> call(final Subscriber<? super GroupedObservable<K, T>> childObserver) {
-        // a new CompositeSubscription to decouple the subscription as the inner subscriptions need a separate lifecycle
+        // a new SubscriptionList to decouple the subscription as the inner subscriptions need a separate lifecycle
         // and will unsubscribe on this parent if they are all unsubscribed
-        return new Subscriber<T>(new CompositeSubscription()) {
+        return new Subscriber<T>() {
             private final Map<K, BufferUntilSubscriber<T>> groups = new HashMap<K, BufferUntilSubscriber<T>>();
             private final AtomicInteger completionCounter = new AtomicInteger(0);
             private final AtomicBoolean completionEmitted = new AtomicBoolean(false);
