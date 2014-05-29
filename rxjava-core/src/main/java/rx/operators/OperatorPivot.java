@@ -28,7 +28,7 @@ import rx.Observable.Operator;
 import rx.Subscriber;
 import rx.functions.Action0;
 import rx.observables.GroupedObservable;
-import rx.subscriptions.CompositeSubscription;
+import rx.subscriptions.SubscriptionList;
 import rx.subscriptions.Subscriptions;
 
 public class OperatorPivot<K1, K2, T> implements Operator<GroupedObservable<K2, GroupedObservable<K1, T>>, GroupedObservable<K1, GroupedObservable<K2, T>>> {
@@ -36,7 +36,7 @@ public class OperatorPivot<K1, K2, T> implements Operator<GroupedObservable<K2, 
     @Override
     public Subscriber<? super GroupedObservable<K1, GroupedObservable<K2, T>>> call(final Subscriber<? super GroupedObservable<K2, GroupedObservable<K1, T>>> child) {
         final AtomicReference<State> state = new AtomicReference<State>(State.create());
-        final OperatorPivot<K1, K2, T>.PivotSubscriber pivotSubscriber = new PivotSubscriber(new CompositeSubscription(), child, state);
+        final OperatorPivot<K1, K2, T>.PivotSubscriber pivotSubscriber = new PivotSubscriber(new SubscriptionList(), child, state);
         child.add(Subscriptions.create(new Action0() {
 
             @Override
@@ -65,12 +65,12 @@ public class OperatorPivot<K1, K2, T> implements Operator<GroupedObservable<K2, 
          * needs to decouple the subscription as the inner subscriptions need a separate lifecycle
          * and will unsubscribe on this parent if they are all unsubscribed
          */
-        private final CompositeSubscription parentSubscription;
+        private final SubscriptionList parentSubscription;
         private final Subscriber<? super GroupedObservable<K2, GroupedObservable<K1, T>>> child;
         private final AtomicReference<State> state;
         private final GroupState<K1, K2, T> groups;
 
-        private PivotSubscriber(CompositeSubscription parentSubscription, Subscriber<? super GroupedObservable<K2, GroupedObservable<K1, T>>> child, AtomicReference<State> state) {
+        private PivotSubscriber(SubscriptionList parentSubscription, Subscriber<? super GroupedObservable<K2, GroupedObservable<K1, T>>> child, AtomicReference<State> state) {
             super(parentSubscription);
             this.parentSubscription = parentSubscription;
             this.child = child;
@@ -159,10 +159,10 @@ public class OperatorPivot<K1, K2, T> implements Operator<GroupedObservable<K2, 
         private final ConcurrentHashMap<KeyPair<K1, K2>, Inner<K1, K2, T>> innerSubjects = new ConcurrentHashMap<KeyPair<K1, K2>, Inner<K1, K2, T>>();
         private final ConcurrentHashMap<K2, Outer<K1, K2, T>> outerSubjects = new ConcurrentHashMap<K2, Outer<K1, K2, T>>();
         private final AtomicBoolean completeEmitted = new AtomicBoolean();
-        private final CompositeSubscription parentSubscription;
+        private final SubscriptionList parentSubscription;
         private final Subscriber<? super GroupedObservable<K2, GroupedObservable<K1, T>>> child;
 
-        public GroupState(CompositeSubscription parentSubscription, Subscriber<? super GroupedObservable<K2, GroupedObservable<K1, T>>> child) {
+        public GroupState(SubscriptionList parentSubscription, Subscriber<? super GroupedObservable<K2, GroupedObservable<K1, T>>> child) {
             this.parentSubscription = parentSubscription;
             this.child = child;
         }

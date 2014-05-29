@@ -15,6 +15,7 @@
  */
 package rx;
 
+import rx.subscriptions.SubscriptionList;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -30,17 +31,23 @@ import rx.subscriptions.CompositeSubscription;
  */
 public abstract class Subscriber<T> implements Observer<T>, Subscription {
 
-    private final CompositeSubscription cs;
+    private final SubscriptionList cs;
 
-    protected Subscriber(CompositeSubscription cs) {
+    protected Subscriber(SubscriptionList cs) {
         if (cs == null) {
             throw new IllegalArgumentException("The CompositeSubscription can not be null");
         }
         this.cs = cs;
     }
+    
+    @Deprecated
+    protected Subscriber(CompositeSubscription cs) {
+        this(new SubscriptionList());
+        add(cs);
+    }
 
     protected Subscriber() {
-        this(new CompositeSubscription());
+        this(new SubscriptionList());
     }
 
     protected Subscriber(Subscriber<?> op) {
