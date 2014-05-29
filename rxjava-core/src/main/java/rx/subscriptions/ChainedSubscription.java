@@ -18,29 +18,27 @@ package rx.subscriptions;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import rx.Subscription;
 import rx.exceptions.CompositeException;
 
 /**
- * Subscription that represents a group of Subscriptions that are unsubscribed
- * together.
+ * Subscription that represents a group of Subscriptions that are unsubscribed together.
  * 
  * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.disposables.compositedisposable(v=vs.103).aspx">Rx.Net equivalent CompositeDisposable</a>
  */
-public final class CompositeSubscription implements Subscription {
+public final class ChainedSubscription implements Subscription {
 
-    private Set<Subscription> subscriptions;
+    private List<Subscription> subscriptions;
     private boolean unsubscribed = false;
 
-    public CompositeSubscription() {
+    public ChainedSubscription() {
     }
 
-    public CompositeSubscription(final Subscription... subscriptions) {
-        this.subscriptions = new HashSet<Subscription>(Arrays.asList(subscriptions));
+    public ChainedSubscription(final Subscription... subscriptions) {
+        this.subscriptions = new LinkedList<Subscription>(Arrays.asList(subscriptions));
     }
 
     @Override
@@ -55,7 +53,7 @@ public final class CompositeSubscription implements Subscription {
                 unsubscribe = s;
             } else {
                 if (subscriptions == null) {
-                    subscriptions = new HashSet<Subscription>(4);
+                    subscriptions = new LinkedList<Subscription>();
                 }
                 subscriptions.add(s);
             }
@@ -64,33 +62,6 @@ public final class CompositeSubscription implements Subscription {
             // call after leaving the synchronized block so we're not holding a lock while executing this
             unsubscribe.unsubscribe();
         }
-    }
-
-    public void remove(final Subscription s) {
-        boolean unsubscribe = false;
-        synchronized (this) {
-            if (unsubscribed || subscriptions == null) {
-                return;
-            }
-            unsubscribe = subscriptions.remove(s);
-        }
-        if (unsubscribe) {
-            // if we removed successfully we then need to call unsubscribe on it (outside of the lock)
-            s.unsubscribe();
-        }
-    }
-
-    public void clear() {
-        Collection<Subscription> unsubscribe = null;
-        synchronized (this) {
-            if (unsubscribed || subscriptions == null) {
-                return;
-            } else {
-                unsubscribe = subscriptions;
-                subscriptions = null;
-            }
-        }
-        unsubscribeFromAll(unsubscribe);
     }
 
     @Override
