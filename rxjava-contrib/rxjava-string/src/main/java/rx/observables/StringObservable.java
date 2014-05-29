@@ -37,6 +37,7 @@ import java.nio.charset.CharsetEncoder;
 import java.nio.charset.CoderResult;
 import java.nio.charset.CodingErrorAction;
 import java.util.Arrays;
+import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
 
@@ -55,7 +56,7 @@ public class StringObservable {
         return from(i, 8 * 1024);
     }
     
-    private static class CloseableResource<S extends AutoCloseable> implements Subscription {
+    private static class CloseableResource<S extends Closeable> implements Subscription {
         private final AtomicBoolean unsubscribed = new AtomicBoolean();
         private S closable;
 
@@ -86,8 +87,8 @@ public class StringObservable {
      *
      * @param <R>
      */
-    public static interface UnsafeFunc0<R> {
-        public R call() throws Throwable;
+    public static interface UnsafeFunc0<R> extends Callable<R> {
+        public R call() throws Exception;
     }
 
     /**
@@ -103,7 +104,7 @@ public class StringObservable {
      *            Converts the {@link Closeable} resource into a {@link Observable} with {@link #from(InputStream)} or {@link #from(Reader)}
      * @return
      */
-    public static <R, S extends AutoCloseable> Observable<R> using(final UnsafeFunc0<S> resourceFactory,
+    public static <R, S extends Closeable> Observable<R> using(final UnsafeFunc0<S> resourceFactory,
             final Func1<S, Observable<R>> observableFactory) {
         return Observable.using(new Func0<CloseableResource<S>>() {
             @Override

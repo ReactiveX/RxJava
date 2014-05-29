@@ -55,6 +55,7 @@ import java.nio.charset.CharsetDecoder;
 import java.nio.charset.MalformedInputException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class StringObservableTest {
@@ -303,7 +304,7 @@ public class StringObservableTest {
 
         using(new UnsafeFunc0<Reader>() {
             @Override
-            public Reader call() throws Throwable {
+            public Reader call() throws Exception {
                 return reader;
             }
         }, new Func1<Reader, Observable<String>>() {
@@ -338,7 +339,7 @@ public class StringObservableTest {
 
         using(new UnsafeFunc0<Reader>() {
             @Override
-            public Reader call() throws Throwable {
+            public Reader call() throws Exception {
                 return reader;
             }
         }, new Func1<Reader, Observable<String>>() {
@@ -362,7 +363,7 @@ public class StringObservableTest {
 
         using(new UnsafeFunc0<Reader>() {
             @Override
-            public Reader call() throws Throwable {
+            public Reader call() throws Exception {
                 return reader;
             }
         }, new Func1<Reader, Observable<String>>() {
