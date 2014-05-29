@@ -176,4 +176,44 @@ class ObservableTests extends JUnitSuite {
     assertEquals(List(0, 1, 2), o.toBlockingObservable.toList)
   }
 
+  @Test
+  def testSingleOrElse() {
+    val o = Observable.items(1).singleOrElse(2)
+    assertEquals(1, o.toBlocking.single)
+  }
+
+  @Test
+  def testSingleOrElseWithEmptyObservable() {
+    val o: Observable[Int] = Observable.empty.singleOrElse(1)
+    assertEquals(1, o.toBlocking.single)
+  }
+
+  @Test(expected = classOf[IllegalArgumentException])
+  def testSingleOrElseWithTooManyItems() {
+    Observable.items(1, 2).singleOrElse(1).toBlocking.single
+  }
+
+  @Test
+  def testSingleOrElseWithCallByName() {
+    var called = false
+    val o: Observable[Int] = Observable.empty.singleOrElse {
+      called = true
+      1
+    }
+    assertFalse(called)
+    o.subscribe()
+    assertTrue(called)
+  }
+
+  @Test
+  def testSingleOrElseWithCallByName2() {
+    var called = false
+    val o = Observable.items(1).singleOrElse {
+      called = true
+      2
+    }
+    assertFalse(called)
+    o.subscribe()
+    assertFalse(called)
+  }
 }

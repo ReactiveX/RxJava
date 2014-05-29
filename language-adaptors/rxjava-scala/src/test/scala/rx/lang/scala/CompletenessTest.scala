@@ -72,12 +72,13 @@ class CompletenessTest extends JUnitSuite {
       "all(Func1[_ >: T, Boolean])" -> "forall(T => Boolean)",
       "buffer(Long, Long, TimeUnit)" -> "buffer(Duration, Duration)",
       "buffer(Long, Long, TimeUnit, Scheduler)" -> "buffer(Duration, Duration, Scheduler)",
-      "buffer(Func0[_ <: Observable[_ <: TClosing]])" -> "buffer(() => Observable[Any])",
-      "buffer(Observable[B])" -> "buffer(Observable[Any])",
+      "buffer(Func0[_ <: Observable[_ <: TClosing]])" -> "buffer(=> Observable[Any])",
+      "buffer(Observable[B])" -> "buffer(=> Observable[Any])",
       "buffer(Observable[B], Int)" -> "buffer(Observable[Any], Int)",
       "buffer(Observable[_ <: TOpening], Func1[_ >: TOpening, _ <: Observable[_ <: TClosing]])" -> "buffer(Observable[Opening], Opening => Observable[Any])",
       "contains(Any)" -> "contains(U)",
       "count()" -> "length",
+      "debounce(Func1[_ >: T, _ <: Observable[U]])" -> "debounce(T => Observable[Any])",
       "delay(Func0[_ <: Observable[U]], Func1[_ >: T, _ <: Observable[V]])" -> "delay(() => Observable[Any], T => Observable[Any])",
       "delay(Func1[_ >: T, _ <: Observable[U]])" -> "delay(T => Observable[Any])",
       "dematerialize()" -> "dematerialize(<:<[Observable[T], Observable[Notification[U]]])",
@@ -88,6 +89,9 @@ class CompletenessTest extends JUnitSuite {
       "groupBy(Func1[_ >: T, _ <: K], Func1[_ >: T, _ <: R])" -> "[use `groupBy` and `map`]",
       "groupByUntil(Func1[_ >: T, _ <: TKey], Func1[_ >: GroupedObservable[TKey, T], _ <: Observable[_ <: TDuration]])" -> "groupByUntil(T => K, (K, Observable[T]) => Observable[Any])",
       "ignoreElements()" -> "[use `filter(_ => false)`]",
+      "last(Func1[_ >: T, Boolean])" -> "[use `filter(predicate).last`]",
+      "lastOrDefault(T)" -> "lastOrElse(=> U)",
+      "lastOrDefault(T, Func1[_ >: T, Boolean])" -> "[use `filter(predicate).lastOrElse(default)`]",
       "lift(Operator[_ <: R, _ >: T])" -> "lift(Subscriber[R] => Subscriber[T])",
       "limit(Int)" -> "take(Int)",
       "mapWithIndex(Func2[_ >: T, Integer, _ <: R])" -> "[combine `zipWithIndex` with `map` or with a for comprehension]",
@@ -102,6 +106,7 @@ class CompletenessTest extends JUnitSuite {
       "publish(T)" -> "publish(U)",
       "publish(Func1[_ >: Observable[T], _ <: Observable[R]])" -> "publish(Observable[U] => Observable[R])",
       "publish(Func1[_ >: Observable[T], _ <: Observable[R]], T)" -> "publish(Observable[U] => Observable[R], U)",
+      "publishLast(Func1[_ >: Observable[T], _ <: Observable[R]])" -> "publishLast(Observable[T] => Observable[R])",
       "reduce(Func2[T, T, T])" -> "reduce((U, U) => U)",
       "reduce(R, Func2[R, _ >: T, R])" -> "foldLeft(R)((R, T) => R)",
       "replay(Func1[_ >: Observable[T], _ <: Observable[R]])" -> "replay(Observable[U] => Observable[R])",
@@ -112,15 +117,18 @@ class CompletenessTest extends JUnitSuite {
       "replay(Func1[_ >: Observable[T], _ <: Observable[R]], Long, TimeUnit)" -> "replay(Observable[U] => Observable[R], Duration)",
       "replay(Func1[_ >: Observable[T], _ <: Observable[R]], Long, TimeUnit, Scheduler)" -> "replay(Observable[U] => Observable[R], Duration, Scheduler)",
       "replay(Func1[_ >: Observable[T], _ <: Observable[R]], Scheduler)" -> "replay(Observable[U] => Observable[R], Scheduler)",
+      "sample(Observable[U])" -> "sample(Observable[Any])",
       "scan(Func2[T, T, T])" -> unnecessary,
       "scan(R, Func2[R, _ >: T, R])" -> "scan(R)((R, T) => R)",
+      "single(Func1[_ >: T, Boolean])" -> "[use `filter(predicate).single`]",
+      "singleOrDefault(T)" -> "singleOrElse(=> U)",
+      "singleOrDefault(T, Func1[_ >: T, Boolean])" -> "[use `filter(predicate).singleOrElse(default)`]",
       "skip(Int)" -> "drop(Int)",
       "skip(Long, TimeUnit)" -> "drop(Duration)",
       "skip(Long, TimeUnit, Scheduler)" -> "drop(Duration, Scheduler)",
       "skipWhile(Func1[_ >: T, Boolean])" -> "dropWhile(T => Boolean)",
       "skipWhileWithIndex(Func2[_ >: T, Integer, Boolean])" -> unnecessary,
       "skipUntil(Observable[U])" -> "dropUntil(Observable[E])",
-      "single(Func1[_ >: T, Boolean])" -> "[use `filter(predicate).single`]",
       "startWith(T)" -> "[use `item +: o`]",
       "startWith(Array[T])" -> "[use `Observable.items(items) ++ o`]",
       "startWith(Array[T], Scheduler)" -> "[use `Observable.items(items).subscribeOn(scheduler) ++ o`]",
@@ -152,10 +160,11 @@ class CompletenessTest extends JUnitSuite {
       "toList()" -> "toSeq",
       "toSortedList()" -> "[Sorting is already done in Scala's collection library, use `.toSeq.map(_.sorted)`]",
       "toSortedList(Func2[_ >: T, _ >: T, Integer])" -> "[Sorting is already done in Scala's collection library, use `.toSeq.map(_.sortWith(f))`]",
+      "window(Observable[U])" -> "window(=> Observable[Any])",
+      "window(Func0[_ <: Observable[_ <: TClosing]])" -> "window(=> Observable[Any])",
+      "window(Observable[_ <: TOpening], Func1[_ >: TOpening, _ <: Observable[_ <: TClosing]])" -> "window(Observable[Opening], Opening => Observable[Any])",
       "window(Long, Long, TimeUnit)" -> "window(Duration, Duration)",
       "window(Long, Long, TimeUnit, Scheduler)" -> "window(Duration, Duration, Scheduler)",
-      "zip(Observable[_ <: T2], Func2[_ >: T, _ >: T2, _ <: R])" -> "zipWith(Observable[U], (T, U) => R)",
-      "zip(Iterable[_ <: T2], Func2[_ >: T, _ >: T2, _ <: R])" -> "zipWith(Iterable[U], (T, U) => R)",
 
       // manually added entries for Java static methods
       "average(Observable[Integer])" -> averageProblem,
@@ -178,6 +187,8 @@ class CompletenessTest extends JUnitSuite {
       "merge(Observable[_ <: Observable[_ <: T]])" -> "flatten(<:<[Observable[T], Observable[Observable[U]]])",
       "mergeDelayError(Observable[_ <: T], Observable[_ <: T])" -> "mergeDelayError(Observable[U])",
       "mergeDelayError(Observable[_ <: Observable[_ <: T]])" -> "flattenDelayError(<:<[Observable[T], Observable[Observable[U]]])",
+      "parallelMerge(Observable[Observable[T]], Int)" -> "parallelMerge(Int)(<:<[Observable[T], Observable[Observable[U]]])",
+      "parallelMerge(Observable[Observable[T]], Int, Scheduler)" -> "parallelMerge(Int, Scheduler)(<:<[Observable[T], Observable[Observable[U]]])",
       "sequenceEqual(Observable[_ <: T], Observable[_ <: T])" -> "sequenceEqual(Observable[U])",
       "sequenceEqual(Observable[_ <: T], Observable[_ <: T], Func2[_ >: T, _ >: T, Boolean])" -> "sequenceEqual(Observable[U], (U, U) => Boolean)",
       "range(Int, Int)" -> "[use `(start until (start + count)).toObservable` instead of `range(start, count)`]",
@@ -190,7 +201,9 @@ class CompletenessTest extends JUnitSuite {
       "switchOnNext(Observable[_ <: Observable[_ <: T]])" -> "switch(<:<[Observable[T], Observable[Observable[U]]])",
       "zip(Observable[_ <: T1], Observable[_ <: T2], Func2[_ >: T1, _ >: T2, _ <: R])" -> "[use instance method `zip` and `map`]",
       "zip(Observable[_ <: Observable[_]], FuncN[_ <: R])" -> "[use `zip` in companion object and `map`]",
-      "zip(Iterable[_ <: Observable[_]], FuncN[_ <: R])" -> "[use `zip` in companion object and `map`]"
+      "zip(Iterable[_ <: Observable[_]], FuncN[_ <: R])" -> "[use `zip` in companion object and `map`]",
+      "zip(Observable[_ <: T2], Func2[_ >: T, _ >: T2, _ <: R])" -> "zipWith(Observable[U], (T, U) => R)",
+      "zip(Iterable[_ <: T2], Func2[_ >: T, _ >: T2, _ <: R])" -> "zipWith(Iterable[U], (T, U) => R)"
   ) ++ List.iterate("T, T", 8)(s => s + ", T").map(
       // all 9 overloads of startWith:
       "startWith(" + _ + ")" -> "[use `Observable.items(...) ++ o`]"
@@ -216,7 +229,10 @@ class CompletenessTest extends JUnitSuite {
     val obsArgs = (1 to i).map(j => s"Observable[_ <: T$j], ").mkString("")
     val funcParams = (1 to i).map(j => s"_ >: T$j, ").mkString("")
     ("combineLatest(" + obsArgs + "Func" + i + "[" + funcParams + "_ <: R])", "[If C# doesn't need it, Scala doesn't need it either ;-)]")
-  }).toMap
+  }).toMap ++ List.iterate("Observable[_ <: T]", 9)(s => s + ", Observable[_ <: T]").map(
+    // amb 2-9
+    "amb(" + _ + ")" -> "[unnecessary because we can use `o1 amb o2` instead or `amb(List(o1, o2, o3, ...)`]"
+  ).drop(1).toMap
 
   def removePackage(s: String) = s.replaceAll("(\\w+\\.)+(\\w+)", "$2")
 
