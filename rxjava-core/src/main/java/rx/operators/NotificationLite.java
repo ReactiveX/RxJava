@@ -129,6 +129,39 @@ public final class NotificationLite<T> {
             throw new IllegalArgumentException("The lite notification can not be null");
         }
     }
+    /**
+     * Unwraps the lite notification and calls the appropriate method on the {@link Observer}.
+     * 
+     * @param o
+     *            the {@link Observer} to call onNext, onCompleted or onError.
+     * @param n
+     * @return true if the n was a termination event
+     * @throws IllegalArgumentException
+     *             if the notification is null.
+     * @throws NullPointerException
+     *             if the {@link Observer} is null.
+     */
+    @SuppressWarnings("unchecked")
+    public boolean accept2(Observer<? super T> o, Object n) {
+        if (n == ON_COMPLETED_SENTINEL) {
+            o.onCompleted();
+            return true;
+        } else
+        if (n == ON_NEXT_NULL_SENTINEL) {
+            o.onNext(null);
+            return false;
+        } else
+        if (n != null) {
+            if (n.getClass() == OnErrorSentinel.class) {
+                o.onError(((OnErrorSentinel)n).e);
+                return true;
+            }
+            o.onNext((T)n);
+            return false;
+        } else {
+            throw new IllegalArgumentException("The lite notification can not be null");
+        }
+    }
 
     public boolean isCompleted(Object n) {
         return n == ON_COMPLETED_SENTINEL;
