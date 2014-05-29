@@ -15,6 +15,16 @@
  */
 package rx.observables;
 
+import rx.Observable;
+import rx.Observable.OnSubscribe;
+import rx.Observable.Operator;
+import rx.Subscriber;
+import rx.Subscription;
+import rx.functions.Func0;
+import rx.functions.Func1;
+import rx.functions.Func2;
+
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
@@ -27,14 +37,8 @@ import java.nio.charset.CharsetEncoder;
 import java.nio.charset.CoderResult;
 import java.nio.charset.CodingErrorAction;
 import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
-
-import rx.Observable;
-import rx.Observable.OnSubscribe;
-import rx.Observable.Operator;
-import rx.Subscriber;
-import rx.functions.Func1;
-import rx.functions.Func2;
 
 public class StringObservable {
     /**
@@ -49,6 +53,73 @@ public class StringObservable {
      */
     public static Observable<byte[]> from(final InputStream i) {
         return from(i, 8 * 1024);
+    }
+    
+    private static class CloseableResource<S extends AutoCloseable> implements Subscription {
+        private final AtomicBoolean unsubscribed = new AtomicBoolean();
+        private S closable;
+
+        public CloseableResource(S closeable) {
+            this.closable = closeable;
+        }
+
+        @Override
+        public void unsubscribe() {
+            if (unsubscribed.compareAndSet(false, true)) {
+                try {
+                    closable.close();
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+
+        @Override
+        public boolean isUnsubscribed() {
+            return unsubscribed.get();
+        }
+    }
+    
+    /**
+     * Func0 that allows throwing an {@link IOException}s commonly thrown during IO operations.
+     * @see StringObservable#from(UnsafeFunc0, UnsafeFunc1)
+     *
+     * @param <R>
+     */
+    public static interface UnsafeFunc0<R> {
+        public R call() throws Throwable;
+    }
+
+    /**
+     * Helps in creating an Observable that automatically calls {@link Closeable#close()} on completion, error or unsubscribe.
+     * 
+     * <pre>
+     * StringObservable.using(() -> new FileReader(file), (reader) -> StringObservable.from(reader))
+     * </pre>
+     * 
+     * @param resourceFactory
+     *            Generates a new {@link Closeable} resource for each new subscription to the returned Observable
+     * @param observableFactory
+     *            Converts the {@link Closeable} resource into a {@link Observable} with {@link #from(InputStream)} or {@link #from(Reader)}
+     * @return
+     */
+    public static <R, S extends AutoCloseable> Observable<R> using(final UnsafeFunc0<S> resourceFactory,
+            final Func1<S, Observable<R>> observableFactory) {
+        return Observable.using(new Func0<CloseableResource<S>>() {
+            @Override
+            public CloseableResource<S> call() {
+                try {
+                    return new CloseableResource<S>(resourceFactory.call());
+                } catch (Throwable e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }, new Func1<CloseableResource<S>, Observable<R>>() {
+            @Override
+            public Observable<R> call(CloseableResource<S> t1) {
+                return observableFactory.call(t1.closable);
+            }
+        });
     }
 
     /**
@@ -320,10 +391,24 @@ public class StringObservable {
      * @return the Observable returing all strings concatenated as a single string
      */
     public static Observable<String> stringConcat(Observable<String> src) {
-        return src.reduce(new Func2<String, String, String>() {
+        return toString(src.reduce(new StringBuilder(), new Func2<StringBuilder, String, StringBuilder>() {
             @Override
-            public String call(String a, String b) {
-                return a + b;
+            public StringBuilder call(StringBuilder a, String b) {
+                return a.append(b);
+            }
+        }));
+    }
+
+    /**
+     * Maps {@link Observable}&lt;{@link Object}&gt; to {@link Observable}&lt;{@link String}&gt; by using {@link String#valueOf(Object)} 
+     * @param src
+     * @return
+     */
+    public static Observable<String> toString(Observable<?> src) {
+        return src.map(new Func1<Object, String>() {
+            @Override
+            public String call(Object obj) {
+                return String.valueOf(obj);
             }
         });
     }
@@ -429,11 +514,11 @@ public class StringObservable {
      * @return an Observable which emits a single String value having the concatenated
      *         values of the source observable with the separator between elements
      */
-    public static <T> Observable<String> join(final Observable<T> source, final CharSequence separator) {
-        return source.lift(new Operator<String, T>() {
+    public static Observable<String> join(final Observable<String> source, final CharSequence separator) {
+        return source.lift(new Operator<String, String>() {
             @Override
-            public Subscriber<T> call(final Subscriber<? super String> o) {
-                return new Subscriber<T>(o) {
+            public Subscriber<String> call(final Subscriber<? super String> o) {
+                return new Subscriber<String>(o) {
                     boolean mayAddSeparator;
                     StringBuilder b = new StringBuilder();
 
@@ -455,12 +540,12 @@ public class StringObservable {
                     }
 
                     @Override
-                    public void onNext(Object t) {
+                    public void onNext(String t) {
                         if (mayAddSeparator) {
                             b.append(separator);
                         }
                         mayAddSeparator = true;
-                        b.append(String.valueOf(t));
+                        b.append(t);
                     }
                 };
             }
