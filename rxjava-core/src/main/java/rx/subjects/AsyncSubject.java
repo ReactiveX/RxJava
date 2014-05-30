@@ -54,7 +54,7 @@ public final class AsyncSubject<T> extends Subject<T, T> {
 
     /**
      * Creates and returns a new {@code AsyncSubject}.
-     *
+     * @param <T> the result value type
      * @return the new {@code AsyncSubject}
      */
     public static <T> AsyncSubject<T> create() {
@@ -63,7 +63,7 @@ public final class AsyncSubject<T> extends Subject<T, T> {
             @Override
             public void call(SubjectObserver<T> o) {
                 Object v = state.get();
-                o.accept(v);
+                o.accept(v, state.nl);
                 NotificationLite<T> nl = NotificationLite.instance();
                 if (v == null || (!nl.isCompleted(v) && !nl.isError(v))) {
                     o.onCompleted();
