@@ -99,7 +99,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
 
             @Override
             public void call(SubjectObserver<T> o) {
-                o.emitFirst(state.get());
+                o.emitFirst(state.get(), state.nl);
             }
             
         };
@@ -121,7 +121,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
         if (last == null || state.active) {
             Object n = nl.completed();
             for (SubjectObserver<T> bo : state.terminate(n)) {
-                bo.emitNext(n);
+                bo.emitNext(n, state.nl);
             }
         }
     }
@@ -132,7 +132,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
         if (last == null || state.active) {
             Object n = nl.error(e);
             for (SubjectObserver<T> bo : state.terminate(n)) {
-                bo.emitNext(n);
+                bo.emitNext(n, state.nl);
             }
         }
     }
@@ -143,7 +143,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
         if (last == null || state.active) {
             Object n = nl.next(v);
             for (SubjectObserver<T> bo : state.next(n)) {
-                bo.emitNext(n);
+                bo.emitNext(n, state.nl);
             }
         }
     }

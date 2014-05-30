@@ -63,7 +63,7 @@ public final class TestSubject<T> extends Subject<T, T> {
 
             @Override
             public void call(SubjectObserver<T> o) {
-                o.emitFirst(state.get());
+                o.emitFirst(state.get(), state.nl);
             }
             
         };

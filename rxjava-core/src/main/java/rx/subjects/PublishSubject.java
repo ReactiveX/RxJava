@@ -50,19 +50,19 @@ public final class PublishSubject<T> extends Subject<T, T> {
     /**
      * Creates and returns a new {@code PublishSubject}.
      *
+     * @param <T> the value type
      * @return the new {@code PublishSubject}
      */
     public static <T> PublishSubject<T> create() {
         final SubjectSubscriptionManager<T> state = new SubjectSubscriptionManager<T>();
-        state.onAdded = new Action1<SubjectObserver<T>>() {
+        state.onTerminated = new Action1<SubjectObserver<T>>() {
 
             @Override
             public void call(SubjectObserver<T> o) {
-                o.emitFirst(state.get());
+                o.emitFirst(state.get(), state.nl);
             }
             
         };
-        state.onTerminated = state.onAdded;
         return new PublishSubject<T>(state, state);
     }
 
@@ -79,7 +79,7 @@ public final class PublishSubject<T> extends Subject<T, T> {
         if (state.active) {
             Object n = nl.completed();
             for (SubjectObserver<T> bo : state.terminate(n)) {
-                bo.emitNext(n);
+                bo.emitNext(n, state.nl);
             }
         }
 
@@ -90,7 +90,7 @@ public final class PublishSubject<T> extends Subject<T, T> {
         if (state.active) {
             Object n = nl.error(e);
             for (SubjectObserver<T> bo : state.terminate(n)) {
-                bo.emitNext(n);
+                bo.emitNext(n, state.nl);
             }
         }
     }

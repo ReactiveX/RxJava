@@ -16,10 +16,8 @@
 package rx.subjects;
 
 import java.util.ArrayList;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
-import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 
 import rx.Observer;
 import rx.Scheduler;
@@ -98,24 +96,18 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                 int lastIndex = state.replayObserverFromIndex(0, o);
 
                 // now that it is caught up add to observers
-                state.replayState.put(o, lastIndex);
+                o.index(lastIndex);
             }
         };
         ssm.onTerminated = new Action1<SubjectObserver<T>>() {
             @Override
             public void call(SubjectObserver<T> o) {
-                Integer idx = state.replayState.remove(o);
+                Integer idx = o.index();
                 if (idx == null) {
                     idx = 0;
                 }
                 // we will finish replaying if there is anything left
                 state.replayObserverFromIndex(idx, o);
-            }
-        };
-        ssm.onUnsubscribed = new Action1<SubjectObserver<T>>() {
-            @Override
-            public void call(SubjectObserver<T> o) {
-                state.replayState.remove(o);
             }
         };
         
@@ -273,18 +265,11 @@ public final class ReplaySubject<T> extends Subject<T, T> {
 
             @Override
             public void call(SubjectObserver<T> t1) {
-                NodeList.Node<Object> l = state.removeState(t1);
+                NodeList.Node<Object> l = t1.index();
                 if (l == null) {
                     l = state.head();
                 }
                 state.replayObserverFromIndex(l, t1);
-            }
-
-        };
-        ssm.onUnsubscribed = new Action1<SubjectObserver<T>>() {
-            @Override
-            public void call(SubjectObserver<T> t1) {
-                state.removeState(t1);
             }
 
         };
@@ -341,7 +326,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
      * @return Returns the number of subscribers.
      */
     /* Support test. */int subscriberCount() {
-        return state.replayStateSize();
+        return ssm.state.observers.length;
     }
     
     private boolean caughtUp(SubjectObserver<? super T> o) {
@@ -364,8 +349,6 @@ public final class ReplaySubject<T> extends Subject<T, T> {
      * @param <T> the input and output type
      */
     static final class UnboundedReplayState<T> implements ReplayState<T, Integer> {
-        /** Each Observer is tracked here for what events they have received. */
-        final ConcurrentHashMap<Observer<? super T>, Integer> replayState;
         private final NotificationLite<T> nl = NotificationLite.instance();
         /** The buffer. */
         private final ArrayList<Object> list;
@@ -378,7 +361,6 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                 = AtomicIntegerFieldUpdater.newUpdater(UnboundedReplayState.class, "index");
         public UnboundedReplayState(int initialCapacity) {
             list = new ArrayList<Object>(initialCapacity);
-            replayState = new ConcurrentHashMap<Observer<? super T>, Integer>();
         }
 
         @Override
@@ -417,10 +399,10 @@ public final class ReplaySubject<T> extends Subject<T, T> {
 
         @Override
         public void replayObserver(SubjectObserver<? super T> observer) {
-            Integer lastEmittedLink = replayState.get(observer);
+            Integer lastEmittedLink = observer.index();
             if (lastEmittedLink != null) {
                 int l = replayObserverFromIndex(lastEmittedLink, observer);
-                replayState.put(observer, l);
+                observer.index(l);
             } else {
                 throw new IllegalStateException("failed to find lastEmittedLink for: " + observer);
             }
@@ -441,12 +423,6 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         public Integer replayObserverFromIndexTest(Integer idx, SubjectObserver<? super T> observer, long now) {
             return replayObserverFromIndex(idx, observer);
         }
-
-        @Override
-        public int replayStateSize() {
-            return replayState.size();
-        }
-        
     }
     
     
@@ -456,7 +432,6 @@ public final class ReplaySubject<T> extends Subject<T, T> {
      */
     static final class BoundedState<T> implements ReplayState<T, NodeList.Node<Object>> {
         final NodeList<Object> list;
-        final ConcurrentHashMap<Observer<? super T>, NodeList.Node<Object>> replayState;
         final EvictionPolicy evictionPolicy;
         final Func1<Object, Object> enterTransform;
         final Func1<Object, Object> leaveTransform;
@@ -468,7 +443,6 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                 Func1<Object, Object> leaveTransform) {
             this.list = new NodeList<Object>();
             this.tail = list.tail;
-            this.replayState = new ConcurrentHashMap<Observer<? super T>, NodeList.Node<Object>>();
             this.evictionPolicy = evictionPolicy;
             this.enterTransform = enterTransform;
             this.leaveTransform = leaveTransform;
@@ -525,21 +499,11 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         public Node<Object> tail() {
             return tail;
         }
-        public Node<Object> removeState(SubjectObserver<? super T> o) {
-            return replayState.remove(o);
-        }
-        public void addState(SubjectObserver<? super T> o, Node<Object> state) {
-            if (state == null) {
-                throw new IllegalStateException("Null state!");
-            } else {
-                replayState.put(o, state);
-            }
-        }
         @Override
         public void replayObserver(SubjectObserver<? super T> observer) {
-            NodeList.Node<Object> lastEmittedLink = replayState.get(observer);
+            NodeList.Node<Object> lastEmittedLink = observer.index();
             NodeList.Node<Object> l = replayObserverFromIndex(lastEmittedLink, observer);
-            addState(observer, l);
+            observer.index(l);
         }
 
         @Override
@@ -565,11 +529,6 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         public boolean terminated() {
             return terminated;
         }
-
-        @Override
-        public int replayStateSize() {
-            return replayState.size();
-        }
     }
     
     // **************
@@ -584,6 +543,10 @@ public final class ReplaySubject<T> extends Subject<T, T> {
     interface ReplayState<T, I> {
         /** @return true if the subject has reached a terminal state. */
         boolean terminated();
+        /**
+         * Replay contents to the given observer.
+         * @param observer the receiver of events
+         */
         void replayObserver(SubjectObserver<? super T> observer);
         /**
          * Replay the buffered values from an index position and return a new index
@@ -601,10 +564,6 @@ public final class ReplaySubject<T> extends Subject<T, T> {
          */
         I replayObserverFromIndexTest(
                 I idx, SubjectObserver<? super T> observer, long now);
-        /**
-         * @return the size of the replay state map for testing purposes.
-         */
-        int replayStateSize();
         /**
          * Add an OnNext value to the buffer
          * @param value the value to add
@@ -756,7 +715,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         @Override
         public void call(SubjectObserver<T> t1) {
             NodeList.Node<Object> l = state.replayObserverFromIndex(state.head(), t1);
-            state.addState(t1, l);
+            t1.index(l);
         }
         
     }
@@ -783,7 +742,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                 // accept all if terminated
                 l = state.replayObserverFromIndex(state.head(), t1);
             }
-            state.addState(t1, l);
+            t1.index(l);
         }
         
     }
