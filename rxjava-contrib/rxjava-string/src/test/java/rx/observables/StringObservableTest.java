@@ -33,6 +33,7 @@ import java.nio.charset.CharsetDecoder;
 import java.nio.charset.MalformedInputException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
@@ -246,6 +247,22 @@ public class StringObservableTest {
         assertArrayEquals(inBytes, outBytes);
     }
 
+    @Test
+    public void testFromInputStreamWillUnsubscribeBeforeCallingNextRead() {
+        final byte[] inBytes = "test".getBytes();
+        final AtomicInteger numReads = new AtomicInteger(0);
+        ByteArrayInputStream is = new ByteArrayInputStream(inBytes) {
+
+            @Override
+            public synchronized int read(byte[] b, int off, int len) {
+                numReads.incrementAndGet();
+                return super.read(b, off, len);
+            }
+        };
+        StringObservable.from(is).first().toBlockingObservable().single();
+        assertEquals(1, numReads.get());
+    }
+    
     @Test
     public void testFromReader() {
         final String inStr = "test";
