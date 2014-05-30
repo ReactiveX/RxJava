@@ -15,14 +15,16 @@
  */
 package rx.schedulers;
 
-import java.util.concurrent.Executors;
 import rx.Scheduler;
+import rx.internal.util.RxThreadFactory;
+
+import java.util.concurrent.Executors;
 
 public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
 
     @Override
     protected Scheduler getScheduler() {
-        return Schedulers.from(Executors.newFixedThreadPool(2, new NewThreadScheduler.RxThreadFactory("TestCustomPool-")));
+        return Schedulers.from(Executors.newFixedThreadPool(2, new RxThreadFactory("TestCustomPool-")));
     }
     
 }

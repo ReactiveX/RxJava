@@ -15,12 +15,13 @@
  */
 package rx.schedulers;
 
+import rx.Scheduler;
+import rx.internal.util.RxThreadFactory;
+
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-
-import rx.Scheduler;
 
 /**
  * A default {@link ScheduledExecutorService} that can be used for scheduling actions when a {@link Scheduler} implementation doesn't have that ability.
@@ -34,7 +35,7 @@ import rx.Scheduler;
 /* package */final class GenericScheduledExecutorService {
 
     private static final String THREAD_NAME_PREFIX = "RxScheduledExecutorPool-";
-    private static final NewThreadScheduler.RxThreadFactory THREAD_FACTORY = new NewThreadScheduler.RxThreadFactory(THREAD_NAME_PREFIX);
+    private static final RxThreadFactory THREAD_FACTORY = new RxThreadFactory(THREAD_NAME_PREFIX);
     
     private final static GenericScheduledExecutorService INSTANCE = new GenericScheduledExecutorService();
     private final ScheduledExecutorService executor;

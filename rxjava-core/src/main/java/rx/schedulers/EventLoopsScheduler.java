@@ -15,16 +15,17 @@
  */
 package rx.schedulers;
 
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
-
 import rx.Scheduler;
 import rx.Subscription;
 import rx.functions.Action0;
-import rx.schedulers.NewThreadScheduler.NewThreadWorker.ScheduledAction;
-import rx.schedulers.NewThreadScheduler.RxThreadFactory;
+import rx.internal.schedulers.NewThreadWorker;
+import rx.internal.schedulers.ScheduledAction;
+import rx.internal.util.RxThreadFactory;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.Subscriptions;
+
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 
 /* package */class EventLoopsScheduler extends Scheduler {
     /** Manages a fixed number of workers. */
@@ -104,7 +105,7 @@ import rx.subscriptions.Subscriptions;
         }
     }
     
-    private static final class PoolWorker extends NewThreadScheduler.NewThreadWorker {
+    private static final class PoolWorker extends NewThreadWorker {
         PoolWorker(ThreadFactory threadFactory) {
             super(threadFactory);
         }
