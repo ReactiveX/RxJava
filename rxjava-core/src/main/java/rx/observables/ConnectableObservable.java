@@ -27,7 +27,7 @@ import rx.internal.operators.OnSubscribeRefCount;
  * can wait for all intended {@link Subscriber}s to {@link Observable#subscribe} to the {@code Observable}
  * before the {@code Observable} begins emitting items.
  * <p>
- * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/publishConnect.png">
+ * <img width="640" height="510" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/publishConnect.png">
  * 
  * @see <a href="https://github.com/Netflix/RxJava/wiki/Connectable-Observable-Operators">RxJava Wiki:
  *      Connectable Observable Operators</a>
