@@ -44,12 +44,12 @@ import rx.subscriptions.CompositeSubscription;
  * @param <R> the value type of the groups
  * @param <D> the type of the duration
  */
-public class OnSubscribeGroupByUntil<T, K, R, D> implements Operator<GroupedObservable<K, R>, T> {
+public class OperatorGroupByUntil<T, K, R, D> implements Operator<GroupedObservable<K, R>, T> {
     final Func1<? super T, ? extends K> keySelector;
     final Func1<? super T, ? extends R> valueSelector;
     final Func1<? super GroupedObservable<K, R>, ? extends Observable<? extends D>> durationSelector;
 
-    public OnSubscribeGroupByUntil(
+    public OperatorGroupByUntil(
             Func1<? super T, ? extends K> keySelector,
             Func1<? super T, ? extends R> valueSelector,
             Func1<? super GroupedObservable<K, R>, ? extends Observable<? extends D>> durationSelector) {

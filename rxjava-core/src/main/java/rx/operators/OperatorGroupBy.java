@@ -37,11 +37,11 @@ import rx.subscriptions.Subscriptions;
  * @param <K> the key type
  * @param <T> the source and group value type
  */
-public final class OnSubscribeGroupBy<K, T> implements Operator<GroupedObservable<K, T>, T> {
+public final class OperatorGroupBy<K, T> implements Operator<GroupedObservable<K, T>, T> {
     
     final Func1<? super T, ? extends K> keySelector;
     
-    public OnSubscribeGroupBy(final Func1<? super T, ? extends K> keySelector) {
+    public OperatorGroupBy(final Func1<? super T, ? extends K> keySelector) {
         this.keySelector = keySelector;
     }
     
