@@ -31,7 +31,7 @@ import rx.functions.Func1;
 import rx.functions.Func2;
 import rx.subjects.PublishSubject;
 
-public class OperatorJoinTest {
+public class OnSubscribeJoinTest {
     @Mock
     Observer<Object> observer;
 

@@ -34,7 +34,7 @@ import rx.subscriptions.Subscriptions;
  * This is blocking so the Subscription returned when calling
  * <code>Observable.unsafeSubscribe(Observer)</code> does nothing.
  */
-public class OperatorToObservableFuture {
+public class OnSubscribeToObservableFuture {
     /* package accessible for unit tests */static class ToObservableFuture<T> implements OnSubscribe<T> {
         private final Future<? extends T> that;
         private final long time;

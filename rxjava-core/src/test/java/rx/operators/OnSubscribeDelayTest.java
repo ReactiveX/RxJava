@@ -43,7 +43,7 @@ import rx.functions.Func1;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
 
-public class OperatorDelayTest {
+public class OnSubscribeDelayTest {
     @Mock
     private Observer<Long> observer;
     @Mock

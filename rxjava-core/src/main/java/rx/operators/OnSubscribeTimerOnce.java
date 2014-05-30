@@ -26,12 +26,12 @@ import rx.functions.Action0;
  * Timer that emits a single 0L and completes after the specified time.
  * @see <a href='http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.timer.aspx'>MSDN Observable.Timer</a>
  */
-public final class OperatorTimerOnce implements OnSubscribe<Long> {
+public final class OnSubscribeTimerOnce implements OnSubscribe<Long> {
     final long time;
     final TimeUnit unit;
     final Scheduler scheduler;
 
-    public OperatorTimerOnce(long time, TimeUnit unit, Scheduler scheduler) {
+    public OnSubscribeTimerOnce(long time, TimeUnit unit, Scheduler scheduler) {
         this.time = time;
         this.unit = unit;
         this.scheduler = scheduler;

@@ -26,13 +26,13 @@ import rx.functions.Action0;
  * Emit 0L after the initial period and ever increasing number after each period.
  * @see <a href='http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.timer.aspx'>MSDN Observable.Timer</a>
  */
-public final class OperatorTimerPeriodically implements OnSubscribe<Long> {
+public final class OnSubscribeTimerPeriodically implements OnSubscribe<Long> {
     final long initialDelay;
     final long period;
     final TimeUnit unit;
     final Scheduler scheduler;
 
-    public OperatorTimerPeriodically(long initialDelay, long period, TimeUnit unit, Scheduler scheduler) {
+    public OnSubscribeTimerPeriodically(long initialDelay, long period, TimeUnit unit, Scheduler scheduler) {
         this.initialDelay = initialDelay;
         this.period = period;
         this.unit = unit;

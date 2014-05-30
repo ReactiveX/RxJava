@@ -29,14 +29,14 @@ import rx.functions.Func1;
  * Delays the emission of onNext events by a given amount of time.
  * @param <T> the value type
  */
-public final class OperatorDelay<T> implements OnSubscribe<T> {
+public final class OnSubscribeDelay<T> implements OnSubscribe<T> {
 
     final Observable<? extends T> source;
     final long delay;
     final TimeUnit unit;
     final Scheduler scheduler;
 
-    public OperatorDelay(Observable<? extends T> source, long delay, TimeUnit unit, Scheduler scheduler) {
+    public OnSubscribeDelay(Observable<? extends T> source, long delay, TimeUnit unit, Scheduler scheduler) {
         this.source = source;
         this.delay = delay;
         this.unit = unit;

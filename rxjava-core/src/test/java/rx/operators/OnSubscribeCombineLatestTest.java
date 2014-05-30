@@ -48,7 +48,7 @@ import rx.functions.FuncN;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 
-public class OperatorCombineLatestTest {
+public class OnSubscribeCombineLatestTest {
 
     @Test
     public void testCombineLatestWithFunctionThatThrowsAnException() {

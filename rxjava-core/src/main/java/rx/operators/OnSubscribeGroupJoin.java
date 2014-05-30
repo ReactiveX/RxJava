@@ -44,14 +44,14 @@ import rx.subscriptions.RefCountSubscription;
  * @param <D2> the value type of the right duration
  * @param <R> the result value type
  */
-public final class OperatorGroupJoin<T1, T2, D1, D2, R> implements OnSubscribe<R> {
+public final class OnSubscribeGroupJoin<T1, T2, D1, D2, R> implements OnSubscribe<R> {
     protected final Observable<T1> left;
     protected final Observable<T2> right;
     protected final Func1<? super T1, ? extends Observable<D1>> leftDuration;
     protected final Func1<? super T2, ? extends Observable<D2>> rightDuration;
     protected final Func2<? super T1, ? super Observable<T2>, ? extends R> resultSelector;
 
-    public OperatorGroupJoin(
+    public OnSubscribeGroupJoin(
             Observable<T1> left,
             Observable<T2> right,
             Func1<? super T1, ? extends Observable<D1>> leftDuration,

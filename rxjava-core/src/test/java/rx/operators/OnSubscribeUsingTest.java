@@ -36,7 +36,7 @@ import rx.functions.Func0;
 import rx.functions.Func1;
 import rx.subscriptions.Subscriptions;
 
-public class OperatorUsingTest {
+public class OnSubscribeUsingTest {
 
     private static interface Resource extends Subscription {
         public String getTextFromWeb();

@@ -28,7 +28,7 @@ import org.mockito.Mockito;
 import rx.Observable;
 import rx.Observer;
 
-public class OperatorFromIterableTest {
+public class OnSubscribeFromIterableTest {
 
     @Test
     public void testIterable() {
