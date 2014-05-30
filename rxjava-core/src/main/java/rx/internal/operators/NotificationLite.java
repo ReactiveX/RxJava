@@ -31,8 +31,6 @@ import rx.Observer;
  * It's implemented as a singleton to maintain some semblance of type safety that is completely
  * non-existent.
  * 
- * @author gscampbell
- * 
  * @param <T>
  */
 public final class NotificationLite<T> {
@@ -89,8 +87,7 @@ public final class NotificationLite<T> {
     }
 
     /**
-     * Create a lite onError notification. This call does new up an object to wrap the
-     * {@link Throwable} but since there should only be one of these the performance impact should
+     * Create a lite onError notification. This call does new up an object to wrap the {@link Throwable} but since there should only be one of these the performance impact should
      * be small. Can be unwrapped and sent with the {@link #accept} method.
      * 
      * @param e
@@ -106,25 +103,27 @@ public final class NotificationLite<T> {
      * @param o
      *            the {@link Observer} to call onNext, onCompleted or onError.
      * @param n
+     * @return true if the n was a termination event
      * @throws IllegalArgumentException
      *             if the notification is null.
      * @throws NullPointerException
      *             if the {@link Observer} is null.
      */
     @SuppressWarnings("unchecked")
-    public void accept(Observer<? super T> o, Object n) {
+    public boolean accept(Observer<? super T> o, Object n) {
         if (n == ON_COMPLETED_SENTINEL) {
             o.onCompleted();
-        } else
-        if (n == ON_NEXT_NULL_SENTINEL) {
+            return true;
+        } else if (n == ON_NEXT_NULL_SENTINEL) {
             o.onNext(null);
-        } else
-        if (n != null) {
+            return false;
+        } else if (n != null) {
             if (n.getClass() == OnErrorSentinel.class) {
-                o.onError(((OnErrorSentinel)n).e);
-            } else {
-                o.onNext((T)n);
+                o.onError(((OnErrorSentinel) n).e);
+                return true;
             }
+            o.onNext((T) n);
+            return false;
         } else {
             throw new IllegalArgumentException("The lite notification can not be null");
         }
@@ -139,8 +138,7 @@ public final class NotificationLite<T> {
     }
 
     /**
-     * If there is custom logic that isn't as simple as call the right method on an {@link Observer}
-     * then this method can be used to get the {@link rx.Notification.Kind}
+     * If there is custom logic that isn't as simple as call the right method on an {@link Observer} then this method can be used to get the {@link rx.Notification.Kind}
      * 
      * @param n
      * @return the kind of the raw object
