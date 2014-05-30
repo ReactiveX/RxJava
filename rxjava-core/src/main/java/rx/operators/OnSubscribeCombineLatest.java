@@ -37,11 +37,11 @@ import rx.observers.SerializedSubscriber;
  * @param <T> the common basetype of the source values
  * @param <R> the result type of the combinator function
  */
-public final class OperatorCombineLatest<T, R> implements OnSubscribe<R> {
+public final class OnSubscribeCombineLatest<T, R> implements OnSubscribe<R> {
     final List<? extends Observable<? extends T>> sources;
     final FuncN<? extends R> combinator;
 
-    public OperatorCombineLatest(List<? extends Observable<? extends T>> sources, FuncN<? extends R> combinator) {
+    public OnSubscribeCombineLatest(List<? extends Observable<? extends T>> sources, FuncN<? extends R> combinator) {
         this.sources = sources;
         this.combinator = combinator;
     }

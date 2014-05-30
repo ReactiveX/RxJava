@@ -31,7 +31,7 @@ import rx.Observer;
 import rx.Subscription;
 import rx.observers.TestObserver;
 
-public class OperatorToObservableFutureTest {
+public class OnSubscribeToObservableFutureTest {
 
     @Test
     public void testSuccess() throws Exception {

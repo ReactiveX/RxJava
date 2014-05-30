@@ -28,7 +28,7 @@ import rx.observables.ConnectableObservable;
 import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
 
-public class OperatorMulticastTest {
+public class OnSubscribeMulticastTest {
 
     @Test
     public void testMulticast() {

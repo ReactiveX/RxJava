@@ -39,14 +39,14 @@ import rx.subscriptions.SerialSubscription;
  * @param <TRightDuration> the right duration type
  * @param <R> the result type
  */
-public final class OperatorJoin<TLeft, TRight, TLeftDuration, TRightDuration, R> implements OnSubscribe<R> {
+public final class OnSubscribeJoin<TLeft, TRight, TLeftDuration, TRightDuration, R> implements OnSubscribe<R> {
     final Observable<TLeft> left;
     final Observable<TRight> right;
     final Func1<TLeft, Observable<TLeftDuration>> leftDurationSelector;
     final Func1<TRight, Observable<TRightDuration>> rightDurationSelector;
     final Func2<TLeft, TRight, R> resultSelector;
 
-    public OperatorJoin(
+    public OnSubscribeJoin(
             Observable<TLeft> left,
             Observable<TRight> right,
             Func1<TLeft, Observable<TLeftDuration>> leftDurationSelector,

@@ -40,7 +40,7 @@ import rx.subjects.PublishSubject;
 import rx.subjects.ReplaySubject;
 import rx.subjects.Subject;
 
-public class OperatorCacheTest {
+public class OnSubscribeCacheTest {
 
     @Test
     public void testCache() throws InterruptedException {
@@ -107,7 +107,7 @@ public class OperatorCacheTest {
                     }
                 });
         
-        Observable<Integer> source1 = Observable.create(new OperatorCache<Integer>(source0, subject));
+        Observable<Integer> source1 = Observable.create(new OnSubscribeCache<Integer>(source0, subject));
         
         Observable<Integer> source2 = source1
                 .repeat(4)

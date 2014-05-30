@@ -41,7 +41,7 @@ public final class OperatorParallel<T, R> implements Operator<R, T> {
     public Subscriber<? super T> call(Subscriber<? super R> op) {
 
         Func1<Subscriber<? super GroupedObservable<Long, T>>, Subscriber<? super T>> groupBy =
-                new OperatorGroupBy<Long, T>(new Func1<T, Long>() {
+                new OnSubscribeGroupBy<Long, T>(new Func1<T, Long>() {
 
                     long i = 0;
 

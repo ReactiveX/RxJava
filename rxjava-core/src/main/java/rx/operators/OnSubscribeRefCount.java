@@ -31,7 +31,7 @@ import rx.subscriptions.Subscriptions;
  * as there is at least one subscription to the observable sequence.
  * @param <T> the value type
  */
-public final class OperatorRefCount<T> implements OnSubscribe<T> {
+public final class OnSubscribeRefCount<T> implements OnSubscribe<T> {
     final ConnectableObservable<? extends T> source;
     final Object guard;
     /** Guarded by guard. */
@@ -48,7 +48,7 @@ public final class OperatorRefCount<T> implements OnSubscribe<T> {
     final Map<Token, Object> connectionStatus;
     /** Occupied indicator. */
     private static final Object OCCUPIED = new Object();
-    public OperatorRefCount(ConnectableObservable<? extends T> source) {
+    public OnSubscribeRefCount(ConnectableObservable<? extends T> source) {
         this.source = source;
         this.guard = new Object();
         this.connectionStatus = new WeakHashMap<Token, Object>();

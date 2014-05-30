@@ -21,7 +21,7 @@ import rx.Subscriber;
 import rx.functions.Func0;
 import rx.functions.Func1;
 import rx.observers.SerializedSubscriber;
-import rx.operators.OperatorDelay.Emitter;
+import rx.operators.OnSubscribeDelay.Emitter;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -30,12 +30,12 @@ import rx.subscriptions.CompositeSubscription;
  * @param <U> the value type of the subscription-delaying observable
  * @param <V> the value type of the item-delaying observable
  */
-public final class OperatorDelayWithSelector<T, U, V> implements OnSubscribe<T> {
+public final class OnSubscribeDelayWithSelector<T, U, V> implements OnSubscribe<T> {
     final Observable<? extends T> source;
     final Func0<? extends Observable<U>> subscriptionDelay;
     final Func1<? super T, ? extends Observable<V>> itemDelay;
 
-    public OperatorDelayWithSelector(Observable<? extends T> source, Func1<? super T, ? extends Observable<V>> itemDelay) {
+    public OnSubscribeDelayWithSelector(Observable<? extends T> source, Func1<? super T, ? extends Observable<V>> itemDelay) {
         this.source = source;
         this.subscriptionDelay = new Func0<Observable<U>>() {
             @Override
@@ -46,7 +46,7 @@ public final class OperatorDelayWithSelector<T, U, V> implements OnSubscribe<T> 
         this.itemDelay = itemDelay;
     }
 
-    public OperatorDelayWithSelector(Observable<? extends T> source, Func0<? extends Observable<U>> subscriptionDelay, Func1<? super T, ? extends Observable<V>> itemDelay) {
+    public OnSubscribeDelayWithSelector(Observable<? extends T> source, Func0<? extends Observable<U>> subscriptionDelay, Func1<? super T, ? extends Observable<V>> itemDelay) {
         this.source = source;
         this.subscriptionDelay = subscriptionDelay;
         this.itemDelay = itemDelay;

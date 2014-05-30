@@ -28,13 +28,13 @@ import rx.functions.Action0;
  * 
  * @param <T> the value type
  */
-public final class OperatorDelaySubscription<T> implements OnSubscribe<T> {
+public final class OnSubscribeDelaySubscription<T> implements OnSubscribe<T> {
     final Observable<? extends T> source;
     final long time;
     final TimeUnit unit;
     final Scheduler scheduler;
 
-    public OperatorDelaySubscription(Observable<? extends T> source, long time, TimeUnit unit, Scheduler scheduler) {
+    public OnSubscribeDelaySubscription(Observable<? extends T> source, long time, TimeUnit unit, Scheduler scheduler) {
         this.source = source;
         this.time = time;
         this.unit = unit;

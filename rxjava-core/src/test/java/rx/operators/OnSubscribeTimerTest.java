@@ -39,7 +39,7 @@ import rx.exceptions.TestException;
 import rx.observables.ConnectableObservable;
 import rx.schedulers.TestScheduler;
 
-public class OperatorTimerTest {
+public class OnSubscribeTimerTest {
     @Mock
     Observer<Object> observer;
     @Mock

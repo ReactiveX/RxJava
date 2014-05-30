@@ -36,12 +36,12 @@ import rx.subjects.Subject;
  * @param <TIntermediate> the intermediate type
  * @param <TResult> the result type
  */
-public final class OperatorMulticastSelector<TInput, TIntermediate, TResult> implements OnSubscribe<TResult> {
+public final class OnSubscribeMulticastSelector<TInput, TIntermediate, TResult> implements OnSubscribe<TResult> {
     final Observable<? extends TInput> source;
     final Func0<? extends Subject<? super TInput, ? extends TIntermediate>> subjectFactory;
     final Func1<? super Observable<TIntermediate>, ? extends Observable<TResult>> resultSelector;
     
-    public OperatorMulticastSelector(Observable<? extends TInput> source,
+    public OnSubscribeMulticastSelector(Observable<? extends TInput> source,
             Func0<? extends Subject<? super TInput, ? extends TIntermediate>> subjectFactory,
             Func1<? super Observable<TIntermediate>, ? extends Observable<TResult>> resultSelector) {
         this.source = source;

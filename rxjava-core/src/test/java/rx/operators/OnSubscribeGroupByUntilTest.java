@@ -45,7 +45,7 @@ import rx.functions.Func1;
 import rx.functions.Functions;
 import rx.observables.GroupedObservable;
 
-public class OperatorGroupByUntilTest {
+public class OnSubscribeGroupByUntilTest {
     @Mock
     Observer<Object> observer;
 

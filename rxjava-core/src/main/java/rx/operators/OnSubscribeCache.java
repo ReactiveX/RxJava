@@ -40,19 +40,19 @@ import rx.subjects.Subject;
  * @param <T>
  *            the cached value type
  */
-public final class OperatorCache<T> implements OnSubscribe<T> {
+public final class OnSubscribeCache<T> implements OnSubscribe<T> {
     protected final Observable<? extends T> source;
     protected final Subject<? super T, ? extends T> cache;
     volatile int sourceSubscribed;
     @SuppressWarnings("rawtypes")
-    static final AtomicIntegerFieldUpdater<OperatorCache> SRC_SUBSCRIBED_UPDATER
-            = AtomicIntegerFieldUpdater.newUpdater(OperatorCache.class, "sourceSubscribed");
+    static final AtomicIntegerFieldUpdater<OnSubscribeCache> SRC_SUBSCRIBED_UPDATER
+            = AtomicIntegerFieldUpdater.newUpdater(OnSubscribeCache.class, "sourceSubscribed");
 
-    public OperatorCache(Observable<? extends T> source) {
+    public OnSubscribeCache(Observable<? extends T> source) {
         this(source, ReplaySubject.<T> create());
     }
 
-    /* accessible to tests */OperatorCache(Observable<? extends T> source, Subject<? super T, ? extends T> cache) {
+    /* accessible to tests */OnSubscribeCache(Observable<? extends T> source, Subject<? super T, ? extends T> cache) {
         this.source = source;
         this.cache = cache;
     }

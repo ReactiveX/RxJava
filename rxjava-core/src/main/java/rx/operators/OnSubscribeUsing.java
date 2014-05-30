@@ -25,12 +25,12 @@ import rx.functions.Func1;
 /**
  * Constructs an observable sequence that depends on a resource object.
  */
-public final class OperatorUsing<T, Resource extends Subscription> implements OnSubscribe<T> {
+public final class OnSubscribeUsing<T, Resource extends Subscription> implements OnSubscribe<T> {
 
     private final Func0<Resource> resourceFactory;
     private final Func1<Resource, ? extends Observable<? extends T>> observableFactory;
 
-    public OperatorUsing(Func0<Resource> resourceFactory, Func1<Resource, ? extends Observable<? extends T>> observableFactory) {
+    public OnSubscribeUsing(Func0<Resource> resourceFactory, Func1<Resource, ? extends Observable<? extends T>> observableFactory) {
         this.resourceFactory = resourceFactory;
         this.observableFactory = observableFactory;
     }

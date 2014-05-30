@@ -31,7 +31,7 @@ import rx.exceptions.TestException;
 import rx.functions.Func0;
 
 @SuppressWarnings("unchecked")
-public class OperatorDeferTest {
+public class OnSubscribeDeferTest {
 
     @Test
     public void testDefer() throws Throwable {

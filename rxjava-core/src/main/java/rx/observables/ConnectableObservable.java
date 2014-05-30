@@ -19,7 +19,7 @@ import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Action1;
-import rx.operators.OperatorRefCount;
+import rx.operators.OnSubscribeRefCount;
 
 /**
  * A {@code ConnectableObservable} resembles an ordinary {@link Observable}, except that it does not begin
@@ -75,6 +75,6 @@ public abstract class ConnectableObservable<T> extends Observable<T> {
      * @return a {@link Observable}
      */
     public Observable<T> refCount() {
-        return create(new OperatorRefCount<T>(this));
+        return create(new OnSubscribeRefCount<T>(this));
     }
 }

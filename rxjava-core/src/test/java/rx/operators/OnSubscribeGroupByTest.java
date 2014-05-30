@@ -50,7 +50,7 @@ import rx.functions.Func1;
 import rx.observables.GroupedObservable;
 import rx.schedulers.Schedulers;
 
-public class OperatorGroupByTest {
+public class OnSubscribeGroupByTest {
 
     final Func1<String, Integer> length = new Func1<String, Integer>() {
         @Override
@@ -62,7 +62,7 @@ public class OperatorGroupByTest {
     @Test
     public void testGroupBy() {
         Observable<String> source = Observable.from("one", "two", "three", "four", "five", "six");
-        Observable<GroupedObservable<Integer, String>> grouped = source.lift(new OperatorGroupBy<Integer, String>(length));
+        Observable<GroupedObservable<Integer, String>> grouped = source.lift(new OnSubscribeGroupBy<Integer, String>(length));
 
         Map<Integer, Collection<String>> map = toMap(grouped);
 
@@ -75,7 +75,7 @@ public class OperatorGroupByTest {
     @Test
     public void testEmpty() {
         Observable<String> source = Observable.empty();
-        Observable<GroupedObservable<Integer, String>> grouped = source.lift(new OperatorGroupBy<Integer, String>(length));
+        Observable<GroupedObservable<Integer, String>> grouped = source.lift(new OnSubscribeGroupBy<Integer, String>(length));
 
         Map<Integer, Collection<String>> map = toMap(grouped);
 
@@ -88,7 +88,7 @@ public class OperatorGroupByTest {
         Observable<String> errorSource = Observable.error(new RuntimeException("forced failure"));
         Observable<String> source = Observable.concat(sourceStrings, errorSource);
 
-        Observable<GroupedObservable<Integer, String>> grouped = source.lift(new OperatorGroupBy<Integer, String>(length));
+        Observable<GroupedObservable<Integer, String>> grouped = source.lift(new OnSubscribeGroupBy<Integer, String>(length));
 
         final AtomicInteger groupCounter = new AtomicInteger();
         final AtomicInteger eventCounter = new AtomicInteger();

@@ -30,10 +30,10 @@ import rx.functions.Func0;
  * return an Observable that will call this function to generate its Observable sequence afresh
  * each time a new Observer subscribes.
  */
-public final class OperatorDefer<T> implements OnSubscribe<T> {
+public final class OnSubscribeDefer<T> implements OnSubscribe<T> {
     final Func0<? extends Observable<? extends T>> observableFactory;
 
-    public OperatorDefer(Func0<? extends Observable<? extends T>> observableFactory) {
+    public OnSubscribeDefer(Func0<? extends Observable<? extends T>> observableFactory) {
         this.observableFactory = observableFactory;
     }
 

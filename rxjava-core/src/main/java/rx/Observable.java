@@ -183,7 +183,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229115.aspx">MSDN: Observable.Amb</a>
      */
     public final static <T> Observable<T> amb(Iterable<? extends Observable<? extends T>> sources) {
-        return create(OperatorAmb.amb(sources));
+        return create(OnSubscribeAmb.amb(sources));
     }
 
     /**
@@ -201,7 +201,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229733.aspx">MSDN: Observable.Amb</a>
      */
     public final static <T> Observable<T> amb(Observable<? extends T> o1, Observable<? extends T> o2) {
-        return create(OperatorAmb.amb(o1, o2));
+        return create(OnSubscribeAmb.amb(o1, o2));
     }
 
     /**
@@ -221,7 +221,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229733.aspx">MSDN: Observable.Amb</a>
      */
     public final static <T> Observable<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3) {
-        return create(OperatorAmb.amb(o1, o2, o3));
+        return create(OnSubscribeAmb.amb(o1, o2, o3));
     }
 
     /**
@@ -243,7 +243,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229733.aspx">MSDN: Observable.Amb</a>
      */
     public final static <T> Observable<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4) {
-        return create(OperatorAmb.amb(o1, o2, o3, o4));
+        return create(OnSubscribeAmb.amb(o1, o2, o3, o4));
     }
 
     /**
@@ -267,7 +267,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229733.aspx">MSDN: Observable.Amb</a>
      */
     public final static <T> Observable<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4, Observable<? extends T> o5) {
-        return create(OperatorAmb.amb(o1, o2, o3, o4, o5));
+        return create(OnSubscribeAmb.amb(o1, o2, o3, o4, o5));
     }
 
     /**
@@ -293,7 +293,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229733.aspx">MSDN: Observable.Amb</a>
      */
     public final static <T> Observable<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4, Observable<? extends T> o5, Observable<? extends T> o6) {
-        return create(OperatorAmb.amb(o1, o2, o3, o4, o5, o6));
+        return create(OnSubscribeAmb.amb(o1, o2, o3, o4, o5, o6));
     }
 
     /**
@@ -321,7 +321,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229733.aspx">MSDN: Observable.Amb</a>
      */
     public final static <T> Observable<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4, Observable<? extends T> o5, Observable<? extends T> o6, Observable<? extends T> o7) {
-        return create(OperatorAmb.amb(o1, o2, o3, o4, o5, o6, o7));
+        return create(OnSubscribeAmb.amb(o1, o2, o3, o4, o5, o6, o7));
     }
 
     /**
@@ -351,7 +351,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229733.aspx">MSDN: Observable.Amb</a>
      */
     public final static <T> Observable<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4, Observable<? extends T> o5, Observable<? extends T> o6, Observable<? extends T> o7, Observable<? extends T> o8) {
-        return create(OperatorAmb.amb(o1, o2, o3, o4, o5, o6, o7, o8));
+        return create(OnSubscribeAmb.amb(o1, o2, o3, o4, o5, o6, o7, o8));
     }
 
     /**
@@ -383,7 +383,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229733.aspx">MSDN: Observable.Amb</a>
      */
     public final static <T> Observable<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4, Observable<? extends T> o5, Observable<? extends T> o6, Observable<? extends T> o7, Observable<? extends T> o8, Observable<? extends T> o9) {
-        return create(OperatorAmb.amb(o1, o2, o3, o4, o5, o6, o7, o8, o9));
+        return create(OnSubscribeAmb.amb(o1, o2, o3, o4, o5, o6, o7, o8, o9));
     }
 
     /**
@@ -642,7 +642,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#wiki-combinelatest">RxJava Wiki: combineLatest()</a>
      */
     public static final <T, R> Observable<R> combineLatest(List<? extends Observable<? extends T>> sources, FuncN<? extends R> combineFunction) {
-        return create(new OperatorCombineLatest<T, R>(sources, combineFunction));
+        return create(new OnSubscribeCombineLatest<T, R>(sources, combineFunction));
     }
 
     /**
@@ -891,7 +891,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#wiki-defer">RxJava Wiki: defer()</a>
      */
     public final static <T> Observable<T> defer(Func0<? extends Observable<? extends T>> observableFactory) {
-        return create(new OperatorDefer<T>(observableFactory));
+        return create(new OnSubscribeDefer<T>(observableFactory));
     }
 
     /**
@@ -991,7 +991,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#wiki-from">RxJava Wiki: from()</a>
      */
     public final static <T> Observable<T> from(Future<? extends T> future) {
-        return create(OperatorToObservableFuture.toObservableFuture(future));
+        return create(OnSubscribeToObservableFuture.toObservableFuture(future));
     }
 
     /**
@@ -1018,7 +1018,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#wiki-from">RxJava Wiki: from()</a>
      */
     public final static <T> Observable<T> from(Future<? extends T> future, long timeout, TimeUnit unit) {
-        return create(OperatorToObservableFuture.toObservableFuture(future, timeout, unit));
+        return create(OnSubscribeToObservableFuture.toObservableFuture(future, timeout, unit));
     }
 
     /**
@@ -1043,7 +1043,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#wiki-from">RxJava Wiki: from()</a>
      */
     public final static <T> Observable<T> from(Future<? extends T> future, Scheduler scheduler) {
-        return create(OperatorToObservableFuture.toObservableFuture(future)).subscribeOn(scheduler);
+        return create(OnSubscribeToObservableFuture.toObservableFuture(future)).subscribeOn(scheduler);
     }
 
     /**
@@ -1402,7 +1402,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229027.aspx">MSDN: Observable.Interval</a>
      */
     public final static Observable<Long> interval(long interval, TimeUnit unit) {
-        return create(new OperatorTimerPeriodically(interval, interval, unit, Schedulers.computation()));
+        return create(new OnSubscribeTimerPeriodically(interval, interval, unit, Schedulers.computation()));
     }
 
     /**
@@ -1422,7 +1422,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh228911.aspx">MSDN: Observable.Interval</a>
      */
     public final static Observable<Long> interval(long interval, TimeUnit unit, Scheduler scheduler) {
-        return create(new OperatorTimerPeriodically(interval, interval, unit, scheduler));
+        return create(new OnSubscribeTimerPeriodically(interval, interval, unit, scheduler));
     }
 
     /**
@@ -2452,7 +2452,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229652.aspx">MSDN: Observable.Timer</a>
      */
     public final static Observable<Long> timer(long initialDelay, long period, TimeUnit unit, Scheduler scheduler) {
-        return create(new OperatorTimerPeriodically(initialDelay, period, unit, scheduler));
+        return create(new OnSubscribeTimerPeriodically(initialDelay, period, unit, scheduler));
     }
 
     /**
@@ -2488,7 +2488,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#wiki-timer">RxJava wiki: timer()</a>
      */
     public final static Observable<Long> timer(long delay, TimeUnit unit, Scheduler scheduler) {
-        return create(new OperatorTimerOnce(delay, unit, scheduler));
+        return create(new OnSubscribeTimerOnce(delay, unit, scheduler));
     }
 
     /**
@@ -2505,7 +2505,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229585.aspx">MSDN: Observable.Using</a>
      */
     public final static <T, Resource extends Subscription> Observable<T> using(Func0<Resource> resourceFactory, Func1<Resource, ? extends Observable<? extends T>> observableFactory) {
-        return create(new OperatorUsing<T, Resource>(resourceFactory, observableFactory));
+        return create(new OnSubscribeUsing<T, Resource>(resourceFactory, observableFactory));
     }
 
     /**
@@ -3192,7 +3192,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#wiki-cache">RxJava Wiki: cache()</a>
      */
     public final Observable<T> cache() {
-        return create(new OperatorCache<T>(this));
+        return create(new OnSubscribeCache<T>(this));
     }
 
     /**
@@ -3424,7 +3424,7 @@ public class Observable<T> {
     public final <U, V> Observable<T> delay(
             Func0<? extends Observable<U>> subscriptionDelay,
             Func1<? super T, ? extends Observable<V>> itemDelay) {
-        return create(new OperatorDelayWithSelector<T, U, V>(this, subscriptionDelay, itemDelay));
+        return create(new OnSubscribeDelayWithSelector<T, U, V>(this, subscriptionDelay, itemDelay));
     }
 
     /**
@@ -3446,7 +3446,7 @@ public class Observable<T> {
      *         per-item basis
      */
     public final <U> Observable<T> delay(Func1<? super T, ? extends Observable<U>> itemDelay) {
-        return create(new OperatorDelayWithSelector<T, U, U>(this, itemDelay));
+        return create(new OnSubscribeDelayWithSelector<T, U, U>(this, itemDelay));
     }
 
     /**
@@ -3464,7 +3464,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229810.aspx">MSDN: Observable.Delay</a>
      */
     public final Observable<T> delay(long delay, TimeUnit unit) {
-        return create(new OperatorDelay<T>(this, delay, unit, Schedulers.computation()));
+        return create(new OnSubscribeDelay<T>(this, delay, unit, Schedulers.computation()));
     }
 
     /**
@@ -3484,7 +3484,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229280.aspx">MSDN: Observable.Delay</a>
      */
     public final Observable<T> delay(long delay, TimeUnit unit, Scheduler scheduler) {
-        return create(new OperatorDelay<T>(this, delay, unit, scheduler));
+        return create(new OnSubscribeDelay<T>(this, delay, unit, scheduler));
     }
 
     /**
@@ -3518,7 +3518,7 @@ public class Observable<T> {
      *         amount, waiting and subscribing on the given Scheduler
      */
     public final Observable<T> delaySubscription(long delay, TimeUnit unit, Scheduler scheduler) {
-        return create(new OperatorDelaySubscription<T>(this, delay, unit, scheduler));
+        return create(new OnSubscribeDelaySubscription<T>(this, delay, unit, scheduler));
     }
 
     /**
@@ -4039,7 +4039,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#wiki-groupby-and-groupbyuntil">RxJava Wiki: groupBy</a>
      */
     public final <K> Observable<GroupedObservable<K, T>> groupBy(final Func1<? super T, ? extends K> keySelector) {
-        return lift(new OperatorGroupBy<K, T>(keySelector));
+        return lift(new OnSubscribeGroupBy<K, T>(keySelector));
     }
 
     /**
@@ -4082,7 +4082,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229433.aspx">MSDN: Observable.GroupByUntil</a>
      */
     public final <TKey, TValue, TDuration> Observable<GroupedObservable<TKey, TValue>> groupByUntil(Func1<? super T, ? extends TKey> keySelector, Func1<? super T, ? extends TValue> valueSelector, Func1<? super GroupedObservable<TKey, TValue>, ? extends Observable<? extends TDuration>> durationSelector) {
-        return lift(new OperatorGroupByUntil<T, TKey, TValue, TDuration>(keySelector, valueSelector, durationSelector));
+        return lift(new OnSubscribeGroupByUntil<T, TKey, TValue, TDuration>(keySelector, valueSelector, durationSelector));
     }
 
     /**
@@ -4109,7 +4109,7 @@ public class Observable<T> {
     public final <T2, D1, D2, R> Observable<R> groupJoin(Observable<T2> right, Func1<? super T, ? extends Observable<D1>> leftDuration,
             Func1<? super T2, ? extends Observable<D2>> rightDuration,
             Func2<? super T, ? super Observable<T2>, ? extends R> resultSelector) {
-        return create(new OperatorGroupJoin<T, T2, D1, D2, R>(this, right, leftDuration, rightDuration, resultSelector));
+        return create(new OnSubscribeGroupJoin<T, T2, D1, D2, R>(this, right, leftDuration, rightDuration, resultSelector));
     }
 
     /**
@@ -4166,7 +4166,7 @@ public class Observable<T> {
     public final <TRight, TLeftDuration, TRightDuration, R> Observable<R> join(Observable<TRight> right, Func1<T, Observable<TLeftDuration>> leftDurationSelector,
             Func1<TRight, Observable<TRightDuration>> rightDurationSelector,
             Func2<T, TRight, R> resultSelector) {
-        return create(new OperatorJoin<T, TRight, TLeftDuration, TRightDuration, R>(this, right, leftDurationSelector, rightDurationSelector, resultSelector));
+        return create(new OnSubscribeJoin<T, TRight, TLeftDuration, TRightDuration, R>(this, right, leftDurationSelector, rightDurationSelector, resultSelector));
     }
 
     /**
@@ -4447,7 +4447,7 @@ public class Observable<T> {
     public final <TIntermediate, TResult> Observable<TResult> multicast(
             final Func0<? extends Subject<? super T, ? extends TIntermediate>> subjectFactory,
             final Func1<? super Observable<TIntermediate>, ? extends Observable<TResult>> selector) {
-        return create(new OperatorMulticastSelector<T, TIntermediate, TResult>(this, subjectFactory, selector));
+        return create(new OnSubscribeMulticastSelector<T, TIntermediate, TResult>(this, subjectFactory, selector));
     }
 
     /**
@@ -4959,7 +4959,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229653.aspx">MSDN: Observable.Replay</a>
      */
     public final <R> Observable<R> replay(Func1<? super Observable<T>, ? extends Observable<R>> selector) {
-        return create(new OperatorMulticastSelector<T, T, R>(this, new Func0<Subject<T, T>>() {
+        return create(new OnSubscribeMulticastSelector<T, T, R>(this, new Func0<Subject<T, T>>() {
             @Override
             public final Subject<T, T> call() {
                 return ReplaySubject.create();
@@ -4988,7 +4988,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211675.aspx">MSDN: Observable.Replay</a>
      */
     public final <R> Observable<R> replay(Func1<? super Observable<T>, ? extends Observable<R>> selector, final int bufferSize) {
-        return create(new OperatorMulticastSelector<T, T, R>(this, new Func0<Subject<T, T>>() {
+        return create(new OnSubscribeMulticastSelector<T, T, R>(this, new Func0<Subject<T, T>>() {
             @Override
             public final Subject<T, T> call() {
                 return ReplaySubject.<T>createWithSize(bufferSize);
@@ -5058,7 +5058,7 @@ public class Observable<T> {
         if (bufferSize < 0) {
             throw new IllegalArgumentException("bufferSize < 0");
         }
-        return create(new OperatorMulticastSelector<T, T, R>(this, new Func0<Subject<T, T>>() {
+        return create(new OnSubscribeMulticastSelector<T, T, R>(this, new Func0<Subject<T, T>>() {
             @Override
             public final Subject<T, T> call() {
                 return ReplaySubject.<T>createWithTimeAndSize(time, unit, bufferSize, scheduler);
@@ -5089,7 +5089,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229928.aspx">MSDN: Observable.Replay</a>
      */
     public final <R> Observable<R> replay(Func1<? super Observable<T>, ? extends Observable<R>> selector, final int bufferSize, final Scheduler scheduler) {
-        return create(new OperatorMulticastSelector<T, T, R>(this, new Func0<Subject<T, T>>() {
+        return create(new OnSubscribeMulticastSelector<T, T, R>(this, new Func0<Subject<T, T>>() {
             @Override
             public final Subject<T, T> call() {
                 return OperatorReplay.<T> createScheduledSubject(ReplaySubject.<T>createWithSize(bufferSize), scheduler);
@@ -5148,7 +5148,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh244327.aspx">MSDN: Observable.Replay</a>
      */
     public final <R> Observable<R> replay(Func1<? super Observable<T>, ? extends Observable<R>> selector, final long time, final TimeUnit unit, final Scheduler scheduler) {
-        return create(new OperatorMulticastSelector<T, T, R>(this, new Func0<Subject<T, T>>() {
+        return create(new OnSubscribeMulticastSelector<T, T, R>(this, new Func0<Subject<T, T>>() {
             @Override
             public final Subject<T, T> call() {
                 return ReplaySubject.<T>createWithTime(time, unit, scheduler);
@@ -5176,7 +5176,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211644.aspx">MSDN: Observable.Replay</a>
      */
     public final <R> Observable<R> replay(Func1<? super Observable<T>, ? extends Observable<R>> selector, final Scheduler scheduler) {
-        return create(new OperatorMulticastSelector<T, T, R>(this, new Func0<Subject<T, T>>() {
+        return create(new OnSubscribeMulticastSelector<T, T, R>(this, new Func0<Subject<T, T>>() {
             @Override
             public final Subject<T, T> call() {
                 return OperatorReplay.createScheduledSubject(ReplaySubject.<T> create(), scheduler);
