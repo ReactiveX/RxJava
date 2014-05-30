@@ -18,6 +18,8 @@ package rx.schedulers;
 import rx.Scheduler;
 import rx.Subscription;
 import rx.functions.Action0;
+import rx.internal.schedulers.NewThreadWorker;
+import rx.internal.schedulers.ScheduledAction;
 import rx.internal.util.RxThreadFactory;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.Subscriptions;
@@ -144,14 +146,14 @@ import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
                 return Subscriptions.empty();
             }
 
-            NewThreadScheduler.NewThreadWorker.ScheduledAction s = threadWorker.scheduleActual(action, delayTime, unit);
+            ScheduledAction s = threadWorker.scheduleActual(action, delayTime, unit);
             innerSubscription.add(s);
             s.addParent(innerSubscription);
             return s;
         }
     }
 
-    private static final class ThreadWorker extends NewThreadScheduler.NewThreadWorker {
+    private static final class ThreadWorker extends NewThreadWorker {
         private long expirationTime;
 
         ThreadWorker(ThreadFactory threadFactory) {

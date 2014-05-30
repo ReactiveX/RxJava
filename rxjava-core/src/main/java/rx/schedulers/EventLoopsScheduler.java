@@ -18,8 +18,9 @@ package rx.schedulers;
 import rx.Scheduler;
 import rx.Subscription;
 import rx.functions.Action0;
+import rx.internal.schedulers.NewThreadWorker;
+import rx.internal.schedulers.ScheduledAction;
 import rx.internal.util.RxThreadFactory;
-import rx.schedulers.NewThreadScheduler.NewThreadWorker.ScheduledAction;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.Subscriptions;
 
@@ -104,7 +105,7 @@ import java.util.concurrent.TimeUnit;
         }
     }
     
-    private static final class PoolWorker extends NewThreadScheduler.NewThreadWorker {
+    private static final class PoolWorker extends NewThreadWorker {
         PoolWorker(ThreadFactory threadFactory) {
             super(threadFactory);
         }
