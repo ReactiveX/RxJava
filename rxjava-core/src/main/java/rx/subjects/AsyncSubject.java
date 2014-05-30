@@ -63,8 +63,8 @@ public final class AsyncSubject<T> extends Subject<T, T> {
             @Override
             public void call(SubjectObserver<T> o) {
                 Object v = state.get();
-                o.accept(v, state.nl);
-                NotificationLite<T> nl = NotificationLite.instance();
+                NotificationLite<T> nl = state.nl;
+                o.accept(v, nl);
                 if (v == null || (!nl.isCompleted(v) && !nl.isError(v))) {
                     o.onCompleted();
                 }
