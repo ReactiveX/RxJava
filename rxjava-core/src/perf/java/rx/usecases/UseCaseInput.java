@@ -42,7 +42,7 @@ public class UseCaseInput {
     private CountDownLatch latch;
 
     @Setup
-    public void setup() {
+    public void setup(final BlackHole bh) {
         observable = Observable.create(new OnSubscribe<Integer>() {
             @Override
             public void call(Subscriber<? super Integer> o) {
@@ -53,7 +53,6 @@ public class UseCaseInput {
             }
         });
 
-        final BlackHole bh = new BlackHole();
         latch = new CountDownLatch(1);
 
         observer = new Observer<Integer>() {

@@ -3,6 +3,7 @@ package rx.archive.operators;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.logic.BlackHole;
 
 import rx.Observable;
@@ -25,30 +26,6 @@ public class OperatorSerializePerformance extends AbstractPerformanceTester {
 
     OperatorSerializePerformance() {
         super(reps);
-    }
-
-    public static void main(String args[]) {
-
-        final OperatorSerializePerformance spt = new OperatorSerializePerformance();
-        final Input input = new Input();
-        input.setup();
-        try {
-            spt.runTest(new Action0() {
-
-                @Override
-                public void call() {
-                    //                    spt.noSerializationSingleThreaded(input);
-                    spt.serializedSingleStream(input);
-                    //                    spt.synchronizedSingleStream(input);
-                    //                    spt.timeTwoStreams();
-                    //                    spt.timeSingleStream();
-                    //                    spt.timeTwoStreamsIntervals();
-                }
-            });
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
     }
 
     /**
@@ -379,7 +356,8 @@ public class OperatorSerializePerformance extends AbstractPerformanceTester {
 
         private CountDownLatch latch;
 
-        public void setup() {
+        @Setup
+        public void setup(final BlackHole bh) {
             observable = Observable.create(new OnSubscribe<Integer>() {
                 @Override
                 public void call(Subscriber<? super Integer> o) {
@@ -392,7 +370,6 @@ public class OperatorSerializePerformance extends AbstractPerformanceTester {
                 }
             });
 
-            final BlackHole bh = new BlackHole();
             latch = new CountDownLatch(1);
 
             subscriber = new TestSubscriber<Integer>(new Observer<Integer>() {
