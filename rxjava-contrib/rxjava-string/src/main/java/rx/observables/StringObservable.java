@@ -71,11 +71,11 @@ public class StringObservable {
                 try {
                     if (o.isUnsubscribed())
                         return;
-                    int n = 0;
-                    n = i.read(buffer);
+                    int n = i.read(buffer);
                     while (n != -1 && !o.isUnsubscribed()) {
                         o.onNext(Arrays.copyOf(buffer, n));
-                        n = i.read(buffer);
+                        if (!o.isUnsubscribed())
+                            n = i.read(buffer);
                     }
                 } catch (IOException e) {
                     o.onError(e);
