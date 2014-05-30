@@ -46,6 +46,14 @@ public final class ChainedSubscription implements Subscription {
         return unsubscribed;
     }
 
+    /**
+     * Adds a new {@link Subscription} to this {@code ChainedSubscription} if the {@code ChainedSubscription} is
+     * not yet unsubscribed. If the {@code ChainedSubscription} <em>is</em> unsubscribed, {@code add} will
+     * indicate this by explicitly unsubscribing the new {@code Subscription} as well.
+     *
+     * @param s
+     *          the {@link Subscription} to add
+     */
     public void add(final Subscription s) {
         Subscription unsubscribe = null;
         synchronized (this) {
@@ -76,6 +84,10 @@ public final class ChainedSubscription implements Subscription {
         unsubscribeFromAll(subscriptions);
     }
 
+    /**
+     * @warn javadoc missing
+     * @param subscriptions
+     */
     private static void unsubscribeFromAll(Collection<Subscription> subscriptions) {
         if (subscriptions == null) {
             return;
