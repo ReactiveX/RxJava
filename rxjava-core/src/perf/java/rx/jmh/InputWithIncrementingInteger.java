@@ -15,8 +15,6 @@
  */
 package rx.jmh;
 
-import java.util.concurrent.CountDownLatch;
-
 import org.openjdk.jmh.annotations.Param;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
@@ -27,6 +25,7 @@ import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Observer;
 import rx.Subscriber;
+import rx.observers.TestSubscriber;
 
 /**
  * Exposes an Observable and Observer that increments n Integers and consumes them in a Blackhole.
@@ -37,12 +36,11 @@ public class InputWithIncrementingInteger {
     public int size;
 
     public Observable<Integer> observable;
-    public Observer<Integer> observer;
-
-    private CountDownLatch latch;
+    private BlackHole bh;
 
     @Setup
     public void setup(final BlackHole bh) {
+        this.bh = bh;
         observable = Observable.create(new OnSubscribe<Integer>() {
             @Override
             public void call(Subscriber<? super Integer> o) {
@@ -54,13 +52,12 @@ public class InputWithIncrementingInteger {
                 o.onCompleted();
             }
         });
+    }
 
-        latch = new CountDownLatch(1);
-
-        observer = new Observer<Integer>() {
+    public TestSubscriber<Integer> newSubscriber() {
+        return new TestSubscriber<Integer>(new Observer<Integer>() {
             @Override
             public void onCompleted() {
-                latch.countDown();
             }
 
             @Override
@@ -72,11 +69,6 @@ public class InputWithIncrementingInteger {
             public void onNext(Integer value) {
                 bh.consume(value);
             }
-        };
-
-    }
-
-    public void awaitCompletion() throws InterruptedException {
-        latch.await();
+        });
     }
 }
