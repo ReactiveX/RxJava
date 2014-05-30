@@ -22,7 +22,7 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
 
     @Override
     protected Scheduler getScheduler() {
-        return Schedulers.newExecutor(Executors.newFixedThreadPool(2, new NewThreadScheduler.RxThreadFactory("TestCustomPool-")));
+        return Schedulers.from(Executors.newFixedThreadPool(2, new NewThreadScheduler.RxThreadFactory("TestCustomPool-")));
     }
     
 }

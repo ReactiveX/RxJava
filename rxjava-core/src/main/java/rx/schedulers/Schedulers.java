@@ -127,7 +127,7 @@ public final class Schedulers {
      *          the executor to wrap
      * @return the new Scheduler wrapping the Executor
      */
-    public static Scheduler newExecutor(Executor executor) {
+    public static Scheduler from(Executor executor) {
         return new ExecutorScheduler(executor);
     }
 }
