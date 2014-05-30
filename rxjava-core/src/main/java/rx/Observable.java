@@ -2255,12 +2255,12 @@ public class Observable<T> {
     }
 
     /**
-     * Pivots a sequence of GroupedObservables emitted by an Observable so as to swap the group and and the set
-     * on which their items are grouped.
+     * Pivots a sequence of {@code GroupedObservable}s emitted by an {@code Observable} so as to swap the group
+     * and and the set on which their items are grouped.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/pivot.png">
      *
-     * For example an Observable such as this =&gt;
+     * For example an {@code Observable} such as this =&gt;
      * 
      * {@code Observable<GroupedObservable<String, GroupedObservable<Boolean, Integer>>>}:
      * <ul>
@@ -2280,10 +2280,16 @@ public class Observable<T> {
      * </ul>
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/pivot.ex.png">
+     * <p>
+     * <em>Note:</em> A {@link GroupedObservable} will cache the items it is to emit until such time as it
+     * is subscribed to. For this reason, in order to avoid memory leaks, you should not simply ignore those
+     * {@code GroupedObservable}s that do not concern you. Instead, you can signal to them that they may
+     * discard their buffers by applying an operator like {@link #take}{@code (0)} to them.
      * 
      * @param groups
                  the {@link GroupedObservable} to pivot
-     * @return an Observable containing a stream of nested GroupedObservables with swapped inner-outer keys.
+     * @return an {@code Observable} containing a stream of nested {@code GroupedObservable}s with swapped
+     *         inner-outer keys.
      * @since 0.17
      */
     public static final <K1, K2, T> Observable<GroupedObservable<K2, GroupedObservable<K1, T>>> pivot(Observable<GroupedObservable<K1, GroupedObservable<K2, T>>> groups) {
@@ -3214,16 +3220,18 @@ public class Observable<T> {
     }
 
     /**
-     * Collects values emitted by the source Observable into a single mutable data structure and returns an
+     * Collects items emitted by the source Observable into a single mutable data structure and returns an
      * Observable that emits this structure.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/collect.png">
      * <p>
      * This is a simplified version of {@code reduce} that does not need to return the state on each pass.
      * 
-     * @warn javadocs incomplete; no marble diagram for this operator
      * @param state
-     * @warn javadocs incomplete; "state" parameter not described
+     *           the mutable data structure that will collect the items
      * @param collector
-     * @warn javadocs incomplete; "collector" parameter not described
+     *           a function that accepts the {@code state} and an emitted item, and modifies {@code state}
+     *           accordingly
      * @return an Observable that emits the result of collecting the values emitted by the source Observable
      *         into a single mutable data structure
      */
@@ -4025,17 +4033,23 @@ public class Observable<T> {
     }
     
     /**
-     * Groups the items emitted by an Observable according to a specified criterion, and emits these grouped
-     * items as {@link GroupedObservable}s, one {@code GroupedObservable} per group.
+     * Groups the items emitted by an {@code Observable} according to a specified criterion, and emits these
+     * grouped items as {@link GroupedObservable}s, one {@code GroupedObservable} per group.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/groupBy.png">
+     * <p>
+     * <em>Note:</em> A {@link GroupedObservable} will cache the items it is to emit until such time as it
+     * is subscribed to. For this reason, in order to avoid memory leaks, you should not simply ignore those
+     * {@code GroupedObservable}s that do not concern you. Instead, you can signal to them that they may
+     * discard their buffers by applying an operator like {@link #take}{@code (0)} to them.
      * 
      * @param keySelector
      *            a function that extracts the key for each item
      * @param <K>
      *            the key type
-     * @return an Observable that emits {@link GroupedObservable}s, each of which corresponds to a unique key
-     *         value and each of which emits those items from the source Observable that share that key value
+     * @return an {@code Observable} that emits {@link GroupedObservable}s, each of which corresponds to a
+     *         unique key value and each of which emits those items from the source Observable that share that
+     *         key value
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#wiki-groupby-and-groupbyuntil">RxJava Wiki: groupBy</a>
      */
     public final <K> Observable<GroupedObservable<K, T>> groupBy(final Func1<? super T, ? extends K> keySelector) {
@@ -4043,18 +4057,23 @@ public class Observable<T> {
     }
 
     /**
-     * Groups the items emitted by an Observable according to a specified key selector function until the
-     * duration Observable expires for the key.
+     * Groups the items emitted by an {@code Observable} according to a specified key selector function until
+     * the duration {@code Observable} expires for the key.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/groupByUntil.png">
+     * <p>
+     * <em>Note:</em> A {@link GroupedObservable} will cache the items it is to emit until such time as it
+     * is subscribed to. For this reason, in order to avoid memory leaks, you should not simply ignore those
+     * {@code GroupedObservable}s that do not concern you. Instead, you can signal to them that they may
+     * discard their buffers by applying an operator like {@link #take}{@code (0)} to them.
      * 
      * @param keySelector
      *            a function to extract the key for each item
      * @param durationSelector
      *            a function to signal the expiration of a group
-     * @return an Observable that emits {@link GroupedObservable}s, each of which corresponds to a key value and
-     *         each of which emits all items emitted by the source Observable during that key's duration that
-     *         share that same key value
+     * @return an {@code Observable} that emits {@link GroupedObservable}s, each of which corresponds to a key
+     *         value and each of which emits all items emitted by the source {@code Observable} during that
+     *         key's duration that share that same key value
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#wiki-groupby-and-groupbyuntil">RxJava Wiki: groupByUntil()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211932.aspx">MSDN: Observable.GroupByUntil</a>
      */
@@ -4063,21 +4082,26 @@ public class Observable<T> {
     }
 
     /**
-     * Groups the items emitted by an Observable (transformed by a selector) according to a specified key
-     * selector function until the duration Observable expires for the key.
+     * Groups the items emitted by an {@code Observable} (transformed by a selector) according to a specified
+     * key selector function until the duration Observable expires for the key.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/groupByUntil.png">
+     * <p>
+     * <em>Note:</em> A {@link GroupedObservable} will cache the items it is to emit until such time as it
+     * is subscribed to. For this reason, in order to avoid memory leaks, you should not simply ignore those
+     * {@code GroupedObservable}s that do not concern you. Instead, you can signal to them that they may
+     * discard their buffers by applying an operator like {@link #take}{@code (0)} to them.
      * 
      * @param keySelector
      *            a function to extract the key for each item
      * @param valueSelector
-     *            a function to map each item emitted by the source Observable to an item emitted by one of the
-     *            resulting {@link GroupedObservable}s
+     *            a function to map each item emitted by the source {@code Observable} to an item emitted by one
+     *            of the resulting {@link GroupedObservable}s
      * @param durationSelector
      *            a function to signal the expiration of a group
-     * @return an Observable that emits {@link GroupedObservable}s, each of which corresponds to a key value and
-     *         each of which emits all items emitted by the source Observable during that key's duration that
-     *         share that same key value, transformed by the value selector
+     * @return an {@code Observable} that emits {@link GroupedObservable}s, each of which corresponds to a key
+     *         value and each of which emits all items emitted by the source {@code Observable} during that
+     *         key's duration that share that same key value, transformed by the value selector
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#wiki-groupby-and-groupbyuntil">RxJava Wiki: groupByUntil()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229433.aspx">MSDN: Observable.GroupByUntil</a>
      */
@@ -5389,13 +5413,19 @@ public class Observable<T> {
     public final Observable<T> retry(int retryCount) {
         return nest().lift(new OperatorRetry<T>(retryCount));
     }
+
     /**
      * Returns an Observable that mirrors the source Observable, resubscribing to it if it calls {@code onError}
      * and the predicate returns true for that specific exception and retry count.
-     * @param predicate the predicate that determines if a resubscription may happen in case of a specific exception and retry
-     * count
-     * @return the Observable modified with retry logic
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/retry.png">
+     *
+     * @param predicate
+     *            the predicate that determines if a resubscription may happen in case of a specific exception
+     *            and retry count
+     * @return the source Observable modified with retry logic
      * @see #retry()
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Error-Handling-Operators#wiki-retry">RxJava Wiki: retry()</a>
      */
     public final Observable<T> retry(Func2<Integer, Throwable, Boolean> predicate) {
         return nest().lift(new OperatorRetryWithPredicate<T>(predicate));
@@ -5513,7 +5543,7 @@ public class Observable<T> {
      * It is possible for an Observable to invoke its Subscribers' methods asynchronously, perhaps from
      * different threads. This could make such an Observable poorly-behaved, in that it might try to invoke
      * {@code onCompleted} or {@code onError} before one of its {@code onNext} invocations, or it might call
-     * {@code onNext} from two different threads simultaneously. You can force such an Observable to be
+     * {@code onNext} from two different threads concurrently. You can force such an Observable to be
      * well-behaved and sequential by applying the {@code serialize} method to it.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/synchronize.png">

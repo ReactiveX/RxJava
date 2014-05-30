@@ -53,8 +53,9 @@ import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
 public final class AsyncSubject<T> extends Subject<T, T> {
 
     /**
-     * @warn javadoc missing
-     * @return
+     * Creates and returns a new {@code AsyncSubject}.
+     *
+     * @return the new {@code AsyncSubject}
      */
     public static <T> AsyncSubject<T> create() {
         final SubjectSubscriptionManager<T> state = new SubjectSubscriptionManager<T>();

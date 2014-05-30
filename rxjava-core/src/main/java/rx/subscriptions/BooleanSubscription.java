@@ -43,16 +43,20 @@ public final class BooleanSubscription implements Subscription {
     }
 
     /**
-     * @warn javadoc missing
-     * @return
+     * Creates a {@code BooleanSubscription} without unsubscribe behavior.
+     *
+     * @return the created {@code BooleanSubscription}
      */
     public static BooleanSubscription create() {
         return new BooleanSubscription();
     }
 
     /**
-     * @warn javadoc missing
-     * @return
+     * Creates a {@code BooleanSubscription} with a specified function to invoke upon unsubscribe.
+     *
+     * @param onUnsubscribe
+     *          an {@link Action0} to invoke upon unsubscribe
+     * @return the created {@code BooleanSubscription}
      */
     public static BooleanSubscription create(Action0 onUnsubscribe) {
         return new BooleanSubscription(onUnsubscribe);

@@ -16,29 +16,42 @@
 package rx.schedulers;
 
 /**
- * @warn javadoc class description missing
+ * A {@code TimeInterval} represents an item emitted by an {@code Observable} along with the amount of time that
+ * elapsed either since the emission of the previous item or (if there was no previous item) since the
+ * {@code Observable} was first subscribed to.
  */
 public class TimeInterval<T> {
     private final long intervalInMilliseconds;
     private final T value;
 
+    /**
+     * Creates a {@code TimeInterval} object.
+     *
+     * @param intervalInMilliseconds
+     *          the number of milliseconds between the time when {@code value} was emitted and the item that
+     *          was emitted immediately prior to {@code value}, or, if there was no such prior item, since the
+     *          initial subscription to the {@code Observable}
+     * @param value
+     *          the item emitted by the Observable
+     */
     public TimeInterval(long intervalInMilliseconds, T value) {
         this.value = value;
         this.intervalInMilliseconds = intervalInMilliseconds;
     }
 
     /**
-     * Returns the interval, expressed in milliseconds.
+     * Returns the time interval, expressed in milliseconds.
      * 
-     * @return the interval in milliseconds
+     * @return the time interval in milliseconds
      */
     public long getIntervalInMilliseconds() {
         return intervalInMilliseconds;
     }
 
     /**
-     * @warn javadoc missing
-     * @return
+     * Returns the item that was emitted by the Observable after this time interval.
+     *
+     * @return the item that was emitted by the Observable
      */
     public T getValue() {
         return value;

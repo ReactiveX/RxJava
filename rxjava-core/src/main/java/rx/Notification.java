@@ -61,8 +61,11 @@ public class Notification<T> {
     }
 
     /**
-     * @warn javadoc missing
-     * @return
+     * Creates and returns a {@code Notification} of variety {@code Kind.OnCompleted}.
+     *
+     * @warn param "type" undescribed
+     * @param type
+     * @return an {@code OnCompleted} variety of {@code Notification}
      */
     @SuppressWarnings("unchecked")
     public static <T> Notification<T> createOnCompleted(Class<T> type) {
@@ -149,7 +152,7 @@ public class Notification<T> {
     }
 
     /**
-     * @warn javadoc missing
+     * Forwards this notification on to a specified {@link Observer}.
      */
     public void accept(Observer<? super T> observer) {
         if (isOnNext()) {

@@ -15,6 +15,7 @@
  */
 package rx;
 
+import rx.subscriptions.ChainedSubscription;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -31,17 +32,23 @@ import rx.subscriptions.CompositeSubscription;
  */
 public abstract class Subscriber<T> implements Observer<T>, Subscription {
 
-    private final CompositeSubscription cs;
+    private final ChainedSubscription cs;
 
-    protected Subscriber(CompositeSubscription cs) {
+    protected Subscriber(ChainedSubscription cs) {
         if (cs == null) {
             throw new IllegalArgumentException("The CompositeSubscription can not be null");
         }
         this.cs = cs;
     }
+    
+    @Deprecated
+    protected Subscriber(CompositeSubscription cs) {
+        this(new ChainedSubscription());
+        add(cs);
+    }
 
     protected Subscriber() {
-        this(new CompositeSubscription());
+        this(new ChainedSubscription());
     }
 
     protected Subscriber(Subscriber<?> op) {
@@ -63,8 +70,9 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
     }
 
     /**
-     * @warn javadoc missing
-     * @return
+     * Indicates whether this Subscriber has unsubscribed from its Observable.
+     * 
+     * @return {@code true} if this Subscriber has unsubscribed from its Observable, {@code false} otherwise
      */
     public final boolean isUnsubscribed() {
         return cs.isUnsubscribed();

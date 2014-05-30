@@ -18,12 +18,15 @@ package rx.plugins;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * Registry for plugin implementations that allows global override and handles the retrieval of correct implementation based on order of precedence:
+ * Registry for plugin implementations that allows global override and handles the retrieval of correct
+ * implementation based on order of precedence:
  * <ol>
  * <li>plugin registered globally via {@code register} methods in this class</li>
- * <li>plugin registered and retrieved using {@link java.lang.System#getProperty(String)} (see get methods for property names)</li>
+ * <li>plugin registered and retrieved using {@link java.lang.System#getProperty(String)} (see get methods for
+ * property names)</li>
  * <li>default implementation</li>
  * </ol>
+ *
  * @see <a href="https://github.com/Netflix/RxJava/wiki/Plugins">RxJava Wiki: Plugins</a>
  */
 public class RxJavaPlugins {
@@ -34,8 +37,9 @@ public class RxJavaPlugins {
     private final AtomicReference<RxJavaDefaultSchedulers> schedulerOverrides = new AtomicReference<RxJavaDefaultSchedulers>();
 
     /**
-     * @warn javadoc missing
-     * @return
+     * Retrieves the single {@code RxJavaPlugins} instance.
+     *
+     * @return the single {@code RxJavaPlugins} instance
      */
     public static RxJavaPlugins getInstance() {
         return INSTANCE;
@@ -170,7 +174,7 @@ public class RxJavaPlugins {
      * the property {@code rxjava.plugin.RxJavaDefaultSchedulers.implementation} with the full classname to
      * load.
      * 
-     * @return {@link RxJavaErrorHandler} implementation to use
+     * @return the {@link RxJavaDefaultSchedulers} implementation in use
      */
     public RxJavaDefaultSchedulers getDefaultSchedulers() {
         if (schedulerOverrides.get() == null) {

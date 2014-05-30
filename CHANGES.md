@@ -1,5 +1,11 @@
 # RxJava Releases #
 
+### Version 0.18.4 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.18.4%22)) ###
+
+This is a fix for `CompositeSubscription` object allocation problems. Details can be found in issue [#1204](https://github.com/Netflix/RxJava/issues/1204).
+
+* [Pull 1283](https://github.com/Netflix/RxJava/pull/1283) Subscription object allocation fix
+
 ### Version 0.18.3 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.18.3%22)) ###
 
 * [Pull 1161] (https://github.com/Netflix/RxJava/pull/1161) Removed use of deprecated API from tests & operators

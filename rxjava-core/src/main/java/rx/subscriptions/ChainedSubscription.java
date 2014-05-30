@@ -18,9 +18,8 @@ package rx.subscriptions;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 
 import rx.Subscription;
 import rx.exceptions.CompositeException;
@@ -30,16 +29,16 @@ import rx.exceptions.CompositeException;
  * 
  * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.disposables.compositedisposable(v=vs.103).aspx">Rx.Net equivalent CompositeDisposable</a>
  */
-public final class CompositeSubscription implements Subscription {
+public final class ChainedSubscription implements Subscription {
 
-    private Set<Subscription> subscriptions;
+    private List<Subscription> subscriptions;
     private boolean unsubscribed = false;
 
-    public CompositeSubscription() {
+    public ChainedSubscription() {
     }
 
-    public CompositeSubscription(final Subscription... subscriptions) {
-        this.subscriptions = new HashSet<Subscription>(Arrays.asList(subscriptions));
+    public ChainedSubscription(final Subscription... subscriptions) {
+        this.subscriptions = new LinkedList<Subscription>(Arrays.asList(subscriptions));
     }
 
     @Override
@@ -47,15 +46,6 @@ public final class CompositeSubscription implements Subscription {
         return unsubscribed;
     }
 
-    /**
-     * Adds a new {@link Subscription} to this {@code CompositeSubscription} if the
-     * {@code CompositeSubscription} is not yet unsubscribed. If the {@code CompositeSubscription} <em>is</em>
-     * unsubscribed, {@code add} will indicate this by explicitly unsubscribing the new {@code Subscription} as
-     * well.
-     *
-     * @param s
-     *          the {@link Subscription} to add
-     */
     public void add(final Subscription s) {
         Subscription unsubscribe = null;
         synchronized (this) {
@@ -63,7 +53,7 @@ public final class CompositeSubscription implements Subscription {
                 unsubscribe = s;
             } else {
                 if (subscriptions == null) {
-                    subscriptions = new HashSet<Subscription>(4);
+                    subscriptions = new LinkedList<Subscription>();
                 }
                 subscriptions.add(s);
             }
@@ -72,45 +62,6 @@ public final class CompositeSubscription implements Subscription {
             // call after leaving the synchronized block so we're not holding a lock while executing this
             unsubscribe.unsubscribe();
         }
-    }
-
-    /**
-     * Removes a {@link Subscription} from this {@code CompositeSubscription}, and unsubscribes the
-     * {@link Subscription}.
-     *
-     * @param s
-     *          the {@link Subscription} to remove
-     */
-    public void remove(final Subscription s) {
-        boolean unsubscribe = false;
-        synchronized (this) {
-            if (unsubscribed || subscriptions == null) {
-                return;
-            }
-            unsubscribe = subscriptions.remove(s);
-        }
-        if (unsubscribe) {
-            // if we removed successfully we then need to call unsubscribe on it (outside of the lock)
-            s.unsubscribe();
-        }
-    }
-
-    /**
-     * Unsubscribes any subscriptions that are currently part of this {@code CompositeSubscription} and remove
-     * them from the {@code CompositeSubscription} so that the {@code CompositeSubscription} is empty and in
-     * an unoperative state.
-     */
-    public void clear() {
-        Collection<Subscription> unsubscribe = null;
-        synchronized (this) {
-            if (unsubscribed || subscriptions == null) {
-                return;
-            } else {
-                unsubscribe = subscriptions;
-                subscriptions = null;
-            }
-        }
-        unsubscribeFromAll(unsubscribe);
     }
 
     @Override

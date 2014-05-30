@@ -54,25 +54,20 @@ public final class CompositeException extends RuntimeException {
     }
 
     /**
-     * @warn javadoc missing
+     * Retrieves the list of exceptions that make up the {@code CompositeException}
+     *
+     * @return the exceptions that make up the {@code CompositeException}, as a {@link List} of
+     *         {@link Throwable}s
      */
     public List<Throwable> getExceptions() {
         return exceptions;
     }
 
-    /**
-     * Returns a concatenation of the composite exceptions.
-     *
-     * @warn return value undocumented (e.g. how are multiple exceptions delimited?)
-     */
     @Override
     public String getMessage() {
         return message;
     }
 
-    /**
-     * @warn javadoc missing
-     */
     @Override
     public synchronized Throwable getCause() {
         return cause;
