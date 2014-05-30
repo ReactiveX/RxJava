@@ -15,19 +15,15 @@
  */
 package rx.schedulers;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
-import java.util.concurrent.atomic.AtomicLongFieldUpdater;
-
 import rx.Scheduler;
 import rx.Subscription;
 import rx.functions.Action0;
+import rx.internal.util.RxThreadFactory;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.Subscriptions;
+
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 /**
  * Schedules work on a new thread.
@@ -38,24 +34,6 @@ public class NewThreadScheduler extends Scheduler {
     private static final RxThreadFactory THREAD_FACTORY = new RxThreadFactory(THREAD_NAME_PREFIX);
     private static final NewThreadScheduler INSTANCE = new NewThreadScheduler();
 
-    static final class RxThreadFactory implements ThreadFactory {
-        final String prefix;
-        volatile long counter;
-        static final AtomicLongFieldUpdater<RxThreadFactory> COUNTER_UPDATER
-                = AtomicLongFieldUpdater.newUpdater(RxThreadFactory.class, "counter");
-
-        public RxThreadFactory(String prefix) {
-            this.prefix = prefix;
-        }
-        
-        @Override
-        public Thread newThread(Runnable r) {
-            Thread t = new Thread(r, prefix + COUNTER_UPDATER.incrementAndGet(this));
-            t.setDaemon(true);
-            return t;
-        }
-    }
-    
     /* package */static NewThreadScheduler instance() {
         return INSTANCE;
     }

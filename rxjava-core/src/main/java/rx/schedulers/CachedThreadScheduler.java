@@ -18,6 +18,7 @@ package rx.schedulers;
 import rx.Scheduler;
 import rx.Subscription;
 import rx.functions.Action0;
+import rx.internal.util.RxThreadFactory;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.Subscriptions;
 
@@ -27,12 +28,12 @@ import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 /* package */final class CachedThreadScheduler extends Scheduler {
     private static final String WORKER_THREAD_NAME_PREFIX = "RxCachedThreadScheduler-";
-    private static final NewThreadScheduler.RxThreadFactory WORKER_THREAD_FACTORY =
-            new NewThreadScheduler.RxThreadFactory(WORKER_THREAD_NAME_PREFIX);
+    private static final RxThreadFactory WORKER_THREAD_FACTORY =
+            new RxThreadFactory(WORKER_THREAD_NAME_PREFIX);
 
     private static final String EVICTOR_THREAD_NAME_PREFIX = "RxCachedWorkerPoolEvictor-";
-    private static final NewThreadScheduler.RxThreadFactory EVICTOR_THREAD_FACTORY =
-            new NewThreadScheduler.RxThreadFactory(EVICTOR_THREAD_NAME_PREFIX);
+    private static final RxThreadFactory EVICTOR_THREAD_FACTORY =
+            new RxThreadFactory(EVICTOR_THREAD_NAME_PREFIX);
 
     private static final class CachedWorkerPool {
         private final long keepAliveTime;
