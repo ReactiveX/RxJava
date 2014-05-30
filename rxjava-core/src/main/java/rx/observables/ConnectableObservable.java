@@ -19,7 +19,7 @@ import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Action1;
-import rx.operators.OnSubscribeRefCount;
+import rx.internal.operators.OnSubscribeRefCount;
 
 /**
  * A {@code ConnectableObservable} resembles an ordinary {@link Observable}, except that it does not begin

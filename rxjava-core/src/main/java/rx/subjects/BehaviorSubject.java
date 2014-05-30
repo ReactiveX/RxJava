@@ -18,7 +18,7 @@ package rx.subjects;
 
 import rx.Observer;
 import rx.functions.Action1;
-import rx.operators.NotificationLite;
+import rx.internal.operators.NotificationLite;
 import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
 
 /**

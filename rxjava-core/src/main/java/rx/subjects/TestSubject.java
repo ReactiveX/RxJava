@@ -21,7 +21,7 @@ import rx.Observer;
 import rx.Scheduler;
 import rx.functions.Action0;
 import rx.functions.Action1;
-import rx.operators.NotificationLite;
+import rx.internal.operators.NotificationLite;
 import rx.schedulers.TestScheduler;
 import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
 

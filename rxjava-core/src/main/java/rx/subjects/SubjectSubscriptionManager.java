@@ -18,14 +18,14 @@ package rx.subjects;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
-import rx.Observable.OnSubscribe;
 
+import rx.Observable.OnSubscribe;
 import rx.Observer;
 import rx.Subscriber;
 import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Actions;
-import rx.operators.NotificationLite;
+import rx.internal.operators.NotificationLite;
 import rx.subscriptions.Subscriptions;
 
 /**
