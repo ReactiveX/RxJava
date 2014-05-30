@@ -18,18 +18,21 @@ package rx.schedulers;
 import org.openjdk.jmh.annotations.GenerateMicroBenchmark;
 
 import rx.jmh.InputWithIncrementingInteger;
+import rx.observers.TestSubscriber;
 
 public class ComputationSchedulerPerf {
 
     @GenerateMicroBenchmark
     public void subscribeOn(InputWithIncrementingInteger input) throws InterruptedException {
-        input.observable.subscribeOn(Schedulers.computation()).subscribe(input.observer);
-        input.awaitCompletion();
+        TestSubscriber<Integer> ts = input.newSubscriber();
+        input.observable.subscribeOn(Schedulers.computation()).subscribe(ts);
+        ts.awaitTerminalEvent();
     }
 
     @GenerateMicroBenchmark
     public void observeOn(InputWithIncrementingInteger input) throws InterruptedException {
-        input.observable.observeOn(Schedulers.computation()).subscribe(input.observer);
-        input.awaitCompletion();
+        TestSubscriber<Integer> ts = input.newSubscriber();
+        input.observable.observeOn(Schedulers.computation()).subscribe(ts);
+        ts.awaitTerminalEvent();
     }
 }

@@ -19,6 +19,7 @@ import org.openjdk.jmh.annotations.GenerateMicroBenchmark;
 
 import rx.Observable;
 import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 
 public class PerfTransforms {
 
@@ -43,12 +44,12 @@ public class PerfTransforms {
     }
 
     @GenerateMicroBenchmark
-    public void flatMapTransformsUsingFrom(UseCaseInput input) throws InterruptedException {
+    public void flatMapTransforms(UseCaseInput input) throws InterruptedException {
         input.observable.flatMap(new Func1<Integer, Observable<Integer>>() {
 
             @Override
             public Observable<Integer> call(Integer i) {
-                return Observable.from(i);
+                return Observable.just(i);
             }
 
         }).subscribe(input.observer);
@@ -56,12 +57,46 @@ public class PerfTransforms {
     }
 
     @GenerateMicroBenchmark
-    public void flatMapTransformsUsingJust(UseCaseInput input) throws InterruptedException {
+    public void flatMapNestedMapFilterTake(final UseCaseInput input) throws InterruptedException {
         input.observable.flatMap(new Func1<Integer, Observable<Integer>>() {
 
             @Override
             public Observable<Integer> call(Integer i) {
-                return Observable.just(i);
+                return input.observable.map(new Func1<Integer, String>() {
+
+                    @Override
+                    public String call(Integer i) {
+                        return String.valueOf(i);
+                    }
+
+                }).map(new Func1<String, Integer>() {
+
+                    @Override
+                    public Integer call(String i) {
+                        return Integer.parseInt(i);
+                    }
+
+                }).filter(new Func1<Integer, Boolean>() {
+
+                    @Override
+                    public Boolean call(Integer t1) {
+                        return true;
+                    }
+
+                }).take(100);
+            }
+
+        }).subscribe(input.observer);
+        input.awaitCompletion();
+    }
+
+    @GenerateMicroBenchmark
+    public void flatMapAsyncNested(final UseCaseInput input) throws InterruptedException {
+        input.observable.flatMap(new Func1<Integer, Observable<Integer>>() {
+
+            @Override
+            public Observable<Integer> call(Integer i) {
+                return input.observable.subscribeOn(Schedulers.computation());
             }
 
         }).subscribe(input.observer);

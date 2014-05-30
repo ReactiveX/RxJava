@@ -15,7 +15,7 @@
  */
 package rx.operators;
 
-import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import org.openjdk.jmh.annotations.GenerateMicroBenchmark;
 import org.openjdk.jmh.annotations.Param;
@@ -29,36 +29,97 @@ import rx.Observable.OnSubscribe;
 import rx.Observer;
 import rx.Subscriber;
 import rx.observers.TestSubscriber;
+import rx.schedulers.Schedulers;
 
 public class OperatorSerializePerf {
 
+    public static void main(String[] args) {
+
+    }
+
     @GenerateMicroBenchmark
     public void noSerializationSingleThreaded(Input input) {
-        input.observable.subscribe(input.subscriber);
+        TestSubscriber<Long> ts = input.newSubscriber();
+        input.firehose.subscribe(ts);
+        ts.awaitTerminalEvent();
     }
 
     @GenerateMicroBenchmark
     public void serializedSingleStream(Input input) {
-        input.observable.serialize().subscribe(input.subscriber);
+        TestSubscriber<Long> ts = input.newSubscriber();
+        input.firehose.serialize().subscribe(ts);
+        ts.awaitTerminalEvent();
     }
 
-    @State(Scope.Thread)
+    @GenerateMicroBenchmark
+    public void serializedTwoStreamsSlightlyContended(final Input input) {
+        TestSubscriber<Long> ts = input.newSubscriber();
+        Observable.create(new OnSubscribe<Long>() {
+
+            @Override
+            public void call(Subscriber<? super Long> s) {
+                // break the contract here and concurrently onNext
+                input.interval.subscribeOn(Schedulers.computation()).unsafeSubscribe(s);
+                input.interval.subscribeOn(Schedulers.computation()).unsafeSubscribe(s);
+                // they will be serialized after
+            }
+
+        }).serialize().subscribe(ts);
+        ts.awaitTerminalEvent();
+    }
+
+    @GenerateMicroBenchmark
+    public void serializedTwoStreamsHighlyContended(final Input input) {
+        TestSubscriber<Long> ts = input.newSubscriber();
+        Observable.create(new OnSubscribe<Long>() {
+
+            @Override
+            public void call(Subscriber<? super Long> s) {
+                // break the contract here and concurrently onNext
+                input.firehose.subscribeOn(Schedulers.computation()).unsafeSubscribe(s);
+                input.firehose.subscribeOn(Schedulers.computation()).unsafeSubscribe(s);
+                // they will be serialized after
+            }
+
+        }).serialize().subscribe(ts);
+        ts.awaitTerminalEvent();
+    }
+
+    @GenerateMicroBenchmark
+    public void serializedTwoStreamsOneFastOneSlow(final Input input) {
+        TestSubscriber<Long> ts = input.newSubscriber();
+        Observable.create(new OnSubscribe<Long>() {
+
+            @Override
+            public void call(final Subscriber<? super Long> s) {
+                // break the contract here and concurrently onNext
+                input.interval.subscribeOn(Schedulers.computation()).unsafeSubscribe(s);
+                input.firehose.subscribeOn(Schedulers.computation()).unsafeSubscribe(s);
+                // they will be serialized after
+            }
+
+        }).serialize().subscribe(ts);
+        ts.awaitTerminalEvent();
+    }
+
+    @State(Scope.Benchmark)
     public static class Input {
 
-        @Param({ "1024", "1048576" })
+        @Param({ "1", "1000" })
         public int size;
 
-        public Observable<Integer> observable;
-        public TestSubscriber<Integer> subscriber;
+        public Observable<Long> firehose;
+        public Observable<Long> interval;
 
-        private CountDownLatch latch;
+        private BlackHole bh;
 
         @Setup
         public void setup(final BlackHole bh) {
-            observable = Observable.create(new OnSubscribe<Integer>() {
+            this.bh = bh;
+            firehose = Observable.create(new OnSubscribe<Long>() {
                 @Override
-                public void call(Subscriber<? super Integer> o) {
-                    for (int value = 0; value < size; value++) {
+                public void call(Subscriber<? super Long> o) {
+                    for (long value = 0; value < size; value++) {
                         if (o.isUnsubscribed())
                             return;
                         o.onNext(value);
@@ -67,12 +128,13 @@ public class OperatorSerializePerf {
                 }
             });
 
-            latch = new CountDownLatch(1);
+            interval = Observable.timer(0, 1, TimeUnit.MILLISECONDS).take(size);
+        }
 
-            subscriber = new TestSubscriber<Integer>(new Observer<Integer>() {
+        public TestSubscriber<Long> newSubscriber() {
+            return new TestSubscriber<Long>(new Observer<Long>() {
                 @Override
                 public void onCompleted() {
-                    latch.countDown();
                 }
 
                 @Override
@@ -81,15 +143,11 @@ public class OperatorSerializePerf {
                 }
 
                 @Override
-                public void onNext(Integer value) {
+                public void onNext(Long value) {
                     bh.consume(value);
                 }
             });
-
         }
 
-        public void awaitCompletion() throws InterruptedException {
-            latch.await();
-        }
     }
 }
