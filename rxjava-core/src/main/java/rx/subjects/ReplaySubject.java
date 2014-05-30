@@ -24,7 +24,7 @@ import rx.Scheduler;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.functions.Functions;
-import rx.operators.NotificationLite;
+import rx.internal.operators.NotificationLite;
 import rx.schedulers.Timestamped;
 import rx.subjects.ReplaySubject.NodeList.Node;
 import rx.subjects.SubjectSubscriptionManager.SubjectObserver;

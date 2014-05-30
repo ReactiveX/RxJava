@@ -19,6 +19,7 @@ import org.openjdk.jmh.annotations.GenerateMicroBenchmark;
 
 import rx.Observable.Operator;
 import rx.functions.Func1;
+import rx.internal.operators.OperatorMap;
 import rx.jmh.InputWithIncrementingInteger;
 import rx.observers.TestSubscriber;
 

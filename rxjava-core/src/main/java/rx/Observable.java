@@ -19,9 +19,9 @@ import java.util.concurrent.*;
 
 import rx.exceptions.*;
 import rx.functions.*;
+import rx.internal.operators.*;
 import rx.observables.*;
 import rx.observers.SafeSubscriber;
-import rx.operators.*;
 import rx.plugins.*;
 import rx.schedulers.*;
 import rx.subjects.*;

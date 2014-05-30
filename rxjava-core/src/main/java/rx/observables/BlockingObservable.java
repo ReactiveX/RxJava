@@ -26,11 +26,11 @@ import rx.Subscriber;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.functions.Functions;
-import rx.operators.BlockingOperatorLatest;
-import rx.operators.BlockingOperatorMostRecent;
-import rx.operators.BlockingOperatorNext;
-import rx.operators.BlockingOperatorToFuture;
-import rx.operators.BlockingOperatorToIterator;
+import rx.internal.operators.BlockingOperatorLatest;
+import rx.internal.operators.BlockingOperatorMostRecent;
+import rx.internal.operators.BlockingOperatorNext;
+import rx.internal.operators.BlockingOperatorToFuture;
+import rx.internal.operators.BlockingOperatorToIterator;
 
 /**
  * An extension of {@link Observable} that provides blocking operators.
