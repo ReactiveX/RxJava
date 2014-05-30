@@ -61,9 +61,8 @@ subprojects {
     }
 
     dependencies {
-        perfCompile 'org.openjdk.jmh:jmh-core:0.5.3'
-        perfCompile 'org.openjdk.jmh:jmh-generator-annprocess:0.5.3'
-        //perfCompile project
+        perfCompile 'org.openjdk.jmh:jmh-core:0.7.3'
+        perfCompile 'org.openjdk.jmh:jmh-generator-annprocess:0.7.3'
     }
 
     artifacts {
