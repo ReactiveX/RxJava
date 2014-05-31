@@ -25,20 +25,10 @@ trait Subscriber[-T] extends Observer[T] with Subscription {
   /**
    * Register a callback to be run when Subscriber is unsubscribed
    *
-   * @param unsubscriptionCallback callback to run when unsubscribed
+   * @param u callback to run when unsubscribed
    */
-  final def add(unsubscriptionCallback: => Unit): Unit = {
-    asJavaSubscriber.add(new rx.Subscription {
-      val unsubscribed = new AtomicBoolean(false)
-
-      override def unsubscribe() {
-        if (unsubscribed.compareAndSet(false, true)) {
-          unsubscriptionCallback
-        }
-      }
-
-      override def isUnsubscribed: Boolean = { unsubscribed.get() }
-    })
+  final def add(u: => Unit): Unit = {
+    asJavaSubscriber.add(Subscription(u).asJavaSubscription)
   }
 
   override final def unsubscribe(): Unit = {
