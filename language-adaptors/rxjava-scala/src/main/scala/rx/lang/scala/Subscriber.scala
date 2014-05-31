@@ -20,6 +20,15 @@ trait Subscriber[-T] extends Observer[T] with Subscription {
     asJavaSubscriber.add(s.asJavaSubscription)
   }
 
+  /**
+   * Register a callback to be run when Subscriber is unsubscribed
+   *
+   * @param u callback to run when unsubscribed
+   */
+  final def add(u: => Unit): Unit = {
+    asJavaSubscriber.add(Subscription(u).asJavaSubscription)
+  }
+
   override final def unsubscribe(): Unit = {
     asJavaSubscriber.unsubscribe()
   }
