@@ -1,5 +1,7 @@
 package rx.lang.scala
 
+import java.util.concurrent.atomic.AtomicBoolean
+
 trait Subscriber[-T] extends Observer[T] with Subscription {
 
   self =>
@@ -18,6 +20,25 @@ trait Subscriber[-T] extends Observer[T] with Subscription {
    */
   final def add(s: Subscription): Unit = {
     asJavaSubscriber.add(s.asJavaSubscription)
+  }
+
+  /**
+   * Register a callback to be run when Subscriber is unsubscribed
+   *
+   * @param unsubscriptionCallback callback to run when unsubscribed
+   */
+  final def add(unsubscriptionCallback: => Unit): Unit = {
+    asJavaSubscriber.add(new rx.Subscription {
+      val unsubscribed = new AtomicBoolean(false)
+
+      override def unsubscribe() {
+        if (unsubscribed.compareAndSet(false, true)) {
+          unsubscriptionCallback
+        }
+      }
+
+      override def isUnsubscribed: Boolean = { unsubscribed.get() }
+    })
   }
 
   override final def unsubscribe(): Unit = {

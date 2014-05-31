@@ -42,4 +42,19 @@ class SubscriberTests extends JUnitSuite {
     assertTrue(innerSubscriber.isUnsubscribed)
   }
 
+  @Test def testBlockCallbackOnlyOnce() {
+    var called = false
+    val o = Observable[Int](subscriber => {
+      subscriber.add({ called = !called })
+    })
+
+    val subscription = o.subscribe()
+    subscription.unsubscribe()
+    subscription.unsubscribe()
+
+    // Even if called multiple times, callback is only called once
+    assertTrue(called)
+    assertTrue(subscription.isUnsubscribed)
+  }
+
 }
