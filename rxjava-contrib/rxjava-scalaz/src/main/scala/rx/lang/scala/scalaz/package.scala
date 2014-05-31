@@ -18,8 +18,6 @@ package rx.lang.scala
 import scala.language.higherKinds
 import _root_.scalaz._
 import _root_.scalaz.Tags.{Zip => TZip}
-import scala.concurrent._
-import scala.concurrent.duration._
 
 /**
  * This package object provides some type class instances for Observable.
@@ -47,26 +45,14 @@ package object scalaz {
     override def zip[A, B](a: => Observable[A], b: => Observable[B]): Observable[(A, B)] = a zip b
 
     // IsEmpty (NOTE: This method is blocking call)
-    override def isEmpty[A](fa: Observable[A]): Boolean = getOne(fa.isEmpty)
+    override def isEmpty[A](fa: Observable[A]): Boolean = fa.isEmpty.toBlocking.first
 
     // Traverse (NOTE: This method is blocking call)
     override def traverseImpl[G[_], A, B](fa: Observable[A])(f: (A) => G[B])(implicit G: Applicative[G]): G[Observable[B]] = {
       val seed: G[Observable[B]] = G.point(Observable.empty)
-      getOne(fa.foldLeft(seed) {
+      fa.foldLeft(seed) {
         (ys, x) => G.apply2(ys, f(x))((bs, b) => bs :+ b)
-      }.head)
-    }
-
-    // This method extracts first elements from Observable.
-    // NOTE: Make sure that 'o' has at least one element.
-    private[this] def getOne[T](o: Observable[T]): T = {
-      val p = Promise[T]
-      val sub = o.first.subscribe(p.success(_))
-      try {
-        Await.result(p.future, Duration.Inf)
-      } finally {
-        sub.unsubscribe()
-      }
+      }.toBlocking.first
     }
   }
 
