@@ -1,7 +1,5 @@
 package rx.lang.scala
 
-import java.util.concurrent.atomic.AtomicBoolean
-
 trait Subscriber[-T] extends Observer[T] with Subscription {
 
   self =>
