@@ -90,17 +90,4 @@ public class PerfTransforms {
         input.awaitCompletion();
     }
 
-    @GenerateMicroBenchmark
-    public void flatMapAsyncNested(final UseCaseInput input) throws InterruptedException {
-        input.observable.flatMap(new Func1<Integer, Observable<Integer>>() {
-
-            @Override
-            public Observable<Integer> call(Integer i) {
-                return input.observable.subscribeOn(Schedulers.computation());
-            }
-
-        }).subscribe(input.observer);
-        input.awaitCompletion();
-    }
-
 }
