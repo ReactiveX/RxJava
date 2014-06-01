@@ -46,18 +46,18 @@ public final class OperatorGroupBy<K, T> implements Operator<GroupedObservable<K
     }
     
     @Override
-    public Subscriber<? super T> call(final Subscriber<? super GroupedObservable<K, T>> childObserver) {
-        return new GroupBySubscriber<K, T>(keySelector, childObserver);
+    public Subscriber<? super T> call(final Subscriber<? super GroupedObservable<K, T>> child) {
+        return new GroupBySubscriber<K, T>(keySelector, child);
     }
     static final class GroupBySubscriber<K, T> extends Subscriber<T> {
         final Func1<? super T, ? extends K> keySelector;
-        final Subscriber<? super GroupedObservable<K, T>> childObserver;
-        public GroupBySubscriber(Func1<? super T, ? extends K> keySelector, Subscriber<? super GroupedObservable<K, T>> childObserver) {
+        final Subscriber<? super GroupedObservable<K, T>> child;
+        public GroupBySubscriber(Func1<? super T, ? extends K> keySelector, Subscriber<? super GroupedObservable<K, T>> child) {
             // a new CompositeSubscription to decouple the subscription as the inner subscriptions need a separate lifecycle
             // and will unsubscribe on this parent if they are all unsubscribed
             super(new ChainedSubscription());
             this.keySelector = keySelector;
-            this.childObserver = childObserver;
+            this.child = child;
         }
         private final Map<K, BufferUntilSubscriber<T>> groups = new HashMap<K, BufferUntilSubscriber<T>>();
         volatile int completionCounter;
@@ -86,7 +86,7 @@ public final class OperatorGroupBy<K, T> implements Operator<GroupedObservable<K
                 if (completionCounter == 0) {
                     // we must track 'completionEmitted' seperately from 'completed' since `completeInner` can result in childObserver.onCompleted() being emitted
                     if (EMITTED_UPDATER.compareAndSet(this, 0, 1)) {
-                        childObserver.onCompleted();
+                        child.onCompleted();
                     }
                 }
             }
@@ -96,7 +96,7 @@ public final class OperatorGroupBy<K, T> implements Operator<GroupedObservable<K
         public void onError(Throwable e) {
             if (TERMINATED_UPDATER.compareAndSet(this, 0, 1)) {
                 // we immediately tear everything down if we receive an error
-                childObserver.onError(e);
+                child.onError(e);
             }
         }
         
@@ -104,15 +104,15 @@ public final class OperatorGroupBy<K, T> implements Operator<GroupedObservable<K
         public void onNext(T t) {
             try {
                 final K key = keySelector.call(t);
-                BufferUntilSubscriber<T> gps = groups.get(key);
-                if (gps == null) {
+                BufferUntilSubscriber<T> group = groups.get(key);
+                if (group == null) {
                     // this group doesn't exist
-                    if (childObserver.isUnsubscribed()) {
+                    if (child.isUnsubscribed()) {
                         // we have been unsubscribed on the outer so won't send any  more groups
                         return;
                     }
-                    gps = BufferUntilSubscriber.create();
-                    final BufferUntilSubscriber<T> _gps = gps;
+                    group = BufferUntilSubscriber.create();
+                    final BufferUntilSubscriber<T> _group = group;
                     
                     GroupedObservable<K, T> go = new GroupedObservable<K, T>(key, new OnSubscribe<T>() {
                         
@@ -128,7 +128,7 @@ public final class OperatorGroupBy<K, T> implements Operator<GroupedObservable<K
                                 }
                                 
                             }));
-                            _gps.unsafeSubscribe(new Subscriber<T>(o) {
+                            _group.unsafeSubscribe(new Subscriber<T>(o) {
                                 
                                 @Override
                                 public void onCompleted() {
@@ -150,11 +150,11 @@ public final class OperatorGroupBy<K, T> implements Operator<GroupedObservable<K
                         }
                         
                     });
-                    groups.put(key, gps);
-                    childObserver.onNext(go);
+                    groups.put(key, group);
+                    child.onNext(go);
                 }
                 // we have the correct group so send value to it
-                gps.onNext(t);
+                group.onNext(t);
             } catch (Throwable e) {
                 onError(OnErrorThrowable.addValueAsLastCause(e, t));
             }
@@ -162,14 +162,14 @@ public final class OperatorGroupBy<K, T> implements Operator<GroupedObservable<K
         
         private void completeInner() {
             // count can be < 0 because unsubscribe also calls this
-            if (COUNTER_UPDATER.decrementAndGet(this) <= 0 && (terminated == 1 || childObserver.isUnsubscribed())) {
+            if (COUNTER_UPDATER.decrementAndGet(this) <= 0 && (terminated == 1 || child.isUnsubscribed())) {
                 // completionEmitted ensures we only emit onCompleted once
                 if (EMITTED_UPDATER.compareAndSet(this, 0, 1)) {
-                    if (childObserver.isUnsubscribed()) {
+                    if (child.isUnsubscribed()) {
                         // if the entire groupBy has been unsubscribed and children are completed we will propagate the unsubscribe up.
                         unsubscribe();
                     }
-                    childObserver.onCompleted();
+                    child.onCompleted();
                 }
             }
         }
