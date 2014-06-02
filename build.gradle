@@ -30,6 +30,10 @@ subprojects {
     apply plugin: 'shadow'
     group = "com.netflix.rxjava"
 
+    // everything defaults to 1.6
+    sourceCompatibility = JavaVersion.VERSION_1_6
+    targetCompatibility = JavaVersion.VERSION_1_6
+
     // make 'examples' use the same classpath
     configurations { 
         examplesCompile.extendsFrom compile
