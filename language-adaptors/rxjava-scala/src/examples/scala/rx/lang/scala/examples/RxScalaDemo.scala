@@ -1108,4 +1108,65 @@ class RxScalaDemo extends JUnitSuite {
     }
     o.toBlockingObservable.foreach(println(_))
   }
+
+  @Test def flatMapExample() {
+    val o = Observable.items(10, 100)
+    o.flatMap(n => Observable.interval(200 millis).map(_ * n))
+      .take(20)
+      .toBlocking.foreach(println)
+  }
+
+  @Test def flatMapExample2() {
+    val o = Observable.items(10, 100)
+    val o1 = for (n <- o;
+                  i <- Observable.interval(200 millis)) yield i * n
+    o1.take(20).toBlocking.foreach(println)
+  }
+
+  @Test def flatMapExample3() {
+    val o = Observable[Int] {
+      subscriber =>
+        subscriber.onNext(10)
+        subscriber.onNext(100)
+        subscriber.onError(new IOException("Oops"))
+    }
+    o.flatMap(
+      (n: Int) => Observable.interval(200 millis).map(_ * n),
+      e => Observable.interval(200 millis).map(_ * -1),
+      () => Observable.interval(200 millis).map(_ * 1000)
+    ).take(20)
+      .toBlocking.foreach(println)
+  }
+
+  @Test def flatMapExample4() {
+    val o = Observable.items(10, 100)
+    o.flatMap(
+      (n: Int) => Observable.interval(200 millis).map(_ * n),
+      e => Observable.interval(200 millis).map(_ * -1),
+      () => Observable.interval(200 millis).map(_ * 1000)
+    ).take(20)
+      .toBlocking.foreach(println)
+  }
+
+  @Test def flatMapExample5() {
+    val o = Observable.items(1, 10, 100, 1000)
+    o.flatMap(
+      (n: Int) => Observable.interval(200 millis).take(5),
+      (n: Int, m: Long) => n * m
+    ).toBlocking.foreach(println)
+  }
+
+  @Test def flatMapIterableExample() {
+    val o = Observable.items(10, 100)
+    o.flatMapIterable(n => (1 to 20).map(_ * n))
+      .toBlocking.foreach(println)
+  }
+
+  @Test def flatMapIterableExample2() {
+    val o = Observable.items(1, 10, 100, 1000)
+    o.flatMapIterable(
+      (n: Int) => (1 to 5),
+      (n: Int, m: Int) => n * m
+    ).toBlocking.foreach(println)
+  }
 }
