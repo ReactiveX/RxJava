@@ -18,7 +18,7 @@ package rx.internal.operators;
 import rx.Observable.Operator;
 import rx.Subscriber;
 import rx.exceptions.OnErrorThrowable;
-import rx.functions.Func1;
+import rx.functions.Func1Checked;
 
 /**
  * Applies a function of your choosing to every item emitted by an Observable, and returns this
@@ -28,9 +28,9 @@ import rx.functions.Func1;
  */
 public final class OperatorMap<T, R> implements Operator<R, T> {
 
-    private final Func1<? super T, ? extends R> transformer;
+    private final Func1Checked<? super T, ? extends R> transformer;
 
-    public OperatorMap(Func1<? super T, ? extends R> transformer) {
+    public OperatorMap(Func1Checked<? super T, ? extends R> transformer) {
         this.transformer = transformer;
     }
 
