@@ -19,6 +19,7 @@ import rx.Observable;
 import rx.Observable.Operator;
 import rx.Subscriber;
 import rx.functions.Func1;
+import rx.plugins.RxJavaPlugins;
 
 /**
  * Instruct an Observable to pass control to another Observable (the return value of a function)
@@ -59,6 +60,7 @@ public final class OperatorOnErrorResumeNextViaFunction<T> implements Operator<T
             @Override
             public void onError(Throwable e) {
                 try {
+                    RxJavaPlugins.getInstance().getErrorHandler().handleError(e);
                     Observable<? extends T> resume = resumeFunction.call(e);
                     resume.unsafeSubscribe(child);
                 } catch (Throwable e2) {

@@ -22,6 +22,7 @@ import rx.Observable.Operator;
 import rx.Subscriber;
 import rx.exceptions.CompositeException;
 import rx.observers.SerializedSubscriber;
+import rx.plugins.RxJavaPlugins;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -125,10 +126,13 @@ public final class OperatorMergeDelayError<T> implements Operator<T, Observable<
         public void onCompleted() {
             complete();
         }
+
         void error(Throwable e) {
+            RxJavaPlugins.getInstance().getErrorHandler().handleError(e);
             exceptions.add(e);
             complete();
         }
+
         void complete() {
             if (WIP_UPDATER.decrementAndGet(this) == 0) {
                 if (exceptions.isEmpty()) {

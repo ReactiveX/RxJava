@@ -18,6 +18,7 @@ package rx.internal.operators;
 import rx.Observable;
 import rx.Observable.Operator;
 import rx.Subscriber;
+import rx.plugins.RxJavaPlugins;
 
 /**
  * Instruct an Observable to pass control to another Observable rather than invoking
@@ -58,6 +59,7 @@ public final class OperatorOnErrorResumeNextViaObservable<T> implements Operator
 
             @Override
             public void onError(Throwable e) {
+                RxJavaPlugins.getInstance().getErrorHandler().handleError(e);
                 unsubscribe();
                 resumeSequence.unsafeSubscribe(child);
             }

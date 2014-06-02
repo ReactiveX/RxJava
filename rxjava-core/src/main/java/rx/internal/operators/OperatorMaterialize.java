@@ -18,6 +18,7 @@ package rx.internal.operators;
 import rx.Notification;
 import rx.Observable.Operator;
 import rx.Subscriber;
+import rx.plugins.RxJavaPlugins;
 
 /**
  * Turns all of the notifications from an Observable into <code>onNext</code> emissions, and marks
@@ -42,6 +43,7 @@ public final class OperatorMaterialize<T> implements Operator<Notification<T>, T
 
             @Override
             public void onError(Throwable e) {
+                RxJavaPlugins.getInstance().getErrorHandler().handleError(e);
                 child.onNext(Notification.<T> createOnError(e));
                 child.onCompleted();
             }
