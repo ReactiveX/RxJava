@@ -299,6 +299,25 @@ trait Observable[+T]
   }
 
   /**
+   * Returns a new Observable that emits items resulting from applying a function that you supply to each item
+   * emitted by the source Observable, where that function returns an Observable, and then emitting the items
+   * that result from concatinating those resulting Observables.
+   *
+   * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/concatMap.png">
+   *
+   * @param f a function that, when applied to an item emitted by the source Observable, returns an Observable
+   * @return an Observable that emits the result of applying the transformation function to each item emitted
+   *         by the source Observable and concatinating the Observables obtained from this transformation
+   */
+  def concatMap[R](f: T => Observable[R]): Observable[R] = {
+    toScalaObservable[R](asJavaObservable.concatMap[R](new Func1[T, rx.Observable[_ <: R]] {
+      def call(t1: T): rx.Observable[_ <: R] = {
+        f(t1).asJavaObservable
+      }
+    }))
+  }
+
+  /**
    * Wraps this Observable in another Observable that ensures that the resulting
    * Observable is chronologically well-behaved.
    *

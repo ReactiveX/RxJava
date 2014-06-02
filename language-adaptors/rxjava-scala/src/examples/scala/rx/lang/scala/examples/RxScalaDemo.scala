@@ -1169,4 +1169,11 @@ class RxScalaDemo extends JUnitSuite {
       (n: Int, m: Int) => n * m
     ).toBlocking.foreach(println)
   }
+
+  @Test def concatMapExample() {
+    val o = Observable.items(10, 100)
+    o.concatMap(n => Observable.interval(200 millis).map(_ * n).take(10))
+      .take(20)
+      .toBlocking.foreach(println)
+  }
 }
