@@ -30,12 +30,12 @@ import org.junit.Test;
 import rx.Subscription;
 import rx.exceptions.CompositeException;
 
-public class ChainedSubscriptionTest {
+public class SubscriptionListTest {
 
     @Test
     public void testSuccess() {
         final AtomicInteger counter = new AtomicInteger();
-        ChainedSubscription s = new ChainedSubscription();
+        SubscriptionList s = new SubscriptionList();
         s.add(new Subscription() {
 
             @Override
@@ -70,7 +70,7 @@ public class ChainedSubscriptionTest {
     @Test(timeout = 1000)
     public void shouldUnsubscribeAll() throws InterruptedException {
         final AtomicInteger counter = new AtomicInteger();
-        final ChainedSubscription s = new ChainedSubscription();
+        final SubscriptionList s = new SubscriptionList();
 
         final int count = 10;
         final CountDownLatch start = new CountDownLatch(1);
@@ -117,7 +117,7 @@ public class ChainedSubscriptionTest {
     @Test
     public void testException() {
         final AtomicInteger counter = new AtomicInteger();
-        ChainedSubscription s = new ChainedSubscription();
+        SubscriptionList s = new SubscriptionList();
         s.add(new Subscription() {
 
             @Override
@@ -159,7 +159,7 @@ public class ChainedSubscriptionTest {
     @Test
     public void testCompositeException() {
         final AtomicInteger counter = new AtomicInteger();
-        ChainedSubscription s = new ChainedSubscription();
+        SubscriptionList s = new SubscriptionList();
         s.add(new Subscription() {
 
             @Override
@@ -215,7 +215,7 @@ public class ChainedSubscriptionTest {
     @Test
     public void testUnsubscribeIdempotence() {
         final AtomicInteger counter = new AtomicInteger();
-        ChainedSubscription s = new ChainedSubscription();
+        SubscriptionList s = new SubscriptionList();
         s.add(new Subscription() {
 
             @Override
@@ -241,7 +241,7 @@ public class ChainedSubscriptionTest {
     public void testUnsubscribeIdempotenceConcurrently()
             throws InterruptedException {
         final AtomicInteger counter = new AtomicInteger();
-        final ChainedSubscription s = new ChainedSubscription();
+        final SubscriptionList s = new SubscriptionList();
 
         final int count = 10;
         final CountDownLatch start = new CountDownLatch(1);

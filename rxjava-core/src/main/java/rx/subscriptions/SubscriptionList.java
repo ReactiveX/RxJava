@@ -29,15 +29,15 @@ import rx.exceptions.CompositeException;
  * 
  * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.disposables.compositedisposable(v=vs.103).aspx">Rx.Net equivalent CompositeDisposable</a>
  */
-public final class ChainedSubscription implements Subscription {
+public final class SubscriptionList implements Subscription {
 
     private List<Subscription> subscriptions;
     private boolean unsubscribed = false;
 
-    public ChainedSubscription() {
+    public SubscriptionList() {
     }
 
-    public ChainedSubscription(final Subscription... subscriptions) {
+    public SubscriptionList(final Subscription... subscriptions) {
         this.subscriptions = new LinkedList<Subscription>(Arrays.asList(subscriptions));
     }
 
@@ -47,8 +47,8 @@ public final class ChainedSubscription implements Subscription {
     }
 
     /**
-     * Adds a new {@link Subscription} to this {@code ChainedSubscription} if the {@code ChainedSubscription} is
-     * not yet unsubscribed. If the {@code ChainedSubscription} <em>is</em> unsubscribed, {@code add} will
+     * Adds a new {@link Subscription} to this {@code SubscriptionList} if the {@code SubscriptionList} is
+     * not yet unsubscribed. If the {@code SubscriptionList} <em>is</em> unsubscribed, {@code add} will
      * indicate this by explicitly unsubscribing the new {@code Subscription} as well.
      *
      * @param s
