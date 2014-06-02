@@ -272,7 +272,8 @@ public class SerializedObserverTest {
      */
     @Test
     public void testNotificationDelay() throws InterruptedException {
-        ExecutorService tp = Executors.newFixedThreadPool(2);
+        ExecutorService tp1 = Executors.newFixedThreadPool(1);
+        ExecutorService tp2 = Executors.newFixedThreadPool(1);
         try {
             int n = 10;
             for (int i = 0; i < n; i++) {
@@ -306,8 +307,8 @@ public class SerializedObserverTest {
                 });
                 Observer<String> o = serializedObserver(to);
 
-                Future<?> f1 = tp.submit(new OnNextThread(o, 1, onNextCount, running));
-                Future<?> f2 = tp.submit(new OnNextThread(o, 1, onNextCount, running));
+                Future<?> f1 = tp1.submit(new OnNextThread(o, 1, onNextCount, running));
+                Future<?> f2 = tp2.submit(new OnNextThread(o, 1, onNextCount, running));
 
                 running.await(); // let one of the OnNextThread actually run before proceeding
                 
@@ -333,7 +334,8 @@ public class SerializedObserverTest {
                 System.out.println(to.getOnNextEvents());
             }
         } finally {
-            tp.shutdown();
+            tp1.shutdown();
+            tp2.shutdown();
         }
     }
 
