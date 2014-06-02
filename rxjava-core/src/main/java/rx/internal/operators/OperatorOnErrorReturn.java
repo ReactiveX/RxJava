@@ -20,6 +20,7 @@ import rx.Observable.Operator;
 import rx.Subscriber;
 import rx.exceptions.CompositeException;
 import rx.functions.Func1;
+import rx.plugins.RxJavaPlugins;
 
 /**
  * Instruct an Observable to emit a particular item to its Observer's <code>onNext</code> method
@@ -59,6 +60,7 @@ public final class OperatorOnErrorReturn<T> implements Operator<T, T> {
             @Override
             public void onError(Throwable e) {
                 try {
+                    RxJavaPlugins.getInstance().getErrorHandler().handleError(e);
                     T result = resultFunction.call(e);
                     
                     child.onNext(result);

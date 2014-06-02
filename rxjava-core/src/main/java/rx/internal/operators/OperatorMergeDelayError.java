@@ -125,10 +125,12 @@ public final class OperatorMergeDelayError<T> implements Operator<T, Observable<
         public void onCompleted() {
             complete();
         }
+
         void error(Throwable e) {
             exceptions.add(e);
             complete();
         }
+
         void complete() {
             if (WIP_UPDATER.decrementAndGet(this) == 0) {
                 if (exceptions.isEmpty()) {

@@ -20,6 +20,7 @@ import rx.Observable.Operator;
 import rx.Subscriber;
 import rx.exceptions.OnErrorThrowable;
 import rx.functions.Func1;
+import rx.plugins.RxJavaPlugins;
 
 /**
  * Allows inserting onNext events into a stream when onError events are received
@@ -46,6 +47,7 @@ public final class OperatorOnErrorFlatMap<T> implements Operator<T, T> {
             @Override
             public void onError(Throwable e) {
                 try {
+                    RxJavaPlugins.getInstance().getErrorHandler().handleError(e);
                     Observable<? extends T> resume = resumeFunction.call(OnErrorThrowable.from(e));
                     resume.unsafeSubscribe(new Subscriber<T>() {
 
