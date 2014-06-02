@@ -17,7 +17,7 @@ package rx.internal.operators;
 
 import rx.Observable.Operator;
 import rx.Subscriber;
-import rx.subscriptions.ChainedSubscription;
+import rx.subscriptions.SubscriptionList;
 
 /**
  * Returns an Observable that emits the first <code>num</code> items emitted by the source
@@ -40,7 +40,7 @@ public final class OperatorTake<T> implements Operator<T, T> {
 
     @Override
     public Subscriber<? super T> call(final Subscriber<? super T> child) {
-        final ChainedSubscription parent = new ChainedSubscription();
+        final SubscriptionList parent = new SubscriptionList();
         if (limit == 0) {
             child.onCompleted();
             parent.unsubscribe();
