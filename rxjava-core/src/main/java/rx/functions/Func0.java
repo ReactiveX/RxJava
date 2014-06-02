@@ -15,9 +15,10 @@
  */
 package rx.functions;
 
-import java.util.concurrent.Callable;
-
-public interface Func0<R> extends Function, Callable<R> {
+/**
+ * A zero-argument function that returns a value.
+ */
+public interface Func0<R> extends Func0Checked<R> {
     @Override
     public R call();
 }

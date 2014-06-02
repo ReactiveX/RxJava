@@ -15,6 +15,9 @@
  */
 package rx.functions;
 
-public interface Func2<T1, T2, R> extends Function {
+/**
+ * A two-argument function that returns a value.
+ */
+public interface Func2<T1, T2, R> extends Func2Checked<T1, T2, R> {
     public R call(T1 t1, T2 t2);
 }

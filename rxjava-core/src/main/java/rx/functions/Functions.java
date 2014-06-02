@@ -255,18 +255,7 @@ public class Functions {
      * @return a {@link FuncN} representation of {@code f}
      */
     public static FuncN<Void> fromAction(final Action0 f) {
-        return new FuncN<Void>() {
-
-            @Override
-            public Void call(Object... args) {
-                if (args.length != 0) {
-                    throw new RuntimeException("Action0 expecting 0 arguments.");
-                }
-                f.call();
-                return null;
-            }
-
-        };
+        return fromFunc(Actions.toFunc(f));
     }
 
     /**
@@ -278,19 +267,7 @@ public class Functions {
      * @return a {@link FuncN} representation of {@code f}
      */
     public static <T0> FuncN<Void> fromAction(final Action1<? super T0> f) {
-        return new FuncN<Void>() {
-
-            @SuppressWarnings("unchecked")
-            @Override
-            public Void call(Object... args) {
-                if (args.length != 1) {
-                    throw new RuntimeException("Action1 expecting 1 argument.");
-                }
-                f.call((T0) args[0]);
-                return null;
-            }
-
-        };
+        return fromFunc(Actions.toFunc(f));
     }
 
     /**
@@ -302,19 +279,7 @@ public class Functions {
      * @return a {@link FuncN} representation of {@code f}
      */
     public static <T0, T1> FuncN<Void> fromAction(final Action2<? super T0, ? super T1> f) {
-        return new FuncN<Void>() {
-
-            @SuppressWarnings("unchecked")
-            @Override
-            public Void call(Object... args) {
-                if (args.length != 2) {
-                    throw new RuntimeException("Action3 expecting 2 arguments.");
-                }
-                f.call((T0) args[0], (T1) args[1]);
-                return null;
-            }
-
-        };
+        return fromFunc(Actions.toFunc(f));
     }
 
     /**
@@ -326,19 +291,7 @@ public class Functions {
      * @return a {@link FuncN} representation of {@code f}
      */
     public static <T0, T1, T2> FuncN<Void> fromAction(final Action3<? super T0, ? super T1, ? super T2> f) {
-        return new FuncN<Void>() {
-
-            @SuppressWarnings("unchecked")
-            @Override
-            public Void call(Object... args) {
-                if (args.length != 3) {
-                    throw new RuntimeException("Action3 expecting 3 arguments.");
-                }
-                f.call((T0) args[0], (T1) args[1], (T2) args[2]);
-                return null;
-            }
-
-        };
+        return fromFunc(Actions.toFunc(f));
     }
 
     /**
