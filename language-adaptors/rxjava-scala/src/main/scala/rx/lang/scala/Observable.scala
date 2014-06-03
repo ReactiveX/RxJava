@@ -3626,6 +3626,17 @@ trait Observable[+T]
   def lift[R](operator: Subscriber[R] => Subscriber[T]): Observable[R] = {
     toScalaObservable(asJavaObservable.lift(toJavaOperator[T, R](operator)))
   }
+
+  /**
+   * Converts the source `Observable[T]` into an `Observable[Observable[T]]` that emits the source Observable as its single emission.
+   *
+   * <img width="640" height="350" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/nest.png">
+   *
+   * @return an Observable that emits a single item: the source Observable
+   */
+  def nest: Observable[Observable[T]] = {
+    toScalaObservable(asJavaObservable.nest).map(toScalaObservable[T](_))
+  }
 }
 
 /**
