@@ -3692,6 +3692,48 @@ trait Observable[+T]
   def nest: Observable[Observable[T]] = {
     toScalaObservable(asJavaObservable.nest).map(toScalaObservable[T](_))
   }
+
+  /**
+   * Subscribes to the [[Observable]] and receives notifications for each element.
+   *
+   * Alias to `subscribe(T => Unit)`.
+   *
+   * @param onNext function to execute for each item.
+   * @throws IllegalArgumentException if `onNext` is null
+   * @since 0.19
+   */
+  def foreach(onNext: T => Unit): Unit = {
+    asJavaObservable.subscribe(onNext)
+  }
+
+  /**
+   * Subscribes to the [[Observable]] and receives notifications for each element and error events.
+   *
+   * Alias to `subscribe(T => Unit, Throwable => Unit)`.
+   *
+   * @param onNext function to execute for each item.
+   * @param onError function to execute when an error is emitted.
+   * @throws IllegalArgumentException if `onNext` is null, or if `onError` is null
+   * @since 0.19
+   */
+  def foreach(onNext: T => Unit, onError: Throwable => Unit): Unit = {
+    asJavaObservable.subscribe(onNext, onError)
+  }
+
+  /**
+   * Subscribes to the [[Observable]] and receives notifications for each element and the terminal events.
+   *
+   * Alias to `subscribe(T => Unit, Throwable => Unit, () => Unit)`.
+   *
+   * @param onNext function to execute for each item.
+   * @param onError function to execute when an error is emitted.
+   * @param onComplete function to execute when completion is signalled.
+   * @throws IllegalArgumentException if `onNext` is null, or if `onError` is null, or if `onComplete` is null
+   * @since 0.19
+   */
+  def foreach(onNext: T => Unit, onError: Throwable => Unit, onComplete: () => Unit): Unit = {
+    asJavaObservable.subscribe(onNext, onError, onComplete)
+  }
 }
 
 /**
