@@ -3812,6 +3812,21 @@ object Observable {
   }
 
   /**
+   * Returns an Observable that invokes an `Observer`'s `onError` method on the
+   * specified Scheduler.
+   *
+   * <img width="640" height="190" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/error.s.png">
+   *
+   * @param exception the particular Throwable to pass to `onError`
+   * @param scheduler the Scheduler on which to call `onError`
+   * @tparam T the type of the items (ostensibly) emitted by the Observable
+   * @return an Observable that invokes the `Observer`'s `onError` method, on the specified Scheduler
+   */
+  def error[T](exception: Throwable, scheduler: Scheduler): Observable[T] = {
+    toScalaObservable[T](rx.Observable.error(exception, scheduler))
+  }
+
+  /**
    * Returns an Observable that emits no data to the [[rx.lang.scala.Observer]] and
    * immediately invokes its [[rx.lang.scala.Observer#onCompleted onCompleted]] method
    * with the specified scheduler.
