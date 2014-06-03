@@ -2976,6 +2976,26 @@ trait Observable[+T]
   }
 
   /**
+   * Returns an Observable that emits the items emitted by the source Observable or a specified default item
+   * if the source Observable is empty.
+   *
+   * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/defaultIfEmpty.png">
+   *
+   * @param default the item to emit if the source Observable emits no items. This is a by-name parameter, so it is
+   *                only evaluated if the source Observable doesn't emit anything.
+   * @return an Observable that emits either the specified default item if the source Observable emits no
+   *         items, or the items emitted by the source Observable
+   */
+  def orElse[U >: T](default: => U): Observable[U] = {
+    val jObservableOption = map(Some(_)).asJavaObservable.asInstanceOf[rx.Observable[Option[T]]]
+    val o = toScalaObservable[Option[T]](jObservableOption.defaultIfEmpty(None))
+    o map {
+      case Some(element) => element
+      case None => default
+    }
+  }
+
+  /**
    * Returns an Observable that forwards all sequentially distinct items emitted from the source Observable.
    *
    * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/distinctUntilChanged.png">

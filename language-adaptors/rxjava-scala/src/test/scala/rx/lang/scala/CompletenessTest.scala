@@ -79,6 +79,7 @@ class CompletenessTest extends JUnitSuite {
       "contains(Any)" -> "contains(U)",
       "count()" -> "length",
       "debounce(Func1[_ >: T, _ <: Observable[U]])" -> "debounce(T => Observable[Any])",
+      "defaultIfEmpty(T)" -> "orElse(=> U)",
       "delay(Func0[_ <: Observable[U]], Func1[_ >: T, _ <: Observable[V]])" -> "delay(() => Observable[Any], T => Observable[Any])",
       "delay(Func1[_ >: T, _ <: Observable[U]])" -> "delay(T => Observable[Any])",
       "dematerialize()" -> "dematerialize(<:<[Observable[T], Observable[Notification[U]]])",

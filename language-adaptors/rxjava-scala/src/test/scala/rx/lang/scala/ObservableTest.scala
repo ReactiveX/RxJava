@@ -216,4 +216,16 @@ class ObservableTests extends JUnitSuite {
     o.subscribe()
     assertFalse(called)
   }
+
+  @Test
+  def testOrElse() {
+    val o = Observable.items(1, 2, 3).orElse(4)
+    assertEquals(List(1, 2, 3), o.toBlocking.toList)
+  }
+
+  @Test
+  def testOrElseWithEmpty() {
+    val o = Observable.empty.orElse(-1)
+    assertEquals(List(-1), o.toBlocking.toList)
+  }
 }
