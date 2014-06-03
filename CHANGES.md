@@ -1,5 +1,175 @@
 # RxJava Releases #
 
+### Version 0.19.0 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.19.0%22)) ###
+
+#### Performance and Object Allocation
+
+Fairly significant object allocation improvements are included in this release which reduce GC pressure and improve performance.
+
+Two pull requests (amongst several) with details are:
+
+- https://github.com/Netflix/RxJava/pull/1281 Reduce Subscription Object Allocation
+- https://github.com/Netflix/RxJava/pull/1246 Moved to atomic field updaters
+
+With the following simple test code relative performance has increased as shown below:
+
+```java
+Observable<Integer> o = Observable.just(1);
+o.map(i -> {
+    return String.valueOf(i);
+}).map(i -> {
+    return Integer.parseInt(i);
+}).subscribe(observer);
+```
+
+
+###### Rx 0.19
+
+```
+Run: 10 - 10,692,099 ops/sec 
+Run: 11 - 10,617,627 ops/sec 
+Run: 12 - 10,938,405 ops/sec 
+Run: 13 - 10,917,388 ops/sec 
+Run: 14 - 10,783,298 ops/sec 
+```
+
+###### Rx 0.18.4
+
+```
+Run: 11 - 8,493,506 ops/sec 
+Run: 12 - 8,403,361 ops/sec 
+Run: 13 - 8,400,537 ops/sec 
+Run: 14 - 8,163,998 ops/sec 
+```
+
+###### Rx 0.17.6
+
+```
+Run: 10 - 4,930,966 ops/sec 
+Run: 11 - 6,119,951 ops/sec 
+Run: 12 - 7,062,146 ops/sec 
+Run: 13 - 6,514,657 ops/sec 
+Run: 14 - 6,369,426 ops/sec 
+```
+
+###### Rx 0.16.1
+
+```
+Run: 10 - 2,879,355 ops/sec 
+Run: 11 - 3,236,245 ops/sec 
+Run: 12 - 4,468,275 ops/sec 
+Run: 13 - 3,237,293 ops/sec 
+Run: 14 - 4,683,840 ops/sec 
+```
+
+Note that these numbers are relative as they depend on the JVM and hardware. 
+
+
+#### Scala Changes
+
+Many missing operators have been added to the RxScala APIs along with fixes and other maturation.
+
+
+#### toBlockingObservable() -> toBlocking()
+
+The `toBlockingObservable()` method has been deprecated in favor of `toBlocking()` for brevity and fit better with possible future additions such as `toParallel()` without always needing the `Observable` suffix.
+
+
+#### forEach
+
+`forEach` as added as an alias for `subscribe` to match the Java 8 naming convention.
+
+This means code can now be written as:
+
+```java
+Observable.from(1, 2, 3).limit(2).forEach(System.out::println);
+```
+
+which is an alias of this:
+
+```java
+Observable.from(1, 2, 3).take(2).subscribe(System.out::println);
+```
+
+Since `forEach` exists on `BlockingObservable` as well, moving from non-blocking to blocking looks like this:
+
+```java
+// non-blocking
+Observable.from(1, 2, 3).limit(2).forEach(System.out::println);
+// blocking
+Observable.from(1, 2, 3).limit(2).toBlocking().forEach(System.out::println);
+```
+
+
+#### Schedulers
+
+Thread caching is restored to `Schedulers.io()` after being lost in v0.18.
+
+A replacement for `ExecutorScheduler` (removed in 0.18) is accessible via `Schedulers.from(Executor e)` that wraps an `Executor` and complies with the Rx contract. 
+
+
+#### ReplaySubject
+
+All "replay" functionality now exists directly on the `ReplaySubject` rather than in an internal type. This means there are now several different `create` methods with the various overloads of size and time. 
+
+
+#### Changelist
+
+* [Pull 1165](https://github.com/Netflix/RxJava/pull/1165) RxScala: Add dropUntil, contains, repeat, doOnTerminate, startWith, publish variants
+* [Pull 1183](https://github.com/Netflix/RxJava/pull/1183) NotificationLite.accept performance improvements
+* [Pull 1177](https://github.com/Netflix/RxJava/pull/1177) GroupByUntil to use BufferUntilSubscriber
+* [Pull 1182](https://github.com/Netflix/RxJava/pull/1182) Add facilities for creating Observables from JavaFX events and ObservableValues
+* [Pull 1188](https://github.com/Netflix/RxJava/pull/1188) RxScala Schedulers changes
+* [Pull 1175](https://github.com/Netflix/RxJava/pull/1175) Fixed synchronous ConnectableObservable.connect problem
+* [Pull 1172](https://github.com/Netflix/RxJava/pull/1172) ObserveOn: Change to batch dequeue
+* [Pull 1191](https://github.com/Netflix/RxJava/pull/1191) Fix attempt for OperatorPivotTest
+* [Pull 1195](https://github.com/Netflix/RxJava/pull/1195) SwingScheduler: allow negative schedule
+* [Pull 1178](https://github.com/Netflix/RxJava/pull/1178) Fix RxScala bug
+* [Pull 1210](https://github.com/Netflix/RxJava/pull/1210) Add more operators to RxScala
+* [Pull 1216](https://github.com/Netflix/RxJava/pull/1216) RxScala: Exposing PublishSubject
+* [Pull 1208](https://github.com/Netflix/RxJava/pull/1208) OperatorToObservableList: use LinkedList to buffer the sequence’s items
+* [Pull 1185](https://github.com/Netflix/RxJava/pull/1185) Behavior subject time gap fix 2 
+* [Pull 1226](https://github.com/Netflix/RxJava/pull/1226) Fix bug in `zipWithIndex` and set `zip(that, selector)` public in RxScala
+* [Pull 1224](https://github.com/Netflix/RxJava/pull/1224) Implement shorter toBlocking as shorter alias for toBlockingObservable.
+* [Pull 1223](https://github.com/Netflix/RxJava/pull/1223) ReplaySubject enhancement with time and/or size bounds
+* [Pull 1160](https://github.com/Netflix/RxJava/pull/1160) Add `replay` and `multicast` variants to RxScala
+* [Pull 1229](https://github.com/Netflix/RxJava/pull/1229) Remove Ambiguous Subscribe Overloads with Scheduler
+* [Pull 1232](https://github.com/Netflix/RxJava/pull/1232) Adopt Limit and ForEach Java 8 Naming Conventions
+* [Pull 1233](https://github.com/Netflix/RxJava/pull/1233) Deprecate toBlockingObservable in favor of toBlocking
+* [Pull 1237](https://github.com/Netflix/RxJava/pull/1237) SafeSubscriber memory reduction
+* [Pull 1236](https://github.com/Netflix/RxJava/pull/1236) CompositeSubscription with atomic field updater
+* [Pull 1243](https://github.com/Netflix/RxJava/pull/1243) Remove Subscription Wrapper from Observable.subscribe
+* [Pull 1244](https://github.com/Netflix/RxJava/pull/1244) Observable.from(T) using Observable.just(T)
+* [Pull 1239](https://github.com/Netflix/RxJava/pull/1239) RxScala: Update docs for "apply" and add an example
+* [Pull 1248](https://github.com/Netflix/RxJava/pull/1248) Fixed testConcurrentOnNextFailsValidation 
+* [Pull 1246](https://github.com/Netflix/RxJava/pull/1246) Moved to atomic field updaters.
+* [Pull 1254](https://github.com/Netflix/RxJava/pull/1254) ZipIterable unsubscription fix
+* [Pull 1247](https://github.com/Netflix/RxJava/pull/1247) Add zip(iterable, selector) to RxScala
+* [Pull 1260](https://github.com/Netflix/RxJava/pull/1260) Fix the bug that BlockingObservable.singleOrDefault doesn't call unsubscribe
+* [Pull 1269](https://github.com/Netflix/RxJava/pull/1269) Fix the bug that int overflow can bypass the range check
+* [Pull 1272](https://github.com/Netflix/RxJava/pull/1272) ExecutorScheduler to wrap an Executor
+* [Pull 1264](https://github.com/Netflix/RxJava/pull/1264) ObserveOn scheduled unsubscription
+* [Pull 1271](https://github.com/Netflix/RxJava/pull/1271) Operator Retry with predicate
+* [Pull 1265](https://github.com/Netflix/RxJava/pull/1265) Add more operators to RxScala
+* [Pull 1281](https://github.com/Netflix/RxJava/pull/1281) Reduce Subscription Object Allocation 
+* [Pull 1284](https://github.com/Netflix/RxJava/pull/1284) Lock-free, MPSC-queue
+* [Pull 1288](https://github.com/Netflix/RxJava/pull/1288) Ensure StringObservable.from() does not perform unnecessary read
+* [Pull 1286](https://github.com/Netflix/RxJava/pull/1286) Rename some Operator* classes to OnSubscribe*
+* [Pull 1276](https://github.com/Netflix/RxJava/pull/1276) CachedThreadScheduler
+* [Pull 1287](https://github.com/Netflix/RxJava/pull/1287) ReplaySubject remove replayState CHM and related SubjectObserver changes
+* [Pull 1289](https://github.com/Netflix/RxJava/pull/1289) Schedulers.from(Executor)
+* [Pull 1290](https://github.com/Netflix/RxJava/pull/1290) Upgrade to JMH 0.7.3
+* [Pull 1293](https://github.com/Netflix/RxJava/pull/1293) Fix and Update JMH Perf Tests 
+* [Pull 1291](https://github.com/Netflix/RxJava/pull/1291) Check unsubscribe within observable from future
+* [Pull 1294](https://github.com/Netflix/RxJava/pull/1294) rx.operators -> rx.internal.operators
+* [Pull 1295](https://github.com/Netflix/RxJava/pull/1295) Change `void accept` to `boolean accept`
+* [Pull 1296](https://github.com/Netflix/RxJava/pull/1296) Move re-used internal Scheduler classes to their own package
+* [Pull 1298](https://github.com/Netflix/RxJava/pull/1298) Remove Bad Perf Test
+* [Pull 1301](https://github.com/Netflix/RxJava/pull/1301) RxScala: Add convenience method for adding unsubscription callback
+* [Pull 1304](https://github.com/Netflix/RxJava/pull/1304) Add flatMap and concatMap to RxScala
+* [Pull 1306](https://github.com/Netflix/RxJava/pull/1306) Hooked RxJavaPlugins errorHandler up within all operators that swallow onErrors
+* [Pull 1309](https://github.com/Netflix/RxJava/pull/1309) Hide ChainedSubscription/SubscriptionList from Public API
+
 ### Version 0.18.4 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.18.4%22)) ###
 
 This is a fix for `CompositeSubscription` object allocation problems. Details can be found in issue [#1204](https://github.com/Netflix/RxJava/issues/1204).
