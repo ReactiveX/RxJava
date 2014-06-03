@@ -106,6 +106,7 @@ class CompletenessTest extends JUnitSuite {
       "onErrorResumeNext(Observable[_ <: T])" -> "onErrorResumeNext(Observable[U])",
       "onErrorReturn(Func1[Throwable, _ <: T])" -> "onErrorReturn(Throwable => U)",
       "onExceptionResumeNext(Observable[_ <: T])" -> "onExceptionResumeNext(Observable[U])",
+      "onErrorFlatMap(Func1[OnErrorThrowable, _ <: Observable[_ <: T]])" -> "onErrorFlatMap((Throwable, Option[Any]) => Observable[U])",
       "parallel(Func1[Observable[T], Observable[R]])" -> "parallel(Observable[T] => Observable[R])",
       "parallel(Func1[Observable[T], Observable[R]], Scheduler)" -> "parallel(Observable[T] => Observable[R], Scheduler)",
       "publish(T)" -> "publish(U)",

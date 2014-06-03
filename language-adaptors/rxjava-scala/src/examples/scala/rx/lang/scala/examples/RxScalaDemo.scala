@@ -1176,4 +1176,38 @@ class RxScalaDemo extends JUnitSuite {
       .take(20)
       .toBlocking.foreach(println)
   }
+
+  @Test def onErrorResumeNextExample() {
+    val o = Observable {
+      (subscriber: Subscriber[Int]) =>
+        subscriber.onNext(1)
+        subscriber.onNext(2)
+        subscriber.onError(new IOException("Oops"))
+        subscriber.onNext(3)
+        subscriber.onNext(4)
+    }
+    o.onErrorResumeNext(_ => Observable.items(10, 11, 12)).subscribe(println(_))
+  }
+
+  @Test def onErrorFlatMapExample() {
+    val o = Observable {
+      (subscriber: Subscriber[Int]) =>
+        subscriber.onNext(1)
+        subscriber.onNext(2)
+        subscriber.onError(new IOException("Oops"))
+        subscriber.onNext(3)
+        subscriber.onNext(4)
+    }
+    o.onErrorFlatMap((_, _) => Observable.items(10, 11, 12)).subscribe(println(_))
+  }
+
+  @Test def onErrorFlatMapExample2() {
+    val o = Observable.items(4, 2, 0).map(16 / _).onErrorFlatMap {
+      (e, op) => op match {
+        case Some(v) if v == 0 => Observable.items(Int.MinValue)
+        case _ => Observable.empty
+      }
+    }
+    o.subscribe(println(_))
+  }
 }

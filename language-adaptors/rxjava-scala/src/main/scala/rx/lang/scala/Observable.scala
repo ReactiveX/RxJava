@@ -1209,6 +1209,30 @@ trait Observable[+T]
   }
 
   /**
+   * Intercepts `onError` notifications from the source Observable and replaces them with the
+   * `onNext` emissions of an Observable returned by a specified function. This allows the source
+   * sequence to continue even if it issues multiple `onError` notifications.
+   *
+   * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/onErrorFlatMap.png">
+   *
+   * @param resumeFunction a function that accepts an `Throwable` and an `Option` associated with this error representing
+   *                       the Throwable issued by the source Observable, and returns an Observable that emits items
+   *                       that will be emitted in place of the error. If no value is associated with the error, the value
+   *                       will be `None`.
+   * @return the original Observable, with appropriately modified behavior
+   */
+  def onErrorFlatMap[U >: T](resumeFunction: (Throwable, Option[Any]) => Observable[U]): Observable[U] = {
+    val f = new Func1[rx.exceptions.OnErrorThrowable, rx.Observable[_ <: U]] {
+      override def call(t: rx.exceptions.OnErrorThrowable): rx.Observable[_ <: U] = {
+        val v = if (t.isValueNull) Some(t.getValue) else None
+        resumeFunction(t.getCause, v).asJavaObservable
+      }
+    }
+    val thisJava = asJavaObservable.asInstanceOf[rx.Observable[U]]
+    toScalaObservable[U](thisJava.onErrorFlatMap(f))
+  }
+
+  /**
    * Returns an Observable that applies a function of your choosing to the first item emitted by a
    * source Observable, then feeds the result of that function along with the second item emitted
    * by the source Observable into the same function, and so on until all items have been emitted
