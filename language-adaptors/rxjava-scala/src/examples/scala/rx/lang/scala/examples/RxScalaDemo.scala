@@ -304,6 +304,17 @@ class RxScalaDemo extends JUnitSuite {
     waitFor(combinedCounter)
   }
 
+  @Test def combineLatestExample2() {
+    val firstCounter = Observable.interval(250 millis)
+    val secondCounter = Observable.interval(550 millis)
+    val thirdCounter = Observable.interval(850 millis)
+    val sources = Seq(firstCounter, secondCounter, thirdCounter)
+    val combinedCounter = Observable.combineLatest(sources, (items: Seq[Long]) => items.toList).take(10)
+
+    combinedCounter subscribe {x => println(s"Emitted group: $x")}
+    waitFor(combinedCounter)
+  }
+
   @Test def olympicsExampleWithoutPublish() {
     val medals = Olympics.mountainBikeMedals.doOnEach(_ => println("onNext"))
     medals.subscribe(println(_)) // triggers an execution of medals Observable

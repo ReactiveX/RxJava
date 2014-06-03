@@ -184,6 +184,7 @@ class CompletenessTest extends JUnitSuite {
       "create(OnSubscribeFunc[T])" -> "create(Observer[T] => Subscription)",
       "create(OnSubscribe[T])" -> "apply(Subscriber[T] => Unit)",
       "combineLatest(Observable[_ <: T1], Observable[_ <: T2], Func2[_ >: T1, _ >: T2, _ <: R])" -> "combineLatest(Observable[U])",
+      "combineLatest(List[_ <: Observable[_ <: T]], FuncN[_ <: R])" -> "combineLatest(Seq[Observable[T]], Seq[T] => R)",
       "concat(Observable[_ <: Observable[_ <: T]])" -> "concat(<:<[Observable[T], Observable[Observable[U]]])",
       "defer(Func0[_ <: Observable[_ <: T]])" -> "defer(=> Observable[T])",
       "from(Array[T])" -> "[use `items(T*)`]",

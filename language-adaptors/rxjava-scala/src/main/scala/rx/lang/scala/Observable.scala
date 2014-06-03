@@ -4185,6 +4185,26 @@ object Observable {
   def amb[T](sources: Observable[T]*): Observable[T] = {
     toScalaObservable[T](rx.Observable.amb[T](sources.map(_.asJavaObservable).asJava))
   }
+
+  /**
+   * Combines a list of source Observables by emitting an item that aggregates the latest values of each of
+   * the source Observables each time an item is received from any of the source Observables, where this
+   * aggregation is defined by a specified function.
+   *
+   * @tparam T the common base type of source values
+   * @tparam R the result type
+   * @param sources the list of source Observables
+   * @param combineFunction the aggregation function used to combine the items emitted by the source Observables
+   * @return an Observable that emits items that are the result of combining the items emitted by the source
+   *         Observables by means of the given aggregation function
+   */
+  def combineLatest[T, R](sources: Seq[Observable[T]], combineFunction: Seq[T] => R): Observable[R] = {
+    val jSources = new java.util.ArrayList[rx.Observable[_ <: T]](sources.map(_.asJavaObservable).asJava)
+    val jCombineFunction = new rx.functions.FuncN[R] {
+      override def call(args: java.lang.Object*): R = combineFunction(args.map(_.asInstanceOf[T]))
+    }
+    toScalaObservable[R](rx.Observable.combineLatest[T, R](jSources, jCombineFunction))
+  }
 }
 
 
