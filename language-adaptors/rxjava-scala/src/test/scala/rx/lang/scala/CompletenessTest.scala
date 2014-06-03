@@ -123,6 +123,7 @@ class CompletenessTest extends JUnitSuite {
       "replay(Func1[_ >: Observable[T], _ <: Observable[R]], Long, TimeUnit)" -> "replay(Observable[U] => Observable[R], Duration)",
       "replay(Func1[_ >: Observable[T], _ <: Observable[R]], Long, TimeUnit, Scheduler)" -> "replay(Observable[U] => Observable[R], Duration, Scheduler)",
       "replay(Func1[_ >: Observable[T], _ <: Observable[R]], Scheduler)" -> "replay(Observable[U] => Observable[R], Scheduler)",
+      "retry(Func2[Integer, Throwable, Boolean])" -> "retry((Int, Throwable) => Boolean)",
       "sample(Observable[U])" -> "sample(Observable[Any])",
       "scan(Func2[T, T, T])" -> unnecessary,
       "scan(R, Func2[R, _ >: T, R])" -> "scan(R)((R, T) => R)",

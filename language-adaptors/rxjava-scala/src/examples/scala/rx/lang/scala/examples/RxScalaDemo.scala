@@ -875,6 +875,28 @@ class RxScalaDemo extends JUnitSuite {
     assertEquals(List("alice", "bob", "carol"), o.retry(3).toBlockingObservable.toList)
   }
 
+  @Test def retryExample3(): Unit = {
+    var isFirst = true
+    val o = Observable {
+      (subscriber: Subscriber[String]) =>
+        if (isFirst) {
+          subscriber.onNext("alice")
+          subscriber.onError(new IOException("Oops"))
+          isFirst = false
+        }
+        else {
+          subscriber.onNext("bob")
+          subscriber.onError(new RuntimeException("Oops"))
+        }
+    }
+    o.retry {
+      (times, e) => e match {
+        case e: IOException => times <= 3
+        case _ => false
+      }
+    }.subscribe(s => println(s), e => e.printStackTrace())
+  }
+
   @Test def liftExample1(): Unit = {
     // Add "No. " in front of each item
     val o = List(1, 2, 3).toObservable.lift {

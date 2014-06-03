@@ -3087,6 +3087,22 @@ trait Observable[+T]
   }
 
   /**
+   * Returns an Observable that mirrors the source Observable, resubscribing to it if it calls `onError`
+   * and the predicate returns true for that specific exception and retry count.
+   *
+   * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/retry.png">
+   *
+   * @param predicate the predicate that determines if a resubscription may happen in case of a specific exception and retry count
+   * @return the source Observable modified with retry logic
+   */
+  def retry(predicate: (Int, Throwable) => Boolean): Observable[T] = {
+    val f = new Func2[java.lang.Integer, Throwable, java.lang.Boolean] {
+      def call(times: java.lang.Integer, e: Throwable): java.lang.Boolean = predicate(times, e)
+    }
+    toScalaObservable[T](asJavaObservable.retry(f))
+  }
+
+  /**
    * Returns an Observable that repeats the sequence of items emitted by the source Observable indefinitely.
    * <p>
    * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/repeat.o.png">
