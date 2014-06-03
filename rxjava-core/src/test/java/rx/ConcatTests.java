@@ -16,7 +16,6 @@
 package rx;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.List;
@@ -57,6 +56,8 @@ public class ConcatTests {
         assertEquals("two", values.get(1));
         assertEquals("three", values.get(2));
         assertEquals("four", values.get(3));
+        assertEquals("five", values.get(4));
+        assertEquals("six", values.get(5));
     }
 
     @Test
@@ -74,66 +75,99 @@ public class ConcatTests {
         assertEquals("two", values.get(1));
         assertEquals("three", values.get(2));
         assertEquals("four", values.get(3));
+        assertEquals("five", values.get(4));
+        assertEquals("six", values.get(5));        
     }
 
     @Test
     public void testConcatCovariance() {
-        Observable<Media> o1 = Observable.<Media> from(new HorrorMovie(), new Movie());
-        Observable<Media> o2 = Observable.from(new Media(), new HorrorMovie());
+    	HorrorMovie horrorMovie1 = new HorrorMovie();
+    	Movie movie = new Movie();
+    	Media media = new Media();
+    	HorrorMovie horrorMovie2 = new HorrorMovie();
+    	
+        Observable<Media> o1 = Observable.<Media> from(horrorMovie1, movie);
+        Observable<Media> o2 = Observable.from(media, horrorMovie2);
 
         Observable<Observable<Media>> os = Observable.from(o1, o2);
 
         List<Media> values = Observable.concat(os).toList().toBlocking().single();
         
+        assertEquals(horrorMovie1, values.get(0));
+        assertEquals(movie, values.get(1));
+        assertEquals(media, values.get(2));
+        assertEquals(horrorMovie2, values.get(3));
         assertEquals(4, values.size());
     }
 
     @Test
     public void testConcatCovariance2() {
-        Observable<Media> o1 = Observable.from(new HorrorMovie(), new Movie(), new Media());
-        Observable<Media> o2 = Observable.from(new Media(), new HorrorMovie());
+    	HorrorMovie horrorMovie1 = new HorrorMovie();
+    	Movie movie = new Movie();
+    	Media media1 = new Media();
+    	Media media2 = new Media();
+    	HorrorMovie horrorMovie2 = new HorrorMovie();
+    	
+        Observable<Media> o1 = Observable.from(horrorMovie1, movie, media1);
+        Observable<Media> o2 = Observable.from(media2, horrorMovie2);
 
         Observable<Observable<Media>> os = Observable.from(o1, o2);
 
         List<Media> values = Observable.concat(os).toList().toBlocking().single();
 
+        assertEquals(horrorMovie1, values.get(0));
+        assertEquals(movie, values.get(1));
+        assertEquals(media1, values.get(2));
+        assertEquals(media2, values.get(3));
+        assertEquals(horrorMovie2, values.get(4));
         assertEquals(5, values.size());
     }
 
     @Test
     public void testConcatCovariance3() {
-        Observable<Movie> o1 = Observable.from(new HorrorMovie(), new Movie());
-        Observable<Media> o2 = Observable.from(new Media(), new HorrorMovie());
+    	HorrorMovie horrorMovie1 = new HorrorMovie();
+    	Movie movie = new Movie();
+    	Media media = new Media();
+    	HorrorMovie horrorMovie2 = new HorrorMovie();
+    	
+        Observable<Movie> o1 = Observable.from(horrorMovie1, movie);
+        Observable<Media> o2 = Observable.from(media, horrorMovie2);
 
         List<Media> values = Observable.concat(o1, o2).toList().toBlocking().single();
 
-        assertTrue(values.get(0) instanceof HorrorMovie);
-        assertTrue(values.get(1) instanceof Movie);
-        assertTrue(values.get(2) instanceof Media);
-        assertTrue(values.get(3) instanceof HorrorMovie);
+        assertEquals(horrorMovie1, values.get(0));
+        assertEquals(movie, values.get(1));
+        assertEquals(media, values.get(2));
+        assertEquals(horrorMovie2, values.get(3));
+        assertEquals(4, values.size());
     }
 
     @Test
     public void testConcatCovariance4() {
-
+    	final HorrorMovie horrorMovie1 = new HorrorMovie();
+    	final Movie movie = new Movie();
+    	Media media = new Media();
+    	HorrorMovie horrorMovie2 = new HorrorMovie();
+    	
         Observable<Movie> o1 = Observable.create(new OnSubscribe<Movie>() {
 
             @Override
             public void call(Subscriber<? super Movie> o) {
-                o.onNext(new HorrorMovie());
-                o.onNext(new Movie());
+                o.onNext(horrorMovie1);
+                o.onNext(movie);
                 //                o.onNext(new Media()); // correctly doesn't compile
                 o.onCompleted();
             }
         });
 
-        Observable<Media> o2 = Observable.from(new Media(), new HorrorMovie());
+        Observable<Media> o2 = Observable.from(media, horrorMovie2);
 
         List<Media> values = Observable.concat(o1, o2).toList().toBlocking().single();
 
-        assertTrue(values.get(0) instanceof HorrorMovie);
-        assertTrue(values.get(1) instanceof Movie);
-        assertTrue(values.get(2) instanceof Media);
-        assertTrue(values.get(3) instanceof HorrorMovie);
+        assertEquals(horrorMovie1, values.get(0));
+        assertEquals(movie, values.get(1));
+        assertEquals(media, values.get(2));
+        assertEquals(horrorMovie2, values.get(3));
+        assertEquals(4, values.size());
     }
 }
