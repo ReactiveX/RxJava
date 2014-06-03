@@ -1228,4 +1228,11 @@ class RxScalaDemo extends JUnitSuite {
     }
     o.subscribe(println(_))
   }
+
+  @Test def switchMapExample() {
+    val o = Observable.interval(300 millis).take(5).switchMap[String] {
+      n => Observable.interval(50 millis).take(10).map(i => s"Seq ${n}: ${i}")
+    }
+    o.toBlocking.foreach(println)
+  }
 }

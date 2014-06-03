@@ -2238,6 +2238,23 @@ trait Observable[+T]
   }
 
   /**
+   * Returns a new Observable by applying a function that you supply to each item emitted by the source
+   * Observable that returns an Observable, and then emitting the items emitted by the most recently emitted
+   * of these Observables.
+   *
+   * <img width="640" height="350" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/switchMap.png">
+   *
+   * @param f a function that, when applied to an item emitted by the source Observable, returns an Observable
+   * @return an Observable that emits the items emitted by the Observable returned from applying a function to
+   *         the most recently emitted item emitted by the source Observable
+   */
+  def switchMap[R](f: T => Observable[R]): Observable[R] = {
+    toScalaObservable[R](asJavaObservable.switchMap[R](new Func1[T, rx.Observable[_ <: R]] {
+      def call(t: T): rx.Observable[_ <: R] = f(t).asJavaObservable
+    }))
+  }
+
+  /**
    * Given an Observable that emits Observables, creates a single Observable that
    * emits the items emitted by the most recently published of those Observables.
    *
