@@ -17,7 +17,6 @@ package rx.internal.operators;
 
 import rx.Observable.Operator;
 import rx.Subscriber;
-import rx.subscriptions.ChainedSubscription;
 
 /**
  * Returns an Observable that emits the first <code>num</code> items emitted by the source
@@ -40,22 +39,7 @@ public final class OperatorTake<T> implements Operator<T, T> {
 
     @Override
     public Subscriber<? super T> call(final Subscriber<? super T> child) {
-        final ChainedSubscription parent = new ChainedSubscription();
-        if (limit == 0) {
-            child.onCompleted();
-            parent.unsubscribe();
-        }
-
-        /*
-         * We decouple the parent and child subscription so there can be multiple take() in a chain
-         * such as for the groupBy Observer use case where you may take(1) on groups and take(20) on the children.
-         * 
-         * Thus, we only unsubscribe UPWARDS to the parent and an onComplete DOWNSTREAM.
-         * 
-         * However, if we receive an unsubscribe from the child we still want to propagate it upwards so we register 'parent' with 'child'
-         */
-        child.add(parent);
-        return new Subscriber<T>(parent) {
+        Subscriber<T> parent = new Subscriber<T>() {
 
             int count = 0;
             boolean completed = false;
@@ -87,6 +71,22 @@ public final class OperatorTake<T> implements Operator<T, T> {
             }
 
         };
+        
+        if (limit == 0) {
+            child.onCompleted();
+            parent.unsubscribe();
+        }
+        
+        /*
+         * We decouple the parent and child subscription so there can be multiple take() in a chain
+         * such as for the groupBy Observer use case where you may take(1) on groups and take(20) on the children.
+         * 
+         * Thus, we only unsubscribe UPWARDS to the parent and an onComplete DOWNSTREAM.
+         * 
+         * However, if we receive an unsubscribe from the child we still want to propagate it upwards so we register 'parent' with 'child'
+         */
+        child.add(parent);
+        return parent;
     }
 
 }

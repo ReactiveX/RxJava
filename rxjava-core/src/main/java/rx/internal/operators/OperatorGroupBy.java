@@ -26,7 +26,6 @@ import rx.exceptions.OnErrorThrowable;
 import rx.functions.Action0;
 import rx.functions.Func1;
 import rx.observables.GroupedObservable;
-import rx.subscriptions.ChainedSubscription;
 import rx.subscriptions.Subscriptions;
 
 /**
@@ -55,7 +54,7 @@ public final class OperatorGroupBy<K, T> implements Operator<GroupedObservable<K
         public GroupBySubscriber(Func1<? super T, ? extends K> keySelector, Subscriber<? super GroupedObservable<K, T>> child) {
             // a new CompositeSubscription to decouple the subscription as the inner subscriptions need a separate lifecycle
             // and will unsubscribe on this parent if they are all unsubscribed
-            super(new ChainedSubscription());
+            super();
             this.keySelector = keySelector;
             this.child = child;
         }

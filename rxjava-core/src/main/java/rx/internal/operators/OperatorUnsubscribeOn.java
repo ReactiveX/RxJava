@@ -19,7 +19,6 @@ import rx.Observable.Operator;
 import rx.Scheduler;
 import rx.Subscriber;
 import rx.functions.Action0;
-import rx.subscriptions.ChainedSubscription;
 import rx.subscriptions.Subscriptions;
 
 /**
@@ -36,25 +35,7 @@ public class OperatorUnsubscribeOn<T> implements Operator<T, T> {
 
     @Override
     public Subscriber<? super T> call(final Subscriber<? super T> subscriber) {
-        final ChainedSubscription parentSubscription = new ChainedSubscription();
-        subscriber.add(Subscriptions.create(new Action0() {
-
-            @Override
-            public void call() {
-                final Scheduler.Worker inner = scheduler.createWorker();
-                inner.schedule(new Action0() {
-
-                    @Override
-                    public void call() {
-                        parentSubscription.unsubscribe();
-                        inner.unsubscribe();
-                    }
-                });
-            }
-
-        }));
-
-        return new Subscriber<T>(parentSubscription) {
+        final Subscriber<T> parent = new Subscriber<T>() {
 
             @Override
             public void onCompleted() {
@@ -72,5 +53,26 @@ public class OperatorUnsubscribeOn<T> implements Operator<T, T> {
             }
 
         };
+        
+        subscriber.add(Subscriptions.create(new Action0() {
+
+            @Override
+            public void call() {
+                final Scheduler.Worker inner = scheduler.createWorker();
+                inner.schedule(new Action0() {
+
+                    @Override
+                    public void call() {
+                        parent.unsubscribe();
+                        inner.unsubscribe();
+                    }
+                });
+            }
+
+        }));
+        
+        return parent;
+
+
     }
 }
