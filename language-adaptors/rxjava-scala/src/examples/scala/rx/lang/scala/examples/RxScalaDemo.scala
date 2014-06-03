@@ -130,13 +130,31 @@ class RxScalaDemo extends JUnitSuite {
     o.flatten.takeUntil(stopper).toBlockingObservable.foreach(println(_))
   }
 
-  @Test def fattenSomeExample() {
+  @Test def flattenSomeExample() {
     // To merge some observables which are all known already:
     List(
       Observable.interval(200 millis),
       Observable.interval(400 millis),
       Observable.interval(800 millis)
     ).toObservable.flatten.take(12).toBlockingObservable.foreach(println(_))
+  }
+
+  @Test def flattenExample() {
+    List(
+      Observable.interval(200 millis).map(_ => 1).take(5),
+      Observable.interval(200 millis).map(_ => 2).take(5),
+      Observable.interval(200 millis).map(_ => 3).take(5),
+      Observable.interval(200 millis).map(_ => 4).take(5)
+    ).toObservable.flatten.toBlocking.foreach(println(_))
+  }
+
+  @Test def flattenExample2() {
+    List(
+      Observable.interval(200 millis).map(_ => 1).take(5),
+      Observable.interval(200 millis).map(_ => 2).take(5),
+      Observable.interval(200 millis).map(_ => 3).take(5),
+      Observable.interval(200 millis).map(_ => 4).take(5)
+    ).toObservable.flatten(2).toBlocking.foreach(println(_))
   }
 
   @Test def rangeAndBufferExample() {

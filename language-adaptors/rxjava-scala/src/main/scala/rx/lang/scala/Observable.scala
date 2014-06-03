@@ -2330,6 +2330,28 @@ trait Observable[+T]
   }
 
   /**
+   * Flattens an Observable that emits Observables into a single Observable that emits the items emitted by
+   * those Observables, without any transformation, while limiting the maximum number of concurrent
+   * subscriptions to these Observables.
+   *
+   * <img width="640" height="370" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.oo.png">
+   *
+   * You can combine the items emitted by multiple Observables so that they appear as a single Observable, by
+   * using the `flatten` method.
+   *
+   * @param maxConcurrent the maximum number of Observables that may be subscribed to concurrently
+   * @return an Observable that emits items that are the result of flattening the Observables emitted by the `source` Observable
+   * @throws IllegalArgumentException  if `maxConcurrent` is less than or equal to 0
+   */
+  def flatten[U](maxConcurrent: Int)(implicit evidence: Observable[T] <:< Observable[Observable[U]]): Observable[U] = {
+    val o2: Observable[Observable[U]] = this
+    val o3: Observable[rx.Observable[_ <: U]] = o2.map(_.asJavaObservable)
+    val o4: rx.Observable[_ <: rx.Observable[_ <: U]] = o3.asJavaObservable
+    val o5 = rx.Observable.merge[U](o4, maxConcurrent)
+    toScalaObservable[U](o5)
+  }
+
+  /**
    * This behaves like `flatten` except that if any of the merged Observables
    * notify of an error via [[rx.lang.scala.Observer.onError onError]], this method will
    * refrain from propagating that error notification until all of the merged Observables have
