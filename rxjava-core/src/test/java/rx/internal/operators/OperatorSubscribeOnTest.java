@@ -16,6 +16,7 @@
 package rx.internal.operators;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
@@ -26,6 +27,7 @@ import org.junit.Test;
 
 import rx.Observable;
 import rx.Observable.OnSubscribe;
+import rx.Observer;
 import rx.Scheduler;
 import rx.Subscriber;
 import rx.Subscription;
@@ -77,7 +79,7 @@ public class OperatorSubscribeOnTest {
         assertEquals(0, observer.getOnErrorEvents().size());
         assertEquals(1, observer.getOnCompletedEvents().size());
     }
-    
+
     @Test
     public void testThrownErrorHandling() {
         TestSubscriber<String> ts = new TestSubscriber<String>();
@@ -92,7 +94,7 @@ public class OperatorSubscribeOnTest {
         ts.awaitTerminalEvent(1000, TimeUnit.MILLISECONDS);
         ts.assertTerminalEvent();
     }
-    
+
     @Test
     public void testOnError() {
         TestSubscriber<String> ts = new TestSubscriber<String>();
@@ -182,6 +184,37 @@ public class OperatorSubscribeOnTest {
         Thread.sleep(200); // give time for the loop to continue
         ts.assertReceivedOnNext(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
         assertEquals(10, count.get());
+    }
+
+    @Test
+    public void testBackpressureReschedulesCorrectly() throws InterruptedException {
+        final CountDownLatch latch = new CountDownLatch(10);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(new Observer<Integer>() {
+
+            @Override
+            public void onCompleted() {
+            }
+
+            @Override
+            public void onError(Throwable e) {
+            }
+
+            @Override
+            public void onNext(Integer t) {
+                latch.countDown();
+            }
+
+        });
+        ts.request(10);
+        Observable.range(1, 10000000).subscribeOn(Schedulers.newThread()).take(20).subscribe(ts);
+        latch.await();
+        Thread t = ts.getLastSeenThread();
+        System.out.println("First schedule: " + t);
+        assertTrue(t.getName().startsWith("Rx"));
+        ts.request(10);
+        ts.awaitTerminalEvent();
+        System.out.println("After reschedule: " + ts.getLastSeenThread());
+        assertEquals(t, ts.getLastSeenThread());
     }
 
 }
