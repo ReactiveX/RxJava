@@ -219,6 +219,7 @@ class CompletenessTest extends JUnitSuite {
       "mergeDelayError(Observable[_ <: Observable[_ <: T]])" -> "flattenDelayError(<:<[Observable[T], Observable[Observable[U]]])",
       "parallelMerge(Observable[Observable[T]], Int)" -> "parallelMerge(Int)(<:<[Observable[T], Observable[Observable[U]]])",
       "parallelMerge(Observable[Observable[T]], Int, Scheduler)" -> "parallelMerge(Int, Scheduler)(<:<[Observable[T], Observable[Observable[U]]])",
+      "pivot(Observable[GroupedObservable[K1, GroupedObservable[K2, T]]])" -> "pivot(<:<[Observable[T], Observable[(K1, Observable[(K2, Observable[U])])]])",
       "sequenceEqual(Observable[_ <: T], Observable[_ <: T])" -> "sequenceEqual(Observable[U])",
       "sequenceEqual(Observable[_ <: T], Observable[_ <: T], Func2[_ >: T, _ >: T, Boolean])" -> "sequenceEqual(Observable[U], (U, U) => Boolean)",
       "range(Int, Int)" -> "[use `(start until (start + count)).toObservable` instead of `range(start, count)`]",
