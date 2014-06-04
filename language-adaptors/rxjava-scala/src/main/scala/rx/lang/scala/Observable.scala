@@ -2194,6 +2194,35 @@ trait Observable[+T]
   }
 
   /**
+   * Groups the items emitted by an [[Observable]] (transformed by a selector) according to a specified key selector function
+   * until the duration Observable expires for the key.
+   *
+   * <img width="640" height="375" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/groupByUntil.png">
+   *
+   * <em>Note:</em> The `Observable` in the pair `(K, Observable[V])` will cache the items it is to emit until such time as it
+   * is subscribed to. For this reason, in order to avoid memory leaks, you should not simply ignore those `Observable` that
+   * do not concern you. Instead, you can signal to them that they may discard their buffers by applying an operator like `take(0)` to them.
+   *
+   * @param keySelector a function to extract the key for each item
+   * @param valueSelector a function to map each item emitted by the source [[Observable]] to an item emitted by one
+   *                      of the resulting `Observable[V]`s
+   * @param closings a function to signal the expiration of a group
+   * @return an [[Observable]] that emits pairs of key and `Observable[V]`, each of which corresponds to a key
+   *         value and each of which emits all items emitted by the source [[Observable]] during that
+   *         key's duration that share that same key value, transformed by the value selector
+   */
+  def groupByUntil[K, V](keySelector: T => K, valueSelector: T => V, closings: (K, Observable[V]) => Observable[Any]): Observable[(K, Observable[V])] = {
+    val jKeySelector: Func1[_ >: T, _ <: K] = keySelector
+    val jValueSelector: Func1[_ >: T, _ <: V] = valueSelector
+    val jDurationSelector = new Func1[rx.observables.GroupedObservable[_ <: K, _ <: V], rx.Observable[_ <: Any]] {
+      override def call(jgo: rx.observables.GroupedObservable[_ <: K, _ <: V]): rx.Observable[_ <: Any] = closings(jgo.getKey, toScalaObservable[V](jgo))
+    }
+    val f = (o: rx.observables.GroupedObservable[K, _ <: V]) => (o.getKey, toScalaObservable[V](o))
+    val jo = asJavaObservable.groupByUntil[K, V, Any](jKeySelector, jValueSelector, jDurationSelector).map[(K, Observable[V])](f)
+    toScalaObservable[(K, Observable[V])](jo)
+  }
+
+  /**
    * Correlates the items emitted by two Observables based on overlapping durations.
    * <p>
    * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/join_.png">

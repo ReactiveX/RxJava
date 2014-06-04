@@ -96,6 +96,7 @@ class CompletenessTest extends JUnitSuite {
       "forEach(Action1[_ >: T], Action1[Throwable], Action0)" -> "foreach(T => Unit, Throwable => Unit, () => Unit)",
       "groupBy(Func1[_ >: T, _ <: K], Func1[_ >: T, _ <: R])" -> "[use `groupBy` and `map`]",
       "groupByUntil(Func1[_ >: T, _ <: TKey], Func1[_ >: GroupedObservable[TKey, T], _ <: Observable[_ <: TDuration]])" -> "groupByUntil(T => K, (K, Observable[T]) => Observable[Any])",
+      "groupByUntil(Func1[_ >: T, _ <: TKey], Func1[_ >: T, _ <: TValue], Func1[_ >: GroupedObservable[TKey, TValue], _ <: Observable[_ <: TDuration]])" -> "groupByUntil(T => K, T => V, (K, Observable[V]) => Observable[Any])",
       "ignoreElements()" -> "[use `filter(_ => false)`]",
       "last(Func1[_ >: T, Boolean])" -> "[use `filter(predicate).last`]",
       "lastOrDefault(T)" -> "lastOrElse(=> U)",

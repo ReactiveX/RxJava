@@ -294,6 +294,13 @@ class RxScalaDemo extends JUnitSuite {
     sequenced.subscribe(x => println(s"Emitted group: $x"))
   }
 
+  @Test def groupByUntilExample2() {
+    val numbers = Observable.interval(250 millis).take(14)
+    val grouped = numbers.groupByUntil[Long, Long](x => x % 2, x => x * 10, {case (key, obs) => Observable.interval(2 seconds)})
+    val sequenced = (grouped.map({ case (key, obs) => obs.toSeq })).flatten
+    sequenced.toBlocking.foreach(x => println(s"Emitted group: $x"))
+  }
+
   @Test def combineLatestExample() {
     val firstCounter = Observable.interval(250 millis)
     val secondCounter = Observable.interval(550 millis)
