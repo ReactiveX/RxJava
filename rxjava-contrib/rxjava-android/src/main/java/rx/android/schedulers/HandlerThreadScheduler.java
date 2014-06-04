@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,6 +22,7 @@ import rx.Subscription;
 import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.subscriptions.BooleanSubscription;
+import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.Subscriptions;
 import android.os.Handler;
 
@@ -34,7 +35,7 @@ public class HandlerThreadScheduler extends Scheduler {
 
     /**
      * Constructs a {@link HandlerThreadScheduler} using the given {@link Handler}
-     * 
+     *
      * @param handler
      *            {@link Handler} to use when scheduling actions
      */
@@ -46,11 +47,12 @@ public class HandlerThreadScheduler extends Scheduler {
     public Worker createWorker() {
         return new InnerHandlerThreadScheduler(handler);
     }
-    
+
     private static class InnerHandlerThreadScheduler extends Worker {
 
         private final Handler handler;
-        private BooleanSubscription innerSubscription = new BooleanSubscription();
+
+        private final CompositeSubscription mCompositeSubscription = new CompositeSubscription();
 
         public InnerHandlerThreadScheduler(Handler handler) {
             this.handler = handler;
@@ -58,12 +60,12 @@ public class HandlerThreadScheduler extends Scheduler {
 
         @Override
         public void unsubscribe() {
-            innerSubscription.unsubscribe();
+            mCompositeSubscription.unsubscribe();
         }
 
         @Override
         public boolean isUnsubscribed() {
-            return innerSubscription.isUnsubscribed();
+            return mCompositeSubscription.isUnsubscribed();
         }
 
         @Override
@@ -78,15 +80,17 @@ public class HandlerThreadScheduler extends Scheduler {
                 }
             };
             handler.postDelayed(runnable, unit.toMillis(delayTime));
-            return Subscriptions.create(new Action0() {
 
+            final Subscription subscription = Subscriptions.create(new Action0() {
                 @Override
                 public void call() {
                     handler.removeCallbacks(runnable);
-                    
+
                 }
-                
             });
+            mCompositeSubscription.add(subscription);
+
+            return Subscriptions.empty();
         }
 
         @Override
