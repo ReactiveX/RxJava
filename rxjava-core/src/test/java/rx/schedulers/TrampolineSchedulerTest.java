@@ -15,12 +15,18 @@
  */
 package rx.schedulers;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.junit.Test;
 
 import rx.Observable;
 import rx.Scheduler;
+import rx.Scheduler.Worker;
+import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Func1;
 
@@ -54,5 +60,63 @@ public class TrampolineSchedulerTest extends AbstractSchedulerTests {
                 System.out.println("t: " + t);
             }
         });
+    }
+
+    @Test
+    public void testNestedTrampolineWithUnsubscribe() {
+        final ArrayList<String> workDone = new ArrayList<String>();
+        Worker worker = Schedulers.trampoline().createWorker();
+        worker.schedule(new Action0() {
+
+            @Override
+            public void call() {
+                doWorkOnNewTrampoline("A", workDone);
+            }
+
+        });
+
+        final Worker worker2 = Schedulers.trampoline().createWorker();
+        worker2.schedule(new Action0() {
+
+            @Override
+            public void call() {
+                doWorkOnNewTrampoline("B", workDone);
+                // we unsubscribe worker2 ... it should not affect work scheduled on a separate Trampline.Worker
+                worker2.unsubscribe();
+            }
+
+        });
+
+        assertEquals(6, workDone.size());
+        assertEquals(Arrays.asList("A.1", "A.B.1", "A.B.2", "B.1", "B.B.1", "B.B.2"), workDone);
+    }
+
+    private static void doWorkOnNewTrampoline(final String key, final ArrayList<String> workDone) {
+        Worker worker = Schedulers.trampoline().createWorker();
+        worker.schedule(new Action0() {
+
+            @Override
+            public void call() {
+                String msg = key + ".1";
+                workDone.add(msg);
+                System.out.println(msg);
+                Worker worker3 = Schedulers.trampoline().createWorker();
+                worker3.schedule(createPrintAction(key + ".B.1", workDone));
+                worker3.schedule(createPrintAction(key + ".B.2", workDone));
+            }
+
+        });
+    }
+
+    private static Action0 createPrintAction(final String message, final ArrayList<String> workDone) {
+        return new Action0() {
+
+            @Override
+            public void call() {
+                System.out.println(message);
+                workDone.add(message);
+            }
+
+        };
     }
 }

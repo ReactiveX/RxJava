@@ -83,9 +83,6 @@ public final class TrampolineScheduler extends Scheduler {
 
             if (exec) {
                 while (!queue.isEmpty()) {
-                    if (innerSubscription.isUnsubscribed()) {
-                        return Subscriptions.empty();
-                    }
                     queue.poll().action.call();
                 }
 
@@ -108,7 +105,6 @@ public final class TrampolineScheduler extends Scheduler {
 
         @Override
         public void unsubscribe() {
-            QUEUE.set(null); // this assumes we are calling unsubscribe from the same thread
             innerSubscription.unsubscribe();
         }
 
