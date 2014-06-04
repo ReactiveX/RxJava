@@ -52,6 +52,9 @@ public final class OperatorFilter<T> implements Operator<T, T> {
                 try {
                     if (predicate.call(t)) {
                         child.onNext(t);
+                    } else {
+                        // TODO consider a more complicated version that batches these
+                        request(1);
                     }
                 } catch (Throwable e) {
                     child.onError(OnErrorThrowable.addValueAsLastCause(e, t));

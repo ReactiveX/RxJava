@@ -25,10 +25,12 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Observable.OnSubscribe;
 import rx.Observable.Operator;
+import rx.Observer;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Action0;
 import rx.observables.GroupedObservable;
+import rx.observers.SerializedObserver;
 import rx.subscriptions.Subscriptions;
 
 public final class OperatorPivot<K1, K2, T> implements Operator<GroupedObservable<K2, GroupedObservable<K1, T>>, GroupedObservable<K1, GroupedObservable<K2, T>>> {
@@ -268,7 +270,7 @@ public final class OperatorPivot<K1, K2, T> implements Operator<GroupedObservabl
                     return null;
                 }
 
-                Outer<K1, K2, T> newOuter = Outer.<K1, K2, T> create(this, state, key2);
+                Outer<K1, K2, T> newOuter = Outer.<K1, K2, T> create(key2);
                 Outer<K1, K2, T> existing = outerSubjects.putIfAbsent(key2, newOuter);
                 if (existing != null) {
                     // we lost the race to create so return the one that did
@@ -283,11 +285,12 @@ public final class OperatorPivot<K1, K2, T> implements Operator<GroupedObservabl
 
     private static final class Inner<K1, K2, T> {
 
-        private final BufferUntilSubscriber<T> subscriber;
+        private final Observer<T> subscriber;
         private final GroupedObservable<K1, T> group;
 
         private Inner(BufferUntilSubscriber<T> subscriber, GroupedObservable<K1, T> group) {
-            this.subscriber = subscriber;
+            // since multiple threads are being pivoted we need to make sure this is serialized
+            this.subscriber = new SerializedObserver<T>(subscriber);
             this.group = group;
         }
 
@@ -335,15 +338,16 @@ public final class OperatorPivot<K1, K2, T> implements Operator<GroupedObservabl
 
     private static final class Outer<K1, K2, T> {
 
-        private final BufferUntilSubscriber<GroupedObservable<K1, T>> subscriber;
+        private final Observer<GroupedObservable<K1, T>> subscriber;
         private final GroupedObservable<K2, GroupedObservable<K1, T>> group;
 
         private Outer(BufferUntilSubscriber<GroupedObservable<K1, T>> subscriber, GroupedObservable<K2, GroupedObservable<K1, T>> group) {
-            this.subscriber = subscriber;
+            // since multiple threads are being pivoted we need to make sure this is serialized
+            this.subscriber = new SerializedObserver<GroupedObservable<K1, T>>(subscriber);
             this.group = group;
         }
 
-        public static <K1, K2, T> Outer<K1, K2, T> create(final GroupState<K1, K2, T> groups, final AtomicReference<State> state, final K2 key2) {
+        public static <K1, K2, T> Outer<K1, K2, T> create(final K2 key2) {
             final BufferUntilSubscriber<GroupedObservable<K1, T>> subject = BufferUntilSubscriber.create();
             GroupedObservable<K2, GroupedObservable<K1, T>> group = new GroupedObservable<K2, GroupedObservable<K1, T>>(key2, new OnSubscribe<GroupedObservable<K1, T>>() {
 

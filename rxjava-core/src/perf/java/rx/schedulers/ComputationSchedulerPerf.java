@@ -17,20 +17,20 @@ package rx.schedulers;
 
 import org.openjdk.jmh.annotations.GenerateMicroBenchmark;
 
-import rx.jmh.InputWithIncrementingInteger;
+import rx.jmh.InputWithIncrementingIntegerTo1000000;
 import rx.observers.TestSubscriber;
 
 public class ComputationSchedulerPerf {
 
     @GenerateMicroBenchmark
-    public void subscribeOn(InputWithIncrementingInteger input) throws InterruptedException {
+    public void subscribeOn(InputWithIncrementingIntegerTo1000000 input) throws InterruptedException {
         TestSubscriber<Integer> ts = input.newSubscriber();
         input.observable.subscribeOn(Schedulers.computation()).subscribe(ts);
         ts.awaitTerminalEvent();
     }
 
     @GenerateMicroBenchmark
-    public void observeOn(InputWithIncrementingInteger input) throws InterruptedException {
+    public void observeOn(InputWithIncrementingIntegerTo1000000 input) throws InterruptedException {
         TestSubscriber<Integer> ts = input.newSubscriber();
         input.observable.observeOn(Schedulers.computation()).subscribe(ts);
         ts.awaitTerminalEvent();
