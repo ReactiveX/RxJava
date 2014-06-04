@@ -15,8 +15,15 @@
  */
 package rx.internal.operators;
 
+import java.util.Iterator;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import rx.Observable.OnSubscribe;
+import rx.Producer;
+import rx.Scheduler;
 import rx.Subscriber;
+import rx.functions.Action0;
+import rx.schedulers.Schedulers;
 
 /**
  * Converts an Iterable sequence into an Observable.
@@ -35,17 +42,48 @@ public final class OnSubscribeFromIterable<T> implements OnSubscribe<T> {
     }
 
     @Override
-    public void call(Subscriber<? super T> o) {
-        for (T i : is) {
-            if (o.isUnsubscribed()) {
-                return;
+    public void call(final Subscriber<? super T> o) {
+        final Iterator<? extends T> it = is.iterator();
+        // TODO make a fast-path if site of Iterable is less than min buffer size so we avoid trampoline and producer in that case
+        final Scheduler.Worker trampoline = Schedulers.trampoline().createWorker();
+        o.add(trampoline);
+        o.setProducer(new Producer() {
+            // TODO migrate to AFU
+            final AtomicInteger requested = new AtomicInteger();
+
+            @Override
+            public void request(int n) {
+                int _c = requested.getAndAdd(n);
+                if (_c == 0) {
+                    // it was 0 (not running) so start it
+                    trampoline.schedule(new Action0() {
+
+                        @Override
+                        public void call() {
+                            while (it.hasNext()) {
+                                if (o.isUnsubscribed()) {
+                                    return;
+                                }
+                                int c = requested.decrementAndGet();
+                                T t = it.next();
+                                o.onNext(t);
+                                if (c == 0) {
+                                    // we're done emitting the number requested so return
+                                    return;
+                                }
+                            }
+
+                            if (o.isUnsubscribed()) {
+                                return;
+                            }
+                            o.onCompleted();
+                        }
+
+                    });
+                }
             }
-            o.onNext(i);
-        }
-        if (o.isUnsubscribed()) {
-            return;
-        }
-        o.onCompleted();
+
+        });
     }
 
 }

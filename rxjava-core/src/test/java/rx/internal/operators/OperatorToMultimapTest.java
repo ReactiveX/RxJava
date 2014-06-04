@@ -36,6 +36,7 @@ import org.mockito.MockitoAnnotations;
 
 import rx.Observable;
 import rx.Observer;
+import rx.functions.Action1;
 import rx.functions.Func0;
 import rx.functions.Func1;
 import rx.functions.Functions;
@@ -194,6 +195,17 @@ public class OperatorToMultimapTest {
     public void testToMultimapWithErrorInValueSelector() {
         Observable<String> source = Observable.from("a", "b", "cc", "dd");
 
+        System.out.println("1*****************************");
+        source.forEach(new Action1<String>() {
+
+            @Override
+            public void call(String t1) {
+                System.out.println(">>>> t1: " + t1);
+            }
+            
+        });
+        System.out.println("2*****************************");
+        
         Func1<String, String> duplicateErr = new Func1<String, String>() {
             @Override
             public String call(String t1) {

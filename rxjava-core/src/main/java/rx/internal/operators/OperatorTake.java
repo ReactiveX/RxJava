@@ -16,6 +16,7 @@
 package rx.internal.operators;
 
 import rx.Observable.Operator;
+import rx.Producer;
 import rx.Subscriber;
 
 /**
@@ -70,13 +71,29 @@ public final class OperatorTake<T> implements Operator<T, T> {
                 }
             }
 
+            @Override
+            public void setProducer(final Producer producer) {
+                child.setProducer(new Producer() {
+
+                    @Override
+                    public void request(int n) {
+                        int c = limit - count;
+                        if (n < c) {
+                            producer.request(n);
+                        } else {
+                            producer.request(c);
+                        }
+                    }
+                });
+            }
+
         };
-        
+
         if (limit == 0) {
             child.onCompleted();
             parent.unsubscribe();
         }
-        
+
         /*
          * We decouple the parent and child subscription so there can be multiple take() in a chain
          * such as for the groupBy Observer use case where you may take(1) on groups and take(20) on the children.

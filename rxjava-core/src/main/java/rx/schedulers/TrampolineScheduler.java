@@ -17,6 +17,7 @@ package rx.schedulers;
 
 import java.util.PriorityQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 import rx.Scheduler;
@@ -44,15 +45,20 @@ public final class TrampolineScheduler extends Scheduler {
     /* package accessible for unit tests */TrampolineScheduler() {
     }
 
-    private static final ThreadLocal<PriorityQueue<TimedAction>> QUEUE = new ThreadLocal<PriorityQueue<TimedAction>>();
+    private static final ThreadLocal<PriorityQueue<TimedAction>> QUEUE = new ThreadLocal<PriorityQueue<TimedAction>>() {
+        @Override
+        protected PriorityQueue<TimedAction> initialValue() {
+            return new PriorityQueue<TimedAction>();
+        }
+    };
 
     volatile int counter;
-    static final AtomicIntegerFieldUpdater<TrampolineScheduler> COUNTER_UPDATER
-            = AtomicIntegerFieldUpdater.newUpdater(TrampolineScheduler.class, "counter");
+    static final AtomicIntegerFieldUpdater<TrampolineScheduler> COUNTER_UPDATER = AtomicIntegerFieldUpdater.newUpdater(TrampolineScheduler.class, "counter");
 
     private class InnerCurrentThreadScheduler extends Scheduler.Worker implements Subscription {
 
         private final BooleanSubscription innerSubscription = new BooleanSubscription();
+        private final AtomicInteger wip = new AtomicInteger();
 
         @Override
         public Subscription schedule(Action0 action) {
@@ -71,24 +77,17 @@ public final class TrampolineScheduler extends Scheduler {
                 return Subscriptions.empty();
             }
             PriorityQueue<TimedAction> queue = QUEUE.get();
-            boolean exec = queue == null;
-
-            if (exec) {
-                queue = new PriorityQueue<TimedAction>();
-                QUEUE.set(queue);
-            }
-
             final TimedAction timedAction = new TimedAction(action, execTime, COUNTER_UPDATER.incrementAndGet(TrampolineScheduler.this));
             queue.add(timedAction);
-
-            if (exec) {
+            if (wip.getAndIncrement() == 0) {
+                // we are the first so we'll execute
                 while (!queue.isEmpty()) {
                     queue.poll().action.call();
                 }
-
-                QUEUE.set(null);
+                wip.decrementAndGet();
                 return Subscriptions.empty();
             } else {
+                // queue wasn't empty, a parent is already processing so we just add to the end of the queue
                 return Subscriptions.create(new Action0() {
 
                     @Override
