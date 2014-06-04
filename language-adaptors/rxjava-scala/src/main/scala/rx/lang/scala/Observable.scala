@@ -3870,6 +3870,16 @@ trait Observable[+T]
     }
   }
 
+  /**
+   * Returns an Observable that counts the total number of items emitted by the source Observable and emits this count as a 64-bit Long.
+   *
+   * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/longCount.png">
+   *
+   * @return an Observable that emits a single item: the number of items emitted by the source Observable as a 64-bit Long item
+   */
+  def longCount: Observable[Long] = {
+    toScalaObservable[java.lang.Long](asJavaObservable.longCount()).map(_.longValue())
+  }
 }
 
 /**
