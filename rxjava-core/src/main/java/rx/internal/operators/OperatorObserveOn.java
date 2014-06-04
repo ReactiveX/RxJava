@@ -15,6 +15,7 @@
  */
 package rx.internal.operators;
 
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 import java.util.concurrent.atomic.AtomicLongFieldUpdater;
 
@@ -22,7 +23,9 @@ import rx.Observable.Operator;
 import rx.Scheduler;
 import rx.Subscriber;
 import rx.Subscription;
+import rx.exceptions.MissingBackpressureException;
 import rx.functions.Action0;
+import rx.internal.util.RxSpscRingBuffer;
 import rx.schedulers.ImmediateScheduler;
 import rx.schedulers.TrampolineScheduler;
 
@@ -31,7 +34,8 @@ import rx.schedulers.TrampolineScheduler;
  * 
  * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/observeOn.png">
  * 
- * @param <T> the transmitted value type
+ * @param <T>
+ *            the transmitted value type
  */
 public final class OperatorObserveOn<T> implements Operator<T, T> {
 
@@ -63,13 +67,12 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
         private final Scheduler.Worker recursiveScheduler;
         private final ScheduledUnsubscribe scheduledUnsubscribe;
         final NotificationLite<T> on = NotificationLite.instance();
-        /** Guarded by this. */
-        private FastList queue = new FastList();
-        
+
+        private final RxSpscRingBuffer queue = new RxSpscRingBuffer();
+
         volatile long counter;
         @SuppressWarnings("rawtypes")
-        static final AtomicLongFieldUpdater<ObserveOnSubscriber> COUNTER_UPDATER
-                = AtomicLongFieldUpdater.newUpdater(ObserveOnSubscriber.class, "counter");
+        static final AtomicLongFieldUpdater<ObserveOnSubscriber> COUNTER_UPDATER = AtomicLongFieldUpdater.newUpdater(ObserveOnSubscriber.class, "counter");
 
         public ObserveOnSubscriber(Scheduler scheduler, Subscriber<? super T> subscriber) {
             super(subscriber);
@@ -77,6 +80,8 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
             this.recursiveScheduler = scheduler.createWorker();
             this.scheduledUnsubscribe = new ScheduledUnsubscribe(recursiveScheduler);
             subscriber.add(scheduledUnsubscribe);
+            // signal that this is an async operator capable of receiving this many
+            queue.requestIfNeeded(this);
         }
 
         @Override
@@ -84,8 +89,11 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
             if (scheduledUnsubscribe.isUnsubscribed()) {
                 return;
             }
-            synchronized (this) {
-                queue.add(on.next(t));
+            try {
+                queue.onNext(t);
+            } catch (MissingBackpressureException e) {
+                onError(e);
+                return;
             }
             schedule();
         }
@@ -95,9 +103,7 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
             if (scheduledUnsubscribe.isUnsubscribed()) {
                 return;
             }
-            synchronized (this) {
-                queue.add(on.completed());
-            }
+            queue.onCompleted();
             schedule();
         }
 
@@ -106,9 +112,7 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
             if (scheduledUnsubscribe.isUnsubscribed()) {
                 return;
             }
-            synchronized (this) {
-                queue.add(on.error(e));
-            }
+            queue.onError(e);
             schedule();
         }
 
@@ -127,50 +131,23 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
 
         private void pollQueue() {
             do {
-                FastList vs;
-                synchronized (this) {
-                    vs = queue;
-                    queue = new FastList();
+                Object o = queue.poll();
+                if (o != null) {
+                    on.accept(observer, o);
+                    queue.requestIfNeeded(this);
                 }
-                for (Object v : vs.array) {
-                    if (v == null) {
-                        break;
-                    }
-                    on.accept(observer, v);
-                }
-                if (COUNTER_UPDATER.addAndGet(this, -vs.size) == 0) {
+
+                if (COUNTER_UPDATER.decrementAndGet(this) == 0) {
                     break;
                 }
             } while (true);
         }
-
     }
 
-    static final class FastList {
-        Object[] array;
-        int size;
-
-        public void add(Object o) {
-            int s = size;
-            Object[] a = array;
-            if (a == null) {
-                a = new Object[16];
-                array = a;
-            } else if (s == a.length) {
-                Object[] array2 = new Object[s + (s >> 2)];
-                System.arraycopy(a, 0, array2, 0, s);
-                a = array2;
-                array = a;
-            }
-            a[s] = o;
-            size = s + 1;
-        }
-    }
     static final class ScheduledUnsubscribe implements Subscription {
         final Scheduler.Worker worker;
         volatile int once;
-        static final AtomicIntegerFieldUpdater<ScheduledUnsubscribe> ONCE_UPDATER
-                = AtomicIntegerFieldUpdater.newUpdater(ScheduledUnsubscribe.class, "once");
+        static final AtomicIntegerFieldUpdater<ScheduledUnsubscribe> ONCE_UPDATER = AtomicIntegerFieldUpdater.newUpdater(ScheduledUnsubscribe.class, "once");
 
         public ScheduledUnsubscribe(Scheduler.Worker worker) {
             this.worker = worker;
@@ -192,6 +169,6 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
                 });
             }
         }
-        
+
     }
 }

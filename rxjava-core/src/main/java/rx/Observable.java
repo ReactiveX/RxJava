@@ -4850,6 +4850,14 @@ public class Observable<T> {
         }).cast(klass);
     }
 
+    public final Observable<T> onBackpressureBuffer() {
+        return lift(new OperatorOnBackpressureBuffer<T>());
+    }
+    
+    public final Observable<T> onBackpressureDrop() {
+        return lift(new OperatorOnBackpressureDrop<T>());
+    }
+    
     /**
      * Instructs an Observable to pass control to another Observable rather than invoking
      * {@link Observer#onError onError} if it encounters an error.
@@ -7199,7 +7207,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Conditional-and-Boolean-Operators#wiki-takeuntil">RxJava Wiki: takeUntil()</a>
      */
     public final <E> Observable<T> takeUntil(Observable<? extends E> other) {
-        return OperatorTakeUntil.takeUntil(this, other);
+        return lift(new OperatorTakeUntil<T, E>(other));
     }
 
     /**

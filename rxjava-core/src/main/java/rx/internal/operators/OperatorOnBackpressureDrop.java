@@ -15,26 +15,26 @@
  */
 package rx.internal.operators;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import rx.Observable.Operator;
+import rx.Producer;
 import rx.Subscriber;
-import rx.exceptions.OnErrorThrowable;
-import rx.functions.Func1;
 
-/**
- * Filters an Observable by discarding any items it emits that do not meet some test.
- * <p>
- * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/filter.png">
- */
-public final class OperatorFilter<T> implements Operator<T, T> {
-
-    private final Func1<? super T, Boolean> predicate;
-
-    public OperatorFilter(Func1<? super T, Boolean> predicate) {
-        this.predicate = predicate;
-    }
+public class OperatorOnBackpressureDrop<T> implements Operator<T, T> {
 
     @Override
     public Subscriber<? super T> call(final Subscriber<? super T> child) {
+        final AtomicInteger requested = new AtomicInteger();
+
+        child.setProducer(new Producer() {
+
+            @Override
+            public void request(int n) {
+                requested.getAndAdd(n);
+            }
+
+        });
         return new Subscriber<T>(child) {
 
             @Override
@@ -49,15 +49,9 @@ public final class OperatorFilter<T> implements Operator<T, T> {
 
             @Override
             public void onNext(T t) {
-                try {
-                    if (predicate.call(t)) {
-                        child.onNext(t);
-                    } else {
-                        // TODO consider a more complicated version that batches these
-                        request(1);
-                    }
-                } catch (Throwable e) {
-                    child.onError(OnErrorThrowable.addValueAsLastCause(e, t));
+                if (requested.get() > 0) {
+                    child.onNext(t);
+                    requested.decrementAndGet();
                 }
             }
 

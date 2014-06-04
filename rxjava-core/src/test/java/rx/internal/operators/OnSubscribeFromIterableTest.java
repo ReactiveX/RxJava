@@ -21,13 +21,14 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 import org.junit.Test;
 import org.mockito.Mockito;
 
 import rx.Observable;
 import rx.Observer;
-import rx.internal.operators.OnSubscribeFromIterable;
+import rx.observers.TestSubscriber;
 
 public class OnSubscribeFromIterableTest {
 
@@ -57,6 +58,48 @@ public class OnSubscribeFromIterableTest {
         verify(observer, times(1)).onNext("three");
         verify(observer, Mockito.never()).onError(any(Throwable.class));
         verify(observer, times(1)).onCompleted();
+    }
+
+    @Test
+    public void testBackpressureViaRequest() {
+        OnSubscribeFromIterable<Integer> o = new OnSubscribeFromIterable<Integer>(Arrays.asList(1, 2, 3, 4, 5));
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        ts.assertReceivedOnNext(Collections.<Integer> emptyList());
+        ts.request(1);
+        o.call(ts);
+        ts.assertReceivedOnNext(Arrays.asList(1));
+        ts.request(2);
+        ts.assertReceivedOnNext(Arrays.asList(1, 2, 3));
+        ts.request(3);
+        ts.assertReceivedOnNext(Arrays.asList(1, 2, 3, 4, 5));
+        ts.assertTerminalEvent();
+    }
+
+    @Test
+    public void testNoBackpressure() {
+        OnSubscribeFromIterable<Integer> o = new OnSubscribeFromIterable<Integer>(Arrays.asList(1, 2, 3, 4, 5));
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        ts.assertReceivedOnNext(Collections.<Integer> emptyList());
+        ts.request(-1); // infinite
+        o.call(ts);
+        ts.assertReceivedOnNext(Arrays.asList(1, 2, 3, 4, 5));
+        ts.assertTerminalEvent();
+    }
+    
+    @Test
+    public void testSubscribeMultipleTimes() {
+        OnSubscribeFromIterable<Integer> o = new OnSubscribeFromIterable<Integer>(Arrays.asList(1, 2, 3));
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        o.call(ts);
+        ts.assertReceivedOnNext(Arrays.asList(1, 2, 3));
+        
+        ts = new TestSubscriber<Integer>();
+        o.call(ts);
+        ts.assertReceivedOnNext(Arrays.asList(1, 2, 3));
+        
+        ts = new TestSubscriber<Integer>();
+        o.call(ts);
+        ts.assertReceivedOnNext(Arrays.asList(1, 2, 3));
     }
 
 }
