@@ -865,6 +865,40 @@ class RxScalaDemo extends JUnitSuite {
     println(m.toBlockingObservable.single)
   }
 
+  @Test def toMultimapExample1(): Unit = {
+    val o : Observable[String] = List("alice", "bob", "carol", "allen", "clarke").toObservable
+    val keySelector = (s: String) => s.head
+    val m = o.toMultimap(keySelector)
+    println(m.toBlocking.single.mapValues(_.toList))
+  }
+
+  @Test def toMultimapExample2(): Unit = {
+    val o : Observable[String] = List("alice", "bob", "carol", "allen", "clarke").toObservable
+    val keySelector = (s: String) => s.head
+    val valueSelector = (s: String) => s.tail
+    val m = o.toMultimap(keySelector, valueSelector)
+    println(m.toBlocking.single.mapValues(_.toList))
+  }
+
+  @Test def toMultimapExample3(): Unit = {
+    val o : Observable[String] = List("alice", "bob", "carol", "allen", "clarke").toObservable
+    val keySelector = (s: String) => s.head
+    val valueSelector = (s: String) => s.tail
+    val mapFactory = () => Map('d' -> List("oug"))
+    val m = o.toMultimap(keySelector, valueSelector, mapFactory)
+    println(m.toBlocking.single.mapValues(_.toList))
+  }
+
+  @Test def toMultimapExample4(): Unit = {
+    val o : Observable[String] = List("alice", "bob", "carol", "allen", "clarke").toObservable
+    val keySelector = (s: String) => s.head
+    val valueSelector = (s: String) => s.tail
+    val mapFactory = () => Map('d' -> List("oug"))
+    val valueFactor = (k: Char) => List[String]()
+    val m = o.toMultimap(keySelector, valueSelector, mapFactory, valueFactor)
+    println(m.toBlocking.single)
+  }
+
   @Test def containsExample(): Unit = {
     val o1 = List(1, 2, 3).toObservable.contains(2)
     assertTrue(o1.toBlockingObservable.single)

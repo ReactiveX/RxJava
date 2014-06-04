@@ -3880,6 +3880,83 @@ trait Observable[+T]
   def longCount: Observable[Long] = {
     toScalaObservable[java.lang.Long](asJavaObservable.longCount()).map(_.longValue())
   }
+
+  /**
+   * Returns an Observable that emits a single `Map` that contains an `Seq` of items emitted by the
+   * source Observable keyed by a specified keySelector` function.
+   *
+   * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toMultiMap.png">
+   *
+   * @param keySelector the function that extracts the key from the source items to be used as key in the HashMap
+   * @return an Observable that emits a single item: a `Map` that contains an `Seq` of items mapped from
+   *         the source Observable
+   */
+  def toMultimap[K](keySelector: T => K): Observable[Map[K, Seq[T]]] = {
+    val thisJava = asJavaObservable.asInstanceOf[rx.Observable[T]]
+    val o: rx.Observable[java.util.Map[K, java.util.Collection[T]]] = thisJava.toMultimap[K](keySelector)
+    toScalaObservable[java.util.Map[K, java.util.Collection[T]]](o).map(m => m.toMap.mapValues(_.toSeq))
+  }
+
+  /**
+   * Returns an Observable that emits a single `Map` that contains an `Seq` of values extracted by a
+   * specified `valueSelector` function from items emitted by the source Observable, keyed by a
+   * specified `keySelector` function.
+   *
+   * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toMultiMap.png">
+   *
+   * @param keySelector the function that extracts a key from the source items to be used as key in the HashMap
+   * @param valueSelector the function that extracts a value from the source items to be used as value in the HashMap
+   * @return an Observable that emits a single item: a `Map` that contains an `Seq` of items mapped from
+   *         the source Observable
+   */
+  def toMultimap[K, V](keySelector: T => K, valueSelector: T => V): Observable[Map[K, Seq[V]]] = {
+    val thisJava = asJavaObservable.asInstanceOf[rx.Observable[T]]
+    val o: rx.Observable[java.util.Map[K, java.util.Collection[V]]] = thisJava.toMultimap[K, V](keySelector, valueSelector)
+    toScalaObservable[java.util.Map[K, java.util.Collection[V]]](o).map(m => m.toMap.mapValues(_.toSeq))
+  }
+
+  /**
+   * Returns an Observable that emits a single `Map`, returned by a specified mapFactory` function, that
+   * contains an `Seq` of values, extracted by a specified `valueSelector` function from items
+   * emitted by the source Observable and keyed by the `keySelector` function.
+   *
+   * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toMultiMap.png">
+   *
+   * @param keySelector the function that extracts a key from the source items to be used as the key in the Map
+   * @param valueSelector the function that extracts a value from the source items to be used as the value in the Map
+   * @param mapFactory he function that returns a Map instance to be used
+   * @return an Observable that emits a single item: a `Map` that contains a `Seq` items mapped from the source
+   *         Observable
+   */
+  def toMultimap[K, V](keySelector: T => K, valueSelector: T => V, mapFactory: () => Map[K, Seq[V]]): Observable[Map[K, Seq[V]]] = {
+    val thisJava = asJavaObservable.asInstanceOf[rx.Observable[T]]
+    val o: rx.Observable[java.util.Map[K, java.util.Collection[V]]] = thisJava.toMultimap[K, V](keySelector, valueSelector)
+    toScalaObservable[java.util.Map[K, java.util.Collection[V]]](o).map(m => mapFactory() ++ m.toMap.mapValues(_.toSeq))
+  }
+
+  /**
+   * Returns an Observable that emits a single `Map`, returned by a specified `mapFactory` function, that
+   * contains a custom `Seq` of values, extracted by a specified `valueSelector` function from
+   * items emitted by the source Observable, and keyed by the `keySelector` function.
+   *
+   * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toMultiMap.png">
+   *
+   * @param keySelector the function that extracts a key from the source items to be used as the key in the Map
+   * @param valueSelector the function that extracts a value from the source items to be used as the value in the Map
+   * @param mapFactory the function that returns a Map instance to be used
+   * @param collectionFactory the function that returns a Collection instance for a particular key to be used in the Map
+   * @return an Observable that emits a single item: a `Map` that contains the `Seq` of mapped items from
+   *         the source Observable
+   */
+  def toMultimap[K, V](keySelector: T => K, valueSelector: T => V, mapFactory: () => Map[K, Seq[V]], collectionFactory: K => Seq[V]): Observable[Map[K, Seq[V]]] = {
+    val thisJava = asJavaObservable.asInstanceOf[rx.Observable[T]]
+    val o: rx.Observable[java.util.Map[K, java.util.Collection[V]]] = thisJava.toMultimap[K, V](keySelector, valueSelector)
+    toScalaObservable[java.util.Map[K, java.util.Collection[V]]](o).map {
+      m => mapFactory() ++ m.toMap.map {
+        case (k: K, v: java.util.Collection[V]) => (k, collectionFactory(k) ++ v)
+      }
+    }
+  }
 }
 
 /**
