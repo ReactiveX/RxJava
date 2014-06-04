@@ -16,6 +16,7 @@
 package rx.internal.operators;
 
 import rx.Observable.Operator;
+import rx.Producer;
 import rx.Subscriber;
 
 /**
@@ -38,7 +39,7 @@ public final class OperatorTake<T> implements Operator<T, T> {
 
     @Override
     public Subscriber<? super T> call(final Subscriber<? super T> child) {
-        Subscriber<T> parent = new Subscriber<T>() {
+        final Subscriber<T> parent = new Subscriber<T>() {
 
             int count = 0;
             boolean completed = false;
@@ -69,13 +70,33 @@ public final class OperatorTake<T> implements Operator<T, T> {
                 }
             }
 
+            /**
+             * We want to adjust the requested values based on the `take` count.
+             */
+            @Override
+            protected Producer onSetProducer(final Producer producer) {
+                return new Producer() {
+
+                    @Override
+                    public void request(int n) {
+                        int c = limit - count;
+                        if (n < c) {
+                            producer.request(n);
+                        } else {
+                            producer.request(c);
+                        }
+                    }
+                };
+            }
+
         };
-        
+
+
         if (limit == 0) {
             child.onCompleted();
             parent.unsubscribe();
         }
-        
+
         /*
          * We decouple the parent and child subscription so there can be multiple take() in a chain such as for
          * the groupBy Observer use case where you may take(1) on groups and take(20) on the children.
@@ -86,6 +107,18 @@ public final class OperatorTake<T> implements Operator<T, T> {
          * register 'parent' with 'child'
          */
         child.add(parent);
+        
+        /**
+         * Since we decoupled the subscription chain but want the request to flow through, we reconnect the producer here.
+         */
+        child.setProducer(new Producer() {
+
+            @Override
+            public void request(int n) {
+                parent.request(n);
+            }
+        });
+
         return parent;
     }
 
