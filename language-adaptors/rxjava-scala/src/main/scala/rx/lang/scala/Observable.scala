@@ -2267,6 +2267,36 @@ trait Observable[+T]
   }
 
   /**
+   * Returns an Observable that correlates two Observables when they overlap in time and groups the results.
+   *
+   * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/groupJoin.png">
+   *
+   * @param other the other Observable to correlate items from the source Observable with
+   * @param leftDuration a function that returns an Observable whose emissions indicate the duration of the values of
+   *                     the source Observable
+   * @param rightDuration a function that returns an Observable whose emissions indicate the duration of the values of
+   *                      the `other` Observable
+   * @param resultSelector a function that takes an item emitted by each Observable and returns the value to be emitted
+   *                       by the resulting Observable
+   * @return an Observable that emits items based on combining those items emitted by the source Observables
+   *         whose durations overlap
+   */
+  def groupJoin[S, R](other: Observable[S], leftDuration: T => Observable[Any], rightDuration: S => Observable[Any], resultSelector: (T, Observable[S]) => R): Observable[R] = {
+    val outer: rx.Observable[_ <: T] = this.asJavaObservable
+    val inner: rx.Observable[_ <: S] = other.asJavaObservable
+    val left: Func1[_ >: T, _ <: rx.Observable[_ <: Any]] = (t: T) => leftDuration(t).asJavaObservable
+    val right: Func1[_ >: S, _ <: rx.Observable[_ <: Any]] = (s: S) => rightDuration(s).asJavaObservable
+    val f: Func2[_ >: T, _ >: rx.Observable[S], _ <: R] = (t: T, o: rx.Observable[S]) => resultSelector(t, toScalaObservable[S](o))
+    toScalaObservable[R](
+      outer.asInstanceOf[rx.Observable[T]].groupJoin[S, Any, Any, R](
+        inner.asInstanceOf[rx.Observable[S]],
+        left.asInstanceOf[Func1[T, rx.Observable[Any]]],
+        right.asInstanceOf[Func1[S, rx.Observable[Any]]],
+        f)
+    )
+  }
+
+  /**
    * Returns a new Observable by applying a function that you supply to each item emitted by the source
    * Observable that returns an Observable, and then emitting the items emitted by the most recently emitted
    * of these Observables.

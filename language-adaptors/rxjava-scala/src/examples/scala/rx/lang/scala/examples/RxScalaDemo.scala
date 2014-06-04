@@ -1275,4 +1275,24 @@ class RxScalaDemo extends JUnitSuite {
     }
     o.toBlocking.foreach(println)
   }
+
+  @Test def joinExample() {
+    val o1 = Observable.interval(500 millis).map(n => "1: " + n)
+    val o2 = Observable.interval(100 millis).map(n => "2: " + n)
+    val o = o1.join(o2,
+      (_: String) => Observable.timer(300 millis),
+      (_: String) => Observable.timer(200 millis),
+      (t1: String, t2: String) => (t1, t2))
+    o.take(10).toBlocking.foreach(println)
+  }
+
+  @Test def groupJoinExample() {
+    val o1 = Observable.interval(500 millis).map(n => "1: " + n)
+    val o2 = Observable.interval(100 millis).map(n => "2: " + n)
+    val o = o1.groupJoin(o2,
+      (_: String) => Observable.timer(300 millis),
+      (_: String) => Observable.timer(200 millis),
+      (t1: String, t2: Observable[String]) => (t1, t2.toSeq.toBlocking.single))
+    o.take(3).toBlocking.foreach(println)
+  }
 }
