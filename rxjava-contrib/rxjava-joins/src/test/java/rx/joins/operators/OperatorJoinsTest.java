@@ -15,8 +15,10 @@
  */
 package rx.joins.operators;
 
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -31,10 +33,20 @@ import org.mockito.MockitoAnnotations;
 
 import rx.Observable;
 import rx.Observer;
+import rx.exceptions.TestException;
+import rx.functions.Func0;
 import rx.functions.Func1;
 import rx.functions.Func2;
 import rx.functions.Func3;
+import rx.functions.Func4;
+import rx.functions.Func5;
+import rx.functions.Func6;
+import rx.functions.Func7;
+import rx.functions.Func8;
+import rx.functions.Func9;
+import rx.functions.FuncN;
 import rx.functions.Functions;
+import rx.joins.PatternN;
 import rx.joins.Plan0;
 import rx.observables.JoinObservable;
 import rx.observers.TestSubscriber;
@@ -44,12 +56,76 @@ public class OperatorJoinsTest {
     @Mock
     Observer<Integer> observer;
 
-    Func2<Integer, Integer, Integer> add2 = new Func2<Integer, Integer, Integer>() {
-        @Override
-        public Integer call(Integer t1, Integer t2) {
-            return t1 + t2;
-        }
-    };
+    static final class Adder implements
+    Func2<Integer, Integer, Integer>,
+    Func3<Integer, Integer, Integer, Integer>,
+    Func4<Integer, Integer, Integer, Integer, Integer>,
+    Func5<Integer, Integer, Integer, Integer, Integer, Integer>,
+    Func6<Integer, Integer, Integer, Integer, Integer, Integer, Integer>,
+    Func7<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer>,
+    Func8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer>,
+    Func9<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer>,
+    FuncN<Integer>
+    {
+
+		@Override
+		public Integer call(Object... args) {
+			int sum = 0;
+			
+			for(Object o : args) {
+				sum += (Integer)o;
+			}
+			
+			return sum;
+		}
+
+		@Override
+		public Integer call(Integer t1, Integer t2, Integer t3, Integer t4,
+				Integer t5, Integer t6, Integer t7, Integer t8, Integer t9) {
+			return t1 + t2 + t3 + t4 + t5 + t6 + t7 + t8 + t9;
+		}
+
+		@Override
+		public Integer call(Integer t1, Integer t2, Integer t3, Integer t4,
+				Integer t5, Integer t6, Integer t7, Integer t8) {
+			return t1 + t2 + t3 + t4 + t5 + t6 + t7 + t8;
+		}
+
+		@Override
+		public Integer call(Integer t1, Integer t2, Integer t3, Integer t4,
+				Integer t5, Integer t6, Integer t7) {
+			return t1 + t2 + t3 + t4 + t5 + t6 + t7;
+		}
+
+		@Override
+		public Integer call(Integer t1, Integer t2, Integer t3, Integer t4,
+				Integer t5, Integer t6) {
+			return t1 + t2 + t3 + t4 + t5 + t6;
+		}
+
+		@Override
+		public Integer call(Integer t1, Integer t2, Integer t3, Integer t4,
+				Integer t5) {
+			return t1 + t2 + t3 + t4 + t5;
+		}
+
+		@Override
+		public Integer call(Integer t1, Integer t2, Integer t3, Integer t4) {
+			return t1 + t2 + t3 + t4;
+		}
+
+		@Override
+		public Integer call(Integer t1, Integer t2, Integer t3) {
+			return t1 + t2 + t3;
+		}
+
+		@Override
+		public Integer call(Integer t1, Integer t2) {
+			return t1 + t2;
+		}
+    	
+    }
+    Adder add = new Adder();
     Func2<Integer, Integer, Integer> mul2 = new Func2<Integer, Integer, Integer>() {
         @Override
         public Integer call(Integer t1, Integer t2) {
@@ -63,30 +139,73 @@ public class OperatorJoinsTest {
         }
     };
 
-    Func3<Integer, Integer, Integer, Integer> add3 = new Func3<Integer, Integer, Integer, Integer>() {
-        @Override
-        public Integer call(Integer t1, Integer t2, Integer t3) {
-            return t1 + t2 + t3;
-        }
-    };
-    Func1<Integer, Integer> func1Throw = new Func1<Integer, Integer>() {
-        @Override
-        public Integer call(Integer t1) {
-            throw new RuntimeException("Forced failure");
-        }
-    };
-    Func2<Integer, Integer, Integer> func2Throw = new Func2<Integer, Integer, Integer>() {
-        @Override
-        public Integer call(Integer t1, Integer t2) {
-            throw new RuntimeException("Forced failure");
-        }
-    };
-    Func3<Integer, Integer, Integer, Integer> func3Throw = new Func3<Integer, Integer, Integer, Integer>() {
-        @Override
-        public Integer call(Integer t1, Integer t2, Integer t3) {
-            throw new RuntimeException("Forced failure");
-        }
-    };
+    static final class ThrowFunc<R> implements 
+    Func0<R>, 
+    Func1<Integer, R>, 
+    Func2<Integer, Integer, R>, 
+    Func3<Integer, Integer, Integer, R>, 
+    Func4<Integer, Integer, Integer, Integer, R>, 
+    Func5<Integer, Integer, Integer, Integer, Integer, R>, 
+    Func6<Integer, Integer, Integer, Integer, Integer, Integer, R>, 
+    Func7<Integer, Integer, Integer, Integer, Integer, Integer, Integer, R>, 
+    Func8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, R>, 
+    Func9<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, R>, 
+    FuncN<R> 
+    {
+    	@Override
+    	public R call() {
+            throw new TestException("Forced failure");
+    	}
+    	@Override
+    	public R call(Integer t1) {
+    		return call();
+    	}
+		@Override
+		public R call(Object... args) {
+    		return call();
+		}
+		@Override
+		public R call(Integer t1, Integer t2, Integer t3, Integer t4, Integer t5,
+				Integer t6, Integer t7, Integer t8, Integer t9) {
+    		return call();
+		}
+		@Override
+		public R call(Integer t1, Integer t2, Integer t3, Integer t4, Integer t5,
+				Integer t6, Integer t7, Integer t8) {
+    		return call();
+		}
+		@Override
+		public R call(Integer t1, Integer t2, Integer t3, Integer t4, Integer t5,
+				Integer t6, Integer t7) {
+    		return call();
+		}
+		@Override
+		public R call(Integer t1, Integer t2, Integer t3, Integer t4, Integer t5,
+				Integer t6) {
+    		return call();
+		}
+		@Override
+		public R call(Integer t1, Integer t2, Integer t3, Integer t4, Integer t5) {
+    		return call();
+		}
+		@Override
+		public R call(Integer t1, Integer t2, Integer t3, Integer t4) {
+    		return call();
+		}
+		@Override
+		public R call(Integer t1, Integer t2, Integer t3) {
+    		return call();
+		}
+		@Override
+		public R call(Integer t1, Integer t2) {
+    		return call();
+		}
+    }
+    ThrowFunc<Integer> throwFunc = new ThrowFunc<Integer>();
+
+    Observable<Integer> some = Observable.just(1);
+
+    Observable<Integer> error = Observable.error(new TestException("Forced failure"));
 
     @Before
     public void before() {
@@ -95,196 +214,164 @@ public class OperatorJoinsTest {
 
     @Test(expected = NullPointerException.class)
     public void and2ArgumentNull() {
-        Observable<Integer> some = Observable.just(1);
         JoinObservable.from(some).and(null);
     }
 
     @Test(expected = NullPointerException.class)
     public void and3argumentNull() {
-        Observable<Integer> some = Observable.just(1);
         JoinObservable.from(some).and(some).and(null);
     }
 
+    void verifyAnd(JoinObservable<Integer> m, int count) {
+    	
+    	@SuppressWarnings("unchecked")
+    	Observer<Integer> o = mock(Observer.class);
+    	
+        m.toObservable().subscribe(o);
+
+        verify(o, never()).onError(any(Throwable.class));
+        verify(o, times(1)).onNext(count);
+        verify(o, times(1)).onCompleted();
+    }
+    void verifyError(JoinObservable<Integer> m) {
+    	@SuppressWarnings("unchecked")
+    	Observer<Integer> o = mock(Observer.class);
+    	
+        m.toObservable().subscribe(o);
+
+        verify(o, times(1)).onError(any(TestException.class));
+        verify(o, never()).onNext(any(Integer.class));
+        verify(o, never()).onCompleted();
+    }
+    
     @Test
     public void and2() {
-        Observable<Integer> some = Observable.just(1);
-
-        Observable<Integer> m = JoinObservable.when(JoinObservable.from(some).and(some).then(add2)).toObservable();
-
-        m.subscribe(observer);
-
-        verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onNext(2);
-        verify(observer, times(1)).onCompleted();
+        verifyAnd(JoinObservable.when(JoinObservable.from(some).and(some).then(add)), 2);
     }
 
     @Test
     public void and2Error1() {
-        Observable<Integer> error = Observable.error(new RuntimeException("Forced failure"));
-
-        Observable<Integer> some = Observable.just(1);
-
-        Observable<Integer> m = JoinObservable.when(JoinObservable.from(error).and(some).then(add2)).toObservable();
-
-        m.subscribe(observer);
-
-        verify(observer, times(1)).onError(any(Throwable.class));
-        verify(observer, never()).onNext(any(Integer.class));
-        verify(observer, never()).onCompleted();
+        verifyError(JoinObservable.when(JoinObservable.from(error).and(some).then(add)));
     }
 
     @Test
     public void and2Error2() {
-        Observable<Integer> error = Observable.error(new RuntimeException("Forced failure"));
-
-        Observable<Integer> some = Observable.just(1);
-
-        Observable<Integer> m = JoinObservable.when(JoinObservable.from(some).and(error).then(add2)).toObservable();
-
-        m.subscribe(observer);
-
-        verify(observer, times(1)).onError(any(Throwable.class));
-        verify(observer, never()).onNext(any(Integer.class));
-        verify(observer, never()).onCompleted();
+        verifyError(JoinObservable.when(JoinObservable.from(some).and(error).then(add)));
     }
 
     @Test
     public void and3() {
-        Observable<Integer> some = Observable.just(1);
-
-        Observable<Integer> m = JoinObservable.when(JoinObservable.from(some).and(some).and(some).then(add3)).toObservable();
-
-        m.subscribe(observer);
-
-        verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onNext(3);
-        verify(observer, times(1)).onCompleted();
+        verifyAnd(JoinObservable.when(JoinObservable.from(some).and(some).and(some).then(add)), 3);
     }
 
     @Test
     public void and3Error1() {
-        Observable<Integer> error = Observable.error(new RuntimeException("Forced failure"));
-
-        Observable<Integer> some = Observable.just(1);
-
-        Observable<Integer> m = JoinObservable.when(JoinObservable.from(error).and(some).and(some).then(add3)).toObservable();
-
-        m.subscribe(observer);
-
-        verify(observer, times(1)).onError(any(Throwable.class));
-        verify(observer, never()).onNext(any(Integer.class));
-        verify(observer, never()).onCompleted();
+        verifyError(JoinObservable.when(JoinObservable.from(error).and(some).and(some).then(add)));
     }
 
     @Test
     public void and3Error2() {
-        Observable<Integer> error = Observable.error(new RuntimeException("Forced failure"));
-
-        Observable<Integer> some = Observable.just(1);
-
-        Observable<Integer> m = JoinObservable.when(JoinObservable.from(some).and(error).and(some).then(add3)).toObservable();
-
-        m.subscribe(observer);
-
-        verify(observer, times(1)).onError(any(Throwable.class));
-        verify(observer, never()).onNext(any(Integer.class));
-        verify(observer, never()).onCompleted();
+        verifyError(JoinObservable.when(JoinObservable.from(some).and(error).and(some).then(add)));
     }
 
     @Test
     public void and3Error3() {
-        Observable<Integer> error = Observable.error(new RuntimeException("Forced failure"));
-
-        Observable<Integer> some = Observable.just(1);
-
-        Observable<Integer> m = JoinObservable.when(JoinObservable.from(some).and(some).and(error).then(add3)).toObservable();
-
-        m.subscribe(observer);
-
-        verify(observer, times(1)).onError(any(Throwable.class));
-        verify(observer, never()).onNext(any(Integer.class));
-        verify(observer, never()).onCompleted();
+        verifyError(JoinObservable.when(JoinObservable.from(some).and(some).and(error).then(add)));
     }
 
     @Test(expected = NullPointerException.class)
     public void thenArgumentNull() {
-        Observable<Integer> some = Observable.just(1);
-
         JoinObservable.from(some).then(null);
     }
 
     @Test(expected = NullPointerException.class)
     public void then2ArgumentNull() {
-        Observable<Integer> some = Observable.just(1);
-
         JoinObservable.from(some).and(some).then(null);
     }
 
     @Test(expected = NullPointerException.class)
     public void then3ArgumentNull() {
-        Observable<Integer> some = Observable.just(1);
-
         JoinObservable.from(some).and(some).and(some).then(null);
+    }
+    
+    @Test(expected = NullPointerException.class)
+    public void then4ArgumentNull() {
+        JoinObservable.from(some).and(some).and(some).and(some).then(null);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void then5ArgumentNull() {
+        JoinObservable.from(some).and(some).and(some).and(some).and(some).then(null);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void then6ArgumentNull() {
+        JoinObservable.from(some).and(some).and(some).and(some).and(some).and(some).then(null);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void then7ArgumentNull() {
+        JoinObservable.from(some).and(some).and(some).and(some).and(some).and(some).and(some).then(null);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void then8ArgumentNull() {
+        JoinObservable.from(some).and(some).and(some).and(some).and(some).and(some).and(some).and(some).then(null);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void then9ArgumentNull() {
+        JoinObservable.from(some).and(some).and(some).and(some).and(some).and(some).and(some).and(some).and(some).then(null);
+    }
+
+    @Test
+    public void thenNArgumentNull() {
+    	for (int n = 10; n < 100; n++) {
+    		PatternN p = JoinObservable.from(some).and(some)
+    				.and(some).and(some)
+    				.and(some).and(some)
+    				.and(some).and(some)
+    				.and(some).and(some);
+    		try {
+    			for (int j = 0; j < n - 10; j++) {
+    				p = p.and(some);
+    			}
+    			p.then(null);
+    			fail("Failed to throw exception with pattern length " + n);
+    		} catch (NullPointerException ex) {
+    			// expected, continue
+    		}
+    	}
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void then10ArgumentNull() {
+        JoinObservable.from(some).and(some).and(some).and(some).and(some).and(some).and(some).and(some).and(some).and(some).then(null);
     }
 
     @Test
     public void then1() {
-        Observable<Integer> some = Observable.just(1);
-
-        Observable<Integer> m = JoinObservable.when(JoinObservable.from(some).then(Functions.<Integer> identity())).toObservable();
-        m.subscribe(observer);
-
-        verify(observer, never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onNext(1);
-        verify(observer, times(1)).onCompleted();
+        verifyAnd(JoinObservable.when(JoinObservable.from(some).then(Functions.<Integer> identity())), 1);
     }
 
     @Test
     public void then1Error() {
-        Observable<Integer> some = Observable.error(new RuntimeException("Forced failure"));
-
-        Observable<Integer> m = JoinObservable.when(JoinObservable.from(some).then(Functions.<Integer> identity())).toObservable();
-        m.subscribe(observer);
-
-        verify(observer, times(1)).onError(any(Throwable.class));
-        verify(observer, never()).onNext(any(Integer.class));
-        verify(observer, never()).onCompleted();
+        verifyError(JoinObservable.when(JoinObservable.from(error).then(Functions.<Integer> identity())));
     }
 
     @Test
     public void then1Throws() {
-        Observable<Integer> some = Observable.just(1);
-
-        Observable<Integer> m = JoinObservable.when(JoinObservable.from(some).then(func1Throw)).toObservable();
-        m.subscribe(observer);
-
-        verify(observer, times(1)).onError(any(Throwable.class));
-        verify(observer, never()).onNext(any(Integer.class));
-        verify(observer, never()).onCompleted();
+        verifyError(JoinObservable.when(JoinObservable.from(some).then(throwFunc)));
     }
 
     @Test
     public void then2Throws() {
-        Observable<Integer> some = Observable.just(1);
-
-        Observable<Integer> m = JoinObservable.when(JoinObservable.from(some).and(some).then(func2Throw)).toObservable();
-        m.subscribe(observer);
-
-        verify(observer, times(1)).onError(any(Throwable.class));
-        verify(observer, never()).onNext(any(Integer.class));
-        verify(observer, never()).onCompleted();
+    	verifyError(JoinObservable.when(JoinObservable.from(some).and(some).then(throwFunc)));
     }
 
     @Test
     public void then3Throws() {
-        Observable<Integer> some = Observable.just(1);
-
-        Observable<Integer> m = JoinObservable.when(JoinObservable.from(some).and(some).and(some).then(func3Throw)).toObservable();
-        m.subscribe(observer);
-
-        verify(observer, times(1)).onError(any(Throwable.class));
-        verify(observer, never()).onNext(any(Integer.class));
-        verify(observer, never()).onCompleted();
+    	verifyError(JoinObservable.when(JoinObservable.from(some).and(some).and(some).then(throwFunc)));
     }
 
     @Test(expected = NullPointerException.class)
@@ -302,7 +389,7 @@ public class OperatorJoinsTest {
         Observable<Integer> source1 = Observable.from(1, 2, 3);
         Observable<Integer> source2 = Observable.from(4, 5, 6);
 
-        Observable<Integer> m = JoinObservable.when(JoinObservable.from(source1).and(source2).then(add2)).toObservable();
+        Observable<Integer> m = JoinObservable.when(JoinObservable.from(source1).and(source2).then(add)).toObservable();
         m.subscribe(observer);
 
         verify(observer, never()).onError(any(Throwable.class));
@@ -317,7 +404,7 @@ public class OperatorJoinsTest {
         Observable<Integer> source1 = Observable.from(1, 2, 3);
         Observable<Integer> source2 = Observable.from(4, 5);
 
-        Observable<Integer> m = JoinObservable.when(JoinObservable.from(source1).and(source2).then(add2)).toObservable();
+        Observable<Integer> m = JoinObservable.when(JoinObservable.from(source1).and(source2).then(add)).toObservable();
         m.subscribe(observer);
 
         verify(observer, never()).onError(any(Throwable.class));
@@ -331,7 +418,7 @@ public class OperatorJoinsTest {
         Observable<Integer> source1 = Observable.empty();
         Observable<Integer> source2 = Observable.empty();
 
-        Observable<Integer> m = JoinObservable.when(JoinObservable.from(source1).and(source2).then(add2)).toObservable();
+        Observable<Integer> m = JoinObservable.when(JoinObservable.from(source1).and(source2).then(add)).toObservable();
         m.subscribe(observer);
 
         verify(observer, never()).onError(any(Throwable.class));
@@ -344,7 +431,7 @@ public class OperatorJoinsTest {
         Observable<Integer> source1 = Observable.never();
         Observable<Integer> source2 = Observable.never();
 
-        Observable<Integer> m = JoinObservable.when(JoinObservable.from(source1).and(source2).then(add2)).toObservable();
+        Observable<Integer> m = JoinObservable.when(JoinObservable.from(source1).and(source2).then(add)).toObservable();
         m.subscribe(observer);
 
         verify(observer, never()).onError(any(Throwable.class));
@@ -355,9 +442,9 @@ public class OperatorJoinsTest {
     @Test
     public void whenThrowNonEmpty() {
         Observable<Integer> source1 = Observable.empty();
-        Observable<Integer> source2 = Observable.error(new RuntimeException("Forced failure"));
+        Observable<Integer> source2 = Observable.error(new TestException("Forced failure"));
 
-        Observable<Integer> m = JoinObservable.when(JoinObservable.from(source1).and(source2).then(add2)).toObservable();
+        Observable<Integer> m = JoinObservable.when(JoinObservable.from(source1).and(source2).then(add)).toObservable();
         m.subscribe(observer);
 
         verify(observer, times(1)).onError(any(Throwable.class));
@@ -372,7 +459,7 @@ public class OperatorJoinsTest {
         PublishSubject<Integer> zs = PublishSubject.create();
 
         Observable<Integer> m = JoinObservable.when(
-                JoinObservable.from(xs).and(ys).then(add2), // 1+4=5, 2+5=7, 3+6=9
+                JoinObservable.from(xs).and(ys).then(add), // 1+4=5, 2+5=7, 3+6=9
                 JoinObservable.from(xs).and(zs).then(mul2), // 1*7=7, 2*8=16, 3*9=27
                 JoinObservable.from(ys).and(zs).then(sub2)  // 4-7=-3, 5-8=-3, 6-9=-3
                 ).toObservable();
@@ -413,5 +500,890 @@ public class OperatorJoinsTest {
         inOrder.verify(observer, times(1)).onNext(5 - 9);
         inOrder.verify(observer, times(1)).onCompleted();
         verify(observer, never()).onError(any(Throwable.class));
+    }
+    
+    // -----------------
+
+    @Test
+    public void and4() {
+        verifyAnd(JoinObservable.when(JoinObservable.from(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.then(add)), 4);
+    }
+
+    @Test
+    public void and4Error1() {
+        verifyError(JoinObservable.when(
+        		JoinObservable.from(error)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.then(add)));
+    }
+
+    @Test
+    public void and4Error2() {
+        verifyError(JoinObservable.when(
+        		JoinObservable.from(some)
+        		.and(error)
+        		.and(some)
+        		.and(some)
+        		.then(add)));
+    }
+
+    @Test
+    public void and4Error3() {
+    	verifyError(JoinObservable.when(
+        		JoinObservable.from(some)
+        		.and(some)
+        		.and(error)
+        		.and(some)
+        		.then(add)));
+    }
+
+    @Test
+    public void and4Error4() {
+    	verifyError(JoinObservable.when(
+        		JoinObservable.from(some)
+        		.and(some)
+        		.and(some)
+        		.and(error)
+        		.then(add)));
+    }
+
+    @Test
+    public void then4Throws() {
+    	verifyError(JoinObservable.when(
+        		JoinObservable
+        		.from(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.then(throwFunc)));
+    }
+
+    // -----------------
+
+    @Test
+    public void and5() {
+        verifyAnd(JoinObservable.when(JoinObservable.from(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.then(add)), 5);
+    }
+
+    @Test
+    public void and5Error1() {
+    	verifyError(JoinObservable.when(
+        		JoinObservable.from(error)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.then(add)));
+    }
+
+    @Test
+    public void and5Error2() {
+    	verifyError(JoinObservable.when(
+        		JoinObservable.from(some)
+        		.and(error)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.then(add)));
+    }
+
+    @Test
+    public void and5Error3() {
+    	verifyError(JoinObservable.when(
+        		JoinObservable.from(some)
+        		.and(some)
+        		.and(error)
+        		.and(some)
+        		.and(some)
+        		.then(add)));
+    }
+
+    @Test
+    public void and5Error4() {
+    	verifyError(JoinObservable.when(
+        		JoinObservable.from(some)
+        		.and(some)
+        		.and(some)
+        		.and(error)
+        		.and(some)
+        		.then(add)));
+    }
+    @Test
+    public void and5Error5() {
+    	verifyError(JoinObservable.when(
+        		JoinObservable.from(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(error)
+        		.then(add)));
+    }
+
+    @Test
+    public void then5Throws() {
+    	verifyError(JoinObservable.when(
+        		JoinObservable
+        		.from(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.then(throwFunc)));
+    }
+
+    // -----------------
+
+    @Test
+    public void and6() {
+        verifyAnd(JoinObservable.when(JoinObservable.from(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.then(add)), 6);
+    }
+
+    @Test
+    public void and6Error1() {
+    	verifyError(JoinObservable.when(
+        		JoinObservable.from(error)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.then(add)));
+    }
+
+    @Test
+    public void and6Error2() {
+    	verifyError(JoinObservable.when(
+        		JoinObservable.from(some)
+        		.and(error)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.then(add)));
+    }
+
+    @Test
+    public void and6Error3() {
+    	verifyError(JoinObservable.when(
+        		JoinObservable.from(some)
+        		.and(some)
+        		.and(error)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.then(add)));
+    }
+
+    @Test
+    public void and6Error4() {
+    	verifyError(JoinObservable.when(
+        		JoinObservable.from(some)
+        		.and(some)
+        		.and(some)
+        		.and(error)
+        		.and(some)
+        		.and(some)
+        		.then(add)));
+    }
+    @Test
+    public void and6Error5() {
+    	verifyError(JoinObservable.when(
+        		JoinObservable.from(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(error)
+        		.and(some)
+        		.then(add)));
+    }
+
+    @Test
+    public void and6Error6() {
+    	verifyError(JoinObservable.when(
+        		JoinObservable.from(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(error)
+        		.then(add)));
+    }
+
+    @Test
+    public void then6Throws() {
+    	verifyError(JoinObservable.when(
+        		JoinObservable
+        		.from(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.then(throwFunc)));
+    }
+    // -----------------
+
+    @Test
+    public void and7() {
+        verifyAnd(JoinObservable.when(JoinObservable.from(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.then(add)), 7);
+    }
+
+    @Test
+    public void and7Error1() {
+    	verifyError(JoinObservable.when(
+        		JoinObservable.from(error)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.then(add)));
+    }
+
+    @Test
+    public void and7Error2() {
+    	verifyError(JoinObservable.when(
+        		JoinObservable.from(some)
+        		.and(error)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.then(add)));
+    }
+
+    @Test
+    public void and7Error3() {
+    	verifyError(JoinObservable.when(
+        		JoinObservable.from(some)
+        		.and(some)
+        		.and(error)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.then(add)));
+    }
+
+    @Test
+    public void and7Error4() {
+    	verifyError(JoinObservable.when(
+        		JoinObservable.from(some)
+        		.and(some)
+        		.and(some)
+        		.and(error)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.then(add)));
+    }
+    @Test
+    public void and7Error5() {
+    	verifyError(JoinObservable.when(
+        		JoinObservable.from(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(error)
+        		.and(some)
+        		.and(some)
+        		.then(add)));
+    }
+
+    @Test
+    public void and7Error6() {
+    	verifyError(JoinObservable.when(
+        		JoinObservable.from(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(error)
+        		.and(some)
+        		.then(add)));
+    }
+
+    @Test
+    public void and7Error7() {
+    	verifyError(JoinObservable.when(
+        		JoinObservable.from(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(error)
+        		.then(add)));
+    }
+
+    @Test
+    public void then7Throws() {
+    	verifyError(JoinObservable.when(
+        		JoinObservable
+        		.from(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.then(throwFunc)));
+    }
+    // -----------------
+
+    @Test
+    public void and8() {
+        verifyAnd(JoinObservable.when(JoinObservable.from(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.then(add)), 8);
+    }
+
+    @Test
+    public void and8Error1() {
+    	verifyError(JoinObservable.when(
+        		JoinObservable.from(error)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.then(add)));
+    }
+
+    @Test
+    public void and8Error2() {
+    	verifyError(JoinObservable.when(
+        		JoinObservable.from(some)
+        		.and(error)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.then(add)));
+    }
+
+    @Test
+    public void and8Error3() {
+    	verifyError(JoinObservable.when(
+        		JoinObservable.from(some)
+        		.and(some)
+        		.and(error)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.then(add)));
+    }
+
+    @Test
+    public void and8Error4() {
+    	verifyError(JoinObservable.when(
+        		JoinObservable.from(some)
+        		.and(some)
+        		.and(some)
+        		.and(error)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.then(add)));
+    }
+    @Test
+    public void and8Error5() {
+    	verifyError(JoinObservable.when(
+        		JoinObservable.from(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(error)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.then(add)));
+    }
+
+    @Test
+    public void and8Error6() {
+    	verifyError(JoinObservable.when(
+        		JoinObservable.from(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(error)
+        		.and(some)
+        		.and(some)
+        		.then(add)));
+    }
+
+    @Test
+    public void and8Error7() {
+    	verifyError(JoinObservable.when(
+        		JoinObservable.from(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(error)
+        		.and(some)
+        		.then(add)));
+    }
+
+    @Test
+    public void and8Error8() {
+    	verifyError(JoinObservable.when(
+        		JoinObservable.from(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(error)
+        		.then(add)));
+    }
+
+    @Test
+    public void then8Throws() {
+    	verifyError(JoinObservable.when(
+        		JoinObservable
+        		.from(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.then(throwFunc)));
+    }
+    // -----------------
+
+    @Test
+    public void and9() {
+        verifyAnd(JoinObservable.when(JoinObservable.from(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.then(add)), 9);
+    }
+
+    @Test
+    public void and9Error1() {
+    	verifyError(JoinObservable.when(
+        		JoinObservable.from(error)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.then(add)));
+    }
+
+    @Test
+    public void and9Error2() {
+    	verifyError(JoinObservable.when(
+        		JoinObservable.from(some)
+        		.and(error)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.then(add)));
+    }
+
+    @Test
+    public void and9Error3() {
+    	verifyError(JoinObservable.when(
+        		JoinObservable.from(some)
+        		.and(some)
+        		.and(error)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.then(add)));
+    }
+
+    @Test
+    public void and9Error4() {
+    	verifyError(JoinObservable.when(
+        		JoinObservable.from(some)
+        		.and(some)
+        		.and(some)
+        		.and(error)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.then(add)));
+    }
+    @Test
+    public void and9Error5() {
+    	verifyError(JoinObservable.when(
+        		JoinObservable.from(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(error)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.then(add)));
+    }
+
+    @Test
+    public void and9Error6() {
+    	verifyError(JoinObservable.when(
+        		JoinObservable.from(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(error)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.then(add)));
+    }
+
+    @Test
+    public void and9Error7() {
+    	verifyError(JoinObservable.when(
+        		JoinObservable.from(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(error)
+        		.and(some)
+        		.and(some)
+        		.then(add)));
+    }
+
+    @Test
+    public void and9Error8() {
+    	verifyError(JoinObservable.when(
+        		JoinObservable.from(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(error)
+        		.and(some)
+        		.then(add)));
+    }
+    @Test
+    public void and9Error9() {
+    	verifyError(JoinObservable.when(
+        		JoinObservable.from(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(error)
+        		.then(add)));
+    }
+
+    @Test
+    public void then9Throws() {
+    	verifyError(JoinObservable.when(
+        		JoinObservable
+        		.from(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.then(throwFunc)));
+    }
+    // -----------------
+
+    @Test
+    public void andN() {
+    	int s = 10;
+    	for (int n = s; n < 100; n++) {
+    		System.out.println("AndN(" + n + ")");
+    		PatternN p = JoinObservable.from(some)
+    		.and(some)
+    		.and(some)
+    		.and(some)
+    		.and(some)
+    		.and(some)
+    		.and(some)
+    		.and(some)
+    		.and(some)
+    		.and(some);
+    		
+    		for (int j = 0; j < n - s; j++) {
+    			p = p.and(some);
+    		}
+    		verifyAnd(JoinObservable.when(p.then(add)), n);
+    	}
+    }
+
+    @Test
+    public void andNError1() {
+    	verifyError(JoinObservable.when(
+        		JoinObservable.from(error)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.then(add)));
+    }
+
+    @Test
+    public void andNError2() {
+    	verifyError(JoinObservable.when(
+        		JoinObservable.from(some)
+        		.and(error)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.then(add)));
+    }
+
+    @Test
+    public void andNError3() {
+    	verifyError(JoinObservable.when(
+        		JoinObservable.from(some)
+        		.and(some)
+        		.and(error)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.then(add)));
+    }
+
+    @Test
+    public void andNError4() {
+    	verifyError(JoinObservable.when(
+        		JoinObservable.from(some)
+        		.and(some)
+        		.and(some)
+        		.and(error)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.then(add)));
+    }
+    @Test
+    public void andNError5() {
+    	verifyError(JoinObservable.when(
+        		JoinObservable.from(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(error)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.then(add)));
+    }
+
+    @Test
+    public void andNError6() {
+    	verifyError(JoinObservable.when(
+        		JoinObservable.from(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(error)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.then(add)));
+    }
+
+    @Test
+    public void andNError7() {
+    	verifyError(JoinObservable.when(
+        		JoinObservable.from(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(error)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.then(add)));
+    }
+
+    @Test
+    public void andNError8() {
+    	verifyError(JoinObservable.when(
+        		JoinObservable.from(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(error)
+        		.and(some)
+        		.and(some)
+        		.then(add)));
+    }
+
+    @Test
+    public void andNError9() {
+    	verifyError(JoinObservable.when(
+        		JoinObservable.from(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(error)
+        		.and(some)
+        		.then(add)));
+    }
+
+    @Test
+    public void andNErrorN() {
+    	verifyError(JoinObservable.when(
+        		JoinObservable.from(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(some)
+        		.and(error)
+        		.then(add)));
+    }
+
+    @Test
+    public void andNErrorNRange() {
+    	for (int n = 10; n < 100; n++) {
+    		PatternN p = JoinObservable.from(some)
+            		.and(some)
+            		.and(some)
+            		.and(some)
+            		.and(some)
+            		.and(some)
+            		.and(some)
+            		.and(some)
+            		.and(some)
+            		.and(some);
+    		
+    		for (int j = 0; j < n - 10; j++) {
+    			p = p.and(some);
+    		}
+    		p = p.and(error);
+    		
+    		verifyError(JoinObservable.when(p.then(add)));
+    	}
+    }
+
+
+    @Test
+    public void thenNThrows() {
+    	for (int n = 10; n < 100; n++) {
+    		PatternN p = JoinObservable.from(some)
+            		.and(some)
+            		.and(some)
+            		.and(some)
+            		.and(some)
+            		.and(some)
+            		.and(some)
+            		.and(some)
+            		.and(some)
+            		.and(some);
+    		
+    		for (int j = 0; j < n - 10; j++) {
+    			p = p.and(some);
+    		}
+    		verifyError(JoinObservable.when(p.then(throwFunc)));
+    	}
     }
 }

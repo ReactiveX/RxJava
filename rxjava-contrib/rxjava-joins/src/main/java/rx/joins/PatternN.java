@@ -15,48 +15,54 @@
  */
 package rx.joins;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import rx.Observable;
-import rx.functions.Func3;
+import rx.functions.FuncN;
 
 /**
  * Represents a join pattern over observable sequences.
  */
-public final class Pattern3<T1, T2, T3> implements Pattern {
-    private final Observable<T1> o1;
-    private final Observable<T2> o2;
-    private final Observable<T3> o3;
+public final class PatternN implements Pattern {
+    private final List<Observable<? extends Object>> observables;
 
-    public Pattern3(Observable<T1> o1, Observable<T2> o2,
-            Observable<T3> o3) {
-        this.o1 = o1;
-        this.o2 = o2;
-        this.o3 = o3;
+    public PatternN(List<Observable<? extends Object>> observables) {
+    	this.observables = observables;
     }
 
-    Observable<T1> o1() {
-        return o1;
-    }
-
-    Observable<T2> o2() {
-        return o2;
-    }
-
-    Observable<T3> o3() {
-        return o3;
+    public PatternN(List<Observable<? extends Object>> observables, Observable<? extends Object> other) {
+    	this.observables = new ArrayList<Observable<? extends Object>>(observables);
+    	this.observables.add(other);
     }
 
     /**
-     * Creates a pattern that matches when all three observable sequences have an available element.
+     * @return the number of observables in this pattern.
+     */
+    int size() {
+    	return observables.size();
+    }
+    /**
+     * Returns the specific Observable from this pattern.
+     * @param index the index
+     * @return the observable
+     */
+    Observable<? extends Object> get(int index) {
+    	return observables.get(index);
+    }
+
+    /**
+     * Creates a pattern that matches when all previous observable sequences have an available element.
      * 
      * @param other
-     *            Observable sequence to match with the two previous sequences.
+     *            Observable sequence to match with the previous sequences.
      * @return Pattern object that matches when all observable sequences have an available element.
      */
-    public <T4> Pattern4<T1, T2, T3, T4> and(Observable<T4> other) {
+    public PatternN and(Observable<? extends Object> other) {
         if (other == null) {
             throw new NullPointerException();
         }
-        return new Pattern4<T1, T2, T3, T4>(o1, o2, o3, other);
+        return new PatternN(observables, other);
     }
     
     /**
@@ -69,10 +75,10 @@ public final class Pattern3<T1, T2, T3> implements Pattern {
      * @throws NullPointerException
      *             if selector is null
      */
-    public <R> Plan0<R> then(Func3<T1, T2, T3, R> selector) {
+    public <R> Plan0<R> then(FuncN<R> selector) {
         if (selector == null) {
             throw new NullPointerException();
         }
-        return new Plan3<T1, T2, T3, R>(this, selector);
+        return new PlanN<R>(this, selector);
     }
 }

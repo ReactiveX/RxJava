@@ -22,14 +22,14 @@ import rx.functions.Action3;
 /**
  * Represents an active plan.
  */
-public class ActivePlan3<T1, T2, T3> extends ActivePlan0 {
+public final class ActivePlan3<T1, T2, T3> extends ActivePlan0 {
     private final Action3<T1, T2, T3> onNext;
     private final Action0 onCompleted;
     private final JoinObserver1<T1> first;
     private final JoinObserver1<T2> second;
     private final JoinObserver1<T3> third;
 
-    public ActivePlan3(JoinObserver1<T1> first,
+    ActivePlan3(JoinObserver1<T1> first,
             JoinObserver1<T2> second,
             JoinObserver1<T3> third,
             Action3<T1, T2, T3> onNext,
@@ -45,7 +45,7 @@ public class ActivePlan3<T1, T2, T3> extends ActivePlan0 {
     }
 
     @Override
-    public void match() {
+    protected void match() {
         if (!first.queue().isEmpty()
                 && !second.queue().isEmpty()
                 && !third.queue().isEmpty()) {

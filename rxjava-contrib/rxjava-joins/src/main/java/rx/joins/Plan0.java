@@ -29,7 +29,7 @@ public abstract class Plan0<R> {
             Observer<R> observer, Action1<ActivePlan0> deactivate);
 
     @SuppressWarnings("unchecked")
-    public static <T> JoinObserver1<T> createObserver(
+    public static final <T> JoinObserver1<T> createObserver(
             Map<Object, JoinObserver> externalSubscriptions,
             Observable<T> observable,
             Action1<Throwable> onError

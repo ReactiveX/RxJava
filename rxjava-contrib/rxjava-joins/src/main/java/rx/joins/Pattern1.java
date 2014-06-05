@@ -21,15 +21,15 @@ import rx.functions.Func1;
 /**
  * Represents a join pattern over one observable sequence.
  */
-public class Pattern1<T1> implements Pattern {
-    private final Observable<T1> first;
+public final class Pattern1<T1> implements Pattern {
+    private final Observable<T1> o1;
 
-    public Pattern1(Observable<T1> first) {
-        this.first = first;
+    public Pattern1(Observable<T1> o1) {
+        this.o1 = o1;
     }
 
-    public Observable<T1> first() {
-        return first;
+    Observable<T1> o1() {
+        return o1;
     }
 
     /**

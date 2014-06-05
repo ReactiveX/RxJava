@@ -21,18 +21,18 @@ import java.util.concurrent.atomic.AtomicReference;
 import rx.Observer;
 import rx.functions.Action0;
 import rx.functions.Action1;
-import rx.functions.Action2;
+import rx.functions.Action5;
 import rx.functions.Actions;
-import rx.functions.Func2;
+import rx.functions.Func5;
 
 /**
  * Represents an execution plan for join patterns.
  */
-public final class Plan2<T1, T2, R> extends Plan0<R> {
-    protected final Pattern2<T1, T2> expression;
-    protected final Func2<T1, T2, R> selector;
+public final class Plan5<T1, T2, T3, T4, T5, R> extends Plan0<R> {
+    protected final Pattern5<T1, T2, T3, T4, T5> expression;
+    protected final Func5<T1, T2, T3, T4, T5, R> selector;
 
-    public Plan2(Pattern2<T1, T2> expression, Func2<T1, T2, R> selector) {
+    public Plan5(Pattern5<T1, T2, T3, T4, T5> expression, Func5<T1, T2, T3, T4, T5, R> selector) {
         this.expression = expression;
         this.selector = selector;
     }
@@ -44,28 +44,36 @@ public final class Plan2<T1, T2, R> extends Plan0<R> {
 
         final JoinObserver1<T1> jo1 = createObserver(externalSubscriptions, expression.o1(), onError);
         final JoinObserver1<T2> jo2 = createObserver(externalSubscriptions, expression.o2(), onError);
+        final JoinObserver1<T3> jo3 = createObserver(externalSubscriptions, expression.o3(), onError);
+        final JoinObserver1<T4> jo4 = createObserver(externalSubscriptions, expression.o4(), onError);
+        final JoinObserver1<T5> jo5 = createObserver(externalSubscriptions, expression.o5(), onError);
 
-        final AtomicReference<ActivePlan2<T1, T2>> self = new AtomicReference<ActivePlan2<T1, T2>>();
+        final AtomicReference<ActivePlan0> self = new AtomicReference<ActivePlan0>();
 
-        ActivePlan2<T1, T2> activePlan = new ActivePlan2<T1, T2>(jo1, jo2, new Action2<T1, T2>() {
-            @Override
-            public void call(T1 t1, T2 t2) {
-                R result;
-                try {
-                    result = selector.call(t1, t2);
-                } catch (Throwable t) {
-                    observer.onError(t);
-                    return;
-                }
-                observer.onNext(result);
-            }
-        },
+        ActivePlan0 activePlan = new ActivePlan5<T1, T2, T3, T4, T5>(
+        		jo1, jo2, jo3, jo4, jo5,
+                new Action5<T1, T2, T3, T4, T5>() {
+                    @Override
+                    public void call(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5) {
+                        R result;
+                        try {
+                            result = selector.call(t1, t2, t3, t4, t5);
+                        } catch (Throwable t) {
+                            observer.onError(t);
+                            return;
+                        }
+                        observer.onNext(result);
+                    }
+                },
                 new Action0() {
                     @Override
                     public void call() {
                     	ActivePlan0 ap = self.get();
                         jo1.removeActivePlan(ap);
                         jo2.removeActivePlan(ap);
+                        jo3.removeActivePlan(ap);
+                        jo4.removeActivePlan(ap);
+                        jo5.removeActivePlan(ap);
                         deactivate.call(ap);
                     }
                 });
@@ -74,6 +82,9 @@ public final class Plan2<T1, T2, R> extends Plan0<R> {
 
         jo1.addActivePlan(activePlan);
         jo2.addActivePlan(activePlan);
+        jo3.addActivePlan(activePlan);
+        jo4.addActivePlan(activePlan);
+        jo5.addActivePlan(activePlan);
 
         return activePlan;
     }
