@@ -72,13 +72,14 @@ public class HandlerThreadScheduler extends Scheduler {
         @Override
         public Subscription schedule(final Action0 action, long delayTime, TimeUnit unit) {
             final ScheduledAction scheduledAction = new ScheduledAction(action);
-            scheduledAction.addParent(mCompositeSubscription);
             scheduledAction.add(Subscriptions.create(new Action0() {
                 @Override
                 public void call() {
                     handler.removeCallbacks(scheduledAction);
                 }
             }));
+            scheduledAction.addParent(mCompositeSubscription);
+            mCompositeSubscription.add(scheduledAction);
 
             handler.postDelayed(scheduledAction, unit.toMillis(delayTime));
 
@@ -91,5 +92,4 @@ public class HandlerThreadScheduler extends Scheduler {
         }
 
     }
-
 }
