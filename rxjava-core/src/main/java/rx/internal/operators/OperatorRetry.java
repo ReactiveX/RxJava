@@ -31,30 +31,25 @@ package rx.internal.operators;
  * limitations under the License.
  */
 
-import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
-
+import rx.Notification;
 import rx.Observable;
 import rx.Observable.Operator;
+import rx.Observer;
 import rx.Scheduler;
 import rx.Subscriber;
 import rx.functions.Action0;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
+import rx.subjects.PublishSubject;
 import rx.subscriptions.SerialSubscription;
 
 public final class OperatorRetry<T> implements Operator<T, Observable<T>> {
 
-    private static final int INFINITE_RETRY = -1;
-
-    private final int retryCount;
-
     private static Scheduler scheduler = Schedulers.trampoline();
+    private final Func1<Observable<Notification<?>>, Observable<?>> f;
 
-    public OperatorRetry(int retryCount) {
-        this.retryCount = retryCount;
-    }
-
-    public OperatorRetry() {
-        this(INFINITE_RETRY);
+    public OperatorRetry(Func1<Observable<Notification<?>>, Observable<?>> f) {
+        this.f = f;
     }
 
     @Override
@@ -66,79 +61,85 @@ public final class OperatorRetry<T> implements Operator<T, Observable<T>> {
         // add serialSubscription so it gets unsubscribed if child is unsubscribed
         child.add(serialSubscription);
         
-        return new SourceSubscriber<T>(child, retryCount, inner, serialSubscription);
+        return new SourceSubscriber<T>(child, f, inner, serialSubscription);
     }
     
     static final class SourceSubscriber<T> extends Subscriber<Observable<T>> {
         final Subscriber<? super T> child;
-        final int retryCount;
         final Scheduler.Worker inner;
         final SerialSubscription serialSubscription;
+        PublishSubject<Notification<?>> ts = PublishSubject.create();
         
-        volatile int attempts;
-        @SuppressWarnings("rawtypes")
-        static final AtomicIntegerFieldUpdater<SourceSubscriber> ATTEMPTS_UPDATER
-                = AtomicIntegerFieldUpdater.newUpdater(SourceSubscriber.class, "attempts");
-
-        public SourceSubscriber(Subscriber<? super T> child, int retryCount, Scheduler.Worker inner, 
+        public SourceSubscriber(final Subscriber<? super T> child,
+                final Func1<Observable<Notification<?>>, Observable<?>> f,
+                Scheduler.Worker inner,
                 SerialSubscription serialSubscription) {
             this.child = child;
-            this.retryCount = retryCount;
             this.inner = inner;
             this.serialSubscription = serialSubscription;
+            f.call(ts).subscribe(new Observer<Object>() {
+
+                @Override
+                public void onCompleted() {
+                    child.onCompleted();
+                }
+
+                @Override
+                public void onError(Throwable e) {
+                    child.onError(e);
+                }
+
+                @Override
+                public void onNext(Object t) {
+                }
+            });
         }
         
         
         @Override
-            public void onCompleted() {
-                // ignore as we expect a single nested Observable<T>
-            }
+        public void onCompleted() {
+            // ignore as we expect a single nested Observable<T>
+        }
 
-            @Override
-            public void onError(Throwable e) {
-                child.onError(e);
-            }
+        @Override
+        public void onError(Throwable e) {
+            child.onError(e);
+        }
 
-            @Override
-            public void onNext(final Observable<T> o) {
-                inner.schedule(new Action0() {
+        @Override
+        public void onNext(final Observable<T> o) {
 
-                    @Override
-                    public void call() {
-                        final Action0 _self = this;
-                        ATTEMPTS_UPDATER.incrementAndGet(SourceSubscriber.this);
+            inner.schedule(new Action0() {
 
-                        // new subscription each time so if it unsubscribes itself it does not prevent retries
-                        // by unsubscribing the child subscription
-                        Subscriber<T> subscriber = new Subscriber<T>() {
+                @Override
+                public void call() {
+                    final Action0 _self = this;
+                    // new subscription each time so if it unsubscribes itself it does not prevent retries
+                    // by unsubscribing the child subscription
+                    Subscriber<T> subscriber = new Subscriber<T>() {
 
-                            @Override
-                            public void onCompleted() {
-                                child.onCompleted();
-                            }
+                        @Override
+                        public void onCompleted() {
+                            child.onCompleted();
+                        }
 
-                            @Override
-                            public void onError(Throwable e) {
-                                if ((retryCount == INFINITE_RETRY || attempts <= retryCount) && !inner.isUnsubscribed()) {
-                                    // retry again
-                                    inner.schedule(_self);
-                                } else {
-                                    // give up and pass the failure
-                                    child.onError(e);
-                                }
-                            }
+                        @Override
+                        public void onError(Throwable e) {
+                            ts.onNext(Notification.createOnError(e));
+                            if (!child.isUnsubscribed()) inner.schedule(_self);
+                        }
 
-                            @Override
-                            public void onNext(T v) {
-                                child.onNext(v);
-                            }
+                        @Override
+                        public void onNext(T v) {
+                            child.onNext(v);
+                        }
 
-                        };
-                        // register this Subscription (and unsubscribe previous if exists) 
-                        serialSubscription.set(subscriber);
-                        o.unsafeSubscribe(subscriber);
-                    }
-                });
-            }
+                    };
+                    // register this Subscription (and unsubscribe previous if exists)
+                    serialSubscription.set(subscriber);
+                    o.unsafeSubscribe(subscriber);
+                }
+            });
+        }
     }
 }
