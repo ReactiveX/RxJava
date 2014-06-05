@@ -21,6 +21,7 @@ import rx.Scheduler;
 import rx.Subscription;
 import rx.functions.Action0;
 import rx.functions.Action1;
+import rx.internal.schedulers.ScheduledAction;
 import rx.subscriptions.BooleanSubscription;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.Subscriptions;
@@ -70,27 +71,18 @@ public class HandlerThreadScheduler extends Scheduler {
 
         @Override
         public Subscription schedule(final Action0 action, long delayTime, TimeUnit unit) {
-            final Runnable runnable = new Runnable() {
-                @Override
-                public void run() {
-                    if (isUnsubscribed()) {
-                        return;
-                    }
-                    action.call();
-                }
-            };
-            handler.postDelayed(runnable, unit.toMillis(delayTime));
-
-            final Subscription subscription = Subscriptions.create(new Action0() {
+            final ScheduledAction scheduledAction = new ScheduledAction(action);
+            scheduledAction.addParent(mCompositeSubscription);
+            scheduledAction.add(Subscriptions.create(new Action0() {
                 @Override
                 public void call() {
-                    handler.removeCallbacks(runnable);
-
+                    handler.removeCallbacks(scheduledAction);
                 }
-            });
-            mCompositeSubscription.add(subscription);
+            }));
 
-            return Subscriptions.empty();
+            handler.postDelayed(scheduledAction, unit.toMillis(delayTime));
+
+            return scheduledAction;
         }
 
         @Override
