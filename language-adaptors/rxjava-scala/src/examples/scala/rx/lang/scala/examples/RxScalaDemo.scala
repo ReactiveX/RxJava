@@ -1332,30 +1332,18 @@ class RxScalaDemo extends JUnitSuite {
 
   @Test def pivotExample() {
     val o1 = (1 to 20).toObservable.groupBy(i => if (i <= 10) "x" else "y").map {
-      case (t: String, o: Observable[Int]) => (t, o.groupBy(i => if (i % 2 == 0) true else false))
+      case (t: String, o: Observable[Int]) => (t, o.groupBy(i => i % 2 == 0))
     }
     println("o1:")
-    o1.subscribe {
-      n => n match {
-        case (k1: String, o: Observable[(Boolean, Observable[Int])]) =>
-          o.subscribe {
-            m => m match {
-              case (k2: Boolean, oi: Observable[Int]) => oi.subscribe(v => println(s"$k1 $k2 $v"))
-            }
-          }
-      }
-    }
+    (for ((k1, o) <- o1;
+          (k2, vs) <- o;
+          v <- vs
+    ) yield (k1, k2, v)).subscribe(println(_))
     val o2 = o1.pivot
     println("o2:")
-    o2.subscribe {
-      n => n match {
-        case (k1: Boolean, o: Observable[(String, Observable[Int])]) =>
-          o.subscribe {
-            m => m match {
-              case (k2: String, oi: Observable[Int]) => oi.subscribe(v => println(s"$k1 $k2 $v"))
-            }
-          }
-      }
-    }
+    (for ((k1, o) <- o2;
+          (k2, vs) <- o;
+          v <- vs
+    ) yield (k1, k2, v)).subscribe(println(_))
   }
 }
