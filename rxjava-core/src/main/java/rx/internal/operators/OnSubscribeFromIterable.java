@@ -15,8 +15,15 @@
  */
 package rx.internal.operators;
 
+import java.util.Iterator;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import rx.Observable.OnSubscribe;
+import rx.Producer;
+import rx.Scheduler;
 import rx.Subscriber;
+import rx.functions.Action0;
+import rx.schedulers.Schedulers;
 
 /**
  * Converts an {@code Iterable} sequence into an {@code Observable}.
@@ -35,17 +42,35 @@ public final class OnSubscribeFromIterable<T> implements OnSubscribe<T> {
     }
 
     @Override
-    public void call(Subscriber<? super T> o) {
-        for (T i : is) {
-            if (o.isUnsubscribed()) {
-                return;
+    public void call(final Subscriber<? super T> o) {
+        final Iterator<? extends T> it = is.iterator();
+        o.setProducer(new Producer() {
+            // TODO migrate to AFU
+            final AtomicInteger requested = new AtomicInteger();
+
+            @Override
+            public void request(int n) {
+                int _c = requested.getAndAdd(n);
+                if (_c == 0) {
+                    while (it.hasNext()) {
+                        if (o.isUnsubscribed()) {
+                            return;
+                        }
+                        int c = requested.decrementAndGet();
+                        T t = it.next();
+                        o.onNext(t);
+                        if (c == 0) {
+                            // we're done emitting the number requested so return
+                            return;
+                        }
+                    }
+
+                    o.onCompleted();
+                }
+
             }
-            o.onNext(i);
-        }
-        if (o.isUnsubscribed()) {
-            return;
-        }
-        o.onCompleted();
+
+        });
     }
 
 }

@@ -16,6 +16,7 @@
 package rx.internal.operators;
 
 import rx.Observable;
+import rx.Producer;
 import rx.Subscriber;
 
 /**
@@ -29,17 +30,17 @@ import rx.Subscriber;
  */
 public final class OperatorSkip<T> implements Observable.Operator<T, T> {
 
-    final int n;
+    final int toSkip;
 
     public OperatorSkip(int n) {
-        this.n = n;
+        this.toSkip = n;
     }
 
     @Override
     public Subscriber<? super T> call(final Subscriber<? super T> child) {
         return new Subscriber<T>(child) {
 
-           int skipped = 0;
+            int skipped = 0;
 
             @Override
             public void onCompleted() {
@@ -53,14 +54,30 @@ public final class OperatorSkip<T> implements Observable.Operator<T, T> {
 
             @Override
             public void onNext(T t) {
-                if(skipped >= n) {
+                if (skipped >= toSkip) {
                     child.onNext(t);
                 } else {
                     skipped += 1;
                 }
             }
 
+            @Override
+            public void setProducer(final Producer producer) {
+                child.setProducer(new Producer() {
+
+                    @Override
+                    public void request(int n) {
+                        // add the skip num to the requested amount, since we'll skip everything and then emit to the buffer downstream
+                        if (n > 0) {
+                            producer.request(n + (toSkip - skipped));
+                        } else {
+                            // infinite so leave it alone
+                            producer.request(n);
+                        }
+                    }
+                });
+            }
+
         };
     }
-
 }

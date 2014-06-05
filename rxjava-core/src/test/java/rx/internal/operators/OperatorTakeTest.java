@@ -44,6 +44,7 @@ import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.internal.operators.OperatorTake;
 import rx.observers.Subscribers;
+import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 
 public class OperatorTakeTest {
@@ -303,8 +304,13 @@ public class OperatorTakeTest {
     public void testTakeObserveOn() {
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
+        TestSubscriber<Object> ts = new TestSubscriber<Object>(o);
         
-        INFINITE_OBSERVABLE.observeOn(Schedulers.newThread()).take(1).subscribe(o);
+        INFINITE_OBSERVABLE.observeOn(Schedulers.newThread()).take(1).subscribe(ts);
+        ts.awaitTerminalEvent();
+        if(ts.getOnErrorEvents().size() > 0) {
+            ts.getOnErrorEvents().get(0).printStackTrace();
+        }
         
         verify(o).onNext(1L);
         verify(o, never()).onNext(2L);

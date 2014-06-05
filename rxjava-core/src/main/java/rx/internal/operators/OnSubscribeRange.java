@@ -15,7 +15,10 @@
  */
 package rx.internal.operators;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import rx.Observable.OnSubscribe;
+import rx.Producer;
 import rx.Subscriber;
 
 /**
@@ -32,14 +35,33 @@ public final class OnSubscribeRange implements OnSubscribe<Integer> {
     }
 
     @Override
-    public void call(Subscriber<? super Integer> o) {
-        for (int i = start; i <= end; i++) {
-            if (o.isUnsubscribed()) {
-                return;
+    public void call(final Subscriber<? super Integer> o) {
+        o.setProducer(new Producer() {
+            // TODO migrate to AFU
+            final AtomicInteger requested = new AtomicInteger();
+            int index = start;
+
+            @Override
+            public void request(int n) {
+                int _c = requested.getAndAdd(n);
+                if (_c == 0) {
+                    while (index <= end) {
+                        if (o.isUnsubscribed()) {
+                            return;
+                        }
+                        o.onNext(index++);
+                        int c = requested.decrementAndGet();
+                        if (c == 0) {
+                            // we're done emitting the number requested so return
+                            return;
+                        }
+                    }
+                    o.onCompleted();
+                }
             }
-            o.onNext(i);
-        }
-        o.onCompleted();
+
+        });
+
     }
 
 }

@@ -17,6 +17,7 @@ package rx.schedulers;
 
 import java.util.PriorityQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 import rx.Scheduler;
@@ -44,15 +45,20 @@ public final class TrampolineScheduler extends Scheduler {
     /* package accessible for unit tests */TrampolineScheduler() {
     }
 
-    private static final ThreadLocal<PriorityQueue<TimedAction>> QUEUE = new ThreadLocal<PriorityQueue<TimedAction>>();
+    private static final ThreadLocal<PriorityQueue<TimedAction>> QUEUE = new ThreadLocal<PriorityQueue<TimedAction>>() {
+        @Override
+        protected PriorityQueue<TimedAction> initialValue() {
+            return new PriorityQueue<TimedAction>();
+        }
+    };
 
     volatile int counter;
-    static final AtomicIntegerFieldUpdater<TrampolineScheduler> COUNTER_UPDATER
-            = AtomicIntegerFieldUpdater.newUpdater(TrampolineScheduler.class, "counter");
+    static final AtomicIntegerFieldUpdater<TrampolineScheduler> COUNTER_UPDATER = AtomicIntegerFieldUpdater.newUpdater(TrampolineScheduler.class, "counter");
 
     private class InnerCurrentThreadScheduler extends Scheduler.Worker implements Subscription {
 
         private final BooleanSubscription innerSubscription = new BooleanSubscription();
+        private final AtomicInteger wip = new AtomicInteger();
 
         @Override
         public Subscription schedule(Action0 action) {
@@ -71,24 +77,16 @@ public final class TrampolineScheduler extends Scheduler {
                 return Subscriptions.empty();
             }
             PriorityQueue<TimedAction> queue = QUEUE.get();
-            boolean exec = queue == null;
-
-            if (exec) {
-                queue = new PriorityQueue<TimedAction>();
-                QUEUE.set(queue);
-            }
-
             final TimedAction timedAction = new TimedAction(action, execTime, COUNTER_UPDATER.incrementAndGet(TrampolineScheduler.this));
             queue.add(timedAction);
 
-            if (exec) {
-                while (!queue.isEmpty()) {
+            if (wip.getAndIncrement() == 0) {
+                do {
                     queue.poll().action.call();
-                }
-
-                QUEUE.set(null);
+                } while (wip.decrementAndGet() > 0);
                 return Subscriptions.empty();
             } else {
+                // queue wasn't empty, a parent is already processing so we just add to the end of the queue
                 return Subscriptions.create(new Action0() {
 
                     @Override
@@ -118,9 +116,9 @@ public final class TrampolineScheduler extends Scheduler {
     private static class TimedAction implements Comparable<TimedAction> {
         final Action0 action;
         final Long execTime;
-        final Integer count; // In case if time between enqueueing took less than 1ms
+        final int count; // In case if time between enqueueing took less than 1ms
 
-        private TimedAction(Action0 action, Long execTime, Integer count) {
+        private TimedAction(Action0 action, Long execTime, int count) {
             this.action = action;
             this.execTime = execTime;
             this.count = count;
@@ -130,10 +128,15 @@ public final class TrampolineScheduler extends Scheduler {
         public int compareTo(TimedAction that) {
             int result = execTime.compareTo(that.execTime);
             if (result == 0) {
-                return count.compareTo(that.count);
+                return compare(count, that.count);
             }
             return result;
         }
+    }
+    
+    // because I can't use Integer.compare from Java 7
+    private static int compare(int x, int y) {
+        return (x < y) ? -1 : ((x == y) ? 0 : 1);
     }
 
 }
