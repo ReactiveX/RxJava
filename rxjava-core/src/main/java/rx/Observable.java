@@ -5760,7 +5760,12 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Error-Handling-Operators#wiki-retry">RxJava Wiki: retry()</a>
      */
     public final Observable<T> retry() {
-        return nest().lift(new OperatorRetry<T>());
+        return nest().lift(new OperatorRetry<T>(new Func1<Observable<Notification<?>>, Observable<?>>() {
+            @Override
+            public Observable<?> call(Observable<Notification<?>> notifications) {
+                return Observable.never();
+            }
+        }));
     }
 
     /**
@@ -5783,8 +5788,13 @@ public class Observable<T> {
      * @return the source Observable modified with retry logic
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Error-Handling-Operators#wiki-retry">RxJava Wiki: retry()</a>
      */
-    public final Observable<T> retry(int retryCount) {
-        return nest().lift(new OperatorRetry<T>(retryCount));
+    public final Observable<T> retry(final int retryCount) {
+        return retry(new Func1<Observable<Notification<?>>, Observable<?>>() {
+            @Override
+            public Observable<?> call(Observable<Notification<?>> notifications) {
+                return notifications.take(retryCount + 1).last().dematerialize();
+            }
+        });
     }
 
     /**
@@ -5802,10 +5812,50 @@ public class Observable<T> {
      * @see #retry()
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Error-Handling-Operators#wiki-retry">RxJava Wiki: retry()</a>
      */
-    public final Observable<T> retry(Func2<Integer, Throwable, Boolean> predicate) {
-        return nest().lift(new OperatorRetryWithPredicate<T>(predicate));
+    public final Observable<T> retry(final Func2<Integer, Throwable, Boolean> predicate) {
+        return retry(new Func1<Observable<Notification<?>>, Observable<?>>() {
+            @Override
+            public Observable<?> call(Observable<Notification<?>> notifications) {
+                return notifications.scan(new Object[] { 0, null }, new Func2<Object[], Notification<?>, Object[]>() {
+
+                    @Override
+                    public Object[] call(Object[] t1, Notification<?> enumeratedNotification) {
+                        return new Object[] { ((Integer) t1[0]) + 1, enumeratedNotification };
+                    }
+                }).flatMap(new Func1<Object[], Observable<Void>>() {
+
+                    @Override
+                    public Observable<Void> call(Object[] enumeratedNotification) {
+                        Throwable throwable = ((Notification<?>) enumeratedNotification[1]).getThrowable();
+                        Integer retryCount = (Integer) enumeratedNotification[0];
+                        if (predicate.call(retryCount, throwable)) return Observable.empty();
+                        return Observable.error(throwable);
+                    }
+                });
+            }
+        });
     }
-    
+
+    /**
+     * Returns an Observable that emits the same values as the source observable with the exception of an {@code onError}.
+     * An onError will emit a {@link Notification} to the observable provided as an argument to the notificationHandler 
+     * func. If the observable returned {@code onCompletes} or {@code onErrors} then retry will call {@code onCompleted} 
+     * or {@code onError} on the child subscription. Otherwise, this observable will resubscribe to the source observable.    
+     * <p>
+     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/retry.png">
+     * <p>
+     * {@code retry} operates by default on the {@code trampoline} {@link Scheduler}.
+     *
+     * @param notificationHandler
+     *            recieves an Observable of notifications with which a user can complete or error, aborting the retry. 
+     * @return the source Observable modified with retry logic
+     * @see #retry()
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Error-Handling-Operators#wiki-retry">RxJava Wiki: retry()</a>
+     */
+    public final Observable<T> retry(Func1<Observable<Notification<?>>, Observable<?>> notificationHandler) {
+        return nest().lift(new OperatorRetry<T>(notificationHandler));
+    }
+
     /**
      * Returns an Observable that emits the most recently emitted item (if any) emitted by the source Observable
      * within periodic time intervals.
