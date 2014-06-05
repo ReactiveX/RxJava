@@ -24,8 +24,8 @@ import rx.functions.Func2;
 import rx.functions.Functions;
 
 /**
- * Returns an Observable that emits a Boolean value that indicate whether two
- * sequences are equal by comparing the elements pairwise.
+ * Returns an Observable that emits a Boolean value that indicate whether two sequences are equal by comparing
+ * the elements pairwise.
  */
 public final class OperatorSequenceEqual {
     private OperatorSequenceEqual() { throw new IllegalStateException("No instances!"); }
@@ -42,6 +42,14 @@ public final class OperatorSequenceEqual {
 
                 }), from(LOCAL_ONCOMPLETED));
     }
+
+    /**
+     * @warn javadoc missing
+     * @param first
+     * @param second
+     * @param equality
+     * @return
+     */
     public static <T> Observable<Boolean> sequenceEqual(
             Observable<? extends T> first, Observable<? extends T> second,
             final Func2<? super T, ? super T, Boolean> equality) {

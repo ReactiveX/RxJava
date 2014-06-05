@@ -33,6 +33,11 @@ import rx.exceptions.Exceptions;
  */
 public final class BlockingOperatorNext {
 
+    /**
+     * @warn next() missing javadocs
+     * @param items
+     * @return
+     */
     public static <T> Iterable<T> next(final Observable<? extends T> items) {
         return new Iterable<T>() {
             @Override

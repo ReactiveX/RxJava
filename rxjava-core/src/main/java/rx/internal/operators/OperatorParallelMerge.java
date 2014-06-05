@@ -26,10 +26,23 @@ import rx.schedulers.Schedulers;
 public final class OperatorParallelMerge {
     private OperatorParallelMerge() { throw new IllegalStateException("No instances!"); }
 
+    /**
+     * @warn javadoc missing
+     * @param source
+     * @param parallelObservables
+     * @return
+     */
     public static <T> Observable<Observable<T>> parallelMerge(final Observable<Observable<T>> source, final int parallelObservables) {
         return parallelMerge(source, parallelObservables, Schedulers.immediate());
     }
 
+    /**
+     * @warn javadoc missing
+     * @param source
+     * @param parallelObservables
+     * @param scheduler
+     * @return
+     */
     public static <T> Observable<Observable<T>> parallelMerge(final Observable<Observable<T>> source, final int parallelObservables, final Scheduler scheduler) {
 
         return source.groupBy(new StrideMapper<T>(parallelObservables))

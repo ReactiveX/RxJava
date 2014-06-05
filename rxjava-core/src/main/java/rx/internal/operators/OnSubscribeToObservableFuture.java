@@ -40,12 +40,24 @@ public class OnSubscribeToObservableFuture {
         private final long time;
         private final TimeUnit unit;
 
+        /**
+         * @warn javadoc missing
+         * @param that
+         * @return
+         */
         public ToObservableFuture(Future<? extends T> that) {
             this.that = that;
             this.time = 0;
             this.unit = null;
         }
 
+        /**
+         * @warn javadoc missing
+         * @param that
+         * @param time
+         * @param unit
+         * @return
+         */
         public ToObservableFuture(Future<? extends T> that, long time, TimeUnit unit) {
             this.that = that;
             this.time = time;

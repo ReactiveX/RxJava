@@ -19,10 +19,10 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 
 /**
- * A multiple-producer single consumer queue implementation with padded reference
- * to tail to avoid cache-line thrashing.
- * Based on Netty's <a href='https://github.com/netty/netty/blob/master/common/src/main/java/io/netty/util/internal/MpscLinkedQueue.java'>MpscQueue implementation</a> but using AtomicReferenceFieldUpdater
- * instead of Unsafe.
+ * A multiple-producer single consumer queue implementation with padded reference to tail to avoid cache-line
+ * thrashing. Based on Netty's <a href='https://github.com/netty/netty/blob/master/common/src/main/java/io/netty/util/internal/MpscLinkedQueue.java'>MpscQueue implementation</a>
+ * but using {@code AtomicReferenceFieldUpdater} instead of {@code Unsafe}.
+ *
  * @param <E> the element type
  */
 public final class MpscPaddedQueue<E> extends AtomicReference<MpscPaddedQueue.Node<E>> {
@@ -32,6 +32,7 @@ public final class MpscPaddedQueue<E> extends AtomicReference<MpscPaddedQueue.No
     private static final long serialVersionUID = 1L;
     /** The padded tail reference. */
     final PaddedNode<E> tail;
+
     /**
      * Initializes the empty queue.
      */
@@ -41,8 +42,10 @@ public final class MpscPaddedQueue<E> extends AtomicReference<MpscPaddedQueue.No
         tail.tail = first;
         set(first);
     }
+
     /**
      * Offer a new value.
+     *
      * @param v the value to offer
      */
     public void offer(E v) {
@@ -51,6 +54,7 @@ public final class MpscPaddedQueue<E> extends AtomicReference<MpscPaddedQueue.No
     }
 
     /**
+     * @warn method description missing
      * @return Poll a value from the head of the queue or return null if the queue is empty.
      */
     public E poll() {
@@ -63,8 +67,10 @@ public final class MpscPaddedQueue<E> extends AtomicReference<MpscPaddedQueue.No
         TAIL_UPDATER.lazySet(tail, n);
         return v;
     }
+
     /**
      * Check if there is a node available without changing anything.
+     * @return
      */
     private Node<E> peekNode() {
         for (;;) {
@@ -76,6 +82,7 @@ public final class MpscPaddedQueue<E> extends AtomicReference<MpscPaddedQueue.No
             }
         }
     }
+
     /**
      * Clears the queue.
      */
@@ -86,6 +93,7 @@ public final class MpscPaddedQueue<E> extends AtomicReference<MpscPaddedQueue.No
             }
         }
     }
+
     /** Class that contains a Node reference padded around to fit a typical cache line. */
     static final class PaddedNode<E> {
         /** Padding, public to prevent optimizing it away. */
@@ -102,6 +110,7 @@ public final class MpscPaddedQueue<E> extends AtomicReference<MpscPaddedQueue.No
         /** Padding, public to prevent optimizing it away. */
         public long p6;
     }
+
     /**
      * Regular node with value and reference to the next node.
      */

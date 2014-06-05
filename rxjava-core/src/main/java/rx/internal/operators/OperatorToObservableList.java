@@ -23,18 +23,18 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Returns an Observable that emits a single item, a list composed of all the items emitted by the
- * source Observable.
+ * Returns an Observable that emits a single item, a list composed of all the items emitted by the source
+ * Observable.
  * <p>
- * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-Observers/toList.png">
+ * <img width="640" height="305" src="https://raw.githubusercontent.com/wiki/Netflix/RxJava/images/rx-operators/toList.png">
  * <p>
- * Normally, an Observable that returns multiple items will do so by invoking its Observer's
- * <code>onNext</code> method for each such item. You can change this behavior, instructing the
- * Observable to compose a list of all of these multiple items and then to invoke the Observer's
- * <code>onNext</code> method once, passing it the entire list, by using the toList Observer.
+ * Normally, an Observable that returns multiple items will do so by invoking its Observer's {@code onNext}
+ * method for each such item. You can change this behavior, instructing the Observable to compose a list of all
+ * of these multiple items and then to invoke the Observer's {@code onNext} method once, passing it the entire
+ * list, by using the toList Observer.
  * <p>
- * Be careful not to use this Observer on Observables that emit infinite or very large numbers of
- * items, as you do not have the option to unsubscribe.
+ * Be careful not to use this Observer on Observables that emit infinite or very large numbers of items, as you
+ * do not have the option to unsubscribe.
  */
 public final class OperatorToObservableList<T> implements Operator<List<T>, T> {
 

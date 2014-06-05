@@ -28,6 +28,12 @@ import rx.Subscriber;
  */
 public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
 
+    /**
+     * @warn javadoc missing
+     * @param o1
+     * @param o2
+     * @return
+     */
     public static <T> OnSubscribe<T> amb(Observable<? extends T> o1, Observable<? extends T> o2) {
         List<Observable<? extends T>> sources = new ArrayList<Observable<? extends T>>();
         sources.add(o1);
@@ -35,6 +41,13 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
         return amb(sources);
     }
 
+    /**
+     * @warn javadoc missing
+     * @param o1
+     * @param o2
+     * @param o3
+     * @return
+     */
     public static <T> OnSubscribe<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3) {
         List<Observable<? extends T>> sources = new ArrayList<Observable<? extends T>>();
         sources.add(o1);
@@ -43,6 +56,14 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
         return amb(sources);
     }
 
+    /**
+     * @warn javadoc missing
+     * @param o1
+     * @param o2
+     * @param o3
+     * @param o4
+     * @return
+     */
     public static <T> OnSubscribe<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4) {
         List<Observable<? extends T>> sources = new ArrayList<Observable<? extends T>>();
         sources.add(o1);
@@ -52,6 +73,15 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
         return amb(sources);
     }
 
+    /**
+     * @warn javadoc missing
+     * @param o1
+     * @param o2
+     * @param o3
+     * @param o4
+     * @param o5
+     * @return
+     */
     public static <T> OnSubscribe<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4, Observable<? extends T> o5) {
         List<Observable<? extends T>> sources = new ArrayList<Observable<? extends T>>();
         sources.add(o1);
@@ -62,6 +92,16 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
         return amb(sources);
     }
 
+    /**
+     * @warn javadoc missing
+     * @param o1
+     * @param o2
+     * @param o3
+     * @param o4
+     * @param o5
+     * @param o6
+     * @return
+     */
     public static <T> OnSubscribe<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4, Observable<? extends T> o5, Observable<? extends T> o6) {
         List<Observable<? extends T>> sources = new ArrayList<Observable<? extends T>>();
         sources.add(o1);
@@ -73,6 +113,17 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
         return amb(sources);
     }
 
+    /**
+     * @warn javadoc missing
+     * @param o1
+     * @param o2
+     * @param o3
+     * @param o4
+     * @param o5
+     * @param o6
+     * @param o7
+     * @return
+     */
     public static <T> OnSubscribe<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4, Observable<? extends T> o5, Observable<? extends T> o6, Observable<? extends T> o7) {
         List<Observable<? extends T>> sources = new ArrayList<Observable<? extends T>>();
         sources.add(o1);
@@ -85,6 +136,18 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
         return amb(sources);
     }
 
+    /**
+     * @warn javadoc missing
+     * @param o1
+     * @param o2
+     * @param o3
+     * @param o4
+     * @param o5
+     * @param o6
+     * @param o7
+     * @param o8
+     * @return
+     */
     public static <T> OnSubscribe<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4, Observable<? extends T> o5, Observable<? extends T> o6, Observable<? extends T> o7, Observable<? extends T> o8) {
         List<Observable<? extends T>> sources = new ArrayList<Observable<? extends T>>();
         sources.add(o1);
@@ -98,6 +161,19 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
         return amb(sources);
     }
 
+    /**
+     * @warn javadoc missing
+     * @param o1
+     * @param o2
+     * @param o3
+     * @param o4
+     * @param o5
+     * @param o6
+     * @param o7
+     * @param o8
+     * @param o9
+     * @return
+     */
     public static <T> OnSubscribe<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4, Observable<? extends T> o5, Observable<? extends T> o6, Observable<? extends T> o7, Observable<? extends T> o8, Observable<? extends T> o9) {
         List<Observable<? extends T>> sources = new ArrayList<Observable<? extends T>>();
         sources.add(o1);
@@ -112,6 +188,11 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
         return amb(sources);
     }
 
+    /**
+     * @warn javadoc missing
+     * @param sources
+     * @return
+     */
     public static <T> OnSubscribe<T> amb(final Iterable<? extends Observable<? extends T>> sources) {
         return new OnSubscribeAmb<T>(sources);
     }

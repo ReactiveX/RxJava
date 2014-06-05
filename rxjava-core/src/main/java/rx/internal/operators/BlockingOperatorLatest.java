@@ -26,9 +26,8 @@ import rx.Subscriber;
 import rx.exceptions.Exceptions;
 
 /**
- * Wait for and iterate over the latest values of the source observable.
- * If the source works faster than the iterator, values may be skipped, but
- * not the onError or onCompleted events.
+ * Wait for and iterate over the latest values of the source observable. If the source works faster than the
+ * iterator, values may be skipped, but not the {@code onError} or {@code onCompleted} events.
  */
 public final class BlockingOperatorLatest {
     /** Utility class. */
@@ -36,6 +35,11 @@ public final class BlockingOperatorLatest {
         throw new IllegalStateException("No instances!");
     }
 
+    /**
+     * @warn latest() missing javadoc
+     * @param source
+     * @return
+     */
     public static <T> Iterable<T> latest(final Observable<? extends T> source) {
         return new Iterable<T>() {
             @Override

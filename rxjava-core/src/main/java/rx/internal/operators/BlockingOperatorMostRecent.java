@@ -29,6 +29,12 @@ import rx.exceptions.Exceptions;
  */
 public final class BlockingOperatorMostRecent {
 
+    /**
+     * @warn mostRecent() missing javadocs
+     * @param source
+     * @param initialValue
+     * @return
+     */
     public static <T> Iterable<T> mostRecent(final Observable<? extends T> source, final T initialValue) {
 
         return new Iterable<T>() {

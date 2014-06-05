@@ -22,6 +22,9 @@ import rx.subscriptions.Subscriptions;
 
 import java.util.concurrent.*;
 
+/**
+ * @warn class description missing
+ */
 public class NewThreadWorker extends Scheduler.Worker implements Subscription {
     private final ScheduledExecutorService executor;
     volatile boolean isUnsubscribed;
@@ -44,6 +47,13 @@ public class NewThreadWorker extends Scheduler.Worker implements Subscription {
         return scheduleActual(action, delayTime, unit);
     }
 
+    /**
+     * @warn javadoc missing
+     * @param action
+     * @param delayTime
+     * @param unit
+     * @return
+     */
     public ScheduledAction scheduleActual(final Action0 action, long delayTime, TimeUnit unit) {
         ScheduledAction run = new ScheduledAction(action);
         Future<?> f;

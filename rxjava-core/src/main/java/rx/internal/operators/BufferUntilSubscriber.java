@@ -27,25 +27,33 @@ import rx.subjects.Subject;
 import rx.subscriptions.Subscriptions;
 
 /**
- * A solution to the "time gap" problem that occurs with `groupBy` and `pivot` => https://github.com/Netflix/RxJava/issues/844
- * 
+ * A solution to the "time gap" problem that occurs with {@code groupBy} and {@code pivot}.
+ * <p>
  * This currently has temporary unbounded buffers. It needs to become bounded and then do one of two things:
- * 
- * 1) blow up and make the user do something about it
- * 2) work with the backpressure solution ... still to be implemented (such as co-routines)
- * 
- * Generally the buffer should be very short lived (milliseconds) and then stops being involved.
- * It can become a memory leak though if a GroupedObservable backed by this class is emitted but never subscribed to (such as filtered out).
- * In that case, either a time-bomb to throw away the buffer, or just blowing up and making the user do something about it is needed.
- * 
- * For example, to filter out GroupedObservables, perhaps they need a silent `subscribe()` on them to just blackhole the data.
- * 
- * This is an initial start at solving this problem and solves the immediate problem of `groupBy` and `pivot` and trades off the possibility of memory leak for deterministic functionality.
+ * <ol>
+ * <li>blow up and make the user do something about it</li>
+ * <li>work with the backpressure solution ... still to be implemented (such as co-routines)</li>
+ * </ol><p>
+ * Generally the buffer should be very short lived (milliseconds) and then stops being involved. It can become a
+ * memory leak though if a {@code GroupedObservable} backed by this class is emitted but never subscribed to
+ * (such as filtered out). In that case, either a time-bomb to throw away the buffer, or just blowing up and
+ * making the user do something about it is needed.
+ * <p>
+ * For example, to filter out {@code GroupedObservable}s, perhaps they need a silent {@code subscribe()} on them
+ * to just blackhole the data.
+ * <p>
+ * This is an initial start at solving this problem and solves the immediate problem of {@code groupBy} and
+ * {@code pivot} and trades off the possibility of memory leak for deterministic functionality.
  *
+ * @see <a href="https://github.com/Netflix/RxJava/issues/844">the Github issue describing the time gap problem</a>
+ * @warn type param "T" undescribed
  * @param <T>
  */
 public class BufferUntilSubscriber<T> extends Subject<T, T> {
 
+    /**
+     * @warn create() undescribed
+     */
     public static <T> BufferUntilSubscriber<T> create() {
         State<T> state = new State<T>();
         return new BufferUntilSubscriber<T>(state);
@@ -136,8 +144,8 @@ public class BufferUntilSubscriber<T> extends Subject<T, T> {
      * from the producer and will drain the queue of any items received during the race of the initial drain and
      * switching this.
      * 
-     * It will then immediately swap itself out for the actual (after a single notification), but since this is now
-     * being done on the same producer thread no further buffering will occur.
+     * It will then immediately swap itself out for the actual (after a single notification), but since this is
+     * now being done on the same producer thread no further buffering will occur.
      */
     private static final class PassThruObserver<T> extends Subscriber<T> {
 

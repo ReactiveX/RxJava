@@ -163,6 +163,8 @@ public class TestSubscriber<T> extends Subscriber<T> {
 
     /**
      * @warn javadoc missing
+     * @param timeout
+     * @param unit
      */
     public void awaitTerminalEvent(long timeout, TimeUnit unit) {
         try {
@@ -174,6 +176,8 @@ public class TestSubscriber<T> extends Subscriber<T> {
 
     /**
      * @warn javadoc missing
+     * @param timeout
+     * @param unit
      */
     public void awaitTerminalEventAndUnsubscribeOnTimeout(long timeout, TimeUnit unit) {
         try {

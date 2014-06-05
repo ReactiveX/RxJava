@@ -96,6 +96,7 @@ public final class TestSubject<T> extends Subject<T, T> {
 
     /**
      * @warn javadoc missing
+     * @param timeInMilliseconds
      */
     public void onCompleted(long timeInMilliseconds) {
         innerScheduler.schedule(new Action0() {
@@ -123,6 +124,8 @@ public final class TestSubject<T> extends Subject<T, T> {
 
     /**
      * @warn javadoc missing
+     * @param e
+     * @param timeInMilliseconds
      */
     public void onError(final Throwable e, long timeInMilliseconds) {
         innerScheduler.schedule(new Action0() {
@@ -148,6 +151,8 @@ public final class TestSubject<T> extends Subject<T, T> {
 
     /**
      * @warn javadoc missing
+     * @param v
+     * @param timeInMilliseconds
      */
     public void onNext(final T v, long timeInMilliseconds) {
         innerScheduler.schedule(new Action0() {

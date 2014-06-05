@@ -25,12 +25,13 @@ import rx.Subscriber;
 import rx.functions.Func2;
 
 /**
- * Return an Observable that emits the items emitted by the source Observable, in a sorted order
- * (each item emitted by the Observable must implement Comparable with respect to all other items
- * in the sequence, or you must pass in a sort function).
+ * Return an Observable that emits the items emitted by the source Observable, in a sorted order (each item
+ * emitted by the Observable must implement Comparable with respect to all other items in the sequence, or you
+ * must pass in a sort function).
  * <p>
- * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-Observers/toSortedList.png">
+ * <img width="640" height="310" src="https://raw.githubusercontent.com/wiki/Netflix/RxJava/images/rx-operators/toSortedList.png">
  * 
+ * @warn type param not described
  * @param <T>
  */
 public final class OperatorToObservableSortedList<T> implements Operator<List<T>, T> {

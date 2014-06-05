@@ -24,7 +24,7 @@ import rx.functions.Func1;
  * Applies a function of your choosing to every item emitted by an Observable, and returns this
  * transformation as a new Observable.
  * <p>
- * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-Observers/map.png">
+ * <img width="640" height="305" src="https://raw.githubusercontent.com/wiki/Netflix/RxJava/images/rx-operators/map.png">
  */
 public final class OperatorMap<T, R> implements Operator<R, T> {
 

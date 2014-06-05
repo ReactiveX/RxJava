@@ -34,10 +34,11 @@ import rx.subjects.Subject;
 import rx.subscriptions.CompositeSubscription;
 
 /**
- * Groups the elements of an observable sequence according to a specified key selector, value selector and duration selector function.
+ * Groups the elements of an observable sequence according to a specified key selector, value selector and
+ * duration selector function.
  * 
- * @see <a href='http://msdn.microsoft.com/en-us/library/hh211932.aspx'>MSDN: Observable.GroupByUntil</a>
- * @see <a href='http://msdn.microsoft.com/en-us/library/hh229433.aspx'>MSDN: Observable.GroupByUntil</a>
+ * @see <a href="http://msdn.microsoft.com/en-us/library/hh211932.aspx">MSDN: Observable.GroupByUntil</a>
+ * @see <a href="http://msdn.microsoft.com/en-us/library/hh229433.aspx">MSDN: Observable.GroupByUntil</a>
  * 
  * @param <T> the source value type
  * @param <K> the group key type
@@ -191,6 +192,7 @@ public class OperatorGroupByUntil<T, K, R, D> implements Operator<GroupedObserva
 
     /** 
      * A grouped observable with subject-like behavior. 
+     *
      * @param <K> the key type
      * @param <R> the value type
      */
@@ -211,6 +213,10 @@ public class OperatorGroupByUntil<T, K, R, D> implements Operator<GroupedObserva
             this.publishSerial = new SerializedObserver<R>(publish);
         }
 
+        /**
+         * @warn javadoc missing
+         * @return
+         */
         public GroupedObservable<K, R> toObservable() {
             return new GroupedObservable<K, R>(key, new OnSubscribe<R>() {
                 @Override

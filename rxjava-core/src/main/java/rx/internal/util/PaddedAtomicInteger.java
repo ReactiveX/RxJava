@@ -48,7 +48,10 @@ public final class PaddedAtomicInteger extends AtomicInteger {
     public int p12;
     /** Padding, public to prevent optimizing it away. */
     public int p13;
-    /** @return prevents optimizing away the fields, most likely. */
+    /**
+     * @warn description missing
+     * @return prevents optimizing away the fields, most likely.
+     */
     public int noopt() {
         return p1 + p2 + p3 + p4 + p5 + p6 + p7 + p8 + p9 + p10 + p11 + p12 + p13;
     }

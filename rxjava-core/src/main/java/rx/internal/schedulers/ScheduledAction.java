@@ -22,8 +22,8 @@ import rx.subscriptions.CompositeSubscription;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 /**
- * A runnable that executes an Action0 and can be cancelled
- * The analogue is the Subscriber in respect of an Observer.
+ * A {@code Runnable} that executes an {@code Action0} and can be cancelled. The analogue is the
+ * {@code Subscriber} in respect of an {@code Observer}.
  */
 public final class ScheduledAction implements Runnable, Subscription {
     final CompositeSubscription cancel;
@@ -58,13 +58,19 @@ public final class ScheduledAction implements Runnable, Subscription {
         }
     }
 
+    /**
+     * @warn javadoc missing
+     * @param s
+     */
     public void add(Subscription s) {
         cancel.add(s);
     }
 
     /**
-     * Adds a parent to this ScheduledAction so when it is
-     * cancelled or terminates, it can remove itself from this parent.
+     * Adds a parent to this ScheduledAction so when it is cancelled or terminates, it can remove itself from
+     * this parent.
+     *
+     * @warn param "parent" undescribed
      * @param parent
      */
     public void addParent(CompositeSubscription parent) {

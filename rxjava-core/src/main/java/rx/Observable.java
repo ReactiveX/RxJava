@@ -4146,8 +4146,8 @@ public class Observable<T> {
     }
 
     /**
-     * Returns an Observable that emits only the very first item emitted by the source Observable, or raises an
-     * {@code NoSuchElementException} if the source Observable is empty.
+     * Returns an Observable that emits only the very first item emitted by the source Observable, or notifies
+     * of an {@code NoSuchElementException} if the source Observable is empty.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/first.png">
      * <p>
@@ -4164,7 +4164,7 @@ public class Observable<T> {
 
     /**
      * Returns an Observable that emits only the very first item emitted by the source Observable that satisfies
-     * a specified condition, or raises an {@code NoSuchElementException} if no such items are emitted.
+     * a specified condition, or notifies of an {@code NoSuchElementException} if no such items are emitted.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/firstN.png">
      * <p>
@@ -4486,7 +4486,7 @@ public class Observable<T> {
 
     /**
      * Returns an Observable that emits the last item emitted by the source Observable or notifies observers of
-     * an {@code NoSuchElementException} if the source Observable is empty.
+     * a {@code NoSuchElementException} if the source Observable is empty.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/last.png">
      * <p>
@@ -4503,7 +4503,7 @@ public class Observable<T> {
 
     /**
      * Returns an Observable that emits only the last item emitted by the source Observable that satisfies a
-     * given condition, or an {@code NoSuchElementException} if no such items are emitted.
+     * given condition, or notifies of a {@code NoSuchElementException} if no such items are emitted.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/last.p.png">
      * <p>
@@ -5964,8 +5964,8 @@ public class Observable<T> {
     
     /**
      * Returns an Observable that emits the single item emitted by the source Observable, if that Observable
-     * emits only a single item. If the source Observable emits more than one item or no items, throw an
-     * {@code NoSuchElementException}.
+     * emits only a single item. If the source Observable emits more than one item or no items, notify of an
+     * {@code IllegalArgumentException} or {@code NoSuchElementException} respectively.
      * <p>
      * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/single.png">
      * <p>
@@ -5986,7 +5986,8 @@ public class Observable<T> {
     /**
      * Returns an Observable that emits the single item emitted by the source Observable that matches a
      * specified predicate, if that Observable emits one such item. If the source Observable emits more than one
-     * such item or no such items, throw an {@code NoSuchElementException}.
+     * such item or no such items, notify of an {@code IllegalArgumentException} or
+     * {@code NoSuchElementException} respectively.
      * <p>
      * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/single.p.png">
      * <p>
@@ -6987,6 +6988,8 @@ public class Observable<T> {
      *            the number of items to emit from the end of the sequence of items emitted by the source
      *            Observable
      * @return an Observable that emits only the last {@code count} items emitted by the source Observable
+     * @throws IndexOutOfBoundsException
+     *             if {@code count} is less than zero
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#wiki-takelast">RxJava Wiki: takeLast()</a>
      */
     public final Observable<T> takeLast(final int count) {
@@ -7032,7 +7035,7 @@ public class Observable<T> {
      * @return an Observable that emits at most {@code count} items from the source Observable that were emitted
      *         in a specified window of time before the Observable completed, where the timing information is
      *         provided by the given {@code scheduler}
-     * @throws IllegalArgumentException
+     * @throws IndexOutOfBoundsException
      *             if {@code count} is less than zero
      */
     public final Observable<T> takeLast(int count, long time, TimeUnit unit, Scheduler scheduler) {

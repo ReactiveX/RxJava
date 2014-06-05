@@ -25,15 +25,20 @@ import rx.observers.SerializedSubscriber;
 import rx.subscriptions.CompositeSubscription;
 
 /**
- * Observable that pairs up the source values and all the derived collection
- * values and projects them via the selector.
+ * Observable that pairs up the source values and all the derived collection values and projects them via the
+ * selector.
  *
  * @param <T> the input value type
  * @param <U> the derived collection value type
  * @param <R> the result type
  */
 public final class OperatorMergeMapPair<T, U, R> implements Operator<R, T> {
-    
+
+    /**
+     * @warn javadoc missing
+     * @param selector
+     * @return
+     */
     public static <T, U> Func1<T, Observable<U>> convertSelector(final Func1<? super T, ? extends Iterable<? extends U>> selector) {
         return new Func1<T, Observable<U>>() {
             @Override
