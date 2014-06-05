@@ -5803,7 +5803,7 @@ public class Observable<T> {
      * func. If the observable returned {@code onCompletes} or {@code onErrors} then retry will call {@code onCompleted} 
      * or {@code onError} on the child subscription. Otherwise, this observable will resubscribe to the source observable.    
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/retry.png">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/retry.fn1.png">
      * <p>
      * {@code retry} operates by default on the {@code trampoline} {@link Scheduler}.
      *
