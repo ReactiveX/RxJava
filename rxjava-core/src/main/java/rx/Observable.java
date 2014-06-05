@@ -5798,45 +5798,6 @@ public class Observable<T> {
     }
 
     /**
-     * Returns an Observable that mirrors the source Observable, resubscribing to it if it calls {@code onError}
-     * and the predicate returns true for that specific exception and retry count.
-     * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/retry.png">
-     * <p>
-     * {@code retry} operates by default on the {@code trampoline} {@link Scheduler}.
-     *
-     * @param predicate
-     *            the predicate that determines if a resubscription may happen in case of a specific exception
-     *            and retry count
-     * @return the source Observable modified with retry logic
-     * @see #retry()
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Error-Handling-Operators#wiki-retry">RxJava Wiki: retry()</a>
-     */
-    public final Observable<T> retry(final Func2<Integer, Throwable, Boolean> predicate) {
-        return retry(new Func1<Observable<Notification<?>>, Observable<?>>() {
-            @Override
-            public Observable<?> call(Observable<Notification<?>> notifications) {
-                return notifications.scan(new Object[] { 0, null }, new Func2<Object[], Notification<?>, Object[]>() {
-
-                    @Override
-                    public Object[] call(Object[] t1, Notification<?> enumeratedNotification) {
-                        return new Object[] { ((Integer) t1[0]) + 1, enumeratedNotification };
-                    }
-                }).flatMap(new Func1<Object[], Observable<Void>>() {
-
-                    @Override
-                    public Observable<Void> call(Object[] enumeratedNotification) {
-                        Throwable throwable = ((Notification<?>) enumeratedNotification[1]).getThrowable();
-                        Integer retryCount = (Integer) enumeratedNotification[0];
-                        if (predicate.call(retryCount, throwable)) return Observable.empty();
-                        return Observable.error(throwable);
-                    }
-                });
-            }
-        });
-    }
-
-    /**
      * Returns an Observable that emits the same values as the source observable with the exception of an {@code onError}.
      * An onError will emit a {@link Notification} to the observable provided as an argument to the notificationHandler 
      * func. If the observable returned {@code onCompletes} or {@code onErrors} then retry will call {@code onCompleted} 
