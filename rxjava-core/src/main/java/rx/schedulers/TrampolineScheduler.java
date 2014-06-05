@@ -128,10 +128,15 @@ public final class TrampolineScheduler extends Scheduler {
         public int compareTo(TimedAction that) {
             int result = execTime.compareTo(that.execTime);
             if (result == 0) {
-                return Integer.compare(count, that.count);
+                return compare(count, that.count);
             }
             return result;
         }
+    }
+    
+    // because I can't use Integer.compare from Java 7
+    private static int compare(int x, int y) {
+        return (x < y) ? -1 : ((x == y) ? 0 : 1);
     }
 
 }
