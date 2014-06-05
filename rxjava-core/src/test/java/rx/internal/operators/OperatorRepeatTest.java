@@ -109,6 +109,7 @@ public class OperatorRepeatTest {
         verify(o).onCompleted();
         verify(o, never()).onError(any(Throwable.class));
     }
+
     @Test(timeout = 2000)
     public void testRepeatLimited() {
         @SuppressWarnings("unchecked")
@@ -120,6 +121,7 @@ public class OperatorRepeatTest {
         verify(o).onCompleted();
         verify(o, never()).onError(any(Throwable.class));
     }
+
     @Test(timeout = 2000)
     public void testRepeatError() {
         @SuppressWarnings("unchecked")
@@ -132,6 +134,7 @@ public class OperatorRepeatTest {
         verify(o, never()).onCompleted();
         
     }
+
     @Test(timeout = 2000)
     public void testRepeatZero() {
         @SuppressWarnings("unchecked")
@@ -141,6 +144,18 @@ public class OperatorRepeatTest {
         
         verify(o).onCompleted();
         verify(o, never()).onNext(any());
+        verify(o, never()).onError(any(Throwable.class));
+    }
+
+    @Test(timeout = 2000)
+    public void testRepeatOne() {
+        @SuppressWarnings("unchecked")
+                Observer<Object> o = mock(Observer.class);
+        
+        Observable.from(1).repeat(1).subscribe(o);
+        
+        verify(o).onCompleted();
+        verify(o, times(1)).onNext(any());
         verify(o, never()).onError(any(Throwable.class));
     }
 }
