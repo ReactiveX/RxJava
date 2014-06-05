@@ -46,13 +46,14 @@ import rx.subscriptions.Subscriptions;
  * {@code pivot} and trades off the possibility of memory leak for deterministic functionality.
  *
  * @see <a href="https://github.com/Netflix/RxJava/issues/844">the Github issue describing the time gap problem</a>
- * @warn type param "T" undescribed
  * @param <T>
+ *            the type of the items to be buffered
  */
 public class BufferUntilSubscriber<T> extends Subject<T, T> {
 
     /**
      * @warn create() undescribed
+     * @return
      */
     public static <T> BufferUntilSubscriber<T> create() {
         State<T> state = new State<T>();

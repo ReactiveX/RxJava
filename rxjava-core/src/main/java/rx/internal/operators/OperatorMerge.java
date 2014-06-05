@@ -24,14 +24,14 @@ import rx.observers.SerializedSubscriber;
 import rx.subscriptions.CompositeSubscription;
 
 /**
- * Flattens a list of Observables into one Observable sequence, without any transformation.
+ * Flattens a list of {@link Observable}s into one {@code Observable}, without any transformation.
  * <p>
  * <img width="640" height="380" src="https://raw.githubusercontent.com/wiki/Netflix/RxJava/images/rx-operators/merge.png">
  * <p>
- * You can combine the items emitted by multiple Observables so that they act like a single
- * Observable, by using the merge operation.
+ * You can combine the items emitted by multiple {@code Observable}s so that they act like a single
+ * {@code Observable}, by using the merge operation.
  * 
- * @param <T> the source and merged value type
+ * @param <T> the type of the items emitted by both the source and merged {@code Observable}s
  */
 public final class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
 

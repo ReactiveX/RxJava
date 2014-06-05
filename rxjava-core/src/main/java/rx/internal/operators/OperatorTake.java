@@ -19,13 +19,14 @@ import rx.Observable.Operator;
 import rx.Subscriber;
 
 /**
- * Returns an Observable that emits the first <code>num</code> items emitted by the source Observable.
+ * An {@code Observable} that emits the first {@code num} items emitted by the source {@code Observable}.
  * <p>
  * <img width="640" height="305" src="https://raw.githubusercontent.com/wiki/Netflix/RxJava/images/rx-operators/take.png" />
  * <p>
- * You can choose to pay attention only to the first <code>num</code> items emitted by an Observable by using
- * the {@code take} operation. This operation returns an Observable that will invoke a subscribing Observer's
- * {@code onNext} function a maximum of {@code num} times before invoking {@code onCompleted}.
+ * You can choose to pay attention only to the first {@code num} items emitted by an {@code Observable} by using
+ * the {@code take} operator. This operator returns an {@code Observable} that will invoke a subscriber's
+ * {@link Subscriber#onNext onNext} function a maximum of {@code num} times before invoking
+ * {@link Subscriber#onCompleted onCompleted}.
  */
 public final class OperatorTake<T> implements Operator<T, T> {
 

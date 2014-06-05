@@ -21,8 +21,8 @@ import rx.exceptions.OnErrorThrowable;
 import rx.functions.Func1;
 
 /**
- * Applies a function of your choosing to every item emitted by an Observable, and returns this
- * transformation as a new Observable.
+ * Applies a function of your choosing to every item emitted by an {@code Observable}, and emits the results of
+ * this transformation as a new {@code Observable}.
  * <p>
  * <img width="640" height="305" src="https://raw.githubusercontent.com/wiki/Netflix/RxJava/images/rx-operators/map.png">
  */

@@ -60,18 +60,20 @@ public final class ScheduledAction implements Runnable, Subscription {
 
     /**
      * @warn javadoc missing
+     *
      * @param s
+     * @warn param "s" undescribed
      */
     public void add(Subscription s) {
         cancel.add(s);
     }
 
     /**
-     * Adds a parent to this ScheduledAction so when it is cancelled or terminates, it can remove itself from
-     * this parent.
+     * Adds a parent {@link CompositeSubscription} to this {@code ScheduledAction} so when the action is
+     * cancelled or terminates, it can remove itself from this parent.
      *
-     * @warn param "parent" undescribed
      * @param parent
+     *            the parent {@code CompositeSubscription} to add
      */
     public void addParent(CompositeSubscription parent) {
         cancel.add(new Remover(this, parent));

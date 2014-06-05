@@ -36,9 +36,13 @@ public final class BlockingOperatorLatest {
     }
 
     /**
-     * @warn latest() missing javadoc
+     * Returns an {@code Iterable} that blocks until or unless the {@code Observable} emits an item that has not
+     * been returned by the {@code Iterable}, then returns that item
+     *
      * @param source
-     * @return
+     *            the source {@code Observable}
+     * @return an {@code Iterable} that blocks until or unless the {@code Observable} emits an item that has not
+     *         been returned by the {@code Iterable}, then returns that item
      */
     public static <T> Iterable<T> latest(final Observable<? extends T> source) {
         return new Iterable<T>() {

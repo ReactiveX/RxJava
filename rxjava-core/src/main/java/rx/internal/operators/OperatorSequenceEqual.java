@@ -24,11 +24,14 @@ import rx.functions.Func2;
 import rx.functions.Functions;
 
 /**
- * Returns an Observable that emits a Boolean value that indicate whether two sequences are equal by comparing
- * the elements pairwise.
+ * Returns an {@link Observable} that emits a single {@code Boolean} value that indicates whether two source
+ * {@code Observable}s emit sequences of items that are equivalent to each other.
  */
 public final class OperatorSequenceEqual {
-    private OperatorSequenceEqual() { throw new IllegalStateException("No instances!"); }
+    private OperatorSequenceEqual() {
+        throw new IllegalStateException("No instances!");
+    }
+
     /** NotificationLite doesn't work as zip uses it. */
     private static final Object LOCAL_ONCOMPLETED = new Object();
     static <T> Observable<Object> materializeLite(Observable<T> source) {
@@ -44,11 +47,18 @@ public final class OperatorSequenceEqual {
     }
 
     /**
-     * @warn javadoc missing
+     * Tests whether two {@code Observable} sequences are identical, emitting {@code true} if both sequences
+     * complete without differing, and {@code false} if the two sequences diverge at any point.
+     *
      * @param first
+     *      the first of the two {@code Observable}s to compare
      * @param second
+     *      the second of the two {@code Observable}s to compare
      * @param equality
-     * @return
+     *      a function that tests emissions from each {@code Observable} for equality
+     * @return an {@code Observable} that emits {@code true} if {@code first} and {@code second} complete
+     *         after emitting equal sequences of items, {@code false} if at any point in their sequences the
+     *         two {@code Observable}s emit a non-equal item.
      */
     public static <T> Observable<Boolean> sequenceEqual(
             Observable<? extends T> first, Observable<? extends T> second,

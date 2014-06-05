@@ -23,25 +23,44 @@ import rx.functions.Func1;
 import rx.observables.GroupedObservable;
 import rx.schedulers.Schedulers;
 
+/**
+ * Combines multiple {@link Observable}s into a smaller number of {@code Observable}s, to facilitate
+ * parallelism.
+ */
 public final class OperatorParallelMerge {
     private OperatorParallelMerge() { throw new IllegalStateException("No instances!"); }
 
     /**
-     * @warn javadoc missing
+     * Recombines multiple {@link Observable}s into a smaller number of {@code Observable}s, to facilitate
+     * parallelism.
+     *
      * @param source
+     *          the source {@code Observable} that emits the {@code Observable}s to recombine
      * @param parallelObservables
-     * @return
+     *          the number of {@code Observable}s you want the source sequence of {@code Observables} to be
+     *          recombined into
+     * @return an {@code Observable} that emits no more than {@code parallelObservables} {@code Observable}s,
+     *         the set of which emits the same set of items emitted by the sequence of {@code Observable}s
+     *         emitted by {@code source}
      */
     public static <T> Observable<Observable<T>> parallelMerge(final Observable<Observable<T>> source, final int parallelObservables) {
         return parallelMerge(source, parallelObservables, Schedulers.immediate());
     }
 
     /**
-     * @warn javadoc missing
+     * Recombines multiple {@link Observable}s into a smaller number of {@code Observable}s on a particular
+     * {@code Scheduler}, to facilitate parallelism.
+     *
      * @param source
+     *          the source {@code Observable} that emits the {@code Observable}s to recombine
      * @param parallelObservables
+     *          the number of {@code Observable}s you want the source sequence of {@code Observables} to be
+     *          recombined into
      * @param scheduler
-     * @return
+     *          the {@link Scheduler} to do the work on
+     * @return an {@code Observable} that emits no more than {@code parallelObservables} {@code Observable}s,
+     *         the set of which emits the same set of items emitted by the sequence of {@code Observable}s
+     *         emitted by {@code source}
      */
     public static <T> Observable<Observable<T>> parallelMerge(final Observable<Observable<T>> source, final int parallelObservables, final Scheduler scheduler) {
 
@@ -55,6 +74,7 @@ public final class OperatorParallelMerge {
 
         });
     }
+
     /** Maps source observables in a round-robin fashion to streaming groups. */
     static final class StrideMapper<T> implements Func1<Observable<T>, Integer> {
         final int parallelObservables;
