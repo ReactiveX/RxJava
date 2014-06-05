@@ -15,6 +15,7 @@
  */
 package rx.lang.scala
 
+import scala.collection.mutable
 import scala.collection.mutable.ListBuffer
 import scala.concurrent.{Future, Await}
 import scala.concurrent.duration.Duration
@@ -228,4 +229,42 @@ class ObservableTests extends JUnitSuite {
     val o = Observable.empty.orElse(-1)
     assertEquals(List(-1), o.toBlocking.toList)
   }
+
+  @Test
+  def testToMultimap() {
+    val o = Observable.items("a", "b", "cc", "dd").toMultimap(_.length)
+    val expected = Map(1 -> List("a", "b"), 2 -> List("cc", "dd"))
+    assertEquals(expected, o.toBlocking.single)
+  }
+
+  @Test
+  def testToMultimapWithValueSelector() {
+    val o = Observable.items("a", "b", "cc", "dd").toMultimap(_.length, s => s + s)
+    val expected = Map(1 -> List("aa", "bb"), 2 -> List("cccc", "dddd"))
+    assertEquals(expected, o.toBlocking.single)
+  }
+
+  @Test
+  def testToMultimapWithMapFactory() {
+    val m = mutable.Map[Int, mutable.Buffer[String]]()
+    val o = Observable.items("a", "b", "cc", "dd").toMultimap(_.length, s => s, () => m)
+    val expected = Map(1 -> List("a", "b"), 2 -> List("cc", "dd"))
+    val r = o.toBlocking.single
+    assertTrue(m eq r) // check same instance
+    assertEquals(expected, r)
+  }
+
+  @Test
+  def testToMultimapWithCollectionFactory() {
+    val m = mutable.Map[Int, mutable.Buffer[String]]()
+    val ls = List(mutable.Buffer[String](), mutable.Buffer[String]())
+    val o = Observable.items("a", "b", "cc", "dd").toMultimap(_.length, s => s, () => m, (i: Int) => ls(i - 1))
+    val expected = Map(1 -> List("a", "b"), 2 -> List("cc", "dd"))
+    val r = o.toBlocking.single
+    assertTrue(m eq r) // check same instance
+    assertTrue(ls(0) eq r(1)) // check same instance
+    assertTrue(ls(1) eq r(2)) // check same instance
+    assertEquals(expected, r)
+  }
+
 }

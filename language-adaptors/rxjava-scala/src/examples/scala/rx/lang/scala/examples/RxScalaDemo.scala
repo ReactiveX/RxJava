@@ -870,7 +870,7 @@ class RxScalaDemo extends JUnitSuite {
     val o : Observable[String] = List("alice", "bob", "carol", "allen", "clarke").toObservable
     val keySelector = (s: String) => s.head
     val m = o.toMultimap(keySelector)
-    println(m.toBlocking.single.mapValues(_.toList))
+    println(m.toBlocking.single)
   }
 
   @Test def toMultimapExample2(): Unit = {
@@ -878,14 +878,14 @@ class RxScalaDemo extends JUnitSuite {
     val keySelector = (s: String) => s.head
     val valueSelector = (s: String) => s.tail
     val m = o.toMultimap(keySelector, valueSelector)
-    println(m.toBlocking.single.mapValues(_.toList))
+    println(m.toBlocking.single)
   }
 
   @Test def toMultimapExample3(): Unit = {
     val o: Observable[String] = List("alice", "bob", "carol", "allen", "clarke").toObservable
     val keySelector = (s: String) => s.head
     val valueSelector = (s: String) => s.tail
-    val mapFactory: () => mutable.Map[Char, mutable.Buffer[String]] = () => mutable.Map('d' -> mutable.ListBuffer("oug"))
+    val mapFactory = () => mutable.Map('d' -> mutable.Buffer("oug"))
     val m = o.toMultimap(keySelector, valueSelector, mapFactory)
     println(m.toBlocking.single.mapValues(_.toList))
   }
@@ -894,7 +894,7 @@ class RxScalaDemo extends JUnitSuite {
     val o : Observable[String] = List("alice", "bob", "carol", "allen", "clarke").toObservable
     val keySelector = (s: String) => s.head
     val valueSelector = (s: String) => s.tail
-    val mapFactory: () => mutable.Map[Char, mutable.Buffer[String]] = () => mutable.Map('d' -> mutable.ListBuffer("oug"))
+    val mapFactory = () => mutable.Map('d' -> mutable.ListBuffer("oug"))
     val valueFactory = (k: Char) => mutable.ListBuffer[String]()
     val m = o.toMultimap(keySelector, valueSelector, mapFactory, valueFactory)
     println(m.toBlocking.single)
