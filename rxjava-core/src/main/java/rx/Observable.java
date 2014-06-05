@@ -3053,6 +3053,31 @@ public class Observable<T> {
         return just(new Observable<?>[] { o1, o2, o3, o4, o5, o6, o7, o8, o9 }).lift(new OperatorZip<R>(zipFunction));
     }
 
+    public final <T1, T2, R> R unzip(Func1<T, T1> select1, Func1<T, T1> select2, Func2<Observable<T1>, Observable<T2>, R> unzipFunc) {
+        return OperatorUnzip.unzip(this, Functions.fromFunc(unzipFunc), select1, select2);
+    }
+    public final <T1, T2, T3, R> R unzip(Func1<T, T1> select1, Func1<T, T1> select2, Func1<T, T1> select3, Func3<Observable<T1>, Observable<T2>, Observable<T3>, R> unzipFunc) {
+        return OperatorUnzip.unzip(this, Functions.fromFunc(unzipFunc), select1, select2, select3);
+    }
+    public final <T1, T2, T3, T4, R> R unzip(Func1<T, T1> select1, Func1<T, T1> select2, Func1<T, T1> select3, Func1<T, T1> select4, Func4<Observable<T1>, Observable<T2>, Observable<T3>, Observable<T4>, R> unzipFunc) {
+        return OperatorUnzip.unzip(this, Functions.fromFunc(unzipFunc), select1, select2, select3, select4);
+    }
+    public final <T1, T2, T3, T4, T5, R> R unzip(Func1<T, T1> select1, Func1<T, T1> select2, Func1<T, T1> select3, Func1<T, T1> select4, Func1<T, T1> select5, Func5<Observable<T1>, Observable<T2>, Observable<T3>, Observable<T4>, Observable<T5>, R> unzipFunc) {
+        return OperatorUnzip.unzip(this, Functions.fromFunc(unzipFunc), select1, select2, select3, select4, select5);
+    }
+    public final <T1, T2, T3, T4, T5, T6, R> R unzip(Func1<T, T1> select1, Func1<T, T1> select2, Func1<T, T1> select3, Func1<T, T1> select4, Func1<T, T1> select5, Func1<T, T1> select6, Func6<Observable<T1>, Observable<T2>, Observable<T3>, Observable<T4>, Observable<T5>, Observable<T6>, R> unzipFunc) {
+        return OperatorUnzip.unzip(this, Functions.fromFunc(unzipFunc), select1, select2, select3, select4, select5, select6);
+    }
+    public final <T1, T2, T3, T4, T5, T6, T7, R> R unzip(Func1<T, T1> select1, Func1<T, T1> select2, Func1<T, T1> select3, Func1<T, T1> select4, Func1<T, T1> select5, Func1<T, T1> select6, Func1<T, T1> select7, Func7<Observable<T1>, Observable<T2>, Observable<T3>, Observable<T4>, Observable<T5>, Observable<T6>, Observable<T7>, R> unzipFunc) {
+        return OperatorUnzip.unzip(this, Functions.fromFunc(unzipFunc), select1, select2, select3, select4, select5, select6, select7);
+    }
+    public final <T1, T2, T3, T4, T5, T6, T7, T8, R> R unzip(Func1<T, T1> select1, Func1<T, T1> select2, Func1<T, T1> select3, Func1<T, T1> select4, Func1<T, T1> select5, Func1<T, T1> select6, Func1<T, T1> select7, Func1<T, T1> select8, Func8<Observable<T1>, Observable<T2>, Observable<T3>, Observable<T4>, Observable<T5>, Observable<T6>, Observable<T7>, Observable<T8>, R> unzipFunc) {
+        return OperatorUnzip.unzip(this, Functions.fromFunc(unzipFunc), select1, select2, select3, select4, select5, select6, select7, select8);
+    }
+    public final <T1, T2, T3, T4, T5, T6, T7, T8, T9, R> R unzip(Func1<T, T1> select1, Func1<T, T1> select2, Func1<T, T1> select3, Func1<T, T1> select4, Func1<T, T1> select5, Func1<T, T1> select6, Func1<T, T1> select7, Func1<T, T1> select8, Func1<T, T1> select9, Func9<Observable<T1>, Observable<T2>, Observable<T3>, Observable<T4>, Observable<T5>, Observable<T6>, Observable<T7>, Observable<T8>, Observable<T9>, R> unzipFunc) {
+        return OperatorUnzip.unzip(this, Functions.fromFunc(unzipFunc), select1, select2, select3, select4, select5, select6, select7, select8, select9);
+    }
+    
     /**
      * Returns an Observable that emits a Boolean that indicates whether all of the items emitted by the source
      * Observable satisfy a condition.
