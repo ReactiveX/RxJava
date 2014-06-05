@@ -79,12 +79,11 @@ public final class TrampolineScheduler extends Scheduler {
             PriorityQueue<TimedAction> queue = QUEUE.get();
             final TimedAction timedAction = new TimedAction(action, execTime, COUNTER_UPDATER.incrementAndGet(TrampolineScheduler.this));
             queue.add(timedAction);
+
             if (wip.getAndIncrement() == 0) {
-                // we are the first so we'll execute
-                while (!queue.isEmpty()) {
+                do {
                     queue.poll().action.call();
-                }
-                wip.decrementAndGet();
+                } while (wip.decrementAndGet() > 0);
                 return Subscriptions.empty();
             } else {
                 // queue wasn't empty, a parent is already processing so we just add to the end of the queue
@@ -117,9 +116,9 @@ public final class TrampolineScheduler extends Scheduler {
     private static class TimedAction implements Comparable<TimedAction> {
         final Action0 action;
         final Long execTime;
-        final Integer count; // In case if time between enqueueing took less than 1ms
+        final int count; // In case if time between enqueueing took less than 1ms
 
-        private TimedAction(Action0 action, Long execTime, Integer count) {
+        private TimedAction(Action0 action, Long execTime, int count) {
             this.action = action;
             this.execTime = execTime;
             this.count = count;
@@ -129,7 +128,7 @@ public final class TrampolineScheduler extends Scheduler {
         public int compareTo(TimedAction that) {
             int result = execTime.compareTo(that.execTime);
             if (result == 0) {
-                return count.compareTo(that.count);
+                return Integer.compare(count, that.count);
             }
             return result;
         }
