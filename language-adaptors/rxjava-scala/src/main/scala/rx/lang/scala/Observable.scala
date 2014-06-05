@@ -102,6 +102,7 @@ trait Observable[+T]
   import scala.collection.JavaConverters._
   import scala.collection.Seq
   import scala.concurrent.duration.{Duration, TimeUnit, MILLISECONDS}
+  import scala.collection.mutable
   import rx.functions._
   import rx.lang.scala.observables.BlockingObservable
   import ImplicitFunctionConversions._
@@ -3891,10 +3892,8 @@ trait Observable[+T]
    * @return an Observable that emits a single item: a `Map` that contains an `Seq` of items mapped from
    *         the source Observable
    */
-  def toMultimap[K](keySelector: T => K): Observable[Map[K, Seq[T]]] = {
-    val thisJava = asJavaObservable.asInstanceOf[rx.Observable[T]]
-    val o: rx.Observable[java.util.Map[K, java.util.Collection[T]]] = thisJava.toMultimap[K](keySelector)
-    toScalaObservable[java.util.Map[K, java.util.Collection[T]]](o).map(m => m.toMap.mapValues(_.toSeq))
+  def toMultimap[K](keySelector: T => K): Observable[scala.collection.Map[K, Seq[T]]] = {
+    toMultimap(keySelector, k => k)
   }
 
   /**
@@ -3909,10 +3908,8 @@ trait Observable[+T]
    * @return an Observable that emits a single item: a `Map` that contains an `Seq` of items mapped from
    *         the source Observable
    */
-  def toMultimap[K, V](keySelector: T => K, valueSelector: T => V): Observable[Map[K, Seq[V]]] = {
-    val thisJava = asJavaObservable.asInstanceOf[rx.Observable[T]]
-    val o: rx.Observable[java.util.Map[K, java.util.Collection[V]]] = thisJava.toMultimap[K, V](keySelector, valueSelector)
-    toScalaObservable[java.util.Map[K, java.util.Collection[V]]](o).map(m => m.toMap.mapValues(_.toSeq))
+  def toMultimap[K, V](keySelector: T => K, valueSelector: T => V): Observable[scala.collection.Map[K, Seq[V]]] = {
+    toMultimap(keySelector, valueSelector, () => mutable.Map[K, mutable.Buffer[V]]())
   }
 
   /**
@@ -3928,10 +3925,8 @@ trait Observable[+T]
    * @return an Observable that emits a single item: a `Map` that contains a `Seq` items mapped from the source
    *         Observable
    */
-  def toMultimap[K, V](keySelector: T => K, valueSelector: T => V, mapFactory: () => Map[K, Seq[V]]): Observable[Map[K, Seq[V]]] = {
-    val thisJava = asJavaObservable.asInstanceOf[rx.Observable[T]]
-    val o: rx.Observable[java.util.Map[K, java.util.Collection[V]]] = thisJava.toMultimap[K, V](keySelector, valueSelector)
-    toScalaObservable[java.util.Map[K, java.util.Collection[V]]](o).map(m => mapFactory() ++ m.toMap.mapValues(_.toSeq))
+  def toMultimap[K, V](keySelector: T => K, valueSelector: T => V, mapFactory: () => mutable.Map[K, mutable.Buffer[V]]): Observable[scala.collection.Map[K, Seq[V]]] = {
+    toMultimap(keySelector, valueSelector, mapFactory, k => mutable.ListBuffer[V]())
   }
 
   /**
@@ -3948,12 +3943,24 @@ trait Observable[+T]
    * @return an Observable that emits a single item: a `Map` that contains the `Seq` of mapped items from
    *         the source Observable
    */
-  def toMultimap[K, V](keySelector: T => K, valueSelector: T => V, mapFactory: () => Map[K, Seq[V]], collectionFactory: K => Seq[V]): Observable[Map[K, Seq[V]]] = {
-    val thisJava = asJavaObservable.asInstanceOf[rx.Observable[T]]
-    val o: rx.Observable[java.util.Map[K, java.util.Collection[V]]] = thisJava.toMultimap[K, V](keySelector, valueSelector)
-    toScalaObservable[java.util.Map[K, java.util.Collection[V]]](o).map {
-      m => mapFactory() ++ m.toMap.map {
-        case (k: K, v: java.util.Collection[V]) => (k, collectionFactory(k) ++ v)
+  def toMultimap[K, V](keySelector: T => K, valueSelector: T => V, mapFactory: () => mutable.Map[K, mutable.Buffer[V]], collectionFactory: K => mutable.Buffer[V]): Observable[scala.collection.Map[K, Seq[V]]] = {
+    lift {
+      (subscriber: Subscriber[scala.collection.Map[K, Seq[V]]]) => {
+        val map = mapFactory().withDefault(collectionFactory)
+        Subscriber[T](
+          subscriber,
+          (t: T) => {
+            val key = keySelector(t)
+            val value = map(key)
+            value += valueSelector(t)
+            map += key -> value: Unit
+          },
+          e => subscriber.onError(e),
+          () => {
+            subscriber.onNext(map)
+            subscriber.onCompleted()
+          }
+        )
       }
     }
   }

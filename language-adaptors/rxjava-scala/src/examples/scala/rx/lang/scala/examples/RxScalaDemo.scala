@@ -19,6 +19,7 @@ import java.io.IOException
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
+import scala.collection.mutable
 import scala.concurrent.duration.Duration
 import scala.concurrent.duration.DurationInt
 import scala.concurrent.duration.DurationLong
@@ -881,10 +882,10 @@ class RxScalaDemo extends JUnitSuite {
   }
 
   @Test def toMultimapExample3(): Unit = {
-    val o : Observable[String] = List("alice", "bob", "carol", "allen", "clarke").toObservable
+    val o: Observable[String] = List("alice", "bob", "carol", "allen", "clarke").toObservable
     val keySelector = (s: String) => s.head
     val valueSelector = (s: String) => s.tail
-    val mapFactory = () => Map('d' -> List("oug"))
+    val mapFactory: () => mutable.Map[Char, mutable.Buffer[String]] = () => mutable.Map('d' -> mutable.ListBuffer("oug"))
     val m = o.toMultimap(keySelector, valueSelector, mapFactory)
     println(m.toBlocking.single.mapValues(_.toList))
   }
@@ -893,9 +894,9 @@ class RxScalaDemo extends JUnitSuite {
     val o : Observable[String] = List("alice", "bob", "carol", "allen", "clarke").toObservable
     val keySelector = (s: String) => s.head
     val valueSelector = (s: String) => s.tail
-    val mapFactory = () => Map('d' -> List("oug"))
-    val valueFactor = (k: Char) => List[String]()
-    val m = o.toMultimap(keySelector, valueSelector, mapFactory, valueFactor)
+    val mapFactory: () => mutable.Map[Char, mutable.Buffer[String]] = () => mutable.Map('d' -> mutable.ListBuffer("oug"))
+    val valueFactory = (k: Char) => mutable.ListBuffer[String]()
+    val m = o.toMultimap(keySelector, valueSelector, mapFactory, valueFactory)
     println(m.toBlocking.single)
   }
 
