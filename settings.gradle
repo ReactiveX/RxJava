@@ -6,8 +6,7 @@ include 'rxjava-core', \
 'language-adaptors:rxjava-scala', \
 'language-adaptors:rxjava-kotlin', \
 'rxjava-contrib:rxjava-swing', \
-'rxjava-contrib:rxjava-ios', \
-'rxjava-contrib:rxjava-javafx', \
+//'rxjava-contrib:rxjava-javafx', \
 'rxjava-contrib:rxjava-android', \
 'rxjava-contrib:rxjava-android-samples-build-wrapper', \
 'rxjava-contrib:rxjava-apache-http', \
