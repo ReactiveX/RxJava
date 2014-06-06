@@ -18,7 +18,6 @@ package rx.internal.operators;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static rx.internal.operators.OperatorTakeUntil.takeUntil;
 
 import org.junit.Test;
 
@@ -38,7 +37,7 @@ public class OperatorTakeUntilTest {
         TestObservable other = new TestObservable(sOther);
 
         Observer<String> result = mock(Observer.class);
-        Observable<String> stringObservable = takeUntil(Observable.create(source), Observable.create(other));
+        Observable<String> stringObservable = Observable.create(source).takeUntil(Observable.create(other));
         stringObservable.subscribe(result);
         source.sendOnNext("one");
         source.sendOnNext("two");
@@ -65,7 +64,7 @@ public class OperatorTakeUntilTest {
         TestObservable other = new TestObservable(sOther);
 
         Observer<String> result = mock(Observer.class);
-        Observable<String> stringObservable = takeUntil(Observable.create(source), Observable.create(other));
+        Observable<String> stringObservable = Observable.create(source).takeUntil(Observable.create(other));
         stringObservable.subscribe(result);
         source.sendOnNext("one");
         source.sendOnNext("two");
@@ -88,7 +87,7 @@ public class OperatorTakeUntilTest {
         Throwable error = new Throwable();
 
         Observer<String> result = mock(Observer.class);
-        Observable<String> stringObservable = takeUntil(Observable.create(source), Observable.create(other));
+        Observable<String> stringObservable = Observable.create(source).takeUntil(Observable.create(other));
         stringObservable.subscribe(result);
         source.sendOnNext("one");
         source.sendOnNext("two");
@@ -114,7 +113,7 @@ public class OperatorTakeUntilTest {
         Throwable error = new Throwable();
 
         Observer<String> result = mock(Observer.class);
-        Observable<String> stringObservable = takeUntil(Observable.create(source), Observable.create(other));
+        Observable<String> stringObservable = Observable.create(source).takeUntil(Observable.create(other));
         stringObservable.subscribe(result);
         source.sendOnNext("one");
         source.sendOnNext("two");
@@ -143,7 +142,7 @@ public class OperatorTakeUntilTest {
         TestObservable other = new TestObservable(sOther);
 
         Observer<String> result = mock(Observer.class);
-        Observable<String> stringObservable = takeUntil(Observable.create(source), Observable.create(other));
+        Observable<String> stringObservable = Observable.create(source).takeUntil(Observable.create(other));
         stringObservable.subscribe(result);
         source.sendOnNext("one");
         source.sendOnNext("two");
