@@ -1,0 +1,39 @@
+apply plugin: 'osgi'
+
+dependencies {
+    compile project(':rxjava-core')
+
+    // testing
+    provided 'junit:junit-dep:4.10'
+    compile 'org.robovm:robovm-rt:0.0.12'
+    compile 'org.robovm:robovm-objc:0.0.12'
+    compile 'org.robovm:robovm-cocoatouch:0.0.12'
+}
+
+javadoc {
+    options {
+        doclet = "org.benjchristensen.doclet.DocletExclude"
+        docletpath = [rootProject.file('./gradle/doclet-exclude.jar')]
+        stylesheetFile = rootProject.file('./gradle/javadocStyleSheet.css')
+        windowTitle = "RxJava iOS Javadoc ${project.version}"
+    }
+    options.addStringOption('top').value = '<h2 class="title" style="padding-top:40px">RxJava iOS</h2>'
+}
+
+jar {
+    manifest {
+        name = 'rxjava-ios'
+        instruction 'Bundle-Vendor', 'Netflix'
+        instruction 'Bundle-DocURL', 'https://github.com/Netflix/RxJava'
+        instruction 'Import-Package', '!org.junit,!junit.framework,!org.mockito.*,*'
+        instruction 'Fragment-Host', 'com.netflix.rxjava.core'
+    }
+}
+
+test {
+    testLogging {
+        exceptionFormat "full"
+        events "started"
+        displayGranularity 2
+    }
+}
