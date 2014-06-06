@@ -23,7 +23,7 @@ import org.robovm.apple.foundation.NSOperationQueue;
 public class IOSSchedulers {
 
     private static final Scheduler MAIN_THREAD_SCHEDULER =
-            new HandlerThreadScheduler((NSOperationQueue) NSOperationQueue.mainQueue());
+            new HandlerThreadScheduler((NSOperationQueue) NSOperationQueue.getMainQueue());
 
     private IOSSchedulers(){
 

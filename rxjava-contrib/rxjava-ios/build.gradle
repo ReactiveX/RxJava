@@ -5,9 +5,9 @@ dependencies {
 
     // testing
     provided 'junit:junit-dep:4.10'
-    compile 'org.robovm:robovm-rt:0.0.11'
-    compile 'org.robovm:robovm-objc:0.0.11'
-    compile 'org.robovm:robovm-cocoatouch:0.0.11'
+    compile 'org.robovm:robovm-rt:0.0.12'
+    compile 'org.robovm:robovm-objc:0.0.12'
+    compile 'org.robovm:robovm-cocoatouch:0.0.12'
 }
 
 javadoc {

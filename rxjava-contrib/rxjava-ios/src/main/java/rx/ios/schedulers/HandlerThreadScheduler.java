@@ -1,3 +1,4 @@
+package rx.ios.schedulers;
 /**
  * Copyright 2013 Netflix, Inc.
  * Copyright 2014 Ashley Williams
@@ -14,19 +15,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rx.ios.schedulers;
-
-import java.util.concurrent.TimeUnit;
 
 
 import org.robovm.apple.foundation.NSBlockOperation;
 import org.robovm.apple.foundation.NSOperationQueue;
 import rx.Scheduler;
-
 import rx.Subscription;
 import rx.functions.Action0;
 import rx.subscriptions.BooleanSubscription;
 import rx.subscriptions.Subscriptions;
+
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Schedules actions to run on an iOS Handler thread.
@@ -50,6 +51,7 @@ public class HandlerThreadScheduler extends Scheduler {
         private final NSOperationQueue operationQueue;
         private BooleanSubscription innerSubscription = new BooleanSubscription();
 
+
         public InnerHandlerThreadScheduler(NSOperationQueue operationQueue) {
             this.operationQueue = operationQueue;
         }
@@ -71,43 +73,37 @@ public class HandlerThreadScheduler extends Scheduler {
 
         @Override
         public Subscription schedule(final Action0 action, long delayTime, TimeUnit unit) {
-            final long delay = unit.toMillis(delayTime);
 
-            final Runnable delayLaunch = new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        Thread.sleep(delay);
-                    } catch (InterruptedException e) {
-                        System.err.println("iOS post-delay thread interrupted");
-                    }
-                }
-            };
+            ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+            final NSBlockOperation runOperation = new NSBlockOperation();
 
-            final Runnable runnable = new Runnable() {
+            executor.schedule(new Runnable() {
                 @Override
                 public void run() {
                     if (isUnsubscribed()) {
                         return;
                     }
-                    action.call();
+                    /* Runnable for action */
+                    final Runnable actionRunner = new Runnable() {
+                        @Override
+                        public void run() {
+                            action.call();
+                        }
+                    };
+
+                    runOperation.addExecutionBlock$(actionRunner);
+
+                    /* Add operation to operation queue*/
+                    operationQueue.addOperation(runOperation);
                 }
-            };
+            }, delayTime, unit);
 
-            /* create the two operations */
-            NSBlockOperation delayOperation = new NSBlockOperation();
-            NSBlockOperation runOperation = new NSBlockOperation();
-            delayOperation.addExecutionBlock$(delayLaunch);
-            runOperation.addExecutionBlock$(runnable);
-
-            /* add the delay operation as a dependency to the run operation*/
-            runOperation.addDependency$(delayOperation);
-
-            /* add both operations to the queue */
-            operationQueue.addOperation$(delayOperation);
-            operationQueue.addOperation$(runOperation);
-
-            return Subscriptions.empty();
+            return Subscriptions.create(new Action0() {
+                @Override
+                public void call() {
+                    runOperation.cancel();
+                }
+            });
         }
     }
 }
