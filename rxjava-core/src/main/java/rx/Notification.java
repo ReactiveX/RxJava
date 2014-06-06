@@ -27,6 +27,7 @@ public class Notification<T> {
     private final T value;
 
     private static final Notification<Void> ON_COMPLETED = new Notification<Void>(Kind.OnCompleted, null, null);
+    private static final Notification<Void> ON_NEXT_NULL = new Notification<Void>(Kind.OnNext, null, null);
 
     /**
      * Creates and returns a {@code Notification} of variety {@code Kind.OnNext}, and assigns it a value.
@@ -35,7 +36,10 @@ public class Notification<T> {
      *          the item to assign to the notification as its value
      * @return an {@code OnNext} variety of {@code Notification}
      */
+    @SuppressWarnings("unchecked")
     public static <T> Notification<T> createOnNext(T t) {
+        if (t == null)
+            return (Notification<T>) ON_NEXT_NULL;
         return new Notification<T>(Kind.OnNext, t, null);
     }
 
