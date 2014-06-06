@@ -3,6 +3,7 @@ package rx.internal.util;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import rx.Observer;
 import rx.Subscriber;
 import rx.exceptions.MissingBackpressureException;
 import rx.internal.operators.NotificationLite;
@@ -44,8 +45,9 @@ public class RxSpscRingBuffer {
      * @throws MissingBackpressureException
      *             if more onNext are sent than have been requested
      */
-    public void onNext(Object o) {
+    public void onNext(Object o) throws MissingBackpressureException {
         if (count.incrementAndGet() > size) {
+            // a rare time where a checkedexception seems helpful ... as an internal safety check that we're handling it correctly
             throw new MissingBackpressureException();
         }
         // we received a requested item
@@ -63,7 +65,11 @@ public class RxSpscRingBuffer {
 
     public void onError(Throwable t) {
         if (!queue.offer(on.error(t))) {
-            throw new IllegalStateException("onError could not be delivered. Buffer has already received a terminal event.");
+            if (t instanceof MissingBackpressureException) {
+                throw new IllegalStateException("onError could not be delivered. Missing Backpressure.", t);
+            } else {
+                throw new IllegalStateException("onError could not be delivered. Buffer has already received a terminal event.", t);
+            }
         }
     }
 
@@ -86,6 +92,18 @@ public class RxSpscRingBuffer {
             count.decrementAndGet();
         }
         return o;
+    }
+
+    public boolean isCompleted(Object o) {
+        return on.isCompleted(o);
+    }
+
+    public boolean isError(Object o) {
+        return on.isError(o);
+    }
+
+    public Throwable asError(Object o) {
+        return on.getError(o);
     }
 
     public void requestIfNeeded(Subscriber<?> s) {

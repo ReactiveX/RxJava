@@ -20,10 +20,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import rx.Observable.OnSubscribe;
 import rx.Producer;
-import rx.Scheduler;
 import rx.Subscriber;
-import rx.functions.Action0;
-import rx.schedulers.Schedulers;
 
 /**
  * Converts an Iterable sequence into an Observable.
@@ -50,16 +47,16 @@ public final class OnSubscribeFromIterable<T> implements OnSubscribe<T> {
 
             @Override
             public void request(int n) {
+                System.out.println("onSubscribeFromIterable.request: " + n);
                 int _c = requested.getAndAdd(n);
                 if (_c == 0) {
                     while (it.hasNext()) {
                         if (o.isUnsubscribed()) {
                             return;
                         }
-                        int c = requested.decrementAndGet();
                         T t = it.next();
                         o.onNext(t);
-                        if (c == 0) {
+                        if (requested.decrementAndGet() == 0) {
                             // we're done emitting the number requested so return
                             return;
                         }

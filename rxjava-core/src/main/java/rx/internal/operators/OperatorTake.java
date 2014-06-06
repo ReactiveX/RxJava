@@ -40,7 +40,7 @@ public final class OperatorTake<T> implements Operator<T, T> {
 
     @Override
     public Subscriber<? super T> call(final Subscriber<? super T> child) {
-        Subscriber<T> parent = new Subscriber<T>() {
+        final Subscriber<T> parent = new Subscriber<T>() {
 
             int count = 0;
             boolean completed = false;
@@ -71,9 +71,12 @@ public final class OperatorTake<T> implements Operator<T, T> {
                 }
             }
 
+            /**
+             * We want to adjust the requested values based on the `take` count.
+             */
             @Override
-            public void setProducer(final Producer producer) {
-                child.setProducer(new Producer() {
+            protected Producer onSetProducer(final Producer producer) {
+                return new Producer() {
 
                     @Override
                     public void request(int n) {
@@ -84,10 +87,11 @@ public final class OperatorTake<T> implements Operator<T, T> {
                             producer.request(c);
                         }
                     }
-                });
+                };
             }
 
         };
+
 
         if (limit == 0) {
             child.onCompleted();
@@ -103,6 +107,18 @@ public final class OperatorTake<T> implements Operator<T, T> {
          * However, if we receive an unsubscribe from the child we still want to propagate it upwards so we register 'parent' with 'child'
          */
         child.add(parent);
+        
+        /**
+         * Since we decoupled the subscription chain but want the request to flow through, we reconnect the producer here.
+         */
+        child.setProducer(new Producer() {
+
+            @Override
+            public void request(int n) {
+                parent.request(n);
+            }
+        });
+
         return parent;
     }
 

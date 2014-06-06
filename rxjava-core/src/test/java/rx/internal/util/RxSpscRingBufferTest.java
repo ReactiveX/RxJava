@@ -27,7 +27,7 @@ import rx.observers.TestSubscriber;
 public class RxSpscRingBufferTest {
 
     @Test
-    public void missingBackpressureException() {
+    public void missingBackpressureException() throws MissingBackpressureException {
         RxSpscRingBuffer b = new RxSpscRingBuffer(2, 1);
         TestSubscriber<Object> s = new TestSubscriber<Object>();
         b.requestIfNeeded(s);
@@ -43,7 +43,7 @@ public class RxSpscRingBufferTest {
     }
 
     @Test
-    public void addAndPollFailBackpressure() {
+    public void addAndPollFailBackpressure() throws MissingBackpressureException {
         RxSpscRingBuffer b = new RxSpscRingBuffer(2, 1);
         TestSubscriber<Object> s = new TestSubscriber<Object>();
         b.onNext("o");
@@ -60,7 +60,7 @@ public class RxSpscRingBufferTest {
     }
 
     @Test
-    public void addAndPoll() {
+    public void addAndPoll() throws MissingBackpressureException {
         RxSpscRingBuffer b = new RxSpscRingBuffer(2, 1);
         TestSubscriber<Object> s = new TestSubscriber<Object>();
         b.onNext("o");
@@ -75,7 +75,7 @@ public class RxSpscRingBufferTest {
      * assert that we only request when we have space (items not yet polled).
      */
     @Test
-    public void onNextPollRequestCycle() {
+    public void onNextPollRequestCycle() throws MissingBackpressureException {
         RxSpscRingBuffer b = new RxSpscRingBuffer(2, 1);
         TestSubscriber<Object> s = new TestSubscriber<Object>();
         assertEquals(2, b.available());
@@ -118,7 +118,7 @@ public class RxSpscRingBufferTest {
     }
 
     @Test
-    public void roomForError() {
+    public void roomForError() throws MissingBackpressureException {
         RxSpscRingBuffer b = new RxSpscRingBuffer(2, 1);
         TestSubscriber<Object> s = new TestSubscriber<Object>();
         b.requestIfNeeded(s);
@@ -135,7 +135,7 @@ public class RxSpscRingBufferTest {
     }
 
     @Test
-    public void multipleTerminalEventsOnComplete() {
+    public void multipleTerminalEventsOnComplete() throws MissingBackpressureException {
         RxSpscRingBuffer b = new RxSpscRingBuffer(2, 1);
         TestSubscriber<Object> s = new TestSubscriber<Object>();
         b.requestIfNeeded(s);
@@ -152,7 +152,7 @@ public class RxSpscRingBufferTest {
     }
 
     @Test
-    public void multipleTerminalEventsOnError() {
+    public void multipleTerminalEventsOnError() throws MissingBackpressureException {
         RxSpscRingBuffer b = new RxSpscRingBuffer(2, 1);
         TestSubscriber<Object> s = new TestSubscriber<Object>();
         b.requestIfNeeded(s);

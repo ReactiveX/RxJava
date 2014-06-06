@@ -120,9 +120,9 @@ public class TestSubscriber<T> extends Subscriber<T> {
      * Assert that a particular sequence of items was received in order.
      *
      * @param items
-     *          the sequence of items expected to have been observed
+     *            the sequence of items expected to have been observed
      * @throws AssertionError
-     *          if the sequence of items observed does not exactly match {@code items}
+     *             if the sequence of items observed does not exactly match {@code items}
      */
     public void assertReceivedOnNext(List<T> items) {
         testObserver.assertReceivedOnNext(items);
@@ -132,7 +132,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
      * Assert that a single terminal event occurred, either {@link #onCompleted} or {@link #onError}.
      *
      * @throws AssertionError
-     *          if not exactly one terminal event notification was received
+     *             if not exactly one terminal event notification was received
      */
     public void assertTerminalEvent() {
         testObserver.assertTerminalEvent();
@@ -142,11 +142,17 @@ public class TestSubscriber<T> extends Subscriber<T> {
      * Assert that this {@code Subscriber} is unsubscribed.
      *
      * @throws AssertionError
-     *          if this {@code Subscriber} is not unsubscribed
+     *             if this {@code Subscriber} is not unsubscribed
      */
     public void assertUnsubscribed() {
         if (!isUnsubscribed()) {
             throw new AssertionError("Not unsubscribed.");
+        }
+    }
+
+    public void assertNoErrors() {
+        if (getOnErrorEvents().size() > 0) {
+            throw new AssertionError("Unexpected onError events: " + getOnErrorEvents().size(), getOnErrorEvents().get(0));
         }
     }
 

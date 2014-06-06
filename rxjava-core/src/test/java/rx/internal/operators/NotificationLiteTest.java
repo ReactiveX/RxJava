@@ -13,17 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rx.exceptions;
+package rx.internal.operators;
 
-public class MissingBackpressureException extends Exception {
+import static org.junit.Assert.*;
 
-    private static final long serialVersionUID = 7250870679677032194L;
+import org.junit.Test;
 
-    public MissingBackpressureException() {
+
+public class NotificationLiteTest {
+
+    @Test
+    public void testComplete() {
+        NotificationLite<Object> on = NotificationLite.instance();
+        Object n = on.next("Hello");
+        Object c = on.completed();
+        
+        assertTrue(on.isCompleted(c));
+        assertFalse(on.isCompleted(n));
+        
+        assertEquals("Hello", on.getValue(n));
     }
-
-    public MissingBackpressureException(String message) {
-        super(message);
-    }
-
+    
+    
 }

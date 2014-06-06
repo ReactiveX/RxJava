@@ -38,6 +38,7 @@ import org.mockito.InOrder;
 import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Observer;
+import rx.Producer;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Action1;
@@ -308,13 +309,57 @@ public class OperatorTakeTest {
         
         INFINITE_OBSERVABLE.observeOn(Schedulers.newThread()).take(1).subscribe(ts);
         ts.awaitTerminalEvent();
-        if(ts.getOnErrorEvents().size() > 0) {
-            ts.getOnErrorEvents().get(0).printStackTrace();
-        }
+        ts.assertNoErrors();
         
         verify(o).onNext(1L);
         verify(o, never()).onNext(2L);
         verify(o).onCompleted();
         verify(o, never()).onError(any(Throwable.class));
+    }
+    
+    @Test
+    public void testProducerRequestThroughTake() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        ts.request(3);
+        final AtomicInteger requested = new AtomicInteger();
+        Observable.create(new OnSubscribe<Integer>() {
+
+            @Override
+            public void call(Subscriber<? super Integer> s) {
+                s.setProducer(new Producer() {
+
+                    @Override
+                    public void request(int n) {
+                        requested.set(n);
+                    }
+
+                });
+            }
+
+        }).take(3).subscribe(ts);
+        assertEquals(3, requested.get());
+    }
+    
+    @Test
+    public void testProducerRequestThroughTakeIsModified() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        ts.request(3);
+        final AtomicInteger requested = new AtomicInteger();
+        Observable.create(new OnSubscribe<Integer>() {
+
+            @Override
+            public void call(Subscriber<? super Integer> s) {
+                s.setProducer(new Producer() {
+
+                    @Override
+                    public void request(int n) {
+                        requested.set(n);
+                    }
+
+                });
+            }
+
+        }).take(1).subscribe(ts);
+        assertEquals(1, requested.get());
     }
 }

@@ -89,7 +89,12 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
             if (scheduledUnsubscribe.isUnsubscribed()) {
                 return;
             }
-            queue.onNext(t);
+            try {
+                queue.onNext(t);
+            } catch (MissingBackpressureException e) {
+                onError(e);
+                return;
+            }
             schedule();
         }
 

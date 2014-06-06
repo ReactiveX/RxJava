@@ -50,8 +50,7 @@ public final class OnSubscribeRange implements OnSubscribe<Integer> {
                             return;
                         }
                         o.onNext(index++);
-                        int c = requested.decrementAndGet();
-                        if (c == 0) {
+                        if (requested.decrementAndGet() == 0) {
                             // we're done emitting the number requested so return
                             return;
                         }

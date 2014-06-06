@@ -76,7 +76,7 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
         return cs.isUnsubscribed();
     }
 
-    public void request(int n) {
+    public final void request(int n) {
         State previous;
         State intermediate;
         State newState;
@@ -95,7 +95,12 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
         }
     }
 
-    public void setProducer(Producer producer) {
+    protected Producer onSetProducer(Producer producer) {
+        return producer;
+    }
+    
+    public final void setProducer(Producer producer) {
+        producer = onSetProducer(producer);
         if (op == null) {
             // end of chain, we must run
             int claimed = claim(producer);
