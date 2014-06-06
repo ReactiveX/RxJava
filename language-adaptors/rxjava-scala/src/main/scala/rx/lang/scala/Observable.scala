@@ -3915,7 +3915,7 @@ trait Observable[+T]
   /**
    * Returns an Observable that emits a single `mutable.Map[K, mutable.Buffer[V]]`, returned by a specified `mapFactory` function, that
    * contains values, extracted by a specified `valueSelector` function from items emitted by the source Observable and
-   * keyed by the `keySelector` function.
+   * keyed by the `keySelector` function. `mutable.Map[K, B]` is the same instance create by `mapFactory`.
    *
    * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toMultiMap.png">
    *
@@ -3932,17 +3932,17 @@ trait Observable[+T]
   /**
    * Returns an Observable that emits a single `mutable.Map[K, B]`, returned by a specified `mapFactory` function, that
    * contains values extracted by a specified `valueSelector` function from items emitted by the source Observable, and
-   * keyed by the `keySelector` function.
+   * keyed by the `keySelector` function. `mutable.Map[K, B]` is the same instance create by `mapFactory`.
    *
    * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toMultiMap.png">
    *
    * @param keySelector the function that extracts a key from the source items to be used as the key in the Map
    * @param valueSelector the function that extracts a value from the source items to be used as the value in the Map
    * @param mapFactory the function that returns a Map instance to be used
-   * @param collectionFactory the function that returns a `mutable.Buffer[V]` instance for a particular key to be used in the Map
-   * @return an Observable that emits a single item: a `mutable.Map[K, B]` that contains mapped items from the source Observable
+   * @param bufferFactory the function that returns a `mutable.Buffer[V]` instance for a particular key to be used in the Map
+   * @return an Observable that emits a single item: a `mutable.Map[K, B]` that contains mapped items from the source Observable.
    */
-  def toMultimap[K, V, B <: mutable.Buffer[V], M <: mutable.Map[K, B]](keySelector: T => K, valueSelector: T => V, mapFactory: () => M, collectionFactory: K => B): Observable[M] = {
+  def toMultimap[K, V, B <: mutable.Buffer[V], M <: mutable.Map[K, B]](keySelector: T => K, valueSelector: T => V, mapFactory: () => M, bufferFactory: K => B): Observable[M] = {
     // It's complicated to convert `mutable.Map[K, mutable.Buffer[V]]` to `java.util.Map[K, java.util.Collection[V]]`,
     // so RxScala implements `toMultimap` directly.
     // Choosing `mutable.Buffer/Map` is because `append/update` is necessary to implement an efficient `toMultimap`.
@@ -3955,7 +3955,7 @@ trait Observable[+T]
             val key = keySelector(t)
             val values = map.get(key) match {
               case Some(v) => v
-              case None => collectionFactory(key)
+              case None => bufferFactory(key)
             }
             values += valueSelector(t)
             map += key -> values: Unit

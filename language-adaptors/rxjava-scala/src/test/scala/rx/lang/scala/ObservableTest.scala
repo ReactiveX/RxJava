@@ -250,20 +250,24 @@ class ObservableTests extends JUnitSuite {
     val o = Observable.items("a", "b", "cc", "dd").toMultimap(_.length, s => s, () => m)
     val expected = Map(1 -> List("a", "b"), 2 -> List("cc", "dd"))
     val r = o.toBlocking.single
-    assertTrue(m eq r) // check same instance
+    // r should be the same instance created by the `mapFactory`
+    assertTrue(m eq r)
     assertEquals(expected, r)
   }
 
   @Test
-  def testToMultimapWithCollectionFactory() {
+  def testToMultimapWithBufferFactory() {
     val m = mutable.Map[Int, mutable.Buffer[String]]()
     val ls = List(mutable.Buffer[String](), mutable.Buffer[String]())
     val o = Observable.items("a", "b", "cc", "dd").toMultimap(_.length, s => s, () => m, (i: Int) => ls(i - 1))
     val expected = Map(1 -> List("a", "b"), 2 -> List("cc", "dd"))
     val r = o.toBlocking.single
-    assertTrue(m eq r) // check same instance
-    assertTrue(ls(0) eq r(1)) // check same instance
-    assertTrue(ls(1) eq r(2)) // check same instance
+    // r should be the same instance created by the `mapFactory`
+    assertTrue(m eq r)
+    // r(1) should be the same instance created by the first calling `bufferFactory`
+    assertTrue(ls(0) eq r(1))
+    // r(2) should be the same instance created by the second calling `bufferFactory`
+    assertTrue(ls(1) eq r(2))
     assertEquals(expected, r)
   }
 

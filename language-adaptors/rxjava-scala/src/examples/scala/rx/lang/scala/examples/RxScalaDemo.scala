@@ -895,8 +895,8 @@ class RxScalaDemo extends JUnitSuite {
     val keySelector = (s: String) => s.head
     val valueSelector = (s: String) => s.tail
     val mapFactory = () => mutable.Map('d' -> mutable.ListBuffer("oug"))
-    val valueFactory = (k: Char) => mutable.ListBuffer[String]()
-    val m = o.toMultimap(keySelector, valueSelector, mapFactory, valueFactory)
+    val bufferFactory = (k: Char) => mutable.ListBuffer[String]()
+    val m = o.toMultimap(keySelector, valueSelector, mapFactory, bufferFactory)
     println(m.toBlocking.single)
   }
 
