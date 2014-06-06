@@ -91,7 +91,7 @@ public class OperatorRetryTest {
         subscriber.awaitTerminalEvent();
         InOrder inOrder = inOrder(observer);
         // should show 3 attempts
-        inOrder.verify(observer, times(NUM_RETRIES)).onNext("beginningEveryTime");
+        inOrder.verify(observer, times(1 + NUM_RETRIES)).onNext("beginningEveryTime");
         // should have no errors
         inOrder.verify(observer, never()).onError(any(Throwable.class));
         // should have a single success
@@ -110,7 +110,13 @@ public class OperatorRetryTest {
         origin.retry(new Func1<Observable<? extends Notification<?>>, Observable<? extends Notification<?>>>() {
             @Override
             public Observable<? extends Notification<?>> call(Observable<? extends Notification<?>> t1) {
-                return t1;
+                return t1.map(new Func1<Notification<?>, Notification<?>>() {
+
+                    @Override
+                    public Notification<?> call(Notification<?> t1) {
+                        return Notification.createOnNext(null);
+                    }
+                });
             }
         }).subscribe(observer);
 
@@ -130,7 +136,7 @@ public class OperatorRetryTest {
     public void testOnCompletedFromNotificationHandler() {
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
-        Observable<String> origin = Observable.create(new FuncWithErrors(2));
+        Observable<String> origin = Observable.create(new FuncWithErrors(1));
         origin.retry(new Func1<Observable<? extends Notification<?>>, Observable<? extends Notification<?>>>() {
             @Override
             public Observable<? extends Notification<?>> call(Observable<? extends Notification<?>> t1) {
@@ -142,11 +148,11 @@ public class OperatorRetryTest {
         // should show 3 attempts
         inOrder.verify(observer, times(1)).onNext("beginningEveryTime");
         // should have no errors
-        inOrder.verify(observer, never()).onError(any(Throwable.class));
+        inOrder.verify(observer, times(1)).onError(any(Throwable.class));
         // should have a single success
         inOrder.verify(observer, never()).onNext("onSuccessOnly");
         // should have a single successful onCompleted
-        inOrder.verify(observer, times(1)).onCompleted();
+        inOrder.verify(observer, never()).onCompleted();
         inOrder.verifyNoMoreInteractions();
     }
 
@@ -154,7 +160,7 @@ public class OperatorRetryTest {
     public void testOnErrorFromNotificationHandler() {
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
-        Observable<String> origin = Observable.create(new FuncWithErrors(3));
+        Observable<String> origin = Observable.create(new FuncWithErrors(2));
         origin.retry(new Func1<Observable<? extends Notification<?>>, Observable<? extends Notification<?>>>() {
             @Override
             public Observable<? extends Notification<?>> call(Observable<? extends Notification<?>> t1) {
@@ -172,7 +178,7 @@ public class OperatorRetryTest {
     public void testOriginFails() {
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
-        Observable<String> origin = Observable.create(new FuncWithErrors(2));
+        Observable<String> origin = Observable.create(new FuncWithErrors(1));
         origin.subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
@@ -204,12 +210,11 @@ public class OperatorRetryTest {
 
     @Test
     public void testRetrySuccess() {
-        int NUM_RETRIES = 3;
-        int NUM_FAILURES = 2;
+        int NUM_FAILURES = 1;
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
         Observable<String> origin = Observable.create(new FuncWithErrors(NUM_FAILURES));
-        origin.retry(NUM_RETRIES).subscribe(observer);
+        origin.retry(3).subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
         // should show 3 attempts
@@ -299,7 +304,7 @@ public class OperatorRetryTest {
         @Override
         public void call(Subscriber<? super String> o) {
             o.onNext("beginningEveryTime");
-            if (count.incrementAndGet() <= numFailures) {
+            if (count.getAndIncrement() < numFailures) {
                 o.onError(new RuntimeException("forced failure: " + count.get()));
             } else {
                 o.onNext("onSuccessOnly");
@@ -374,12 +379,48 @@ public class OperatorRetryTest {
                     // this simulates various error/completion scenarios that could occur
                     // or just a source that proactively triggers cleanup
                     s.unsubscribe();
-                }
+                } else throw new RuntimeException();
             }
         };
 
         Observable.create(onSubscribe).retry(3).subscribe(ts);
         assertEquals(4, subsCount.get()); // 1 + 3 retries
+    }
+
+    @Test
+    public void testSourceObservableRetry3() throws InterruptedException {
+        final AtomicInteger subsCount = new AtomicInteger(0);
+
+        final TestSubscriber<String> ts = new TestSubscriber<String>();
+
+        OnSubscribe<String> onSubscribe = new OnSubscribe<String>() {
+            @Override
+            public void call(Subscriber<? super String> s) {
+                subsCount.incrementAndGet();
+                s.onError(new RuntimeException("failed"));
+            }
+        };
+
+        Observable.create(onSubscribe).retry(1).subscribe(ts);
+        assertEquals(2, subsCount.get());
+    }
+
+    @Test
+    public void testSourceObservableRetry0() throws InterruptedException {
+        final AtomicInteger subsCount = new AtomicInteger(0);
+
+        final TestSubscriber<String> ts = new TestSubscriber<String>();
+
+        OnSubscribe<String> onSubscribe = new OnSubscribe<String>() {
+            @Override
+            public void call(Subscriber<? super String> s) {
+                subsCount.incrementAndGet();
+                s.onError(new RuntimeException("failed"));
+            }
+        };
+
+        Observable.create(onSubscribe).retry(0).subscribe(ts);
+        assertEquals(1, subsCount.get());
     }
 
     static final class SlowObservable implements Observable.OnSubscribe<Long> {

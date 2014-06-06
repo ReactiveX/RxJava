@@ -5391,7 +5391,7 @@ public class Observable<T> {
             public Observable<? extends Notification<?>> call(Observable<? extends Notification<?>> ts) {
                 return ts.map(new Func1<Notification<?>, Notification<?>>() {
                     @Override
-                    public Notification<?> call(Notification t1) {
+                    public Notification<?> call(Notification<?> t1) {
                         return Notification.createOnNext(null);
                     }
                 });
@@ -5417,7 +5417,7 @@ public class Observable<T> {
             public Observable<? extends Notification<?>> call(Observable<? extends Notification<?>> ts) {
                 return ts.map(new Func1<Notification<?>, Notification<?>>() {
                     @Override
-                    public Notification<?> call(Notification t1) {
+                    public Notification<?> call(Notification<?> t1) {
                         return Notification.createOnNext(null);
                     }
                 });
@@ -5448,6 +5448,8 @@ public class Observable<T> {
         if (count < 0) {
             throw new IllegalArgumentException("count >= 0 expected");
         }
+        else if (count == 0)
+            return empty();
         return repeat(new Func1<Observable<? extends Notification<?>>, Observable<? extends Notification<?>>>() {
             @Override
             public Observable<? extends Notification<?>> call(Observable<? extends Notification<?>> ts) {
@@ -5455,9 +5457,9 @@ public class Observable<T> {
                     @Override
                     public Notification<Long> call(Notification<Long> n, Notification<?> term) {
                         final long value = n.getValue();
-                        if (value > 0)
-                            return Notification.createOnNext(value - 1);
-                        return Notification.createOnCompleted();
+                        return value > 1 ?
+                                Notification.createOnNext(value - 1) :
+                                Notification.<Long> createOnCompleted();
                     }
                 });
             }
@@ -5485,6 +5487,8 @@ public class Observable<T> {
         if (count < 0) {
             throw new IllegalArgumentException("count >= 0 expected");
         }
+        else if (count == 0)
+            return empty();
         return repeat(new Func1<Observable<? extends Notification<?>>, Observable<? extends Notification<?>>>() {
             @Override
             public Observable<? extends Notification<?>> call(Observable<? extends Notification<?>> ts) {
@@ -5492,9 +5496,9 @@ public class Observable<T> {
                     @Override
                     public Notification<Long> call(Notification<Long> n, Notification<?> term) {
                         final long value = n.getValue();
-                        if (value > 0)
-                            return Notification.createOnNext(value - 1);
-                        return Notification.createOnCompleted();
+                            return value > 1 ?
+                                Notification.createOnNext(value - 1) :
+                                Notification.<Long> createOnCompleted();
                     }
                 });
             }
@@ -6005,7 +6009,7 @@ public class Observable<T> {
             public Observable<? extends Notification<?>> call(Observable<? extends Notification<?>> ts) {
                 return ts.map(new Func1<Notification<?>, Notification<?>>() {
                     @Override
-                    public Notification<?> call(Notification t1) {
+                    public Notification<?> call(Notification<?> terminal) {
                         return Notification.createOnNext(null);
                     }
                 });
@@ -6035,22 +6039,25 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.retry.aspx">MSDN: Observable.Retry</a>
      */
     public final Observable<T> retry(final long count) {
-        if (count < 0) {
+        if (count < 0)
             throw new IllegalArgumentException("count >= 0 expected");
-        }
+        if (count == 0) 
+            return this;
         return retry(new Func1<Observable<? extends Notification<?>>, Observable<? extends Notification<?>>>() {
             @Override
             public Observable<? extends Notification<?>> call(Observable<? extends Notification<?>> ts) {
-                return ts.scan(Notification.createOnNext(count), new Func2<Notification<Long>, Notification<?>, Notification<Long>>() {
-                    @Override
-                    public Notification<Long> call(Notification<Long> n, Notification<?> term) {
-                        final long value = n.getValue();
-                        if (value > 0)
-                            return Notification.createOnNext(value - 1);
-                        return Notification.createOnCompleted();
-                    }
-                });
-            }
+                return ts.scan(Notification.createOnNext(count),
+                        new Func2<Notification<Long>, Notification<?>, Notification<Long>>() {
+                            @SuppressWarnings("unchecked")
+                            @Override
+                            public Notification<Long> call(Notification<Long> n, Notification<?> term) {
+                                final long value = n.getValue();
+                                return value > 0 ?
+                                        Notification.createOnNext(value - 1) : 
+                                        (Notification<Long>) term;
+                            }
+                        }).skip(1);
+        }
         });
     }
 
