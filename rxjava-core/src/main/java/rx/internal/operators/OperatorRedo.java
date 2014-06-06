@@ -109,14 +109,12 @@ public final class OperatorRedo<T> implements OnSubscribe<T> {
         final Action0 action = new Action0() {
             @Override
             public void call() {
-                final Action0 _self = this;
                 // new subscription each time so if it unsubscribes itself it does not prevent retries
                 // by unsubscribing the child subscription
                 Subscriber<T> subscriber = new Subscriber<T>() {
                     @Override
                     public void onCompleted() {
                         ts.onNext(Notification.createOnCompleted());
-                        if (!child.isUnsubscribed()) inner.schedule(_self);
                     }
 
                     @Override
