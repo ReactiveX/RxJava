@@ -5386,7 +5386,17 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229428.aspx">MSDN: Observable.Repeat</a>
      */
     public final Observable<T> repeat() {
-        return nest().lift(new OperatorRepeat<T>());
+        return repeat(new Func1<Observable<? extends Notification<?>>, Observable<? extends Notification<?>>>() {
+            @Override
+            public Observable<? extends Notification<?>> call(Observable<? extends Notification<?>> ts) {
+                return ts.map(new Func1<Notification<?>, Notification<?>>() {
+                    @Override
+                    public Notification<?> call(Notification t1) {
+                        return Notification.createOnNext(null);
+                    }
+                });
+            }
+        });
     }
 
     /**
@@ -5402,7 +5412,17 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229428.aspx">MSDN: Observable.Repeat</a>
      */
     public final Observable<T> repeat(Scheduler scheduler) {
-        return nest().lift(new OperatorRepeat<T>(scheduler));
+        return repeat(new Func1<Observable<? extends Notification<?>>, Observable<? extends Notification<?>>>() {
+            @Override
+            public Observable<? extends Notification<?>> call(Observable<? extends Notification<?>> ts) {
+                return ts.map(new Func1<Notification<?>, Notification<?>>() {
+                    @Override
+                    public Notification<?> call(Notification t1) {
+                        return Notification.createOnNext(null);
+                    }
+                });
+            }
+        }, scheduler);
     }
 
     /**
@@ -5424,11 +5444,61 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229428.aspx">MSDN: Observable.Repeat</a>
      * @since 0.17
      */
-    public final Observable<T> repeat(long count) {
+    public final Observable<T> repeat(final long count) {
         if (count < 0) {
             throw new IllegalArgumentException("count >= 0 expected");
         }
-        return nest().lift(new OperatorRepeat<T>(count));
+        return repeat(new Func1<Observable<? extends Notification<?>>, Observable<? extends Notification<?>>>() {
+            @Override
+            public Observable<? extends Notification<?>> call(Observable<? extends Notification<?>> ts) {
+                return ts.scan(Notification.createOnNext(count), new Func2<Notification<Long>, Notification<?>, Notification<Long>>() {
+                    @Override
+                    public Notification<Long> call(Notification<Long> n, Notification<?> term) {
+                        final long value = n.getValue();
+                        if (value > 0)
+                            return Notification.createOnNext(value - 1);
+                        return Notification.createOnCompleted();
+                    }
+                });
+            }
+        });
+    }
+
+    /**
+     * Returns an Observable that repeats the sequence of items emitted by the source Observable at most
+     * {@code count} times, on a particular Scheduler.
+     * <p>
+     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/repeat.ons.png">
+     * 
+     * @param count
+     *            the number of times the source Observable items are repeated, a count of 0 will yield an empty
+     *            sequence
+     * @param scheduler
+     *            the {@link Scheduler} to emit the items on
+     * @return an Observable that repeats the sequence of items emitted by the source Observable at most
+     *         {@code count} times on a particular Scheduler
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#wiki-repeat">RxJava Wiki: repeat()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229428.aspx">MSDN: Observable.Repeat</a>
+     * @since 0.17
+     */
+    public final Observable<T> repeat(final long count, Scheduler scheduler) {
+        if (count < 0) {
+            throw new IllegalArgumentException("count >= 0 expected");
+        }
+        return repeat(new Func1<Observable<? extends Notification<?>>, Observable<? extends Notification<?>>>() {
+            @Override
+            public Observable<? extends Notification<?>> call(Observable<? extends Notification<?>> ts) {
+                return ts.scan(Notification.createOnNext(count), new Func2<Notification<Long>, Notification<?>, Notification<Long>>() {
+                    @Override
+                    public Notification<Long> call(Notification<Long> n, Notification<?> term) {
+                        final long value = n.getValue();
+                        if (value > 0)
+                            return Notification.createOnNext(value - 1);
+                        return Notification.createOnCompleted();
+                    }
+                });
+            }
+        }, scheduler);
     }
 
     /**
@@ -5448,8 +5518,29 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229428.aspx">MSDN: Observable.Repeat</a>
      * @since 0.17
      */
-    public final Observable<T> repeat(long count, Scheduler scheduler) {
-        return nest().lift(new OperatorRepeat<T>(count, scheduler));
+    public final Observable<T> repeat(Func1<? super Observable<? extends Notification<?>>, ? extends Observable<? extends Notification<?>>> notificationHandler, Scheduler scheduler) {
+        return create(OperatorRedo.repeat(this, notificationHandler, scheduler));
+    }
+
+    /**
+     * Returns an Observable that repeats the sequence of items emitted by the source Observable at most
+     * {@code count} times, on a particular Scheduler.
+     * <p>
+     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/repeat.ons.png">
+     * 
+     * @param count
+     *            the number of times the source Observable items are repeated, a count of 0 will yield an empty
+     *            sequence
+     * @param scheduler
+     *            the {@link Scheduler} to emit the items on
+     * @return an Observable that repeats the sequence of items emitted by the source Observable at most
+     *         {@code count} times on a particular Scheduler
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#wiki-repeat">RxJava Wiki: repeat()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229428.aspx">MSDN: Observable.Repeat</a>
+     * @since 0.17
+     */
+    public final Observable<T> repeat(Func1<? super Observable<? extends Notification<?>>, ? extends Observable<? extends Notification<?>>> notificationHandler) {
+        return create(OperatorRedo.repeat(this, notificationHandler));
     }
 
     /**
@@ -5909,12 +6000,17 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.retry.aspx">MSDN: Observable.Retry</a>
      */
     public final Observable<T> retry() {
-        return nest().lift(new OperatorRetry<T>(new Func1<Observable<Notification<?>>, Observable<?>>() {
+        return retry(new Func1<Observable<? extends Notification<?>>, Observable<? extends Notification<?>>>() {
             @Override
-            public Observable<?> call(Observable<Notification<?>> notifications) {
-                return Observable.never();
+            public Observable<? extends Notification<?>> call(Observable<? extends Notification<?>> ts) {
+                return ts.map(new Func1<Notification<?>, Notification<?>>() {
+                    @Override
+                    public Notification<?> call(Notification t1) {
+                        return Notification.createOnNext(null);
+                    }
+                });
             }
-        }));
+        });
     }
 
     /**
@@ -5938,11 +6034,22 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Error-Handling-Operators#retry">RxJava wiki: retry</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.retry.aspx">MSDN: Observable.Retry</a>
      */
-    public final Observable<T> retry(final int retryCount) {
-        return retry(new Func1<Observable<Notification<?>>, Observable<?>>() {
+    public final Observable<T> retry(final long count) {
+        if (count < 0) {
+            throw new IllegalArgumentException("count >= 0 expected");
+        }
+        return retry(new Func1<Observable<? extends Notification<?>>, Observable<? extends Notification<?>>>() {
             @Override
-            public Observable<?> call(Observable<Notification<?>> notifications) {
-                return notifications.take(retryCount + 1).last().dematerialize();
+            public Observable<? extends Notification<?>> call(Observable<? extends Notification<?>> ts) {
+                return ts.scan(Notification.createOnNext(count), new Func2<Notification<Long>, Notification<?>, Notification<Long>>() {
+                    @Override
+                    public Notification<Long> call(Notification<Long> n, Notification<?> term) {
+                        final long value = n.getValue();
+                        if (value > 0)
+                            return Notification.createOnNext(value - 1);
+                        return Notification.createOnCompleted();
+                    }
+                });
             }
         });
     }
@@ -5963,8 +6070,28 @@ public class Observable<T> {
      * @see #retry()
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Error-Handling-Operators#wiki-retry">RxJava Wiki: retry()</a>
      */
-    public final Observable<T> retry(Func1<Observable<Notification<?>>, Observable<?>> notificationHandler) {
-        return nest().lift(new OperatorRetry<T>(notificationHandler));
+    public final Observable<T> retry(Func1<? super Observable<? extends Notification<?>>, ? extends Observable<? extends Notification<?>>> notificationHandler) {
+        return create(OperatorRedo.<T> retry(this, notificationHandler));
+    }
+
+    /**
+     * Returns an Observable that emits the same values as the source observable with the exception of an {@code onError}.
+     * An onError will emit a {@link Notification} to the observable provided as an argument to the notificationHandler 
+     * func. If the observable returned {@code onCompletes} or {@code onErrors} then retry will call {@code onCompleted} 
+     * or {@code onError} on the child subscription. Otherwise, this observable will resubscribe to the source observable.    
+     * <p>
+     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/retry.fn1.png">
+     * <p>
+     * {@code retry} operates by default on the {@code trampoline} {@link Scheduler}.
+     *
+     * @param notificationHandler
+     *            recieves an Observable of notifications with which a user can complete or error, aborting the retry. 
+     * @return the source Observable modified with retry logic
+     * @see #retry()
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Error-Handling-Operators#wiki-retry">RxJava Wiki: retry()</a>
+     */
+    public final Observable<T> retry(Func1<? super Observable<? extends Notification<?>>, ? extends Observable<? extends Notification<?>>> notificationHandler, Scheduler scheduler) {
+        return create(OperatorRedo.<T> retry(this, notificationHandler, scheduler));
     }
 
     /**
