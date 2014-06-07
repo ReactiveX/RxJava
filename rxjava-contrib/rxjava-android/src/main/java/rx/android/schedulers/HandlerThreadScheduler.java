@@ -20,9 +20,7 @@ import java.util.concurrent.TimeUnit;
 import rx.Scheduler;
 import rx.Subscription;
 import rx.functions.Action0;
-import rx.functions.Action1;
 import rx.internal.schedulers.ScheduledAction;
-import rx.subscriptions.BooleanSubscription;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.Subscriptions;
 import android.os.Handler;
@@ -53,7 +51,7 @@ public class HandlerThreadScheduler extends Scheduler {
 
         private final Handler handler;
 
-        private final CompositeSubscription mCompositeSubscription = new CompositeSubscription();
+        private final CompositeSubscription compositeSubscription = new CompositeSubscription();
 
         public InnerHandlerThreadScheduler(Handler handler) {
             this.handler = handler;
@@ -61,12 +59,12 @@ public class HandlerThreadScheduler extends Scheduler {
 
         @Override
         public void unsubscribe() {
-            mCompositeSubscription.unsubscribe();
+            compositeSubscription.unsubscribe();
         }
 
         @Override
         public boolean isUnsubscribed() {
-            return mCompositeSubscription.isUnsubscribed();
+            return compositeSubscription.isUnsubscribed();
         }
 
         @Override
@@ -78,8 +76,8 @@ public class HandlerThreadScheduler extends Scheduler {
                     handler.removeCallbacks(scheduledAction);
                 }
             }));
-            scheduledAction.addParent(mCompositeSubscription);
-            mCompositeSubscription.add(scheduledAction);
+            scheduledAction.addParent(compositeSubscription);
+            compositeSubscription.add(scheduledAction);
 
             handler.postDelayed(scheduledAction, unit.toMillis(delayTime));
 
