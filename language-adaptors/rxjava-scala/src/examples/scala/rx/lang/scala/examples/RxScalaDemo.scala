@@ -48,6 +48,29 @@ import rx.lang.scala.schedulers._
 @Ignore // Since this doesn't do automatic testing, don't increase build time unnecessarily
 class RxScalaDemo extends JUnitSuite {
 
+  @Test def subscribeExample() {
+    val o = Observable.items(1, 2, 3)
+
+    // Generally, we have two methods, `subscribe` and `foreach`, to listen to the messages from an Observable.
+    // `foreach` is just an alias to `subscribe`.
+    o.subscribe(
+      n => println(n),
+      e => e.printStackTrace(),
+      () => println("done")
+    )
+
+    o.foreach(
+      n => println(n),
+      e => e.printStackTrace(),
+      () => println("done")
+    )
+
+    // For-comprehension is also an alternative, if you are only interested in `onNext`
+    for (i <- o) {
+      println(i)
+    }
+  }
+
   @Test def intervalExample() {
     val o = Observable.interval(200 millis).take(5)
     o.subscribe(n => println("n = " + n))
