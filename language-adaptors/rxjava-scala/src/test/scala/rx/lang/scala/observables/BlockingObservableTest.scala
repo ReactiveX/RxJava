@@ -1,5 +1,22 @@
+/**
+ * Copyright 2013 Netflix, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package rx.lang.scala.observables
 
+import scala.concurrent.Await
+import scala.concurrent.duration._
 import org.junit.Assert._
 import org.junit.Test
 import org.scalatest.junit.JUnitSuite
@@ -112,5 +129,24 @@ class BlockingObservableTest extends JUnitSuite {
   def testLastOrElseWithMultipleItems() {
     val o = Observable.items(1, 2)
     assertEquals(2, o.toBlocking.lastOrElse(3))
+  }
+
+  @Test
+  def testToFuture() {
+    val o = Observable.items(1)
+    val r = Await.result(o.toBlocking.toFuture, 10 seconds)
+    assertEquals(1, r)
+  }
+
+  @Test(expected = classOf[NoSuchElementException])
+  def testToFutureWithEmpty() {
+    val o = Observable.empty
+    Await.result(o.toBlocking.toFuture, 10 seconds)
+  }
+
+  @Test(expected = classOf[IllegalArgumentException])
+  def testToFutureWithMultipleItems() {
+    val o = Observable.items(1, 2)
+    Await.result(o.toBlocking.toFuture, 10 seconds)
   }
 }

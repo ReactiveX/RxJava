@@ -16,6 +16,7 @@
 package rx.lang.scala.observables
 
 import scala.collection.JavaConverters._
+import scala.concurrent.{Future, Promise}
 import rx.lang.scala.ImplicitFunctionConversions._
 import rx.lang.scala.Observable
 import rx.observables.{BlockingObservable => JBlockingObservable}
@@ -227,8 +228,6 @@ class BlockingObservable[+T] private[scala] (val o: Observable[T])
     }
   }
 
-  // TODO toFuture()
-
   /**
    * Returns an {@link Iterator} that iterates over all items emitted by this {@link Observable}.
    */
@@ -258,6 +257,23 @@ class BlockingObservable[+T] private[scala] (val o: Observable[T])
     asJava.latest.asScala: Iterable[T] // useless ascription because of compiler bug
   }
 
+  /**
+   * Returns a `Future` representing the single value emitted by this `BlockingObservable`.
+   *
+   * `toFuture` throws an `IllegalArgumentException` if the `BlockingObservable` emits more than one item. If the
+   * `BlockingObservable` may emit more than item, use `BlockingObservable.toList.toFuture`.
+   *
+   * `toFuture` throws an `NoSuchElementException` if the `BlockingObservable` is empty.
+   *
+   * <img width="640" height="395" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.toFuture.png">
+   *
+   * @return a `Future` that expects a single item to be emitted by this `BlockingObservable`.
+   */
+  def toFuture: Future[T] = {
+    val p = Promise[T]()
+    o.single.subscribe(t => p.success(t), e => p.failure(e))
+    p.future
+  }
 }
 
 // Cannot yet have inner class because of this error message: 
