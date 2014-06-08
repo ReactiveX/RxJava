@@ -18,6 +18,7 @@ package rx.subjects;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
+import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 
 import rx.Observer;
 import rx.Scheduler;
@@ -87,7 +88,13 @@ public final class ReplaySubject<T> extends Subject<T, T> {
      * @return the created subject
      */
     public static <T> ReplaySubject<T> create(int capacity) {
-        final UnboundedReplayState<T> state = new UnboundedReplayState<T>(capacity);
+        final ReplayState<T, Integer> state;
+        if (capacity <= 0 || capacity > 1) {
+            state = new UnboundedReplayState<T>(capacity);
+        } else {
+            state = new SingleValueReplayState<T>(capacity);
+        }
+
         SubjectSubscriptionManager<T> ssm = new SubjectSubscriptionManager<T>();
         ssm.onStart = new Action1<SubjectObserver<T>>() {
             @Override
@@ -374,7 +381,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         public void accept(Observer<? super T> o, int idx) {
             nl.accept(o, list.get(idx));
         }
-        
+
         @Override
         public void complete() {
             if (!terminated) {
@@ -528,6 +535,129 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         @Override
         public boolean terminated() {
             return terminated;
+        }
+    }
+
+    static final class SingleValueReplayState<T> implements ReplayState<T, Integer> {
+        private final NotificationLite<T> nl = NotificationLite.instance();
+        /** The termination flag. */
+        private volatile boolean terminated;
+        /** The size of the buffer. */
+        volatile int index;
+        @SuppressWarnings("rawtypes")
+        static final AtomicIntegerFieldUpdater<SingleValueReplayState> INDEX_UPDATER
+                = AtomicIntegerFieldUpdater.newUpdater(SingleValueReplayState.class, "index");
+
+        private static final int REPLAY_BUFFER_SIZE = 2; // One onNext value with onComplete
+        private final Object[] replayBuffer = new Object[REPLAY_BUFFER_SIZE];
+
+        private final int initialCapacity;
+        private volatile UnboundedReplayState<T> unboundedReplayState;
+        @SuppressWarnings(value = "rawtypes")
+        static final AtomicReferenceFieldUpdater<SingleValueReplayState, UnboundedReplayState> UNBOUNDED_UPDATER =
+            AtomicReferenceFieldUpdater.newUpdater(SingleValueReplayState.class, UnboundedReplayState.class, "unboundedReplayState");
+
+
+        public SingleValueReplayState(int initialCapacity) {
+            this.initialCapacity = initialCapacity;
+        }
+
+        @Override
+        public void next(T n) {
+            if (!terminated) {
+                if (index < REPLAY_BUFFER_SIZE) {
+                    replayBuffer[index] = nl.next(n);
+                    INDEX_UPDATER.getAndIncrement(this);
+                    return;
+                } else if (unboundedReplayState == null) {
+                    setupUnboundedReplayState();
+                }
+
+                unboundedReplayState.next(n);
+            }
+        }
+
+        public void accept(Observer<? super T> o, int idx) {
+            if (idx < index) {
+                nl.accept(o, replayBuffer[idx]);
+            } else {
+                throw new IndexOutOfBoundsException(
+                    String.format("Given replay subject index: %d, is bigger than current index: %d", idx, index)
+                );
+            }
+        }
+
+        @Override
+        public void complete() {
+            if (!terminated) {
+                terminated = true;
+                if (index < REPLAY_BUFFER_SIZE) {
+                    replayBuffer[index] = nl.completed();
+                    INDEX_UPDATER.getAndIncrement(this);
+                    return;
+                } else if (unboundedReplayState == null) {
+                    setupUnboundedReplayState();
+                }
+
+                unboundedReplayState.complete();
+            }
+        }
+        @Override
+        public void error(Throwable e) {
+            if (!terminated) {
+                terminated = true;
+                if (index < REPLAY_BUFFER_SIZE) {
+                    replayBuffer[index] = nl.error(e);
+                    INDEX_UPDATER.getAndIncrement(this);
+                    return;
+                } else if (unboundedReplayState == null) {
+                    setupUnboundedReplayState();
+                }
+
+                unboundedReplayState.error(e);
+            }
+        }
+
+        @Override
+        public boolean terminated() {
+            return terminated;
+        }
+
+        @Override
+        public void replayObserver(SubjectObserver<? super T> observer) {
+            Integer lastEmittedLink = observer.index();
+            if (lastEmittedLink != null) {
+                int l = replayObserverFromIndex(lastEmittedLink, observer);
+                observer.index(l);
+            } else {
+                throw new IllegalStateException("failed to find lastEmittedLink for: " + observer);
+            }
+        }
+
+        @Override
+        public Integer replayObserverFromIndex(Integer idx, SubjectObserver<? super T> observer) {
+            if (idx < index) {
+                int i = idx;
+                while (i < index) {
+                    accept(observer, i);
+                    i++;
+                }
+
+                return i;
+            } else if (unboundedReplayState == null) {
+                setupUnboundedReplayState();
+            }
+
+            return unboundedReplayState.replayObserverFromIndex(Math.max(0, idx - index), observer);
+        }
+
+        @Override
+        public Integer replayObserverFromIndexTest(Integer idx, SubjectObserver<? super T> observer, long now) {
+            return replayObserverFromIndex(idx, observer);
+        }
+
+        private void setupUnboundedReplayState() {
+            UNBOUNDED_UPDATER.compareAndSet(this, null, new UnboundedReplayState<T>(initialCapacity));
         }
     }
     
