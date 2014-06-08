@@ -243,6 +243,21 @@ class BlockingObservable[+T] private[scala] (val o: Observable[T])
     asJava.toIterable.asScala.toList: List[T] // useless ascription because of compiler bug
   }
 
+  /**
+   * Returns an `Iterable` that returns the latest item emitted by this `BlockingObservable`,
+   * waiting if necessary for one to become available.
+   *
+   * If this `BlockingObservable` produces items faster than `Iterator.next` takes them,
+   * `onNext` events might be skipped, but `onError` or `onCompleted` events are not.
+   *
+   * Note also that an `onNext` directly followed by `onCompleted` might hide the `onNext` event.
+   *
+   * @return an `Iterable` that always returns the latest item emitted by this `BlockingObservable`
+   */
+  def latest: Iterable[T] = {
+    asJava.latest.asScala: Iterable[T] // useless ascription because of compiler bug
+  }
+
 }
 
 // Cannot yet have inner class because of this error message: 
