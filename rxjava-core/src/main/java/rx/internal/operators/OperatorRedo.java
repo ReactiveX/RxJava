@@ -31,20 +31,127 @@ package rx.internal.operators;
  * limitations under the License.
  */
 
+import static rx.Observable.create;
 import rx.Notification;
 import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Observable.Operator;
-import rx.Observer;
 import rx.Scheduler;
 import rx.Subscriber;
 import rx.functions.Action0;
 import rx.functions.Func1;
+import rx.functions.Func2;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
-import rx.subscriptions.SerialSubscription;
+import rx.subscriptions.CompositeSubscription;
 
 public final class OperatorRedo<T> implements OnSubscribe<T> {
+
+    static final Func1<Observable<? extends Notification<?>>, Observable<? extends Notification<?>>> REDO_INIFINITE = new Func1<Observable<? extends Notification<?>>, Observable<? extends Notification<?>>>() {
+        @Override
+        public Observable<? extends Notification<?>> call(Observable<? extends Notification<?>> ts) {
+            return ts.map(new Func1<Notification<?>, Notification<?>>() {
+                @Override
+                public Notification<?> call(Notification<?> terminal) {
+                    return Notification.createOnNext(null);
+                }
+            }).startWith(Notification.createOnNext(null));
+        }
+    };
+
+    public static final class RedoFinite implements Func1<Observable<? extends Notification<?>>, Observable<? extends Notification<?>>> {
+        private final long count;
+
+        public RedoFinite(long count) {
+            this.count = count;
+        }
+
+        @Override
+        public Observable<? extends Notification<?>> call(Observable<? extends Notification<?>> ts) {
+            final Notification<Long> first = count < 0 ? Notification.<Long> createOnCompleted() : Notification.createOnNext(0l);
+
+            return ts.scan(first, new Func2<Notification<Long>, Notification<?>, Notification<Long>>() {
+                @SuppressWarnings("unchecked")
+                @Override
+                public Notification<Long> call(Notification<Long> n, Notification<?> term) {
+                    final long value = n.getValue();
+                    if (value < count) return Notification.createOnNext(value + 1);
+                    else return (Notification<Long>) term;
+                }
+            });
+        }
+    }
+
+    public static final class RetryWithPredicate implements Func1<Observable<? extends Notification<?>>, Observable<? extends Notification<?>>> {
+        private Func2<Integer, Throwable, Boolean> predicate;
+
+        public RetryWithPredicate(Func2<Integer, Throwable, Boolean> predicate) {
+            this.predicate = predicate;
+        }
+
+        @Override
+        public Observable<? extends Notification<?>> call(Observable<? extends Notification<?>> ts) {
+            return ts.scan(Notification.createOnNext(0), new Func2<Notification<Integer>, Notification<?>, Notification<Integer>>() {
+                @SuppressWarnings("unchecked")
+                @Override
+                public Notification<Integer> call(Notification<Integer> n, Notification<?> term) {
+                    final int value = n.getValue();
+                    if (predicate.call(value, term.getThrowable()).booleanValue()) return Notification.createOnNext(value + 1);
+                    else return (Notification<Integer>) term;
+                }
+            });
+        }
+    }
+
+    public static <T> Observable<T> retry(Observable<T> source) {
+        return retry(source, REDO_INIFINITE);
+    }
+
+    public static <T> Observable<T> retry(Observable<T> source, final long count) {
+        if (count < 0) throw new IllegalArgumentException("count >= 0 expected");
+        if (count == 0) return source;
+        return retry(source, new RedoFinite(count));
+    }
+
+    public static <T> Observable<T> retry(Observable<T> source, Func1<? super Observable<? extends Notification<?>>, ? extends Observable<? extends Notification<?>>> notificationHandler) {
+        return create(new OperatorRedo<T>(source, notificationHandler, true, false, Schedulers.trampoline()));
+    }
+
+    public static <T> Observable<T> retry(Observable<T> source, Func1<? super Observable<? extends Notification<?>>, ? extends Observable<? extends Notification<?>>> notificationHandler,
+            Scheduler scheduler) {
+        return create(new OperatorRedo<T>(source, notificationHandler, true, false, scheduler));
+    }
+
+    public static <T> Observable<T> repeat(Observable<T> source) {
+        return repeat(source, Schedulers.trampoline());
+    }
+
+    public static <T> Observable<T> repeat(Observable<T> source, Scheduler scheduler) {
+        return repeat(source, REDO_INIFINITE, scheduler);
+    }
+
+    public static <T> Observable<T> repeat(Observable<T> source, final long count) {
+        return repeat(source, count, Schedulers.trampoline());
+    }
+
+    public static <T> Observable<T> repeat(Observable<T> source, final long count, Scheduler scheduler) {
+        if (count < 0) throw new IllegalArgumentException("count >= 0 expected");
+        return repeat(source, new RedoFinite(count - 1), scheduler);
+    }
+
+    public static <T> Observable<T> repeat(Observable<T> source, Func1<? super Observable<? extends Notification<?>>, ? extends Observable<? extends Notification<?>>> notificationHandler) {
+        return create(new OperatorRedo<T>(source, notificationHandler, false, true, Schedulers.trampoline()));
+    }
+
+    public static <T> Observable<T> repeat(Observable<T> source, Func1<? super Observable<? extends Notification<?>>, ? extends Observable<? extends Notification<?>>> notificationHandler,
+            Scheduler scheduler) {
+        return create(new OperatorRedo<T>(source, notificationHandler, false, true, scheduler));
+    }
+
+    public static <T> Observable<T> redo(Observable<T> source, Func1<? super Observable<? extends Notification<?>>, ? extends Observable<? extends Notification<?>>> notificationHandler,
+            Scheduler scheduler) {
+        return create(new OperatorRedo<T>(source, notificationHandler, false, false, scheduler));
+    }
 
     private Observable<T> source;
     private final Func1<? super Observable<? extends Notification<?>>, ? extends Observable<? extends Notification<?>>> f;
@@ -52,42 +159,8 @@ public final class OperatorRedo<T> implements OnSubscribe<T> {
     private boolean stopOnError;
     private final Scheduler scheduler;
 
-    public static <T> OnSubscribe<T> retry(Observable<T> source,
-            Func1<? super Observable<? extends Notification<?>>, ? extends Observable<? extends Notification<?>>> notificationHandler) {
-        return retry(source, notificationHandler, Schedulers.trampoline());
-    }
-
-    public static <T> OnSubscribe<T> retry(Observable<T> source,
-            Func1<? super Observable<? extends Notification<?>>, ? extends Observable<? extends Notification<?>>> notificationHandler,
+    private OperatorRedo(Observable<T> source, Func1<? super Observable<? extends Notification<?>>, ? extends Observable<? extends Notification<?>>> f, boolean stopOnComplete, boolean stopOnError,
             Scheduler scheduler) {
-        return new OperatorRedo<T>(source, notificationHandler, true, false, scheduler);
-    }
-
-    public static <T> OnSubscribe<T> repeat(Observable<T> source,
-            Func1<? super Observable<? extends Notification<?>>, ? extends Observable<? extends Notification<?>>> notificationHandler) {
-        return repeat(source, notificationHandler, Schedulers.trampoline());
-    }
-
-    public static <T> OnSubscribe<T> repeat(Observable<T> source,
-            Func1<? super Observable<? extends Notification<?>>, ? extends Observable<? extends Notification<?>>> notificationHandler,
-            Scheduler scheduler) {
-        return new OperatorRedo<T>(source, notificationHandler, false, true, scheduler);
-    }
-
-    public static <T> OnSubscribe<T> redo(Observable<T> source,
-            Func1<? super Observable<? extends Notification<?>>, ? extends Observable<? extends Notification<?>>> notificationHandler) {
-        return redo(source, notificationHandler, Schedulers.trampoline());
-    }
-
-    public static <T> OnSubscribe<T> redo(Observable<T> source,
-            Func1<? super Observable<? extends Notification<?>>, ? extends Observable<? extends Notification<?>>> notificationHandler,
-            Scheduler scheduler) {
-        return new OperatorRedo<T>(source, notificationHandler, false, false, scheduler);
-    }
-
-    private OperatorRedo(Observable<T> source,
-            Func1<? super Observable<? extends Notification<?>>, ? extends Observable<? extends Notification<?>>> f,
-            boolean stopOnComplete, boolean stopOnError, Scheduler scheduler) {
         this.source = source;
         this.f = f;
         this.stopOnComplete = stopOnComplete;
@@ -100,11 +173,10 @@ public final class OperatorRedo<T> implements OnSubscribe<T> {
         final Scheduler.Worker inner = scheduler.createWorker();
         child.add(inner);
 
-        final SerialSubscription serialSubscription = new SerialSubscription();
-        // add serialSubscription so it gets unsubscribed if child is unsubscribed
-        child.add(serialSubscription);
+        final CompositeSubscription subscription = new CompositeSubscription();
+        child.add(subscription);
 
-        final PublishSubject<Notification<?>> ts = PublishSubject.create();
+        final PublishSubject<Notification<?>> terminals = PublishSubject.create();
 
         final Action0 action = new Action0() {
             @Override
@@ -114,12 +186,14 @@ public final class OperatorRedo<T> implements OnSubscribe<T> {
                 Subscriber<T> subscriber = new Subscriber<T>() {
                     @Override
                     public void onCompleted() {
-                        ts.onNext(Notification.createOnCompleted());
+                        unsubscribe();
+                        terminals.onNext(Notification.createOnCompleted());
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        ts.onNext(Notification.createOnError(e));
+                        unsubscribe();
+                        terminals.onNext(Notification.createOnError(e));
                     }
 
                     @Override
@@ -127,54 +201,60 @@ public final class OperatorRedo<T> implements OnSubscribe<T> {
                         child.onNext(v);
                     }
                 };
-                // register this Subscription (and unsubscribe previous if exists)
-                serialSubscription.set(subscriber);
+                subscription.add(subscriber);
                 source.unsafeSubscribe(subscriber);
             }
         };
 
-        f.call(ts.lift(new Operator<Notification<?>, Notification<?>>() {
+        final Observable<? extends Notification<?>> restarts = f.call(
+        // lifting in a custom operator to kind of do a merge/map/filter thing.
+                terminals.lift(new Operator<Notification<?>, Notification<?>>() {
+                    @Override
+                    public Subscriber<? super Notification<?>> call(final Subscriber<? super Notification<?>> filteredTerminals) {
+                        return new Subscriber<Notification<?>>(filteredTerminals) {
+                            @Override
+                            public void onCompleted() {
+                                filteredTerminals.onCompleted();
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                filteredTerminals.onError(e);
+                            }
+
+                            @Override
+                            public void onNext(Notification<?> t) {
+                                if (t.isOnCompleted() && stopOnComplete) child.onCompleted();
+                                else if (t.isOnError() && stopOnError) child.onError(t.getThrowable());
+                                else filteredTerminals.onNext(t);
+                            }
+                        };
+                    }
+                }));
+
+        // subscribe to the restarts observable to know when to schedule the next redo.
+        child.add(inner.schedule(new Action0() {
             @Override
-            public Subscriber<? super Notification<?>> call(final Subscriber<? super Notification<?>> terminals) {
-                return new Subscriber<Notification<?>>(terminals) {
+            public void call() {
+                restarts.dematerialize().unsafeSubscribe(new Subscriber<Object>(child) {
                     @Override
                     public void onCompleted() {
-                        terminals.onCompleted();
+                        child.onCompleted();
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        terminals.onError(e);
+                        child.onError(e);
                     }
 
                     @Override
-                    public void onNext(Notification<?> t) {
-                        if (t.isOnCompleted() && stopOnComplete) terminals.onCompleted();
-                        else if (t.isOnError() && stopOnError) terminals.onError(t.getThrowable());
-                        else terminals.onNext(t);
+                    public void onNext(Object t) {
+                        if (!child.isUnsubscribed()) {
+                            child.add(inner.schedule(action));
+                        }
                     }
-                };
+                });
             }
-        })).subscribe(new Observer<Notification<?>>() {
-
-            @Override
-            public void onCompleted() {
-                child.onCompleted();
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                child.onError(e);
-            }
-
-            @Override
-            public void onNext(Notification<?> t) {
-                if (t.isOnCompleted()) child.onCompleted();
-                else if (t.isOnError()) child.onError(t.getThrowable());
-                else if (!child.isUnsubscribed()) inner.schedule(action);
-            }
-        });
-
-        inner.schedule(action);
+        }));
     }
 }
