@@ -95,10 +95,7 @@ class BlockingObservable[+T] private[scala] (val o: Observable[T])
    * @return the last item emitted by the source Observable, or a default item if the source Observable is empty
    */
   def lastOrElse[U >: T](default: => U): U = {
-    lastOption match {
-      case Some(element) => element
-      case None => default
-    }
+    lastOption getOrElse default
   }
 
   /**
@@ -149,10 +146,7 @@ class BlockingObservable[+T] private[scala] (val o: Observable[T])
    * @return the very first item from the source, or a default value if the source Observable completes without emitting any item.
    */
   def headOrElse[U >: T](default: => U): U = {
-    headOption match {
-      case Some(element) => element
-      case None => default
-    }
+    headOption getOrElse default
   }
 
   /**
@@ -222,10 +216,7 @@ class BlockingObservable[+T] private[scala] (val o: Observable[T])
    * @throws IllegalArgumentException if the source Observable emits more than one item
    */
   def singleOrElse[U >: T](default: => U): U = {
-    singleOption match {
-      case Some(element) => element
-      case None => default
-    }
+    singleOption getOrElse default
   }
 
   /**
