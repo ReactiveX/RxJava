@@ -405,9 +405,11 @@ public class BlockingObservable<T> {
     /**
      * Returns a {@link Future} representing the single value emitted by this {@code BlockingObservable}.
      * <p>
-     * {@code toFuture} throws an exception if the {@code BlockingObservable} emits more than one item. If the
-     * {@code BlockingObservable} may emit more than item, use
-     * {@link Observable#toList toList()}{@code .toFuture()}.
+     * If {@link BlockingObservable} emits more than one item, {@link java.util.concurrent.Future} will receive an
+     * {@link java.lang.IllegalArgumentException}. If {@link BlockingObservable} is empty, {@link java.util.concurrent.Future}
+     * will receive an {@link java.util.NoSuchElementException}.
+     * <p>
+     * If the {@code BlockingObservable} may emit more than one item, use {@code Observable.toList().toBlocking().toFuture()}.
      * <p>
      * <img width="640" height="395" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.toFuture.png">
      * 
