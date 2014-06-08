@@ -578,13 +578,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         }
 
         public void accept(Observer<? super T> o, int idx) {
-            if (idx < index) {
-                nl.accept(o, replayBuffer[idx]);
-            } else {
-                throw new IndexOutOfBoundsException(
-                    String.format("Given replay subject index: %d, is bigger than current index: %d", idx, index)
-                );
-            }
+            nl.accept(o, replayBuffer[idx]);
         }
 
         @Override
