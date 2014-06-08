@@ -15,8 +15,6 @@
  */
 package rx.internal.operators;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import rx.Observable.Operator;
 import rx.Subscriber;
 import rx.exceptions.OnErrorThrowable;
@@ -73,27 +71,26 @@ public final class OperatorScan<R, T> implements Operator<R, T> {
 
     @Override
     public Subscriber<? super T> call(final Subscriber<? super R> observer) {
+        if (initialValue != NO_INITIAL_VALUE) {
+            observer.onNext(initialValue);
+        }
         return new Subscriber<T>(observer) {
-            private AtomicBoolean hasNotOnNexted = new AtomicBoolean(true);
-            private R accumulatedValue = initialValue;
+            private R value = initialValue;
 
             @SuppressWarnings("unchecked")
             @Override
             public void onNext(T value) {
-                if (this.accumulatedValue.equals(NO_INITIAL_VALUE))
-                    this.accumulatedValue = (R) value;
-                else {
-                    if (hasNotOnNexted.get())
-                        observer.onNext(initialValue);
-    
+                if (this.value == NO_INITIAL_VALUE) {
+                    // if there is NO_INITIAL_VALUE then we know it is type T for both so cast T to R
+                    this.value = (R) value;
+                } else {
                     try {
-                        this.accumulatedValue = accumulator.call(this.accumulatedValue, value);
+                        this.value = accumulator.call(this.value, value);
                     } catch (Throwable e) {
                         observer.onError(OnErrorThrowable.addValueAsLastCause(e, value));
                     }
                 }
-                hasNotOnNexted.set(false);
-                observer.onNext(this.accumulatedValue);
+                observer.onNext(this.value);
             }
 
             @Override
@@ -103,8 +100,6 @@ public final class OperatorScan<R, T> implements Operator<R, T> {
 
             @Override
             public void onCompleted() {
-                if (!initialValue.equals(NO_INITIAL_VALUE) && hasNotOnNexted.get())
-                    observer.onNext(initialValue);
                 observer.onCompleted();
             }
         };

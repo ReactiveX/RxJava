@@ -5386,17 +5386,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229428.aspx">MSDN: Observable.Repeat</a>
      */
     public final Observable<T> repeat() {
-        return repeat(new Func1<Observable<? extends Notification<?>>, Observable<? extends Notification<?>>>() {
-            @Override
-            public Observable<? extends Notification<?>> call(Observable<? extends Notification<?>> ts) {
-                return ts.map(new Func1<Notification<?>, Notification<?>>() {
-                    @Override
-                    public Notification<?> call(Notification<?> t1) {
-                        return Notification.createOnNext(null);
-                    }
-                });
-            }
-        });
+        return OperatorRedo.<T>repeat(this);
     }
 
     /**
@@ -5412,17 +5402,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229428.aspx">MSDN: Observable.Repeat</a>
      */
     public final Observable<T> repeat(Scheduler scheduler) {
-        return repeat(new Func1<Observable<? extends Notification<?>>, Observable<? extends Notification<?>>>() {
-            @Override
-            public Observable<? extends Notification<?>> call(Observable<? extends Notification<?>> ts) {
-                return ts.map(new Func1<Notification<?>, Notification<?>>() {
-                    @Override
-                    public Notification<?> call(Notification<?> t1) {
-                        return Notification.createOnNext(null);
-                    }
-                });
-            }
-        }, scheduler);
+        return OperatorRedo.<T>repeat(this, scheduler);
     }
 
     /**
@@ -5445,25 +5425,7 @@ public class Observable<T> {
      * @since 0.17
      */
     public final Observable<T> repeat(final long count) {
-        if (count < 0) {
-            throw new IllegalArgumentException("count >= 0 expected");
-        }
-        else if (count == 0)
-            return empty();
-        return repeat(new Func1<Observable<? extends Notification<?>>, Observable<? extends Notification<?>>>() {
-            @Override
-            public Observable<? extends Notification<?>> call(Observable<? extends Notification<?>> ts) {
-                return ts.scan(Notification.createOnNext(count), new Func2<Notification<Long>, Notification<?>, Notification<Long>>() {
-                    @Override
-                    public Notification<Long> call(Notification<Long> n, Notification<?> term) {
-                        final long value = n.getValue();
-                        return value > 1 ?
-                                Notification.createOnNext(value - 1) :
-                                Notification.<Long> createOnCompleted();
-                    }
-                });
-            }
-        });
+        return OperatorRedo.<T>repeat(this, count);
     }
 
     /**
@@ -5484,25 +5446,7 @@ public class Observable<T> {
      * @since 0.17
      */
     public final Observable<T> repeat(final long count, Scheduler scheduler) {
-        if (count < 0) {
-            throw new IllegalArgumentException("count >= 0 expected");
-        }
-        else if (count == 0)
-            return empty();
-        return repeat(new Func1<Observable<? extends Notification<?>>, Observable<? extends Notification<?>>>() {
-            @Override
-            public Observable<? extends Notification<?>> call(Observable<? extends Notification<?>> ts) {
-                return ts.scan(Notification.createOnNext(count), new Func2<Notification<Long>, Notification<?>, Notification<Long>>() {
-                    @Override
-                    public Notification<Long> call(Notification<Long> n, Notification<?> term) {
-                        final long value = n.getValue();
-                            return value > 1 ?
-                                Notification.createOnNext(value - 1) :
-                                Notification.<Long> createOnCompleted();
-                    }
-                });
-            }
-        }, scheduler);
+        return OperatorRedo.<T>repeat(this, count, scheduler);
     }
 
     /**
@@ -5523,7 +5467,7 @@ public class Observable<T> {
      * @since 0.17
      */
     public final Observable<T> repeat(Func1<? super Observable<? extends Notification<?>>, ? extends Observable<? extends Notification<?>>> notificationHandler, Scheduler scheduler) {
-        return create(OperatorRedo.repeat(this, notificationHandler, scheduler));
+        return OperatorRedo.repeat(this, notificationHandler, scheduler);
     }
 
     /**
@@ -5544,7 +5488,7 @@ public class Observable<T> {
      * @since 0.17
      */
     public final Observable<T> repeat(Func1<? super Observable<? extends Notification<?>>, ? extends Observable<? extends Notification<?>>> notificationHandler) {
-        return create(OperatorRedo.repeat(this, notificationHandler));
+        return OperatorRedo.repeat(this, notificationHandler);
     }
 
     /**
@@ -6004,17 +5948,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.retry.aspx">MSDN: Observable.Retry</a>
      */
     public final Observable<T> retry() {
-        return retry(new Func1<Observable<? extends Notification<?>>, Observable<? extends Notification<?>>>() {
-            @Override
-            public Observable<? extends Notification<?>> call(Observable<? extends Notification<?>> ts) {
-                return ts.map(new Func1<Notification<?>, Notification<?>>() {
-                    @Override
-                    public Notification<?> call(Notification<?> terminal) {
-                        return Notification.createOnNext(null);
-                    }
-                });
-            }
-        });
+        return OperatorRedo.<T>retry(this);
     }
 
     /**
@@ -6039,26 +5973,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.retry.aspx">MSDN: Observable.Retry</a>
      */
     public final Observable<T> retry(final long count) {
-        if (count < 0)
-            throw new IllegalArgumentException("count >= 0 expected");
-        if (count == 0) 
-            return this;
-        return retry(new Func1<Observable<? extends Notification<?>>, Observable<? extends Notification<?>>>() {
-            @Override
-            public Observable<? extends Notification<?>> call(Observable<? extends Notification<?>> ts) {
-                return ts.scan(Notification.createOnNext(count),
-                        new Func2<Notification<Long>, Notification<?>, Notification<Long>>() {
-                            @SuppressWarnings("unchecked")
-                            @Override
-                            public Notification<Long> call(Notification<Long> n, Notification<?> term) {
-                                final long value = n.getValue();
-                                return value > 0 ?
-                                        Notification.createOnNext(value - 1) : 
-                                        (Notification<Long>) term;
-                            }
-                        }).skip(1);
-        }
-        });
+        return OperatorRedo.<T>retry(this, count);
     }
 
     /**
@@ -6078,7 +5993,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Error-Handling-Operators#wiki-retry">RxJava Wiki: retry()</a>
      */
     public final Observable<T> retry(Func1<? super Observable<? extends Notification<?>>, ? extends Observable<? extends Notification<?>>> notificationHandler) {
-        return create(OperatorRedo.<T> retry(this, notificationHandler));
+        return OperatorRedo.<T> retry(this, notificationHandler);
     }
 
     /**
@@ -6098,7 +6013,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Error-Handling-Operators#wiki-retry">RxJava Wiki: retry()</a>
      */
     public final Observable<T> retry(Func1<? super Observable<? extends Notification<?>>, ? extends Observable<? extends Notification<?>>> notificationHandler, Scheduler scheduler) {
-        return create(OperatorRedo.<T> retry(this, notificationHandler, scheduler));
+        return OperatorRedo.<T> retry(this, notificationHandler, scheduler);
     }
 
     /**
