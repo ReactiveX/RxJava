@@ -180,9 +180,5 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
             }
         }
 
-        public State producer(Producer _p) {
-            return new State(n, _p);
-        }
-
     }
 }
