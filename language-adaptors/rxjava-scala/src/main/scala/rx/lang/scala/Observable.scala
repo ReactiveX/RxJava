@@ -879,8 +879,8 @@ trait Observable[+T]
    *            an function to be invoked when the source Observable finishes
    * @return an Observable that emits the same items as the source Observable, then invokes the function
    */
-  def finallyDo(action: () => Unit): Observable[T] = {
-    toScalaObservable[T](asJavaObservable.finallyDo(action))
+  def finallyDo(action: => Unit): Observable[T] = {
+    toScalaObservable[T](asJavaObservable.finallyDo(() => action))
   }
 
   /**
@@ -3406,8 +3406,8 @@ trait Observable[+T]
    *                    `onCompleted`
    * @return the source Observable with the side-effecting behavior applied
    */
-  def doOnCompleted(onCompleted: () => Unit): Observable[T] = {
-    toScalaObservable[T](asJavaObservable.doOnCompleted(onCompleted))
+  def doOnCompleted(onCompleted: => Unit): Observable[T] = {
+    toScalaObservable[T](asJavaObservable.doOnCompleted(() => onCompleted))
   }
 
   /**
@@ -3461,8 +3461,8 @@ trait Observable[+T]
    * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#wiki-doonterminate">RxJava Wiki: doOnTerminate()</a>
    * @see <a href="http://msdn.microsoft.com/en-us/library/hh229804.aspx">MSDN: Observable.Do</a>
    */
-  def doOnTerminate(onTerminate: () => Unit): Observable[T] = {
-    toScalaObservable[T](asJavaObservable.doOnTerminate(onTerminate))
+  def doOnTerminate(onTerminate: => Unit): Observable[T] = {
+    toScalaObservable[T](asJavaObservable.doOnTerminate(() => onTerminate))
   }
 
   /**
