@@ -115,7 +115,7 @@ public class RxSpscRingBuffer {
                 available = available - o;
             }
             if (available >= threshold) {
-                if (outstandingRequests.compareAndSet(o, available)) {
+                if (outstandingRequests.compareAndSet(o, available + o)) {
                     s.request(available);
                     return;
                 }

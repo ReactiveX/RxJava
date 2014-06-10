@@ -28,7 +28,7 @@ import rx.functions.Func1;
 
 public class OperatorParallelTest {
 
-    @Test
+    @Test(timeout=1000)
     public void testParallel() {
         int NUM = 1000;
         final AtomicInteger count = new AtomicInteger();
@@ -76,7 +76,7 @@ public class OperatorParallelTest {
         assertEquals("finalCount", NUM, count.get());
     }
 
-    @Test
+    @Test(timeout=1000)
     public void testParallelWithNestedAsyncWork() {
         int NUM = 20;
         final AtomicInteger count = new AtomicInteger();

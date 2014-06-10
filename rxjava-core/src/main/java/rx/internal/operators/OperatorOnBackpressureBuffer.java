@@ -89,6 +89,7 @@ public class OperatorOnBackpressureBuffer<T> implements Operator<T, T> {
                         } else {
                             // we hit the end ... so increment back to 0 again
                             requested.incrementAndGet();
+                            return;
                         }
                     }
                 }
