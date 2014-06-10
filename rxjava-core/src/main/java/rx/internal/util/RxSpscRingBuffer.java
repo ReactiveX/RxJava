@@ -73,6 +73,10 @@ public class RxSpscRingBuffer {
         }
     }
 
+    public int count() {
+        return count.get();
+    }
+    
     public int available() {
         return size - count.get();
     }

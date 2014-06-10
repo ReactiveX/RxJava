@@ -15,7 +15,6 @@
  */
 package rx.internal.operators;
 
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 import rx.Observable;
@@ -44,20 +43,16 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
     public Subscriber<Observable<? extends T>> call(final Subscriber<? super T> child) {
         final SubscriptionSet<InnerSubscriber<T>> childrenSubscriptions = new SubscriptionSet<InnerSubscriber<T>>();
         child.add(childrenSubscriptions);
-
-        System.out.println("subscribed");
         return new MergeSubscriber<T>(child, childrenSubscriptions);
 
     }
 
-    static final class MergeSubscriber<T> extends Subscriber<Observable<? extends T>> {
+    private static final class MergeSubscriber<T> extends Subscriber<Observable<? extends T>> {
         final Subscriber<? super T> actual;
         final SubscriptionSet<InnerSubscriber<T>> childrenSubscribers;
-        volatile MergeProducer<T> mergeProducer;
-        volatile int wip;
-        volatile boolean completed;
-        @SuppressWarnings("rawtypes")
-        static final AtomicIntegerFieldUpdater<MergeSubscriber> WIP_UPDATER = AtomicIntegerFieldUpdater.newUpdater(MergeSubscriber.class, "wip");
+        private MergeProducer<T> mergeProducer;
+        private int wip;
+        private boolean completed;
 
         public MergeSubscriber(Subscriber<? super T> actual, SubscriptionSet<InnerSubscriber<T>> childrenSubscriptions) {
             super(actual);
@@ -67,11 +62,14 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
 
         @Override
         public void onNext(Observable<? extends T> t) {
-            if (mergeProducer == null) {
-                // this means it's an Observable without backpressure support
-                mergeProducer = new MergeProducer<T>(null, actual, childrenSubscribers);
+            synchronized (this) {
+                if (mergeProducer == null) {
+                    System.out.println("No MergeProducer so we request -1");
+                    // this means it's an Observable without backpressure support
+                    mergeProducer = new MergeProducer<T>(null, actual, childrenSubscribers);
+                }
+                wip++;
             }
-            WIP_UPDATER.incrementAndGet(this);
             InnerSubscriber<T> i = new InnerSubscriber<T>(mergeProducer, this);
             childrenSubscribers.add(i);
             t.unsafeSubscribe(i);
@@ -85,8 +83,16 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
 
         @Override
         public void onCompleted() {
-            completed = true;
-            if (wip == 0) {
+            boolean c = false;
+            synchronized (this) {
+                completed = true;
+                if (wip == 0) {
+                    c = true;
+                }
+            }
+            System.out.println("********* outer onComplete ... should send? " + c + "        " + actual);
+            if (c) {
+                // complete outside of lock
                 actual.onCompleted();
             }
         }
@@ -100,13 +106,26 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
              * For requests coming from the child we want to route them instead
              * to the MergeProducer which will manage draining queues to deliver events.
              */
-            mergeProducer = new MergeProducer<T>(p, actual, childrenSubscribers);
+            synchronized (this) {
+                if (mergeProducer != null) {
+                    throw new IllegalStateException("Received Producer in `onSetProducer` after `onNext`");
+                }
+                mergeProducer = new MergeProducer<T>(p, actual, childrenSubscribers);
+            }
             return mergeProducer;
         }
 
         void completeInner(InnerSubscriber<T> s) {
             try {
-                if (WIP_UPDATER.decrementAndGet(this) == 0 && completed) {
+                boolean sendOnComplete = false;
+                synchronized (this) {
+                    wip--;
+                    if (wip == 0 && completed) {
+                        sendOnComplete = true;
+                    }
+                }
+                System.out.println("    **** inner onComplete ... should send: " + sendOnComplete + "        " + actual);
+                if (sendOnComplete) {
                     actual.onCompleted();
                 }
             } finally {
@@ -117,12 +136,13 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
 
     private static final class MergeProducer<T> implements Producer {
 
-        // TODO migrate to AFU
-        private final AtomicInteger requested = new AtomicInteger(-1);
-        private final AtomicInteger wip = new AtomicInteger();
+        private boolean infiniteRequestSent = false;
+        private int requested = -1;
+        private int wip = 0;
         private final Subscriber<? super T> child;
         private final SubscriptionSet<InnerSubscriber<T>> childrenSubscribers;
         private final Producer parentProducer;
+        private final MergeProducer<T> self = this;
 
         public MergeProducer(Producer parentProducer, Subscriber<? super T> child, SubscriptionSet<InnerSubscriber<T>> childrenSubscribers) {
             this.parentProducer = parentProducer;
@@ -135,24 +155,32 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
             @SuppressWarnings("unchecked")
             @Override
             public void call(InnerSubscriber<T> childSubscriber) {
-                if (child.isUnsubscribed() || requested.get() == 0) {
-                    return;
-                }
-                RxSpscRingBuffer q = childSubscriber.queue;
-                Object o = null;
-                while ((o = q.poll()) != null) {
-                    if (q.isCompleted(o)) {
-                        childSubscriber.complete();
-                    } else {
-                        child.onNext((T) o);
-                    }
-
-                    if (requested.decrementAndGet() == 0) {
-                        // we have sent as many as have been requested
+                synchronized (self) {
+                    if (child.isUnsubscribed() || requested == 0) {
                         return;
                     }
                 }
-                childSubscriber.queue.requestIfNeeded(childSubscriber);
+                RxSpscRingBuffer q = childSubscriber.queue;
+                Object o = null;
+                try {
+                    while ((o = q.poll()) != null) {
+                        if (q.isCompleted(o)) {
+                            childSubscriber.complete();
+                        } else {
+                            child.onNext((T) o);
+                        }
+
+                        synchronized (self) {
+                            requested--;
+                            if (requested == 0) {
+                                // we have sent as many as have been requested
+                                return;
+                            }
+                        }
+                    }
+                } finally {
+                    childSubscriber.queue.requestIfNeeded(childSubscriber);
+                }
             }
 
         };
@@ -160,9 +188,18 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
         @Override
         public void request(int n) {
             // we have been requested from our child
-            requested.getAndAdd(n);
-            // parentProducer can be null if we're merging an Observable<Observable> without backpressure support
-            if (parentProducer != null) {
+            boolean sendInfiniteRequest = false;
+            synchronized (this) {
+                if (requested < 0) {
+                    requested = 0;
+                }
+                requested += n;
+                // parentProducer can be null if we're merging an Observable<Observable> without backpressure support
+                if (parentProducer == null && !infiniteRequestSent) {
+                    sendInfiniteRequest = true;
+                }
+            }
+            if (sendInfiniteRequest) {
                 // request up to our parent to start sending us the Observables for merging
                 parentProducer.request(-1);
             }
@@ -174,27 +211,35 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
          * It will drain as many Observers as it can up to the requested limit.
          */
         private void attemptSending() {
-            if (requested.get() == 0) {
-                // we're done emitting the number requested so return
-                return;
+            synchronized (this) {
+                if (requested == 0) {
+                    // we're done emitting the number requested so return
+                    return;
+                }
             }
 
             // TODO right now this starts from the beginning every time
             // it needs to be more intelligent and remember where in the list it last ended
             // so it can be more fair ... otherwise those at the end may never get their events emitted
-            if (wip.getAndIncrement() == 0) {
+            boolean shouldSend = false;
+            synchronized (this) {
+                if (wip == 0) {
+                    shouldSend = true;
+                }
+                wip++;
+            }
+            if (shouldSend) {
                 while (true) {
                     if (child.isUnsubscribed()) {
                         return;
                     }
                     childrenSubscribers.forEach(action);
-                    if (wip.decrementAndGet() == 0) {
-                        //                            // no further events to try sending data for
-                        return;
-                    }
-                    if (requested.get() == 0) {
-                        // we're done emitting the number requested so return
-                        return;
+                    synchronized (this) {
+                        wip--;
+                        if (wip <= 0) {
+                            // no further events to try sending data for
+                            return;
+                        }
                     }
                 }
             }
@@ -204,7 +249,6 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
 
     private static final class InnerSubscriber<T> extends Subscriber<T> {
         final MergeProducer<T> mergeProducer;
-        final Subscriber<? super T> actual;
         final MergeSubscriber<T> parent;
         /** Make sure the inner termination events are delivered only once. */
         volatile int once;
@@ -214,9 +258,9 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
         private final RxSpscRingBuffer queue = new RxSpscRingBuffer();
 
         public InnerSubscriber(MergeProducer<T> mergeProducer, MergeSubscriber<T> parent) {
+            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> innerSubscriber: " + this);
             this.mergeProducer = mergeProducer;
             this.parent = parent;
-            this.actual = parent.actual;
             // setup request to fill queue
             queue.requestIfNeeded(this);
         }
