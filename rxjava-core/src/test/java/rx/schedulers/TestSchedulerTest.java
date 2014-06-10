@@ -30,6 +30,7 @@ import org.mockito.InOrder;
 import org.mockito.Mockito;
 
 import rx.Scheduler;
+import rx.Subscription;
 import rx.functions.Action0;
 import rx.functions.Func1;
 
@@ -77,6 +78,48 @@ public class TestSchedulerTest {
         inOrder.verify(calledOp, never()).call(anyLong());
     }
 
+    @SuppressWarnings("unchecked")
+    // mocking is unchecked, unfortunately
+    @Test
+    public final void testPeriodicSchedulingUnsubscription() {
+        final Func1<Long, Void> calledOp = mock(Func1.class);
+
+        final TestScheduler scheduler = new TestScheduler();
+        final Scheduler.Worker inner = scheduler.createWorker();
+
+        final Subscription subscription = inner.schedulePeriodically(new Action0() {
+            @Override
+            public void call() {
+                System.out.println(scheduler.now());
+                calledOp.call(scheduler.now());
+            }
+        }, 1, 2, TimeUnit.SECONDS);
+
+        verify(calledOp, never()).call(anyLong());
+
+        InOrder inOrder = Mockito.inOrder(calledOp);
+
+        scheduler.advanceTimeBy(999L, TimeUnit.MILLISECONDS);
+        inOrder.verify(calledOp, never()).call(anyLong());
+
+        scheduler.advanceTimeBy(1L, TimeUnit.MILLISECONDS);
+        inOrder.verify(calledOp, times(1)).call(1000L);
+
+        scheduler.advanceTimeBy(1999L, TimeUnit.MILLISECONDS);
+        inOrder.verify(calledOp, never()).call(3000L);
+
+        scheduler.advanceTimeBy(1L, TimeUnit.MILLISECONDS);
+        inOrder.verify(calledOp, times(1)).call(3000L);
+
+        scheduler.advanceTimeBy(5L, TimeUnit.SECONDS);
+        inOrder.verify(calledOp, times(1)).call(5000L);
+        inOrder.verify(calledOp, times(1)).call(7000L);
+
+        subscription.unsubscribe();
+        scheduler.advanceTimeBy(11L, TimeUnit.SECONDS);
+        inOrder.verify(calledOp, never()).call(anyLong());
+    }
+
     @Test
     public final void testImmediateUnsubscribes() {
         TestScheduler s = new TestScheduler();
@@ -94,6 +137,26 @@ public class TestSchedulerTest {
 
         });
         inner.unsubscribe();
+        assertEquals(0, counter.get());
+    }
+
+    @Test
+    public final void testImmediateUnsubscribes2() {
+        TestScheduler s = new TestScheduler();
+        final Scheduler.Worker inner = s.createWorker();
+        final AtomicInteger counter = new AtomicInteger(0);
+
+        final Subscription subscription = inner.schedule(new Action0() {
+
+            @Override
+            public void call() {
+                counter.incrementAndGet();
+                System.out.println("counter: " + counter.get());
+                inner.schedule(this);
+            }
+
+        });
+        subscription.unsubscribe();
         assertEquals(0, counter.get());
     }
 
