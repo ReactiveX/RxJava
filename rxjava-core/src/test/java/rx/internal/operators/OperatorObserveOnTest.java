@@ -544,6 +544,14 @@ public class OperatorObserveOnTest {
         assertEquals(1, errors.size());
         System.out.println("Errors: " + errors);
         Throwable t = errors.get(0);
-        assertTrue(t instanceof MissingBackpressureException);
+        if (t instanceof MissingBackpressureException) {
+            // success, we expect this
+        } else {
+            if (t.getCause() instanceof MissingBackpressureException) {
+                // this is also okay
+            } else {
+                fail("Expecting MissingBackpressureException");
+            }
+        }
     }
 }

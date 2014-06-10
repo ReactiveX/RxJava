@@ -307,7 +307,7 @@ public class OperatorTakeTest {
         Observer<Object> o = mock(Observer.class);
         TestSubscriber<Object> ts = new TestSubscriber<Object>(o);
         
-        INFINITE_OBSERVABLE.observeOn(Schedulers.newThread()).take(1).subscribe(ts);
+        INFINITE_OBSERVABLE.onBackpressureDrop().observeOn(Schedulers.newThread()).take(1).subscribe(ts);
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
         

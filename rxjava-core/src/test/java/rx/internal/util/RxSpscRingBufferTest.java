@@ -103,6 +103,7 @@ public class RxSpscRingBufferTest {
         b.poll();
         assertEquals(1, b.available());
         assertEquals(0, b.requested());
+        // we haven't requested anything so nothing should be sent, but there is space available so we can send
         b.onNext("a");
         assertEquals(0, b.available());
         assertEquals(0, b.requested());
@@ -110,7 +111,7 @@ public class RxSpscRingBufferTest {
         assertEquals(1, b.available());
         b.poll();
         assertEquals(2, b.available());
-        // empty
+        // empty, both spots available, but nothing requested
         assertEquals(0, b.requested());
         assertEquals(2, b.available());
         b.requestIfNeeded(s);
