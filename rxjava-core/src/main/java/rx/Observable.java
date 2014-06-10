@@ -4850,6 +4850,14 @@ public class Observable<T> {
         }).cast(klass);
     }
 
+    public final Observable<T> onBackpressureBuffer() {
+        return lift(new OperatorOnBackpressureBuffer<T>());
+    }
+    
+    public final Observable<T> onBackpressureDrop() {
+        return lift(new OperatorOnBackpressureDrop<T>());
+    }
+    
     /**
      * Instructs an Observable to pass control to another Observable rather than invoking
      * {@link Observer#onError onError} if it encounters an error.
