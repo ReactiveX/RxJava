@@ -15,6 +15,12 @@ public class PerfBaseline {
 
     @GenerateMicroBenchmark
     public void observableConsumption(UseCaseInput input) throws InterruptedException {
+        input.firehose.subscribe(input.observer);
+        input.awaitCompletion();
+    }
+    
+    @GenerateMicroBenchmark
+    public void observableViaRange(UseCaseInput input) throws InterruptedException {
         input.observable.subscribe(input.observer);
         input.awaitCompletion();
     }

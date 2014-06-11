@@ -39,6 +39,7 @@ public class UseCaseInput {
 
     public Iterable<Integer> iterable;
     public Observable<Integer> observable;
+    public Observable<Integer> firehose;
     public Observer<Integer> observer;
 
     private CountDownLatch latch;
@@ -46,15 +47,27 @@ public class UseCaseInput {
     @Setup
     public void setup(final BlackHole bh) {
         observable = Observable.range(0, size);
-        
+
+        firehose = Observable.create(new OnSubscribe<Integer>() {
+
+            @Override
+            public void call(Subscriber<? super Integer> s) {
+                for (int i = 0; i < size; i++) {
+                    s.onNext(i);
+                }
+                s.onCompleted();
+            }
+
+        });
+
         iterable = new Iterable<Integer>() {
 
             @Override
             public Iterator<Integer> iterator() {
                 return new Iterator<Integer>() {
 
-                    int i=0;
-                    
+                    int i = 0;
+
                     @Override
                     public boolean hasNext() {
                         return i < size;
@@ -64,15 +77,15 @@ public class UseCaseInput {
                     public Integer next() {
                         return i++;
                     }
-                    
+
                     @Override
                     public void remove() {
-                        
+
                     }
-                    
+
                 };
             }
-            
+
         };
 
         latch = new CountDownLatch(1);
