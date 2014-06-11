@@ -15,12 +15,14 @@
  */
 package rx.internal.operators;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 import rx.Observable.OnSubscribe;
 import rx.Producer;
 import rx.Subscriber;
+import rx.internal.util.RxSpscRingBuffer;
 
 /**
  * Converts an {@code Iterable} sequence into an {@code Observable}.
@@ -41,6 +43,22 @@ public final class OnSubscribeFromIterable<T> implements OnSubscribe<T> {
     @Override
     public void call(final Subscriber<? super T> o) {
         final Iterator<? extends T> it = is.iterator();
+        if (is instanceof Collection) {
+            @SuppressWarnings("rawtypes")
+            int size = ((Collection) is).size();
+            if (size < RxSpscRingBuffer.SIZE) {
+                while (it.hasNext()) {
+                    if (o.isUnsubscribed()) {
+                        return;
+                    }
+                    T t = it.next();
+                    o.onNext(t);
+                }
+                o.onCompleted();
+                return;
+            }
+        }
+        // otherwise we do it via the producer to support backpressure
         o.setProducer(new IterableProducer<T>(o, it));
     }
 
