@@ -16,7 +16,7 @@
 package rx.internal.operators;
 
 import java.util.Iterator;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 import rx.Observable.OnSubscribe;
 import rx.Producer;
@@ -41,32 +41,42 @@ public final class OnSubscribeFromIterable<T> implements OnSubscribe<T> {
     @Override
     public void call(final Subscriber<? super T> o) {
         final Iterator<? extends T> it = is.iterator();
-        o.setProducer(new Producer() {
-            // TODO migrate to AFU
-            final AtomicInteger requested = new AtomicInteger();
+        o.setProducer(new IterableProducer<T>(o, it));
+    }
 
-            @Override
-            public void request(int n) {
-                int _c = requested.getAndAdd(n);
-                if (_c == 0) {
-                    while (it.hasNext()) {
-                        if (o.isUnsubscribed()) {
-                            return;
-                        }
-                        T t = it.next();
-                        o.onNext(t);
-                        if (requested.decrementAndGet() == 0) {
-                            // we're done emitting the number requested so return
-                            return;
-                        }
+    private static final class IterableProducer<T> implements Producer {
+        private final Subscriber<? super T> o;
+        private final Iterator<? extends T> it;
+
+        private volatile int requested = 0;
+        @SuppressWarnings("rawtypes")
+        private static final AtomicIntegerFieldUpdater<IterableProducer> REQUESTED_UPDATER = AtomicIntegerFieldUpdater.newUpdater(IterableProducer.class, "requested");
+
+        private IterableProducer(Subscriber<? super T> o, Iterator<? extends T> it) {
+            this.o = o;
+            this.it = it;
+        }
+
+        @Override
+        public void request(int n) {
+            int _c = REQUESTED_UPDATER.getAndAdd(this, n);
+            if (_c == 0) {
+                while (it.hasNext()) {
+                    if (o.isUnsubscribed()) {
+                        return;
                     }
-
-                    o.onCompleted();
+                    T t = it.next();
+                    o.onNext(t);
+                    if (REQUESTED_UPDATER.decrementAndGet(this) == 0) {
+                        // we're done emitting the number requested so return
+                        return;
+                    }
                 }
 
+                o.onCompleted();
             }
 
-        });
+        }
     }
 
 }

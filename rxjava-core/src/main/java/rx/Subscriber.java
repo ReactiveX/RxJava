@@ -15,9 +15,6 @@
  */
 package rx;
 
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
-
 import rx.internal.util.SubscriptionList;
 import rx.subscriptions.CompositeSubscription;
 
@@ -35,6 +32,10 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
 
     private final SubscriptionList cs;
     private final Subscriber<?> op;
+    /* protected by `this` */
+    private Producer p;
+    /* protected by `this` */
+    private int requested = -1; // default to infinite
 
     @Deprecated
     protected Subscriber(CompositeSubscription cs) {
@@ -77,108 +78,48 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
     }
 
     public final void request(int n) {
-        State previous;
-        State intermediate;
-        State newState;
-        do {
-            previous = state.get();
-            newState = previous.request(n);
-            intermediate = newState;
-            if (intermediate.p != null) {
-                // we want to try and claim
-                newState = intermediate.claim();
+        Producer shouldRequest = null;
+        synchronized (this) {
+            if (p != null) {
+                shouldRequest = p;
+            } else {
+                requested = n;
             }
-        } while (!state.compareAndSet(previous, newState));
-        if (intermediate.p != null && intermediate.n > 0) {
-            // we have both P and N and won the claim so invoke
-            intermediate.p.request(intermediate.n);
+        }
+        // after releasing lock
+        if (shouldRequest != null) {
+            shouldRequest.request(n);
         }
     }
 
     protected Producer onSetProducer(Producer producer) {
         return producer;
     }
-    
+
     public final void setProducer(Producer producer) {
         producer = onSetProducer(producer);
-        if (op == null) {
-            // end of chain, we must run
-            int claimed = claim(producer);
-            if (claimed >= 0) {
-                // use count if we have it
-                producer.request(claimed);
-            } else {
-                // otherwise we must run when at the end of the chain
-                producer.request(State.INFINITE);
+        int toRequest = requested;
+        boolean setProducer = false;
+        synchronized (this) {
+            p = producer;
+            if (op != null) {
+                // middle operator ... we pass thru unless a request has been made
+                if (requested >= 0) {
+                    // if we have a positive value we will run as that means this operator has expressed interest
+                    toRequest = requested;
+                } else {
+                    // we pass-thru to the next producer as it has not been set
+                    setProducer = true;
+                }
+
             }
+        }
+        // do after releasing lock
+        if (setProducer) {
+            op.setProducer(p);
         } else {
-            // middle operator ... we pass thru unless a request has been made
-
-            // if we have a non-0 value we will run as that means this operator has expressed interest
-            int claimed = claim(producer);
-            if (claimed == State.NOT_SET) {
-                // we pass-thru to the next producer as it has not been set
-                op.setProducer(producer);
-            } else if (claimed != State.PAUSED) {
-                // it has been set and is not paused so we'll execute
-                producer.request(claimed);
-            }
+            // we execute the request with whatever has been requested (or -1)
+            p.request(toRequest);
         }
-    }
-
-    private int claim(Producer producer) {
-        State previous;
-        State newState;
-        do {
-            previous = state.get();
-            newState = previous.claim(producer);
-        } while (!state.compareAndSet(previous, newState));
-        return previous.n;
-    }
-
-    private final AtomicReference<State> state = new AtomicReference<State>(State.create());
-
-    private static class State {
-        private final int n;
-        private final Producer p;
-
-        private final static int PAUSED = 0;
-        private final static int INFINITE = -1;
-        private final static int NOT_SET = -2;
-
-        public State(int n, Producer p) {
-            this.n = n;
-            this.p = p;
-        }
-
-        public static State create() {
-            return new State(-2, null); // not set
-        }
-
-        public State request(int _n) {
-            int newN = _n;
-            if (n > 0) {
-                // add to existing if it hasn't been used yet
-                newN = n + _n;
-            }
-            return new State(newN, p);
-        }
-
-        public State claim(Producer producer) {
-            if (n == -2) {
-                return new State(-2, producer);
-            } else {
-                return new State(0, producer);
-            }
-        }
-
-        public State claim() {
-            if (n == -2) {
-                return this; // not set so return as is
-            } else {
-                return new State(0, p);
-            }
-        }
-
     }
 }
