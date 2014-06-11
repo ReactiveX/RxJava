@@ -22,8 +22,20 @@ import rx.schedulers.Schedulers;
 public class PerfObserveOn {
 
     @GenerateMicroBenchmark
-    public void observeOn(UseCaseInput input) throws InterruptedException {
+    public void observeOnComputation(UseCaseInput input) throws InterruptedException {
         input.observable.observeOn(Schedulers.computation()).subscribe(input.observer);
+        input.awaitCompletion();
+    }
+
+    @GenerateMicroBenchmark
+    public void observeOnNewThread(UseCaseInput input) throws InterruptedException {
+        input.observable.observeOn(Schedulers.newThread()).subscribe(input.observer);
+        input.awaitCompletion();
+    }
+
+    @GenerateMicroBenchmark
+    public void observeOnImmediate(UseCaseInput input) throws InterruptedException {
+        input.observable.observeOn(Schedulers.immediate()).subscribe(input.observer);
         input.awaitCompletion();
     }
 
