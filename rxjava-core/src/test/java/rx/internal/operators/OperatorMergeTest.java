@@ -635,7 +635,7 @@ public class OperatorMergeTest {
         // it should be between the take num and requested batch size across the async boundary
         System.out.println("Generated 1: " + generated1.get());
         System.out.println("Generated 2: " + generated2.get());
-        assertTrue(generated1.get() >= 3 && generated1.get() <= RxSpscRingBuffer.DEFAULT_SIZE);
+        assertTrue(generated1.get() >= 3 && generated1.get() <= RxSpscRingBuffer.SIZE);
     }
 
     private Observable<Integer> createInfiniteObservable(final AtomicInteger generated) {

@@ -28,11 +28,12 @@ public class RxSpscRingBufferTest {
 
     @Test
     public void missingBackpressureException() throws MissingBackpressureException {
-        RxSpscRingBuffer b = new RxSpscRingBuffer(2, 1);
+        RxSpscRingBuffer b = new RxSpscRingBuffer();
         TestSubscriber<Object> s = new TestSubscriber<Object>();
         b.requestIfNeeded(s);
-        b.onNext("o");
-        b.onNext("o");
+        for (int i = 0; i < RxSpscRingBuffer.SIZE; i++) {
+            b.onNext("one");
+        }
         try {
             b.onNext("o");
             fail("expected failure adding beyond size");
@@ -44,10 +45,11 @@ public class RxSpscRingBufferTest {
 
     @Test
     public void addAndPollFailBackpressure() throws MissingBackpressureException {
-        RxSpscRingBuffer b = new RxSpscRingBuffer(2, 1);
+        RxSpscRingBuffer b = new RxSpscRingBuffer();
         TestSubscriber<Object> s = new TestSubscriber<Object>();
-        b.onNext("o");
-        b.onNext("o");
+        for (int i = 0; i < RxSpscRingBuffer.SIZE; i++) {
+            b.onNext("one");
+        }
         b.poll();
         b.onNext("o");
         try {
@@ -61,7 +63,7 @@ public class RxSpscRingBufferTest {
 
     @Test
     public void addAndPoll() throws MissingBackpressureException {
-        RxSpscRingBuffer b = new RxSpscRingBuffer(2, 1);
+        RxSpscRingBuffer b = new RxSpscRingBuffer();
         TestSubscriber<Object> s = new TestSubscriber<Object>();
         b.onNext("o");
         b.onNext("o");
@@ -76,16 +78,20 @@ public class RxSpscRingBufferTest {
      */
     @Test
     public void onNextPollRequestCycle() throws MissingBackpressureException {
-        RxSpscRingBuffer b = new RxSpscRingBuffer(2, 1);
+        RxSpscRingBuffer b = new RxSpscRingBuffer();
         TestSubscriber<Object> s = new TestSubscriber<Object>();
-        assertEquals(2, b.available());
+        assertEquals(RxSpscRingBuffer.SIZE, b.available());
         assertEquals(0, b.requested());
         b.requestIfNeeded(s);
-        assertEquals(2, b.requested());
+        assertEquals(RxSpscRingBuffer.SIZE, b.requested());
         b.onNext("a");
-        assertEquals(1, b.available());
+        assertEquals(RxSpscRingBuffer.SIZE - 1, b.available());
         b.onNext("a");
-        assertEquals(0, b.available());
+        assertEquals(RxSpscRingBuffer.SIZE - 2, b.available());
+        // fill the queue
+        for (int i = 0; i < RxSpscRingBuffer.SIZE - 2; i++) {
+            b.onNext("one");
+        }
         // now full and no outstanding requests
         assertEquals(0, b.requested());
         b.poll();
@@ -93,15 +99,41 @@ public class RxSpscRingBufferTest {
         // it should still be 0 requested as we haven't requested more
         assertEquals(0, b.requested());
         b.requestIfNeeded(s);
-        // we can ONLY have 1 outstanding request here as we have not polled the last one
-        assertEquals(1, b.requested());
-        assertEquals(1, b.available());
-        b.onNext("a");
+        // still only 0 as we have not dropped below the threshold
+        assertEquals(0, b.requested());
+        // drain to threshold
+        final int DIFF = RxSpscRingBuffer.SIZE - RxSpscRingBuffer.THRESHOLD - 1;
+        System.out.println("DIFF: " + DIFF);
+        for (int i = 0; i < DIFF; i++) {
+            b.poll();
+        }
+        // DIFF+1 as we polled 1 above        
+        assertEquals(DIFF + 1, b.available());
+        assertEquals(RxSpscRingBuffer.SIZE - DIFF - 1, b.count());
+        assertEquals(0, b.requested());
+        System.out.println("---> Count: " + b.count() + "  Requested: " + b.requested());
+        b.requestIfNeeded(s);
+        // should still be the same since we're at the threshold
+        assertEquals(DIFF + 1, b.available());
+        System.out.println("---> Count: " + b.count() + "  Requested: " + b.requested());
+        assertEquals(0, b.requested());
+        // drop below threshold
+        b.poll();
+        System.out.println("---> Count: " + b.count() + "  Requested: " + b.requested());
+        b.requestIfNeeded(s);
+        System.out.println("---> Count: " + b.count() + "  Requested: " + b.requested());
+        // the diff of SIZE - THRESHOLD + the one that dropped below the threshold is how much we will have requested
+        assertEquals(DIFF + 2, b.requested());
+        assertEquals(DIFF + 2, b.available());
+        for (int i = 0; i < DIFF + 2; i++) {
+            b.onNext("a");
+        }
         // we are full and all requests are fulfilled
         assertEquals(0, b.requested());
         assertEquals(0, b.available());
         b.poll();
         assertEquals(1, b.available());
+        // requested is still 0 as we have polled 1, but not requested any further
         assertEquals(0, b.requested());
         // we haven't requested anything so nothing should be sent, but there is space available so we can send
         b.onNext("a");
@@ -111,20 +143,25 @@ public class RxSpscRingBufferTest {
         assertEquals(1, b.available());
         b.poll();
         assertEquals(2, b.available());
+        // finish draining
+        for (int i = 0; i < RxSpscRingBuffer.SIZE - 2; i++) {
+            b.poll();
+        }
         // empty, both spots available, but nothing requested
+        assertEquals(RxSpscRingBuffer.SIZE, b.available());
         assertEquals(0, b.requested());
-        assertEquals(2, b.available());
         b.requestIfNeeded(s);
-        assertEquals(2, b.requested());
+        assertEquals(RxSpscRingBuffer.SIZE, b.requested());
     }
 
     @Test
     public void roomForError() throws MissingBackpressureException {
-        RxSpscRingBuffer b = new RxSpscRingBuffer(2, 1);
+        RxSpscRingBuffer b = new RxSpscRingBuffer();
         TestSubscriber<Object> s = new TestSubscriber<Object>();
         b.requestIfNeeded(s);
-        b.onNext("one");
-        b.onNext("one");
+        for (int i = 0; i < RxSpscRingBuffer.SIZE; i++) {
+            b.onNext("one");
+        }
         // should act full now
         try {
             b.onNext("should-fail");
@@ -137,11 +174,12 @@ public class RxSpscRingBufferTest {
 
     @Test
     public void multipleTerminalEventsOnComplete() throws MissingBackpressureException {
-        RxSpscRingBuffer b = new RxSpscRingBuffer(2, 1);
+        RxSpscRingBuffer b = new RxSpscRingBuffer();
         TestSubscriber<Object> s = new TestSubscriber<Object>();
         b.requestIfNeeded(s);
-        b.onNext("one");
-        b.onNext("one");
+        for (int i = 0; i < RxSpscRingBuffer.SIZE; i++) {
+            b.onNext("one");
+        }
         // queue is now full
         b.onError(new RuntimeException("an error"));
         try {
@@ -154,11 +192,12 @@ public class RxSpscRingBufferTest {
 
     @Test
     public void multipleTerminalEventsOnError() throws MissingBackpressureException {
-        RxSpscRingBuffer b = new RxSpscRingBuffer(2, 1);
+        RxSpscRingBuffer b = new RxSpscRingBuffer();
         TestSubscriber<Object> s = new TestSubscriber<Object>();
         b.requestIfNeeded(s);
-        b.onNext("one");
-        b.onNext("one");
+        for (int i = 0; i < RxSpscRingBuffer.SIZE; i++) {
+            b.onNext("one");
+        }
         // queue is now full
         b.onCompleted();
         try {

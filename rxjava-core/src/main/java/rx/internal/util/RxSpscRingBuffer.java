@@ -1,12 +1,11 @@
 package rx.internal.util;
 
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import rx.Observer;
 import rx.Subscriber;
 import rx.exceptions.MissingBackpressureException;
 import rx.internal.operators.NotificationLite;
+import rx.internal.util.jctools.SpscArrayQueue;
 
 /**
  * Ring Buffer customized to Rx use-case.
@@ -15,28 +14,45 @@ import rx.internal.operators.NotificationLite;
  */
 public class RxSpscRingBuffer {
 
-    // TODO change to some global size like 1024/768
-    public static final int DEFAULT_SIZE = 10;
-    public static final int DEFAULT_THRESHOLD = 7;
+    public static final int SIZE = 1023; // +1 = 1024 which is a power of 2
+    public static final int THRESHOLD = 768;
 
     private static final NotificationLite<Object> on = NotificationLite.instance();
 
-    // TODO replace with non-blocking spsc ringbuffer
-    // for example: http://psy-lob-saw.blogspot.com/2013/11/spsc-iv-look-at-bqueue.html
-    private final ArrayBlockingQueue<Object> queue;
+    /**
+     * Using ArrayBlockingQueue
+     * <pre> {@code
+     * 
+     * Benchmark                              (size)   Mode   Samples         Mean   Mean error    Units
+     * r.i.u.PerfRingBuffer.onNextConsume        100  thrpt         5   159236.300     7108.964    ops/s
+     * r.i.u.PerfRingBuffer.onNextConsume       1023  thrpt         5    15615.351      953.520    ops/s
+     * r.i.u.PerfRingBuffer.onNextPollLoop       100  thrpt         5   158659.665     7847.576    ops/s
+     * r.i.u.PerfRingBuffer.onNextPollLoop   1000000  thrpt         5       17.495        0.246    ops/s
+     * 
+     * Using SpscArrayQueue
+     * 
+     * Benchmark                              (size)   Mode   Samples         Mean   Mean error    Units
+     * r.i.u.PerfRingBuffer.onNextConsume        100  thrpt         5   321948.603     9071.204    ops/s
+     * r.i.u.PerfRingBuffer.onNextConsume       1023  thrpt         5    35104.267     1586.282    ops/s
+     * r.i.u.PerfRingBuffer.onNextPollLoop       100  thrpt         5   324645.717    11050.170    ops/s
+     * r.i.u.PerfRingBuffer.onNextPollLoop   1000000  thrpt         5       41.269        0.630    ops/s
+     * } </pre>
+     */
+    private final SpscArrayQueue<Object> queue;
+
     private final int size;
     private final int threshold;
     private final AtomicInteger outstandingRequests = new AtomicInteger();
     private final AtomicInteger count = new AtomicInteger();
 
-    public RxSpscRingBuffer(int size, int threshold) {
-        queue = new ArrayBlockingQueue<Object>(size + 1); // +1 for onCompleted if onNext fills buffer
+    private RxSpscRingBuffer(int size, int threshold) {
+        queue = new SpscArrayQueue<Object>(size + 1); // +1 for onCompleted if onNext fills buffer
         this.size = size;
         this.threshold = threshold;
     }
 
     public RxSpscRingBuffer() {
-        this(DEFAULT_SIZE, DEFAULT_THRESHOLD);
+        this(SIZE, THRESHOLD);
     }
 
     /**
@@ -76,7 +92,7 @@ public class RxSpscRingBuffer {
     public int count() {
         return count.get();
     }
-    
+
     public int available() {
         return size - count.get();
     }
@@ -118,7 +134,7 @@ public class RxSpscRingBuffer {
                 // oustandingRequests can be <0 if we received an onNext or MissingBackpressureException that decremented below 0
                 available = available - o;
             }
-            if (available >= threshold) {
+            if (available > (size - threshold)) {
                 if (outstandingRequests.compareAndSet(o, available + Math.max(0, o))) {
                     s.request(available);
                     return;
