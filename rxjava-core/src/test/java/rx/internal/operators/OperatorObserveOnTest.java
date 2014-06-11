@@ -435,12 +435,12 @@ public class OperatorObserveOnTest {
         testSubscriber.assertReceivedOnNext(Arrays.asList(0, 1, 2));
         // it should be between the take num and requested batch size across the async boundary
         System.out.println("Generated: " + generated.get());
-        assertTrue(generated.get() >= 3 && generated.get() <= RxSpscRingBuffer.DEFAULT_SIZE);
+        assertTrue(generated.get() >= 3 && generated.get() <= RxSpscRingBuffer.SIZE);
     }
 
     @Test
     public void testBackpressureWithTakeAfterAndMultipleBatches() {
-        int numForBatches = RxSpscRingBuffer.DEFAULT_SIZE * 3 + 1; // should be 4 batches == ((3*n)+1) items
+        int numForBatches = RxSpscRingBuffer.SIZE * 3 + 1; // should be 4 batches == ((3*n)+1) items
         final AtomicInteger generated = new AtomicInteger();
         Observable<Integer> observable = Observable.from(new Iterable<Integer>() {
             @Override
@@ -467,12 +467,8 @@ public class OperatorObserveOnTest {
         TestSubscriber<Integer> testSubscriber = new TestSubscriber<Integer>() {
             @Override
             public void onNext(Integer t) {
-                System.err.println("c t = " + t + " thread " + Thread.currentThread());
+//                System.err.println("c t = " + t + " thread " + Thread.currentThread());
                 super.onNext(t);
-                try {
-                    Thread.sleep(10);
-                } catch (InterruptedException e) {
-                }
             }
         };
 
@@ -484,7 +480,7 @@ public class OperatorObserveOnTest {
         System.err.println(testSubscriber.getOnNextEvents());
         // it should be between the take num and requested batch size across the async boundary
         System.out.println("Generated: " + generated.get());
-        assertTrue(generated.get() >= numForBatches && generated.get() <= numForBatches + RxSpscRingBuffer.DEFAULT_SIZE);
+        assertTrue(generated.get() >= numForBatches && generated.get() <= numForBatches + RxSpscRingBuffer.SIZE);
     }
 
     @Test
@@ -525,18 +521,43 @@ public class OperatorObserveOnTest {
 
     @Test
     public void testQueueFullEmitsError() {
+        final CountDownLatch latch = new CountDownLatch(1);
         Observable<Integer> observable = Observable.create(new OnSubscribe<Integer>() {
 
             @Override
             public void call(Subscriber<? super Integer> o) {
-                for (int i = 0; i < 100; i++) {
+                for (int i = 0; i < RxSpscRingBuffer.SIZE + 10; i++) {
                     o.onNext(i);
                 }
+                latch.countDown();
                 o.onCompleted();
             }
 
         });
-        TestSubscriber<Integer> testSubscriber = new TestSubscriber<Integer>();
+        
+        TestSubscriber<Integer> testSubscriber = new TestSubscriber<Integer>(new Observer<Integer>() {
+
+            @Override
+            public void onCompleted() {
+                
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                
+            }
+
+            @Override
+            public void onNext(Integer t) {
+                // force it to be slow and wait until we have queued everything
+                try {
+                    latch.await(500, TimeUnit.MILLISECONDS);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            
+        });
         observable.observeOn(Schedulers.newThread()).subscribe(testSubscriber);
 
         testSubscriber.awaitTerminalEvent();

@@ -47,7 +47,6 @@ public final class OnSubscribeFromIterable<T> implements OnSubscribe<T> {
 
             @Override
             public void request(int n) {
-                System.out.println("onSubscribeFromIterable.request: " + n);
                 int _c = requested.getAndAdd(n);
                 if (_c == 0) {
                     while (it.hasNext()) {
