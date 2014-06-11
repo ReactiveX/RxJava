@@ -64,7 +64,6 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
         public void onNext(Observable<? extends T> t) {
             synchronized (this) {
                 if (mergeProducer == null) {
-                    System.out.println("No MergeProducer so we request -1");
                     // this means it's an Observable without backpressure support
                     mergeProducer = new MergeProducer<T>(null, actual, childrenSubscribers);
                 }
@@ -90,7 +89,6 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
                     c = true;
                 }
             }
-            System.out.println("********* outer onComplete ... should send? " + c + "        " + actual);
             if (c) {
                 // complete outside of lock
                 actual.onCompleted();
@@ -124,7 +122,6 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
                         sendOnComplete = true;
                     }
                 }
-                System.out.println("    **** inner onComplete ... should send: " + sendOnComplete + "        " + actual);
                 if (sendOnComplete) {
                     actual.onCompleted();
                 }
@@ -195,7 +192,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
                 }
                 requested += n;
                 // parentProducer can be null if we're merging an Observable<Observable> without backpressure support
-                if (parentProducer == null && !infiniteRequestSent) {
+                if (parentProducer != null && !infiniteRequestSent) {
                     sendInfiniteRequest = true;
                 }
             }
@@ -258,7 +255,6 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
         private final RxSpscRingBuffer queue = new RxSpscRingBuffer();
 
         public InnerSubscriber(MergeProducer<T> mergeProducer, MergeSubscriber<T> parent) {
-            System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> innerSubscriber: " + this);
             this.mergeProducer = mergeProducer;
             this.parent = parent;
             // setup request to fill queue

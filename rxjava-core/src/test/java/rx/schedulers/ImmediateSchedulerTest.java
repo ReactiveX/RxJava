@@ -19,10 +19,12 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import rx.Notification;
 import rx.Observable;
 import rx.Scheduler;
 import rx.functions.Action1;
 import rx.functions.Func1;
+import rx.observers.TestSubscriber;
 
 public class ImmediateSchedulerTest extends AbstractSchedulerTests {
 
@@ -63,10 +65,18 @@ public class ImmediateSchedulerTest extends AbstractSchedulerTests {
 
             @Override
             public String call(Integer t) {
+                System.out.println("hello?");
                 assertTrue(Thread.currentThread().getName().equals(currentThreadName));
                 return "Value_" + t + "_Thread_" + Thread.currentThread().getName();
             }
         });
+
+        o = o.doOnEach(new Action1<Notification<? super String>>() {
+
+            @Override
+            public void call(Notification<? super String> t1) {
+                System.out.println(t1);
+            }});
 
         o.toBlocking().forEach(new Action1<String>() {
 
