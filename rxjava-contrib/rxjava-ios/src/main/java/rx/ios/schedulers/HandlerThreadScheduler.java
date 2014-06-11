@@ -1,4 +1,3 @@
-package rx.ios.schedulers;
 /**
  * Copyright 2013 Netflix, Inc.
  * Copyright 2014 Ashley Williams
@@ -16,16 +15,18 @@ package rx.ios.schedulers;
  * limitations under the License.
  */
 
+package rx.ios.schedulers;
 
-import org.robovm.apple.foundation.NSBlockOperation;
 import org.robovm.apple.foundation.NSOperationQueue;
 import rx.Scheduler;
 import rx.Subscription;
 import rx.functions.Action0;
-import rx.subscriptions.BooleanSubscription;
+import rx.internal.util.RxThreadFactory;
+import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.Subscriptions;
 
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -35,6 +36,8 @@ import java.util.concurrent.TimeUnit;
 public class HandlerThreadScheduler extends Scheduler {
 
     private final NSOperationQueue operationQueue;
+    private static final String THREAD_PREFIX = "RxiOSScheduledExecutorPool-";
+
 
     public HandlerThreadScheduler(NSOperationQueue operationQueue) {
         this.operationQueue = operationQueue;
@@ -49,7 +52,7 @@ public class HandlerThreadScheduler extends Scheduler {
     private static class InnerHandlerThreadScheduler extends Worker {
 
         private final NSOperationQueue operationQueue;
-        private BooleanSubscription innerSubscription = new BooleanSubscription();
+        private CompositeSubscription innerSubscription = new CompositeSubscription();
 
 
         public InnerHandlerThreadScheduler(NSOperationQueue operationQueue) {
@@ -67,43 +70,53 @@ public class HandlerThreadScheduler extends Scheduler {
         }
 
         @Override
-        public Subscription schedule(Action0 action0) {
-            return schedule(action0, 0, TimeUnit.MILLISECONDS);
+        public Subscription schedule(final Action0 action) {
+            return schedule(action, 0, null);
         }
 
         @Override
         public Subscription schedule(final Action0 action, long delayTime, TimeUnit unit) {
+            return scheduledAction(action, delayTime, unit);
+        }
 
-            ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
-            final NSBlockOperation runOperation = new NSBlockOperation();
+        public Subscription scheduledAction(final Action0 action, long delay, TimeUnit unit) {
 
-            executor.schedule(new Runnable() {
-                @Override
-                public void run() {
-                    if (isUnsubscribed()) {
-                        return;
-                    }
-                    /* Runnable for action */
-                    final Runnable actionRunner = new Runnable() {
-                        @Override
-                        public void run() {
-                            action.call();
-                        }
-                    };
+            if (innerSubscription.isUnsubscribed()) {
+                return Subscriptions.empty();
+            }
 
-                    runOperation.addExecutionBlock$(actionRunner);
+            final ScheduledIOSAction scheduledAction = new ScheduledIOSAction(action, operationQueue);
+            final ScheduledExecutorService executor = IOSScheduledExecutorPool.getInstance();
 
-                    /* Add operation to operation queue*/
-                    operationQueue.addOperation(runOperation);
-                }
-            }, delayTime, unit);
+            Future<?> future;
+            if (delay <= 0) {
+                future = executor.submit(scheduledAction);
+            } else {
+                future = executor.schedule(scheduledAction, delay, unit);
+            }
 
-            return Subscriptions.create(new Action0() {
-                @Override
-                public void call() {
-                    runOperation.cancel();
-                }
-            });
+            scheduledAction.add(Subscriptions.from(future));
+            scheduledAction.addParent(innerSubscription);
+
+            return scheduledAction;
         }
     }
+
+
+    private static final class IOSScheduledExecutorPool {
+
+        private static final RxThreadFactory THREAD_FACTORY = new RxThreadFactory(THREAD_PREFIX);
+
+        private static IOSScheduledExecutorPool INSTANCE = new IOSScheduledExecutorPool();
+        private final ScheduledExecutorService executorService;
+
+        private IOSScheduledExecutorPool() {
+            executorService = Executors.newScheduledThreadPool(1, THREAD_FACTORY);
+        }
+
+        public static ScheduledExecutorService getInstance() {
+            return INSTANCE.executorService;
+        }
+    }
+
 }
