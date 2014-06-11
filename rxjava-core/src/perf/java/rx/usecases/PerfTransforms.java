@@ -19,12 +19,24 @@ import org.openjdk.jmh.annotations.GenerateMicroBenchmark;
 
 import rx.Observable;
 import rx.functions.Func1;
-import rx.schedulers.Schedulers;
 
 public class PerfTransforms {
 
     @GenerateMicroBenchmark
-    public void mapTransformation(UseCaseInput input) throws InterruptedException {
+    public void mapPassThru(UseCaseInput input) throws InterruptedException {
+        input.observable.map(new Func1<Integer, Integer>() {
+
+            @Override
+            public Integer call(Integer i) {
+                return i;
+            }
+
+        }).subscribe(input.observer);
+        input.awaitCompletion();
+    }
+
+    @GenerateMicroBenchmark
+    public void mapIntStringInt(UseCaseInput input) throws InterruptedException {
         input.observable.map(new Func1<Integer, String>() {
 
             @Override
@@ -44,7 +56,7 @@ public class PerfTransforms {
     }
 
     @GenerateMicroBenchmark
-    public void flatMapTransforms(UseCaseInput input) throws InterruptedException {
+    public void flatMapInt(UseCaseInput input) throws InterruptedException {
         input.observable.flatMap(new Func1<Integer, Observable<Integer>>() {
 
             @Override

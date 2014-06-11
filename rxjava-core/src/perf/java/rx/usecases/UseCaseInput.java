@@ -15,6 +15,7 @@
  */
 package rx.usecases;
 
+import java.util.Iterator;
 import java.util.concurrent.CountDownLatch;
 
 import org.openjdk.jmh.annotations.Param;
@@ -36,6 +37,7 @@ public class UseCaseInput {
     @Param({ "1", "1024" })
     public int size;
 
+    public Iterable<Integer> iterable;
     public Observable<Integer> observable;
     public Observer<Integer> observer;
 
@@ -52,6 +54,34 @@ public class UseCaseInput {
                 o.onCompleted();
             }
         });
+        
+        iterable = new Iterable<Integer>() {
+
+            @Override
+            public Iterator<Integer> iterator() {
+                return new Iterator<Integer>() {
+
+                    int i=0;
+                    
+                    @Override
+                    public boolean hasNext() {
+                        return i < size;
+                    }
+
+                    @Override
+                    public Integer next() {
+                        return i++;
+                    }
+                    
+                    @Override
+                    public void remove() {
+                        
+                    }
+                    
+                };
+            }
+            
+        };
 
         latch = new CountDownLatch(1);
 
