@@ -1,6 +1,6 @@
 package rx.internal.util;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 import rx.Subscriber;
 import rx.exceptions.MissingBackpressureException;
@@ -14,8 +14,8 @@ import rx.internal.util.jctools.SpscArrayQueue;
  */
 public class RxSpscRingBuffer {
 
-    public static final int SIZE = 1023; // +1 = 1024 which is a power of 2
-    public static final int THRESHOLD = 768;
+    public static final int SIZE = 1024; //power of 2
+    public static final int THRESHOLD = 256;
 
     private static final NotificationLite<Object> on = NotificationLite.instance();
 
@@ -42,11 +42,12 @@ public class RxSpscRingBuffer {
 
     private final int size;
     private final int threshold;
-    private final AtomicInteger outstandingRequests = new AtomicInteger();
-    private final AtomicInteger count = new AtomicInteger();
+    private volatile Object terminalState;
+    private volatile int outstandingRequests = 0;
+    private static final AtomicIntegerFieldUpdater<RxSpscRingBuffer> REQUEST_UPDATER = AtomicIntegerFieldUpdater.newUpdater(RxSpscRingBuffer.class, "outstandingRequests");
 
     private RxSpscRingBuffer(int size, int threshold) {
-        queue = new SpscArrayQueue<Object>(size + 1); // +1 for onCompleted if onNext fills buffer
+        queue = new SpscArrayQueue<Object>(size);
         this.size = size;
         this.threshold = threshold;
     }
@@ -62,44 +63,38 @@ public class RxSpscRingBuffer {
      *             if more onNext are sent than have been requested
      */
     public void onNext(Object o) throws MissingBackpressureException {
-        if (count.incrementAndGet() > size) {
-            // a rare time where a checkedexception seems helpful ... as an internal safety check that we're handling it correctly
-            throw new MissingBackpressureException();
-        }
         // we received a requested item
-        outstandingRequests.decrementAndGet();
+        REQUEST_UPDATER.decrementAndGet(this);
         if (!queue.offer(on.next(o))) {
-            throw new IllegalStateException("onNext could not be delivered. There is a bug.");
+            throw new MissingBackpressureException();
         }
     }
 
     public void onCompleted() {
-        if (!queue.offer(on.completed())) {
-            throw new IllegalStateException("onComplete could not be delivered. Buffer has already received a terminal event.");
+        // we ignore terminal events if we already have one
+        if (terminalState == null) {
+            terminalState = on.completed();
         }
     }
 
     public void onError(Throwable t) {
-        if (!queue.offer(on.error(t))) {
-            if (t instanceof MissingBackpressureException) {
-                throw new IllegalStateException("onError could not be delivered. Missing Backpressure.", t);
-            } else {
-                throw new IllegalStateException("onError could not be delivered. Buffer has already received a terminal event.", t);
-            }
+        // we ignore terminal events if we already have one
+        if (terminalState == null) {
+            terminalState = on.error(t);
         }
     }
 
     public int count() {
-        return count.get();
+        return queue.size();
     }
 
     public int available() {
-        return size - count.get();
+        return size - count();
     }
 
     public int requested() {
         // it can be 0 if onNext are sent without having been requested
-        return Math.max(0, outstandingRequests.get());
+        return Math.max(0, outstandingRequests);
     }
 
     public int capacity() {
@@ -108,8 +103,10 @@ public class RxSpscRingBuffer {
 
     public Object poll() {
         Object o = queue.poll();
-        if (o != null) {
-            count.decrementAndGet();
+        if (o == null && terminalState != null) {
+            o = terminalState;
+            // once emitted we clear so a poll loop will finish
+            terminalState = null;
         }
         return o;
     }
@@ -128,14 +125,14 @@ public class RxSpscRingBuffer {
 
     public void requestIfNeeded(Subscriber<?> s) {
         do {
-            int o = outstandingRequests.get();
+            int o = outstandingRequests;
             int available = available();
             if (o > 0) {
                 // oustandingRequests can be <0 if we received an onNext or MissingBackpressureException that decremented below 0
                 available = available - o;
             }
             if (available > (size - threshold)) {
-                if (outstandingRequests.compareAndSet(o, available + Math.max(0, o))) {
+                if (REQUEST_UPDATER.compareAndSet(this, o, available + Math.max(0, o))) {
                     s.request(available);
                     return;
                 }

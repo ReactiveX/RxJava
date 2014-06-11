@@ -2,9 +2,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -75,10 +75,12 @@ public final class SpscArrayQueue<E> extends SpscArrayQueueL3Pad<E> implements Q
             throw new RuntimeException(e);
         }
     }
-    protected static final int OFFER_BATCH_SIZE = Integer.getInteger("offer.batch.size", 1024);
+
+    private final int offerLimit;
 
     public SpscArrayQueue(final int capacity) {
-        super(Math.max(capacity, 2 * OFFER_BATCH_SIZE));
+        super(capacity);
+        this.offerLimit = capacity;
     }
 
     private long getHeadV() {
@@ -97,10 +99,9 @@ public final class SpscArrayQueue<E> extends SpscArrayQueueL3Pad<E> implements Q
 
         E[] lb = buffer;
         if (tail >= batchTail) {
-            if (null != lvElement(lb, calcOffset(tail + OFFER_BATCH_SIZE))) {
+            if (null != lvElement(lb, calcOffset(tail))) {
                 return false;
             }
-            batchTail = tail + OFFER_BATCH_SIZE;
         }
         soElement(lb, calcOffset(tail), e);
         tail++;

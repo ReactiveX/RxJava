@@ -19,6 +19,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.Arrays;
+
 import org.junit.Test;
 
 import rx.exceptions.MissingBackpressureException;
@@ -45,10 +47,17 @@ public class RxSpscRingBufferTest {
 
     @Test
     public void addAndPollFailBackpressure() throws MissingBackpressureException {
+
         RxSpscRingBuffer b = new RxSpscRingBuffer();
+
         TestSubscriber<Object> s = new TestSubscriber<Object>();
-        for (int i = 0; i < RxSpscRingBuffer.SIZE; i++) {
-            b.onNext("one");
+        try {
+            for (int i = 0; i < RxSpscRingBuffer.SIZE; i++) {
+                System.out.println("Add: " + i);
+                b.onNext("one");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         b.poll();
         b.onNext("o");
@@ -184,9 +193,9 @@ public class RxSpscRingBufferTest {
         b.onError(new RuntimeException("an error"));
         try {
             b.onCompleted();
-            fail("expecting an exception");
+            // we ignore duplicate terminal events
         } catch (IllegalStateException e) {
-            // expecting
+            fail("we will ignore duplicate terminal events");
         }
     }
 
@@ -202,10 +211,30 @@ public class RxSpscRingBufferTest {
         b.onCompleted();
         try {
             b.onError(new RuntimeException("an error"));
-            fail("expecting an exception");
+            // we ignore duplicate terminal events
         } catch (IllegalStateException e) {
-            // expecting
+            fail("we will ignore duplicate terminal events");
         }
+    }
+
+    @Test(timeout = 500)
+    public void testPollingTerminalState() throws MissingBackpressureException {
+        RxSpscRingBuffer b = new RxSpscRingBuffer();
+        b.onNext(1);
+        b.onCompleted();
+        TestSubscriber<Object> s = new TestSubscriber<Object>();
+        Object o = null;
+        while ((o = b.poll()) != null) {
+            if (b.isCompleted(o)) {
+                s.onCompleted();
+            } else {
+                s.onNext(o);
+            }
+        }
+
+        s.awaitTerminalEvent();
+        s.assertReceivedOnNext(Arrays.<Object> asList(1));
+
     }
 
 }
