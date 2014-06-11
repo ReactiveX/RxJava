@@ -92,7 +92,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         if (capacity <= 0 || capacity > 1) {
             state = new UnboundedReplayState<T>(capacity);
         } else {
-            state = new SingleValueReplayState<T>(capacity);
+            state = new SingleItemReplayState<T>();
         }
 
         SubjectSubscriptionManager<T> ssm = new SubjectSubscriptionManager<T>();
@@ -538,83 +538,105 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         }
     }
 
-    static final class SingleValueReplayState<T> implements ReplayState<T, Integer> {
+    static final class SingleItemReplayState<T> implements ReplayState<T, Integer> {
         private final NotificationLite<T> nl = NotificationLite.instance();
-        /** The termination flag. */
-        private volatile boolean terminated;
-        /** The size of the buffer. */
-        volatile int index;
-        @SuppressWarnings("rawtypes")
-        static final AtomicIntegerFieldUpdater<SingleValueReplayState> INDEX_UPDATER
-                = AtomicIntegerFieldUpdater.newUpdater(SingleValueReplayState.class, "index");
-
-        private static final int REPLAY_BUFFER_SIZE = 2; // One onNext value with onComplete
-        private final Object[] replayBuffer = new Object[REPLAY_BUFFER_SIZE];
-
-        private final int initialCapacity;
-        private volatile UnboundedReplayState<T> unboundedReplayState;
+        /** The buffer. */
+        private volatile ArrayList<Object> list;
         @SuppressWarnings(value = "rawtypes")
-        static final AtomicReferenceFieldUpdater<SingleValueReplayState, UnboundedReplayState> UNBOUNDED_UPDATER =
-            AtomicReferenceFieldUpdater.newUpdater(SingleValueReplayState.class, UnboundedReplayState.class, "unboundedReplayState");
+        static final AtomicReferenceFieldUpdater<SingleItemReplayState, ArrayList> LIST_UPDATER =
+                AtomicReferenceFieldUpdater.newUpdater(SingleItemReplayState.class, ArrayList.class, "list");
+        /** The size of the buffer. */
+        private volatile int index;
+        @SuppressWarnings("rawtypes")
+        static final AtomicIntegerFieldUpdater<SingleItemReplayState> INDEX_UPDATER
+                = AtomicIntegerFieldUpdater.newUpdater(SingleItemReplayState.class, "index");
 
+        private volatile Object item;
+        @SuppressWarnings(value = "rawtypes")
+        static final AtomicReferenceFieldUpdater<SingleItemReplayState, Object> ITEM_UPDATER =
+                AtomicReferenceFieldUpdater.newUpdater(SingleItemReplayState.class, Object.class, "item");
 
-        public SingleValueReplayState(int initialCapacity) {
-            this.initialCapacity = initialCapacity;
-        }
+        /** The termination flag. */
+        private volatile int terminalObjectIndex = -1;
+        private volatile Object terminalObject;
+        @SuppressWarnings(value = "rawtypes")
+        static final AtomicReferenceFieldUpdater<SingleItemReplayState, Object> TERMINAL_OBJECT_UPDATER =
+                AtomicReferenceFieldUpdater.newUpdater(SingleItemReplayState.class, Object.class, "terminalObject");
 
         @Override
         public void next(T n) {
-            if (!terminated) {
-                if (index < REPLAY_BUFFER_SIZE) {
-                    replayBuffer[index] = nl.next(n);
-                    INDEX_UPDATER.getAndIncrement(this);
-                    return;
-                } else if (unboundedReplayState == null) {
-                    setupUnboundedReplayState();
-                }
-
-                unboundedReplayState.next(n);
+            if (terminalObjectIndex >= 0) {
+                return;
             }
+
+            if (index == 0 && ITEM_UPDATER.compareAndSet(this, null, nl.next(n))) {
+                INDEX_UPDATER.getAndIncrement(this);
+                return;
+            } else if (list == null) {
+                setupList();
+            }
+
+            list.add(index - 1, nl.next(n));
+            INDEX_UPDATER.getAndIncrement(this);
         }
 
         public void accept(Observer<? super T> o, int idx) {
-            nl.accept(o, replayBuffer[idx]);
+            if (idx < index) {
+                if (idx == 0 && item != null) {
+                    nl.accept(o, item);
+                    return;
+                }
+
+                if (terminalObjectIndex == idx && terminalObject != null) {
+                    nl.accept(o, terminalObject);
+                } else {
+                    nl.accept(o, list.get(idx - 1));
+                }
+            } else {
+                throw new IndexOutOfBoundsException();
+            }
+
         }
 
         @Override
         public void complete() {
-            if (!terminated) {
-                terminated = true;
-                if (index < REPLAY_BUFFER_SIZE) {
-                    replayBuffer[index] = nl.completed();
-                    INDEX_UPDATER.getAndIncrement(this);
-                    return;
-                } else if (unboundedReplayState == null) {
-                    setupUnboundedReplayState();
-                }
-
-                unboundedReplayState.complete();
+            if (terminalObjectIndex >= 0) {
+                return;
             }
+
+            terminalObjectIndex = index;
+            if (terminalObject == null && TERMINAL_OBJECT_UPDATER.compareAndSet(this, null, nl.completed())) {
+                INDEX_UPDATER.getAndIncrement(this);
+                return;
+            } else if (list == null) {
+                setupList();
+            }
+
+            list.add(index - 1, nl.completed());
+            INDEX_UPDATER.getAndIncrement(this);
         }
+
         @Override
         public void error(Throwable e) {
-            if (!terminated) {
-                terminated = true;
-                if (index < REPLAY_BUFFER_SIZE) {
-                    replayBuffer[index] = nl.error(e);
-                    INDEX_UPDATER.getAndIncrement(this);
-                    return;
-                } else if (unboundedReplayState == null) {
-                    setupUnboundedReplayState();
-                }
-
-                unboundedReplayState.error(e);
+            if (terminalObjectIndex >= 0) {
+                return;
             }
+
+            terminalObjectIndex = index;
+            if (terminalObject == null && TERMINAL_OBJECT_UPDATER.compareAndSet(this, null, nl.error(e))) {
+                INDEX_UPDATER.getAndIncrement(this);
+                return;
+            } else if (list == null) {
+                setupList();
+            }
+
+            list.add(index - 1, nl.error(e));
+            INDEX_UPDATER.getAndIncrement(this);
         }
 
         @Override
         public boolean terminated() {
-            return terminated;
+            return terminalObjectIndex != -1;
         }
 
         @Override
@@ -630,19 +652,13 @@ public final class ReplaySubject<T> extends Subject<T, T> {
 
         @Override
         public Integer replayObserverFromIndex(Integer idx, SubjectObserver<? super T> observer) {
-            if (idx < index) {
-                int i = idx;
-                while (i < index) {
-                    accept(observer, i);
-                    i++;
-                }
-
-                return i;
-            } else if (unboundedReplayState == null) {
-                setupUnboundedReplayState();
+            int i = idx;
+            while (i < index) {
+                accept(observer, i);
+                i++;
             }
 
-            return unboundedReplayState.replayObserverFromIndex(Math.max(0, idx - index), observer);
+            return i;
         }
 
         @Override
@@ -650,8 +666,8 @@ public final class ReplaySubject<T> extends Subject<T, T> {
             return replayObserverFromIndex(idx, observer);
         }
 
-        private void setupUnboundedReplayState() {
-            UNBOUNDED_UPDATER.compareAndSet(this, null, new UnboundedReplayState<T>(initialCapacity));
+        private void setupList() {
+            LIST_UPDATER.compareAndSet(this, null, new ArrayList<T>(16));
         }
     }
     
