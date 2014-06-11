@@ -45,15 +45,7 @@ public class UseCaseInput {
 
     @Setup
     public void setup(final BlackHole bh) {
-        observable = Observable.create(new OnSubscribe<Integer>() {
-            @Override
-            public void call(Subscriber<? super Integer> o) {
-                for (int value = 0; value < size; value++) {
-                    o.onNext(value);
-                }
-                o.onCompleted();
-            }
-        });
+        observable = Observable.range(0, size);
         
         iterable = new Iterable<Integer>() {
 
