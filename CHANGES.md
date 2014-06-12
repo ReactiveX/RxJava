@@ -1,5 +1,21 @@
 # RxJava Releases #
 
+### Version 0.19.1 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.19.1%22)) ###
+
+* [Pull 1357] (https://github.com/Netflix/RxJava/pull/1357) MergeWith, ConcatWith, AmbWith
+* [Pull 1345] (https://github.com/Netflix/RxJava/pull/1345) RxScala: Simplify doOnCompleted/Terminate, finallyDo callback usage
+* [Pull 1337] (https://github.com/Netflix/RxJava/pull/1337) Make Future receive NoSuchElementException when the BlockingObservable is empty
+* [Pull 1335] (https://github.com/Netflix/RxJava/pull/1335) RxAndroid: Bump build tools to 19.1 and android plugin to 0.11
+* [Pull 1327] (https://github.com/Netflix/RxJava/pull/1327) Join patterns extension for 4..9 and N arity joins.
+* [Pull 1321] (https://github.com/Netflix/RxJava/pull/1321) RxAndroid: Ensuring Runnables posted with delay to a Handler are removed when unsubcribed
+* [Pull 1347] (https://github.com/Netflix/RxJava/pull/1347) Allow use of the returned subscription to cancel periodic scheduling 
+* [Pull 1355] (https://github.com/Netflix/RxJava/pull/1355) Don't add the subscriber to the manager if it unsubscribed during the onStart call
+* [Pull 1350] (https://github.com/Netflix/RxJava/pull/1350) Baseline Performance Tests
+* [Pull 1316] (https://github.com/Netflix/RxJava/pull/1316) RxScala: Add the rest operators
+* [Pull 1324] (https://github.com/Netflix/RxJava/pull/1324) TrampolineScheduler & Unsubscribe
+* [Pull 1311] (https://github.com/Netflix/RxJava/pull/1311) Tiny integration test change
+
+
 ### Version 0.19.0 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.19.0%22)) ###
 
 #### Performance and Object Allocation
