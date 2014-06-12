@@ -580,7 +580,7 @@ public class OperatorMergeTest {
                     @Override
                     public void call() {
                         for (int i = 0; i < 10000; i++) {
-                            s.onNext(1);
+                            s.onNext(i);
                         }
                         s.onCompleted();
                         s.onCompleted();
@@ -662,4 +662,5 @@ public class OperatorMergeTest {
         });
         return observable;
     }
+
 }

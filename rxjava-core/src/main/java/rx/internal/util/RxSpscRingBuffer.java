@@ -1,8 +1,24 @@
+/**
+ * Copyright 2014 Netflix, Inc.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package rx.internal.util;
 
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 import rx.Subscriber;
+import rx.Subscription;
 import rx.exceptions.MissingBackpressureException;
 import rx.internal.operators.NotificationLite;
 import rx.internal.util.jctools.SpscArrayQueue;
@@ -11,11 +27,24 @@ import rx.internal.util.jctools.SpscArrayQueue;
  * Ring Buffer customized to Rx use-case.
  * <p>
  * Single-producer-single-consumer.
+ * <p>
+ * NOTE: This MUST be unsubscribed after completion.
+ * <p>
+ * The concept of unsubscribing is awkward terminology (should be dispose/close) but allows it to be passed into a Subscriber.add() for cleanup.
  */
-public class RxSpscRingBuffer {
+public class RxSpscRingBuffer implements Subscription {
 
     public static final int SIZE = 1024; //power of 2
     public static final int THRESHOLD = 256;
+
+    public static final ObjectPool<RxSpscRingBuffer> POOL = new ObjectPool<RxSpscRingBuffer>(1024, 1024 * 10, 60) {
+
+        @Override
+        protected RxSpscRingBuffer createObject() {
+            return new RxSpscRingBuffer();
+        }
+
+    };
 
     private static final NotificationLite<Object> on = NotificationLite.instance();
 
@@ -41,19 +70,24 @@ public class RxSpscRingBuffer {
     private final SpscArrayQueue<Object> queue;
 
     private final int size;
-    private final int threshold;
+    private final int requestThreshold;
     private volatile Object terminalState;
     private volatile int outstandingRequests = 0;
-    private static final AtomicIntegerFieldUpdater<RxSpscRingBuffer> REQUEST_UPDATER = AtomicIntegerFieldUpdater.newUpdater(RxSpscRingBuffer.class, "outstandingRequests");
+    // NOTE: if anything is added here, make sure it is cleared in `unsubscribe` as this object is reused
+    private static final AtomicIntegerFieldUpdater<RxSpscRingBuffer> OUTSTANDING_REQUEST_UPDATER = AtomicIntegerFieldUpdater.newUpdater(RxSpscRingBuffer.class, "outstandingRequests");
 
     private RxSpscRingBuffer(int size, int threshold) {
         queue = new SpscArrayQueue<Object>(size);
         this.size = size;
-        this.threshold = threshold;
+        this.requestThreshold = size - threshold;
     }
 
-    public RxSpscRingBuffer() {
+    /* for unit tests */RxSpscRingBuffer() {
         this(SIZE, THRESHOLD);
+    }
+
+    public final static RxSpscRingBuffer getInstance() {
+        return POOL.borrowObject();
     }
 
     /**
@@ -64,7 +98,7 @@ public class RxSpscRingBuffer {
      */
     public void onNext(Object o) throws MissingBackpressureException {
         // we received a requested item
-        REQUEST_UPDATER.decrementAndGet(this);
+        OUTSTANDING_REQUEST_UPDATER.decrementAndGet(this);
         if (!queue.offer(on.next(o))) {
             throw new MissingBackpressureException();
         }
@@ -124,16 +158,46 @@ public class RxSpscRingBuffer {
     }
 
     public void requestIfNeeded(Subscriber<?> s) {
+        /**
+         * Example behavior:
+         * 
+         * <pre> {@code
+         * outstanding  0      available    1024
+         * outstanding 1024    available    1024
+         *     onNext
+         * outstanding 1023    available    1023
+         *     onNext  
+         * outstanding 1022    available    1022
+         *     poll
+         * outstanding 1022    available    1023
+         *     onNext * 1000
+         * outstanding 22      available    23
+         *     poll * 100
+         * outstanding 22      available    123
+         *     poll * 500
+         * outstanding 22      available    523 
+         *     request a523 - o22 = 501
+         * outstanding 523     available    523 
+         *     onNext * 523
+         * outstanding 0       available    0
+         *     request a0 - o0 = 0
+         *     poll 1024
+         * outstanding 0       available    1024
+         *     request a1024 - o0 = 1024
+         * outstanding 1024    available    1024
+         * } </pre>
+         */
         do {
-            int o = outstandingRequests;
-            int available = available();
-            if (o > 0) {
-                // oustandingRequests can be <0 if we received an onNext or MissingBackpressureException that decremented below 0
-                available = available - o;
+            int a = available();
+            int _o = outstandingRequests;
+            int o = _o;
+            if (o < 0) {
+                o = 0;
             }
-            if (available > (size - threshold)) {
-                if (REQUEST_UPDATER.compareAndSet(this, o, available + Math.max(0, o))) {
-                    s.request(available);
+            int r = a - o;
+            if (r > requestThreshold) {
+                if (OUTSTANDING_REQUEST_UPDATER.compareAndSet(this, _o, r + o)) {
+                    s.request(r-1); // -1 is solving an off-by-one bug somewhere I can't figure out ... OperatorMergeTest.testConcurrencyWithBrokenOnCompleteContract fails without this
                     return;
                 }
             } else {
@@ -141,6 +205,19 @@ public class RxSpscRingBuffer {
                 return;
             }
         } while (true);
+    }
+
+    @Override
+    public void unsubscribe() {
+        queue.clear();
+        terminalState = null;
+        outstandingRequests = 0;
+        POOL.returnObject(this);
+    }
+
+    @Override
+    public boolean isUnsubscribed() {
+        return false;
     }
 
 }

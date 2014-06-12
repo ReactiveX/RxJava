@@ -246,6 +246,7 @@ public class OperatorObserveOnTest {
                     }
 
                 });
+
     }
 
     /**
@@ -467,7 +468,7 @@ public class OperatorObserveOnTest {
         TestSubscriber<Integer> testSubscriber = new TestSubscriber<Integer>() {
             @Override
             public void onNext(Integer t) {
-//                System.err.println("c t = " + t + " thread " + Thread.currentThread());
+                //                System.err.println("c t = " + t + " thread " + Thread.currentThread());
                 super.onNext(t);
             }
         };
@@ -534,17 +535,17 @@ public class OperatorObserveOnTest {
             }
 
         });
-        
+
         TestSubscriber<Integer> testSubscriber = new TestSubscriber<Integer>(new Observer<Integer>() {
 
             @Override
             public void onCompleted() {
-                
+
             }
 
             @Override
             public void onError(Throwable e) {
-                
+
             }
 
             @Override
@@ -556,7 +557,7 @@ public class OperatorObserveOnTest {
                     e.printStackTrace();
                 }
             }
-            
+
         });
         observable.observeOn(Schedulers.newThread()).subscribe(testSubscriber);
 

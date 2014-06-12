@@ -161,6 +161,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
                 Object o = null;
                 try {
                     while ((o = q.poll()) != null) {
+                        // we don't enqueue the errors, so only check for complete/next
                         if (q.isCompleted(o)) {
                             childSubscriber.complete();
                         } else {
@@ -252,7 +253,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
         @SuppressWarnings("rawtypes")
         static final AtomicIntegerFieldUpdater<InnerSubscriber> ONCE_UPDATER = AtomicIntegerFieldUpdater.newUpdater(InnerSubscriber.class, "once");
 
-        private final RxSpscRingBuffer queue = new RxSpscRingBuffer();
+        private final RxSpscRingBuffer queue = RxSpscRingBuffer.getInstance();
 
         public InnerSubscriber(MergeProducer<T> mergeProducer, MergeSubscriber<T> parent) {
             this.mergeProducer = mergeProducer;

@@ -76,11 +76,8 @@ public final class SpscArrayQueue<E> extends SpscArrayQueueL3Pad<E> implements Q
         }
     }
 
-    private final int offerLimit;
-
     public SpscArrayQueue(final int capacity) {
         super(capacity);
-        this.offerLimit = capacity;
     }
 
     private long getHeadV() {
