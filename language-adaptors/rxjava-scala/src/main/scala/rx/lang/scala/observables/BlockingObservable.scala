@@ -251,10 +251,10 @@ class BlockingObservable[+T] private[scala] (val o: Observable[T])
   /**
    * Returns a `Future` representing the single value emitted by this `BlockingObservable`.
    *
-   * `toFuture` throws an `IllegalArgumentException` if the `BlockingObservable` emits more than one item. If the
-   * `BlockingObservable` may emit more than item, use `BlockingObservable.toList.toFuture`.
-   *
-   * `toFuture` throws an `NoSuchElementException` if the `BlockingObservable` is empty.
+   * The returned `Future` will be completed with an `IllegalArgumentException` if the `BlockingObservable`
+   * emits more than one item. And it will be completed with an `NoSuchElementException` if the `BlockingObservable`
+   * is empty. Use `Observable.toSeq.toBlocking.toFuture` if you are not sure about the size of `BlockingObservable`
+   * and do not want to handle these `Exception`s.
    *
    * <img width="640" height="395" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.toFuture.png">
    *
