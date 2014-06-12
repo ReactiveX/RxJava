@@ -21,6 +21,7 @@ import static org.junit.Assert.fail;
 import static rx.internal.operators.BlockingOperatorToFuture.toFuture;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -51,12 +52,17 @@ public class BlockingOperatorToFutureTest {
         assertEquals("three", f.get().get(2));
     }
 
-    @Test(expected = ExecutionException.class)
-    public void testExceptionWithMoreThanOneElement() throws InterruptedException, ExecutionException {
+    @Test(expected = IllegalArgumentException.class)
+    public void testExceptionWithMoreThanOneElement() throws Throwable {
         Observable<String> obs = Observable.from("one", "two");
         Future<String> f = toFuture(obs);
-        assertEquals("one", f.get());
-        // we expect an exception since there are more than 1 element
+        try {
+            // we expect an exception since there are more than 1 element
+            f.get();
+        }
+        catch(ExecutionException e) {
+            throw e.getCause();
+        }
     }
 
     @Test
@@ -105,5 +111,24 @@ public class BlockingOperatorToFutureTest {
         public void call(Subscriber<? super T> unused) {
             // do nothing
         }
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void testGetWithEmptyObservable() throws Throwable {
+        Observable<String> obs = Observable.empty();
+        Future<String> f = obs.toBlocking().toFuture();
+        try {
+            f.get();
+        }
+        catch(ExecutionException e) {
+            throw e.getCause();
+        }
+    }
+
+    @Test
+    public void testGetWithASingleNullItem() throws Exception {
+        Observable<String> obs = Observable.from((String)null);
+        Future<String> f = obs.toBlocking().toFuture();
+        assertEquals(null, f.get());
     }
 }
