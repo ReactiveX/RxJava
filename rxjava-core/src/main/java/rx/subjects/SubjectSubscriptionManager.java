@@ -57,8 +57,10 @@ import rx.subscriptions.Subscriptions;
         SubjectObserver<T> bo = new SubjectObserver<T>(child);
         addUnsubscriber(child, bo);
         onStart.call(bo);
-        if (add(bo) && child.isUnsubscribed()) {
-            remove(bo);
+        if (!child.isUnsubscribed()) {
+            if (add(bo) && child.isUnsubscribed()) {
+                remove(bo);
+            }
         }
     }
     /** Registers the unsubscribe action for the given subscriber. */
