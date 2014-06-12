@@ -20,6 +20,7 @@ import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
 import scala.concurrent.Await
+import scala.collection.mutable
 import scala.concurrent.duration.Duration
 import scala.concurrent.duration.DurationInt
 import scala.concurrent.duration.DurationLong
@@ -47,6 +48,29 @@ import rx.lang.scala.schedulers._
  */
 @Ignore // Since this doesn't do automatic testing, don't increase build time unnecessarily
 class RxScalaDemo extends JUnitSuite {
+
+  @Test def subscribeExample() {
+    val o = Observable.items(1, 2, 3)
+
+    // Generally, we have two methods, `subscribe` and `foreach`, to listen to the messages from an Observable.
+    // `foreach` is just an alias to `subscribe`.
+    o.subscribe(
+      n => println(n),
+      e => e.printStackTrace(),
+      () => println("done")
+    )
+
+    o.foreach(
+      n => println(n),
+      e => e.printStackTrace(),
+      () => println("done")
+    )
+
+    // For-comprehension is also an alternative, if you are only interested in `onNext`
+    for (i <- o) {
+      println(i)
+    }
+  }
 
   @Test def intervalExample() {
     val o = Observable.interval(200 millis).take(5)
@@ -131,13 +155,31 @@ class RxScalaDemo extends JUnitSuite {
     o.flatten.takeUntil(stopper).toBlockingObservable.foreach(println(_))
   }
 
-  @Test def fattenSomeExample() {
+  @Test def flattenSomeExample() {
     // To merge some observables which are all known already:
     List(
       Observable.interval(200 millis),
       Observable.interval(400 millis),
       Observable.interval(800 millis)
     ).toObservable.flatten.take(12).toBlockingObservable.foreach(println(_))
+  }
+
+  @Test def flattenExample() {
+    List(
+      Observable.interval(200 millis).map(_ => 1).take(5),
+      Observable.interval(200 millis).map(_ => 2).take(5),
+      Observable.interval(200 millis).map(_ => 3).take(5),
+      Observable.interval(200 millis).map(_ => 4).take(5)
+    ).toObservable.flatten.toBlocking.foreach(println(_))
+  }
+
+  @Test def flattenExample2() {
+    List(
+      Observable.interval(200 millis).map(_ => 1).take(5),
+      Observable.interval(200 millis).map(_ => 2).take(5),
+      Observable.interval(200 millis).map(_ => 3).take(5),
+      Observable.interval(200 millis).map(_ => 4).take(5)
+    ).toObservable.flatten(2).toBlocking.foreach(println(_))
   }
 
   @Test def rangeAndBufferExample() {
@@ -299,11 +341,29 @@ class RxScalaDemo extends JUnitSuite {
     sequenced.subscribe(x => println(s"Emitted group: $x"))
   }
 
+  @Test def groupByUntilExample2() {
+    val numbers = Observable.interval(250 millis).take(14)
+    val grouped = numbers.groupByUntil[Long, Long](x => x % 2, x => x * 10, {case (key, obs) => Observable.interval(2 seconds)})
+    val sequenced = (grouped.map({ case (key, obs) => obs.toSeq })).flatten
+    sequenced.toBlocking.foreach(x => println(s"Emitted group: $x"))
+  }
+
   @Test def combineLatestExample() {
     val firstCounter = Observable.interval(250 millis)
     val secondCounter = Observable.interval(550 millis)
     val combinedCounter = firstCounter.combineLatest(secondCounter,
       (x: Long, y: Long) => List(x,y)) take 10
+
+    combinedCounter subscribe {x => println(s"Emitted group: $x")}
+    waitFor(combinedCounter)
+  }
+
+  @Test def combineLatestExample2() {
+    val firstCounter = Observable.interval(250 millis)
+    val secondCounter = Observable.interval(550 millis)
+    val thirdCounter = Observable.interval(850 millis)
+    val sources = Seq(firstCounter, secondCounter, thirdCounter)
+    val combinedCounter = Observable.combineLatest(sources, (items: Seq[Long]) => items.toList).take(10)
 
     combinedCounter subscribe {x => println(s"Emitted group: $x")}
     waitFor(combinedCounter)
@@ -852,6 +912,40 @@ class RxScalaDemo extends JUnitSuite {
     println(m.toBlockingObservable.single)
   }
 
+  @Test def toMultimapExample1(): Unit = {
+    val o : Observable[String] = List("alice", "bob", "carol", "allen", "clarke").toObservable
+    val keySelector = (s: String) => s.head
+    val m = o.toMultimap(keySelector)
+    println(m.toBlocking.single)
+  }
+
+  @Test def toMultimapExample2(): Unit = {
+    val o : Observable[String] = List("alice", "bob", "carol", "allen", "clarke").toObservable
+    val keySelector = (s: String) => s.head
+    val valueSelector = (s: String) => s.tail
+    val m = o.toMultimap(keySelector, valueSelector)
+    println(m.toBlocking.single)
+  }
+
+  @Test def toMultimapExample3(): Unit = {
+    val o: Observable[String] = List("alice", "bob", "carol", "allen", "clarke").toObservable
+    val keySelector = (s: String) => s.head
+    val valueSelector = (s: String) => s.tail
+    val mapFactory = () => mutable.Map('d' -> mutable.Buffer("oug"))
+    val m = o.toMultimap(keySelector, valueSelector, mapFactory)
+    println(m.toBlocking.single.mapValues(_.toList))
+  }
+
+  @Test def toMultimapExample4(): Unit = {
+    val o : Observable[String] = List("alice", "bob", "carol", "allen", "clarke").toObservable
+    val keySelector = (s: String) => s.head
+    val valueSelector = (s: String) => s.tail
+    val mapFactory = () => mutable.Map('d' -> mutable.ListBuffer("oug"))
+    val bufferFactory = (k: Char) => mutable.ListBuffer[String]()
+    val m = o.toMultimap(keySelector, valueSelector, mapFactory, bufferFactory)
+    println(m.toBlocking.single)
+  }
+
   @Test def containsExample(): Unit = {
     val o1 = List(1, 2, 3).toObservable.contains(2)
     assertTrue(o1.toBlockingObservable.single)
@@ -878,6 +972,28 @@ class RxScalaDemo extends JUnitSuite {
   @Test def retryExample2(): Unit = {
     val o : Observable[String] = List("alice", "bob", "carol").toObservable
     assertEquals(List("alice", "bob", "carol"), o.retry(3).toBlockingObservable.toList)
+  }
+
+  @Test def retryExample3(): Unit = {
+    var isFirst = true
+    val o = Observable {
+      (subscriber: Subscriber[String]) =>
+        if (isFirst) {
+          subscriber.onNext("alice")
+          subscriber.onError(new IOException("Oops"))
+          isFirst = false
+        }
+        else {
+          subscriber.onNext("bob")
+          subscriber.onError(new RuntimeException("Oops"))
+        }
+    }
+    o.retry {
+      (times, e) => e match {
+        case e: IOException => times <= 3
+        case _ => false
+      }
+    }.subscribe(s => println(s), e => e.printStackTrace())
   }
 
   @Test def liftExample1(): Unit = {
@@ -1198,5 +1314,83 @@ class RxScalaDemo extends JUnitSuite {
     o.concatMap(n => Observable.interval(200 millis).map(_ * n).take(10))
       .take(20)
       .toBlocking.foreach(println)
+  }
+
+  @Test def onErrorResumeNextExample() {
+    val o = Observable {
+      (subscriber: Subscriber[Int]) =>
+        subscriber.onNext(1)
+        subscriber.onNext(2)
+        subscriber.onError(new IOException("Oops"))
+        subscriber.onNext(3)
+        subscriber.onNext(4)
+    }
+    o.onErrorResumeNext(_ => Observable.items(10, 11, 12)).subscribe(println(_))
+  }
+
+  @Test def onErrorFlatMapExample() {
+    val o = Observable {
+      (subscriber: Subscriber[Int]) =>
+        subscriber.onNext(1)
+        subscriber.onNext(2)
+        subscriber.onError(new IOException("Oops"))
+        subscriber.onNext(3)
+        subscriber.onNext(4)
+    }
+    o.onErrorFlatMap((_, _) => Observable.items(10, 11, 12)).subscribe(println(_))
+  }
+
+  @Test def onErrorFlatMapExample2() {
+    val o = Observable.items(4, 2, 0).map(16 / _).onErrorFlatMap {
+      (e, op) => op match {
+        case Some(v) if v == 0 => Observable.items(Int.MinValue)
+        case _ => Observable.empty
+      }
+    }
+    o.subscribe(println(_))
+  }
+
+  @Test def switchMapExample() {
+    val o = Observable.interval(300 millis).take(5).switchMap[String] {
+      n => Observable.interval(50 millis).take(10).map(i => s"Seq ${n}: ${i}")
+    }
+    o.toBlocking.foreach(println)
+  }
+
+  @Test def joinExample() {
+    val o1 = Observable.interval(500 millis).map(n => "1: " + n)
+    val o2 = Observable.interval(100 millis).map(n => "2: " + n)
+    val o = o1.join(o2,
+      (_: String) => Observable.timer(300 millis),
+      (_: String) => Observable.timer(200 millis),
+      (t1: String, t2: String) => (t1, t2))
+    o.take(10).toBlocking.foreach(println)
+  }
+
+  @Test def groupJoinExample() {
+    val o1 = Observable.interval(500 millis).map(n => "1: " + n)
+    val o2 = Observable.interval(100 millis).map(n => "2: " + n)
+    val o = o1.groupJoin(o2,
+      (_: String) => Observable.timer(300 millis),
+      (_: String) => Observable.timer(200 millis),
+      (t1: String, t2: Observable[String]) => (t1, t2.toSeq.toBlocking.single))
+    o.take(3).toBlocking.foreach(println)
+  }
+
+  @Test def pivotExample() {
+    val o1 = (1 to 20).toObservable.groupBy(i => if (i <= 10) "x" else "y").map {
+      case (t: String, o: Observable[Int]) => (t, o.groupBy(i => i % 2 == 0))
+    }
+    println("o1:")
+    (for ((k1, o) <- o1;
+          (k2, vs) <- o;
+          v <- vs
+    ) yield (k1, k2, v)).subscribe(println(_))
+    val o2 = o1.pivot
+    println("o2:")
+    (for ((k1, o) <- o2;
+          (k2, vs) <- o;
+          v <- vs
+    ) yield (k1, k2, v)).subscribe(println(_))
   }
 }
