@@ -17,37 +17,57 @@ package rx.joins;
 
 import rx.Notification;
 import rx.functions.Action0;
-import rx.functions.Action2;
+import rx.functions.Action4;
 
 /**
  * Represents an active plan.
  */
-public final class ActivePlan2<T1, T2> extends ActivePlan0 {
-    private final Action2<T1, T2> onNext;
+public final class ActivePlan4<T1, T2, T3, T4> extends ActivePlan0 {
+    private final Action4<T1, T2, T3, T4> onNext;
     private final Action0 onCompleted;
     private final JoinObserver1<T1> jo1;
     private final JoinObserver1<T2> jo2;
+    private final JoinObserver1<T3> jo3;
+    private final JoinObserver1<T4> jo4;
 
-    ActivePlan2(JoinObserver1<T1> jo1, JoinObserver1<T2> jo2, Action2<T1, T2> onNext, Action0 onCompleted) {
+    ActivePlan4(
+    		JoinObserver1<T1> jo1,
+            JoinObserver1<T2> jo2,
+            JoinObserver1<T3> jo3,
+            JoinObserver1<T4> jo4,
+            Action4<T1, T2, T3, T4> onNext,
+            Action0 onCompleted) {
         this.onNext = onNext;
         this.onCompleted = onCompleted;
         this.jo1 = jo1;
         this.jo2 = jo2;
+        this.jo3 = jo3;
+        this.jo4 = jo4;
         addJoinObserver(jo1);
         addJoinObserver(jo2);
+        addJoinObserver(jo3);
+        addJoinObserver(jo4);
     }
 
     @Override
     protected void match() {
-        if (!jo1.queue().isEmpty() && !jo2.queue().isEmpty()) {
+        if (!jo1.queue().isEmpty()
+                && !jo2.queue().isEmpty()
+                && !jo3.queue().isEmpty()
+                && !jo4.queue().isEmpty()) {
             Notification<T1> n1 = jo1.queue().peek();
             Notification<T2> n2 = jo2.queue().peek();
+            Notification<T3> n3 = jo3.queue().peek();
+            Notification<T4> n4 = jo4.queue().peek();
 
-            if (n1.isOnCompleted() || n2.isOnCompleted()) {
+            if (n1.isOnCompleted() 
+            		|| n2.isOnCompleted() 
+            		|| n3.isOnCompleted()
+            		|| n4.isOnCompleted()) {
                 onCompleted.call();
             } else {
                 dequeue();
-                onNext.call(n1.getValue(), n2.getValue());
+                onNext.call(n1.getValue(), n2.getValue(), n3.getValue(), n4.getValue());
             }
         }
     }

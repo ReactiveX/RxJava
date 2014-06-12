@@ -30,7 +30,7 @@ import rx.observers.SafeSubscriber;
 /**
  * Default implementation of a join observer.
  */
-public final class JoinObserver1<T> extends Subscriber<Notification<T>> implements JoinObserver {
+final class JoinObserver1<T> extends Subscriber<Notification<T>> implements JoinObserver {
     private Object gate;
     private final Observable<T> source;
     private final Action1<Throwable> onError;
@@ -39,7 +39,7 @@ public final class JoinObserver1<T> extends Subscriber<Notification<T>> implemen
     private final AtomicBoolean subscribed = new AtomicBoolean(false);
     private final SafeSubscriber<Notification<T>> safeObserver;
 
-    public JoinObserver1(Observable<T> source, Action1<Throwable> onError) {
+    JoinObserver1(Observable<T> source, Action1<Throwable> onError) {
         this.source = source;
         this.onError = onError;
         queue = new LinkedList<Notification<T>>();

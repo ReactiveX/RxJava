@@ -37,7 +37,8 @@ import rx.subscriptions.CompositeSubscription;
 /**
  * Join patterns: And, Then, When.
  */
-public class OperatorJoinPatterns {
+public final class OperatorJoinPatterns {
+	public OperatorJoinPatterns() { throw new IllegalStateException("No instances!"); }
     /**
      * Creates a pattern that matches when both observable sequences have an available element.
      */

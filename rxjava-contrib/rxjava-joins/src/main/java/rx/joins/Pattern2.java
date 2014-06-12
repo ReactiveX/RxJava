@@ -21,21 +21,21 @@ import rx.functions.Func2;
 /**
  * Represents a join pattern over observable sequences.
  */
-public class Pattern2<T1, T2> implements Pattern {
-    private final Observable<T1> first;
-    private final Observable<T2> second;
+public final class Pattern2<T1, T2> implements Pattern {
+    private final Observable<T1> o1;
+    private final Observable<T2> o2;
 
-    public Pattern2(Observable<T1> first, Observable<T2> second) {
-        this.first = first;
-        this.second = second;
+    public Pattern2(Observable<T1> o1, Observable<T2> o2) {
+        this.o1 = o1;
+        this.o2 = o2;
     }
 
-    public Observable<T1> first() {
-        return first;
+    Observable<T1> o1() {
+        return o1;
     }
 
-    public Observable<T2> second() {
-        return second;
+    Observable<T2> o2() {
+        return o2;
     }
 
     /**
@@ -49,9 +49,19 @@ public class Pattern2<T1, T2> implements Pattern {
         if (other == null) {
             throw new NullPointerException();
         }
-        return new Pattern3<T1, T2, T3>(first, second, other);
+        return new Pattern3<T1, T2, T3>(o1, o2, other);
     }
 
+    /**
+     * Matches when all observable sequences have an available
+     * element and projects the elements by invoking the selector function.
+     * 
+     * @param selector
+     *            the function that will be invoked for elements in the source sequences.
+     * @return the plan for the matching
+     * @throws NullPointerException
+     *             if selector is null
+     */
     public <R> Plan0<R> then(Func2<T1, T2, R> selector) {
         if (selector == null) {
             throw new NullPointerException();
