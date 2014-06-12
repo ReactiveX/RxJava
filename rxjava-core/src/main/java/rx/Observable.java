@@ -3084,6 +3084,7 @@ public class Observable<T> {
      *         emitted an item
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Conditional-and-Boolean-Operators#wiki-amb">RxJava Wiki: amb()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229733.aspx">MSDN: Observable.Amb</a>
+     * @since 0.20
      */
     public final Observable<T> ambWith(Observable<? extends T> t1) {
         return amb(this, t1);
@@ -3495,8 +3496,8 @@ public class Observable<T> {
     }
     
     /**
-     * Returns an Observable that emits the items emitted from the current Observable, then the next, one after the other, without
-     * interleaving them.
+     * Returns an Observable that emits the items emitted from the current Observable, then the next, one after
+     * the other, without interleaving them.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/concat.png">
      * <p>
@@ -3508,6 +3509,7 @@ public class Observable<T> {
      *         without interleaving them
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#wiki-concat">RxJava Wiki: concat()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.concat.aspx">MSDN: Observable.Concat</a>
+     * @since 0.20
      */
     public final Observable<T> concatWith(Observable<? extends T> t1) {
         return concat(this, t1);
@@ -4819,6 +4821,7 @@ public class Observable<T> {
      * @return an Observable that emits all of the items emitted by the source Observables
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#wiki-merge">RxJava Wiki: merge()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge</a>
+     * @since 0.20
      */
     public final Observable<T> mergeWith(Observable<? extends T> t1) {
         return merge(this, t1);
