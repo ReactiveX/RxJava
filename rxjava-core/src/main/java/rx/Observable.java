@@ -3070,6 +3070,24 @@ public class Observable<T> {
     public final Observable<Boolean> all(Func1<? super T, Boolean> predicate) {
         return lift(new OperatorAll<T>(predicate));
     }
+    
+    /**
+     * Mirrors the first Observable (current or provided) that emits an item.
+     * <p>
+     * <img width="640" height="385" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/amb.png">
+     * <p>
+     * {@code amb} does not operate by default on a particular {@link Scheduler}.
+     * 
+     * @param o1
+     *            an Observable competing to react first
+     * @return an Observable that emits the same sequence of items as whichever of the source Observables first
+     *         emitted an item
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Conditional-and-Boolean-Operators#wiki-amb">RxJava Wiki: amb()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229733.aspx">MSDN: Observable.Amb</a>
+     */
+    public final Observable<T> ambWith(Observable<? extends T> t1) {
+        return amb(this, t1);
+    }
 
     /**
      * Disguises a object of an Observable subclass as a simple Observable object. Useful for instance when you
@@ -3474,6 +3492,25 @@ public class Observable<T> {
      */
     public final <R> Observable<R> concatMap(Func1<? super T, ? extends Observable<? extends R>> func) {
         return concat(map(func));
+    }
+    
+    /**
+     * Returns an Observable that emits the items emitted from the current Observable, then the next, one after the other, without
+     * interleaving them.
+     * <p>
+     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/concat.png">
+     * <p>
+     * {@code concat} does not operate by default on a particular {@link Scheduler}.
+     * 
+     * @param t1
+     *            an Observable to be concatenated after the current
+     * @return an Observable that emits items emitted by the two source Observables, one after the other,
+     *         without interleaving them
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#wiki-concat">RxJava Wiki: concat()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.concat.aspx">MSDN: Observable.Concat</a>
+     */
+    public final Observable<T> concatWith(Observable<? extends T> t1) {
+        return concat(this, t1);
     }
 
     /**
@@ -4767,6 +4804,26 @@ public class Observable<T> {
         return mergeMap(OperatorMergeMapPair.convertSelector(collectionSelector), resultSelector);
     }
 
+    /**
+     * Flattens this and another Observable into a single Observable, without any transformation.
+     * <p>
+     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.png">
+     * <p>
+     * You can combine items emitted by multiple Observables so that they appear as a single Observable, by
+     * using the {@code merge} method.
+     * <p>
+     * {@code merge} does not operate by default on a particular {@link Scheduler}.
+     * 
+     * @param t1
+     *            an Observable to be merged
+     * @return an Observable that emits all of the items emitted by the source Observables
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#wiki-merge">RxJava Wiki: merge()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge</a>
+     */
+    public final Observable<T> mergeWith(Observable<? extends T> t1) {
+        return merge(this, t1);
+    }
+    
     /**
      * Returns an Observable that emits items produced by multicasting the source Observable within a selector
      * function.
