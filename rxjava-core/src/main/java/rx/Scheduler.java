@@ -19,6 +19,7 @@ import java.util.concurrent.TimeUnit;
 
 import rx.functions.Action0;
 import rx.schedulers.Schedulers;
+import rx.subscriptions.MultipleAssignmentSubscription;
 
 /**
  * Represents an object that schedules units of work.
@@ -108,18 +109,20 @@ public abstract class Scheduler {
             final long periodInNanos = unit.toNanos(period);
             final long startInNanos = TimeUnit.MILLISECONDS.toNanos(now()) + unit.toNanos(initialDelay);
 
+            final MultipleAssignmentSubscription mas = new MultipleAssignmentSubscription();
             final Action0 recursiveAction = new Action0() {
                 long count = 0;
                 @Override
                 public void call() {
-                    if (!isUnsubscribed()) {
+                    if (!mas.isUnsubscribed()) {
                         action.call();
                         long nextTick = startInNanos + (++count * periodInNanos);
-                        schedule(this, nextTick - TimeUnit.MILLISECONDS.toNanos(now()), TimeUnit.NANOSECONDS);
+                        mas.set(schedule(this, nextTick - TimeUnit.MILLISECONDS.toNanos(now()), TimeUnit.NANOSECONDS));
                     }
                 }
             };
-            return schedule(recursiveAction, initialDelay, unit);
+            mas.set(schedule(recursiveAction, initialDelay, unit));
+            return mas;
         }
 
         /**
