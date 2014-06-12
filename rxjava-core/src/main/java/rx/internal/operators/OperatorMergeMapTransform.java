@@ -76,9 +76,11 @@ public final class OperatorMergeMapTransform<T, R> implements Operator<R, T> {
         
         @Override
         public void onNext(T t) {
+            System.out.println("*********** t: " + t);
             Observable<? extends R> o;
             try {
                 o = onNext.call(t);
+                System.out.println("t gave us: " + o);
             } catch (Throwable e) {
                 error(e);
                 return;
@@ -88,6 +90,7 @@ public final class OperatorMergeMapTransform<T, R> implements Operator<R, T> {
         
         @Override
         public void onError(Throwable e) {
+            System.out.println("*********** e: " + e);
             Observable<? extends R> o;
             try {
                 o = onError.call(e);
@@ -125,16 +128,19 @@ public final class OperatorMergeMapTransform<T, R> implements Operator<R, T> {
                 
                 @Override
                 public void onNext(R t) {
+                    System.out.println("  *********** r: " + t);
                     s.onNext(t);
                 }
                 
                 @Override
                 public void onError(Throwable e) {
+                    System.out.println("  *********** e: " + e);
                     error(e);
                 }
                 
                 @Override
                 public void onCompleted() {
+                    System.out.println("  *********** onCompleted");
                     try {
                         finish();
                     } finally {
@@ -145,6 +151,7 @@ public final class OperatorMergeMapTransform<T, R> implements Operator<R, T> {
             csub.add(oSub);
             WIP_UPDATER.incrementAndGet(this);
             
+            System.out.println("subscribe to: " + o + " with " + oSub);
             o.unsafeSubscribe(oSub);
         }
     }
