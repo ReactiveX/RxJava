@@ -15,6 +15,7 @@
  */
 package rx.internal.util;
 
+import java.io.Serializable;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 
@@ -26,8 +27,6 @@ import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
  * @param <E> the element type
  */
 public final class MpscPaddedQueue<E> extends AtomicReference<MpscPaddedQueue.Node<E>> {
-    @SuppressWarnings(value = "rawtypes")
-    static final AtomicReferenceFieldUpdater<PaddedNode, Node> TAIL_UPDATER = AtomicReferenceFieldUpdater.newUpdater(PaddedNode.class, Node.class, "tail");
     /** */
     private static final long serialVersionUID = 1L;
     /** The padded tail reference. */
@@ -39,7 +38,7 @@ public final class MpscPaddedQueue<E> extends AtomicReference<MpscPaddedQueue.No
     public MpscPaddedQueue() {
         Node<E> first = new Node<E>(null);
         tail = new PaddedNode<E>();
-        tail.tail = first;
+        tail.node = first;
         set(first);
     }
 
@@ -64,7 +63,7 @@ public final class MpscPaddedQueue<E> extends AtomicReference<MpscPaddedQueue.No
         }
         E v = n.value;
         n.value = null; // do not retain this value as the node still stays in the queue
-        TAIL_UPDATER.lazySet(tail, n);
+        tail.lazySet(n);
         return v;
     }
 
@@ -75,7 +74,7 @@ public final class MpscPaddedQueue<E> extends AtomicReference<MpscPaddedQueue.No
     private Node<E> peekNode() {
         for (;;) {
             @SuppressWarnings(value = "unchecked")
-            Node<E> t = TAIL_UPDATER.get(tail);
+            Node<E> t = tail.node;
             Node<E> n = t.get();
             if (n != null || get() == t) {
                 return n;
@@ -93,29 +92,30 @@ public final class MpscPaddedQueue<E> extends AtomicReference<MpscPaddedQueue.No
             }
         }
     }
-
-    /** Class that contains a Node reference padded around to fit a typical cache line. */
-    static final class PaddedNode<E> {
-        /** Padding, public to prevent optimizing it away. */
-        public int p1;
-        volatile Node<E> tail;
-        /** Padding, public to prevent optimizing it away. */
-        public long p2;
-        /** Padding, public to prevent optimizing it away. */
-        public long p3;
-        /** Padding, public to prevent optimizing it away. */
-        public long p4;
-        /** Padding, public to prevent optimizing it away. */
-        public long p5;
-        /** Padding, public to prevent optimizing it away. */
-        public long p6;
+    /** The front-padded node class housing the actual value. */
+    static abstract class PaddedNodeBase<E> extends FrontPadding {
+        private static final long serialVersionUID = 2L;
+        volatile Node<E> node;
+        @SuppressWarnings(value = "rawtypes")
+        static final AtomicReferenceFieldUpdater<PaddedNodeBase, Node> NODE_UPDATER = AtomicReferenceFieldUpdater.newUpdater(PaddedNodeBase.class, Node.class, "node");
+        public void lazySet(Node<E> newValue) {
+            NODE_UPDATER.lazySet(this, newValue);
+        }
+    }
+    /** Post-padding of the padded node base class.  */
+    static final class PaddedNode<E> extends PaddedNodeBase<E> {
+        private static final long serialVersionUID = 3L;
+        /** Padding. */
+        public transient long p16, p17, p18, p19, p20, p21, p22;      // 56 bytes (the remaining 8 is in the base)
+        /** Padding. */
+        public transient long p24, p25, p26, p27, p28, p29, p30, p31; // 64 bytes
     }
 
     /**
      * Regular node with value and reference to the next node.
      */
-    static final class Node<E> {
-
+    static final class Node<E> implements Serializable {
+        private static final long serialVersionUID = 4L;
         E value;
         @SuppressWarnings(value = "rawtypes")
         static final AtomicReferenceFieldUpdater<Node, Node> TAIL_UPDATER = AtomicReferenceFieldUpdater.newUpdater(Node.class, Node.class, "tail");
