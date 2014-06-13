@@ -15,11 +15,12 @@
  */
 package rx.internal.operators;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 import rx.Observable.OnSubscribe;
 import rx.Producer;
 import rx.Subscriber;
+import rx.internal.util.RxSpscRingBuffer;
 
 /**
  * Emit ints from start to end inclusive.
@@ -36,31 +37,55 @@ public final class OnSubscribeRange implements OnSubscribe<Integer> {
 
     @Override
     public void call(final Subscriber<? super Integer> o) {
-        o.setProducer(new Producer() {
-            // TODO migrate to AFU
-            final AtomicInteger requested = new AtomicInteger();
+        // need +1 as this is inclusive
+        if ((end - start + 1) < RxSpscRingBuffer.SIZE) {
             int index = start;
-
-            @Override
-            public void request(int n) {
-                int _c = requested.getAndAdd(n);
-                if (_c == 0) {
-                    while (index <= end) {
-                        if (o.isUnsubscribed()) {
-                            return;
-                        }
-                        o.onNext(index++);
-                        if (requested.decrementAndGet() == 0) {
-                            // we're done emitting the number requested so return
-                            return;
-                        }
-                    }
-                    o.onCompleted();
+            while (index <= end) {
+                if (o.isUnsubscribed()) {
+                    return;
                 }
+                o.onNext(index++);
             }
+            o.onCompleted();
+        } else {
+            // otherwise we do it via the producer to support backpressure
+            o.setProducer(new RangeProducer(o, start, end));
+        }
 
-        });
+    }
 
+    private static final class RangeProducer implements Producer {
+        private final Subscriber<? super Integer> o;
+        @SuppressWarnings("unused")
+        // accessed by REQUESTED_UPDATER
+        private volatile int requested;
+        private static final AtomicIntegerFieldUpdater<RangeProducer> REQUESTED_UPDATER = AtomicIntegerFieldUpdater.newUpdater(RangeProducer.class, "requested");
+        private volatile int index;
+        private final int end;
+
+        private RangeProducer(Subscriber<? super Integer> o, int start, int end) {
+            this.o = o;
+            this.index = start;
+            this.end = end;
+        }
+
+        @Override
+        public void request(int n) {
+            int _c = REQUESTED_UPDATER.getAndAdd(this, n);
+            if (_c == 0) {
+                while (index <= end) {
+                    if (o.isUnsubscribed()) {
+                        return;
+                    }
+                    o.onNext(index++);
+                    if (REQUESTED_UPDATER.decrementAndGet(this) == 0) {
+                        // we're done emitting the number requested so return
+                        return;
+                    }
+                }
+                o.onCompleted();
+            }
+        }
     }
 
 }

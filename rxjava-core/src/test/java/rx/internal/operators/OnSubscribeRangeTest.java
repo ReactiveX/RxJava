@@ -22,6 +22,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -31,6 +32,7 @@ import org.junit.Test;
 import rx.Observable;
 import rx.Observer;
 import rx.functions.Action1;
+import rx.internal.util.RxSpscRingBuffer;
 import rx.observers.TestSubscriber;
 
 public class OnSubscribeRangeTest {
@@ -99,7 +101,7 @@ public class OnSubscribeRangeTest {
 
     @Test
     public void testBackpressureViaRequest() {
-        OnSubscribeRange o = new OnSubscribeRange(1, 5);
+        OnSubscribeRange o = new OnSubscribeRange(1, RxSpscRingBuffer.SIZE);
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         ts.assertReceivedOnNext(Collections.<Integer> emptyList());
         ts.request(1);
@@ -108,18 +110,24 @@ public class OnSubscribeRangeTest {
         ts.request(2);
         ts.assertReceivedOnNext(Arrays.asList(1, 2, 3));
         ts.request(3);
-        ts.assertReceivedOnNext(Arrays.asList(1, 2, 3, 4, 5));
+        ts.assertReceivedOnNext(Arrays.asList(1, 2, 3, 4, 5, 6));
+        ts.request(RxSpscRingBuffer.SIZE);
         ts.assertTerminalEvent();
     }
 
     @Test
     public void testNoBackpressure() {
-        OnSubscribeRange o = new OnSubscribeRange(1, 5);
+        ArrayList<Integer> list = new ArrayList<Integer>(RxSpscRingBuffer.SIZE * 2);
+        for (int i = 1; i <= RxSpscRingBuffer.SIZE * 2 + 1; i++) {
+            list.add(i);
+        }
+
+        OnSubscribeRange o = new OnSubscribeRange(1, list.size());
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         ts.assertReceivedOnNext(Collections.<Integer> emptyList());
         ts.request(-1); // infinite
         o.call(ts);
-        ts.assertReceivedOnNext(Arrays.asList(1, 2, 3, 4, 5));
+        ts.assertReceivedOnNext(list);
         ts.assertTerminalEvent();
     }
 }
