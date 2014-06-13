@@ -15,16 +15,17 @@
  */
 package rx.internal.util;
 
+import java.io.Serializable;
+
 /**
- * A padded atomic integer to fill in 4 cache lines to avoid any false sharing or
- * adjacent prefetch.
- * Based on Netty's implementation.
+ * Padding up to 128 bytes at the front.
+ * Based on netty's implementation
  */
-public final class PaddedAtomicInteger extends PaddedAtomicIntegerBase {
+abstract class FrontPadding implements Serializable {
     /** */
-    private static final long serialVersionUID = 8781891581317286855L;
+    private static final long serialVersionUID = -596356687591714352L;
     /** Padding. */
-    public transient long p16, p17, p18, p19, p20, p21, p22;      // 56 bytes (the remaining 8 is in the base)
+    public transient long p1, p2, p3, p4, p5, p6;           // 48 bytes (header is 16 bytes)
     /** Padding. */
-    public transient long p24, p25, p26, p27, p28, p29, p30, p31; // 64 bytes
+    public transient long p8, p9, p10, p11, p12, p13, p14, p15; // 64 bytes
 }
