@@ -138,7 +138,7 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
                     }
                     on.accept(observer, v);
                 }
-                if (COUNTER_UPDATER.addAndGet(this, -vs.size) == 0) {
+                if (COUNTER_UPDATER.addAndGet(this, -vs.size) <= 0) {
                     break;
                 }
             } while (true);
