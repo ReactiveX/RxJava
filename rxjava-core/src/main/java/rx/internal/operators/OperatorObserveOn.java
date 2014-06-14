@@ -24,7 +24,7 @@ import rx.Subscriber;
 import rx.Subscription;
 import rx.exceptions.MissingBackpressureException;
 import rx.functions.Action0;
-import rx.internal.util.RxSpscRingBuffer;
+import rx.internal.util.RxRingBuffer;
 import rx.schedulers.ImmediateScheduler;
 import rx.schedulers.TrampolineScheduler;
 
@@ -67,7 +67,7 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
         private final ScheduledUnsubscribe scheduledUnsubscribe;
         final NotificationLite<T> on = NotificationLite.instance();
 
-        private final RxSpscRingBuffer queue = RxSpscRingBuffer.getInstance();
+        private final RxRingBuffer queue = RxRingBuffer.getInstance();
 
         volatile long counter;
         @SuppressWarnings("rawtypes")
@@ -147,10 +147,10 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
         final Scheduler.Worker worker;
         volatile int once;
         static final AtomicIntegerFieldUpdater<ScheduledUnsubscribe> ONCE_UPDATER = AtomicIntegerFieldUpdater.newUpdater(ScheduledUnsubscribe.class, "once");
-        final RxSpscRingBuffer queue;
+        final RxRingBuffer queue;
         volatile boolean unsubscribed = false;
 
-        public ScheduledUnsubscribe(Scheduler.Worker worker, RxSpscRingBuffer queue) {
+        public ScheduledUnsubscribe(Scheduler.Worker worker, RxRingBuffer queue) {
             this.worker = worker;
             this.queue = queue;
         }

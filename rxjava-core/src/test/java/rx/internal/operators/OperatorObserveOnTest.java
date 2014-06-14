@@ -40,6 +40,7 @@ import org.mockito.InOrder;
 import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Observer;
+import rx.Producer;
 import rx.Scheduler;
 import rx.Subscriber;
 import rx.exceptions.MissingBackpressureException;
@@ -47,7 +48,7 @@ import rx.exceptions.TestException;
 import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Func1;
-import rx.internal.util.RxSpscRingBuffer;
+import rx.internal.util.RxRingBuffer;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 import rx.schedulers.TestScheduler;
@@ -436,12 +437,12 @@ public class OperatorObserveOnTest {
         testSubscriber.assertReceivedOnNext(Arrays.asList(0, 1, 2));
         // it should be between the take num and requested batch size across the async boundary
         System.out.println("Generated: " + generated.get());
-        assertTrue(generated.get() >= 3 && generated.get() <= RxSpscRingBuffer.SIZE);
+        assertTrue(generated.get() >= 3 && generated.get() <= Producer.BUFFER_SIZE);
     }
 
     @Test
     public void testBackpressureWithTakeAfterAndMultipleBatches() {
-        int numForBatches = RxSpscRingBuffer.SIZE * 3 + 1; // should be 4 batches == ((3*n)+1) items
+        int numForBatches = Producer.BUFFER_SIZE * 3 + 1; // should be 4 batches == ((3*n)+1) items
         final AtomicInteger generated = new AtomicInteger();
         Observable<Integer> observable = Observable.from(new Iterable<Integer>() {
             @Override
@@ -481,7 +482,7 @@ public class OperatorObserveOnTest {
         System.err.println(testSubscriber.getOnNextEvents());
         // it should be between the take num and requested batch size across the async boundary
         System.out.println("Generated: " + generated.get());
-        assertTrue(generated.get() >= numForBatches && generated.get() <= numForBatches + RxSpscRingBuffer.SIZE);
+        assertTrue(generated.get() >= numForBatches && generated.get() <= numForBatches + Producer.BUFFER_SIZE);
     }
 
     @Test
@@ -527,7 +528,7 @@ public class OperatorObserveOnTest {
 
             @Override
             public void call(Subscriber<? super Integer> o) {
-                for (int i = 0; i < RxSpscRingBuffer.SIZE + 10; i++) {
+                for (int i = 0; i < Producer.BUFFER_SIZE + 10; i++) {
                     o.onNext(i);
                 }
                 latch.countDown();

@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 import rx.Observable.OnSubscribe;
 import rx.Producer;
 import rx.Subscriber;
-import rx.internal.util.RxSpscRingBuffer;
+import rx.internal.util.RxRingBuffer;
 
 /**
  * Converts an {@code Iterable} sequence into an {@code Observable}.
@@ -46,7 +46,7 @@ public final class OnSubscribeFromIterable<T> implements OnSubscribe<T> {
         if (is instanceof Collection) {
             @SuppressWarnings("rawtypes")
             int size = ((Collection) is).size();
-            if (size < RxSpscRingBuffer.SIZE) {
+            if (size < Producer.BUFFER_SIZE) {
                 while (it.hasNext()) {
                     if (o.isUnsubscribed()) {
                         return;

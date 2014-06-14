@@ -33,14 +33,14 @@ import rx.functions.Action0;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 
-public class RxSpscRingBufferTest {
+public class RxRingBufferTest {
 
     @Test
     public void missingBackpressureException() throws MissingBackpressureException {
-        RxSpscRingBuffer b = new RxSpscRingBuffer();
+        RxRingBuffer b = new RxRingBuffer();
         TestSubscriber<Object> s = new TestSubscriber<Object>();
         b.requestIfNeeded(s);
-        for (int i = 0; i < RxSpscRingBuffer.SIZE; i++) {
+        for (int i = 0; i < Producer.BUFFER_SIZE; i++) {
             b.onNext("one");
         }
         try {
@@ -55,11 +55,11 @@ public class RxSpscRingBufferTest {
     @Test
     public void addAndPollFailBackpressure() throws MissingBackpressureException {
 
-        RxSpscRingBuffer b = new RxSpscRingBuffer();
+        RxRingBuffer b = new RxRingBuffer();
 
         TestSubscriber<Object> s = new TestSubscriber<Object>();
         try {
-            for (int i = 0; i < RxSpscRingBuffer.SIZE; i++) {
+            for (int i = 0; i < Producer.BUFFER_SIZE; i++) {
                 //                System.out.println("Add: " + i);
                 b.onNext("one");
             }
@@ -79,7 +79,7 @@ public class RxSpscRingBufferTest {
 
     @Test
     public void addAndPoll() throws MissingBackpressureException {
-        RxSpscRingBuffer b = new RxSpscRingBuffer();
+        RxRingBuffer b = new RxRingBuffer();
         TestSubscriber<Object> s = new TestSubscriber<Object>();
         b.onNext("o");
         b.onNext("o");
@@ -94,18 +94,18 @@ public class RxSpscRingBufferTest {
      */
     @Test
     public void onNextPollRequestCycle() throws MissingBackpressureException {
-        RxSpscRingBuffer b = new RxSpscRingBuffer();
+        RxRingBuffer b = new RxRingBuffer();
         TestSubscriber<Object> s = new TestSubscriber<Object>();
-        assertEquals(RxSpscRingBuffer.SIZE, b.available());
+        assertEquals(Producer.BUFFER_SIZE, b.available());
         assertEquals(0, b.requested());
         b.requestIfNeeded(s);
-        assertEquals(RxSpscRingBuffer.SIZE, b.requested());
+        assertEquals(Producer.BUFFER_SIZE, b.requested());
         b.onNext("a");
-        assertEquals(RxSpscRingBuffer.SIZE - 1, b.available());
+        assertEquals(Producer.BUFFER_SIZE - 1, b.available());
         b.onNext("a");
-        assertEquals(RxSpscRingBuffer.SIZE - 2, b.available());
+        assertEquals(Producer.BUFFER_SIZE - 2, b.available());
         // fill the queue
-        for (int i = 0; i < RxSpscRingBuffer.SIZE - 2; i++) {
+        for (int i = 0; i < Producer.BUFFER_SIZE - 2; i++) {
             b.onNext("one");
         }
         // now full and no outstanding requests
@@ -118,14 +118,14 @@ public class RxSpscRingBufferTest {
         // still only 0 as we have not dropped below the threshold
         assertEquals(0, b.requested());
         // drain to threshold
-        final int DIFF = RxSpscRingBuffer.SIZE - RxSpscRingBuffer.THRESHOLD - 1;
+        final int DIFF = Producer.BUFFER_SIZE - RxRingBuffer.THRESHOLD - 1;
         System.out.println("DIFF: " + DIFF);
         for (int i = 0; i < DIFF; i++) {
             b.poll();
         }
         // DIFF+1 as we polled 1 above        
         assertEquals(DIFF + 1, b.available());
-        assertEquals(RxSpscRingBuffer.SIZE - DIFF - 1, b.count());
+        assertEquals(Producer.BUFFER_SIZE - DIFF - 1, b.count());
         assertEquals(0, b.requested());
         System.out.println("---> Count: " + b.count() + "  Requested: " + b.requested());
         b.requestIfNeeded(s);
@@ -160,22 +160,22 @@ public class RxSpscRingBufferTest {
         b.poll();
         assertEquals(2, b.available());
         // finish draining
-        for (int i = 0; i < RxSpscRingBuffer.SIZE - 2; i++) {
+        for (int i = 0; i < Producer.BUFFER_SIZE - 2; i++) {
             b.poll();
         }
         // empty, both spots available, but nothing requested
-        assertEquals(RxSpscRingBuffer.SIZE, b.available());
+        assertEquals(Producer.BUFFER_SIZE, b.available());
         assertEquals(0, b.requested());
         b.requestIfNeeded(s);
-        assertEquals(RxSpscRingBuffer.SIZE, b.requested());
+        assertEquals(Producer.BUFFER_SIZE, b.requested());
     }
 
     @Test
     public void roomForError() throws MissingBackpressureException {
-        RxSpscRingBuffer b = new RxSpscRingBuffer();
+        RxRingBuffer b = new RxRingBuffer();
         TestSubscriber<Object> s = new TestSubscriber<Object>();
         b.requestIfNeeded(s);
-        for (int i = 0; i < RxSpscRingBuffer.SIZE; i++) {
+        for (int i = 0; i < Producer.BUFFER_SIZE; i++) {
             b.onNext("one");
         }
         // should act full now
@@ -190,10 +190,10 @@ public class RxSpscRingBufferTest {
 
     @Test
     public void multipleTerminalEventsOnComplete() throws MissingBackpressureException {
-        RxSpscRingBuffer b = new RxSpscRingBuffer();
+        RxRingBuffer b = new RxRingBuffer();
         TestSubscriber<Object> s = new TestSubscriber<Object>();
         b.requestIfNeeded(s);
-        for (int i = 0; i < RxSpscRingBuffer.SIZE; i++) {
+        for (int i = 0; i < Producer.BUFFER_SIZE; i++) {
             b.onNext("one");
         }
         // queue is now full
@@ -208,10 +208,10 @@ public class RxSpscRingBufferTest {
 
     @Test
     public void multipleTerminalEventsOnError() throws MissingBackpressureException {
-        RxSpscRingBuffer b = new RxSpscRingBuffer();
+        RxRingBuffer b = new RxRingBuffer();
         TestSubscriber<Object> s = new TestSubscriber<Object>();
         b.requestIfNeeded(s);
-        for (int i = 0; i < RxSpscRingBuffer.SIZE; i++) {
+        for (int i = 0; i < Producer.BUFFER_SIZE; i++) {
             b.onNext("one");
         }
         // queue is now full
@@ -226,7 +226,7 @@ public class RxSpscRingBufferTest {
 
     @Test(timeout = 500)
     public void testPollingTerminalState() throws MissingBackpressureException {
-        RxSpscRingBuffer b = new RxSpscRingBuffer();
+        RxRingBuffer b = new RxRingBuffer();
         b.onNext(1);
         b.onCompleted();
         TestSubscriber<Object> s = new TestSubscriber<Object>();
@@ -243,13 +243,17 @@ public class RxSpscRingBufferTest {
         s.assertReceivedOnNext(Arrays.<Object> asList(1));
     }
 
-    @Test(timeout = 1000)
+    /**
+     * Single producer, 2 consumers. The request() ensures it gets scheduled back on the same Producer thread.
+     */
+    @Test(timeout = 2000)
     public void testConcurrency() throws InterruptedException {
-        final RxSpscRingBuffer b = new RxSpscRingBuffer();
-        final CountDownLatch latch = new CountDownLatch(100);
+        final RxRingBuffer b = new RxRingBuffer();
+        final CountDownLatch latch = new CountDownLatch(255);
 
         final Scheduler.Worker w1 = Schedulers.newThread().createWorker();
         Scheduler.Worker w2 = Schedulers.newThread().createWorker();
+        Scheduler.Worker w3 = Schedulers.newThread().createWorker();
 
         final AtomicInteger emit = new AtomicInteger();
         final AtomicInteger poll = new AtomicInteger();
@@ -257,8 +261,11 @@ public class RxSpscRingBufferTest {
 
         final Producer p = new Producer() {
 
+            AtomicInteger c = new AtomicInteger();
+
             @Override
             public void request(final int n) {
+                System.out.println("request[" + c.incrementAndGet() + "]: " + n + "  Thread: " + Thread.currentThread());
                 w1.schedule(new Action0() {
 
                     @Override
@@ -328,9 +335,26 @@ public class RxSpscRingBufferTest {
 
         });
 
+        w3.schedule(new Action0() {
+
+            @Override
+            public void call() {
+                while (true) {
+                    Object o = b.poll();
+                    if (o == null) {
+                        b.requestIfNeeded(s);
+                    } else {
+                        poll.incrementAndGet();
+                    }
+                }
+            }
+
+        });
+
         latch.await();
         w1.unsubscribe();
         w2.unsubscribe();
+        w3.unsubscribe();
 
         System.out.println("emit: " + emit.get() + " poll: " + poll.get());
         assertEquals(0, backpressureExceptions.get());

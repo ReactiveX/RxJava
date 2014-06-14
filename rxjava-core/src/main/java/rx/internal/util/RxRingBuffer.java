@@ -16,12 +16,14 @@
 package rx.internal.util;
 
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
+import java.util.concurrent.atomic.AtomicLong;
 
+import rx.Observer;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.exceptions.MissingBackpressureException;
 import rx.internal.operators.NotificationLite;
-import rx.internal.util.jctools.SpscArrayQueue;
+import rx.internal.util.jctools.SpmcArrayQueue;
 
 /**
  * Ring Buffer customized to Rx use-case.
@@ -32,16 +34,16 @@ import rx.internal.util.jctools.SpscArrayQueue;
  * <p>
  * The concept of unsubscribing is awkward terminology (should be dispose/close) but allows it to be passed into a Subscriber.add() for cleanup.
  */
-public class RxSpscRingBuffer implements Subscription {
+public class RxRingBuffer implements Subscription {
 
     public static final int SIZE = 1024; //power of 2
     public static final int THRESHOLD = 256;
 
-    public static final ObjectPool<RxSpscRingBuffer> POOL = new ObjectPool<RxSpscRingBuffer>(1024, 1024 * 10, 60) {
+    public static final ObjectPool<RxRingBuffer> POOL = new ObjectPool<RxRingBuffer>(0, 1024, 67) {
 
         @Override
-        protected RxSpscRingBuffer createObject() {
-            return new RxSpscRingBuffer();
+        protected RxRingBuffer createObject() {
+            return new RxRingBuffer();
         }
 
     };
@@ -53,40 +55,56 @@ public class RxSpscRingBuffer implements Subscription {
      * <pre> {@code
      * 
      * Benchmark                              (size)   Mode   Samples         Mean   Mean error    Units
-     * r.i.u.PerfRingBuffer.onNextConsume        100  thrpt         5   159236.300     7108.964    ops/s
-     * r.i.u.PerfRingBuffer.onNextConsume       1023  thrpt         5    15615.351      953.520    ops/s
-     * r.i.u.PerfRingBuffer.onNextPollLoop       100  thrpt         5   158659.665     7847.576    ops/s
-     * r.i.u.PerfRingBuffer.onNextPollLoop   1000000  thrpt         5       17.495        0.246    ops/s
+     * r.i.u.PerfRingBuffer.onNextConsume        100  thrpt         5   208825.389     4776.127    ops/s
+     * r.i.u.PerfRingBuffer.onNextConsume       1023  thrpt         5    21480.352      140.259    ops/s
+     * r.i.u.PerfRingBuffer.onNextPollLoop       100  thrpt         5   196311.218     9050.104    ops/s
+     * r.i.u.PerfRingBuffer.onNextPollLoop   1000000  thrpt         5       22.498        0.403    ops/s
      * 
      * Using SpscArrayQueue
      * 
      * Benchmark                              (size)   Mode   Samples         Mean   Mean error    Units
-     * r.i.u.PerfRingBuffer.onNextConsume        100  thrpt         5   321948.603     9071.204    ops/s
-     * r.i.u.PerfRingBuffer.onNextConsume       1023  thrpt         5    35104.267     1586.282    ops/s
-     * r.i.u.PerfRingBuffer.onNextPollLoop       100  thrpt         5   324645.717    11050.170    ops/s
-     * r.i.u.PerfRingBuffer.onNextPollLoop   1000000  thrpt         5       41.269        0.630    ops/s
+     * r.i.u.PerfRingBuffer.onNextConsume        100  thrpt         5   548886.166    21575.383    ops/s
+     * r.i.u.PerfRingBuffer.onNextConsume       1023  thrpt         5    63886.154     1451.675    ops/s
+     * r.i.u.PerfRingBuffer.onNextPollLoop       100  thrpt         5   599163.735    11827.534    ops/s
+     * r.i.u.PerfRingBuffer.onNextPollLoop   1000000  thrpt         5       77.983        2.202    ops/s
+     * 
+     * Using SpmcArrayQueue
+     * 
+     * Benchmark                              (size)   Mode   Samples         Mean   Mean error    Units
+     * r.i.u.PerfRingBuffer.onNextConsume        100  thrpt         5   393642.647    10394.942    ops/s
+     * r.i.u.PerfRingBuffer.onNextConsume       1023  thrpt         5    46423.593      277.894    ops/s
+     * r.i.u.PerfRingBuffer.onNextPollLoop       100  thrpt         5   337851.387     4776.951    ops/s
+     * r.i.u.PerfRingBuffer.onNextPollLoop   1000000  thrpt         5       38.273        0.663    ops/s
+     * 
      * } </pre>
      */
-    private final SpscArrayQueue<Object> queue;
+
+    // despite performance hit this is using Spmc instead of Spsc to allow thread-stealing algorithms, such as in the merge operator where consumption can come from any thread
+    private final SpmcArrayQueue<Object> queue;
 
     private final int size;
     private final int requestThreshold;
     private volatile Object terminalState;
-    private volatile int outstandingRequests = 0;
-    // NOTE: if anything is added here, make sure it is cleared in `unsubscribe` as this object is reused
-    private static final AtomicIntegerFieldUpdater<RxSpscRingBuffer> OUTSTANDING_REQUEST_UPDATER = AtomicIntegerFieldUpdater.newUpdater(RxSpscRingBuffer.class, "outstandingRequests");
+    public volatile int outstandingRequests = 0;
 
-    private RxSpscRingBuffer(int size, int threshold) {
-        queue = new SpscArrayQueue<Object>(size);
+    public AtomicLong totalRequested = new AtomicLong();
+    public AtomicLong totalReceived = new AtomicLong();
+    public AtomicLong totalDrained = new AtomicLong();
+
+    // NOTE: if anything is added here, make sure it is cleared in `unsubscribe` as this object is reused
+    private static final AtomicIntegerFieldUpdater<RxRingBuffer> OUTSTANDING_REQUEST_UPDATER = AtomicIntegerFieldUpdater.newUpdater(RxRingBuffer.class, "outstandingRequests");
+
+    private RxRingBuffer(int size, int threshold) {
+        queue = new SpmcArrayQueue<Object>(size);
         this.size = size;
         this.requestThreshold = size - threshold;
     }
 
-    /* for unit tests */RxSpscRingBuffer() {
+    /* for unit tests */RxRingBuffer() {
         this(SIZE, THRESHOLD);
     }
 
-    public final static RxSpscRingBuffer getInstance() {
+    public final static RxRingBuffer getInstance() {
         return POOL.borrowObject();
     }
 
@@ -97,9 +115,16 @@ public class RxSpscRingBuffer implements Subscription {
      *             if more onNext are sent than have been requested
      */
     public void onNext(Object o) throws MissingBackpressureException {
+        long r = totalReceived.incrementAndGet();
+        long treq = totalRequested.get();
+        if (r > treq) {
+            System.err.println("Why are we receiving more than requested?! " + r + "  " + treq);
+        }
         // we received a requested item
         OUTSTANDING_REQUEST_UPDATER.decrementAndGet(this);
+        int a = available();
         if (!queue.offer(on.next(o))) {
+            System.out.println("/// failed when available: " + a);
             throw new MissingBackpressureException();
         }
     }
@@ -137,6 +162,9 @@ public class RxSpscRingBuffer implements Subscription {
 
     public Object poll() {
         Object o = queue.poll();
+        if (o != null) {
+            totalDrained.incrementAndGet();
+        }
         if (o == null && terminalState != null) {
             o = terminalState;
             // once emitted we clear so a poll loop will finish
@@ -151,6 +179,10 @@ public class RxSpscRingBuffer implements Subscription {
 
     public boolean isError(Object o) {
         return on.isError(o);
+    }
+
+    public void accept(Object o, Observer child) {
+        on.accept(child, o);
     }
 
     public Throwable asError(Object o) {
@@ -196,8 +228,14 @@ public class RxSpscRingBuffer implements Subscription {
             }
             int r = a - o;
             if (r > requestThreshold) {
-                if (OUTSTANDING_REQUEST_UPDATER.compareAndSet(this, _o, r + o)) {
-                    s.request(r-1); // -1 is solving an off-by-one bug somewhere I can't figure out ... OperatorMergeTest.testConcurrencyWithBrokenOnCompleteContract fails without this
+                int toSet = r + o;
+                if (OUTSTANDING_REQUEST_UPDATER.compareAndSet(this, _o, toSet)) {
+                    //                    System.out.println("... requesting: " + (r-1) + " to get to: " + toSet + " available: " + a + "  to  " + s);
+                    totalRequested.addAndGet(r - 1);
+                    s.request(r - 1); // -1 is solving an off-by-one bug somewhere I can't figure out ... OperatorMergeTest.testConcurrencyWithBrokenOnCompleteContract fails without this
+                    if (toSet > size) {
+                        System.err.println("TOO BIG!!");
+                    }
                     return;
                 }
             } else {

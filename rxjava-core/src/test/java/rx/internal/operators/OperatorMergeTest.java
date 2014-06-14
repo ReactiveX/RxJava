@@ -42,13 +42,13 @@ import org.mockito.MockitoAnnotations;
 import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Observer;
+import rx.Producer;
 import rx.Scheduler;
 import rx.Scheduler.Worker;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Action0;
 import rx.functions.Action1;
-import rx.internal.util.RxSpscRingBuffer;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 import rx.schedulers.TestScheduler;
@@ -186,14 +186,10 @@ public class OperatorMergeTest {
         final TestASynchronousObservable o2 = new TestASynchronousObservable();
 
         Observable<String> m = Observable.merge(Observable.create(o1), Observable.create(o2));
-        m.subscribe(stringObserver);
+        TestSubscriber<String> ts = new TestSubscriber<String>(stringObserver);
+        m.subscribe(ts);
 
-        try {
-            o1.t.join();
-            o2.t.join();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        ts.awaitTerminalEvent();
 
         verify(stringObserver, never()).onError(any(Throwable.class));
         verify(stringObserver, times(2)).onNext("hello");
@@ -360,10 +356,14 @@ public class OperatorMergeTest {
                 @Override
                 public void run() {
                     onNextBeingSent.countDown();
-                    observer.onNext("hello");
-                    // I can't use a countDownLatch to prove we are actually sending 'onNext'
-                    // since it will block if synchronized and I'll deadlock
-                    observer.onCompleted();
+                    try {
+                        observer.onNext("hello");
+                        // I can't use a countDownLatch to prove we are actually sending 'onNext'
+                        // since it will block if synchronized and I'll deadlock
+                        observer.onCompleted();
+                    } catch (Exception e) {
+                        observer.onError(e);
+                    }
                 }
 
             });
@@ -489,29 +489,10 @@ public class OperatorMergeTest {
 
     @Test(timeout = 2000)
     public void testConcurrency() {
-
-        Observable<Integer> o = Observable.create(new OnSubscribe<Integer>() {
-
-            @Override
-            public void call(final Subscriber<? super Integer> s) {
-                Worker inner = Schedulers.newThread().createWorker();
-                s.add(inner);
-                inner.schedule(new Action0() {
-
-                    @Override
-                    public void call() {
-                        for (int i = 0; i < 10000; i++) {
-                            s.onNext(1);
-                        }
-                        s.onCompleted();
-                    }
-
-                });
-            }
-        });
+        Observable<Integer> o = Observable.range(1, 10000).subscribeOn(Schedulers.newThread());
 
         for (int i = 0; i < 10; i++) {
-            Observable<Integer> merge = Observable.merge(o.onBackpressureBuffer(), o.onBackpressureBuffer(), o.onBackpressureBuffer());
+            Observable<Integer> merge = Observable.merge(o, o, o);
             TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
             merge.subscribe(ts);
 
@@ -635,7 +616,7 @@ public class OperatorMergeTest {
         // it should be between the take num and requested batch size across the async boundary
         System.out.println("Generated 1: " + generated1.get());
         System.out.println("Generated 2: " + generated2.get());
-        assertTrue(generated1.get() >= 3 && generated1.get() <= RxSpscRingBuffer.SIZE);
+        assertTrue(generated1.get() >= 3 && generated1.get() <= Producer.BUFFER_SIZE);
     }
 
     private Observable<Integer> createInfiniteObservable(final AtomicInteger generated) {

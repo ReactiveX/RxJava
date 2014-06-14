@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 import rx.Observable.OnSubscribe;
 import rx.Producer;
 import rx.Subscriber;
-import rx.internal.util.RxSpscRingBuffer;
+import rx.internal.util.RxRingBuffer;
 
 /**
  * Emit ints from start to end inclusive.
@@ -38,7 +38,7 @@ public final class OnSubscribeRange implements OnSubscribe<Integer> {
     @Override
     public void call(final Subscriber<? super Integer> o) {
         // need +1 as this is inclusive
-        if ((end - start + 1) < RxSpscRingBuffer.SIZE) {
+        if ((end - start + 1) < Producer.BUFFER_SIZE) {
             int index = start;
             while (index <= end) {
                 if (o.isUnsubscribed()) {

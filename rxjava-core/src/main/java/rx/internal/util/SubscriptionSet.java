@@ -44,15 +44,6 @@ public final class SubscriptionSet<T extends Subscription> implements Subscripti
         }
     }
 
-    public void forEach(Action1<T> action) {
-        if (subscriptions == null) {
-            return;
-        }
-        for (T t : subscriptions.keySet()) {
-            action.call(t);
-        }
-    }
-
     @Override
     public boolean isUnsubscribed() {
         return unsubscribed.get();

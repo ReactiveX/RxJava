@@ -31,8 +31,9 @@ import org.junit.Test;
 
 import rx.Observable;
 import rx.Observer;
+import rx.Producer;
 import rx.functions.Action1;
-import rx.internal.util.RxSpscRingBuffer;
+import rx.internal.util.RxRingBuffer;
 import rx.observers.TestSubscriber;
 
 public class OnSubscribeRangeTest {
@@ -101,7 +102,7 @@ public class OnSubscribeRangeTest {
 
     @Test
     public void testBackpressureViaRequest() {
-        OnSubscribeRange o = new OnSubscribeRange(1, RxSpscRingBuffer.SIZE);
+        OnSubscribeRange o = new OnSubscribeRange(1, Producer.BUFFER_SIZE);
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         ts.assertReceivedOnNext(Collections.<Integer> emptyList());
         ts.request(1);
@@ -111,14 +112,14 @@ public class OnSubscribeRangeTest {
         ts.assertReceivedOnNext(Arrays.asList(1, 2, 3));
         ts.request(3);
         ts.assertReceivedOnNext(Arrays.asList(1, 2, 3, 4, 5, 6));
-        ts.request(RxSpscRingBuffer.SIZE);
+        ts.request(Producer.BUFFER_SIZE);
         ts.assertTerminalEvent();
     }
 
     @Test
     public void testNoBackpressure() {
-        ArrayList<Integer> list = new ArrayList<Integer>(RxSpscRingBuffer.SIZE * 2);
-        for (int i = 1; i <= RxSpscRingBuffer.SIZE * 2 + 1; i++) {
+        ArrayList<Integer> list = new ArrayList<Integer>(Producer.BUFFER_SIZE * 2);
+        for (int i = 1; i <= Producer.BUFFER_SIZE * 2 + 1; i++) {
             list.add(i);
         }
 

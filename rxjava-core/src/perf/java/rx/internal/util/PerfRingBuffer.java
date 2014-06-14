@@ -13,7 +13,7 @@ public class PerfRingBuffer {
 
     @GenerateMicroBenchmark
     public void onNextConsume(OnNextConsumeInput input) throws InterruptedException, MissingBackpressureException {
-        RxSpscRingBuffer queue = new RxSpscRingBuffer();
+        RxRingBuffer queue = new RxRingBuffer();
         for (int i = 0; i < input.size; i++) {
             queue.onNext(i);
         }
@@ -36,7 +36,7 @@ public class PerfRingBuffer {
 
     @GenerateMicroBenchmark
     public void onNextPollLoop(OnNextPollLoopInput input) throws InterruptedException, MissingBackpressureException {
-        RxSpscRingBuffer queue = new RxSpscRingBuffer();
+        RxRingBuffer queue = new RxRingBuffer();
         for (int i = 0; i < input.size; i++) {
             queue.onNext(i);
             input.bh.consume(queue.poll());

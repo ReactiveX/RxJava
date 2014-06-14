@@ -30,7 +30,8 @@ import org.mockito.Mockito;
 
 import rx.Observable;
 import rx.Observer;
-import rx.internal.util.RxSpscRingBuffer;
+import rx.Producer;
+import rx.internal.util.RxRingBuffer;
 import rx.observers.TestSubscriber;
 
 public class OnSubscribeFromIterableTest {
@@ -108,8 +109,8 @@ public class OnSubscribeFromIterableTest {
 
     @Test
     public void testBackpressureViaRequest() {
-        ArrayList<Integer> list = new ArrayList<Integer>(RxSpscRingBuffer.SIZE);
-        for (int i = 1; i <= RxSpscRingBuffer.SIZE + 1; i++) {
+        ArrayList<Integer> list = new ArrayList<Integer>(Producer.BUFFER_SIZE);
+        for (int i = 1; i <= Producer.BUFFER_SIZE + 1; i++) {
             list.add(i);
         }
         OnSubscribeFromIterable<Integer> o = new OnSubscribeFromIterable<Integer>(list);

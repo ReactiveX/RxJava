@@ -15,6 +15,8 @@
  */
 package rx.internal.operators;
 
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 import rx.Observable;
@@ -22,8 +24,7 @@ import rx.Observable.Operator;
 import rx.Producer;
 import rx.Subscriber;
 import rx.exceptions.MissingBackpressureException;
-import rx.functions.Action1;
-import rx.internal.util.RxSpscRingBuffer;
+import rx.internal.util.RxRingBuffer;
 import rx.internal.util.SubscriptionSet;
 
 /**
@@ -47,6 +48,9 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
 
     }
 
+    @SuppressWarnings("rawtypes")
+    private final static NotificationLite NOTIFICATION = NotificationLite.instance();
+
     private static final class MergeSubscriber<T> extends Subscriber<Observable<? extends T>> {
         final Subscriber<? super T> actual;
         final SubscriptionSet<InnerSubscriber<T>> childrenSubscribers;
@@ -65,13 +69,11 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
             synchronized (this) {
                 if (mergeProducer == null) {
                     // this means it's an Observable without backpressure support
-                    mergeProducer = new MergeProducer<T>(null, actual, childrenSubscribers);
+                    mergeProducer = new MergeProducer<T>(this, null, actual, childrenSubscribers);
                 }
                 wip++;
             }
-            InnerSubscriber<T> i = new InnerSubscriber<T>(mergeProducer, this);
-            childrenSubscribers.add(i);
-            t.unsafeSubscribe(i);
+            mergeProducer.handleNewSource(t);
         }
 
         @Override
@@ -95,24 +97,6 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
             }
         }
 
-        @Override
-        protected Producer onSetProducer(final Producer p) {
-            /*
-             * Decouple the Producer chain.
-             * 
-             * Upwards we will just request -1 to get all Observables.
-             * For requests coming from the child we want to route them instead
-             * to the MergeProducer which will manage draining queues to deliver events.
-             */
-            synchronized (this) {
-                if (mergeProducer != null) {
-                    throw new IllegalStateException("Received Producer in `onSetProducer` after `onNext`");
-                }
-                mergeProducer = new MergeProducer<T>(p, actual, childrenSubscribers);
-            }
-            return mergeProducer;
-        }
-
         void completeInner(InnerSubscriber<T> s) {
             try {
                 boolean sendOnComplete = false;
@@ -129,118 +113,146 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
                 childrenSubscribers.remove(s);
             }
         }
+
+        @Override
+        protected Producer onSetProducer(final Producer p) {
+            /*
+             * Decouple the Producer chain.
+             * 
+             * Upwards we will just request -1 to get all Observables (on first request to MergeProducer)
+             * 
+             * For requests coming from the child we want to route them instead
+             * to the MergeProducer which will manage draining queues to deliver events.
+             */
+            synchronized (this) {
+                if (mergeProducer != null) {
+                    throw new IllegalStateException("Received Producer in `onSetProducer` after `onNext`");
+                }
+                mergeProducer = new MergeProducer<T>(this, p, actual, childrenSubscribers);
+            }
+            return mergeProducer;
+        }
     }
 
     private static final class MergeProducer<T> implements Producer {
 
-        private boolean infiniteRequestSent = false;
-        private int requested = -1;
-        private int wip = 0;
-        private final Subscriber<? super T> child;
+        private final MergeSubscriber<T> parentSubscriber;
         private final SubscriptionSet<InnerSubscriber<T>> childrenSubscribers;
         private final Producer parentProducer;
-        private final MergeProducer<T> self = this;
 
-        public MergeProducer(Producer parentProducer, Subscriber<? super T> child, SubscriptionSet<InnerSubscriber<T>> childrenSubscribers) {
+        private volatile int _requested = -1; // default to infinite
+        private volatile int _infiniteRequestSent = 0;
+        private static final AtomicIntegerFieldUpdater<MergeProducer> ONCE_PARENT_REQUEST = AtomicIntegerFieldUpdater.newUpdater(MergeProducer.class, "_infiniteRequestSent");
+        private static final AtomicIntegerFieldUpdater<MergeProducer> REQUESTED_UPDATER = AtomicIntegerFieldUpdater.newUpdater(MergeProducer.class, "_requested");
+
+        /* protected by `emitLock` */
+        private final Subscriber<? super T> child;
+        private volatile int _emitLock;
+        private static final AtomicIntegerFieldUpdater<MergeProducer> EMIT_LOCK = AtomicIntegerFieldUpdater.newUpdater(MergeProducer.class, "_emitLock");
+
+        /* used to ensure serialized emission to the child Subscriber */
+
+        private final ConcurrentHashMap<InnerSubscriber<T>, RxRingBuffer> queues = new ConcurrentHashMap<InnerSubscriber<T>, RxRingBuffer>();
+
+        public MergeProducer(MergeSubscriber<T> parentSubscriber, Producer parentProducer, Subscriber<? super T> child, SubscriptionSet<InnerSubscriber<T>> childrenSubscribers) {
+            this.parentSubscriber = parentSubscriber;
             this.parentProducer = parentProducer;
             this.child = child;
             this.childrenSubscribers = childrenSubscribers;
         }
 
-        private final Action1<InnerSubscriber<T>> action = new Action1<InnerSubscriber<T>>() {
-
-            @SuppressWarnings("unchecked")
-            @Override
-            public void call(InnerSubscriber<T> childSubscriber) {
-                synchronized (self) {
-                    if (child.isUnsubscribed() || requested == 0) {
-                        return;
-                    }
-                }
-                RxSpscRingBuffer q = childSubscriber.queue;
-                Object o = null;
-                try {
-                    while ((o = q.poll()) != null) {
-                        // we don't enqueue the errors, so only check for complete/next
-                        if (q.isCompleted(o)) {
-                            childSubscriber.complete();
-                        } else {
-                            child.onNext((T) o);
-                        }
-
-                        synchronized (self) {
-                            requested--;
-                            if (requested == 0) {
-                                // we have sent as many as have been requested
-                                return;
-                            }
-                        }
-                    }
-                } finally {
-                    childSubscriber.queue.requestIfNeeded(childSubscriber);
-                }
-            }
-
-        };
-
         @Override
         public void request(int n) {
-            // we have been requested from our child
-            boolean sendInfiniteRequest = false;
-            synchronized (this) {
-                if (requested < 0) {
-                    requested = 0;
-                }
-                requested += n;
+            int r = REQUESTED_UPDATER.addAndGet(this, n);
+            if (r < n) {
+                // this means it was negative so let's add the diff
+                REQUESTED_UPDATER.addAndGet(this, (n - r));
+            }
+
+            // do outside of lock
+            if (ONCE_PARENT_REQUEST.compareAndSet(this, 0, 1)) {
                 // parentProducer can be null if we're merging an Observable<Observable> without backpressure support
-                if (parentProducer != null && !infiniteRequestSent) {
-                    sendInfiniteRequest = true;
+                if (parentProducer != null) {
+                    // request up to our parent to start sending us the Observables for merging
+                    parentProducer.request(-1);
                 }
             }
-            if (sendInfiniteRequest) {
-                // request up to our parent to start sending us the Observables for merging
-                parentProducer.request(-1);
-            }
-            attemptSending();
+
+            drainQueues();
         }
 
         /**
-         * Allow only one thread to be sending at a time.
-         * It will drain as many Observers as it can up to the requested limit.
+         * Loop over all queues and emit up to the requested amount
          */
-        private void attemptSending() {
-            synchronized (this) {
-                if (requested == 0) {
-                    // we're done emitting the number requested so return
-                    return;
-                }
-            }
-
-            // TODO right now this starts from the beginning every time
-            // it needs to be more intelligent and remember where in the list it last ended
-            // so it can be more fair ... otherwise those at the end may never get their events emitted
-            boolean shouldSend = false;
-            synchronized (this) {
-                if (wip == 0) {
-                    shouldSend = true;
-                }
-                wip++;
-            }
-            if (shouldSend) {
-                while (true) {
-                    if (child.isUnsubscribed()) {
-                        return;
-                    }
-                    childrenSubscribers.forEach(action);
-                    synchronized (this) {
-                        wip--;
-                        if (wip <= 0) {
-                            // no further events to try sending data for
-                            return;
+        private void drainQueues() {
+            // try draining queues
+            if (EMIT_LOCK.getAndIncrement(this) == 0) {
+                try {
+                    do {
+                        // TODO this allocates a new Enumerable everytime ... would prefer direct access to an underlying array
+                        // TODO this starts at the beginning every time and could starve queues at the end
+                        for (Entry<InnerSubscriber<T>, RxRingBuffer> is : queues.entrySet()) {
+                            _unsafeDrainQueue(is.getKey(), is.getValue());
                         }
+                    } while (EMIT_LOCK.decrementAndGet(this) > 0);
+                } finally {
+                    if (_emitLock > 0) {
+                        System.err.println("leaving draining while > 0");
+                    } else {
+                        //                                                System.err.println("after draining");
                     }
                 }
             }
+        }
+
+        /*
+         * ONLY call this if you hold the EMIT_LOCK
+         */
+        private void _unsafeDrainQueue(InnerSubscriber<T> is, RxRingBuffer q) {
+            Object o = null;
+            while (REQUESTED_UPDATER.decrementAndGet(this) != 0 && (o = q.poll()) != null) {
+                // we don't receive errors via the queue
+                if (q.isCompleted(o)) {
+                    is.complete();
+                } else {
+                    q.accept(o, child);
+                }
+            }
+            q.requestIfNeeded(is);
+        }
+
+        private void enqueue(InnerSubscriber<T> is, Object o) throws MissingBackpressureException {
+            RxRingBuffer q = queues.get(is);
+            if (q.isCompleted(o)) {
+                q.onCompleted();
+            } else {
+                int or = q.outstandingRequests;
+                int ar = q.available();
+                int c = q.count();
+                try {
+                    q.onNext((T) o);
+                } catch (MissingBackpressureException e) {
+                    throw e;
+                }
+            }
+            drainQueues();
+        }
+
+        private void onNext(InnerSubscriber<T> is, T t) throws MissingBackpressureException {
+            enqueue(is, t);
+        }
+
+        private void onCompleted(InnerSubscriber<T> is) throws MissingBackpressureException {
+            enqueue(is, NOTIFICATION.completed());
+        }
+
+        private void handleNewSource(Observable<? extends T> t) {
+            InnerSubscriber<T> i = new InnerSubscriber<T>(this, parentSubscriber);
+            childrenSubscribers.add(i);
+            RxRingBuffer q = RxRingBuffer.getInstance();
+            queues.put(i, q);
+            q.requestIfNeeded(i);
+            t.unsafeSubscribe(i);
         }
 
     }
@@ -253,24 +265,18 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
         @SuppressWarnings("rawtypes")
         static final AtomicIntegerFieldUpdater<InnerSubscriber> ONCE_UPDATER = AtomicIntegerFieldUpdater.newUpdater(InnerSubscriber.class, "once");
 
-        private final RxSpscRingBuffer queue = RxSpscRingBuffer.getInstance();
-
         public InnerSubscriber(MergeProducer<T> mergeProducer, MergeSubscriber<T> parent) {
             this.mergeProducer = mergeProducer;
             this.parent = parent;
-            // setup request to fill queue
-            queue.requestIfNeeded(this);
         }
 
         @Override
         public void onNext(T t) {
             try {
-                queue.onNext(t);
+                mergeProducer.onNext(this, t);
             } catch (MissingBackpressureException e) {
                 onError(e);
-                unsubscribe();
             }
-            mergeProducer.attemptSending();
         }
 
         @Override
@@ -283,8 +289,11 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
 
         @Override
         public void onCompleted() {
-            queue.onCompleted();
-            mergeProducer.attemptSending();
+            try {
+                mergeProducer.onCompleted(this);
+            } catch (MissingBackpressureException e) {
+                onError(e);
+            }
         }
 
         void complete() {
