@@ -271,4 +271,19 @@ class ObservableTests extends JUnitSuite {
     assertEquals(expected, r)
   }
 
+  @Test
+  def testCreate() {
+    var called = false
+    val o = Observable.create[String](observer => {
+      observer.onNext("a")
+      observer.onNext("b")
+      observer.onNext("c")
+      observer.onCompleted()
+      Subscription {
+        called = true
+      }
+    })
+    assertEquals(List("a", "b", "c"), o.toBlocking.toList)
+    assertTrue(called)
+  }
 }
