@@ -4307,7 +4307,6 @@ object Observable {
    */
   def interval(duration: Duration): Observable[Long] = {
     toScalaObservable[java.lang.Long](rx.Observable.interval(duration.length, duration.unit)).map(_.longValue())
-    /*XXX*/
   }
 
   /**
@@ -4340,7 +4339,6 @@ object Observable {
    */
   def timer(initialDelay: Duration, period: Duration): Observable[Long] = {
     toScalaObservable[java.lang.Long](rx.Observable.timer(initialDelay.toNanos, period.toNanos, duration.NANOSECONDS)).map(_.longValue())
-    /*XXX*/
   }
 
   /**
