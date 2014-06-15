@@ -15,19 +15,24 @@
  */
 package rx.internal.operators;
 
+import static org.junit.Assert.assertFalse;
 import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 
 import java.util.NoSuchElementException;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.Test;
 import org.mockito.InOrder;
 
 import rx.Observable;
 import rx.Observer;
+import rx.Subscriber;
 import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 
 public class OperatorSingleTest {
 
@@ -240,5 +245,45 @@ public class OperatorSingleTest {
         inOrder.verify(observer, times(1)).onNext(2);
         inOrder.verify(observer, times(1)).onCompleted();
         inOrder.verifyNoMoreInteractions();
+    }
+
+    @Test
+    public void testUnsubscribe() throws InterruptedException {
+        final AtomicBoolean hasBeenInterrupted = new AtomicBoolean();
+
+        final CountDownLatch waitForSubscribeCalled = new CountDownLatch(1);
+        final CountDownLatch WaitForHasBeenInterruptedSet = new CountDownLatch(1);
+
+        Observable<Integer> observable = Observable.from(1, 2).single()
+                .onErrorResumeNext(new Func1<Throwable, Observable<Integer>>() {
+
+                    @Override
+                    public Observable<Integer> call(Throwable ignored) {
+                        // If single `unsubscribe` the whole Subscription chain by mistake,
+                        // the Action in `Schedulers.io()` will be cancelled by calling "Future.cancel(true)".
+                        // So we will observe `InterruptedException` here.
+                        // This is not the desired behavior.
+                        return Observable.create(new Observable.OnSubscribe<Integer>() {
+
+                            @Override
+                            public void call(Subscriber<? super Integer> subscriber) {
+                                try {
+                                    waitForSubscribeCalled.await();
+                                    hasBeenInterrupted.set(false);
+                                } catch (InterruptedException e) {
+                                    hasBeenInterrupted.set(true);
+                                }
+                                WaitForHasBeenInterruptedSet.countDown();
+                            }
+                        }).subscribeOn(Schedulers.io());
+                    }
+                });
+
+        observable.subscribe();
+
+        waitForSubscribeCalled.countDown();
+        WaitForHasBeenInterruptedSet.await();
+
+        assertFalse(hasBeenInterrupted.get());
     }
 }

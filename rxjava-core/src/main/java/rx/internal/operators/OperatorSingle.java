@@ -44,8 +44,8 @@ public final class OperatorSingle<T> implements Operator<T, T> {
     }
 
     @Override
-    public Subscriber<? super T> call(final Subscriber<? super T> subscriber) {
-        return new Subscriber<T>(subscriber) {
+    public Subscriber<? super T> call(final Subscriber<? super T> child) {
+        Subscriber<T> parent = new Subscriber<T>() {
 
             private T value;
             private boolean isNonEmpty = false;
@@ -55,7 +55,8 @@ public final class OperatorSingle<T> implements Operator<T, T> {
             public void onNext(T value) {
                 if (isNonEmpty) {
                     hasTooManyElements = true;
-                    subscriber.onError(new IllegalArgumentException("Sequence contains too many elements"));
+                    child.onError(new IllegalArgumentException("Sequence contains too many elements"));
+                    // Decouple the parent and child so that here `unsubscribe` won't propagate to the child
                     unsubscribe();
                 } else {
                     this.value = value;
@@ -69,14 +70,14 @@ public final class OperatorSingle<T> implements Operator<T, T> {
                     // We have already sent an onError message
                 } else {
                     if (isNonEmpty) {
-                        subscriber.onNext(value);
-                        subscriber.onCompleted();
+                        child.onNext(value);
+                        child.onCompleted();
                     } else {
                         if (hasDefaultValue) {
-                            subscriber.onNext(defaultValue);
-                            subscriber.onCompleted();
+                            child.onNext(defaultValue);
+                            child.onCompleted();
                         } else {
-                            subscriber.onError(new NoSuchElementException("Sequence contains no elements"));
+                            child.onError(new NoSuchElementException("Sequence contains no elements"));
                         }
                     }
                 }
@@ -84,10 +85,12 @@ public final class OperatorSingle<T> implements Operator<T, T> {
 
             @Override
             public void onError(Throwable e) {
-                subscriber.onError(e);
+                child.onError(e);
             }
 
         };
+        child.add(parent);
+        return parent;
     }
 
 }
