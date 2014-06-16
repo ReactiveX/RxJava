@@ -15,8 +15,14 @@
  */
 package rx.internal.operators;
 
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
+
 import rx.Observable.OnSubscribe;
+import rx.Producer;
 import rx.Subscriber;
+import rx.internal.util.RxRingBuffer;
 
 /**
  * Converts an {@code Iterable} sequence into an {@code Observable}.
@@ -35,17 +41,60 @@ public final class OnSubscribeFromIterable<T> implements OnSubscribe<T> {
     }
 
     @Override
-    public void call(Subscriber<? super T> o) {
-        for (T i : is) {
-            if (o.isUnsubscribed()) {
+    public void call(final Subscriber<? super T> o) {
+        final Iterator<? extends T> it = is.iterator();
+        if (is instanceof Collection) {
+            @SuppressWarnings("rawtypes")
+            int size = ((Collection) is).size();
+            if (size < Producer.BUFFER_SIZE) {
+                while (it.hasNext()) {
+                    if (o.isUnsubscribed()) {
+                        return;
+                    }
+                    T t = it.next();
+                    o.onNext(t);
+                }
+                o.onCompleted();
                 return;
             }
-            o.onNext(i);
         }
-        if (o.isUnsubscribed()) {
-            return;
+        // otherwise we do it via the producer to support backpressure
+        o.setProducer(new IterableProducer<T>(o, it));
+    }
+
+    private static final class IterableProducer<T> implements Producer {
+        private final Subscriber<? super T> o;
+        private final Iterator<? extends T> it;
+
+        private volatile int requested = 0;
+        @SuppressWarnings("rawtypes")
+        private static final AtomicIntegerFieldUpdater<IterableProducer> REQUESTED_UPDATER = AtomicIntegerFieldUpdater.newUpdater(IterableProducer.class, "requested");
+
+        private IterableProducer(Subscriber<? super T> o, Iterator<? extends T> it) {
+            this.o = o;
+            this.it = it;
         }
-        o.onCompleted();
+
+        @Override
+        public void request(int n) {
+            int _c = REQUESTED_UPDATER.getAndAdd(this, n);
+            if (_c == 0) {
+                while (it.hasNext()) {
+                    if (o.isUnsubscribed()) {
+                        return;
+                    }
+                    T t = it.next();
+                    o.onNext(t);
+                    if (REQUESTED_UPDATER.decrementAndGet(this) == 0) {
+                        // we're done emitting the number requested so return
+                        return;
+                    }
+                }
+
+                o.onCompleted();
+            }
+
+        }
     }
 
 }

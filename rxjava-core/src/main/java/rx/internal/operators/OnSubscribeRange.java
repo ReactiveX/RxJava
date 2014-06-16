@@ -15,8 +15,12 @@
  */
 package rx.internal.operators;
 
+import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
+
 import rx.Observable.OnSubscribe;
+import rx.Producer;
 import rx.Subscriber;
+import rx.internal.util.RxRingBuffer;
 
 /**
  * Emit ints from start to end inclusive.
@@ -32,14 +36,56 @@ public final class OnSubscribeRange implements OnSubscribe<Integer> {
     }
 
     @Override
-    public void call(Subscriber<? super Integer> o) {
-        for (int i = start; i <= end; i++) {
-            if (o.isUnsubscribed()) {
-                return;
+    public void call(final Subscriber<? super Integer> o) {
+        // need +1 as this is inclusive
+        if ((end - start + 1) < Producer.BUFFER_SIZE) {
+            int index = start;
+            while (index <= end) {
+                if (o.isUnsubscribed()) {
+                    return;
+                }
+                o.onNext(index++);
             }
-            o.onNext(i);
+            o.onCompleted();
+        } else {
+            // otherwise we do it via the producer to support backpressure
+            o.setProducer(new RangeProducer(o, start, end));
         }
-        o.onCompleted();
+
+    }
+
+    private static final class RangeProducer implements Producer {
+        private final Subscriber<? super Integer> o;
+        @SuppressWarnings("unused")
+        // accessed by REQUESTED_UPDATER
+        private volatile int requested;
+        private static final AtomicIntegerFieldUpdater<RangeProducer> REQUESTED_UPDATER = AtomicIntegerFieldUpdater.newUpdater(RangeProducer.class, "requested");
+        private volatile int index;
+        private final int end;
+
+        private RangeProducer(Subscriber<? super Integer> o, int start, int end) {
+            this.o = o;
+            this.index = start;
+            this.end = end;
+        }
+
+        @Override
+        public void request(int n) {
+            int _c = REQUESTED_UPDATER.getAndAdd(this, n);
+            if (_c == 0) {
+                while (index <= end) {
+                    if (o.isUnsubscribed()) {
+                        return;
+                    }
+                    o.onNext(index++);
+                    if (REQUESTED_UPDATER.decrementAndGet(this) == 0) {
+                        // we're done emitting the number requested so return
+                        return;
+                    }
+                }
+                o.onCompleted();
+            }
+        }
     }
 
 }
