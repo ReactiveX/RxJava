@@ -17,6 +17,8 @@ package rx.internal.util;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -69,6 +71,14 @@ public final class SubscriptionSet<T extends Subscription> implements Subscripti
             if (unsubscribed.get()) {
                 s.unsubscribe();
             }
+        }
+    }
+    
+    public Enumeration<T> getSubscriptions() {
+        if (subscriptions != null) {
+            return subscriptions.keys();
+        } else {
+            return Collections.emptyEnumeration();
         }
     }
 
@@ -126,4 +136,5 @@ public final class SubscriptionSet<T extends Subscription> implements Subscripti
             }
         }
     }
+
 }

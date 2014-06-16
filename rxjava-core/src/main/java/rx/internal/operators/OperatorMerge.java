@@ -15,8 +15,7 @@
  */
 package rx.internal.operators;
 
-import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Enumeration;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 import rx.Observable;
@@ -153,8 +152,6 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
 
         /* used to ensure serialized emission to the child Subscriber */
 
-        private final ConcurrentHashMap<InnerSubscriber<T>, RxRingBuffer> queues = new ConcurrentHashMap<InnerSubscriber<T>, RxRingBuffer>();
-
         public MergeProducer(MergeSubscriber<T> parentSubscriber, Producer parentProducer, Subscriber<? super T> child, SubscriptionSet<InnerSubscriber<T>> childrenSubscribers) {
             this.parentSubscriber = parentSubscriber;
             this.parentProducer = parentProducer;
@@ -191,9 +188,12 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
                 do {
                     // TODO this allocates a new Enumerable everytime ... would prefer direct access to an underlying array
                     // TODO this starts at the beginning every time and could starve queues at the end
-                    for (Entry<InnerSubscriber<T>, RxRingBuffer> is : queues.entrySet()) {
-                        _unsafeDrainQueue(is.getKey(), is.getValue());
+                    Enumeration<InnerSubscriber<T>> subscriptions = childrenSubscribers.getSubscriptions();
+                    while (subscriptions.hasMoreElements()) {
+                        InnerSubscriber<T> is = subscriptions.nextElement();
+                        _unsafeDrainQueue(is, is.q);
                     }
+
                 } while (EMIT_LOCK.decrementAndGet(this) > 0);
             }
         }
@@ -215,7 +215,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
         }
 
         private void emitOrEnqueue(InnerSubscriber<T> is, Object o) throws MissingBackpressureException {
-            RxRingBuffer q = queues.get(is);
+            RxRingBuffer q = is.q;
             boolean enqueue = true;
             int el = 0;
             if (EMIT_LOCK.getAndIncrement(this) == 0) {
@@ -267,9 +267,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
         private void handleNewSource(Observable<? extends T> t) {
             InnerSubscriber<T> i = new InnerSubscriber<T>(this, parentSubscriber);
             childrenSubscribers.add(i);
-            RxRingBuffer q = RxSpmcRingBuffer.getInstance();
-            queues.put(i, q);
-            q.requestIfNeeded(i);
+            i.q.requestIfNeeded(i);
             t.unsafeSubscribe(i);
         }
 
@@ -282,6 +280,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
         volatile int once;
         @SuppressWarnings("rawtypes")
         static final AtomicIntegerFieldUpdater<InnerSubscriber> ONCE_UPDATER = AtomicIntegerFieldUpdater.newUpdater(InnerSubscriber.class, "once");
+        final RxRingBuffer q = RxSpmcRingBuffer.getInstance();
 
         public InnerSubscriber(MergeProducer<T> mergeProducer, MergeSubscriber<T> parent) {
             this.mergeProducer = mergeProducer;

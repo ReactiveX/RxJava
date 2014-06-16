@@ -6,7 +6,7 @@ import rx.internal.util.jctools.SpmcArrayQueue;
 
 public class RxSpmcRingBuffer extends RxRingBuffer {
 
-    public static final ObjectPool<RxRingBuffer> POOL = new ObjectPool<RxRingBuffer>(0, 1024, 67) {
+    private static final ObjectPool<RxRingBuffer> POOL = new ObjectPool<RxRingBuffer>(0, 1024, 67) {
 
         @Override
         protected RxRingBuffer createObject() {

@@ -526,7 +526,6 @@ public class OperatorMergeTest {
                                 e.printStackTrace();
                             }
                         }
-                        System.err.println("******** completed");
                         s.onCompleted();
                     }
 
