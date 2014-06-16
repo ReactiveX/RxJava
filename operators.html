@@ -11,7 +11,8 @@
    dl#outer>dt { font-weight: bold; }
    dt { font-weight: normal;
         margin-right: -1.5em; }
-   dt dt::before { content: "…"; }
+   dl > dt::before { content: "…"; }
+   dl#outer > dt::before { content: ""; }
    dd::before { content: ": "; }
    dd.sub::before { content: ""; }
 
@@ -70,13 +71,72 @@
     </dl></dd>
    <dt>that completes without emitting items</dt>
     <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#empty"><code>empty(&#8239;)</code></a></dd>
-   <dt>that only sends an error notification</dt>
-    <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#error"><code>error(&#8239;)</code></a></dd>
    <dt>that does nothing at all</dt>
     <dd><a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#never"><code>never(&#8239;)</code></a></dd>
   </dl></dd>
 
- <dt>I want to transform the items emitted by an Observable and then reemit them</dt>
+ <dt>I want to create an Observable by combining other Observables</dt>
+  <dd class="sub"><dl>
+   <dt>emitting all of the items from all of the Observables in whatever order they are received</dt>
+    <dd class="sub"><dl>
+     <dt>where the source Observables are passed to the operator as parameters</dt>
+      <dd><a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#merge"><code>merge(&hellip;)</code></a></dd>
+     <dt>where the source Observables are found in an Array</dt>
+      <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#merge"><code>merge(sequences)</code></a></dd>
+     <dt>where the source Observables are found in an Iterable</dt>
+      <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#merge"><code>merge(sequences)</code></a></dd>
+      <dd class="sub"><dl>
+       <dt>but I only want to process a certain number of them at once</dt>
+        <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#merge"><code>merge(sequences,maxConcurrent)</code></a></dd>
+      </dl></dd>
+     <dt>where the source Observables are emitted from an Observable</dt>
+      <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#merge"><code>merge(source)</code></a></dd>
+      <dd class="sub"><dl>
+       <dt>but I only want to process a certain number of them at once</dt>
+        <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#merge"><code>merge(source,maxConcurrent)</code></a></dd>
+      </dl></dd>
+     <dt>but not forwarding any error notifications until all source Observables have terminated</dt>
+      <dd class="sub"><dl>
+       <dt>where the source Observables are emitted from an Observable</dt>
+        <dd><a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#mergedelayerror"><code>mergeDelayError(source)</code></a></dd>
+       <dt>where the source Observables are passed to the operator as parameters</dt>
+        <dd><a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#mergedelayerror"><code>mergeDelayError(&hellip;)</code></a></dd>
+      </dl></dd>
+    </dl></dd>
+   <dt>reducing an Observable that emits many Observables to one that emits as many Observables as I have processes to process them on</dt>
+    <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#parallelmerge"><code>parallelMerge(&hellip;)</code></a></dd>
+   <dt>by combining the items from two or more Observables sequentially to come up with new items to emit</dt>
+    <dd class="sub"><dl>
+     <dt>whenever each Observable has emitted a new item</dt>
+      <dd class="sub"><dl>
+       <dt>where the source Observables are found in an Iterable</dt>
+        <dd><a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#zip"><code>zip(iterableOfObservables,zipFunction)</code></a></dd>
+       <dt>where the source Observables are emitted by an Observable</dt>
+        <dd><a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#zip"><code>zip(observableOfObservables,zipFunction)</code></a></dd>
+       <dt>where the source Observables are passed to the operator as parameters</dt>
+        <dd><a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#zip"><code>zip(&hellip;,zipFunction)</code></a></dd>
+      </dl></dd>
+     <dt>whenever any Observable has emitted a new item</dt>
+      <dd class="sub"><dl>
+       <dt>where the source Observables are found in a List</dt>
+        <dd><a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#combinelatest"><code>combineLatest(sources,combineFunction)></code></a></dd>
+       <dt>where the source Observables are passed to the operator as parameters</dt>
+        <dd><a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#combinelatest"><code>combineLatest(&hellip;,combineFunction)></code></a></dd>
+      </dl></dd>
+     <dt>whenever an item is emitted by one Observable in a window defined by an item emitted by another</dt>
+      <dd><a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#join-and-groupjoin"><code>join(&#8239;)</code></a></dd>
+      <dd class="sub"><dl>
+       <dt>based on an Observable that emits all items that have fallen in such a window</dt>
+        <dd><a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#join-and-groupjoin"><code>groupJoin(&#8239;)</code></a></dd>
+      </dl></dd>
+     <dt>by means of <code>Pattern</code> and <code>Plan</code> intermediaries</dt>
+      <dd><a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#and-then-and-when"><code>and/then/when</code></a></dd>
+    </dl></dd>
+   <dt>by always emitting the items from only the most-recently emitted of those Observables</dt>
+    <dd><a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#switchonnext"><code>switchOnNext(&#8239;)</code></a></dd>
+  </dl></dd>
+
+ <dt>I want emit the items from an Observable after transforming them</dt>
   <dd class="sub"><dl>
    <dt>one at a time with a function</dt>
     <dd><a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#map"><code>map(&#8239;)</code></a></dd>
@@ -100,12 +160,46 @@
      <dt>and an initial seed value to get the ball rolling</dt>
       <dd><a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#scan"><code>scan(accumulator,initialValue)</code></a></dd>
     </dl></dd>
+   <dt>by combining them sequentially with the items in an Iterable by means of a function</dt>
+    <dd><a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#zip"><code>zip(iterable,zipFunction)</code></a></dd>
+   <dt>by attaching a timestamp to them</dt>
+    <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#timestamp"><code>timestamp(&#8239;)</code></a></dd>
+   <dt>by emitting an indicator of the amount of time lapsed before the emission of the item</dt>
+    <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#itmeinterval"><code>timeInterval(&#8239;)</code></a></dd>
+  </dl></dd>
+
+ <dt>I want to shift the items emitted by an Observable forward in time before reemitting them</dt>
+  <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#delay"><code>delay(delay,unit)</code></a></dd>
+  <dd class="sub"><dl>
+   <dt>with the amount of the shift calculated on a per-item basis</dt>
+    <dd><a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#delay"><code>delay(itemDelay)</code></a></dd> 
+   <dt>and the initial subscription to the Observable shifted as well</dt>
+    <dd><a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#delay"><code>delay(subscriptionDelay,itemDelay)</code></a></dd>
   </dl></dd>
 
  <dt>I want to transform items <em>and</em> notifications from an Observable into items and reemit them</dt>
   <dd class="sub"><dl>
    <dt>by emitting all of the items emitted by corresponding Observables</dt>
     <dd><a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#mergemap-and-mergemapiterable"><code>mergeMap(&#8239;)</code></a></dd>
+   <dt>by wrapping them in <code>Notification</code> objects</dt>
+    <dd><a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#materialize"><code>materialize(&#8239;)</code></a></dd>
+    <dd class="sub"><dl>
+     <dt>which I can then unwrap again with</dt>
+      <dd><a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#dematerialize"><code>dematerialize(&#8239;)</code></a></dd>
+    </dl></dd>
+  </dl></dd>
+
+ <dt>I want to ignore all items emitted by an Observable and only pass along its completed/error notification</dt>
+  <dd><a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#ignoreelements"><code>ignoreElements(&#8239;)</code></a></dd>
+
+ <dt>I want to mirror an Observable but prefix items to its sequence</dt>
+  <dd class="sub"><dl>
+   <dt>obtained from an Array or Iterable</dt>
+    <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#startwith"><code>startWith(values)</code></a></dd>
+   <dt>obtained from an Observable</dt>
+    <dd><a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#startwith"><code>startWith(values)</code></a></dd>
+   <dt>passed as parameters to the operator</dt>
+    <dd><a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#startwith"><code>startWith(&hellip;)</code></a></dd>
   </dl></dd>
 
  <dt>I want to collect items from an Observable and reemit them as buffers of items</dt>
@@ -254,14 +348,14 @@
      <dt>based on a timer</dt>
       <dd class="sub"><dl>
        <dt>and emitting the most-recently emitted item in the period</dt>
-        <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#wiki-sample-or-throttlelast"><code>sample(time,unit)</code></a></dd>
+        <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#sample-or-throttlelast"><code>sample(time,unit)</code></a></dd>
        <dt>and emitting the first-emitted item in the period</dt>
         <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#throttlefirst"><code>throttleFirst(time,unit)</code></a></dd>
       </dl></dd>
      <dt>based on emissions from another Observable</dt>
       <dd class="sub"><dl>
        <dt>and emitting the most-recently emitted item in the period</dt>
-        <dd><a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#wiki-sample-or-throttlelast"><code>sample(sampler)</code></a></dd>
+        <dd><a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#sample-or-throttlelast"><code>sample(sampler)</code></a></dd>
        <dt>and emitting the first-emitted item in the period</dt>
         <dd><a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#throttlefirst"><code>throttleFirst(sampler)</code></a></dd>
       </dl></dd>
@@ -273,40 +367,115 @@
      <dt>based on emissions from another Observable</dt>
       <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#throttlewithtimeout-or-debounce"><code>debounce(debounceSelector)</code></a></dd>
     </dl></dd>
-   <dt>by suppressing items that are duplicates of already-emitted items<dt>
+   <dt>by suppressing items that are duplicates of already-emitted items</dt>
     <dd><a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#distinct"><code>distinct(&#8239;)</code></a></dd>
     <dd class="sub"><dl>
-     <dt>according to a particular function<dt>
+     <dt>according to a particular function</dt>
       <dd><a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#distinct"><code>distinct(keySelector)</code></a></dd>
-     <dt>if they immediatly follow the item they are duplicates of<dt>
+     <dt>if they immediatly follow the item they are duplicates of</dt>
       <dd><a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#distinctuntilchanged"><code>distinctUntilChanged(&#8239;)</code></a></dd>
       <dd class="sub"><dl>
-       <dt>according to a particular function<dt>
+       <dt>according to a particular function</dt>
         <dd><a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#distinctuntilchanged"><code>distinct(keySelector)</code></a></dd>
       </dl></dd>
     </dl></dd>
+   <dt>by delaying my subscription to it for some time after it begins emitting items</dt>
+    <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#delaysubscription"><code>delaySubscription(delay,unit)</code></a></dd>
   </dl></dd>
 
- <dt>I want an Observable to notify observers of an error</dt>
+ <dt>I want an Observable to emit exactly one item</dt>
   <dd class="sub"><dl>
-   <dt>if a period of time elapses without it emitting an item</dt>
+   <dt>so I want it to notify of an error otherwise</dt>
+    <dd><a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#single"><code>single(&#8239;)</code></a></dd>
+   <dt>so I want it to notify of an error if it emits more than one, or a default item if it emits none</dt>
+    <dd><a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#single"><code>singleorDefault(&#8239;)</code></a></dd>
+   <dt>that matches a predicate</dt>
+    <dd class="sub"><dl>
+     <dt>so I want it to notify of an error otherwise</dt>
+      <dd><a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#single"><code>single(predicate)</code></a></dd>
+     <dt>so I want it to notify of an error if it emits more than one, or a default item if it emits none</dt>
+      <dd><a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#single"><code>singleorDefault(predicate)</code></a></dd>
+    </dl></dd>
+  </dl></dd>
+
+ <dt>I want an Observable to retransmit items to observers who subscribe late</dt>
+  <dd><a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#cache"><code>cache(&#8239;)</code></a></dd>
+
+ <dt>I want an operator to operate on a particular Scheduler</dt>
+  <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#subscribeon"><code>subscribeOn(&#8239;)</code></a></dd>
+  <dd class="sub"><dl>
+   <dt>doing its processing in parallel on multiple threads without making the resulting Observable poorly-behaved</dt>
+    <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#parallel"><code>parallel(&#8239;)</code></a></dd>
+   <dt>when it notifies Observers</dt>
+    <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#observeon"><code>observeOn(&#8239;)</code></a></dd>
+  </dl></dd>
+
+ <dt>I want an Observable to invoke a particuar action</dt>
+  <dd class="sub"><dl>
+   <dt>whenever it emits an item</dt>
+    <dd><a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#dooneach"><code>doOnEach(action)</code></a></dd>
+   <dt>when it issues a completed notification</dt>
+    <dd><a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#dooncompleted"><code>doOnCompleted(action)</code></a></dd>
+   <dt>when it issues an error notification</dt>
+    <dd><a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#doonerror"><code>doOnError(action)</code></a></dd>
+   <dt>when it issues a completed or error notification</dt>
+    <dd><a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#doonterminate"><code>doOnTerminate(action)</code></a></dd>
+   <dt>after it has issued a completed or error notification</dt>
+    <dd><a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#finallydo"><code>finallyDo(action)</code></a></dd>
+   <dt>whenever it emits an item or issues a completed/error notification</dt>
+    <dd><a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#dooneach"><code>doOnEach(observer)</code></a></dd>
+  </dl></dd>
+
+ <dt>I want an Observable that will notify observers of an error</dt>
+  <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#error"><code>error(&#8239;)</code></a></dd>
+  <dd class="sub"><dl>
+   <dt>if a specified period of time elapses without it emitting an item</dt>
     <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#timeout"><code>timeout(time,unit)</code></a></dd>
   </dl></dd>
-
- <dt>I want to ignore all items emitted by an Observable and only pass along its completed/error notification</dt>
-  <dd><a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#ignoreelements"><code>ignoreElements(&#8239;)</code></a></dd>
 
  <dt>I want an Observable to recover gracefully</dt>
   <dd class="sub"><dl>
    <dt>from a timeout by switching to a backup Observable</dt>
     <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#timeout"><code>timeout(time,unit,fallback)</code></a></dd>
+   <dt>from an upstream error notification</dt>
+    <dd class="sub"><dl>
+     <dt>by switching to a particular backup Observable</dt>
+      <dd><a href="https://github.com/Netflix/RxJava/wiki/Error-Handling-Operators#onerrorresumenext"><code>onErrorResumeNext(sequence)</code></a></dd>
+      <dd class="sub"><dl>
+       <dt>if and only if the error is an <code>Exception</code></dt>
+        <dd><a href="https://github.com/Netflix/RxJava/wiki/Error-Handling-Operators#onexceptionresumenext"><code>onExceptionResumeNext(&#8239;)</code></a></dd>
+      </dl></dd>
+     <dt>by switching to a backup Observable returned from a function that is passed the error</dt>
+      <dd><a href="https://github.com/Netflix/RxJava/wiki/Error-Handling-Operators#onerrorresumenext"><code>onErrorResumeNext(throwable,function)</code></a></dd>
+      <dd class="sub"><dl>
+       <dt>that continues to observe the source Observable in spite of the error termination</dt>
+        <dd><a href="https://github.com/Netflix/RxJava/wiki/Error-Handling-Operators#onerrorflatmap"><code>onErrorFlatMap(&#8239;)</code></a></dd>
+      </dl></dd>
+     <dt>by emitting a particular item and completing normally</dt>
+      <dd><a href="https://github.com/Netflix/RxJava/wiki/Error-Handling-Operators#onerrorreturn"><code>onErrorReturn(&#8239;)</code></a></dd>
+     <dt>by attempting to resubscribe to the upstream Observable</dt>
+      <dd><a href="https://github.com/Netflix/RxJava/wiki/Error-Handling-Operators#retry"><code>retry(&#8239;)</code></a></dd>
+      <dd class="sub"><dl>
+       <dt>a certain number of times</dt>
+        <dd><a href="https://github.com/Netflix/RxJava/wiki/Error-Handling-Operators#retry"><code>retry(count)</code></a></dd>
+       <dt>so long as a predicate remains true</dt>
+        <dd><a href="https://github.com/Netflix/RxJava/wiki/Error-Handling-Operators#retry"><code>retry(predicate)</code></a></dd>
+      </dl></dd>
+    </dl></dd>
+   <dt>from being unserialized or otherwise poorly-behaved</dt>
+    <dd><a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#serialize"><code>serialize(&#8239;)</code></a></dd>
   </dl></dd>
+
+ <dt>I want to create a resource that has the same lifespan as the Observable</dt>
+  <dd><a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#using"><code>using(&#8239;)</code></a></dd>
 
 </dl>
 </div>
 <hr />
 <p>
- Ⓢ: a variant of this operator allows you to choose a particular Scheduler
+ Ⓢ: a variant of this operator allows you to choose a particular Scheduler<br />
+</p><p>
+ I have omitted parameter names from some methods where they are not necessary to distinguish variants of the method.
 </p>
  </body>
 </html>
