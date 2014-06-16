@@ -505,7 +505,7 @@ public class OperatorMergeTest {
         }
     }
 
-    @Test(timeout = 2000)
+    @Test(timeout = 4000)
     public void testConcurrencyWithSleeping() {
 
         Observable<Integer> o = Observable.create(new OnSubscribe<Integer>() {

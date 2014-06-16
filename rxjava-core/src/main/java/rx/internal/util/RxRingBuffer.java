@@ -93,6 +93,17 @@ public abstract class RxRingBuffer implements Subscription {
     protected abstract Queue<Object> createQueue(int size);
 
     /**
+     * Directly emit to `child.onNext` while also decrementing the request counters used by `requestIfNeeded`.
+     * 
+     * @param o
+     * @param child
+     */
+    public void emitWithoutQueue(Object o, Observer child) {
+        OUTSTANDING_REQUEST_UPDATER.decrementAndGet(this);
+        on.accept(child, o);
+    }
+
+    /**
      * 
      * @param o
      * @throws MissingBackpressureException

@@ -179,30 +179,22 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
                 }
             }
 
-            drainQueues();
+            claimAndDrainQueues();
         }
 
         /**
          * Loop over all queues and emit up to the requested amount
          */
-        private void drainQueues() {
+        private void claimAndDrainQueues() {
             // try draining queues
             if (EMIT_LOCK.getAndIncrement(this) == 0) {
-                try {
-                    do {
-                        // TODO this allocates a new Enumerable everytime ... would prefer direct access to an underlying array
-                        // TODO this starts at the beginning every time and could starve queues at the end
-                        for (Entry<InnerSubscriber<T>, RxRingBuffer> is : queues.entrySet()) {
-                            _unsafeDrainQueue(is.getKey(), is.getValue());
-                        }
-                    } while (EMIT_LOCK.decrementAndGet(this) > 0);
-                } finally {
-                    if (_emitLock > 0) {
-                        System.err.println("leaving draining while > 0");
-                    } else {
-                        //                                                System.err.println("after draining");
+                do {
+                    // TODO this allocates a new Enumerable everytime ... would prefer direct access to an underlying array
+                    // TODO this starts at the beginning every time and could starve queues at the end
+                    for (Entry<InnerSubscriber<T>, RxRingBuffer> is : queues.entrySet()) {
+                        _unsafeDrainQueue(is.getKey(), is.getValue());
                     }
-                }
+                } while (EMIT_LOCK.decrementAndGet(this) > 0);
             }
         }
 
@@ -211,7 +203,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
          */
         private void _unsafeDrainQueue(InnerSubscriber<T> is, RxRingBuffer q) {
             Object o = null;
-            while (REQUESTED_UPDATER.decrementAndGet(this) != 0 && (o = q.poll()) != null) {
+            while (REQUESTED_UPDATER.decrementAndGet(this) != 0 && (o = q.poll()) != null) { // TODO this seems wrong
                 // we don't receive errors via the queue
                 if (q.isCompleted(o)) {
                     is.complete();
@@ -222,29 +214,54 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
             q.requestIfNeeded(is);
         }
 
-        private void enqueue(InnerSubscriber<T> is, Object o) throws MissingBackpressureException {
+        private void emitOrEnqueue(InnerSubscriber<T> is, Object o) throws MissingBackpressureException {
             RxRingBuffer q = queues.get(is);
-            if (q.isCompleted(o)) {
-                q.onCompleted();
-            } else {
-                int or = q.outstandingRequests;
-                int ar = q.available();
-                int c = q.count();
+            boolean enqueue = true;
+            int el = 0;
+            if (EMIT_LOCK.getAndIncrement(this) == 0) {
                 try {
-                    q.onNext((T) o);
-                } catch (MissingBackpressureException e) {
-                    throw e;
+                    // we can write and skip queueing
+                    // first drain anything in our own queue
+                    _unsafeDrainQueue(is, q);
+                    // emit
+                    if (REQUESTED_UPDATER.decrementAndGet(this) != 0) { // TODO this seems wrong
+                        if (q.isCompleted(o)) {
+                            is.complete();
+                        } else {
+                            q.emitWithoutQueue(o, child);
+                        }
+                        enqueue = false;
+                    }
+                } finally {
+                    // we always set to 0 here so anyone can now claim the work, including this thread again below
+                    el = EMIT_LOCK.getAndSet(this, 0);
                 }
             }
-            drainQueues();
+            if (enqueue) {
+                if (q.isCompleted(o)) {
+                    q.onCompleted();
+                } else {
+                    try {
+                        q.onNext((T) o);
+                    } catch (MissingBackpressureException e) {
+                        throw e;
+                    }
+                }
+                claimAndDrainQueues();
+            } else {
+                if (el > 1) {
+                    // only do this after emitting if there is other work queued
+                    claimAndDrainQueues();
+                }
+            }
         }
 
         private void onNext(InnerSubscriber<T> is, T t) throws MissingBackpressureException {
-            enqueue(is, t);
+            emitOrEnqueue(is, t);
         }
 
         private void onCompleted(InnerSubscriber<T> is) throws MissingBackpressureException {
-            enqueue(is, NOTIFICATION.completed());
+            emitOrEnqueue(is, NOTIFICATION.completed());
         }
 
         private void handleNewSource(Observable<? extends T> t) {
