@@ -15,15 +15,14 @@
  */
 package rx.internal.util;
 
+import java.util.Queue;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
-import java.util.concurrent.atomic.AtomicLong;
 
 import rx.Observer;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.exceptions.MissingBackpressureException;
 import rx.internal.operators.NotificationLite;
-import rx.internal.util.jctools.SpmcArrayQueue;
 
 /**
  * Ring Buffer customized to Rx use-case.
@@ -34,19 +33,10 @@ import rx.internal.util.jctools.SpmcArrayQueue;
  * <p>
  * The concept of unsubscribing is awkward terminology (should be dispose/close) but allows it to be passed into a Subscriber.add() for cleanup.
  */
-public class RxRingBuffer implements Subscription {
+public abstract class RxRingBuffer implements Subscription {
 
     public static final int SIZE = 1024; //power of 2
     public static final int THRESHOLD = 256;
-
-    public static final ObjectPool<RxRingBuffer> POOL = new ObjectPool<RxRingBuffer>(0, 1024, 67) {
-
-        @Override
-        protected RxRingBuffer createObject() {
-            return new RxRingBuffer();
-        }
-
-    };
 
     private static final NotificationLite<Object> on = NotificationLite.instance();
 
@@ -80,22 +70,18 @@ public class RxRingBuffer implements Subscription {
      */
 
     // despite performance hit this is using Spmc instead of Spsc to allow thread-stealing algorithms, such as in the merge operator where consumption can come from any thread
-    private final SpmcArrayQueue<Object> queue;
+    private final Queue<Object> queue;
 
     private final int size;
     private final int requestThreshold;
     private volatile Object terminalState;
     public volatile int outstandingRequests = 0;
 
-    public AtomicLong totalRequested = new AtomicLong();
-    public AtomicLong totalReceived = new AtomicLong();
-    public AtomicLong totalDrained = new AtomicLong();
-
     // NOTE: if anything is added here, make sure it is cleared in `unsubscribe` as this object is reused
     private static final AtomicIntegerFieldUpdater<RxRingBuffer> OUTSTANDING_REQUEST_UPDATER = AtomicIntegerFieldUpdater.newUpdater(RxRingBuffer.class, "outstandingRequests");
 
     private RxRingBuffer(int size, int threshold) {
-        queue = new SpmcArrayQueue<Object>(size);
+        queue = createQueue(size);
         this.size = size;
         this.requestThreshold = size - threshold;
     }
@@ -104,9 +90,7 @@ public class RxRingBuffer implements Subscription {
         this(SIZE, THRESHOLD);
     }
 
-    public final static RxRingBuffer getInstance() {
-        return POOL.borrowObject();
-    }
+    protected abstract Queue<Object> createQueue(int size);
 
     /**
      * 
@@ -115,11 +99,6 @@ public class RxRingBuffer implements Subscription {
      *             if more onNext are sent than have been requested
      */
     public void onNext(Object o) throws MissingBackpressureException {
-        long r = totalReceived.incrementAndGet();
-        long treq = totalRequested.get();
-        if (r > treq) {
-            System.err.println("Why are we receiving more than requested?! " + r + "  " + treq);
-        }
         // we received a requested item
         OUTSTANDING_REQUEST_UPDATER.decrementAndGet(this);
         int a = available();
@@ -162,9 +141,6 @@ public class RxRingBuffer implements Subscription {
 
     public Object poll() {
         Object o = queue.poll();
-        if (o != null) {
-            totalDrained.incrementAndGet();
-        }
         if (o == null && terminalState != null) {
             o = terminalState;
             // once emitted we clear so a poll loop will finish
@@ -230,8 +206,6 @@ public class RxRingBuffer implements Subscription {
             if (r > requestThreshold) {
                 int toSet = r + o;
                 if (OUTSTANDING_REQUEST_UPDATER.compareAndSet(this, _o, toSet)) {
-                    //                    System.out.println("... requesting: " + (r-1) + " to get to: " + toSet + " available: " + a + "  to  " + s);
-                    totalRequested.addAndGet(r - 1);
                     s.request(r - 1); // -1 is solving an off-by-one bug somewhere I can't figure out ... OperatorMergeTest.testConcurrencyWithBrokenOnCompleteContract fails without this
                     if (toSet > size) {
                         System.err.println("TOO BIG!!");
@@ -250,8 +224,10 @@ public class RxRingBuffer implements Subscription {
         queue.clear();
         terminalState = null;
         outstandingRequests = 0;
-        POOL.returnObject(this);
+        returnObject(this);
     }
+
+    protected abstract void returnObject(RxRingBuffer b);
 
     @Override
     public boolean isUnsubscribed() {

@@ -12,8 +12,19 @@ import rx.exceptions.MissingBackpressureException;
 public class PerfRingBuffer {
 
     @GenerateMicroBenchmark
-    public void onNextConsume(OnNextConsumeInput input) throws InterruptedException, MissingBackpressureException {
-        RxRingBuffer queue = new RxRingBuffer();
+    public void spscOnNextConsume(OnNextConsumeInput input) throws InterruptedException, MissingBackpressureException {
+        RxRingBuffer queue = new RxSpscRingBuffer();
+        for (int i = 0; i < input.size; i++) {
+            queue.onNext(i);
+        }
+        for (int i = 0; i < input.size; i++) {
+            input.bh.consume(queue.poll());
+        }
+    }
+
+    @GenerateMicroBenchmark
+    public void spmcOnNextConsume(OnNextConsumeInput input) throws InterruptedException, MissingBackpressureException {
+        RxRingBuffer queue = new RxSpmcRingBuffer();
         for (int i = 0; i < input.size; i++) {
             queue.onNext(i);
         }
@@ -35,8 +46,17 @@ public class PerfRingBuffer {
     }
 
     @GenerateMicroBenchmark
-    public void onNextPollLoop(OnNextPollLoopInput input) throws InterruptedException, MissingBackpressureException {
-        RxRingBuffer queue = new RxRingBuffer();
+    public void spscOnNextPollLoop(OnNextPollLoopInput input) throws InterruptedException, MissingBackpressureException {
+        RxRingBuffer queue = new RxSpscRingBuffer();
+        for (int i = 0; i < input.size; i++) {
+            queue.onNext(i);
+            input.bh.consume(queue.poll());
+        }
+    }
+
+    @GenerateMicroBenchmark
+    public void spmcOnNextPollLoop(OnNextPollLoopInput input) throws InterruptedException, MissingBackpressureException {
+        RxRingBuffer queue = new RxSpmcRingBuffer();
         for (int i = 0; i < input.size; i++) {
             queue.onNext(i);
             input.bh.consume(queue.poll());

@@ -25,6 +25,7 @@ import rx.Producer;
 import rx.Subscriber;
 import rx.exceptions.MissingBackpressureException;
 import rx.internal.util.RxRingBuffer;
+import rx.internal.util.RxSpmcRingBuffer;
 import rx.internal.util.SubscriptionSet;
 
 /**
@@ -249,7 +250,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
         private void handleNewSource(Observable<? extends T> t) {
             InnerSubscriber<T> i = new InnerSubscriber<T>(this, parentSubscriber);
             childrenSubscribers.add(i);
-            RxRingBuffer q = RxRingBuffer.getInstance();
+            RxRingBuffer q = RxSpmcRingBuffer.getInstance();
             queues.put(i, q);
             q.requestIfNeeded(i);
             t.unsafeSubscribe(i);
