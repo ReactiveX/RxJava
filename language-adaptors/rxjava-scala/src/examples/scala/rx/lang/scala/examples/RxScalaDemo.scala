@@ -19,6 +19,7 @@ import java.io.IOException
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
+import scala.concurrent.Await
 import scala.collection.mutable
 import scala.concurrent.duration.Duration
 import scala.concurrent.duration.DurationInt
@@ -224,6 +225,28 @@ class RxScalaDemo extends JUnitSuite {
     val observables = List(List(1, 2, 3).toObservable, List(10, 20, 30).toObservable).toObservable
     val squares = (for (o <- observables; i <- o if i % 2 == 0) yield i*i)
     assertEquals(squares.toBlockingObservable.toList, List(4, 100, 400, 900))
+  }
+
+  @Test def nextExample() {
+    val o = Observable.interval(100 millis).take(20)
+    for(i <- o.toBlocking.next) {
+      println(i)
+      Thread.sleep(200)
+    }
+  }
+
+  @Test def latestExample() {
+    val o = Observable.interval(100 millis).take(20)
+    for(i <- o.toBlocking.latest) {
+      println(i)
+      Thread.sleep(200)
+    }
+  }
+
+  @Test def toFutureExample() {
+    val o = Observable.interval(500 millis).take(1)
+    val r = Await.result(o.toBlocking.toFuture, 2 seconds)
+    println(r)
   }
 
   @Test def testTwoSubscriptionsToOneInterval() {
