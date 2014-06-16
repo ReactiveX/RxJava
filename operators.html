@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en-US">
  <head>
   <meta http-equiv="Content-type" content="text/html;charset=utf-8" />
@@ -8,12 +9,19 @@
         margin-bottom: 0;
         margin-left: 1.5em; }
    dl#outer>dt { font-weight: bold; }
-   dt { font-weight: normal; }
+   dt { font-weight: normal;
+        margin-right: -1.5em; }
    dt dt::before { content: "…"; }
    dd::before { content: ": "; }
+   dd.sub::before { content: ""; }
 
    dt { float: left; clear: left; }
-   dd { float: left; margin-start: 0; -webkit-margin-start: 0; }
+   dd { float: left;
+        margin-start: 0;
+        -webkit-margin-start: 0;
+        margin-left: 1.5em; }
+   dd.sub { float: none;
+            margin-left: 0; }
    dd.s::after { content: " Ⓢ"; }
    hr { clear: both; }
   </style>
@@ -24,106 +32,276 @@
 </p>
 <div>
 <dl id="outer">
- <dt>I want to create a new Observable
-  <dl>
+ <dt>I want to create a new Observable</dt>
+  <dd class="sub"><dl>
    <dt>that emits a particular item</dt>
-    <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#just"><tt>just(&#8239;)</tt></a></dd>
-    <dl>
+    <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#just"><code>just(&#8239;)</code></a></dd>
+    <dd class="sub"><dl>
      <dt>after a specified delay</dt>
-     <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#timer"><tt>timer(&#8239;)</tt></a></dd>
-    </dl>
+     <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#timer"><code>timer(&#8239;)</code></a></dd>
+    </dl></dd>
    <dt>that emits a particular set of 1&ndash;10 items</dt>
-   <dd><a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from"><tt>from(&#8239;)</tt></a></dd>
+    <dd><a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from"><code>from(&#8239;)</code></a></dd>
    <dt>from an Array</dt>
-    <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from"><tt>from(&#8239;)</tt></a></dd>
+    <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from"><code>from(&#8239;)</code></a></dd>
    <dt>from a Future </dt>
-    <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from"><tt>from(&#8239;)</tt></a></dd>
-    <dl>
+    <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from"><code>from(&#8239;)</code></a></dd>
+    <dd class="sub"><dl>
      <dt>with a timeout</dt>
-     <dd><a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from"><tt>from(&#8239;)</tt></a></dd>
-    </dl>
+     <dd><a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from"><code>from(&#8239;)</code></a></dd>
+    </dl></dd>
    <dt>from an Iterable</dt>
-    <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from"><tt>from(&#8239;)</tt></a></dd>
+    <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from"><code>from(&#8239;)</code></a></dd>
    <dt>that emits a sequence of items repeatedly</dt>
-    <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#repeat"><tt>repeat(&#8239;)</tt></a></dd>
+    <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#repeat"><code>repeat(&#8239;)</code></a></dd>
    <dt>from scratch, with custom logic</dt>
-    <dd><a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#create"><tt>create(&#8239;)</tt></a></dd>
+    <dd><a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#create"><code>create(&#8239;)</code></a></dd>
    <dt>for each observer that subscribes</dt>
-    <dd><a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#defer"><tt>defer(&#8239;)</tt></a></dd>
+    <dd><a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#defer"><code>defer(&#8239;)</code></a></dd>
    <dt>that emits a sequence of integers</dt>
-    <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#range"><tt>range(&#8239;)</tt></a></dd>
-    <dl>
+    <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#range"><code>range(&#8239;)</code></a></dd>
+    <dd class="sub"><dl>
      <dt>at particular intervals of time</dt>
-      <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#interval"><tt>interval(&#8239;)</tt></a></dd>
-      <dl>
+      <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#interval"><code>interval(&#8239;)</code></a></dd>
+      <dd class="sub"><dl>
        <dt>after a specified delay</dt>
-       <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#timer"><tt>timer(&#8239;)</tt></a></dd>
-      </dl>
-    </dl>
+       <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#timer"><code>timer(&#8239;)</code></a></dd>
+      </dl></dd>
+    </dl></dd>
    <dt>that completes without emitting items</dt>
-    <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#empty"><tt>empty(&#8239;)</tt></a></dd>
+    <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#empty"><code>empty(&#8239;)</code></a></dd>
    <dt>that only sends an error notification</dt>
-    <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#error"><tt>error(&#8239;)</tt></a></dd>
+    <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#error"><code>error(&#8239;)</code></a></dd>
    <dt>that does nothing at all</dt>
-    <dd><a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#never"><tt>never(&#8239;)</tt></a></dd>
-  </dl>
- </dt>
- <dt>I want to transform and then reemit the items emitted by an Observable
-  <dl>
+    <dd><a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#never"><code>never(&#8239;)</code></a></dd>
+  </dl></dd>
+
+ <dt>I want to transform the items emitted by an Observable and then reemit them</dt>
+  <dd class="sub"><dl>
    <dt>one at a time with a function</dt>
-    <dd><a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#map"><tt>map(&#8239;)</tt></a></dd>
+    <dd><a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#map"><code>map(&#8239;)</code></a></dd>
    <dt>by casting them to a particular type</dt>
-    <dd><a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#cast"><tt>cast(&#8239;)</tt></a></dd>
+    <dd><a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#cast"><code>cast(&#8239;)</code></a></dd>
    <dt>by emitting all of the items emitted by corresponding Observables</dt>
-    <dd><a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#flatMap"><tt>flatMap(&#8239;)</tt></a></dd>
-    <dl>
+    <dd><a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#flatMap"><code>flatMap(&#8239;)</code></a></dd>
+    <dd class="sub"><dl>
      <dt>combined with the original items by means of a function</dt>
-      <dd><a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#mergemap-and-mergemapiterable"><tt>mergeMap(collectionSelector,resultSelector)</tt></a></dd>
-    </dl>
+      <dd><a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#mergemap-and-mergemapiterable"><code>mergeMap(collectionSelector,resultSelector)</code></a></dd>
+    </dl></dd>
    <dt>by emitting all of the items in corresponding Iterables</dt>
-    <dd><a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#mergemap-and-mergemapiterable"><tt>mergeMapIterable(collectionSelector)</tt></a></dd>
-    <dl>
+    <dd><a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#mergemap-and-mergemapiterable"><code>mergeMapIterable(collectionSelector)</code></a></dd>
+    <dd class="sub"><dl>
      <dt>combined with the original items by means of a function</dt>
-      <dd><a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#mergemap-and-mergemapiterable"><tt>mergeMapIterable(collectionSelector,resultSelector)</tt></a></dd>
-    </dl>
-  </dl>
- </dt>
- <dt>I want to collect items from an Observable and reemit them as buffers of items
-  <dl>
-   <dt>with a maximum number of items per buffer</dt>
-    <dd><a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#buffer"><tt>buffer(count)</tt></a></dd>
-    <dl>
-     <dt>and starting every <i>n</i> items</dt>
-      <dd><a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#buffer"><tt>buffer(count,skip)</tt></a></dd>
-    </dl>
-   <dt>each time a second Observable emits an item</dt>
-    <dd><a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#buffer"><tt>buffer(boundary)</tt></a></dd>
-    <dl>
-     <dt>with buffers given an initial capacity for efficiency reasons</dt>
-      <dd><a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#buffer"><tt>buffer(boundary,initialCapacity)</tt></a></dd>
-     <dt>where that second Observable is returned from a function I supply</dt>
-      <dd><a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#buffer"><tt>buffer(bufferClosingSelector)</tt></a></dd>
-      <dl>
-       <dt>and operates on the emission of a third Observable that opens the buffer</dt>
-        <dd><a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#buffer"><tt>buffer(bufferOpenings,bufferClosingSelector)</tt></a></dd>
-      </dl>
-     </dl>
-    <dt>at periodic intervals</dt>
-     <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#buffer"><tt>buffer(timespan,unit)</tt></a></dd>
-     <dl>
-      <dt>or when a certain maximum number of items fill the buffer</dt>
-       <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#buffer"><tt>buffer(timespan,unit,count)</tt></a></dd>
-      <dt>for a certain period of time after the interval begins</dt>
-       <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#buffer"><tt>buffer(timespan,timeshift,unit)</tt></a></dd>
-     </dl>
-  </dl>
- </dt>
- <dt>I want to transform items <em>and</em> notifications from an Observable into items and reemit them
-  <dl>
+      <dd><a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#mergemap-and-mergemapiterable"><code>mergeMapIterable(collectionSelector,resultSelector)</code></a></dd>
+    </dl></dd>
+   <dt>based on all of the items that proceeded them</dt>
+    <dd><a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#scan"><code>scan(accumulator)</code></a></dd>
+    <dd class="sub"><dl>
+     <dt>and an initial seed value to get the ball rolling</dt>
+      <dd><a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#scan"><code>scan(accumulator,initialValue)</code></a></dd>
+    </dl></dd>
+  </dl></dd>
+
+ <dt>I want to transform items <em>and</em> notifications from an Observable into items and reemit them</dt>
+  <dd class="sub"><dl>
    <dt>by emitting all of the items emitted by corresponding Observables</dt>
-    <dd><a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#mergemap-and-mergemapiterable"><tt>mergeMap(&#8239;)</tt></a></dd>
-  </dl>
- </dt>
+    <dd><a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#mergemap-and-mergemapiterable"><code>mergeMap(&#8239;)</code></a></dd>
+  </dl></dd>
+
+ <dt>I want to collect items from an Observable and reemit them as buffers of items</dt>
+  <dd class="sub"><dl>
+   <dt>with a maximum number of items per buffer</dt>
+    <dd><a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#buffer"><code>buffer(count)</code></a></dd>
+    <dd class="sub"><dl>
+     <dt>and starting every <i>n</i> items</dt>
+      <dd><a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#buffer"><code>buffer(count,skip)</code></a></dd>
+    </dl></dd>
+   <dt>each time a second Observable emits an item</dt>
+    <dd><a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#buffer"><code>buffer(boundary)</code></a></dd>
+    <dd class="sub"><dl>
+     <dt>with buffers given an initial capacity for efficiency reasons</dt>
+      <dd><a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#buffer"><code>buffer(boundary,initialCapacity)</code></a></dd>
+     <dt>where that second Observable is returned from a function I supply</dt>
+      <dd><a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#buffer"><code>buffer(bufferClosingSelector)</code></a></dd>
+      <dd class="sub"><dl>
+       <dt>and operates on the emission of a third Observable that opens the buffer</dt>
+        <dd><a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#buffer"><code>buffer(bufferOpenings,bufferClosingSelector)</code></a></dd>
+      </dl></dd>
+     </dl></dd>
+    <dt>at periodic intervals</dt>
+     <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#buffer"><code>buffer(timespan,unit)</code></a></dd>
+     <dd class="sub"><dl>
+      <dt>or when a certain maximum number of items fill the buffer</dt>
+       <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#buffer"><code>buffer(timespan,unit,count)</code></a></dd>
+      <dt>for a certain period of time after the interval begins</dt>
+       <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#buffer"><code>buffer(timespan,timeshift,unit)</code></a></dd>
+     </dl></dd>
+   <dt>containing only the last items emitted</dt>
+    <dd class="sub"><dl>
+     <dt>that is, the last <i>n</i> items</dt>
+      <dd><a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#takelastbuffer"><code>takeLastBuffer(count)</code></a></dd>
+      <dd class="sub"><dl>
+       <dt>emitted during a window of time before the Observable completed</dt>
+       <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#takelastbuffer"><code>takeLastBuffer(count,time,unit)</code></a></dd>
+      </dl></dd>
+     <dt>during a window of time before the Observable completed</dt>
+      <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#takelastbuffer"><code>takeLastBuffer(time,unit)</code></a></dd>
+    </dl></dd>
+  </dl></dd>
+
+ <dt>I want to split one Observable into multiple Observables</dt>
+  <dd class="sub"><dl>
+   <dt>with a maximum number of items per sub-Observable</dt>
+    <dd><a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#window"><code>window(count)</code></a></dd>
+    <dd class="sub"><dl>
+     <dt>and starting every <i>n</i> items</dt>
+      <dd><a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#window"><code>window(count,skip)</code></a></dd>
+    </dl></dd>
+   <dt>each time a second Observable emits an item</dt>
+    <dd><a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#window"><code>window(boundary)</code></a></dd>
+    <dd class="sub"><dl>
+     <dt>where that second Observable is returned from a function I supply</dt>
+      <dd><a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#window"><code>window(closingSelector)</code></a></dd>
+      <dd class="sub"><dl>
+       <dt>and operates on the emission of a third Observable that starts the sub-Observable</dt>
+        <dd><a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#window"><code>window(windowOpenings,closingSelector)</code></a></dd>
+      </dl></dd>
+     </dl></dd>
+    <dt>at periodic intervals</dt>
+     <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#window"><code>window(timespan,unit)</code></a></dd>
+     <dd class="sub"><dl>
+      <dt>or when a certain maximum number of items have been emitted on the sub-Observable</dt>
+       <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#window"><code>window(timespan,unit,count)</code></a></dd>
+      <dt>for a certain period of time after the interval begins</dt>
+       <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#window"><code>window(timespan,timeshift,unit)</code></a></dd>
+     </dl></dd>
+   <dt>so that similar items end up on the same Observable</dt>
+    <dd><a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#groupby-and-groupbyuntil"><code>groupBy(&#8239;)</code></a></dd>
+    <dd class="sub"><dl>
+     <dt>but periodically completing some of those Observables even if the source is not complete</dt>
+      <dd><a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#groupby-and-groupbyuntil"><code>groupByUntil(keySelector,durationSelector)</code></a></dd>
+      <dd class="sub"><dl>
+       <dt>and transforming the items before emitting them on those Observables</dt>
+        <dd><a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#groupby-and-groupbyuntil"><code>groupByUntil(keySelector,valueSelector,durationSelector)</code></a></dd>
+       <dt>and then collecting similarly grouped Observables back together again</dt>
+        <dd><a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#pivot"><code>pivot(&#8239;)</code></a></dd>
+      </dl></dd>
+    </dl></dd>
+  </dl></dd>
+
+ <dt>I want to reemit only certain items from an Observable</dt>
+  <dd class="sub"><dl>
+   <dt>by filtering out those that do not match some predicate</dt>
+    <dd><a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#filter"><code>filter(&#8239;)</code></a></dd>
+   <dt>by filtering out those that are not of a particular type</dt>
+    <dd><a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#oftype"><code>ofType(&#8239;)</code></a></dd>
+   <dt>that is, only the first item</dt>
+    <dd class="sub"><dl>
+     <dt>or notify of an error if the source is empty</dt>
+     <dd><a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#first-and-takefirst"><code>first(&#8239;)</code></a></dd>
+     <dt>or a default value if the source is empty</dt>
+     <dd><a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#firstordefault"><code>firstOrDefault(defaultValue)</code></a></dd>
+     <dt>that matches a predicate</dt>
+     <dd><a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#first-and-takefirst"><code>takeFirst(predicate)</code></a></dd>
+     <dd class="sub"><dl>
+      <dt>or notify of an error if none do</dt>
+      <dd><a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#first-and-takefirst"><code>first(predicate)</code></a></dd>
+      <dt>or a default value if none do</dt>
+      <dd><a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#firstordefault"><code>firstOrDefault(defaultValue,predicate)</code></a></dd>
+     </dl></dd>
+    </dl></dd>
+   <dt>that is, only the first item<em>s</em></dt>
+    <dd class="sub"><dl>
+     <dt>that is, the first <i>n</i> items</dt>
+      <dd><a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#take"><code>take(num)</code></a></dd>
+     <dt>that is, items emitted by the source during an initial period of time</dt>
+      <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#take"><code>take(time,unit)</code></a></dd>
+    </dl></dd>
+   <dt>that is, only the last item</dt>
+    <dd><a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#last"><code>last(&#8239;)</code></a></dd>
+    <dd class="sub"><dl>
+     <dt>that meets some predicate</dt>
+     <dd><a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#last"><code>last(predicate)</code></a></dd>
+     <dd class="sub"><dl>
+      <dt>or a default item if none do</dt>
+      <dd><a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#lastOrDefault"><code>lastOrDefault(predicate)</code></a></dd>
+     </dl></dd>
+     <dt>or a default item the source emits nothing</dt>
+      <dd><a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#lastOrDefault"><code>lastOrDefault(&#8239;)</code></a></dd>
+    </dl></dd>
+   <dt>that is, only item <i>n</i></dt>
+    <dd><a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#elementat"><code>elementAt(&#8239;)</code></a></dd>
+    <dd class="sub"><dl>
+     <dt>or a default value if there is no item <i>n</i></dt>
+      <dd><a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#elementat"><code>elementAtOrDefault(&#8239;)</code></a></dd>
+    </dl></dd>
+   <dt>that is, only those items after the first items</dt>
+    <dd class="sub"><dl>
+     <dt>that is, the first <i>n</i> items</dt>
+      <dd><a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#skip"><code>skip(num)</code></a></dd>
+     <dt>that is, items emitted by the source during an initial period of time</dt>
+      <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#skip"><code>skip(time,unit)</code></a></dd>
+    </dl></dd>
+   <dt>that is, those items except the last items</dt>
+    <dd class="sub"><dl>
+     <dt>that is, the last <i>n</i> items</dt>
+      <dd><a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#skipLast"><code>skipLast(&#8239;)</code></a></dd>
+     <dt>that is, items emitted during a period of time before the source completes</dt>
+      <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#skipLast"><code>skipLast(time,unit)</code></a></dd>
+    </dl></dd>
+   <dt>by sampling the Observable periodically</dt>
+    <dd class="sub"><dl>
+     <dt>based on a timer</dt>
+      <dd class="sub"><dl>
+       <dt>and emitting the most-recently emitted item in the period</dt>
+        <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#wiki-sample-or-throttlelast"><code>sample(time,unit)</code></a></dd>
+       <dt>and emitting the first-emitted item in the period</dt>
+        <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#throttlefirst"><code>throttleFirst(time,unit)</code></a></dd>
+      </dl></dd>
+     <dt>based on emissions from another Observable</dt>
+      <dd class="sub"><dl>
+       <dt>and emitting the most-recently emitted item in the period</dt>
+        <dd><a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#wiki-sample-or-throttlelast"><code>sample(sampler)</code></a></dd>
+       <dt>and emitting the first-emitted item in the period</dt>
+        <dd><a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#throttlefirst"><code>throttleFirst(sampler)</code></a></dd>
+      </dl></dd>
+    </dl></dd>
+   <dt>by only emitting items that are not followed by other items within some duration</dt>
+    <dd class="sub"><dl>
+     <dt>based on a timer</dt>
+      <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#throttlewithtimeout-or-debounce"><code>throttleWithTimeout(time,unit)</code></a></dd>
+     <dt>based on emissions from another Observable</dt>
+      <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#throttlewithtimeout-or-debounce"><code>debounce(debounceSelector)</code></a></dd>
+    </dl></dd>
+   <dt>by suppressing items that are duplicates of already-emitted items<dt>
+    <dd><a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#distinct"><code>distinct(&#8239;)</code></a></dd>
+    <dd class="sub"><dl>
+     <dt>according to a particular function<dt>
+      <dd><a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#distinct"><code>distinct(keySelector)</code></a></dd>
+     <dt>if they immediatly follow the item they are duplicates of<dt>
+      <dd><a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#distinctuntilchanged"><code>distinctUntilChanged(&#8239;)</code></a></dd>
+      <dd class="sub"><dl>
+       <dt>according to a particular function<dt>
+        <dd><a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#distinctuntilchanged"><code>distinct(keySelector)</code></a></dd>
+      </dl></dd>
+    </dl></dd>
+  </dl></dd>
+
+ <dt>I want an Observable to notify observers of an error</dt>
+  <dd class="sub"><dl>
+   <dt>if a period of time elapses without it emitting an item</dt>
+    <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#timeout"><code>timeout(time,unit)</code></a></dd>
+  </dl></dd>
+
+ <dt>I want to ignore all items emitted by an Observable and only pass along its completed/error notification</dt>
+  <dd><a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#ignoreelements"><code>ignoreElements(&#8239;)</code></a></dd>
+
+ <dt>I want an Observable to recover gracefully</dt>
+  <dd class="sub"><dl>
+   <dt>from a timeout by switching to a backup Observable</dt>
+    <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#timeout"><code>timeout(time,unit,fallback)</code></a></dd>
+  </dl></dd>
+
 </dl>
 </div>
 <hr />
