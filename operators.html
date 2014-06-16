@@ -1,0 +1,134 @@
+<html lang="en-US">
+ <head>
+  <meta http-equiv="Content-type" content="text/html;charset=utf-8" />
+  <meta name="author" content="PLP Consulting" />
+  <title>A tree of RxJava Observable operators</title>
+  <style>
+   dl { margin-top: 0;
+        margin-bottom: 0;
+        margin-left: 1.5em; }
+   dl#outer>dt { font-weight: bold; }
+   dt { font-weight: normal; }
+   dt dt::before { content: "…"; }
+   dd::before { content: ": "; }
+
+   dt { float: left; clear: left; }
+   dd { float: left; margin-start: 0; -webkit-margin-start: 0; }
+   dd.s::after { content: " Ⓢ"; }
+   hr { clear: both; }
+  </style>
+ </head>
+ <body>
+<p>
+ This tree can help you find the Observable operator you&#8217;re looking for. It is based on the RxJS tables (<a href="https://github.com/trxcllnt/RxJS/blob/master/doc/static-operators.md">static</a> and <a href="https://github.com/trxcllnt/RxJS/blob/master/doc/instance-operators.md">instance</a>) created by Paul Taylor.
+</p>
+<div>
+<dl id="outer">
+ <dt>I want to create a new Observable
+  <dl>
+   <dt>that emits a particular item</dt>
+    <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#just"><tt>just(&#8239;)</tt></a></dd>
+    <dl>
+     <dt>after a specified delay</dt>
+     <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#timer"><tt>timer(&#8239;)</tt></a></dd>
+    </dl>
+   <dt>that emits a particular set of 1&ndash;10 items</dt>
+   <dd><a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from"><tt>from(&#8239;)</tt></a></dd>
+   <dt>from an Array</dt>
+    <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from"><tt>from(&#8239;)</tt></a></dd>
+   <dt>from a Future </dt>
+    <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from"><tt>from(&#8239;)</tt></a></dd>
+    <dl>
+     <dt>with a timeout</dt>
+     <dd><a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from"><tt>from(&#8239;)</tt></a></dd>
+    </dl>
+   <dt>from an Iterable</dt>
+    <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from"><tt>from(&#8239;)</tt></a></dd>
+   <dt>that emits a sequence of items repeatedly</dt>
+    <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#repeat"><tt>repeat(&#8239;)</tt></a></dd>
+   <dt>from scratch, with custom logic</dt>
+    <dd><a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#create"><tt>create(&#8239;)</tt></a></dd>
+   <dt>for each observer that subscribes</dt>
+    <dd><a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#defer"><tt>defer(&#8239;)</tt></a></dd>
+   <dt>that emits a sequence of integers</dt>
+    <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#range"><tt>range(&#8239;)</tt></a></dd>
+    <dl>
+     <dt>at particular intervals of time</dt>
+      <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#interval"><tt>interval(&#8239;)</tt></a></dd>
+      <dl>
+       <dt>after a specified delay</dt>
+       <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#timer"><tt>timer(&#8239;)</tt></a></dd>
+      </dl>
+    </dl>
+   <dt>that completes without emitting items</dt>
+    <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#empty"><tt>empty(&#8239;)</tt></a></dd>
+   <dt>that only sends an error notification</dt>
+    <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#error"><tt>error(&#8239;)</tt></a></dd>
+   <dt>that does nothing at all</dt>
+    <dd><a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#never"><tt>never(&#8239;)</tt></a></dd>
+  </dl>
+ </dt>
+ <dt>I want to transform and then reemit the items emitted by an Observable
+  <dl>
+   <dt>one at a time with a function</dt>
+    <dd><a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#map"><tt>map(&#8239;)</tt></a></dd>
+   <dt>by casting them to a particular type</dt>
+    <dd><a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#cast"><tt>cast(&#8239;)</tt></a></dd>
+   <dt>by emitting all of the items emitted by corresponding Observables</dt>
+    <dd><a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#flatMap"><tt>flatMap(&#8239;)</tt></a></dd>
+    <dl>
+     <dt>combined with the original items by means of a function</dt>
+      <dd><a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#mergemap-and-mergemapiterable"><tt>mergeMap(collectionSelector,resultSelector)</tt></a></dd>
+    </dl>
+   <dt>by emitting all of the items in corresponding Iterables</dt>
+    <dd><a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#mergemap-and-mergemapiterable"><tt>mergeMapIterable(collectionSelector)</tt></a></dd>
+    <dl>
+     <dt>combined with the original items by means of a function</dt>
+      <dd><a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#mergemap-and-mergemapiterable"><tt>mergeMapIterable(collectionSelector,resultSelector)</tt></a></dd>
+    </dl>
+  </dl>
+ </dt>
+ <dt>I want to collect items from an Observable and reemit them as buffers of items
+  <dl>
+   <dt>with a maximum number of items per buffer</dt>
+    <dd><a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#buffer"><tt>buffer(count)</tt></a></dd>
+    <dl>
+     <dt>and starting every <i>n</i> items</dt>
+      <dd><a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#buffer"><tt>buffer(count,skip)</tt></a></dd>
+    </dl>
+   <dt>each time a second Observable emits an item</dt>
+    <dd><a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#buffer"><tt>buffer(boundary)</tt></a></dd>
+    <dl>
+     <dt>with buffers given an initial capacity for efficiency reasons</dt>
+      <dd><a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#buffer"><tt>buffer(boundary,initialCapacity)</tt></a></dd>
+     <dt>where that second Observable is returned from a function I supply</dt>
+      <dd><a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#buffer"><tt>buffer(bufferClosingSelector)</tt></a></dd>
+      <dl>
+       <dt>and operates on the emission of a third Observable that opens the buffer</dt>
+        <dd><a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#buffer"><tt>buffer(bufferOpenings,bufferClosingSelector)</tt></a></dd>
+      </dl>
+     </dl>
+    <dt>at periodic intervals</dt>
+     <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#buffer"><tt>buffer(timespan,unit)</tt></a></dd>
+     <dl>
+      <dt>or when a certain maximum number of items fill the buffer</dt>
+       <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#buffer"><tt>buffer(timespan,unit,count)</tt></a></dd>
+      <dt>for a certain period of time after the interval begins</dt>
+       <dd class="s"><a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#buffer"><tt>buffer(timespan,timeshift,unit)</tt></a></dd>
+     </dl>
+  </dl>
+ </dt>
+ <dt>I want to transform items <em>and</em> notifications from an Observable into items and reemit them
+  <dl>
+   <dt>by emitting all of the items emitted by corresponding Observables</dt>
+    <dd><a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#mergemap-and-mergemapiterable"><tt>mergeMap(&#8239;)</tt></a></dd>
+  </dl>
+ </dt>
+</dl>
+</div>
+<hr />
+<p>
+ Ⓢ: a variant of this operator allows you to choose a particular Scheduler
+</p>
+ </body>
+</html>
