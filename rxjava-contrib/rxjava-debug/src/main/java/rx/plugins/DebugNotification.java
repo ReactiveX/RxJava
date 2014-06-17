@@ -37,7 +37,7 @@ public class DebugNotification<T> {
             o = ds.getActual();
         }
         if (sourceFunc instanceof DebugHook.DebugOnSubscribe) {
-            sourceFunc = (OnSubscribe<T>) ((SafeSubscriber<T>) sourceFunc).getActual();
+            sourceFunc = ((DebugHook.DebugOnSubscribe) sourceFunc).getActual();
         }
         return new DebugNotification<T>(o, from, Kind.Subscribe, null, null, to, source, sourceFunc);
     }
