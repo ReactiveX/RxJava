@@ -25,8 +25,7 @@ import rx.Subscriber;
  * <img width="640" height="305" src="https://raw.githubusercontent.com/wiki/Netflix/RxJava/images/rx-operators/take.png" />
  * <p>
  * You can choose to pay attention only to the first {@code num} items emitted by an {@code Observable} by using
- * the {@code take} operator. This operator returns an {@code Observable} that will invoke a subscriber's
- * {@link Subscriber#onNext onNext} function a maximum of {@code num} times before invoking
+ * the {@code take} operator. This operator returns an {@code Observable} that will invoke a subscriber's {@link Subscriber#onNext onNext} function a maximum of {@code num} times before invoking
  * {@link Subscriber#onCompleted onCompleted}.
  */
 public final class OperatorTake<T> implements Operator<T, T> {
@@ -91,7 +90,6 @@ public final class OperatorTake<T> implements Operator<T, T> {
 
         };
 
-
         if (limit == 0) {
             child.onCompleted();
             parent.unsubscribe();
@@ -107,7 +105,7 @@ public final class OperatorTake<T> implements Operator<T, T> {
          * register 'parent' with 'child'
          */
         child.add(parent);
-        
+
         /**
          * Since we decoupled the subscription chain but want the request to flow through, we reconnect the producer here.
          */
@@ -115,7 +113,12 @@ public final class OperatorTake<T> implements Operator<T, T> {
 
             @Override
             public void request(int n) {
-                parent.request(n);
+                if (n < 0) {
+                    // request up the limit that has been set, no point in asking for more, even if synchronous
+                    parent.request(limit);
+                } else {
+                    parent.request(n);
+                }
             }
         });
 

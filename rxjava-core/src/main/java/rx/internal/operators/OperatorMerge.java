@@ -140,14 +140,20 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
         private final SubscriptionSet<InnerSubscriber<T>> childrenSubscribers;
         private final Producer parentProducer;
 
+        @SuppressWarnings("unused")
         private volatile int _requested = -1; // default to infinite
+        @SuppressWarnings("unused")
         private volatile int _infiniteRequestSent = 0;
+        @SuppressWarnings("rawtypes")
         private static final AtomicIntegerFieldUpdater<MergeProducer> ONCE_PARENT_REQUEST = AtomicIntegerFieldUpdater.newUpdater(MergeProducer.class, "_infiniteRequestSent");
+        @SuppressWarnings("rawtypes")
         private static final AtomicIntegerFieldUpdater<MergeProducer> REQUESTED_UPDATER = AtomicIntegerFieldUpdater.newUpdater(MergeProducer.class, "_requested");
 
         /* protected by `emitLock` */
         private final Subscriber<? super T> child;
+        @SuppressWarnings("unused")
         private volatile int _emitLock;
+        @SuppressWarnings("rawtypes")
         private static final AtomicIntegerFieldUpdater<MergeProducer> EMIT_LOCK = AtomicIntegerFieldUpdater.newUpdater(MergeProducer.class, "_emitLock");
 
         /* used to ensure serialized emission to the child Subscriber */
@@ -188,7 +194,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
                 do {
                     // TODO change this to use iteratorStartingAt or forEach(Node<E> startingAt, Action1<Node<E>> action)
                     // so it resumes from the last node ... rather than always starting at the beginning
-                    for(InnerSubscriber<T> is : childrenSubscribers.subscriptions()) {
+                    for (InnerSubscriber<T> is : childrenSubscribers.subscriptions()) {
                         _unsafeDrainQueue(is, is.getQ());
                     }
 
