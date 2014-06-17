@@ -28,17 +28,17 @@ import rx.internal.util.ConcurrentLinkedNode.Node;
  * <p>
  * NOTE: This purposefully is leaking the internal data structure through the API for efficiency reasons to avoid extra object allocations.
  */
-public final class SubscriptionSet<T extends Subscription> implements Subscription {
+public final class SubscriptionLinkedNodes<T extends Subscription> implements Subscription {
 
     private ConcurrentLinkedNode<T> subscriptions = new ConcurrentLinkedNode<T>();
     private volatile int unsubscribed = 0;
     @SuppressWarnings("rawtypes")
-    private final static AtomicIntegerFieldUpdater<SubscriptionSet> UNSUBSCRIBED = AtomicIntegerFieldUpdater.newUpdater(SubscriptionSet.class, "unsubscribed");
+    private final static AtomicIntegerFieldUpdater<SubscriptionLinkedNodes> UNSUBSCRIBED = AtomicIntegerFieldUpdater.newUpdater(SubscriptionLinkedNodes.class, "unsubscribed");
 
-    public SubscriptionSet() {
+    public SubscriptionLinkedNodes() {
     }
 
-    public SubscriptionSet(final T... subscriptions) {
+    public SubscriptionLinkedNodes(final T... subscriptions) {
         for (T t : subscriptions) {
             this.subscriptions.add(t);
         }
@@ -75,6 +75,8 @@ public final class SubscriptionSet<T extends Subscription> implements Subscripti
 
     /**
      * Uses the Node received from `add` to remove this Subscription.
+     * <p>
+     * Unsubscribes the Subscription after removal
      */
     public void remove(final Node<T> n) {
         if (unsubscribed == 1 || subscriptions == null || n == null) {
@@ -89,16 +91,23 @@ public final class SubscriptionSet<T extends Subscription> implements Subscripti
         }
     }
 
+    /**
+     * Uses the Node received from `add` to remove this Subscription.
+     * <p>
+     * Does not unsubscribe the Subscription after removal.
+     */
+    public void removeSilently(final Node<T> n) {
+        if (unsubscribed == 1 || subscriptions == null || n == null) {
+            return;
+        }
+        subscriptions.remove(n);
+    }
+
     @Override
     public void unsubscribe() {
-        try {
-            if (UNSUBSCRIBED.compareAndSet(this, 0, 1) && subscriptions != null) {
-                // we will only get here once
-                unsubscribeFromAll(subscriptions);
-            }
-        } finally {
-            //            subscriptions.clear();
-            //            POOL.returnObject(subscriptions);
+        if (UNSUBSCRIBED.compareAndSet(this, 0, 1) && subscriptions != null) {
+            // we will only get here once
+            unsubscribeFromAll(subscriptions);
         }
     }
 

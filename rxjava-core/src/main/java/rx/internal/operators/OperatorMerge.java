@@ -25,7 +25,7 @@ import rx.exceptions.MissingBackpressureException;
 import rx.internal.util.ConcurrentLinkedNode.Node;
 import rx.internal.util.RxRingBuffer;
 import rx.internal.util.RxSpmcRingBuffer;
-import rx.internal.util.SubscriptionSet;
+import rx.internal.util.SubscriptionLinkedNodes;
 
 /**
  * Flattens a list of Observables into one Observable sequence, without any transformation.
@@ -42,7 +42,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
 
     @Override
     public Subscriber<Observable<? extends T>> call(final Subscriber<? super T> child) {
-        final SubscriptionSet<InnerSubscriber<T>> childrenSubscriptions = new SubscriptionSet<InnerSubscriber<T>>();
+        final SubscriptionLinkedNodes<InnerSubscriber<T>> childrenSubscriptions = new SubscriptionLinkedNodes<InnerSubscriber<T>>();
         child.add(childrenSubscriptions);
         return new MergeSubscriber<T>(child, childrenSubscriptions);
 
@@ -53,12 +53,12 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
 
     private static final class MergeSubscriber<T> extends Subscriber<Observable<? extends T>> {
         final Subscriber<? super T> actual;
-        final SubscriptionSet<InnerSubscriber<T>> childrenSubscribers;
+        final SubscriptionLinkedNodes<InnerSubscriber<T>> childrenSubscribers;
         private MergeProducer<T> mergeProducer;
         private int wip;
         private boolean completed;
 
-        public MergeSubscriber(Subscriber<? super T> actual, SubscriptionSet<InnerSubscriber<T>> childrenSubscriptions) {
+        public MergeSubscriber(Subscriber<? super T> actual, SubscriptionLinkedNodes<InnerSubscriber<T>> childrenSubscriptions) {
             super(actual);
             this.actual = actual;
             this.childrenSubscribers = childrenSubscriptions;
@@ -137,7 +137,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
     private static final class MergeProducer<T> implements Producer {
 
         private final MergeSubscriber<T> parentSubscriber;
-        private final SubscriptionSet<InnerSubscriber<T>> childrenSubscribers;
+        private final SubscriptionLinkedNodes<InnerSubscriber<T>> childrenSubscribers;
         private final Producer parentProducer;
 
         @SuppressWarnings("unused")
@@ -158,7 +158,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
 
         /* used to ensure serialized emission to the child Subscriber */
 
-        public MergeProducer(MergeSubscriber<T> parentSubscriber, Producer parentProducer, Subscriber<? super T> child, SubscriptionSet<InnerSubscriber<T>> childrenSubscribers) {
+        public MergeProducer(MergeSubscriber<T> parentSubscriber, Producer parentProducer, Subscriber<? super T> child, SubscriptionLinkedNodes<InnerSubscriber<T>> childrenSubscribers) {
             this.parentSubscriber = parentSubscriber;
             this.parentProducer = parentProducer;
             this.child = child;
