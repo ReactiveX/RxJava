@@ -30,10 +30,9 @@ import rx.observers.TestSubscriber;
 /**
  * Exposes an Observable and Observer that increments n Integers and consumes them in a Blackhole.
  */
-@State(Scope.Thread)
-public class InputWithIncrementingInteger {
-    @Param({ "1", "1024", "1048576" })
-    public int size;
+public abstract class InputWithIncrementingIntegerBase {
+    
+    protected abstract int getSize();
 
     public Observable<Integer> observable;
     private BlackHole bh;
@@ -44,7 +43,7 @@ public class InputWithIncrementingInteger {
         observable = Observable.create(new OnSubscribe<Integer>() {
             @Override
             public void call(Subscriber<? super Integer> o) {
-                for (int value = 0; value < size; value++) {
+                for (int value = 0; value < getSize(); value++) {
                     if (o.isUnsubscribed())
                         return;
                     o.onNext(value);

@@ -53,10 +53,18 @@ public final class NotificationLite<T> {
 
     private static final Object ON_COMPLETED_SENTINEL = new Serializable() {
         private static final long serialVersionUID = 1;
+        
+        public String toString() {
+            return "Notification=>Completed";
+        }
     };
 
     private static final Object ON_NEXT_NULL_SENTINEL = new Serializable() {
         private static final long serialVersionUID = 2;
+        
+        public String toString() {
+            return "Notification=>NULL";
+        }
     };
 
     private static class OnErrorSentinel implements Serializable {
@@ -65,6 +73,10 @@ public final class NotificationLite<T> {
 
         public OnErrorSentinel(Throwable e) {
             this.e = e;
+        }
+        
+        public String toString() {
+            return "Notification=>Error:" + e.getMessage();
         }
     }
 

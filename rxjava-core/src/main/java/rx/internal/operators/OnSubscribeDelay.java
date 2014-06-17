@@ -55,7 +55,7 @@ public final class OnSubscribeDelay<T> implements OnSubscribe<T> {
                 worker.schedule(e, delay, unit);
                 return Observable.create(e);
             }
-        })).subscribe(child);
+        })).unsafeSubscribe(child);
     }
     
     /**

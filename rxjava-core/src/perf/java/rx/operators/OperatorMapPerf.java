@@ -20,13 +20,13 @@ import org.openjdk.jmh.annotations.GenerateMicroBenchmark;
 import rx.Observable.Operator;
 import rx.functions.Func1;
 import rx.internal.operators.OperatorMap;
-import rx.jmh.InputWithIncrementingInteger;
+import rx.jmh.InputWithIncrementingIntegerTo1000000;
 import rx.observers.TestSubscriber;
 
 public class OperatorMapPerf {
 
     @GenerateMicroBenchmark
-    public void mapIdentityFunction(InputWithIncrementingInteger input) throws InterruptedException {
+    public void mapIdentityFunction(InputWithIncrementingIntegerTo1000000 input) throws InterruptedException {
         TestSubscriber<Integer> ts = input.newSubscriber();
         input.observable.lift(MAP_OPERATOR).subscribe(ts);
         ts.awaitTerminalEvent();

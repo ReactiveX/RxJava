@@ -21,30 +21,36 @@ import rx.subscriptions.CompositeSubscription;
 /**
  * Provides a mechanism for receiving push-based notifications.
  * <p>
- * After a Subscriber calls an {@link Observable}'s {@link Observable#subscribe subscribe} method, the
- * {@link Observable} calls the Subscriber's {@link #onNext} method to emit items. A well-behaved
- * {@link Observable} will call a Subscriber's {@link #onCompleted} method exactly once or the Subscriber's
- * {@link #onError} method exactly once.
+ * After a Subscriber calls an {@link Observable}'s {@link Observable#subscribe subscribe} method, the {@link Observable} calls the Subscriber's {@link #onNext} method to emit items. A well-behaved
+ * {@link Observable} will call a Subscriber's {@link #onCompleted} method exactly once or the Subscriber's {@link #onError} method exactly once.
  * 
  * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable">RxJava Wiki: Observable</a>
  * @param <T>
- *          the type of items the Subscriber expects to observe
+ *            the type of items the Subscriber expects to observe
  */
 public abstract class Subscriber<T> implements Observer<T>, Subscription {
 
     private final SubscriptionList cs;
+    private final Subscriber<?> op;
+    /* protected by `this` */
+    private Producer p;
+    /* protected by `this` */
+    private int requested = -1; // default to infinite
 
     @Deprecated
     protected Subscriber(CompositeSubscription cs) {
+        this.op = null;
         this.cs = new SubscriptionList();
         add(cs);
     }
 
     protected Subscriber() {
+        this.op = null;
         this.cs = new SubscriptionList();
     }
 
     protected Subscriber(Subscriber<?> op) {
+        this.op = op;
         this.cs = op.cs;
     }
 
@@ -69,5 +75,51 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
      */
     public final boolean isUnsubscribed() {
         return cs.isUnsubscribed();
+    }
+
+    public final void request(int n) {
+        Producer shouldRequest = null;
+        synchronized (this) {
+            if (p != null) {
+                shouldRequest = p;
+            } else {
+                requested = n;
+            }
+        }
+        // after releasing lock
+        if (shouldRequest != null) {
+            shouldRequest.request(n);
+        }
+    }
+
+    protected Producer onSetProducer(Producer producer) {
+        return producer;
+    }
+
+    public final void setProducer(Producer producer) {
+        producer = onSetProducer(producer);
+        int toRequest = requested;
+        boolean setProducer = false;
+        synchronized (this) {
+            p = producer;
+            if (op != null) {
+                // middle operator ... we pass thru unless a request has been made
+                if (requested >= 0) {
+                    // if we have a positive value we will run as that means this operator has expressed interest
+                    toRequest = requested;
+                } else {
+                    // we pass-thru to the next producer as it has not been set
+                    setProducer = true;
+                }
+
+            }
+        }
+        // do after releasing lock
+        if (setProducer) {
+            op.setProducer(p);
+        } else {
+            // we execute the request with whatever has been requested (or -1)
+            p.request(toRequest);
+        }
     }
 }
