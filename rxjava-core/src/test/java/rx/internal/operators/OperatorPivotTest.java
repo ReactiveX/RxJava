@@ -42,11 +42,9 @@ import rx.schedulers.Schedulers;
 
 public class OperatorPivotTest {
 
-    // need to figure this out at some point
-    @Ignore
     @Test
     public void testPivotEvenAndOdd() throws InterruptedException {
-        while(true) {
+        for(int i=0; i<1000; i++) {
             System.out.println("------------------------------------------ testPivotEvenAndOdd -------------------------------------------");
         Observable<GroupedObservable<Boolean, Integer>> o1 = Observable.range(1, 10).groupBy(modKeySelector).subscribeOn(Schedulers.computation());
         Observable<GroupedObservable<Boolean, Integer>> o2 = Observable.range(11, 10).groupBy(modKeySelector).subscribeOn(Schedulers.computation());
@@ -124,7 +122,6 @@ public class OperatorPivotTest {
      * It's NOT easy to understand though, and easy to end up with far more data consumed than expected, because pivot by definition
      * is inverting the data so we can not unsubscribe from the parent until all children are done since the top key becomes the leaf once pivoted.
      */
-    @Ignore
     @Test
     public void testUnsubscribeFromGroups() throws InterruptedException {
         AtomicInteger counter1 = new AtomicInteger();
@@ -234,7 +231,6 @@ public class OperatorPivotTest {
      * 
      * Then a subsequent step can merge them if desired and add serialization, such as merge(even.o1, even.o2) to become a serialized "even"
      */
-    @Ignore
     @Test
     public void testConcurrencyAndSerialization() throws InterruptedException {
         final AtomicInteger maxOuterConcurrency = new AtomicInteger();
