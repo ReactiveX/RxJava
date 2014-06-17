@@ -17,7 +17,7 @@ package rx.internal.util;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 import rx.Subscription;
 import rx.exceptions.CompositeException;
@@ -31,7 +31,9 @@ import rx.internal.util.ConcurrentLinkedNode.Node;
 public final class SubscriptionSet<T extends Subscription> implements Subscription {
 
     private ConcurrentLinkedNode<T> subscriptions = new ConcurrentLinkedNode<T>();
-    private final AtomicBoolean unsubscribed = new AtomicBoolean(false);
+    private volatile int unsubscribed = 0;
+    @SuppressWarnings("rawtypes")
+    private final static AtomicIntegerFieldUpdater<SubscriptionSet> UNSUBSCRIBED = AtomicIntegerFieldUpdater.newUpdater(SubscriptionSet.class, "unsubscribed");
 
     public SubscriptionSet() {
     }
@@ -44,7 +46,7 @@ public final class SubscriptionSet<T extends Subscription> implements Subscripti
 
     @Override
     public boolean isUnsubscribed() {
-        return unsubscribed.get();
+        return unsubscribed == 1;
     }
 
     /**
@@ -58,13 +60,13 @@ public final class SubscriptionSet<T extends Subscription> implements Subscripti
      * @return Node that can be used to remove a Subscription, or null if it was not added (unsubscribed)
      */
     public Node<T> add(final T s) {
-        if (unsubscribed.get()) {
+        if (unsubscribed == 1) {
             s.unsubscribe();
             return null;
         } else {
             Node<T> n = subscriptions.add(s);
             // double check for race condition
-            if (unsubscribed.get()) {
+            if (unsubscribed == 1) {
                 s.unsubscribe();
             }
             return n;
@@ -75,7 +77,7 @@ public final class SubscriptionSet<T extends Subscription> implements Subscripti
      * Uses the Node received from `add` to remove this Subscription.
      */
     public void remove(final Node<T> n) {
-        if (unsubscribed.get() || subscriptions == null || n == null) {
+        if (unsubscribed == 1 || subscriptions == null || n == null) {
             return;
         }
         T t = n.item;
@@ -89,9 +91,14 @@ public final class SubscriptionSet<T extends Subscription> implements Subscripti
 
     @Override
     public void unsubscribe() {
-        if (unsubscribed.compareAndSet(false, true) && subscriptions != null) {
-            // we will only get here once
-            unsubscribeFromAll(subscriptions);
+        try {
+            if (UNSUBSCRIBED.compareAndSet(this, 0, 1) && subscriptions != null) {
+                // we will only get here once
+                unsubscribeFromAll(subscriptions);
+            }
+        } finally {
+            //            subscriptions.clear();
+            //            POOL.returnObject(subscriptions);
         }
     }
 

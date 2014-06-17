@@ -29,6 +29,10 @@ public abstract class ObjectPool<T> {
 
     private Scheduler.Worker schedulerWorker;
 
+    public ObjectPool() {
+        this(0, 0, 67);
+    }
+
     /**
      * Creates the pool.
      *
@@ -41,7 +45,7 @@ public abstract class ObjectPool<T> {
      *            When the number of objects is less than minIdle, missing instances will be created.
      *            When the number of objects is greater than maxIdle, too many instances will be removed.
      */
-    public ObjectPool(final int min, final int max, final long validationInterval) {
+    private ObjectPool(final int min, final int max, final long validationInterval) {
         // initialize pool
         initialize(min);
 

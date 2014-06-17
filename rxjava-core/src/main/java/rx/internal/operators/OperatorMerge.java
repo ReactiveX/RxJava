@@ -15,7 +15,6 @@
  */
 package rx.internal.operators;
 
-import java.util.Enumeration;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 import rx.Observable;
@@ -23,7 +22,6 @@ import rx.Observable.Operator;
 import rx.Producer;
 import rx.Subscriber;
 import rx.exceptions.MissingBackpressureException;
-import rx.functions.Action1;
 import rx.internal.util.ConcurrentLinkedNode.Node;
 import rx.internal.util.RxRingBuffer;
 import rx.internal.util.RxSpmcRingBuffer;

@@ -135,7 +135,6 @@ public final class SpmcArrayQueue<E> extends SpmcArrayQueueL3Pad<E> implements Q
         final long currTail = lvTail();
         final long offset = calcOffset(currTail);
         if (null != lvElement(lb, offset)) {
-            System.out.println("*** failed to offer: " + size());
             return false;
         }
         spElement(lb, offset, e);

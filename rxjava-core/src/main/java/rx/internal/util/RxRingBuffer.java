@@ -23,6 +23,8 @@ import rx.Subscriber;
 import rx.Subscription;
 import rx.exceptions.MissingBackpressureException;
 import rx.internal.operators.NotificationLite;
+import rx.internal.util.jctools.SpmcArrayQueue;
+import rx.internal.util.jctools.SpscArrayQueue;
 
 /**
  * Ring Buffer customized to Rx use-case.
@@ -114,7 +116,6 @@ public abstract class RxRingBuffer implements Subscription {
         OUTSTANDING_REQUEST_UPDATER.decrementAndGet(this);
         int a = available();
         if (!queue.offer(on.next(o))) {
-            System.out.println("/// failed when available: " + a);
             throw new MissingBackpressureException();
         }
     }
