@@ -23,6 +23,8 @@ import rx.Observable.Operator;
 import rx.Producer;
 import rx.Subscriber;
 import rx.exceptions.MissingBackpressureException;
+import rx.functions.Action1;
+import rx.internal.util.ConcurrentLinkedNode.Node;
 import rx.internal.util.RxRingBuffer;
 import rx.internal.util.RxSpmcRingBuffer;
 import rx.internal.util.SubscriptionSet;
@@ -110,7 +112,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
                     actual.onCompleted();
                 }
             } finally {
-                childrenSubscribers.remove(s);
+                childrenSubscribers.remove(s.removalNode);
             }
         }
 
@@ -186,11 +188,9 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
             // try draining queues
             if (EMIT_LOCK.getAndIncrement(this) == 0) {
                 do {
-                    // TODO this allocates a new Enumerable everytime ... would prefer direct access to an underlying array
-                    // TODO this starts at the beginning every time and could starve queues at the end
-                    Enumeration<InnerSubscriber<T>> subscriptions = childrenSubscribers.getSubscriptions();
-                    while (subscriptions.hasMoreElements()) {
-                        InnerSubscriber<T> is = subscriptions.nextElement();
+                    // TODO change this to use iteratorStartingAt or forEach(Node<E> startingAt, Action1<Node<E>> action)
+                    // so it resumes from the last node ... rather than always starting at the beginning
+                    for(InnerSubscriber<T> is : childrenSubscribers.subscriptions()) {
                         _unsafeDrainQueue(is, is.getQ());
                     }
 
@@ -271,7 +271,8 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
 
         private void handleNewSource(Observable<? extends T> t) {
             InnerSubscriber<T> i = new InnerSubscriber<T>(this, parentSubscriber);
-            childrenSubscribers.add(i);
+            Node<InnerSubscriber<T>> removalNode = childrenSubscribers.add(i);
+            i.removalNode = removalNode;
             RxRingBuffer q = i.getQ();
             if (q != null) {
                 q.requestIfNeeded(i);
@@ -283,6 +284,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
     private static final class InnerSubscriber<T> extends Subscriber<T> {
         final MergeProducer<T> mergeProducer;
         final MergeSubscriber<T> parent;
+        private Node<InnerSubscriber<T>> removalNode;
         /** Make sure the inner termination events are delivered only once. */
         volatile int once;
         @SuppressWarnings("rawtypes")

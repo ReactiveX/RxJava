@@ -16,33 +16,29 @@
 package rx.internal.util;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Enumeration;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import rx.Subscription;
 import rx.exceptions.CompositeException;
-import rx.functions.Action1;
+import rx.internal.util.ConcurrentLinkedNode.Node;
 
 /**
  * Similar to CompositeSubscription but giving extra access to internals so we can reuse a datastructure.
+ * <p>
+ * NOTE: This purposefully is leaking the internal data structure through the API for efficiency reasons to avoid extra object allocations.
  */
 public final class SubscriptionSet<T extends Subscription> implements Subscription {
 
-    // TODO find a better data structure
-    private ConcurrentHashMap<T, T> subscriptions;
+    private ConcurrentLinkedNode<T> subscriptions = new ConcurrentLinkedNode<T>();
     private final AtomicBoolean unsubscribed = new AtomicBoolean(false);
 
     public SubscriptionSet() {
     }
 
     public SubscriptionSet(final T... subscriptions) {
-        this.subscriptions = new ConcurrentHashMap<T, T>();
         for (T t : subscriptions) {
-            this.subscriptions.put(t, t);
+            this.subscriptions.add(t);
         }
     }
 
@@ -58,43 +54,36 @@ public final class SubscriptionSet<T extends Subscription> implements Subscripti
      *
      * @param s
      *            the {@link Subscription} to add
+     * 
+     * @return Node that can be used to remove a Subscription, or null if it was not added (unsubscribed)
      */
-    public void add(final T s) {
+    public Node<T> add(final T s) {
         if (unsubscribed.get()) {
             s.unsubscribe();
+            return null;
         } else {
-            if (subscriptions == null) {
-                subscriptions = new ConcurrentHashMap<T, T>(4);
-            }
-            subscriptions.put(s, s);
+            Node<T> n = subscriptions.add(s);
             // double check for race condition
             if (unsubscribed.get()) {
                 s.unsubscribe();
             }
-        }
-    }
-    
-    public Enumeration<T> getSubscriptions() {
-        if (subscriptions != null) {
-            return subscriptions.keys();
-        } else {
-            return Collections.emptyEnumeration();
+            return n;
         }
     }
 
     /**
-     * Removes a {@link Subscription} from this {@code CompositeSubscription}, and unsubscribes the {@link Subscription}.
-     *
-     * @param s
-     *            the {@link Subscription} to remove
+     * Uses the Node received from `add` to remove this Subscription.
      */
-    public void remove(final T s) {
-        if (unsubscribed.get() || subscriptions == null) {
+    public void remove(final Node<T> n) {
+        if (unsubscribed.get() || subscriptions == null || n == null) {
             return;
         }
-        if (subscriptions.remove(s) != null) {
+        T t = n.item;
+        if (subscriptions.remove(n)) {
             // if we removed successfully we then need to call unsubscribe on it
-            s.unsubscribe();
+            if (t != null) {
+                t.unsubscribe();
+            }
         }
     }
 
@@ -102,11 +91,11 @@ public final class SubscriptionSet<T extends Subscription> implements Subscripti
     public void unsubscribe() {
         if (unsubscribed.compareAndSet(false, true) && subscriptions != null) {
             // we will only get here once
-            unsubscribeFromAll(subscriptions.keySet());
+            unsubscribeFromAll(subscriptions);
         }
     }
 
-    private static void unsubscribeFromAll(Collection<? extends Subscription> subscriptions) {
+    private static void unsubscribeFromAll(Iterable<? extends Subscription> subscriptions) {
         if (subscriptions == null) {
             return;
         }
@@ -135,6 +124,10 @@ public final class SubscriptionSet<T extends Subscription> implements Subscripti
                         "Failed to unsubscribe to 2 or more subscriptions.", es);
             }
         }
+    }
+
+    public Iterable<T> subscriptions() {
+        return subscriptions;
     }
 
 }
