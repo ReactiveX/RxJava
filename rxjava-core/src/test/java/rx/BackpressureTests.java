@@ -21,7 +21,6 @@ import static org.junit.Assert.fail;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Ignore;
@@ -29,7 +28,6 @@ import org.junit.Test;
 
 import rx.Observable.OnSubscribe;
 import rx.exceptions.MissingBackpressureException;
-import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.functions.Func2;
 import rx.internal.util.RxRingBuffer;
@@ -174,7 +172,7 @@ public class BackpressureTests {
     }
 
     @Ignore
-    @Test(timeout = 500)
+    @Test(timeout = 1000)
     public void testZipSync() {
         int NUM = (int) ((int) Producer.BUFFER_SIZE * 4.1);
         AtomicInteger c1 = new AtomicInteger();
@@ -202,7 +200,7 @@ public class BackpressureTests {
     }
 
     @Ignore
-    @Test(timeout = 500)
+    @Test(timeout = 1000)
     public void testZipAsync() {
         int NUM = (int) ((int) Producer.BUFFER_SIZE * 2.1);
         AtomicInteger c1 = new AtomicInteger();
@@ -331,7 +329,7 @@ public class BackpressureTests {
         assertEquals(20, batches.get());
     }
 
-    @Test
+    @Test(timeout = 1000)
     public void testUserSubscriberUsingRequestAsync() throws InterruptedException {
         AtomicInteger c = new AtomicInteger();
         final AtomicInteger totalReceived = new AtomicInteger();
@@ -347,7 +345,7 @@ public class BackpressureTests {
 
             @Override
             public void onError(Throwable e) {
-
+                latch.countDown();
             }
 
             @Override
@@ -356,6 +354,7 @@ public class BackpressureTests {
                 received.incrementAndGet();
                 if (total >= 2000) {
                     unsubscribe();
+                    latch.countDown();
                 }
                 if (received.get() == 100) {
                     batches.incrementAndGet();
@@ -366,14 +365,14 @@ public class BackpressureTests {
 
         });
 
-        latch.await(500, TimeUnit.MILLISECONDS);
+        latch.await();
         System.out.println("testUserSubscriberUsingRequestAsync => Received: " + totalReceived.get() + "  Emitted: " + c.get() + " Request Batches: " + batches.get());
         assertEquals(2000, c.get());
         assertEquals(2000, totalReceived.get());
         assertEquals(20, batches.get());
     }
 
-    @Test(timeout = 200)
+    @Test(timeout = 1000)
     public void testFirehoseFailsAsExpected() {
         AtomicInteger c = new AtomicInteger();
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
@@ -384,7 +383,7 @@ public class BackpressureTests {
         assertTrue(ts.getOnErrorEvents().get(0) instanceof MissingBackpressureException);
     }
 
-    @Test(timeout = 500)
+    @Test(timeout = 1000)
     public void testOnBackpressureDrop() {
         int NUM = (int) ((int) Producer.BUFFER_SIZE * 1.1); // > 1 so that take doesn't prevent buffer overflow
         AtomicInteger c = new AtomicInteger();
@@ -398,7 +397,7 @@ public class BackpressureTests {
         assertTrue(NUM < ts.getOnNextEvents().get(NUM - 1).intValue());
     }
 
-    @Test(timeout = 500)
+    @Test(timeout = 1000)
     public void testOnBackpressureBuffer() {
         int NUM = (int) ((int) Producer.BUFFER_SIZE * 1.1); // > 1 so that take doesn't prevent buffer overflow
         AtomicInteger c = new AtomicInteger();
