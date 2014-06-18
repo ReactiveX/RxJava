@@ -1,10 +1,4 @@
-<!DOCTYPE html>
-<html lang="en-US">
- <head>
-  <meta http-equiv="Content-type" content="text/html;charset=utf-8" />
-  <meta name="author" content="PLP Consulting" />
-  <title>A tree of RxJava Observable operators</title>
-  <style>
+<style>
    dl { margin-top: 0;
         margin-bottom: 0;
         margin-left: 1.5em; }
@@ -17,7 +11,6 @@
    dl#outer > dt::before { content: ""; }
    dd::before { content: ": "; }
    dd.sub::before { content: ""; }
-
    dt { float: left; clear: left; }
    dd { float: left;
         margin-start: 0;
@@ -31,16 +24,13 @@
    dd.m::after { content: " ⓜ"; }
    dd.s::after { content: " Ⓢ"; }
    hr { clear: both; }
-
    dl dt, dl dd { background: #fff; }
    dl dl dt, dl dl dd { background: #eef; }
    dl dl dl dt, dl dl dl dd { background: #ffe; }
    dl dl dl dl dt, dl dl dl dl dd { background: #efe; }
    dl dl dl dl dl dt, dl dl dl dl dl dd { background: #fef; }
    dl dl dl dl dl dl dt, dl dl dl dl dl dl dd { background: #fee; }
-  </style>
- </head>
- <body>
+</style>
 <p>
  This tree can help you find the Observable operator you&#8217;re looking for.
 </p>
@@ -652,5 +642,3 @@
 </p><p>
  I have omitted parameter names from some methods where they are not necessary to distinguish variants of the method. This page was inspired by the RxJS tables (<a href="https://github.com/trxcllnt/RxJS/blob/master/doc/static-operators.md">static</a> and <a href="https://github.com/trxcllnt/RxJS/blob/master/doc/instance-operators.md">instance</a>) created by Paul Taylor.
 </p>
- </body>
-</html>
