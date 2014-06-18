@@ -617,6 +617,15 @@ public class OperatorMergeTest {
         System.out.println("Generated 2: " + generated2.get());
         assertTrue(generated1.get() >= 3 && generated1.get() <= Producer.BUFFER_SIZE);
     }
+    
+    @Test
+    public void mergeWithNullValues() {
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+        Observable.merge(Observable.from(null, "one"), Observable.from("two", null)).subscribe(ts);
+        ts.assertTerminalEvent();
+        ts.assertNoErrors();
+        ts.assertReceivedOnNext(Arrays.asList(null, "one", "two", null));
+    }
 
     private Observable<Integer> createInfiniteObservable(final AtomicInteger generated) {
         Observable<Integer> observable = Observable.from(new Iterable<Integer>() {

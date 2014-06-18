@@ -102,7 +102,12 @@ public abstract class RxRingBuffer implements Subscription {
      */
     public void emitWithoutQueue(Object o, Observer child) {
         OUTSTANDING_REQUEST_UPDATER.decrementAndGet(this);
-        on.accept(child, o);
+        if (o == null) {
+            // this means a value has been given to us without being turned into a NULL_SENTINEL
+            child.onNext(null);
+        } else {
+            on.accept(child, o);
+        }
     }
 
     /**
