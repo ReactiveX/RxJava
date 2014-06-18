@@ -19,6 +19,7 @@ import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 import java.util.concurrent.atomic.AtomicLongFieldUpdater;
 
 import rx.Observable.Operator;
+import rx.Producer;
 import rx.Scheduler;
 import rx.Subscriber;
 import rx.Subscription;
@@ -63,30 +64,47 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
 
     /** Observe through individual queue per observer. */
     private static final class ObserveOnSubscriber<T> extends Subscriber<T> {
-        final Subscriber<? super T> observer;
+        final Subscriber<? super T> child;
         private final Scheduler.Worker recursiveScheduler;
         private final ScheduledUnsubscribe scheduledUnsubscribe;
         final NotificationLite<T> on = NotificationLite.instance();
 
         private final RxRingBuffer queue = RxSpscRingBuffer.getInstance();
+        private boolean completed = false;
+
+        private volatile long requested = 0;
+        @SuppressWarnings("rawtypes")
+        static final AtomicLongFieldUpdater<ObserveOnSubscriber> REQUESTED = AtomicLongFieldUpdater.newUpdater(ObserveOnSubscriber.class, "requested");
 
         volatile long counter;
         @SuppressWarnings("rawtypes")
         static final AtomicLongFieldUpdater<ObserveOnSubscriber> COUNTER_UPDATER = AtomicLongFieldUpdater.newUpdater(ObserveOnSubscriber.class, "counter");
 
-        public ObserveOnSubscriber(Scheduler scheduler, Subscriber<? super T> subscriber) {
-            super(subscriber);
-            this.observer = subscriber;
+        // do NOT pass the Subscriber through to couple the subscription chain ... unsubscribing on the parent should
+        // not prevent anything downstream from consuming, which will happen if the Subscription is chained
+        public ObserveOnSubscriber(Scheduler scheduler, Subscriber<? super T> child) {
+            this.child = child;
             this.recursiveScheduler = scheduler.createWorker();
             this.scheduledUnsubscribe = new ScheduledUnsubscribe(recursiveScheduler, queue);
-            subscriber.add(scheduledUnsubscribe);
+            child.add(scheduledUnsubscribe);
+            // unsubscribe ourselves if the child unsubscribes, but not the other way around
+            child.add(this);
             // signal that this is an async operator capable of receiving this many
             queue.requestIfNeeded(this);
+            child.setProducer(new Producer() {
+
+                @Override
+                public void request(int n) {
+                    REQUESTED.getAndAdd(ObserveOnSubscriber.this, n);
+                    schedule();
+                }
+
+            });
         }
 
         @Override
         public void onNext(final T t) {
-            if (isUnsubscribed()) {
+            if (isUnsubscribed() || completed) {
                 return;
             }
             try {
@@ -100,18 +118,20 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
 
         @Override
         public void onCompleted() {
-            if (isUnsubscribed()) {
+            if (isUnsubscribed() || completed) {
                 return;
             }
+            completed = true;
             queue.onCompleted();
             schedule();
         }
 
         @Override
         public void onError(final Throwable e) {
-            if (isUnsubscribed()) {
+            if (isUnsubscribed() || completed) {
                 return;
             }
+            completed = true;
             queue.onError(e);
             schedule();
         }
@@ -129,15 +149,29 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
             }
         }
 
-        private void pollQueue() {
-            while (!scheduledUnsubscribe.isUnsubscribed()) {
-                Object o = queue.poll();
-                if (o != null) {
-                    on.accept(observer, o);
-                    queue.requestIfNeeded(this);
-                }
+        int sent = 0;
 
-                if (COUNTER_UPDATER.decrementAndGet(this) == 0) {
+        private void pollQueue() {
+            while (true) {
+                while (!scheduledUnsubscribe.isUnsubscribed()) {
+                    if (REQUESTED.getAndDecrement(this) != 0) {
+                        Object o = queue.poll();
+                        if (o == null) {
+                            // nothing in queue
+                            REQUESTED.incrementAndGet(this);
+                            break;
+                        } else {
+                            sent++;
+                            on.accept(child, o);
+                            queue.requestIfNeeded(this);
+                        }
+                    } else {
+                        // we hit the end ... so increment back to 0 again
+                        REQUESTED.incrementAndGet(this);
+                        break;
+                    }
+                }
+                if (COUNTER_UPDATER.decrementAndGet(this) <= 0) {
                     break;
                 }
             }

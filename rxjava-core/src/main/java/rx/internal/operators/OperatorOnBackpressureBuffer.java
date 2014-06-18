@@ -45,7 +45,9 @@ public class OperatorOnBackpressureBuffer<T> implements Operator<T, T> {
             }
 
         });
-        return new Subscriber<T>(child) {
+        // don't pass through subscriber as we are async and doing queue draining
+        // a parent being unsubscribed should not affect the children
+        Subscriber<T> parent = new Subscriber<T>() {
 
             @Override
             public void onCompleted() {
@@ -65,7 +67,24 @@ public class OperatorOnBackpressureBuffer<T> implements Operator<T, T> {
                 pollQueue(wip, requested, queue, child);
             }
 
+            @Override
+            protected Producer onSetProducer(final Producer producer) {
+                return new Producer() {
+
+                    @Override
+                    public void request(int n) {
+                        producer.request(n);
+                    }
+
+                };
+            }
+
         };
+        
+        // if child unsubscribes it should unsubscribe the parent, but not the other way around
+        child.add(parent);
+        
+        return parent;
     }
 
     private void pollQueue(AtomicInteger wip, AtomicInteger requested, Queue<Object> queue, Subscriber<? super T> child) {
@@ -78,7 +97,7 @@ public class OperatorOnBackpressureBuffer<T> implements Operator<T, T> {
                  */
                 if (wip.getAndIncrement() == 0) {
                     while (true) {
-                        if (requested.getAndDecrement() > 0) {
+                        if (requested.getAndDecrement() != 0) {
                             Object o = queue.poll();
                             if (o == null) {
                                 // nothing in queue

@@ -34,6 +34,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.InOrder;
 
@@ -48,7 +49,6 @@ import rx.exceptions.TestException;
 import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Func1;
-import rx.internal.util.RxRingBuffer;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 import rx.schedulers.TestScheduler;
@@ -576,5 +576,13 @@ public class OperatorObserveOnTest {
                 fail("Expecting MissingBackpressureException");
             }
         }
+    }
+
+    @Test
+    public void testAsyncChild() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        Observable.range(0, 100000).observeOn(Schedulers.newThread()).observeOn(Schedulers.newThread()).subscribe(ts);
+        ts.awaitTerminalEvent();
+        ts.assertNoErrors();
     }
 }
