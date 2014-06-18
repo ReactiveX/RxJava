@@ -33,9 +33,9 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
     private final SubscriptionList cs;
     private final Subscriber<?> op;
     /* protected by `this` */
-    private Producer p;
+    private volatile Producer p;
     /* protected by `this` */
-    private int requested = -1; // default to infinite
+    private volatile int requested = -1; // default to infinite
 
     @Deprecated
     protected Subscriber(CompositeSubscription cs) {
@@ -48,10 +48,22 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
         this.op = null;
         this.cs = new SubscriptionList();
     }
+    
+    protected Subscriber(int bufferRequest) {
+        this.op = null;
+        this.cs = new SubscriptionList();
+        request(bufferRequest);
+    }
 
     protected Subscriber(Subscriber<?> op) {
         this.op = op;
         this.cs = op.cs;
+    }
+    
+    protected Subscriber(Subscriber<?> op, int bufferRequest) {
+        this.op = op;
+        this.cs = op.cs;
+        request(bufferRequest);
     }
 
     /**

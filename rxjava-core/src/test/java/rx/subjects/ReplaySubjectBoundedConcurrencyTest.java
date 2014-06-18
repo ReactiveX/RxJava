@@ -305,7 +305,7 @@ public class ReplaySubjectBoundedConcurrencyTest {
     /**
      * https://github.com/Netflix/RxJava/issues/1147
      */
-    @Test
+    @Test(timeout=1000)
     public void testRaceForTerminalState() {
         final List<Integer> expected = Arrays.asList(1);
         for (int i = 0; i < 100000; i++) {
