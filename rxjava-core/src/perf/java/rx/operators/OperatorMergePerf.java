@@ -15,9 +15,18 @@
  */
 package rx.operators;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.openjdk.jmh.annotations.GenerateMicroBenchmark;
+import org.openjdk.jmh.annotations.Param;
+import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.Setup;
+import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.logic.BlackHole;
 
 import rx.Observable;
+import rx.Observer;
 import rx.functions.Func1;
 import rx.jmh.InputWithIncrementingIntegerTo1000000;
 import rx.jmh.InputWithIncrementingIntegerTo128;
@@ -62,6 +71,49 @@ public class OperatorMergePerf {
         Observable<Integer> o = Observable.range(0, input.size).subscribeOn(Schedulers.computation());
         Observable.merge(o, o).subscribe(ts);
         ts.awaitTerminalEvent();
+    }
+
+    @GenerateMicroBenchmark
+    public void mergeNStreams(final InputForMergeN input) throws InterruptedException {
+        TestSubscriber<Integer> ts = input.newSubscriber();
+        Observable.merge(input.observables).subscribe(ts);
+        ts.awaitTerminalEvent();
+    }
+
+    @State(Scope.Thread)
+    public static class InputForMergeN {
+        @Param({ "1", "100", "1000" })
+        public int size;
+
+        private BlackHole bh;
+        List<Observable<Integer>> observables;
+
+        @Setup
+        public void setup(final BlackHole bh) {
+            this.bh = bh;
+            observables = new ArrayList<Observable<Integer>>();
+            for (int i = 0; i < size; i++) {
+                observables.add(Observable.just(i));
+            }
+        }
+
+        public TestSubscriber<Integer> newSubscriber() {
+            return new TestSubscriber<Integer>(new Observer<Integer>() {
+                @Override
+                public void onCompleted() {
+                }
+
+                @Override
+                public void onError(Throwable e) {
+                    throw new RuntimeException(e);
+                }
+
+                @Override
+                public void onNext(Integer value) {
+                    bh.consume(value);
+                }
+            });
+        }
     }
 
 }
