@@ -18,6 +18,7 @@ package rx.internal.util;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReferenceArray;
 
 import rx.Subscription;
@@ -39,12 +40,9 @@ public class IndexedRingBuffer<E> implements Subscription {
     }
 
     private final AtomicReferenceArray array;
+    private final AtomicInteger index = new AtomicInteger();
     private final int size;
-
-    private static final Object REMOVED_SENTINEL = new Object();
-
-    private volatile int indexHint = 0;
-
+    
     private IndexedRingBuffer(int size) {
         this.size = size;
         array = new AtomicReferenceArray(size);
@@ -57,41 +55,24 @@ public class IndexedRingBuffer<E> implements Subscription {
      * @return
      */
     public int add(E e) {
-        // start from hint (it's okay if it has race conditions on it)
-        int hint = indexHint;
-        for (int i = hint; i < size; i++) {
-            Object existing = array.get(i);
-            if (existing == null || existing == REMOVED_SENTINEL) {
-                if (array.compareAndSet(i, null, e)) {
-                    hint = i;
-                    return i;
-                }
-            }
+        int i = index.getAndIncrement();
+        if (i < size) {
+            array.set(i, e);
+            return i;
+        } else {
+            // we didn't find a place so we're full
+            throw new IllegalStateException("No space available");
+            // TODO resize/defrag the array rather than throwing an error
         }
-        // start from beginning if we didn't return above
-        for (int i = 0; i < hint; i++) {
-            Object existing = array.get(i);
-            if (existing == null || existing == REMOVED_SENTINEL) {
-                if (array.compareAndSet(i, null, e)) {
-                    hint = i;
-                    return i;
-                }
-            }
-        }
-        // we didn't find a place so we're full
-        throw new IllegalStateException("No space available");
     }
 
     public E remove(int index) {
-        return (E) array.getAndSet(index, REMOVED_SENTINEL);
+        return (E) array.getAndSet(index, null);
     }
 
     @Override
     public void unsubscribe() {
-        for (int i = 0; i < size; i++) {
-            Object o = array.getAndSet(i, null);
-        }
-
+        index.set(0);
         POOL.returnObject(this);
     }
 
@@ -103,21 +84,18 @@ public class IndexedRingBuffer<E> implements Subscription {
     public List<Throwable> forEach(Action1<? super E> action) {
         List<Throwable> es = null;
 
-        for (int i = 0; i < size; i++) {
+        for (int i = 0; i < index.get(); i++) {
             Object element = array.get(i);
             if (element == null) {
-                // end of data
-                break;
+                continue;
             }
-            if (element != REMOVED_SENTINEL) {
-                try {
-                    action.call((E) element);
-                } catch (Throwable e) {
-                    if (es == null) {
-                        es = new ArrayList<Throwable>();
-                    }
-                    es.add(e);
+            try {
+                action.call((E) element);
+            } catch (Throwable e) {
+                if (es == null) {
+                    es = new ArrayList<Throwable>();
                 }
+                es.add(e);
             }
         }
 

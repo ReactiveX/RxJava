@@ -15,6 +15,9 @@
  */
 package rx.internal.operators;
 
+import static rx.internal.util.jctools.UnsafeAccess.UNSAFE;
+
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 import rx.Observable;
@@ -148,19 +151,26 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
 
         @SuppressWarnings("unused")
         private volatile int _requested = -1; // default to infinite
+        private static final long _requestedOffset;
         @SuppressWarnings("unused")
         private volatile int _infiniteRequestSent = 0;
-        @SuppressWarnings("rawtypes")
-        private static final AtomicIntegerFieldUpdater<MergeProducer> ONCE_PARENT_REQUEST = AtomicIntegerFieldUpdater.newUpdater(MergeProducer.class, "_infiniteRequestSent");
-        @SuppressWarnings("rawtypes")
-        private static final AtomicIntegerFieldUpdater<MergeProducer> REQUESTED_UPDATER = AtomicIntegerFieldUpdater.newUpdater(MergeProducer.class, "_requested");
+        private static final long _infiniteRequestSentOffset;
 
         /* protected by `emitLock` */
         private final Subscriber<? super T> child;
         @SuppressWarnings("unused")
         private volatile int _emitLock;
-        @SuppressWarnings("rawtypes")
-        private static final AtomicIntegerFieldUpdater<MergeProducer> EMIT_LOCK = AtomicIntegerFieldUpdater.newUpdater(MergeProducer.class, "_emitLock");
+        private static final long _emitLockOffset;
+
+        static {
+            try {
+                _requestedOffset = UNSAFE.objectFieldOffset(MergeProducer.class.getDeclaredField("_requested"));
+                _infiniteRequestSentOffset = UNSAFE.objectFieldOffset(MergeProducer.class.getDeclaredField("_infiniteRequestSent"));
+                _emitLockOffset = UNSAFE.objectFieldOffset(MergeProducer.class.getDeclaredField("_emitLock"));
+            } catch (Exception ex) {
+                throw new Error(ex);
+            }
+        }
 
         final Action1<InnerSubscriber<T>> DRAIN_ACTION = new Action1<InnerSubscriber<T>>() {
 
@@ -182,14 +192,14 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
 
         @Override
         public void request(int n) {
-            int r = REQUESTED_UPDATER.addAndGet(this, n);
+            int r = UNSAFE.getAndAddInt(this, _requestedOffset, n);
             if (r < n) {
                 // this means it was negative so let's add the diff
-                REQUESTED_UPDATER.addAndGet(this, (n - r));
+                UNSAFE.getAndAddInt(this, _requestedOffset, (n - r));
             }
 
             // do outside of lock
-            if (ONCE_PARENT_REQUEST.compareAndSet(this, 0, 1)) {
+            if (UNSAFE.compareAndSwapInt(this, _infiniteRequestSentOffset, 0, 1)) {
                 // parentProducer can be null if we're merging an Observable<Observable> without backpressure support
                 if (parentProducer != null) {
                     // request up to our parent to start sending us the Observables for merging
@@ -205,12 +215,12 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
          */
         private void claimAndDrainQueues() {
             // try draining queues
-            if (EMIT_LOCK.getAndIncrement(this) == 0) {
+            if (UNSAFE.getAndAddInt(this, _emitLockOffset, 1) == 0) {
                 do {
                     // TODO change this to use iteratorStartingAt or forEach(Node<E> startingAt, Action1<Node<E>> action)
                     // so it resumes from the last node ... rather than always starting at the beginning
                     childrenSubscribers.forEach(DRAIN_ACTION);
-                } while (EMIT_LOCK.decrementAndGet(this) > 0);
+                } while ((UNSAFE.getAndAddInt(this, _emitLockOffset, -1) - 1) > 0);
             }
         }
 
@@ -222,7 +232,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
                 return;
             }
             Object o = null;
-            while (REQUESTED_UPDATER.decrementAndGet(this) != 0 && (o = q.poll()) != null) { // TODO this seems wrong
+            while ((UNSAFE.getAndAddInt(this, _requestedOffset, -1) - 1) != 0 && (o = q.poll()) != null) { // TODO this seems wrong
                 // we don't receive errors via the queue
                 if (q.isCompleted(o)) {
                     is.complete(); // nothing can be done with 'q' after this
@@ -243,13 +253,13 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
             }
             boolean enqueue = true;
             int el = 0;
-            if (EMIT_LOCK.getAndIncrement(this) == 0) {
+            if (UNSAFE.getAndAddInt(this, _emitLockOffset, 1) == 0) {
                 try {
                     // we can write and skip queueing
                     // first drain anything in our own queue
                     _unsafeDrainQueue(is, q);
                     // emit
-                    if (REQUESTED_UPDATER.decrementAndGet(this) != 0) { // TODO this seems wrong
+                    if ((UNSAFE.getAndAddInt(this, _requestedOffset, -1) - 1) != 0) { // TODO this seems wrong
                         if (q.isCompleted(o)) {
                             is.complete(); // nothing can be done with 'q' after this
                         } else {
@@ -259,7 +269,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
                     }
                 } finally {
                     // we always set to 0 here so anyone can now claim the work, including this thread again below
-                    el = EMIT_LOCK.getAndSet(this, 0);
+                    el = UNSAFE.getAndSetInt(this, _emitLockOffset, 0);
                 }
             }
             if (enqueue) {
