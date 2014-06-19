@@ -27,7 +27,6 @@ import org.junit.Test;
 
 import rx.Subscription;
 import rx.exceptions.CompositeException;
-import rx.internal.util.ConcurrentLinkedNode.Node;
 
 public class SubscriptionLinkedNodesTest {
 
@@ -70,7 +69,7 @@ public class SubscriptionLinkedNodesTest {
     public void testRemoveSilently() {
         final AtomicInteger counter = new AtomicInteger();
         SubscriptionLinkedNodes<Subscription> s = new SubscriptionLinkedNodes<Subscription>();
-        Node<Subscription> n1 = s.add(new Subscription() {
+        int n1 = s.add(new Subscription() {
 
             @Override
             public void unsubscribe() {
@@ -83,7 +82,7 @@ public class SubscriptionLinkedNodesTest {
             }
         });
 
-        Node<Subscription> n2 = s.add(new Subscription() {
+        int n2 = s.add(new Subscription() {
 
             @Override
             public void unsubscribe() {
@@ -107,7 +106,7 @@ public class SubscriptionLinkedNodesTest {
     public void testRemove() {
         final AtomicInteger counter = new AtomicInteger();
         SubscriptionLinkedNodes<Subscription> s = new SubscriptionLinkedNodes<Subscription>();
-        Node<Subscription> n1 = s.add(new Subscription() {
+        int n1 = s.add(new Subscription() {
 
             @Override
             public void unsubscribe() {
@@ -120,7 +119,7 @@ public class SubscriptionLinkedNodesTest {
             }
         });
 
-        Node<Subscription> n2 = s.add(new Subscription() {
+        int n2 = s.add(new Subscription() {
 
             @Override
             public void unsubscribe() {

@@ -15,13 +15,13 @@
  */
 package rx.internal.util;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 import rx.Subscription;
 import rx.exceptions.CompositeException;
-import rx.internal.util.ConcurrentLinkedNode.Node;
+import rx.functions.Action1;
 
 /**
  * Similar to CompositeSubscription but giving extra access to internals so we can reuse a datastructure.
@@ -30,7 +30,8 @@ import rx.internal.util.ConcurrentLinkedNode.Node;
  */
 public final class SubscriptionLinkedNodes<T extends Subscription> implements Subscription {
 
-    private ConcurrentLinkedNode<T> subscriptions = new ConcurrentLinkedNode<T>();
+    @SuppressWarnings("unchecked")
+    private volatile IndexedRingBuffer<T> subscriptions = IndexedRingBuffer.getInstance();
     private volatile int unsubscribed = 0;
     @SuppressWarnings("rawtypes")
     private final static AtomicIntegerFieldUpdater<SubscriptionLinkedNodes> UNSUBSCRIBED = AtomicIntegerFieldUpdater.newUpdater(SubscriptionLinkedNodes.class, "unsubscribed");
@@ -57,14 +58,14 @@ public final class SubscriptionLinkedNodes<T extends Subscription> implements Su
      * @param s
      *            the {@link Subscription} to add
      * 
-     * @return Node that can be used to remove a Subscription, or null if it was not added (unsubscribed)
+     * @return int index that can be used to remove a Subscription
      */
-    public Node<T> add(final T s) {
-        if (unsubscribed == 1) {
+    public int add(final T s) {
+        if (unsubscribed == 1 || subscriptions == null) {
             s.unsubscribe();
-            return null;
+            return -1;
         } else {
-            Node<T> n = subscriptions.add(s);
+            int n = subscriptions.add(s);
             // double check for race condition
             if (unsubscribed == 1) {
                 s.unsubscribe();
@@ -78,12 +79,12 @@ public final class SubscriptionLinkedNodes<T extends Subscription> implements Su
      * <p>
      * Unsubscribes the Subscription after removal
      */
-    public void remove(final Node<T> n) {
-        if (unsubscribed == 1 || subscriptions == null || n == null) {
+    public void remove(final int n) {
+        if (unsubscribed == 1 || subscriptions == null || n < 0) {
             return;
         }
-        T t = n.item;
-        if (subscriptions.remove(n)) {
+        T t = subscriptions.remove(n);
+        if (t != null) {
             // if we removed successfully we then need to call unsubscribe on it
             if (t != null) {
                 t.unsubscribe();
@@ -96,8 +97,8 @@ public final class SubscriptionLinkedNodes<T extends Subscription> implements Su
      * <p>
      * Does not unsubscribe the Subscription after removal.
      */
-    public void removeSilently(final Node<T> n) {
-        if (unsubscribed == 1 || subscriptions == null || n == null) {
+    public void removeSilently(final int n) {
+        if (unsubscribed == 1 || subscriptions == null || n < 0) {
             return;
         }
         subscriptions.remove(n);
@@ -108,25 +109,28 @@ public final class SubscriptionLinkedNodes<T extends Subscription> implements Su
         if (UNSUBSCRIBED.compareAndSet(this, 0, 1) && subscriptions != null) {
             // we will only get here once
             unsubscribeFromAll(subscriptions);
+
+            IndexedRingBuffer<T> s = subscriptions;
+            subscriptions = null;
+            s.unsubscribe();
         }
     }
 
-    private static void unsubscribeFromAll(Iterable<? extends Subscription> subscriptions) {
+    public List<Throwable> forEach(Action1<T> action) {
+        if (unsubscribed == 1 || subscriptions == null) {
+            return Collections.emptyList();
+        }
+        return subscriptions.forEach(action);
+    }
+
+    private static void unsubscribeFromAll(IndexedRingBuffer<? extends Subscription> subscriptions) {
         if (subscriptions == null) {
             return;
         }
-        List<Throwable> es = null;
-        for (Subscription s : subscriptions) {
-            try {
-                s.unsubscribe();
-            } catch (Throwable e) {
-                if (es == null) {
-                    es = new ArrayList<Throwable>();
-                }
-                es.add(e);
-            }
-        }
-        if (es != null) {
+
+        List<Throwable> es = subscriptions.forEach(UNSUBSCRIBE);
+
+        if (!es.isEmpty()) {
             if (es.size() == 1) {
                 Throwable t = es.get(0);
                 if (t instanceof RuntimeException) {
@@ -140,10 +144,15 @@ public final class SubscriptionLinkedNodes<T extends Subscription> implements Su
                         "Failed to unsubscribe to 2 or more subscriptions.", es);
             }
         }
+
     }
 
-    public Iterable<T> subscriptions() {
-        return subscriptions;
-    }
+    private final static Action1<Subscription> UNSUBSCRIBE = new Action1<Subscription>() {
+
+        @Override
+        public void call(Subscription s) {
+            s.unsubscribe();
+        }
+    };
 
 }

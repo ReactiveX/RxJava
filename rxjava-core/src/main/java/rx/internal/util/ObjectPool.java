@@ -22,11 +22,13 @@ import java.util.concurrent.TimeUnit;
 
 import rx.Scheduler;
 import rx.functions.Action0;
+import rx.internal.util.jctools.MpmcArrayQueue;
 import rx.schedulers.Schedulers;
 
 public abstract class ObjectPool<T> {
-    private ConcurrentLinkedDeque<T> pool;
-
+    private MpmcArrayQueue<T> pool;
+    private final int maxSize;
+    
     private Scheduler.Worker schedulerWorker;
 
     public ObjectPool() {
@@ -46,6 +48,7 @@ public abstract class ObjectPool<T> {
      *            When the number of objects is greater than maxIdle, too many instances will be removed.
      */
     private ObjectPool(final int min, final int max, final long validationInterval) {
+        this.maxSize = max;
         // initialize pool
         initialize(min);
 
@@ -63,7 +66,8 @@ public abstract class ObjectPool<T> {
                 } else if (size > max) {
                     int sizeToBeRemoved = size - max;
                     for (int i = 0; i < sizeToBeRemoved; i++) {
-                        pool.pollLast();
+//                        pool.pollLast();
+                        pool.poll();
                     }
                 }
             }
@@ -79,7 +83,8 @@ public abstract class ObjectPool<T> {
      */
     public T borrowObject() {
         T object;
-        if ((object = pool.pollFirst()) == null) {
+//        if ((object = pool.pollFirst()) == null) {
+        if ((object = pool.poll()) == null) {
             object = createObject();
         }
 
@@ -97,7 +102,8 @@ public abstract class ObjectPool<T> {
             return;
         }
 
-        this.pool.push(object);
+//        this.pool.push(object);
+        this.pool.offer(object);
     }
 
     /**
@@ -115,7 +121,7 @@ public abstract class ObjectPool<T> {
     protected abstract T createObject();
 
     private void initialize(final int min) {
-        pool = new ConcurrentLinkedDeque<T>();
+        pool = new MpmcArrayQueue<T>(Math.max(maxSize, 1024));
 
         for (int i = 0; i < min; i++) {
             pool.add(createObject());

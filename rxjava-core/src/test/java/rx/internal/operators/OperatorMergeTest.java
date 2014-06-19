@@ -570,7 +570,7 @@ public class OperatorMergeTest {
             }
         });
 
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 10; i++) {
             Observable<Integer> merge = Observable.merge(o.onBackpressureBuffer(), o.onBackpressureBuffer(), o.onBackpressureBuffer());
             TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
             merge.subscribe(ts);

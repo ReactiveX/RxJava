@@ -22,7 +22,7 @@ import rx.Observable.Operator;
 import rx.Producer;
 import rx.Subscriber;
 import rx.exceptions.MissingBackpressureException;
-import rx.internal.util.ConcurrentLinkedNode.Node;
+import rx.functions.Action1;
 import rx.internal.util.RxRingBuffer;
 import rx.internal.util.RxSpmcRingBuffer;
 import rx.internal.util.SubscriptionLinkedNodes;
@@ -116,7 +116,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
                     actual.onCompleted();
                 }
             } finally {
-                childrenSubscribers.remove(s.removalNode);
+                childrenSubscribers.remove(s.removalIndex);
             }
         }
 
@@ -162,6 +162,15 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
         @SuppressWarnings("rawtypes")
         private static final AtomicIntegerFieldUpdater<MergeProducer> EMIT_LOCK = AtomicIntegerFieldUpdater.newUpdater(MergeProducer.class, "_emitLock");
 
+        final Action1<InnerSubscriber<T>> DRAIN_ACTION = new Action1<InnerSubscriber<T>>() {
+
+            @Override
+            public void call(InnerSubscriber<T> is) {
+                _unsafeDrainQueue(is, is.getQ());
+            }
+
+        };
+
         /* used to ensure serialized emission to the child Subscriber */
 
         public MergeProducer(MergeSubscriber<T> parentSubscriber, Producer parentProducer, Subscriber<? super T> child, SubscriptionLinkedNodes<InnerSubscriber<T>> childrenSubscribers) {
@@ -200,10 +209,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
                 do {
                     // TODO change this to use iteratorStartingAt or forEach(Node<E> startingAt, Action1<Node<E>> action)
                     // so it resumes from the last node ... rather than always starting at the beginning
-                    for (InnerSubscriber<T> is : childrenSubscribers.subscriptions()) {
-                        _unsafeDrainQueue(is, is.getQ());
-                    }
-
+                    childrenSubscribers.forEach(DRAIN_ACTION);
                 } while (EMIT_LOCK.decrementAndGet(this) > 0);
             }
         }
@@ -285,8 +291,8 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
 
         private void handleNewSource(Observable<? extends T> t) {
             InnerSubscriber<T> i = new InnerSubscriber<T>(this, parentSubscriber);
-            Node<InnerSubscriber<T>> removalNode = childrenSubscribers.add(i);
-            i.removalNode = removalNode;
+            int index = childrenSubscribers.add(i);
+            i.removalIndex = index;
             RxRingBuffer q = i.getQ();
             if (q != null) {
                 q.requestIfNeeded(i);
@@ -298,7 +304,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
     private static final class InnerSubscriber<T> extends Subscriber<T> {
         final MergeProducer<T> mergeProducer;
         final MergeSubscriber<T> parent;
-        private Node<InnerSubscriber<T>> removalNode;
+        private int removalIndex;
         /** Make sure the inner termination events are delivered only once. */
         volatile int once;
         @SuppressWarnings("rawtypes")

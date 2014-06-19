@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package rx.internal.operators;
 
 import java.util.Random;
@@ -42,7 +41,7 @@ import rx.schedulers.Schedulers;
 
 public class OperatorPivotTest {
 
-    @Test
+    @Test(timeout=10000)
     public void testPivotEvenAndOdd() throws InterruptedException {
         for(int i=0; i<1000; i++) {
             System.out.println("------------------------------------------ testPivotEvenAndOdd -------------------------------------------");
@@ -122,7 +121,7 @@ public class OperatorPivotTest {
      * It's NOT easy to understand though, and easy to end up with far more data consumed than expected, because pivot by definition
      * is inverting the data so we can not unsubscribe from the parent until all children are done since the top key becomes the leaf once pivoted.
      */
-    @Test
+    @Test(timeout=10000)
     public void testUnsubscribeFromGroups() throws InterruptedException {
         AtomicInteger counter1 = new AtomicInteger();
         AtomicInteger counter2 = new AtomicInteger();
@@ -231,7 +230,7 @@ public class OperatorPivotTest {
      * 
      * Then a subsequent step can merge them if desired and add serialization, such as merge(even.o1, even.o2) to become a serialized "even"
      */
-    @Test
+    @Test(timeout=10000)
     public void testConcurrencyAndSerialization() throws InterruptedException {
         final AtomicInteger maxOuterConcurrency = new AtomicInteger();
         final AtomicInteger maxGroupConcurrency = new AtomicInteger();
