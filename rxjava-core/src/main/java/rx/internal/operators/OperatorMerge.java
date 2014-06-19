@@ -17,7 +17,6 @@ package rx.internal.operators;
 
 import static rx.internal.util.jctools.UnsafeAccess.UNSAFE;
 
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 import rx.Observable;
@@ -29,6 +28,7 @@ import rx.functions.Action1;
 import rx.internal.util.RxRingBuffer;
 import rx.internal.util.RxSpmcRingBuffer;
 import rx.internal.util.SubscriptionLinkedNodes;
+import rx.internal.util.jctools.UnsafeAccess;
 
 /**
  * Flattens a list of Observables into one Observable sequence, without any transformation.
@@ -192,14 +192,14 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
 
         @Override
         public void request(int n) {
-            int r = UNSAFE.getAndAddInt(this, _requestedOffset, n);
+            int r = UnsafeAccess.getAndAddInt(this, _requestedOffset, n);
             if (r < n) {
                 // this means it was negative so let's add the diff
-                UNSAFE.getAndAddInt(this, _requestedOffset, (n - r));
+                UnsafeAccess.getAndAddInt(this, _requestedOffset, (n - r));
             }
 
             // do outside of lock
-            if (UNSAFE.compareAndSwapInt(this, _infiniteRequestSentOffset, 0, 1)) {
+            if (UnsafeAccess.compareAndSwapInt(this, _infiniteRequestSentOffset, 0, 1)) {
                 // parentProducer can be null if we're merging an Observable<Observable> without backpressure support
                 if (parentProducer != null) {
                     // request up to our parent to start sending us the Observables for merging
@@ -215,12 +215,12 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
          */
         private void claimAndDrainQueues() {
             // try draining queues
-            if (UNSAFE.getAndAddInt(this, _emitLockOffset, 1) == 0) {
+            if (UnsafeAccess.getAndAddInt(this, _emitLockOffset, 1) == 0) {
                 do {
                     // TODO change this to use iteratorStartingAt or forEach(Node<E> startingAt, Action1<Node<E>> action)
                     // so it resumes from the last node ... rather than always starting at the beginning
                     childrenSubscribers.forEach(DRAIN_ACTION);
-                } while ((UNSAFE.getAndAddInt(this, _emitLockOffset, -1) - 1) > 0);
+                } while ((UnsafeAccess.getAndAddInt(this, _emitLockOffset, -1) - 1) > 0);
             }
         }
 
@@ -232,7 +232,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
                 return;
             }
             Object o = null;
-            while ((UNSAFE.getAndAddInt(this, _requestedOffset, -1) - 1) != 0 && (o = q.poll()) != null) { // TODO this seems wrong
+            while ((UnsafeAccess.getAndAddInt(this, _requestedOffset, -1) - 1) != 0 && (o = q.poll()) != null) { // TODO this seems wrong
                 // we don't receive errors via the queue
                 if (q.isCompleted(o)) {
                     is.complete(); // nothing can be done with 'q' after this
@@ -253,13 +253,13 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
             }
             boolean enqueue = true;
             int el = 0;
-            if (UNSAFE.getAndAddInt(this, _emitLockOffset, 1) == 0) {
+            if (UnsafeAccess.getAndAddInt(this, _emitLockOffset, 1) == 0) {
                 try {
                     // we can write and skip queueing
                     // first drain anything in our own queue
                     _unsafeDrainQueue(is, q);
                     // emit
-                    if ((UNSAFE.getAndAddInt(this, _requestedOffset, -1) - 1) != 0) { // TODO this seems wrong
+                    if ((UnsafeAccess.getAndAddInt(this, _requestedOffset, -1) - 1) != 0) { // TODO this seems wrong
                         if (q.isCompleted(o)) {
                             is.complete(); // nothing can be done with 'q' after this
                         } else {
@@ -269,7 +269,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
                     }
                 } finally {
                     // we always set to 0 here so anyone can now claim the work, including this thread again below
-                    el = UNSAFE.getAndSetInt(this, _emitLockOffset, 0);
+                    el = UnsafeAccess.getAndSetInt(this, _emitLockOffset, 0);
                 }
             }
             if (enqueue) {
