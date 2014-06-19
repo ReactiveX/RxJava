@@ -22,7 +22,6 @@ import java.util.concurrent.atomic.AtomicReferenceArray;
 
 import rx.Subscription;
 import rx.functions.Action1;
-import rx.internal.util.jctools.IntMpmcArrayQueue;
 
 public class IndexedRingBuffer<E> implements Subscription {
 
@@ -40,22 +39,15 @@ public class IndexedRingBuffer<E> implements Subscription {
     }
 
     private final AtomicReferenceArray array;
-    private final IntMpmcArrayQueue indexes;
     private final int size;
 
     private static final Object REMOVED_SENTINEL = new Object();
 
+    private volatile int indexHint = 0;
+
     private IndexedRingBuffer(int size) {
         this.size = size;
         array = new AtomicReferenceArray(size);
-        indexes = new IntMpmcArrayQueue(size);
-        initializeIndexes();
-    }
-
-    private void initializeIndexes() {
-        for (int i = 0; i < size; i++) {
-            indexes.offer(i);
-        }
     }
 
     /**
@@ -65,27 +57,39 @@ public class IndexedRingBuffer<E> implements Subscription {
      * @return
      */
     public int add(E e) {
-        int index = indexes.poll();
-        if (index < 0) {
-            // TODO make the array grow
-            throw new IllegalStateException("No space available");
+        // start from hint (it's okay if it has race conditions on it)
+        int hint = indexHint;
+        for (int i = hint; i < size; i++) {
+            Object existing = array.get(i);
+            if (existing == null || existing == REMOVED_SENTINEL) {
+                if (array.compareAndSet(i, null, e)) {
+                    hint = i;
+                    return i;
+                }
+            }
         }
-        array.set(index, e);
-        return index;
+        // start from beginning if we didn't return above
+        for (int i = 0; i < hint; i++) {
+            Object existing = array.get(i);
+            if (existing == null || existing == REMOVED_SENTINEL) {
+                if (array.compareAndSet(i, null, e)) {
+                    hint = i;
+                    return i;
+                }
+            }
+        }
+        // we didn't find a place so we're full
+        throw new IllegalStateException("No space available");
     }
 
     public E remove(int index) {
-        E e = (E) array.getAndSet(index, REMOVED_SENTINEL);
-        indexes.offer(index);
-        return e;
+        return (E) array.getAndSet(index, REMOVED_SENTINEL);
     }
 
     @Override
     public void unsubscribe() {
-        indexes.clear();
-        initializeIndexes();
         for (int i = 0; i < size; i++) {
-            array.set(i, null);
+            Object o = array.getAndSet(i, null);
         }
 
         POOL.returnObject(this);

@@ -83,7 +83,7 @@ public final class SubscriptionLinkedNodes<T extends Subscription> implements Su
         if (unsubscribed == 1 || subscriptions == null || n < 0) {
             return;
         }
-        T t = subscriptions.remove(n);
+        Subscription t = subscriptions.remove(n);
         if (t != null) {
             // if we removed successfully we then need to call unsubscribe on it
             if (t != null) {
