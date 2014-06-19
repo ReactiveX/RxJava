@@ -42,6 +42,9 @@ public final class OnSubscribeFromIterable<T> implements OnSubscribe<T> {
 
     @Override
     public void call(final Subscriber<? super T> o) {
+        if (is == null) {
+            o.onCompleted();
+        }
         final Iterator<? extends T> it = is.iterator();
         if (is instanceof Collection) {
             @SuppressWarnings("rawtypes")

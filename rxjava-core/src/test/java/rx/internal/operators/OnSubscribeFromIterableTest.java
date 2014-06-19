@@ -31,11 +31,22 @@ import org.mockito.Mockito;
 import rx.Observable;
 import rx.Observer;
 import rx.Producer;
-import rx.internal.util.RxRingBuffer;
 import rx.observers.TestSubscriber;
 
 public class OnSubscribeFromIterableTest {
 
+    @Test
+    public void testNull() {
+        Observable<String> observable = Observable.create(new OnSubscribeFromIterable<String>(null));
+
+        @SuppressWarnings("unchecked")
+        Observer<String> observer = mock(Observer.class);
+        observable.subscribe(observer);
+        verify(observer, Mockito.never()).onNext(any(String.class));
+        verify(observer, Mockito.never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onCompleted();
+    }
+    
     @Test
     public void testListIterable() {
         Observable<String> observable = Observable.create(new OnSubscribeFromIterable<String>(Arrays.<String> asList("one", "two", "three")));

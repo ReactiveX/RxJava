@@ -643,6 +643,14 @@ public class OperatorMergeTest {
         ts.assertNoErrors();
         ts.assertReceivedOnNext(Arrays.asList(null, "one", "two"));
     }
+    
+    @Test
+    public void mergingNullObservable() {
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+        Observable.merge(Observable.from("one"), null).subscribe(ts);
+        ts.assertNoErrors();
+        ts.assertReceivedOnNext(Arrays.asList("one"));
+    }
 
     private Observable<Integer> createInfiniteObservable(final AtomicInteger generated) {
         Observable<Integer> observable = Observable.from(new Iterable<Integer>() {

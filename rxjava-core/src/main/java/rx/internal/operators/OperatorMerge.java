@@ -66,6 +66,10 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
 
         @Override
         public void onNext(Observable<? extends T> t) {
+            if (t == null) {
+                // bad Observable
+                return;
+            }
             synchronized (this) {
                 if (mergeProducer == null) {
                     // this means it's an Observable without backpressure support
@@ -73,7 +77,9 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
                 }
                 wip++;
             }
-            mergeProducer.handleNewSource(t);
+            if (!isUnsubscribed()) {
+                mergeProducer.handleNewSource(t);
+            }
         }
 
         @Override
