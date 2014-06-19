@@ -225,6 +225,10 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
 
         private void emitOrEnqueue(InnerSubscriber<T> is, Object o) throws MissingBackpressureException {
             RxRingBuffer q = is.getQ();
+            if (q == null) {
+                // if we are unsubscribed
+                return;
+            }
             boolean enqueue = true;
             int el = 0;
             if (EMIT_LOCK.getAndIncrement(this) == 0) {

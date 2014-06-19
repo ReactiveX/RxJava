@@ -546,9 +546,8 @@ public class OperatorMergeTest {
         }
     }
 
-    @Test(timeout = 2000)
+    @Test
     public void testConcurrencyWithBrokenOnCompleteContract() {
-
         Observable<Integer> o = Observable.create(new OnSubscribe<Integer>() {
 
             @Override
@@ -581,7 +580,7 @@ public class OperatorMergeTest {
             assertEquals(1, ts.getOnCompletedEvents().size());
             List<Integer> onNextEvents = ts.getOnNextEvents();
             assertEquals(30000, onNextEvents.size());
-            //            System.out.println("onNext: " + onNextEvents.size() + " onCompleted: " + ts.getOnCompletedEvents().size());
+            //                System.out.println("onNext: " + onNextEvents.size() + " onCompleted: " + ts.getOnCompletedEvents().size());
         }
     }
 
@@ -617,7 +616,7 @@ public class OperatorMergeTest {
         System.out.println("Generated 2: " + generated2.get());
         assertTrue(generated1.get() >= 3 && generated1.get() <= Producer.BUFFER_SIZE);
     }
-    
+
     @Test
     public void mergeWithNullValues() {
         TestSubscriber<String> ts = new TestSubscriber<String>();
@@ -625,6 +624,24 @@ public class OperatorMergeTest {
         ts.assertTerminalEvent();
         ts.assertNoErrors();
         ts.assertReceivedOnNext(Arrays.asList(null, "one", "two", null));
+    }
+    
+    @Test
+    public void mergeWithTerminalEventAfterUnsubscribe() {
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+        Observable<String> bad = Observable.create(new OnSubscribe<String>() {
+
+            @Override
+            public void call(Subscriber<? super String> s) {
+                s.onNext("two");
+                s.unsubscribe();
+                s.onCompleted();
+            }
+            
+        });
+        Observable.merge(Observable.from(null, "one"), bad).subscribe(ts);
+        ts.assertNoErrors();
+        ts.assertReceivedOnNext(Arrays.asList(null, "one", "two"));
     }
 
     private Observable<Integer> createInfiniteObservable(final AtomicInteger generated) {
