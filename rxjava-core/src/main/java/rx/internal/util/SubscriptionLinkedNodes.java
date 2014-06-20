@@ -128,6 +128,7 @@ public final class SubscriptionLinkedNodes<T extends Subscription> implements Su
             return;
         }
 
+        // TODO migrate to drain?
         List<Throwable> es = subscriptions.forEach(UNSUBSCRIBE);
 
         if (!es.isEmpty()) {

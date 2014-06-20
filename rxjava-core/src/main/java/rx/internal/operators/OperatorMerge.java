@@ -15,7 +15,7 @@
  */
 package rx.internal.operators;
 
-import static rx.internal.util.jctools.UnsafeAccess.UNSAFE;
+import static rx.internal.util.UnsafeAccess.UNSAFE;
 
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
@@ -28,7 +28,7 @@ import rx.functions.Action1;
 import rx.internal.util.RxRingBuffer;
 import rx.internal.util.RxSpmcRingBuffer;
 import rx.internal.util.SubscriptionLinkedNodes;
-import rx.internal.util.jctools.UnsafeAccess;
+import rx.internal.util.UnsafeAccess;
 
 /**
  * Flattens a list of Observables into one Observable sequence, without any transformation.

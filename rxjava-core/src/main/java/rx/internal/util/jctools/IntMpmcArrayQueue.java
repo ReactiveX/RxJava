@@ -16,7 +16,7 @@
  */
 package rx.internal.util.jctools;
 
-import static rx.internal.util.jctools.UnsafeAccess.UNSAFE;
+import static rx.internal.util.UnsafeAccess.UNSAFE;
 
 import java.util.Queue;
 

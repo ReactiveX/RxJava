@@ -437,6 +437,7 @@ public class OperatorMergeTest {
 
     @Test
     public void testEarlyUnsubscribe() {
+        for(int i=0; i < 10; i++) {
         TestScheduler scheduler1 = Schedulers.test();
         AtomicBoolean os1 = new AtomicBoolean(false);
         Observable<Long> o1 = createObservableOf5IntervalsOf1SecondIncrementsWithSubscriptionHook(scheduler1, os1);
@@ -467,6 +468,7 @@ public class OperatorMergeTest {
 
         ts.assertReceivedOnNext(Arrays.asList(0L, 1L, 2L, 0L, 1L));
         ts.assertUnsubscribed();
+        }
     }
 
     private Observable<Long> createObservableOf5IntervalsOf1SecondIncrementsWithSubscriptionHook(final Scheduler scheduler, final AtomicBoolean unsubscribed) {

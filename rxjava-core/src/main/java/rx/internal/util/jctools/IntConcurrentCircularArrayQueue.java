@@ -16,7 +16,8 @@
  */
 package rx.internal.util.jctools;
 
-import static rx.internal.util.jctools.UnsafeAccess.UNSAFE;
+import static rx.internal.util.UnsafeAccess.UNSAFE;
+import rx.internal.util.UnsafeAccess;
 
 abstract class IntConcurrentCircularArrayQueueL0Pad {
     long p00, p01, p02, p03, p04, p05, p06, p07;

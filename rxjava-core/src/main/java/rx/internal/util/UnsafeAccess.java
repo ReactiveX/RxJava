@@ -1,4 +1,6 @@
-/*
+/**
+ * Copyright 2014 Netflix, Inc.
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -10,11 +12,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
- * Original License: https://github.com/JCTools/JCTools/blob/master/LICENSE
- * Original location: https://github.com/JCTools/JCTools/blob/master/jctools-core/src/main/java/org/jctools/util/UnsafeAccess.java
  */
-package rx.internal.util.jctools;
+package rx.internal.util;
 
 import java.lang.reflect.Field;
 
@@ -24,11 +23,12 @@ public class UnsafeAccess {
     public static final Unsafe UNSAFE;
     static {
         try {
-            // This is a bit of voodoo to force the unsafe object into
-            // visibility and acquire it.
-            // This is not playing nice, but as an established back door it is
-            // not likely to be
-            // taken away.
+            /*
+             * This mechanism for getting UNSAFE originally from:
+             * 
+             * Original License: https://github.com/JCTools/JCTools/blob/master/LICENSE
+             * Original location: https://github.com/JCTools/JCTools/blob/master/jctools-core/src/main/java/org/jctools/util/UnsafeAccess.java
+             */
             Field field = Unsafe.class.getDeclaredField("theUnsafe");
             field.setAccessible(true);
             UNSAFE = (Unsafe) field.get(null);
@@ -36,6 +36,10 @@ public class UnsafeAccess {
             throw new RuntimeException(e);
         }
     }
+
+    /*
+     * Methods below are utilities to offer functionality on top of Unsafe. Several of these already exist in Java7/8 but we must support Java 6.
+     */
 
     public static int getAndIncrementInt(Object obj, long offset) {
         for (;;) {

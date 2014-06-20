@@ -16,7 +16,8 @@
  */
 package rx.internal.util.jctools;
 
-import static rx.internal.util.jctools.UnsafeAccess.UNSAFE;
+import static rx.internal.util.UnsafeAccess.UNSAFE;
+import rx.internal.util.UnsafeAccess;
 
 public abstract class ConcurrentSequencedCircularArrayQueue<E> extends ConcurrentCircularArrayQueue<E> {
     private static final long ARRAY_BASE;

@@ -16,10 +16,12 @@
  */
 package rx.internal.util.jctools;
 
-import static rx.internal.util.jctools.UnsafeAccess.UNSAFE;
+import static rx.internal.util.UnsafeAccess.UNSAFE;
 
 import java.util.AbstractQueue;
 import java.util.Iterator;
+
+import rx.internal.util.UnsafeAccess;
 
 abstract class ConcurrentCircularArrayQueueL0Pad<E> extends AbstractQueue<E>{
     long p00, p01, p02, p03, p04, p05, p06, p07;
