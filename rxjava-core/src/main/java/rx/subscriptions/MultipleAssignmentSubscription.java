@@ -72,9 +72,11 @@ public final class MultipleAssignmentSubscription implements Subscription {
     }
 
     /**
-     * @warn javadoc missing
-     * @param s
-     * @throws IllegalArgumentException
+     * Sets the underlying subscription. If the {@code MultipleAssignmentSubscription} is already unsubscribed,
+     * setting a new subscription causes the new subscription to also be immediately unsubscribed.
+     *
+     * @param s the {@link Subscription} to set
+     * @throws IllegalArgumentException if {@code s} is {@code null}
      */
     public void set(Subscription s) {
         if (s == null) {
@@ -94,8 +96,9 @@ public final class MultipleAssignmentSubscription implements Subscription {
     }
 
     /**
-     * @warn javadoc missing
-     * @return
+     * Gets the underlying subscription.
+     *
+     * @return the {@link Subscription} that underlies the {@code MultipleAssignmentSubscription}
      */
     public Subscription get() {
         return state.subscription;

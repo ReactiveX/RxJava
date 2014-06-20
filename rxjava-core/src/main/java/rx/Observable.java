@@ -4831,10 +4831,12 @@ public class Observable<T> {
      * Returns an Observable that emits items produced by multicasting the source Observable within a selector
      * function.
      * <p>
+     * This is largely a helper function used by RxJava for other forms of multicasting, such as
+     * {@link #publish} and {@link #publishLast}.
+     * <p>
      * {@code multicast} does not operate by default on a particular {@link Scheduler}.
      * 
      * @warn javadocs incomplete; description needs improvement
-     * @warn javadocs incomplete; marble diagram missing
      * @param subjectFactory
      *            the {@link Subject} factory
      * @warn javadocs incomplete; "subjectFactory" parameter described poorly
@@ -7772,9 +7774,6 @@ public class Observable<T> {
      * function once, passing it the entire list, by calling the Observable's {@code toList} method prior to
      * calling its {@link #subscribe} method.
      * <p>
-     *
-     * <!-- IS THE FOLLOWING NOTE STILL VALID? -->
-     *
      * Be careful not to use this operator on Observables that emit infinite or very large numbers of items, as
      * you do not have the option to unsubscribe.
      * <p>

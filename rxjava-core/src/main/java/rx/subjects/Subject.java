@@ -19,7 +19,7 @@ import rx.Observable;
 import rx.Observer;
 
 /**
- * @warn javadoc class description missing
+ * Represents an object that is both an Observable and an Observer.
  */
 public abstract class Subject<T, R> extends Observable<R> implements Observer<T> {
     protected Subject(OnSubscribe<R> onSubscribe) {
