@@ -15,14 +15,13 @@
  */
 package rx.internal.util;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.LinkedList;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 import rx.Subscription;
 import rx.exceptions.CompositeException;
+import rx.functions.Action1;
 
 /**
  * Subscription that represents a group of Subscriptions that are unsubscribed together.
@@ -31,19 +30,23 @@ import rx.exceptions.CompositeException;
  */
 public final class SubscriptionList implements Subscription {
 
-    private List<Subscription> subscriptions;
-    private boolean unsubscribed = false;
+    @SuppressWarnings("unchecked")
+    private volatile IndexedRingBuffer<Subscription> subscriptions = IndexedRingBuffer.getInstance();
+    private volatile int unsubscribed = 0;
+    private final static AtomicIntegerFieldUpdater<SubscriptionList> UNSUBSCRIBED = AtomicIntegerFieldUpdater.newUpdater(SubscriptionList.class, "unsubscribed");
 
     public SubscriptionList() {
     }
 
     public SubscriptionList(final Subscription... subscriptions) {
-        this.subscriptions = new LinkedList<Subscription>(Arrays.asList(subscriptions));
+        for (Subscription t : subscriptions) {
+            this.subscriptions.add(t);
+        }
     }
 
     @Override
     public synchronized boolean isUnsubscribed() {
-        return unsubscribed;
+        return unsubscribed == 1;
     }
 
     /**
@@ -52,58 +55,46 @@ public final class SubscriptionList implements Subscription {
      * indicate this by explicitly unsubscribing the new {@code Subscription} as well.
      *
      * @param s
-     *          the {@link Subscription} to add
+     *            the {@link Subscription} to add
      */
     public void add(final Subscription s) {
-        Subscription unsubscribe = null;
-        synchronized (this) {
-            if (unsubscribed) {
-                unsubscribe = s;
-            } else {
-                if (subscriptions == null) {
-                    subscriptions = new LinkedList<Subscription>();
-                }
-                subscriptions.add(s);
+        if (unsubscribed == 1 || subscriptions == null) {
+            s.unsubscribe();
+        } else {
+            subscriptions.add(s);
+            // double check for race condition
+            if (unsubscribed == 1) {
+                s.unsubscribe();
             }
-        }
-        if (unsubscribe != null) {
-            // call after leaving the synchronized block so we're not holding a lock while executing this
-            unsubscribe.unsubscribe();
         }
     }
 
     @Override
     public void unsubscribe() {
-        synchronized (this) {
-            if (unsubscribed) {
-                return;
-            }
-            unsubscribed = true;
+        if (UNSUBSCRIBED.compareAndSet(this, 0, 1) && subscriptions != null) {
+            // we will only get here once
+            unsubscribeFromAll(subscriptions);
+
+            IndexedRingBuffer<Subscription> s = subscriptions;
+            subscriptions = null;
+            s.unsubscribe();
         }
-        // we will only get here once
-        unsubscribeFromAll(subscriptions);
     }
 
-    /**
-     * @warn javadoc missing
-     * @param subscriptions
-     */
-    private static void unsubscribeFromAll(Collection<Subscription> subscriptions) {
+    public List<Throwable> forEach(Action1<Subscription> action) {
+        if (unsubscribed == 1 || subscriptions == null) {
+            return Collections.emptyList();
+        }
+        return subscriptions.forEach(action);
+    }
+
+    private static void unsubscribeFromAll(IndexedRingBuffer<Subscription> subscriptions) {
         if (subscriptions == null) {
             return;
         }
-        List<Throwable> es = null;
-        for (Subscription s : subscriptions) {
-            try {
-                s.unsubscribe();
-            } catch (Throwable e) {
-                if (es == null) {
-                    es = new ArrayList<Throwable>();
-                }
-                es.add(e);
-            }
-        }
-        if (es != null) {
+        List<Throwable> es = subscriptions.forEach(UNSUBSCRIBE);
+
+        if (!es.isEmpty()) {
             if (es.size() == 1) {
                 Throwable t = es.get(0);
                 if (t instanceof RuntimeException) {
@@ -117,5 +108,14 @@ public final class SubscriptionList implements Subscription {
                         "Failed to unsubscribe to 2 or more subscriptions.", es);
             }
         }
+
     }
+
+    private final static Action1<Subscription> UNSUBSCRIBE = new Action1<Subscription>() {
+
+        @Override
+        public void call(Subscription s) {
+            s.unsubscribe();
+        }
+    };
 }

@@ -118,33 +118,41 @@ public abstract class AbstractSchedulerTests {
 
     @Test
     public final void testNestedScheduling() {
+        for (int i = 0; i < 10; i++) {
+            System.out.println("-----------------------------------------------------------------");
+            System.out.println("-----------------------------------------------------------------");
+            System.out.println("-----------------------------------------------------------------");
+            System.out.println("-----------------------------------------------------------------");
+            System.out.println("-----------------------------------------------------------------");
+            
+            Observable<Integer> ids = Observable.from(Arrays.asList(1, 2), getScheduler());
 
-        Observable<Integer> ids = Observable.from(Arrays.asList(1, 2), getScheduler());
+            Observable<String> m = ids.flatMap(new Func1<Integer, Observable<String>>() {
 
-        Observable<String> m = ids.flatMap(new Func1<Integer, Observable<String>>() {
+                @Override
+                public Observable<String> call(Integer id) {
+                    return Observable.from(Arrays.asList("a-" + id, "b-" + id), getScheduler())
+                            .map(new Func1<String, String>() {
 
-            @Override
-            public Observable<String> call(Integer id) {
-                return Observable.from(Arrays.asList("a-" + id, "b-" + id), getScheduler())
-                        .map(new Func1<String, String>() {
+                                @Override
+                                public String call(String s) {
+                                    System.out.println("s: " + s);
+                                    return "names=>" + s;
+                                }
+                            });
+                }
 
-                            @Override
-                            public String call(String s) {
-                                return "names=>" + s;
-                            }
-                        });
-            }
+            });
 
-        });
+            List<String> strings = m.toList().toBlocking().last();
 
-        List<String> strings = m.toList().toBlocking().last();
-
-        assertEquals(4, strings.size());
-        // because flatMap does a merge there is no guarantee of order
-        assertTrue(strings.contains("names=>a-1"));
-        assertTrue(strings.contains("names=>a-2"));
-        assertTrue(strings.contains("names=>b-1"));
-        assertTrue(strings.contains("names=>b-2"));
+            assertEquals(4, strings.size());
+            // because flatMap does a merge there is no guarantee of order
+            assertTrue(strings.contains("names=>a-1"));
+            assertTrue(strings.contains("names=>a-2"));
+            assertTrue(strings.contains("names=>b-1"));
+            assertTrue(strings.contains("names=>b-2"));
+        }
     }
 
     /**

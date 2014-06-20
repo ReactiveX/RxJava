@@ -224,7 +224,7 @@ public class IndexedRingBuffer<E> implements Subscription {
                     break outer;
                 }
                 if (element == null) {
-                    break outer;
+                    continue;
                 }
                 try {
                     action.call(element);
