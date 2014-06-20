@@ -219,11 +219,11 @@ public class IndexedRingBuffer<E> implements Subscription {
         outer: while (section != null) {
             for (int i = 0; i < SIZE; i++, realIndex++) {
                 E element = section.array.get(i);
-                if (element == null) {
-                    continue;
-                }
                 if (realIndex > maxIndex) {
                     section = null;
+                    break outer;
+                }
+                if (element == null) {
                     break outer;
                 }
                 try {
