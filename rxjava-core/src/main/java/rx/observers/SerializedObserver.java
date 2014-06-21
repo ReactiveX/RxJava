@@ -16,6 +16,7 @@
 package rx.observers;
 
 import rx.Observer;
+import rx.exceptions.Exceptions;
 
 /**
  * Enforces single-threaded, serialized, ordered execution of {@link #onNext}, {@link #onCompleted}, and
@@ -100,6 +101,7 @@ public class SerializedObserver<T> implements Observer<T> {
 
     @Override
     public void onError(final Throwable e) {
+        Exceptions.throwIfFatal(e);
         FastList list;
         synchronized (this) {
             if (terminated) {
