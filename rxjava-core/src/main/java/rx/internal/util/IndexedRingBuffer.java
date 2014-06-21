@@ -59,7 +59,8 @@ public class IndexedRingBuffer<E> implements Subscription {
     };
 
     public final static IndexedRingBuffer getInstance() {
-        return POOL.borrowObject();
+//        return POOL.borrowObject();
+        return new IndexedRingBuffer();
     }
 
     private final ElementSection<E> elements = new ElementSection<E>();
