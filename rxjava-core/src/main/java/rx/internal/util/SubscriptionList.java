@@ -81,13 +81,6 @@ public final class SubscriptionList implements Subscription {
         }
     }
 
-    public List<Throwable> forEach(Action1<Subscription> action) {
-        if (unsubscribed == 1 || subscriptions == null) {
-            return Collections.emptyList();
-        }
-        return subscriptions.forEach(action);
-    }
-
     private static void unsubscribeFromAll(IndexedRingBuffer<Subscription> subscriptions) {
         if (subscriptions == null) {
             return;

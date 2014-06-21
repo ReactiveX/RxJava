@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReferenceArray;
 
 import rx.Subscription;
@@ -59,8 +60,7 @@ public class IndexedRingBuffer<E> implements Subscription {
     };
 
     public final static IndexedRingBuffer getInstance() {
-//        return POOL.borrowObject();
-        return new IndexedRingBuffer();
+        return POOL.borrowObject();
     }
 
     private final ElementSection<E> elements = new ElementSection<E>();
@@ -68,6 +68,17 @@ public class IndexedRingBuffer<E> implements Subscription {
     /* package for unit testing */final AtomicInteger index = new AtomicInteger();
     /* package for unit testing */final AtomicInteger removedIndex = new AtomicInteger();
     /* package for unit testing */static final int SIZE = 512;
+
+    @Override
+    public void unsubscribe() {
+        // need to clear all elements so we don't leak memory
+        //        for(int i=0; i<index.get(); i++) {
+        //            elements.array.lazySet(i, null);
+        //        }
+        index.set(0);
+        removedIndex.set(0);
+        POOL.returnObject(this);
+    }
 
     private IndexedRingBuffer() {
     }
@@ -200,13 +211,6 @@ public class IndexedRingBuffer<E> implements Subscription {
     }
 
     @Override
-    public void unsubscribe() {
-        index.set(0);
-        removedIndex.set(0);
-        POOL.returnObject(this);
-    }
-
-    @Override
     public boolean isUnsubscribed() {
         return false;
     }
@@ -219,11 +223,11 @@ public class IndexedRingBuffer<E> implements Subscription {
         ElementSection<E> section = elements;
         outer: while (section != null) {
             for (int i = 0; i < SIZE; i++, realIndex++) {
-                E element = section.array.get(i);
-                if (realIndex > maxIndex) {
+                if (realIndex >= maxIndex) {
                     section = null;
                     break outer;
                 }
+                E element = section.array.get(i);
                 if (element == null) {
                     continue;
                 }
