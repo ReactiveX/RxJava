@@ -44,6 +44,8 @@ import rx.subscriptions.Subscriptions;
  * <p>
  * This is an initial start at solving this problem and solves the immediate problem of {@code groupBy} and
  * {@code pivot} and trades off the possibility of memory leak for deterministic functionality.
+ * 
+ * NOTE: This is NOT thread-safe and assumes `onNext`/`onCompleted`/`onError` to be sequential according to the Rx contract.
  *
  * @see <a href="https://github.com/Netflix/RxJava/issues/844">the Github issue describing the time gap problem</a>
  * @param <T>
@@ -80,9 +82,6 @@ public class BufferUntilSubscriber<T> extends Subject<T, T> {
         }
         void setObserverRef(Observer<? super T> o) {
             observerRef = o;
-        }
-        boolean casObserverRef(Observer<? super T> expected, Observer<? super T> next) {
-            return OBSERVER_UPDATER.compareAndSet(this, expected, next);
         }
     }
     
@@ -188,7 +187,7 @@ public class BufferUntilSubscriber<T> extends Subject<T, T> {
             }
             // now we can safely change over to the actual and get rid of the pass-thru
             // but only if not unsubscribed
-            state.casObserverRef(this, actual);
+            state.setObserverRef(actual);
         }
 
     }

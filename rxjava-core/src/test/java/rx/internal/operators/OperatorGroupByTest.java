@@ -879,7 +879,7 @@ public class OperatorGroupByTest {
         assertEquals(4, results.size());
     }
 
-    @Test
+    @Test(timeout=1000)
     public void testGroupsWithNestedObserveOn() throws InterruptedException {
         final ArrayList<String> results = new ArrayList<String>();
         Observable.create(new OnSubscribe<Integer>() {
