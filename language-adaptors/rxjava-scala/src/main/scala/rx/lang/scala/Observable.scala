@@ -4099,8 +4099,10 @@ trait Observable[+T]
    * @return an Observable that emits a single item, a `Buffer` containing all of the items emitted by
    *         the source Observable.
    */
-  def toBuffer[U >: T]: Observable[mutable.Buffer[U]] = // use U >: T because Buffer is invariant
-    to[ArrayBuffer].asInstanceOf[Observable[mutable.Buffer[U]]]
+  def toBuffer[U >: T]: Observable[mutable.Buffer[U]] = { // use U >: T because Buffer is invariant
+    val us: Observable[U] = this
+    us.to[ArrayBuffer]
+  }
 
   /**
    * Returns an Observable that emits a single item, a `Set` composed of all the items emitted by
@@ -4112,8 +4114,10 @@ trait Observable[+T]
    * @return an Observable that emits a single item, a `Set` containing all of the items emitted by
    *         the source Observable.
    */
-  def toSet[U >: T]: Observable[immutable.Set[U]] = // use U >: T because Set is invariant
-    to[immutable.Set].asInstanceOf[Observable[immutable.Set[U]]]
+  def toSet[U >: T]: Observable[immutable.Set[U]] = { // use U >: T because Set is invariant
+    val us: Observable[U] = this
+    us.to[immutable.Set]
+  }
 
   /**
    * Returns an Observable that emits a single item, an `Array` composed of all the items emitted by
@@ -4125,7 +4129,7 @@ trait Observable[+T]
    * @return an Observable that emits a single item, an `Array` containing all of the items emitted by
    *         the source Observable.
    */
-  def toArray[U >: T : ClassTag]: Observable[Array[U]] = // use U >: T because Set is invariant
+  def toArray[U >: T : ClassTag]: Observable[Array[U]] = // use U >: T because Array is invariant
     toBuffer[U].map(_.toArray)
 }
 
