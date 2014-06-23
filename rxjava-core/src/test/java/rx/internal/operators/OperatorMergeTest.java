@@ -27,6 +27,7 @@ import static org.mockito.Mockito.verify;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -41,6 +42,7 @@ import org.mockito.MockitoAnnotations;
 import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Observer;
+import rx.Producer;
 import rx.Scheduler;
 import rx.Scheduler.Worker;
 import rx.Subscriber;
@@ -115,7 +117,7 @@ public class OperatorMergeTest {
         verify(stringObserver, times(2)).onNext("hello");
     }
 
-    @Test
+    @Test(timeout = 1000)
     public void testUnSubscribeObservableOfObservables() throws InterruptedException {
 
         final AtomicBoolean unsubscribed = new AtomicBoolean();
@@ -154,8 +156,6 @@ public class OperatorMergeTest {
                 }).start();
             }
 
-            ;
-
         });
 
         final AtomicInteger count = new AtomicInteger();
@@ -186,14 +186,10 @@ public class OperatorMergeTest {
         final TestASynchronousObservable o2 = new TestASynchronousObservable();
 
         Observable<String> m = Observable.merge(Observable.create(o1), Observable.create(o2));
-        m.subscribe(stringObserver);
+        TestSubscriber<String> ts = new TestSubscriber<String>(stringObserver);
+        m.subscribe(ts);
 
-        try {
-            o1.t.join();
-            o2.t.join();
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+        ts.awaitTerminalEvent();
 
         verify(stringObserver, never()).onError(any(Throwable.class));
         verify(stringObserver, times(2)).onNext("hello");
@@ -320,7 +316,7 @@ public class OperatorMergeTest {
         verify(stringObserver, times(0)).onNext("eight");
         verify(stringObserver, times(0)).onNext("nine");
     }
-    
+
     @Test
     public void testThrownErrorHandling() {
         TestSubscriber<String> ts = new TestSubscriber<String>();
@@ -360,10 +356,14 @@ public class OperatorMergeTest {
                 @Override
                 public void run() {
                     onNextBeingSent.countDown();
-                    observer.onNext("hello");
-                    // I can't use a countDownLatch to prove we are actually sending 'onNext'
-                    // since it will block if synchronized and I'll deadlock
-                    observer.onCompleted();
+                    try {
+                        observer.onNext("hello");
+                        // I can't use a countDownLatch to prove we are actually sending 'onNext'
+                        // since it will block if synchronized and I'll deadlock
+                        observer.onCompleted();
+                    } catch (Exception e) {
+                        observer.onError(e);
+                    }
                 }
 
             });
@@ -437,36 +437,38 @@ public class OperatorMergeTest {
 
     @Test
     public void testEarlyUnsubscribe() {
-        TestScheduler scheduler1 = Schedulers.test();
-        AtomicBoolean os1 = new AtomicBoolean(false);
-        Observable<Long> o1 = createObservableOf5IntervalsOf1SecondIncrementsWithSubscriptionHook(scheduler1, os1);
+        for (int i = 0; i < 10; i++) {
+            TestScheduler scheduler1 = Schedulers.test();
+            AtomicBoolean os1 = new AtomicBoolean(false);
+            Observable<Long> o1 = createObservableOf5IntervalsOf1SecondIncrementsWithSubscriptionHook(scheduler1, os1);
 
-        TestScheduler scheduler2 = Schedulers.test();
-        AtomicBoolean os2 = new AtomicBoolean(false);
-        Observable<Long> o2 = createObservableOf5IntervalsOf1SecondIncrementsWithSubscriptionHook(scheduler2, os2);
+            TestScheduler scheduler2 = Schedulers.test();
+            AtomicBoolean os2 = new AtomicBoolean(false);
+            Observable<Long> o2 = createObservableOf5IntervalsOf1SecondIncrementsWithSubscriptionHook(scheduler2, os2);
 
-        TestSubscriber<Long> ts = new TestSubscriber<Long>();
-        Subscription s = Observable.merge(o1, o2).subscribe(ts);
+            TestSubscriber<Long> ts = new TestSubscriber<Long>();
+            Subscription s = Observable.merge(o1, o2).subscribe(ts);
 
-        // we haven't incremented time so nothing should be received yet
-        ts.assertReceivedOnNext(Collections.<Long> emptyList());
+            // we haven't incremented time so nothing should be received yet
+            ts.assertReceivedOnNext(Collections.<Long> emptyList());
 
-        scheduler1.advanceTimeBy(3, TimeUnit.SECONDS);
-        scheduler2.advanceTimeBy(2, TimeUnit.SECONDS);
+            scheduler1.advanceTimeBy(3, TimeUnit.SECONDS);
+            scheduler2.advanceTimeBy(2, TimeUnit.SECONDS);
 
-        ts.assertReceivedOnNext(Arrays.asList(0L, 1L, 2L, 0L, 1L));
-        // not unsubscribed yet
-        assertFalse(os1.get());
-        assertFalse(os2.get());
+            ts.assertReceivedOnNext(Arrays.asList(0L, 1L, 2L, 0L, 1L));
+            // not unsubscribed yet
+            assertFalse(os1.get());
+            assertFalse(os2.get());
 
-        // early unsubscribe
-        s.unsubscribe();
+            // early unsubscribe
+            s.unsubscribe();
 
-        assertTrue(os1.get());
-        assertTrue(os2.get());
+            assertTrue(os1.get());
+            assertTrue(os2.get());
 
-        ts.assertReceivedOnNext(Arrays.asList(0L, 1L, 2L, 0L, 1L));
-        ts.assertUnsubscribed();
+            ts.assertReceivedOnNext(Arrays.asList(0L, 1L, 2L, 0L, 1L));
+            ts.assertUnsubscribed();
+        }
     }
 
     private Observable<Long> createObservableOf5IntervalsOf1SecondIncrementsWithSubscriptionHook(final Scheduler scheduler, final AtomicBoolean unsubscribed) {
@@ -487,28 +489,9 @@ public class OperatorMergeTest {
         });
     }
 
-    @Test
+    @Test(timeout = 2000)
     public void testConcurrency() {
-
-        Observable<Integer> o = Observable.create(new OnSubscribe<Integer>() {
-
-            @Override
-            public void call(final Subscriber<? super Integer> s) {
-                Worker inner = Schedulers.newThread().createWorker();
-                s.add(inner);
-                inner.schedule(new Action0() {
-
-                    @Override
-                    public void call() {
-                        for (int i = 0; i < 10000; i++) {
-                            s.onNext(1);
-                        }
-                        s.onCompleted();
-                    }
-
-                });
-            }
-        });
+        Observable<Integer> o = Observable.range(1, 10000).subscribeOn(Schedulers.newThread());
 
         for (int i = 0; i < 10; i++) {
             Observable<Integer> merge = Observable.merge(o, o, o);
@@ -516,6 +499,7 @@ public class OperatorMergeTest {
             merge.subscribe(ts);
 
             ts.awaitTerminalEvent();
+            ts.assertNoErrors();
             assertEquals(1, ts.getOnCompletedEvents().size());
             List<Integer> onNextEvents = ts.getOnNextEvents();
             assertEquals(30000, onNextEvents.size());
@@ -523,7 +507,7 @@ public class OperatorMergeTest {
         }
     }
 
-    @Test
+    @Test(timeout = 4000)
     public void testConcurrencyWithSleeping() {
 
         Observable<Integer> o = Observable.create(new OnSubscribe<Integer>() {
@@ -566,7 +550,6 @@ public class OperatorMergeTest {
 
     @Test
     public void testConcurrencyWithBrokenOnCompleteContract() {
-
         Observable<Integer> o = Observable.create(new OnSubscribe<Integer>() {
 
             @Override
@@ -578,7 +561,7 @@ public class OperatorMergeTest {
                     @Override
                     public void call() {
                         for (int i = 0; i < 10000; i++) {
-                            s.onNext(1);
+                            s.onNext(i);
                         }
                         s.onCompleted();
                         s.onCompleted();
@@ -589,16 +572,111 @@ public class OperatorMergeTest {
             }
         });
 
-        for (int i = 0; i < 100; i++) {
-            Observable<Integer> merge = Observable.merge(o, o, o);
+        for (int i = 0; i < 10; i++) {
+            Observable<Integer> merge = Observable.merge(o.onBackpressureBuffer(), o.onBackpressureBuffer(), o.onBackpressureBuffer());
             TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
             merge.subscribe(ts);
 
             ts.awaitTerminalEvent();
+            ts.assertNoErrors();
             assertEquals(1, ts.getOnCompletedEvents().size());
             List<Integer> onNextEvents = ts.getOnNextEvents();
             assertEquals(30000, onNextEvents.size());
-            //            System.out.println("onNext: " + onNextEvents.size() + " onCompleted: " + ts.getOnCompletedEvents().size());
+            //                System.out.println("onNext: " + onNextEvents.size() + " onCompleted: " + ts.getOnCompletedEvents().size());
         }
     }
+
+    @Test(timeout = 500)
+    public void testBackpressure() {
+        final AtomicInteger generated1 = new AtomicInteger();
+        Observable<Integer> o1 = createInfiniteObservable(generated1);
+        final AtomicInteger generated2 = new AtomicInteger();
+        Observable<Integer> o2 = createInfiniteObservable(generated2);
+
+        TestSubscriber<Integer> testSubscriber = new TestSubscriber<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                System.err.println("testSubscriber received => " + t + "  on thread " + Thread.currentThread());
+                super.onNext(t);
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        Observable.merge(o1.take(5), o2.take(5)).subscribe(testSubscriber);
+        testSubscriber.awaitTerminalEvent();
+        if (testSubscriber.getOnErrorEvents().size() > 0) {
+            testSubscriber.getOnErrorEvents().get(0).printStackTrace();
+        }
+        System.err.println(testSubscriber.getOnNextEvents());
+        testSubscriber.assertReceivedOnNext(Arrays.asList(0, 1, 2, 3, 4, 0, 1, 2, 3, 4));
+        // it should be between the take num and requested batch size across the async boundary
+        System.out.println("Generated 1: " + generated1.get());
+        System.out.println("Generated 2: " + generated2.get());
+        assertTrue(generated1.get() >= 3 && generated1.get() <= Producer.BUFFER_SIZE);
+    }
+
+    @Test
+    public void mergeWithNullValues() {
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+        Observable.merge(Observable.from(null, "one"), Observable.from("two", null)).subscribe(ts);
+        ts.assertTerminalEvent();
+        ts.assertNoErrors();
+        ts.assertReceivedOnNext(Arrays.asList(null, "one", "two", null));
+    }
+
+    @Test
+    public void mergeWithTerminalEventAfterUnsubscribe() {
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+        Observable<String> bad = Observable.create(new OnSubscribe<String>() {
+
+            @Override
+            public void call(Subscriber<? super String> s) {
+                s.onNext("two");
+                s.unsubscribe();
+                s.onCompleted();
+            }
+
+        });
+        Observable.merge(Observable.from(null, "one"), bad).subscribe(ts);
+        ts.assertNoErrors();
+        ts.assertReceivedOnNext(Arrays.asList(null, "one", "two"));
+    }
+
+    @Test
+    public void mergingNullObservable() {
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+        Observable.merge(Observable.from("one"), null).subscribe(ts);
+        ts.assertNoErrors();
+        ts.assertReceivedOnNext(Arrays.asList("one"));
+    }
+
+    private Observable<Integer> createInfiniteObservable(final AtomicInteger generated) {
+        Observable<Integer> observable = Observable.from(new Iterable<Integer>() {
+            @Override
+            public Iterator<Integer> iterator() {
+                return new Iterator<Integer>() {
+
+                    @Override
+                    public void remove() {
+                    }
+
+                    @Override
+                    public Integer next() {
+                        return generated.getAndIncrement();
+                    }
+
+                    @Override
+                    public boolean hasNext() {
+                        return true;
+                    }
+                };
+            }
+        });
+        return observable;
+    }
+
 }

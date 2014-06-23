@@ -16,6 +16,7 @@
 package rx.internal.operators;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -25,6 +26,8 @@ import org.junit.Test;
 import rx.Observable;
 import rx.functions.Action1;
 import rx.functions.Func1;
+import rx.observers.TestSubscriber;
+import rx.schedulers.Schedulers;
 
 public class OperatorParallelTest {
 
@@ -107,4 +110,77 @@ public class OperatorParallelTest {
         assertEquals(NUM, count.get());
     }
 
+    @Test(timeout = 1000)
+    public void testBackpressureViaObserveOn() {
+        final AtomicInteger emitted = new AtomicInteger();
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+        Observable.range(1, 100000).doOnNext(new Action1<Integer>() {
+
+            @Override
+            public void call(Integer t1) {
+                emitted.incrementAndGet();
+            }
+
+        }).parallel(new Func1<Observable<Integer>, Observable<String>>() {
+
+            @Override
+            public Observable<String> call(Observable<Integer> t1) {
+                return t1.map(new Func1<Integer, String>() {
+
+                    @Override
+                    public String call(Integer t) {
+                        try {
+                            Thread.sleep(1);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        return String.valueOf(t);
+                    }
+
+                });
+            }
+
+        }).observeOn(Schedulers.newThread()).take(2000).subscribe(ts);
+        ts.awaitTerminalEvent();
+        System.out.println("emitted: " + emitted.get());
+        assertTrue(emitted.get() < 3000); // should be < 3000
+        assertEquals(2000, ts.getOnNextEvents().size());
+    }
+
+    @Test(timeout = 1000)
+    public void testBackpressureViaSynchronousTake() {
+        final AtomicInteger emitted = new AtomicInteger();
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+        Observable.range(1, 100000).doOnNext(new Action1<Integer>() {
+
+            @Override
+            public void call(Integer t1) {
+                emitted.incrementAndGet();
+            }
+
+        }).parallel(new Func1<Observable<Integer>, Observable<String>>() {
+
+            @Override
+            public Observable<String> call(Observable<Integer> t1) {
+                return t1.map(new Func1<Integer, String>() {
+
+                    @Override
+                    public String call(Integer t) {
+                        try {
+                            Thread.sleep(1);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        return String.valueOf(t);
+                    }
+
+                });
+            }
+
+        }).take(2000).subscribe(ts);
+        ts.awaitTerminalEvent();
+        System.out.println("emitted: " + emitted.get());
+        assertEquals(2000, emitted.get()); // no async, so should be perfect
+        assertEquals(2000, ts.getOnNextEvents().size());
+    }
 }
