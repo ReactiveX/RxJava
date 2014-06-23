@@ -42,7 +42,7 @@ public class OperatorMergePerf {
     @State(Scope.Thread)
     public static class Input extends InputWithIncrementingInteger {
 
-        @Param({ "1", "1000", "1000000" })
+        @Param({ "1", "1000" })
         public int size;
 
         @Override
