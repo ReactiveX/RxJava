@@ -74,7 +74,7 @@ public class OperatorFlatMapPerf {
 
     @GenerateMicroBenchmark
     public void flatMapTwoNestedSync(final Input input) throws InterruptedException {
-        Observable.range(1, 10).flatMap(new Func1<Integer, Observable<Integer>>() {
+        Observable.range(1, 2).flatMap(new Func1<Integer, Observable<Integer>>() {
 
             @Override
             public Observable<Integer> call(Integer i) {
@@ -84,16 +84,17 @@ public class OperatorFlatMapPerf {
         }).subscribe(input.observer);
     }
 
-    @GenerateMicroBenchmark
-    public void flatMapTenNestedAsync(final Input input) throws InterruptedException {
-        Observable.range(1, 10).flatMap(new Func1<Integer, Observable<Integer>>() {
-
-            @Override
-            public Observable<Integer> call(Integer i) {
-                return input.observable.subscribeOn(Schedulers.computation());
-            }
-
-        }).subscribe(input.observer);
-    }
+    // this runs out of memory currently
+    //    @GenerateMicroBenchmark
+    //    public void flatMapTwoNestedAsync(final Input input) throws InterruptedException {
+    //        Observable.range(1, 2).flatMap(new Func1<Integer, Observable<Integer>>() {
+    //
+    //            @Override
+    //            public Observable<Integer> call(Integer i) {
+    //                return input.observable.subscribeOn(Schedulers.computation());
+    //            }
+    //
+    //        }).subscribe(input.observer);
+    //    }
 
 }
