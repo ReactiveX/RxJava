@@ -46,6 +46,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import rx.Observable.OnSubscribe;
+import rx.exceptions.OnErrorNotImplementedException;
 import rx.functions.Action1;
 import rx.functions.Action2;
 import rx.functions.Func1;
@@ -1016,4 +1017,14 @@ public class ObservableTests {
         ts.assertReceivedOnNext(Arrays.asList(1));
     }
 
+    @Test(expected = OnErrorNotImplementedException.class)
+    public void testSubscribeWithoutOnError() {
+        Observable<String> o = Observable.from("a", "b").flatMap(new Func1<String, Observable<String>>() {
+            @Override
+            public Observable<String> call(String s) {
+                return Observable.error(new Exception("test"));
+            }
+        });
+        o.subscribe();
+    }
 }

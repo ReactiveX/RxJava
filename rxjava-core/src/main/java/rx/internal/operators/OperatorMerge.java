@@ -20,6 +20,7 @@ import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 import rx.Observable;
 import rx.Observable.Operator;
 import rx.Subscriber;
+import rx.exceptions.Exceptions;
 import rx.observers.SerializedSubscriber;
 import rx.subscriptions.CompositeSubscription;
 
@@ -111,6 +112,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
 
         @Override
         public void onError(Throwable e) {
+            Exceptions.throwIfFatal(e);
             if (ONCE_UPDATER.compareAndSet(this, 0, 1)) {
                 parent.onError(e);
             }

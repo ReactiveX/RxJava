@@ -286,4 +286,64 @@ class ObservableTests extends JUnitSuite {
     assertEquals(List("a", "b", "c"), o.toBlocking.toList)
     assertTrue(called)
   }
+
+  @Test
+  def testToTraversable() {
+    val o = Observable.items(1, 2, 3).toTraversable
+    assertEquals(Seq(1, 2, 3), o.toBlocking.single)
+  }
+
+  @Test
+  def testToList() {
+    val o = Observable.items(1, 2, 3).toList
+    assertEquals(Seq(1, 2, 3), o.toBlocking.single)
+  }
+
+  @Test
+  def testToIterable() {
+    val o = Observable.items(1, 2, 3).toIterable
+    assertEquals(Seq(1, 2, 3), o.toBlocking.single)
+  }
+
+  @Test
+  def testToIterator() {
+    val o = Observable.items(1, 2, 3).toIterator
+    assertEquals(Seq(1, 2, 3), o.toBlocking.single.toSeq)
+  }
+
+  @Test
+  def testToStream() {
+    val o = Observable.items(1, 2, 3).toStream
+    assertEquals(Seq(1, 2, 3), o.toBlocking.single)
+  }
+
+  @Test
+  def testToIndexedSeq() {
+    val o = Observable.items(1, 2, 3).toIndexedSeq
+    assertEquals(Seq(1, 2, 3), o.toBlocking.single)
+  }
+
+  @Test
+  def testToBuffer() {
+    val o = Observable.items(1, 2, 3).toBuffer
+    assertEquals(Seq(1, 2, 3), o.toBlocking.single)
+  }
+
+  @Test
+  def testToSet() {
+    val o = Observable.items(1, 2, 2).toSet
+    assertEquals(Set(1, 2), o.toBlocking.single)
+  }
+
+  @Test
+  def testToVector() {
+    val o = Observable.items(1, 2, 3).toVector
+    assertEquals(Seq(1, 2, 3), o.toBlocking.single)
+  }
+
+  @Test
+  def testToArray() {
+    val o = Observable.items(1, 2, 3).toArray
+    assertArrayEquals(Array(1, 2, 3), o.toBlocking.single)
+  }
 }
