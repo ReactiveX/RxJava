@@ -16,9 +16,13 @@
 package rx.subjects;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.GenerateMicroBenchmark;
+import org.openjdk.jmh.annotations.Mode;
+import org.openjdk.jmh.annotations.OutputTimeUnit;
 import org.openjdk.jmh.annotations.Param;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
@@ -26,14 +30,14 @@ import org.openjdk.jmh.logic.BlackHole;
 
 import rx.Observer;
 
-/**
- * Benchmarks the {@link ReplaySubject}.
- */
+@BenchmarkMode(Mode.Throughput)
+@OutputTimeUnit(TimeUnit.SECONDS)
+@State(Scope.Thread)
 public class ReplaySubjectPerf {
 
     @State(Scope.Thread)
     public static class Input {
-        @Param({ "1", "512", "1024", "1048576" })
+        @Param({ "1", "1000", "1000000" })
         public int nextRuns;
     }
 

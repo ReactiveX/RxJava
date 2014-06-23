@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rx.operators;
+package rx.schedulers;
 
 import java.util.concurrent.TimeUnit;
 
@@ -25,14 +25,13 @@ import org.openjdk.jmh.annotations.Param;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 
-import rx.Observable.Operator;
-import rx.functions.Func1;
-import rx.internal.operators.OperatorMap;
 import rx.jmh.InputWithIncrementingInteger;
+import rx.jmh.LatchedObserver;
 
 @BenchmarkMode(Mode.Throughput)
 @OutputTimeUnit(TimeUnit.SECONDS)
-public class OperatorMapPerf {
+@State(Scope.Thread)
+public class IOSchedulerPerf {
 
     @State(Scope.Thread)
     public static class Input extends InputWithIncrementingInteger {
@@ -48,22 +47,16 @@ public class OperatorMapPerf {
     }
 
     @GenerateMicroBenchmark
-    public void mapPassThruViaLift(Input input) throws InterruptedException {
-        input.observable.lift(MAP_OPERATOR).subscribe(input.observer);
+    public void subscribeOn(Input input) throws InterruptedException {
+        LatchedObserver<Integer> o = input.newLatchedObserver();
+        input.observable.subscribeOn(Schedulers.io()).subscribe(o);
+        o.latch.await();
     }
 
     @GenerateMicroBenchmark
-    public void mapPassThru(Input input) throws InterruptedException {
-        input.observable.map(IDENTITY_FUNCTION).subscribe(input.observer);
+    public void observeOn(Input input) throws InterruptedException {
+        LatchedObserver<Integer> o = input.newLatchedObserver();
+        input.observable.observeOn(Schedulers.io()).subscribe(o);
+        o.latch.await();
     }
-
-    private static final Func1<Integer, Integer> IDENTITY_FUNCTION = new Func1<Integer, Integer>() {
-        @Override
-        public Integer call(Integer value) {
-            return value;
-        }
-    };
-
-    private static final Operator<Integer, Integer> MAP_OPERATOR = new OperatorMap<Integer, Integer>(IDENTITY_FUNCTION);
-
 }

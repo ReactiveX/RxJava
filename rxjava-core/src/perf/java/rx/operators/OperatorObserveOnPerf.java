@@ -25,14 +25,13 @@ import org.openjdk.jmh.annotations.Param;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
 
-import rx.Observable.Operator;
-import rx.functions.Func1;
-import rx.internal.operators.OperatorMap;
 import rx.jmh.InputWithIncrementingInteger;
+import rx.jmh.LatchedObserver;
+import rx.schedulers.Schedulers;
 
 @BenchmarkMode(Mode.Throughput)
 @OutputTimeUnit(TimeUnit.SECONDS)
-public class OperatorMapPerf {
+public class OperatorObserveOnPerf {
 
     @State(Scope.Thread)
     public static class Input extends InputWithIncrementingInteger {
@@ -46,24 +45,26 @@ public class OperatorMapPerf {
         }
 
     }
-
+    
     @GenerateMicroBenchmark
-    public void mapPassThruViaLift(Input input) throws InterruptedException {
-        input.observable.lift(MAP_OPERATOR).subscribe(input.observer);
+    public void observeOnComputation(Input input) throws InterruptedException {
+        LatchedObserver<Integer> o = input.newLatchedObserver();
+        input.observable.observeOn(Schedulers.computation()).subscribe(o);
+        o.latch.await();
     }
 
     @GenerateMicroBenchmark
-    public void mapPassThru(Input input) throws InterruptedException {
-        input.observable.map(IDENTITY_FUNCTION).subscribe(input.observer);
+    public void observeOnNewThread(Input input) throws InterruptedException {
+        LatchedObserver<Integer> o = input.newLatchedObserver();
+        input.observable.observeOn(Schedulers.newThread()).subscribe(o);
+        o.latch.await();
     }
 
-    private static final Func1<Integer, Integer> IDENTITY_FUNCTION = new Func1<Integer, Integer>() {
-        @Override
-        public Integer call(Integer value) {
-            return value;
-        }
-    };
-
-    private static final Operator<Integer, Integer> MAP_OPERATOR = new OperatorMap<Integer, Integer>(IDENTITY_FUNCTION);
+    @GenerateMicroBenchmark
+    public void observeOnImmediate(Input input) throws InterruptedException {
+        LatchedObserver<Integer> o = input.newLatchedObserver();
+        input.observable.observeOn(Schedulers.immediate()).subscribe(o);
+        o.latch.await();
+    }
 
 }
