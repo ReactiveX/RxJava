@@ -7779,7 +7779,6 @@ public class Observable<T> {
      * <p>
      * {@code toList} does not operate by default on a particular {@link Scheduler}.
      * 
-     * @warn description may be out-of-date
      * @return an Observable that emits a single item: a List containing all of the items emitted by the source
      *         Observable
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#tolist">RxJava Wiki: toList()</a>
