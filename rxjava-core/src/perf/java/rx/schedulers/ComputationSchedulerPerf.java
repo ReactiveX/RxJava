@@ -15,24 +15,48 @@
  */
 package rx.schedulers;
 
+import java.util.concurrent.TimeUnit;
+
+import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.GenerateMicroBenchmark;
+import org.openjdk.jmh.annotations.Mode;
+import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Param;
+import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.State;
 
 import rx.jmh.InputWithIncrementingInteger;
-import rx.observers.TestSubscriber;
+import rx.jmh.LatchedObserver;
 
+@BenchmarkMode(Mode.Throughput)
+@OutputTimeUnit(TimeUnit.SECONDS)
+@State(Scope.Thread)
 public class ComputationSchedulerPerf {
 
-    @GenerateMicroBenchmark
-    public void subscribeOn(InputWithIncrementingInteger input) throws InterruptedException {
-        TestSubscriber<Integer> ts = input.newSubscriber();
-        input.observable.subscribeOn(Schedulers.computation()).subscribe(ts);
-        ts.awaitTerminalEvent();
+    @State(Scope.Thread)
+    public static class Input extends InputWithIncrementingInteger {
+
+        @Param({ "1", "1000", "1000000" })
+        public int size;
+
+        @Override
+        public int getSize() {
+            return size;
+        }
+
     }
 
     @GenerateMicroBenchmark
-    public void observeOn(InputWithIncrementingInteger input) throws InterruptedException {
-        TestSubscriber<Integer> ts = input.newSubscriber();
-        input.observable.observeOn(Schedulers.computation()).subscribe(ts);
-        ts.awaitTerminalEvent();
+    public void subscribeOn(Input input) throws InterruptedException {
+        LatchedObserver<Integer> o = input.newLatchedObserver();
+        input.observable.subscribeOn(Schedulers.computation()).subscribe(o);
+        o.latch.await();
+    }
+
+    @GenerateMicroBenchmark
+    public void observeOn(Input input) throws InterruptedException {
+        LatchedObserver<Integer> o = input.newLatchedObserver();
+        input.observable.observeOn(Schedulers.computation()).subscribe(o);
+        o.latch.await();
     }
 }
