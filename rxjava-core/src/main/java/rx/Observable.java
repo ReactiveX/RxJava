@@ -7261,7 +7261,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Conditional-and-Boolean-Operators#takeuntil">RxJava Wiki: takeUntil()</a>
      */
     public final <E> Observable<T> takeUntil(Observable<? extends E> other) {
-        return OperatorTakeUntil.takeUntil(this, other);
+        return lift(new OperatorTakeUntil<T, E>(other));
     }
 
     /**
