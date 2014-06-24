@@ -15,12 +15,14 @@
  */
 package rx.internal.operators;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 import rx.Observable;
 import rx.Observable.Operator;
 import rx.Scheduler;
 import rx.Subscriber;
 import rx.functions.Func1;
-import rx.observables.GroupedObservable;
+import rx.subjects.Subject;
 
 /**
  * Identifies unit of work that can be executed in parallel on a given Scheduler.
@@ -38,34 +40,86 @@ public final class OperatorParallel<T, R> implements Operator<R, T> {
     }
 
     @Override
-    public Subscriber<? super T> call(Subscriber<? super R> op) {
+    public Subscriber<? super T> call(final Subscriber<? super R> child) {
 
-        Func1<Subscriber<? super GroupedObservable<Long, T>>, Subscriber<? super T>> groupBy =
-                new OperatorGroupBy<Long, T>(new Func1<T, Long>() {
+        @SuppressWarnings("unchecked")
+        final UnicastPassThruSubject<T>[] subjects = new UnicastPassThruSubject[degreeOfParallelism];
+        @SuppressWarnings("unchecked")
+        final Observable<R>[] os = new Observable[degreeOfParallelism];
+        for (int i = 0; i < subjects.length; i++) {
+            subjects[i] = UnicastPassThruSubject.<T> create();
+            os[i] = f.call(subjects[i].observeOn(scheduler));
+        }
 
-                    long i = 0;
+        // subscribe BEFORE receiving data so everything is hooked up
+        Observable.merge(os).unsafeSubscribe(child);
 
-                    @Override
-                    public Long call(T t) {
-                        return i++ % degreeOfParallelism;
-                    }
+        return new Subscriber<T>(child) {
 
-                });
+            int index = 0; // trust that we receive data synchronously
 
-        Func1<Subscriber<? super Observable<R>>, Subscriber<? super GroupedObservable<Long, T>>> map =
-                new OperatorMap<GroupedObservable<Long, T>, Observable<R>>(
-                        new Func1<GroupedObservable<Long, T>, Observable<R>>() {
+            @Override
+            public void onCompleted() {
+                for (UnicastPassThruSubject<T> s : subjects) {
+                    s.onCompleted();
+                }
+            }
 
-                            @Override
-                            public Observable<R> call(GroupedObservable<Long, T> g) {
-                                // Must use observeOn not subscribeOn because we have a single source behind groupBy.
-                                // The origin is already subscribed to, we are moving each group on to a new thread
-                                // but the origin itself can only be on a single thread.
-                                return f.call(g.observeOn(scheduler));
-                            }
-                        });
+            @Override
+            public void onError(Throwable e) {
+                // bypass the subjects and immediately terminate
+                child.onError(e);
+            }
 
-        // bind together Observers
-        return groupBy.call(map.call(new OperatorMerge<R>().call(op)));
+            @Override
+            public void onNext(T t) {
+                // round-robin subjects
+                subjects[index++].onNext(t);
+                if (index >= degreeOfParallelism) {
+                    index = 0;
+                }
+            }
+
+        };
+
+    }
+
+    private static class UnicastPassThruSubject<T> extends Subject<T, T> {
+
+        private static <T> UnicastPassThruSubject<T> create() {
+            final AtomicReference<Subscriber<? super T>> subscriber = new AtomicReference<Subscriber<? super T>>();
+            return new UnicastPassThruSubject<T>(subscriber, new OnSubscribe<T>() {
+
+                @Override
+                public void call(Subscriber<? super T> s) {
+                    subscriber.set(s);
+                }
+
+            });
+
+        }
+
+        private final AtomicReference<Subscriber<? super T>> subscriber;
+
+        protected UnicastPassThruSubject(AtomicReference<Subscriber<? super T>> subscriber, OnSubscribe<T> onSubscribe) {
+            super(onSubscribe);
+            this.subscriber = subscriber;
+        }
+
+        @Override
+        public void onCompleted() {
+            subscriber.get().onCompleted();
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            subscriber.get().onError(e);
+        }
+
+        @Override
+        public void onNext(T t) {
+            subscriber.get().onNext(t);
+        }
+
     }
 }

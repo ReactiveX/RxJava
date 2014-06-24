@@ -28,7 +28,7 @@ import rx.functions.Func1;
 
 public class OperatorParallelTest {
 
-    @Test
+    @Test(timeout = 20000)
     public void testParallel() {
         int NUM = 1000;
         final AtomicInteger count = new AtomicInteger();
@@ -52,7 +52,7 @@ public class OperatorParallelTest {
                                     // TODO why is this exception not being thrown?
                                     throw new RuntimeException(e);
                                 }
-                                //                                System.out.println("V: " + t  + " Thread: " + Thread.currentThread());
+                                //                                                                System.out.println("V: " + t  + " Thread: " + Thread.currentThread());
                                 innerCount.incrementAndGet();
                                 return new Integer[] { t, t * 99 };
                             }
@@ -76,7 +76,7 @@ public class OperatorParallelTest {
         assertEquals("finalCount", NUM, count.get());
     }
 
-    @Test
+    @Test(timeout = 1000)
     public void testParallelWithNestedAsyncWork() {
         int NUM = 20;
         final AtomicInteger count = new AtomicInteger();
@@ -106,4 +106,5 @@ public class OperatorParallelTest {
         // just making sure we finish and get the number we expect
         assertEquals(NUM, count.get());
     }
+
 }
