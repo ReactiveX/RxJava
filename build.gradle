@@ -104,17 +104,15 @@ subprojects {
         main = 'org.openjdk.jmh.Main'
         classpath = sourceSets.perf.runtimeClasspath + sourceSets.main.output
         maxHeapSize = "512m"
-
+		jvmArgs '-XX:+UnlockCommercialFeatures'
+		jvmArgs '-XX:+FlightRecorder'
+			
         if (project.hasProperty('jmh')) {
             args(jmh.split(' '))
         } else {
             //args '-h' // help output
             args '-f' // fork
             args '1'
-            args '-tu' // time unit
-            args 'ns'
-            args '-bm' // benchmark mode
-            args 'avgt'
             args '-wi' // warmup iterations
             args '5'
             args '-i' // test iterations
@@ -128,7 +126,6 @@ subprojects {
             //args 'HS_COMP' // HotSpot (tm) JIT compiler profiling via implementation-specific MBeans
             //args 'HS_CL' // HotSpot (tm) classloader profiling via implementation-specific MBeans
             //args 'STACK' // Simple and naive Java stack profiler
-            args '.*OperatorSerializePerf.*' // for running only a specific test
         }
     }
 
