@@ -81,9 +81,6 @@ public class BufferUntilSubscriber<T> extends Subject<T, T> {
         void setObserverRef(Observer<? super T> o) {
             observerRef = o;
         }
-        boolean casObserverRef(Observer<? super T> expected, Observer<? super T> next) {
-            return OBSERVER_UPDATER.compareAndSet(this, expected, next);
-        }
     }
     
     static final class OnSubscribeAction<T> implements OnSubscribe<T> {
@@ -188,7 +185,7 @@ public class BufferUntilSubscriber<T> extends Subject<T, T> {
             }
             // now we can safely change over to the actual and get rid of the pass-thru
             // but only if not unsubscribed
-            state.casObserverRef(this, actual);
+            state.setObserverRef(actual);
         }
 
     }
