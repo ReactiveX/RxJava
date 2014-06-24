@@ -314,4 +314,5 @@ public class SubscriberTest {
         }).take(10).subscribe(ts);
         assertEquals(3, requested.get());
     }
+    
 }

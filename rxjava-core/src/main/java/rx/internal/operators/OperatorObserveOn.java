@@ -26,6 +26,7 @@ import rx.Subscription;
 import rx.exceptions.MissingBackpressureException;
 import rx.functions.Action0;
 import rx.internal.util.RxRingBuffer;
+import rx.internal.util.SynchronizedSubscription;
 import rx.schedulers.ImmediateScheduler;
 import rx.schedulers.TrampolineScheduler;
 
@@ -98,6 +99,7 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
                 }
 
             });
+            child.add(new SynchronizedSubscription(this));
         }
 
         @Override

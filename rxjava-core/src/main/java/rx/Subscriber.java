@@ -36,9 +36,9 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
     private final SubscriptionList cs;
     private final Subscriber<?> op;
     /* protected by `this` */
-    private volatile Producer p;
+    private Producer p;
     /* protected by `this` */
-    private volatile int requested = -1; // default to infinite
+    private int requested = -1; // default to infinite
 
     @Deprecated
     protected Subscriber(CompositeSubscription cs) {
@@ -121,11 +121,8 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
             p = producer;
             if (op != null) {
                 // middle operator ... we pass thru unless a request has been made
-                if (requested >= 0) {
-                    // if we have a positive value we will run as that means this operator has expressed interest
-                    toRequest = requested;
-                } else {
-                    // we pass-thru to the next producer as it has not been set
+                if (toRequest < 0) {
+                    // we pass-thru to the next producer as nothing has been requested
                     setProducer = true;
                 }
 
