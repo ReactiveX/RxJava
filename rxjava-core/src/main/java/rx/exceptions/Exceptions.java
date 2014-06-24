@@ -49,7 +49,24 @@ public class Exceptions {
     }
 
     /**
-     * @warn javadoc missing
+     * Throws a particular {@code Throwable} only if it belongs to a set of "fatal" error varieties. These
+     * varieties are as follows:
+     * <ul>
+     * <li>{@link OnErrorNotImplementedException}</li>
+     * <li>{@link OnErrorFailedException}</li>
+     * <li>{@code StackOverflowError}</li>
+     * <li>{@code VirtualMachineError}</li>
+     * <li>{@code ThreadDeath}</li>
+     * <li>{@code LinkageError}</li>
+     * </ul>
+     * This can be useful if you are writing an operator that calls user-supplied code, and you want to
+     * notify subscribers of errors encountered in that code by calling their {@code onError} methods, but only
+     * if the errors are not so catastrophic that such a call would be futile, in which case you simply want to
+     * rethrow the error.
+     *
+     * @param t
+     *         the {@code Throwable} to test and perhaps throw
+     * @see <a href="https://github.com/Netflix/RxJava/issues/748#issuecomment-32471495">RxJava: StackOverflowError is swallowed (Issue #748)</a>
      */
     public static void throwIfFatal(Throwable t) {
         if (t instanceof OnErrorNotImplementedException) {
@@ -77,7 +94,13 @@ public class Exceptions {
     private static final int MAX_DEPTH = 25;
 
     /**
-     * @warn javadoc missing
+     * Adds a {@code Throwable} to a causality-chain of Throwables, as an additional cause (if it does not
+     * already appear in the chain among the causes).
+     *
+     * @param e
+     *         the {@code Throwable} at the head of the causality chain
+     * @param cause
+     *         the {@code Throwable} you want to add as a cause of the chain
      */
     public static void addCause(Throwable e, Throwable cause) {
         Set<Throwable> seenCauses = new HashSet<Throwable>();
@@ -106,8 +129,12 @@ public class Exceptions {
     }
 
     /**
-     * @warn javadoc missing
-     * @return
+     * Get the {@code Throwable} at the end of the causality-chain for a particular {@code Throwable}
+     *
+     * @param e
+     *         the {@code Throwable} whose final cause you are curious about
+     * @return the last {@code Throwable} in the causality-chain of {@code e} (or a "Stack too deep to get
+     *         final cause" {@code RuntimeException} if the chain is too long to traverse)
      */
     public static Throwable getFinalCause(Throwable e) {
         int i = 0;

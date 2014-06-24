@@ -16,7 +16,10 @@
 package rx.exceptions;
 
 /**
- * @warn javadoc class description missing
+ * Represents a {@code Throwable} that an {@code Observable} might notify its subscribers of, but that then can
+ * be handled by an operator that is designed to recover from or react appropriately to such an error. You can
+ * recover more information from an {@code OnErrorThrowable} than is found in a typical {@code Throwable}, such
+ * as the item the {@code Observable} was trying to emit at the time the error was encountered.
  */
 public class OnErrorThrowable extends RuntimeException {
 
@@ -38,8 +41,9 @@ public class OnErrorThrowable extends RuntimeException {
     }
 
     /**
-     * @warn javadoc missing
-     * @return
+     * Get the value associated with this {@code OnErrorThrowable}
+     *
+     * @return the value associated with this {@code OnErrorThrowable} (or {@code null} if there is none)
      */
     public Object getValue() {
         return value;
@@ -72,13 +76,13 @@ public class OnErrorThrowable extends RuntimeException {
     }
 
     /**
-     * Adds the given value as the final cause of the given {@code Throwable} wrapped in
-     * {@code OnNextValue}/{@code RuntimeException}.
+     * Adds the given item as the final cause of the given {@code Throwable}, wrapped in {@code OnNextValue}
+     * (which extends {@code RuntimeException}).
      * 
      * @param e
      *          the {@link Throwable} to which you want to add a cause
      * @param value
-     *          the cause you want to add to {@code e}
+     *          the item you want to add to {@code e} as the cause of the {@code Throwable}
      * @return the same {@code Throwable} ({@code e}) that was passed in, with {@code value} added to it as a
      *         cause
      */
@@ -96,7 +100,8 @@ public class OnErrorThrowable extends RuntimeException {
     }
 
     /**
-     * @warn javadoc class description missing
+     * Represents an exception that was encountered while trying to emit an item from an Observable, and
+     * tries to preserve that item for future use and/or reporting.
      */
     public static class OnNextValue extends RuntimeException {
 
@@ -104,7 +109,11 @@ public class OnErrorThrowable extends RuntimeException {
         private final Object value;
 
         /**
-         * @warn javadoc missing
+         * Create an {@code OnNextValue} exception and include in its error message a string representation of
+         * the item that was intended to be emitted at the time the exception was handled.
+         *
+         * @param value
+         *         the item that the Observable was trying to emit at the time of the exception
          */
         public OnNextValue(Object value) {
             super("OnError while emitting onNext value: " + value);
@@ -112,8 +121,9 @@ public class OnErrorThrowable extends RuntimeException {
         }
 
         /**
-         * @warn javadoc missing
-         * @return
+         * Retrieve the item that the Observable was trying to emit at the time this exception occurred.
+         *
+         * @return the item that the Observable was trying to emit at the time of the exception
          */
         public Object getValue() {
             return value;
