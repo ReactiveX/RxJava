@@ -26,7 +26,6 @@ import java.nio.charset.CharsetDecoder;
 import java.nio.charset.CharsetEncoder;
 import java.nio.charset.CoderResult;
 import java.nio.charset.CodingErrorAction;
-import java.util.Arrays;
 import java.util.regex.Pattern;
 
 import rx.Observable;
@@ -73,7 +72,9 @@ public class StringObservable {
                         return;
                     int n = i.read(buffer);
                     while (n != -1 && !o.isUnsubscribed()) {
-                        o.onNext(Arrays.copyOf(buffer, n));
+                        byte[] copy = new byte[n];
+                        System.arraycopy(buffer, 0, copy, 0, Math.min(buffer.length, n));
+                        o.onNext(copy);
                         if (!o.isUnsubscribed())
                             n = i.read(buffer);
                     }
@@ -305,7 +306,14 @@ public class StringObservable {
                 } catch (CharacterCodingException e) {
                     throw new RuntimeException(e);
                 }
-                return Arrays.copyOfRange(bb.array(), bb.position(), bb.limit());
+
+                byte[] original = bb.array();
+                int from = bb.position();
+                int to = bb.limit();
+                int newLength = to - from;
+                byte[] copy = new byte[newLength];
+                System.arraycopy(original, from, copy, 0, Math.min(original.length - from, newLength));
+                return copy;
             }
         });
     }
