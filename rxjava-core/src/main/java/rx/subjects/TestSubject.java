@@ -26,35 +26,20 @@ import rx.schedulers.TestScheduler;
 import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
 
 /**
- * Subject that, once an {@link Observer} has subscribed, publishes all subsequent events to the subscriber.
- * <p>
- * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/S.PublishSubject.png">
- * <p>
- * Example usage:
- * <p>
- * <pre> {@code
-
-  PublishSubject<Object> subject = PublishSubject.create();
-  // observer1 will receive all onNext and onCompleted events
-  subject.subscribe(observer1);
-  subject.onNext("one");
-  subject.onNext("two");
-  // observer2 will only receive "three" and onCompleted
-  subject.subscribe(observer2);
-  subject.onNext("three");
-  subject.onCompleted();
-
-  } </pre>
- * 
+ * A variety of Subject that is useful for testing purposes. It operates on a {@link TestScheduler} and allows
+ * you to precisely time emissions and notifications to the Subject's subscribers.
+ *
  * @param <T>
  *          the type of item observed by and emitted by the subject
- * @warn javadoc seems misleading
  */
 public final class TestSubject<T> extends Subject<T, T> {
 
     /**
-     * @warn javadoc missing
-     * @return
+     * Creates and returns a new {@code TestSubject}.
+     *
+     * @param <T> the value type
+     * @param scheduler a {@link TestScheduler} on which to operate this Subject
+     * @return the new {@code TestSubject}
      */
     public static <T> TestSubject<T> create(TestScheduler scheduler) {
         final SubjectSubscriptionManager<T> state = new SubjectSubscriptionManager<T>();
@@ -95,8 +80,11 @@ public final class TestSubject<T> extends Subject<T, T> {
     }
 
     /**
-     * @warn javadoc missing
+     * Schedule a call to the {@code onCompleted} methods of all of the subscribers to this Subject to begin at
+     * a particular time.
+     * 
      * @param timeInMilliseconds
+     *         the time at which to begin calling the {@code onCompleted} methods of the subscribers
      */
     public void onCompleted(long timeInMilliseconds) {
         innerScheduler.schedule(new Action0() {
@@ -123,9 +111,13 @@ public final class TestSubject<T> extends Subject<T, T> {
     }
 
     /**
-     * @warn javadoc missing
+     * Schedule a call to the {@code onError} methods of all of the subscribers to this Subject to begin at
+     * a particular time.
+     * 
      * @param e
+     *         the {@code Throwable} to pass to the {@code onError} methods of the subscribers
      * @param timeInMilliseconds
+     *         the time at which to begin calling the {@code onError} methods of the subscribers
      */
     public void onError(final Throwable e, long timeInMilliseconds) {
         innerScheduler.schedule(new Action0() {
@@ -150,9 +142,13 @@ public final class TestSubject<T> extends Subject<T, T> {
     }
 
     /**
-     * @warn javadoc missing
+     * Emit an item to all of the subscribers to this Subject at a particular time.
+     * 
      * @param v
+     *         the item to emit
      * @param timeInMilliseconds
+     *         the time at which to begin calling the {@code onNext} methods of the subscribers in order to emit
+     *         the item
      */
     public void onNext(final T v, long timeInMilliseconds) {
         innerScheduler.schedule(new Action0() {
