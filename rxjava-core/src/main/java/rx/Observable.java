@@ -5842,7 +5842,7 @@ public class Observable<T> {
      * @see #retry()
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Error-Handling-Operators#wiki-retry">RxJava Wiki: retry()</a>
      */
-    public final Observable<T> retry(Func1<? super Observable<? extends Notification<?>>, ? extends Observable<? extends Notification<?>>> notificationHandler) {
+    public final Observable<T> retry(Func1<? super Observable<? extends Notification<?>>, ? extends Observable<?>> notificationHandler) {
         return OperatorRedo.<T> retry(this, notificationHandler);
     }
 

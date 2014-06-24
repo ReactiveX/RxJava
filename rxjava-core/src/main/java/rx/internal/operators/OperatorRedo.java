@@ -113,12 +113,11 @@ public final class OperatorRedo<T> implements OnSubscribe<T> {
         return retry(source, new RedoFinite(count));
     }
 
-    public static <T> Observable<T> retry(Observable<T> source, Func1<? super Observable<? extends Notification<?>>, ? extends Observable<? extends Notification<?>>> notificationHandler) {
+    public static <T> Observable<T> retry(Observable<T> source, Func1<? super Observable<? extends Notification<?>>, ? extends Observable<?>> notificationHandler) {
         return create(new OperatorRedo<T>(source, notificationHandler, true, false, Schedulers.trampoline()));
     }
 
-    public static <T> Observable<T> retry(Observable<T> source, Func1<? super Observable<? extends Notification<?>>, ? extends Observable<? extends Notification<?>>> notificationHandler,
-            Scheduler scheduler) {
+    public static <T> Observable<T> retry(Observable<T> source, Func1<? super Observable<? extends Notification<?>>, ? extends Observable<?>> notificationHandler, Scheduler scheduler) {
         return create(new OperatorRedo<T>(source, notificationHandler, true, false, scheduler));
     }
 
@@ -139,27 +138,25 @@ public final class OperatorRedo<T> implements OnSubscribe<T> {
         return repeat(source, new RedoFinite(count - 1), scheduler);
     }
 
-    public static <T> Observable<T> repeat(Observable<T> source, Func1<? super Observable<? extends Notification<?>>, ? extends Observable<? extends Notification<?>>> notificationHandler) {
+    public static <T> Observable<T> repeat(Observable<T> source, Func1<? super Observable<? extends Notification<?>>, ? extends Observable<?>> notificationHandler) {
         return create(new OperatorRedo<T>(source, notificationHandler, false, true, Schedulers.trampoline()));
     }
 
-    public static <T> Observable<T> repeat(Observable<T> source, Func1<? super Observable<? extends Notification<?>>, ? extends Observable<? extends Notification<?>>> notificationHandler,
-            Scheduler scheduler) {
+    public static <T> Observable<T> repeat(Observable<T> source, Func1<? super Observable<? extends Notification<?>>, ? extends Observable<?>> notificationHandler, Scheduler scheduler) {
         return create(new OperatorRedo<T>(source, notificationHandler, false, true, scheduler));
     }
 
-    public static <T> Observable<T> redo(Observable<T> source, Func1<? super Observable<? extends Notification<?>>, ? extends Observable<? extends Notification<?>>> notificationHandler,
-            Scheduler scheduler) {
+    public static <T> Observable<T> redo(Observable<T> source, Func1<? super Observable<? extends Notification<?>>, ? extends Observable<?>> notificationHandler, Scheduler scheduler) {
         return create(new OperatorRedo<T>(source, notificationHandler, false, false, scheduler));
     }
 
     private Observable<T> source;
-    private final Func1<? super Observable<? extends Notification<?>>, ? extends Observable<? extends Notification<?>>> f;
+    private final Func1<? super Observable<? extends Notification<?>>, ? extends Observable<?>> f;
     private boolean stopOnComplete;
     private boolean stopOnError;
     private final Scheduler scheduler;
 
-    private OperatorRedo(Observable<T> source, Func1<? super Observable<? extends Notification<?>>, ? extends Observable<? extends Notification<?>>> f, boolean stopOnComplete, boolean stopOnError,
+    private OperatorRedo(Observable<T> source, Func1<? super Observable<? extends Notification<?>>, ? extends Observable<?>> f, boolean stopOnComplete, boolean stopOnError,
             Scheduler scheduler) {
         this.source = source;
         this.f = f;
@@ -206,7 +203,7 @@ public final class OperatorRedo<T> implements OnSubscribe<T> {
             }
         };
 
-        final Observable<? extends Notification<?>> restarts = f.call(
+        final Observable<?> restarts = f.call(
         // lifting in a custom operator to kind of do a merge/map/filter thing.
                 terminals.lift(new Operator<Notification<?>, Notification<?>>() {
                     @Override
@@ -236,7 +233,7 @@ public final class OperatorRedo<T> implements OnSubscribe<T> {
         child.add(inner.schedule(new Action0() {
             @Override
             public void call() {
-                restarts.dematerialize().unsafeSubscribe(new Subscriber<Object>(child) {
+                restarts.unsafeSubscribe(new Subscriber<Object>(child) {
                     @Override
                     public void onCompleted() {
                         child.onCompleted();
