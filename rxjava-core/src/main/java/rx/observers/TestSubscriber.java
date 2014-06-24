@@ -150,6 +150,12 @@ public class TestSubscriber<T> extends Subscriber<T> {
         }
     }
 
+    public void assertNoErrors() {
+        if (getOnErrorEvents().size() > 0) {
+            throw new AssertionError("Unexpected onError events: " + getOnErrorEvents().size(), getOnErrorEvents().get(0));
+        }
+    }
+
     /**
      * @warn javadoc missing
      */
