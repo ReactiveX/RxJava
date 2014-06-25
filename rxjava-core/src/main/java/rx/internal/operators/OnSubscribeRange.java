@@ -61,11 +61,13 @@ public final class OnSubscribeRange implements OnSubscribe<Integer> {
         private static final AtomicIntegerFieldUpdater<RangeProducer> REQUESTED_UPDATER = AtomicIntegerFieldUpdater.newUpdater(RangeProducer.class, "requested");
         private volatile int index;
         private final int end;
+        private final int start;
 
         private RangeProducer(Subscriber<? super Integer> o, int start, int end) {
             this.o = o;
             this.index = start;
             this.end = end;
+            this.start = start;
         }
 
         @Override
@@ -83,17 +85,31 @@ public final class OnSubscribeRange implements OnSubscribe<Integer> {
                 // backpressure is requested
                 int _c = REQUESTED_UPDATER.getAndAdd(this, n);
                 if (_c == 0) {
-                    while (index <= end) {
-                        if (o.isUnsubscribed()) {
+                    while (true) {
+                        /*
+                         * This complicated logic is done to avoid touching the volatile `index` and `requested` values
+                         * during the loop itself. If they are touched during the loop the performance is impacted significantly.
+                         */
+                        int numLeft = (end - (index - start));
+                        int e = Math.min(numLeft, requested);
+                        boolean completeOnFinish = numLeft < requested;
+                        int stopAt = e + (index - start);
+                        for (int i = index; i <= stopAt; i++) {
+                            if (o.isUnsubscribed()) {
+                                return;
+                            }
+                            o.onNext(i);
+                        }
+                        index += e;
+                        if (completeOnFinish) {
+                            o.onCompleted();
                             return;
                         }
-                        o.onNext(index++);
-                        if (REQUESTED_UPDATER.decrementAndGet(this) == 0) {
+                        if (REQUESTED_UPDATER.addAndGet(this, -e) == 0) {
                             // we're done emitting the number requested so return
                             return;
                         }
                     }
-                    o.onCompleted();
                 }
             }
         }

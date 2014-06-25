@@ -22,7 +22,6 @@ import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 import rx.Observable.OnSubscribe;
 import rx.Producer;
 import rx.Subscriber;
-import rx.internal.util.RxRingBuffer;
 
 /**
  * Converts an {@code Iterable} sequence into an {@code Observable}.
@@ -54,8 +53,7 @@ public final class OnSubscribeFromIterable<T> implements OnSubscribe<T> {
                     if (o.isUnsubscribed()) {
                         return;
                     }
-                    T t = it.next();
-                    o.onNext(t);
+                    o.onNext(it.next());
                 }
                 o.onCompleted();
                 return;
@@ -80,21 +78,45 @@ public final class OnSubscribeFromIterable<T> implements OnSubscribe<T> {
 
         @Override
         public void request(int n) {
-            int _c = REQUESTED_UPDATER.getAndAdd(this, n);
-            if (_c == 0) {
+            if (n < 0) {
+                // fast-path without backpressure
                 while (it.hasNext()) {
                     if (o.isUnsubscribed()) {
                         return;
                     }
-                    T t = it.next();
-                    o.onNext(t);
-                    if (REQUESTED_UPDATER.decrementAndGet(this) == 0) {
-                        // we're done emitting the number requested so return
-                        return;
+                    o.onNext(it.next());
+                }
+                o.onCompleted();
+            } else {
+                // backpressure is requested
+                int _c = REQUESTED_UPDATER.getAndAdd(this, n);
+                if (_c == 0) {
+                    while (true) {
+                        /*
+                         * This complicated logic is done to avoid touching the volatile `requested` value
+                         * during the loop itself. If it is touched during the loop the performance is impacted significantly.
+                         */
+                        int r = requested;
+                        int numToEmit = r;
+                        while (it.hasNext() && --numToEmit >= 0) {
+                            if (o.isUnsubscribed()) {
+                                return;
+                            }
+                            o.onNext(it.next());
+
+                        }
+
+                        if (!it.hasNext()) {
+                            o.onCompleted();
+                            return;
+                        }
+                        if (REQUESTED_UPDATER.addAndGet(this, -r) == 0) {
+                            // we're done emitting the number requested so return
+                            return;
+                        }
+
                     }
                 }
-
-                o.onCompleted();
             }
 
         }
