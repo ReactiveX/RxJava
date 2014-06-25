@@ -47,9 +47,9 @@ import rx.subscriptions.CompositeSubscription;
 
 public final class OperatorRedo<T> implements OnSubscribe<T> {
 
-    static final Func1<Observable<? extends Notification<?>>, Observable<? extends Notification<?>>> REDO_INIFINITE = new Func1<Observable<? extends Notification<?>>, Observable<? extends Notification<?>>>() {
+    static final Func1<Observable<? extends Notification<?>>, Observable<?>> REDO_INIFINITE = new Func1<Observable<? extends Notification<?>>, Observable<?>>() {
         @Override
-        public Observable<? extends Notification<?>> call(Observable<? extends Notification<?>> ts) {
+        public Observable<?> call(Observable<? extends Notification<?>> ts) {
             return ts.map(new Func1<Notification<?>, Notification<?>>() {
                 @Override
                 public Notification<?> call(Notification<?> terminal) {
