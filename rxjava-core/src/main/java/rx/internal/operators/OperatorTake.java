@@ -71,11 +71,6 @@ public final class OperatorTake<T> implements Operator<T, T> {
 
         };
         
-        if (limit == 0) {
-            child.onCompleted();
-            parent.unsubscribe();
-        }
-        
         /*
          * We decouple the parent and child subscription so there can be multiple take() in a chain such as for
          * the groupBy Observer use case where you may take(1) on groups and take(20) on the children.
@@ -86,6 +81,11 @@ public final class OperatorTake<T> implements Operator<T, T> {
          * register 'parent' with 'child'
          */
         child.add(parent);
+        
+        if (limit == 0) {
+            child.onCompleted();
+        }
+
         return parent;
     }
 
