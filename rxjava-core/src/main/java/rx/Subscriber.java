@@ -100,7 +100,12 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
             if (p != null) {
                 shouldRequest = p;
             } else {
-                requested = n;
+                if (requested == -2) {
+                    // setProducer has already been called and passed on to a child so this would be a no-op ... fail instead
+                    throw new IllegalStateException("This Subscriber has no Producer to submit a request to");
+                } else {
+                    requested = n;
+                }
             }
         }
         // after releasing lock
@@ -124,6 +129,7 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
                 if (toRequest < 0) {
                     // we pass-thru to the next producer as nothing has been requested
                     setProducer = true;
+                    requested = -2; // special value specifying that we have passed on the producer so can't use setRequest here
                 }
 
             }
