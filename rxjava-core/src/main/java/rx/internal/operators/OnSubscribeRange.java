@@ -20,7 +20,6 @@ import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 import rx.Observable.OnSubscribe;
 import rx.Producer;
 import rx.Subscriber;
-import rx.internal.util.RxRingBuffer;
 
 /**
  * Emit ints from start to end inclusive.
@@ -71,19 +70,31 @@ public final class OnSubscribeRange implements OnSubscribe<Integer> {
 
         @Override
         public void request(int n) {
-            int _c = REQUESTED_UPDATER.getAndAdd(this, n);
-            if (_c == 0) {
-                while (index <= end) {
+            if (n < 0) {
+                // fast-path without backpressure
+                for (int i = index; i <= end; i++) {
                     if (o.isUnsubscribed()) {
                         return;
                     }
-                    o.onNext(index++);
-                    if (REQUESTED_UPDATER.decrementAndGet(this) == 0) {
-                        // we're done emitting the number requested so return
-                        return;
-                    }
+                    o.onNext(i);
                 }
                 o.onCompleted();
+            } else {
+                // backpressure is requested
+                int _c = REQUESTED_UPDATER.getAndAdd(this, n);
+                if (_c == 0) {
+                    while (index <= end) {
+                        if (o.isUnsubscribed()) {
+                            return;
+                        }
+                        o.onNext(index++);
+                        if (REQUESTED_UPDATER.decrementAndGet(this) == 0) {
+                            // we're done emitting the number requested so return
+                            return;
+                        }
+                    }
+                    o.onCompleted();
+                }
             }
         }
     }
