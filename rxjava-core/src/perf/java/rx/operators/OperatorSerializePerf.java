@@ -18,13 +18,13 @@ package rx.operators;
 import java.util.concurrent.TimeUnit;
 
 import org.openjdk.jmh.annotations.BenchmarkMode;
-import org.openjdk.jmh.annotations.GenerateMicroBenchmark;
+import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
 import org.openjdk.jmh.annotations.Param;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
-import org.openjdk.jmh.logic.BlackHole;
+import org.openjdk.jmh.infra.Blackhole;
 
 import rx.Observable;
 import rx.Observable.OnSubscribe;
@@ -49,21 +49,21 @@ public class OperatorSerializePerf {
         }
     }
 
-    @GenerateMicroBenchmark
+    @Benchmark
     public void noSerializationSingleThreaded(Input input) throws InterruptedException {
         LatchedObserver<Integer> o = input.newLatchedObserver();
         input.firehose.subscribe(o);
         o.latch.await();
     }
 
-    @GenerateMicroBenchmark
+    @Benchmark
     public void serializedSingleStream(Input input) throws InterruptedException {
         LatchedObserver<Integer> o = input.newLatchedObserver();
         input.firehose.serialize().subscribe(o);
         o.latch.await();
     }
 
-    @GenerateMicroBenchmark
+    @Benchmark
     public void serializedTwoStreamsHighlyContended(final Input input) throws InterruptedException {
         LatchedObserver<Integer> o = input.newLatchedObserver();
         Observable.create(new OnSubscribe<Integer>() {
@@ -94,14 +94,14 @@ public class OperatorSerializePerf {
         }
 
         @Override
-        public void setup(BlackHole bh) {
+        public void setup(Blackhole bh) {
             super.setup(bh);
 
             interval = Observable.timer(0, 1, TimeUnit.MILLISECONDS).take(size).cast(Integer.class);
         }
     }
 
-    @GenerateMicroBenchmark
+    @Benchmark
     public void serializedTwoStreamsSlightlyContended(final InputWithInterval input) throws InterruptedException {
         LatchedObserver<Integer> o = input.newLatchedObserver();
         Observable.create(new OnSubscribe<Integer>() {
@@ -118,7 +118,7 @@ public class OperatorSerializePerf {
         o.latch.await();
     }
 
-    @GenerateMicroBenchmark
+    @Benchmark
     public void serializedTwoStreamsOneFastOneSlow(final InputWithInterval input) throws InterruptedException {
         LatchedObserver<Integer> o = input.newLatchedObserver();
         Observable.create(new OnSubscribe<Integer>() {

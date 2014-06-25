@@ -17,16 +17,16 @@ package rx.jmh;
 
 import java.util.concurrent.CountDownLatch;
 
-import org.openjdk.jmh.logic.BlackHole;
+import org.openjdk.jmh.infra.Blackhole;
 
 import rx.Observer;
 
 public class LatchedObserver<T> implements Observer<T> {
 
     public CountDownLatch latch = new CountDownLatch(1);
-    private final BlackHole bh;
+    private final Blackhole bh;
 
-    public LatchedObserver(BlackHole bh) {
+    public LatchedObserver(Blackhole bh) {
         this.bh = bh;
     }
 

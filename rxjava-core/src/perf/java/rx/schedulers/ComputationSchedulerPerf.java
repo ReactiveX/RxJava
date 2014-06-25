@@ -18,7 +18,7 @@ package rx.schedulers;
 import java.util.concurrent.TimeUnit;
 
 import org.openjdk.jmh.annotations.BenchmarkMode;
-import org.openjdk.jmh.annotations.GenerateMicroBenchmark;
+import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
 import org.openjdk.jmh.annotations.Param;
@@ -46,14 +46,14 @@ public class ComputationSchedulerPerf {
 
     }
 
-    @GenerateMicroBenchmark
+    @Benchmark
     public void subscribeOn(Input input) throws InterruptedException {
         LatchedObserver<Integer> o = input.newLatchedObserver();
         input.observable.subscribeOn(Schedulers.computation()).subscribe(o);
         o.latch.await();
     }
 
-    @GenerateMicroBenchmark
+    @Benchmark
     public void observeOn(Input input) throws InterruptedException {
         LatchedObserver<Integer> o = input.newLatchedObserver();
         input.observable.observeOn(Schedulers.computation()).subscribe(o);

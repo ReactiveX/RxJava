@@ -20,14 +20,14 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.openjdk.jmh.annotations.BenchmarkMode;
-import org.openjdk.jmh.annotations.GenerateMicroBenchmark;
+import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
 import org.openjdk.jmh.annotations.Param;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
-import org.openjdk.jmh.logic.BlackHole;
+import org.openjdk.jmh.infra.Blackhole;
 
 import rx.Observable;
 import rx.functions.Func1;
@@ -52,7 +52,7 @@ public class OperatorMergePerf {
 
     }
 
-    @GenerateMicroBenchmark
+    @Benchmark
     public void mergeSynchronous(final Input input) throws InterruptedException {
         Observable<Observable<Integer>> os = input.observable.map(new Func1<Integer, Observable<Integer>>() {
 
@@ -67,7 +67,7 @@ public class OperatorMergePerf {
         o.latch.await();
     }
 
-    @GenerateMicroBenchmark
+    @Benchmark
     public void mergeAsynchronous(final Input input) throws InterruptedException {
         Observable<Observable<Integer>> os = input.observable.map(new Func1<Integer, Observable<Integer>>() {
 
@@ -82,7 +82,7 @@ public class OperatorMergePerf {
         o.latch.await();
     }
 
-    @GenerateMicroBenchmark
+    @Benchmark
     public void mergeTwoAsyncStreams(final Input input) throws InterruptedException {
         LatchedObserver<Integer> o = input.newLatchedObserver();
         Observable<Integer> ob = Observable.range(0, input.size).subscribeOn(Schedulers.computation());
@@ -90,7 +90,7 @@ public class OperatorMergePerf {
         o.latch.await();
     }
 
-    @GenerateMicroBenchmark
+    @Benchmark
     public void mergeNStreams(final InputForMergeN input) throws InterruptedException {
         LatchedObserver<Integer> o = input.newLatchedObserver();
         Observable.merge(input.observables).subscribe(o);
@@ -102,11 +102,11 @@ public class OperatorMergePerf {
         @Param({ "1", "100", "1000" })
         public int size;
 
-        private BlackHole bh;
+        private Blackhole bh;
         List<Observable<Integer>> observables;
 
         @Setup
-        public void setup(final BlackHole bh) {
+        public void setup(final Blackhole bh) {
             this.bh = bh;
             observables = new ArrayList<Observable<Integer>>();
             for (int i = 0; i < size; i++) {

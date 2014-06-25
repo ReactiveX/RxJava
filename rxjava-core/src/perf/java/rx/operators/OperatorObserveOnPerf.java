@@ -18,7 +18,7 @@ package rx.operators;
 import java.util.concurrent.TimeUnit;
 
 import org.openjdk.jmh.annotations.BenchmarkMode;
-import org.openjdk.jmh.annotations.GenerateMicroBenchmark;
+import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
 import org.openjdk.jmh.annotations.Param;
@@ -46,21 +46,21 @@ public class OperatorObserveOnPerf {
 
     }
     
-    @GenerateMicroBenchmark
+    @Benchmark
     public void observeOnComputation(Input input) throws InterruptedException {
         LatchedObserver<Integer> o = input.newLatchedObserver();
         input.observable.observeOn(Schedulers.computation()).subscribe(o);
         o.latch.await();
     }
 
-    @GenerateMicroBenchmark
+    @Benchmark
     public void observeOnNewThread(Input input) throws InterruptedException {
         LatchedObserver<Integer> o = input.newLatchedObserver();
         input.observable.observeOn(Schedulers.newThread()).subscribe(o);
         o.latch.await();
     }
 
-    @GenerateMicroBenchmark
+    @Benchmark
     public void observeOnImmediate(Input input) throws InterruptedException {
         LatchedObserver<Integer> o = input.newLatchedObserver();
         input.observable.observeOn(Schedulers.immediate()).subscribe(o);

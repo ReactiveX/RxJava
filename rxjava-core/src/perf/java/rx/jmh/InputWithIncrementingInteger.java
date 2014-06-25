@@ -18,7 +18,7 @@ package rx.jmh;
 import java.util.Iterator;
 
 import org.openjdk.jmh.annotations.Setup;
-import org.openjdk.jmh.logic.BlackHole;
+import org.openjdk.jmh.infra.Blackhole;
 
 import rx.Observable;
 import rx.Observable.OnSubscribe;
@@ -32,13 +32,13 @@ public abstract class InputWithIncrementingInteger {
     public Iterable<Integer> iterable;
     public Observable<Integer> observable;
     public Observable<Integer> firehose;
-    private BlackHole bh;
+    private Blackhole bh;
     public Observer<Integer> observer;
 
     public abstract int getSize();
     
     @Setup
-    public void setup(final BlackHole bh) {
+    public void setup(final Blackhole bh) {
         this.bh = bh;
         observable = Observable.range(0, getSize());
 
