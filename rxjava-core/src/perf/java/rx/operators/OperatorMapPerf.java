@@ -18,7 +18,7 @@ package rx.operators;
 import java.util.concurrent.TimeUnit;
 
 import org.openjdk.jmh.annotations.BenchmarkMode;
-import org.openjdk.jmh.annotations.GenerateMicroBenchmark;
+import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
 import org.openjdk.jmh.annotations.Param;
@@ -47,12 +47,12 @@ public class OperatorMapPerf {
 
     }
 
-    @GenerateMicroBenchmark
+    @Benchmark
     public void mapPassThruViaLift(Input input) throws InterruptedException {
         input.observable.lift(MAP_OPERATOR).subscribe(input.observer);
     }
 
-    @GenerateMicroBenchmark
+    @Benchmark
     public void mapPassThru(Input input) throws InterruptedException {
         input.observable.map(IDENTITY_FUNCTION).subscribe(input.observer);
     }

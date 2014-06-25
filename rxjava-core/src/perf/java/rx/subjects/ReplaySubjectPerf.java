@@ -20,13 +20,13 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.openjdk.jmh.annotations.BenchmarkMode;
-import org.openjdk.jmh.annotations.GenerateMicroBenchmark;
+import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
 import org.openjdk.jmh.annotations.Param;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
-import org.openjdk.jmh.logic.BlackHole;
+import org.openjdk.jmh.infra.Blackhole;
 
 import rx.Observer;
 
@@ -41,8 +41,8 @@ public class ReplaySubjectPerf {
         public int nextRuns;
     }
 
-    @GenerateMicroBenchmark
-    public void subscribeBeforeEvents(final Input input, final BlackHole bh) throws Exception {
+    @Benchmark
+    public void subscribeBeforeEvents(final Input input, final Blackhole bh) throws Exception {
         ReplaySubject<Object> subject = ReplaySubject.create();
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicLong sum = new AtomicLong();
@@ -70,8 +70,8 @@ public class ReplaySubjectPerf {
         bh.consume(sum);
     }
 
-    @GenerateMicroBenchmark
-    public void subscribeAfterEvents(final Input input, final BlackHole bh) throws Exception {
+    @Benchmark
+    public void subscribeAfterEvents(final Input input, final Blackhole bh) throws Exception {
         ReplaySubject<Object> subject = ReplaySubject.create();
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicLong sum = new AtomicLong();
