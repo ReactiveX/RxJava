@@ -4886,6 +4886,7 @@ public class Observable<T> {
      * @return the source Observable modified so that its {@link Observer}s are notified on the specified
      *         {@link Scheduler}
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#observeon">RxJava Wiki: observeOn()</a>
+     * @see #subscribeOn
      */
     public final Observable<T> observeOn(Scheduler scheduler) {
         return lift(new OperatorObserveOn<T>(scheduler));
@@ -6936,6 +6937,7 @@ public class Observable<T> {
      * @return the source Observable modified so that its subscriptions happen on the
      *         specified {@link Scheduler}
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#subscribeon">RxJava Wiki: subscribeOn()</a>
+     * @see #observeOn
      */
     public final Observable<T> subscribeOn(Scheduler scheduler) {
         return nest().lift(new OperatorSubscribeOn<T>(scheduler));
