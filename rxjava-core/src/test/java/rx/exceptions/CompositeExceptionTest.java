@@ -16,7 +16,6 @@
 package rx.exceptions;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
