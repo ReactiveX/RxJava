@@ -59,7 +59,7 @@ public final class OperatorRedo<T> implements OnSubscribe<T> {
         }
     };
 
-    public static final class RedoFinite implements Func1<Observable<? extends Notification<?>>, Observable<? extends Notification<?>>> {
+    public static final class RedoFinite implements Func1<Observable<? extends Notification<?>>, Observable<?>> {
         private final long count;
 
         public RedoFinite(long count) {
@@ -67,7 +67,7 @@ public final class OperatorRedo<T> implements OnSubscribe<T> {
         }
 
         @Override
-        public Observable<? extends Notification<?>> call(Observable<? extends Notification<?>> ts) {
+        public Observable<?> call(Observable<? extends Notification<?>> ts) {
             final Notification<Long> first = count < 0 ? Notification.<Long> createOnCompleted() : Notification.createOnNext(0l);
 
             return ts.scan(first, new Func2<Notification<Long>, Notification<?>, Notification<Long>>() {
@@ -78,7 +78,7 @@ public final class OperatorRedo<T> implements OnSubscribe<T> {
                     if (value < count) return Notification.createOnNext(value + 1);
                     else return (Notification<Long>) term;
                 }
-            });
+            }).dematerialize();
         }
     }
 
