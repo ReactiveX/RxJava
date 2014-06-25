@@ -33,11 +33,45 @@ import rx.internal.operators.OperatorToObservableSortedList;
 
 public class OperatorToObservableSortedListTest {
 
+    
+    private static final Func2<Integer, Integer, Integer> SORT_FUNCTION = new Func2<Integer, Integer, Integer>() {
+
+        @Override
+        public Integer call(Integer t1, Integer t2) {
+            return t2 - t1;
+        }
+    };
+    
+    
     @Test
     public void testSortedList() {
         Observable<Integer> w = Observable.from(1, 3, 2, 5, 4);
         Observable<List<Integer>> observable = w.lift(new OperatorToObservableSortedList<Integer>());
+        verifySortedList(observable);
+    }
 
+    @Test
+    public void testSortedListWithCustomFunction() {
+        Observable<Integer> w = Observable.from(1, 3, 2, 5, 4);
+        Observable<List<Integer>> observable = w.lift(new OperatorToObservableSortedList<Integer>(SORT_FUNCTION));
+        verifySortedListWithCustomFunction(observable);
+    }
+    
+    @Test
+    public void testSort() {
+        Observable<Integer> w = Observable.from(1, 3, 2, 5, 4);
+        Observable<List<Integer>> observable = w.sort().toList();
+        verifySortedList(observable);
+    }
+    
+    @Test
+    public void testSortWithCustomFunction() {
+        Observable<Integer> w = Observable.from(1, 3, 2, 5, 4);
+        Observable<List<Integer>> observable = w.sort(SORT_FUNCTION).toList();
+        verifySortedListWithCustomFunction(observable);
+    }
+    
+    private void verifySortedList(Observable<List<Integer>> observable) {
         @SuppressWarnings("unchecked")
         Observer<List<Integer>> observer = mock(Observer.class);
         observable.subscribe(observer);
@@ -46,18 +80,7 @@ public class OperatorToObservableSortedListTest {
         verify(observer, times(1)).onCompleted();
     }
 
-    @Test
-    public void testSortedListWithCustomFunction() {
-        Observable<Integer> w = Observable.from(1, 3, 2, 5, 4);
-        Observable<List<Integer>> observable = w.lift(new OperatorToObservableSortedList<Integer>(new Func2<Integer, Integer, Integer>() {
-
-            @Override
-            public Integer call(Integer t1, Integer t2) {
-                return t2 - t1;
-            }
-
-        }));
-
+    private void verifySortedListWithCustomFunction(Observable<List<Integer>> observable) {
         @SuppressWarnings("unchecked")
         Observer<List<Integer>> observer = mock(Observer.class);
         observable.subscribe(observer);
@@ -65,4 +88,6 @@ public class OperatorToObservableSortedListTest {
         verify(observer, Mockito.never()).onError(any(Throwable.class));
         verify(observer, times(1)).onCompleted();
     }
+    
+    
 }
