@@ -21,6 +21,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
@@ -109,15 +110,16 @@ public class SafeObserverTest {
 
             Throwable e2 = e.getCause();
             assertTrue(e2 instanceof CompositeException);
-            assertEquals("Chain of Causes for CompositeException In Order Received =>", e2.getCause().getMessage());
+            List<Throwable> innerExceptions = ((CompositeException) e2).getExceptions();
+            assertEquals(2, innerExceptions.size());
 
-            Throwable e3 = e2.getCause();
-            assertTrue(e3.getCause() instanceof SafeObserverTestException);
-            assertEquals("error!", e3.getCause().getMessage());
+            Throwable e3 = innerExceptions.get(0);
+            assertTrue(e3 instanceof SafeObserverTestException);
+            assertEquals("error!", e3.getMessage());
 
-            Throwable e4 = e3.getCause();
-            assertTrue(e4.getCause() instanceof SafeObserverTestException);
-            assertEquals("onErrorFail", e4.getCause().getMessage());
+            Throwable e4 = innerExceptions.get(1);
+            assertTrue(e4 instanceof SafeObserverTestException);
+            assertEquals("onErrorFail", e4.getMessage());
         }
     }
 
@@ -157,15 +159,16 @@ public class SafeObserverTest {
 
             Throwable e2 = e.getCause();
             assertTrue(e2 instanceof CompositeException);
-            assertEquals("Chain of Causes for CompositeException In Order Received =>", e2.getCause().getMessage());
+            List<Throwable> innerExceptions = ((CompositeException) e2).getExceptions();
+            assertEquals(2, innerExceptions.size());
 
-            Throwable e3 = e2.getCause();
-            assertTrue(e3.getCause() instanceof SafeObserverTestException);
-            assertEquals("onNextFail", e3.getCause().getMessage());
+            Throwable e3 = innerExceptions.get(0);
+            assertTrue(e3 instanceof SafeObserverTestException);
+            assertEquals("onNextFail", e3.getMessage());
 
-            Throwable e4 = e3.getCause();
-            assertTrue(e4.getCause() instanceof SafeObserverTestException);
-            assertEquals("onErrorFail", e4.getCause().getMessage());
+            Throwable e4 = innerExceptions.get(1);
+            assertTrue(e4 instanceof SafeObserverTestException);
+            assertEquals("onErrorFail", e4.getMessage());
         }
     }
 
@@ -251,19 +254,20 @@ public class SafeObserverTest {
 
             Throwable e2 = e.getCause();
             assertTrue(e2 instanceof CompositeException);
-            assertEquals("Chain of Causes for CompositeException In Order Received =>", e2.getCause().getMessage());
+            List<Throwable> innerExceptions = ((CompositeException) e2).getExceptions();
+            assertEquals(3, innerExceptions.size());
 
-            Throwable e3 = e2.getCause();
-            assertTrue(e3.getCause() instanceof SafeObserverTestException);
-            assertEquals("onError failure", e3.getCause().getMessage());
+            Throwable e3 = innerExceptions.get(0);
+            assertTrue(e3 instanceof SafeObserverTestException);
+            assertEquals("onError failure", e3.getMessage());
 
-            Throwable e4 = e3.getCause();
-            assertTrue(e4.getCause() instanceof SafeObserverTestException);
-            assertEquals("onErrorFail", e4.getCause().getMessage());
+            Throwable e4 = innerExceptions.get(1);
+            assertTrue(e4 instanceof SafeObserverTestException);
+            assertEquals("onErrorFail", e4.getMessage());
 
-            Throwable e5 = e4.getCause();
-            assertTrue(e5.getCause() instanceof SafeObserverTestException);
-            assertEquals("failure from unsubscribe", e5.getCause().getMessage());
+            Throwable e5 = innerExceptions.get(2);
+            assertTrue(e5 instanceof SafeObserverTestException);
+            assertEquals("failure from unsubscribe", e5.getMessage());
         }
     }
 
@@ -292,15 +296,16 @@ public class SafeObserverTest {
 
             Throwable e2 = e.getCause();
             assertTrue(e2 instanceof CompositeException);
-            assertEquals("Chain of Causes for CompositeException In Order Received =>", e2.getCause().getMessage());
+            List<Throwable> innerExceptions = ((CompositeException) e2).getExceptions();
+            assertEquals(2, innerExceptions.size());
 
-            Throwable e3 = e2.getCause();
-            assertTrue(e3.getCause() instanceof SafeObserverTestException);
-            assertEquals("error!", e3.getCause().getMessage());
+            Throwable e3 = innerExceptions.get(0);
+            assertTrue(e3 instanceof SafeObserverTestException);
+            assertEquals("error!", e3.getMessage());
 
-            Throwable e4 = e3.getCause();
-            assertTrue(e4.getCause() instanceof SafeObserverTestException);
-            assertEquals("failure from unsubscribe", e4.getCause().getMessage());
+            Throwable e4 = innerExceptions.get(1);
+            assertTrue(e4 instanceof SafeObserverTestException);
+            assertEquals("failure from unsubscribe", e4.getMessage());
         }
     }
 
