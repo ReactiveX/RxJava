@@ -694,6 +694,54 @@ public class ObservableTests {
         assertEquals(1, counter.get());
     }
 
+    @Test
+    public void testCacheWithCapacity() throws InterruptedException {
+        final AtomicInteger counter = new AtomicInteger();
+        Observable<String> o = Observable.create(new OnSubscribe<String>() {
+
+            @Override
+            public void call(final Subscriber<? super String> observer) {
+                new Thread(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        counter.incrementAndGet();
+                        observer.onNext("one");
+                        observer.onCompleted();
+                    }
+                }).start();
+            }
+        }).cache(1);
+
+        // we then expect the following 2 subscriptions to get that same value
+        final CountDownLatch latch = new CountDownLatch(2);
+
+        // subscribe once
+        o.subscribe(new Action1<String>() {
+
+            @Override
+            public void call(String v) {
+                assertEquals("one", v);
+                latch.countDown();
+            }
+        });
+
+        // subscribe again
+        o.subscribe(new Action1<String>() {
+
+            @Override
+            public void call(String v) {
+                assertEquals("one", v);
+                latch.countDown();
+            }
+        });
+
+        if (!latch.await(1000, TimeUnit.MILLISECONDS)) {
+            fail("subscriptions did not receive values");
+        }
+        assertEquals(1, counter.get());
+    }
+
     /**
      * https://github.com/Netflix/RxJava/issues/198
      * 

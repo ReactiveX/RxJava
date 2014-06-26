@@ -3426,6 +3426,19 @@ public class Observable<T> {
     }
 
     /**
+     * {@code cache} with initial capacity.
+     *
+     * @param capacity
+     *            initial cache size
+     * @return an Observable that, when first subscribed to, caches all of its items and notifications for the
+     *         benefit of subsequent subscribers
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#cache">RxJava Wiki: cache()</a>
+     */
+    public final Observable<T> cache(int capacity) {
+        return create(new OnSubscribeCache<T>(this, capacity));
+    }
+
+    /**
      * Returns an Observable that emits the items emitted by the source Observable, converted to the specified
      * type.
      * <p>
