@@ -1,7 +1,7 @@
 package rx.internal.util;
 
-import java.util.LinkedList;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 import rx.Observer;
@@ -22,15 +22,46 @@ public class RxRingBuffer {
     private final int size;
     private final int requestThreshold;
     private volatile Object terminalState;
-    public volatile int outstandingRequests = 0;
 
+    public volatile int outstandingRequests = 0;
     private static final AtomicIntegerFieldUpdater<RxRingBuffer> OUTSTANDING_REQUEST_UPDATER = AtomicIntegerFieldUpdater.newUpdater(RxRingBuffer.class, "outstandingRequests");
 
     public static final int SIZE = 1024;
     public static final int THRESHOLD = 256;
 
+    /**
+     * Queue implementation testing
+     * 
+     * With synchronized LinkedList
+     * <pre> {@code
+     * Benchmark                                        Mode   Samples        Score  Score error    Units
+     * r.i.RxRingBufferPerf.ringBufferAddRemove        thrpt         5 19118392.046  1002814.238    ops/s
+     * r.i.RxRingBufferPerf.ringBufferAddRemove1000    thrpt         5    17891.641      252.747    ops/s
+     * 
+     * With MpscPaddedQueue (single consumer, so failing 1 unit test)
+     * 
+     * Benchmark                                        Mode   Samples        Score  Score error    Units
+     * r.i.RxRingBufferPerf.ringBufferAddRemove        thrpt         5 22164483.238  3035027.348    ops/s
+     * r.i.RxRingBufferPerf.ringBufferAddRemove1000    thrpt         5    23154.303      602.548    ops/s
+     * 
+     * 
+     * With ConcurrentLinkedQueue (tracking count separately)
+     * 
+     * Benchmark                                        Mode   Samples        Score  Score error    Units
+     * r.i.RxRingBufferPerf.ringBufferAddRemove        thrpt         5 17353906.092   378756.411    ops/s
+     * r.i.RxRingBufferPerf.ringBufferAddRemove1000    thrpt         5    19224.411     1010.610    ops/s
+     * 
+     * With ConcurrentLinkedQueue (using queue.size() method for count)
+     * 
+     * Benchmark                                        Mode   Samples        Score  Score error    Units
+     * r.i.RxRingBufferPerf.ringBufferAddRemove        thrpt         5 23951121.098  1982380.330    ops/s
+     * r.i.RxRingBufferPerf.ringBufferAddRemove1000    thrpt         5     1142.351       33.592    ops/s
+     * 
+     * } </pre>
+     */
+
     private RxRingBuffer(int size, int threshold) {
-        queue = new LinkedList<Object>();
+        queue = new ConcurrentLinkedQueue<Object>();
         this.size = size;
         this.requestThreshold = size - threshold;
     }
@@ -64,12 +95,10 @@ public class RxRingBuffer {
     public void onNext(Object o) throws MissingBackpressureException {
         // we received a requested item
         OUTSTANDING_REQUEST_UPDATER.decrementAndGet(this);
-        synchronized (queue) {
-            if (queue.size() < SIZE) {
-                queue.add(on.next(o));
-            } else {
-                throw new MissingBackpressureException();
-            }
+        if (queue.size() <= SIZE) {
+            queue.offer(on.next(o));
+        } else {
+            throw new MissingBackpressureException();
         }
     }
 
@@ -87,12 +116,6 @@ public class RxRingBuffer {
         }
     }
 
-    public int count() {
-        synchronized (queue) {
-            return queue.size();
-        }
-    }
-
     public int available() {
         return size - count();
     }
@@ -106,11 +129,13 @@ public class RxRingBuffer {
         return size;
     }
 
+    public int count() {
+        return queue.size();
+    }
+
     public Object poll() {
         Object o;
-        synchronized (queue) {
-            o = queue.poll();
-        }
+        o = queue.poll();
         if (o == null && terminalState != null) {
             o = terminalState;
             // once emitted we clear so a poll loop will finish

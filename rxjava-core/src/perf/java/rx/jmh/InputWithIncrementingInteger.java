@@ -32,7 +32,7 @@ public abstract class InputWithIncrementingInteger {
     public Iterable<Integer> iterable;
     public Observable<Integer> observable;
     public Observable<Integer> firehose;
-    private Blackhole bh;
+    public Blackhole bh;
     public Observer<Integer> observer;
 
     public abstract int getSize();
