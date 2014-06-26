@@ -1,3 +1,18 @@
+/**
+ * Copyright 2014 Netflix, Inc.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package rx.internal.util;
 
 import java.util.Queue;
@@ -5,13 +20,14 @@ import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 import rx.Observer;
 import rx.Subscriber;
+import rx.Subscription;
 import rx.exceptions.MissingBackpressureException;
 import rx.internal.operators.NotificationLite;
 import rx.internal.util.unsafe.SpmcArrayQueue;
 import rx.internal.util.unsafe.SpscArrayQueue;
 import rx.internal.util.unsafe.UnsafeAccess;
 
-public class RxRingBuffer {
+public class RxRingBuffer implements Subscription {
 
     public static RxRingBuffer getSpscInstance() {
         if (UnsafeAccess.isUnsafeAvailable()) {
@@ -165,6 +181,11 @@ public class RxRingBuffer {
             pool.returnObject(q);
         }
     }
+    
+    @Override
+    public void unsubscribe() {
+        release();
+    }
 
     /* for unit tests */RxRingBuffer() {
         this(new SynchronizedQueue<Queue>(SIZE), SIZE, THRESHOLD);
@@ -307,6 +328,11 @@ public class RxRingBuffer {
                 return;
             }
         } while (true);
+    }
+
+    @Override
+    public boolean isUnsubscribed() {
+        return false;
     }
 
 }

@@ -302,6 +302,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
         public InnerSubscriber(MergeProducer<T> mergeProducer, MergeSubscriber<T> parent) {
             this.mergeProducer = mergeProducer;
             this.parent = parent;
+            add(_q);
         }
 
         private RxRingBuffer getQ() {
