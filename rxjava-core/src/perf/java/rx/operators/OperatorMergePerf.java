@@ -53,7 +53,22 @@ public class OperatorMergePerf {
     }
 
     @Benchmark
-    public void mergeSynchronous(final Input input) throws InterruptedException {
+    public void merge1SyncStreamOfN(final Input input) throws InterruptedException {
+        Observable<Observable<Integer>> os = Observable.just(1).map(new Func1<Integer, Observable<Integer>>() {
+
+            @Override
+            public Observable<Integer> call(Integer i) {
+                return Observable.range(0, input.size);
+            }
+
+        });
+        LatchedObserver<Integer> o = input.newLatchedObserver();
+        Observable.merge(os).subscribe(o);
+        o.latch.await();
+    }
+    
+    @Benchmark
+    public void mergeNSyncStreamsOfN(final Input input) throws InterruptedException {
         Observable<Observable<Integer>> os = input.observable.map(new Func1<Integer, Observable<Integer>>() {
 
             @Override
@@ -68,7 +83,7 @@ public class OperatorMergePerf {
     }
 
     @Benchmark
-    public void mergeAsynchronous(final Input input) throws InterruptedException {
+    public void mergeNAsyncStreamsOfN(final Input input) throws InterruptedException {
         Observable<Observable<Integer>> os = input.observable.map(new Func1<Integer, Observable<Integer>>() {
 
             @Override
@@ -83,7 +98,7 @@ public class OperatorMergePerf {
     }
 
     @Benchmark
-    public void mergeTwoAsyncStreams(final Input input) throws InterruptedException {
+    public void mergeTwoAsyncStreamsOfN(final Input input) throws InterruptedException {
         LatchedObserver<Integer> o = input.newLatchedObserver();
         Observable<Integer> ob = Observable.range(0, input.size).subscribeOn(Schedulers.computation());
         Observable.merge(ob, ob).subscribe(o);
@@ -91,7 +106,7 @@ public class OperatorMergePerf {
     }
 
     @Benchmark
-    public void mergeNStreams(final InputForMergeN input) throws InterruptedException {
+    public void mergeNSyncStreamsOf1(final InputForMergeN input) throws InterruptedException {
         LatchedObserver<Integer> o = input.newLatchedObserver();
         Observable.merge(input.observables).subscribe(o);
         o.latch.await();
