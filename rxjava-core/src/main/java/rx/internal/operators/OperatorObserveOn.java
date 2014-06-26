@@ -68,7 +68,7 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
         private final ScheduledUnsubscribe scheduledUnsubscribe;
         final NotificationLite<T> on = NotificationLite.instance();
 
-        private final RxRingBuffer queue = RxRingBuffer.getInstance();
+        private final RxRingBuffer queue = RxRingBuffer.getSpscInstance();
         private boolean completed = false;
 
         private volatile long requested = 0;

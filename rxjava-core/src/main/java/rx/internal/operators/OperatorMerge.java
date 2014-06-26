@@ -297,7 +297,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
         volatile int once;
         @SuppressWarnings("rawtypes")
         static final AtomicIntegerFieldUpdater<InnerSubscriber> ONCE_UPDATER = AtomicIntegerFieldUpdater.newUpdater(InnerSubscriber.class, "once");
-        final RxRingBuffer _q = RxRingBuffer.getInstance();
+        final RxRingBuffer _q = RxRingBuffer.getSpmcInstance();
 
         public InnerSubscriber(MergeProducer<T> mergeProducer, MergeSubscriber<T> parent) {
             this.mergeProducer = mergeProducer;

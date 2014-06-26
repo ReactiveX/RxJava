@@ -33,11 +33,9 @@ import rx.functions.Action0;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 
-public class RxRingBufferTest {
+public abstract class RxRingBufferBase {
 
-    private RxRingBuffer createRingBuffer() {
-        return RxRingBuffer.getInstance();
-    }
+    protected abstract RxRingBuffer createRingBuffer();
 
     @Test
     public void missingBackpressureException() throws MissingBackpressureException {
@@ -245,124 +243,6 @@ public class RxRingBufferTest {
 
         s.awaitTerminalEvent();
         s.assertReceivedOnNext(Arrays.<Object> asList(1));
-    }
-
-    /**
-     * Single producer, 2 consumers. The request() ensures it gets scheduled back on the same Producer thread.
-     */
-    @Test(timeout = 2000)
-    public void testConcurrency() throws InterruptedException {
-        final RxRingBuffer b = createRingBuffer();
-        final CountDownLatch latch = new CountDownLatch(255);
-
-        final Scheduler.Worker w1 = Schedulers.newThread().createWorker();
-        Scheduler.Worker w2 = Schedulers.newThread().createWorker();
-        Scheduler.Worker w3 = Schedulers.newThread().createWorker();
-
-        final AtomicInteger emit = new AtomicInteger();
-        final AtomicInteger poll = new AtomicInteger();
-        final AtomicInteger backpressureExceptions = new AtomicInteger();
-
-        final Producer p = new Producer() {
-
-            AtomicInteger c = new AtomicInteger();
-
-            @Override
-            public void request(final int n) {
-                System.out.println("request[" + c.incrementAndGet() + "]: " + n + "  Thread: " + Thread.currentThread());
-                w1.schedule(new Action0() {
-
-                    @Override
-                    public void call() {
-                        if (latch.getCount() == 0) {
-                            return;
-                        }
-                        for (int i = 0; i < n; i++) {
-                            try {
-                                emit.incrementAndGet();
-                                b.onNext("one");
-                            } catch (MissingBackpressureException e) {
-                                System.out.println("BackpressureException => item: " + i + "  requested: " + n + " emit: " + emit.get() + "  poll: " + poll.get());
-                                backpressureExceptions.incrementAndGet();
-                            }
-                        }
-                        // we'll release after n batches
-                        latch.countDown();
-                    }
-
-                });
-            }
-
-        };
-        final Subscriber<String> s = new Subscriber<String>() {
-
-            @Override
-            public void onCompleted() {
-
-            }
-
-            @Override
-            public void onError(Throwable e) {
-
-            }
-
-            @Override
-            public void onNext(String t) {
-
-            }
-
-        };
-
-        w1.schedule(new Action0() {
-
-            @Override
-            public void call() {
-                b.requestIfNeeded(s);
-                s.setProducer(p);
-            }
-
-        });
-
-        w2.schedule(new Action0() {
-
-            @Override
-            public void call() {
-                while (true) {
-                    Object o = b.poll();
-                    if (o == null) {
-                        b.requestIfNeeded(s);
-                    } else {
-                        poll.incrementAndGet();
-                    }
-                }
-            }
-
-        });
-
-        w3.schedule(new Action0() {
-
-            @Override
-            public void call() {
-                while (true) {
-                    Object o = b.poll();
-                    if (o == null) {
-                        b.requestIfNeeded(s);
-                    } else {
-                        poll.incrementAndGet();
-                    }
-                }
-            }
-
-        });
-
-        latch.await();
-        w1.unsubscribe();
-        w2.unsubscribe();
-        w3.unsubscribe();
-
-        System.out.println("emit: " + emit.get() + " poll: " + poll.get());
-        assertEquals(0, backpressureExceptions.get());
-        assertEquals(emit.get(), poll.get());
     }
 
 }

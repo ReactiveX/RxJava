@@ -32,10 +32,82 @@ import rx.jmh.InputWithIncrementingInteger;
 @OutputTimeUnit(TimeUnit.SECONDS)
 public class RxRingBufferPerf {
 
-    @State(Scope.Thread)
-    public static class Input extends InputWithIncrementingInteger {
+    @Benchmark
+    public void spmcRingBufferAddRemove1(SpmcInput input) throws InterruptedException, MissingBackpressureException {
+        input.ring.onNext("a");
+        input.bh.consume(input.ring.poll());
+    }
 
-        RxRingBuffer ring = RxRingBuffer.getInstance();
+    @Benchmark
+    public void spmcRingBufferAddRemove1000(SpmcInput input) throws InterruptedException, MissingBackpressureException {
+        for (int i = 0; i < 1000; i++) {
+            input.ring.onNext("a");
+        }
+        for (int i = 0; i < 1000; i++) {
+            input.bh.consume(input.ring.poll());
+        }
+    }
+
+    @Benchmark
+    public void spmcCreateUseAndDestroy1000(Input input) throws InterruptedException, MissingBackpressureException {
+        RxRingBuffer buffer = RxRingBuffer.getSpmcInstance();
+        for (int i = 0; i < 1000; i++) {
+            buffer.onNext("a");
+        }
+        for (int i = 0; i < 1000; i++) {
+            input.bh.consume(buffer.poll());
+        }
+        buffer.release();
+    }
+
+    @Benchmark
+    public void spmcCreateUseAndDestroy1(Input input) throws InterruptedException, MissingBackpressureException {
+        RxRingBuffer buffer = RxRingBuffer.getSpmcInstance();
+        buffer.onNext("a");
+        input.bh.consume(buffer.poll());
+        buffer.release();
+    }
+
+    @Benchmark
+    public void spscRingBufferAddRemove1(SpscInput input) throws InterruptedException, MissingBackpressureException {
+        input.ring.onNext("a");
+        input.bh.consume(input.ring.poll());
+    }
+
+    @Benchmark
+    public void spscRingBufferAddRemove1000(SpscInput input) throws InterruptedException, MissingBackpressureException {
+        for (int i = 0; i < 1000; i++) {
+            input.ring.onNext("a");
+        }
+        for (int i = 0; i < 1000; i++) {
+            input.bh.consume(input.ring.poll());
+        }
+    }
+
+    @Benchmark
+    public void spscCreateUseAndDestroy1000(Input input) throws InterruptedException, MissingBackpressureException {
+        RxRingBuffer buffer = RxRingBuffer.getSpscInstance();
+        for (int i = 0; i < 1000; i++) {
+            buffer.onNext("a");
+        }
+        for (int i = 0; i < 1000; i++) {
+            input.bh.consume(buffer.poll());
+        }
+        buffer.release();
+    }
+
+    @Benchmark
+    public void spscCreateUseAndDestroy1(Input input) throws InterruptedException, MissingBackpressureException {
+        RxRingBuffer buffer = RxRingBuffer.getSpscInstance();
+        buffer.onNext("a");
+        input.bh.consume(buffer.poll());
+        buffer.release();
+    }
+
+    @State(Scope.Thread)
+    public static class SpmcInput extends InputWithIncrementingInteger {
+
+        RxRingBuffer ring = RxRingBuffer.getSpmcInstance();
 
         @Override
         public int getSize() {
@@ -44,20 +116,26 @@ public class RxRingBufferPerf {
 
     }
 
-    @Benchmark
-    public void ringBufferAddRemove(Input input) throws InterruptedException, MissingBackpressureException {
-        input.ring.onNext("a");
-        input.bh.consume(input.ring.poll());
+    @State(Scope.Thread)
+    public static class SpscInput extends InputWithIncrementingInteger {
+
+        RxRingBuffer ring = RxRingBuffer.getSpscInstance();
+
+        @Override
+        public int getSize() {
+            return 1;
+        }
+
     }
 
-    @Benchmark
-    public void ringBufferAddRemove1000(Input input) throws InterruptedException, MissingBackpressureException {
-        for (int i = 0; i < 1000; i++) {
-            input.ring.onNext("a");
+    @State(Scope.Thread)
+    public static class Input extends InputWithIncrementingInteger {
+
+        @Override
+        public int getSize() {
+            return 1;
         }
-        for (int i = 0; i < 1000; i++) {
-            input.bh.consume(input.ring.poll());
-        }
+
     }
 
 }
