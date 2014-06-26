@@ -1,5 +1,24 @@
 # RxJava Releases #
 
+### Version 0.19.2 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.19.2%22)) ###
+
+* [Pull 1388] (https://github.com/Netflix/RxJava/pull/1388) CompositeException stops mutating nested Exceptions
+* [Pull 1387] (https://github.com/Netflix/RxJava/pull/1387) Upgrade to JMH 0.9
+* [Pull 1297] (https://github.com/Netflix/RxJava/pull/1297) [RxScala] rxjava-scalaz: providing some type class instances
+* [Pull 1332] (https://github.com/Netflix/RxJava/pull/1332) IOSSchedulers for RoboVM
+* [Pull 1380] (https://github.com/Netflix/RxJava/pull/1380) Variety of Fixes
+* [Pull 1379] (https://github.com/Netflix/RxJava/pull/1379) Parallel Operator Rewrite
+* [Pull 1378] (https://github.com/Netflix/RxJava/pull/1378) BugFix: Pivot Concurrency
+* [Pull 1376] (https://github.com/Netflix/RxJava/pull/1376) Revision of JMH Tests
+* [Pull 1375] (https://github.com/Netflix/RxJava/pull/1375) RxScala: Add idiomatic toXXX methods
+* [Pull 1367] (https://github.com/Netflix/RxJava/pull/1367) Fix the bug that 'flatMap' swallows OnErrorNotImplementedException
+* [Pull 1374] (https://github.com/Netflix/RxJava/pull/1374) Fix head/tail false sharing issues 
+* [Pull 1369] (https://github.com/Netflix/RxJava/pull/1369) DebugHook got miswired before
+* [Pull 1361] (https://github.com/Netflix/RxJava/pull/1361) Fix a race condition if queued actions have been handled already
+* [Pull 1336] (https://github.com/Netflix/RxJava/pull/1336) RxScala: Add the rest missing methods to BlockingObservable
+* [Pull 1362] (https://github.com/Netflix/RxJava/pull/1362) RxScala: Fix #1340 and #1343
+* [Pull 1359] (https://github.com/Netflix/RxJava/pull/1359) Fixed padding of the integer and node classes
+
 ### Version 0.19.1 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.19.1%22)) ###
 
 * [Pull 1357] (https://github.com/Netflix/RxJava/pull/1357) MergeWith, ConcatWith, AmbWith
