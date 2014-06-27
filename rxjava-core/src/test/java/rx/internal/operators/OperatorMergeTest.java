@@ -190,6 +190,7 @@ public class OperatorMergeTest {
         m.subscribe(ts);
 
         ts.awaitTerminalEvent();
+        ts.assertNoErrors();
 
         verify(stringObserver, never()).onError(any(Throwable.class));
         verify(stringObserver, times(2)).onNext("hello");
@@ -494,7 +495,7 @@ public class OperatorMergeTest {
         Observable<Integer> o = Observable.range(1, 10000).subscribeOn(Schedulers.newThread());
 
         for (int i = 0; i < 10; i++) {
-            Observable<Integer> merge = Observable.merge(o, o, o);
+            Observable<Integer> merge = Observable.merge(o.onBackpressureBuffer(), o.onBackpressureBuffer(), o.onBackpressureBuffer());
             TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
             merge.subscribe(ts);
 
@@ -520,13 +521,17 @@ public class OperatorMergeTest {
 
                     @Override
                     public void call() {
-                        for (int i = 0; i < 100; i++) {
-                            s.onNext(1);
-                            try {
-                                Thread.sleep(1);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
+                        try {
+                            for (int i = 0; i < 100; i++) {
+                                s.onNext(1);
+                                try {
+                                    Thread.sleep(1);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
                             }
+                        } catch (Exception e) {
+                            s.onError(e);
                         }
                         s.onCompleted();
                     }
@@ -548,7 +553,7 @@ public class OperatorMergeTest {
         }
     }
 
-    @Test
+    @Test(timeout = 2000)
     public void testConcurrencyWithBrokenOnCompleteContract() {
         Observable<Integer> o = Observable.create(new OnSubscribe<Integer>() {
 
@@ -560,8 +565,12 @@ public class OperatorMergeTest {
 
                     @Override
                     public void call() {
-                        for (int i = 0; i < 10000; i++) {
-                            s.onNext(i);
+                        try {
+                            for (int i = 0; i < 10000; i++) {
+                                s.onNext(i);
+                            }
+                        } catch (Exception e) {
+                            s.onError(e);
                         }
                         s.onCompleted();
                         s.onCompleted();
@@ -586,37 +595,33 @@ public class OperatorMergeTest {
         }
     }
 
-    @Test(timeout = 500)
-    public void testBackpressure() {
+    @Test(timeout = 5000)
+    public void testBackpressure() throws InterruptedException {
         final AtomicInteger generated1 = new AtomicInteger();
-        Observable<Integer> o1 = createInfiniteObservable(generated1);
+        Observable<Integer> o1 = createInfiniteObservable(generated1).subscribeOn(Schedulers.computation());
         final AtomicInteger generated2 = new AtomicInteger();
-        Observable<Integer> o2 = createInfiniteObservable(generated2);
+        Observable<Integer> o2 = createInfiniteObservable(generated2).subscribeOn(Schedulers.computation());
 
         TestSubscriber<Integer> testSubscriber = new TestSubscriber<Integer>() {
             @Override
             public void onNext(Integer t) {
                 System.err.println("testSubscriber received => " + t + "  on thread " + Thread.currentThread());
                 super.onNext(t);
-                try {
-                    Thread.sleep(10);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
             }
         };
 
-        Observable.merge(o1.take(5), o2.take(5)).subscribe(testSubscriber);
+        Observable.merge(o1.take(Producer.BUFFER_SIZE * 2), o2.take(Producer.BUFFER_SIZE * 2)).subscribe(testSubscriber);
         testSubscriber.awaitTerminalEvent();
         if (testSubscriber.getOnErrorEvents().size() > 0) {
             testSubscriber.getOnErrorEvents().get(0).printStackTrace();
         }
+        testSubscriber.assertNoErrors();
         System.err.println(testSubscriber.getOnNextEvents());
-        testSubscriber.assertReceivedOnNext(Arrays.asList(0, 1, 2, 3, 4, 0, 1, 2, 3, 4));
+        assertEquals(Producer.BUFFER_SIZE * 4, testSubscriber.getOnNextEvents().size());
         // it should be between the take num and requested batch size across the async boundary
         System.out.println("Generated 1: " + generated1.get());
         System.out.println("Generated 2: " + generated2.get());
-        assertTrue(generated1.get() >= 3 && generated1.get() <= Producer.BUFFER_SIZE);
+        assertTrue(generated1.get() >= Producer.BUFFER_SIZE * 2 && generated1.get() <= Producer.BUFFER_SIZE * 3);
     }
 
     @Test

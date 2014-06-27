@@ -20,6 +20,7 @@ import java.util.concurrent.*;
 import rx.exceptions.*;
 import rx.functions.*;
 import rx.internal.operators.*;
+import rx.internal.util.ScalarSynchronousObservable;
 import rx.observables.*;
 import rx.observers.SafeSubscriber;
 import rx.plugins.*;
@@ -1154,7 +1155,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh212140.aspx">MSDN: Observable.ToObservable</a>
      */
     public final static <T> Observable<T> from(Iterable<? extends T> iterable, Scheduler scheduler) {
-        return create(new OnSubscribeFromIterable<T>(iterable)).subscribeOn(scheduler);
+        return from(iterable).subscribeOn(scheduler);
     }
 
     /**
@@ -1543,17 +1544,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#just">RxJava Wiki: just()</a>
      */
     public final static <T> Observable<T> just(final T value) {
-        return Observable.create(new OnSubscribe<T>() {
-
-            @Override
-            public void call(Subscriber<? super T> s) {
-                if (!s.isUnsubscribed()) {
-                    s.onNext(value);
-                    s.onCompleted();
-                }
-            }
-
-        });
+        return ScalarSynchronousObservable.create(value);
     }
 
     /**
@@ -2470,6 +2461,9 @@ public class Observable<T> {
         }
         if (start > Integer.MAX_VALUE - count + 1) {
             throw new IllegalArgumentException("start + count can not exceed Integer.MAX_VALUE");
+        }
+        if(count == 1) {
+            return Observable.just(start);
         }
         return Observable.create(new OnSubscribeRange(start, start + (count - 1)));
     }

@@ -30,6 +30,10 @@ public class SynchronizedQueue<T> implements Queue<T> {
     private final LinkedList<T> list = new LinkedList<T>();
     private final int size;
 
+    public SynchronizedQueue() {
+        this.size = -1;
+    }
+    
     public SynchronizedQueue(int size) {
         this.size = size;
     }
@@ -107,7 +111,7 @@ public class SynchronizedQueue<T> implements Queue<T> {
     }
 
     public synchronized boolean offer(T e) {
-        if (list.size() + 1 > size) {
+        if (size > -1 && list.size() + 1 > size) {
             return false;
         }
         return list.offer(e);
