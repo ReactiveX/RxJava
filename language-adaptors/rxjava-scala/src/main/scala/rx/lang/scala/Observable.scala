@@ -240,7 +240,7 @@ trait Observable[+T]
    *                 enforced by the created `Subject`
    * @return an Observable that emits the items produced by multicasting the source Observable within a selector function
    */
-  def multicast[R >: T, U](subjectFactory: () => rx.lang.scala.Subject[R], selector: Observable[R] => Observable[U]): Observable[U] = {
+  def multicast[R >: T, U](subjectFactory: () => rx.lang.scala.Subject[R])(selector: Observable[R] => Observable[U]): Observable[U] = {
     val subjectFactoryJava: Func0[rx.subjects.Subject[_ >: T, _ <: R]] = () => subjectFactory().asJavaSubject
     val selectorJava: Func1[rx.Observable[R], rx.Observable[U]] =
       (jo: rx.Observable[R]) => selector(toScalaObservable[R](jo)).asJavaObservable.asInstanceOf[rx.Observable[U]]
@@ -374,7 +374,7 @@ trait Observable[+T]
    * is the minumum of the number of `onNext` invocations of `this` and `that`. 
    */
   def zip[U](that: Observable[U]): Observable[(T, U)] = {
-    zipWith(that, (t: T, u: U) => (t, u))
+    zipWith(that)((_, _))
   }
 
   /**
@@ -386,11 +386,11 @@ trait Observable[+T]
    * Note that the `other` Iterable is evaluated as items are observed from the source Observable; it is
    * not pre-consumed. This allows you to zip infinite streams on either side.
    *
-   * @param other the Iterable sequence
+   * @param that the Iterable sequence
    * @return an Observable that pairs up values from the source Observable and the `other` Iterable.
    */
-  def zip[U](other: Iterable[U]): Observable[(T, U)] = {
-    zipWith(other, (t: T, u: U) => (t, u))
+  def zip[U](that: Iterable[U]): Observable[(T, U)] = {
+    zipWith(that)((_, _))
   }
 
   /**
@@ -402,15 +402,15 @@ trait Observable[+T]
    * Note that the `other` Iterable is evaluated as items are observed from the source Observable; it is
    * not pre-consumed. This allows you to zip infinite streams on either side.
    *
-   * @param other the Iterable sequence
+   * @param that the Iterable sequence
    * @param selector a function that combines the pairs of items from the Observable and the Iterable to generate
    *                 the items to be emitted by the resulting Observable
    * @return an Observable that pairs up values from the source Observable and the `other` Iterable
    *         sequence and emits the results of `selector` applied to these pairs
    */
-  def zipWith[U, R](other: Iterable[U], selector: (T, U) => R): Observable[R] = {
+  def zipWith[U, R](that: Iterable[U])(selector: (T, U) => R): Observable[R] = {
     val thisJava = asJavaObservable.asInstanceOf[rx.Observable[T]]
-    toScalaObservable[R](thisJava.zip(other.asJava, selector))
+    toScalaObservable[R](thisJava.zip(that.asJava, selector))
   }
 
   /**
@@ -419,7 +419,7 @@ trait Observable[+T]
    * The number of `onNext` invocations of the resulting `Observable[(T, U)]`
    * is the minumum of the number of `onNext` invocations of `this` and `that`.
    */
-  def zipWith[U, R](that: Observable[U], selector: (T,U) => R): Observable[R] = {
+  def zipWith[U, R](that: Observable[U])(selector: (T, U) => R): Observable[R] = {
     toScalaObservable[R](rx.Observable.zip[T, U, R](this.asJavaObservable, that.asJavaObservable, selector))
   }
 
@@ -450,7 +450,7 @@ trait Observable[+T]
    * @return
    *         An [[rx.lang.scala.Observable]] which produces buffers which are created and emitted when the specified [[rx.lang.scala.Observable]]s publish certain objects.
    */
-  def buffer[Opening](openings: Observable[Opening], closings: Opening => Observable[Any]): Observable[Seq[T]] = {
+  def slidingBuffer[Opening](openings: Observable[Opening])(closings: Opening => Observable[Any]): Observable[Seq[T]] = {
     val opening: rx.Observable[_ <: Opening] = openings.asJavaObservable
     val closing: Func1[_ >: Opening, _ <: rx.Observable[_ <: Any]] = (o: Opening) => closings(o).asJavaObservable
     val jObs: rx.Observable[_ <: java.util.List[_]] = asJavaObservable.buffer[Opening, Any](opening, closing)
@@ -636,7 +636,7 @@ trait Observable[+T]
    * @return an Observable that emits buffered items from the source Observable when the boundary Observable
    *         emits an item
    */
-  def buffer(boundary: => Observable[Any]): Observable[Seq[T]] = {
+  def tumblingBuffer(boundary: => Observable[Any]): Observable[Seq[T]] = {
     val f = new Func0[rx.Observable[_ <: Any]]() {
       override def call(): rx.Observable[_ <: Any] = boundary.asJavaObservable
     }
@@ -657,7 +657,7 @@ trait Observable[+T]
    * @return an Observable that emits buffered items from the source Observable when the boundary Observable
    *         emits an item
    */
-  def buffer(boundary: Observable[Any], initialCapacity: Int): Observable[Seq[T]] = {
+  def tumblingBuffer(boundary: Observable[Any], initialCapacity: Int): Observable[Seq[T]] = {
     val thisJava = this.asJavaObservable.asInstanceOf[rx.Observable[T]]
     toScalaObservable(thisJava.buffer(boundary.asJavaObservable, initialCapacity)).map(_.asScala)
   }
@@ -674,7 +674,7 @@ trait Observable[+T]
    * @return An Observable which produces connected non-overlapping windows. The boundary of each window is
    *         determined by the items emitted from a specified boundary-governing Observable.
    */
-  def window(boundary: => Observable[Any]): Observable[Observable[T]] = {
+  def tumbling(boundary: => Observable[Any]): Observable[Observable[T]] = {
     val func = new Func0[rx.Observable[_ <: Any]]() {
       override def call(): rx.Observable[_ <: Any] = boundary.asJavaObservable
     }
@@ -697,7 +697,7 @@ trait Observable[+T]
    * @return
    *         An [[rx.lang.scala.Observable]] which produces windows which are created and emitted when the specified [[rx.lang.scala.Observable]]s publish certain objects.
    */
-  def window[Opening](openings: Observable[Opening], closings: Opening => Observable[Any]) = {
+  def sliding[Opening](openings: Observable[Opening])(closings: Opening => Observable[Any]) = {
     Observable.jObsOfJObsToScObsOfScObs(
       asJavaObservable.window[Opening, Any](openings.asJavaObservable, (op: Opening) => closings(op).asJavaObservable))
       : Observable[Observable[T]] // SI-7818
@@ -950,7 +950,7 @@ trait Observable[+T]
    * @return an Observable that emits the results of applying a function to a pair of values emitted by the
    *         source Observable and the collection Observable
    */
-  def flatMap[U, R](collectionSelector: T => Observable[U], resultSelector: (T, U) => R): Observable[R] = {
+  def flatMapWith[U, R](collectionSelector: T => Observable[U])(resultSelector: (T, U) => R): Observable[R] = {
     val jCollectionSelector = new Func1[T, rx.Observable[_ <: U]] {
       override def call(t: T): rx.Observable[_ <: U] = collectionSelector(t).asJavaObservable
     }
@@ -990,7 +990,7 @@ trait Observable[+T]
    *                       Iterable returned for that item by the `collectionSelector`
    * @return an Observable that emits the items returned by `resultSelector` for each item in the source Observable
    */
-  def flatMapIterable[U, R](collectionSelector: T => Iterable[U], resultSelector: (T, U) => R): Observable[R] = {
+  def flatMapIterableWith[U, R](collectionSelector: T => Iterable[U])(resultSelector: (T, U) => R): Observable[R] = {
     val jCollectionSelector = new Func1[T, java.lang.Iterable[_ <: U]] {
       override def call(t: T): java.lang.Iterable[_ <: U] = collectionSelector(t).asJava
     }
@@ -2191,7 +2191,7 @@ trait Observable[+T]
    * @return an Observable that emits `(key, observable)` pairs, where `observable`
    *         contains all items for which `f` returned `key` before `closings` emits a value.
    */
-  def groupByUntil[K](f: T => K, closings: (K, Observable[T])=>Observable[Any]): Observable[(K, Observable[T])] = {
+  def groupByUntil[K](f: T => K)(closings: (K, Observable[T])=>Observable[Any]): Observable[(K, Observable[T])] = {
     val fclosing: Func1[_ >: rx.observables.GroupedObservable[K, _ <: T], _ <: rx.Observable[_ <: Any]] =
       (jGrObs: rx.observables.GroupedObservable[K, _ <: T]) => closings(jGrObs.getKey, toScalaObservable[T](jGrObs)).asJavaObservable
     val o1 = asJavaObservable.groupByUntil[K, Any](f, fclosing) : rx.Observable[_ <: rx.observables.GroupedObservable[K, _ <: T]]
@@ -2217,7 +2217,7 @@ trait Observable[+T]
    *         value and each of which emits all items emitted by the source [[Observable]] during that
    *         key's duration that share that same key value, transformed by the value selector
    */
-  def groupByUntil[K, V](keySelector: T => K, valueSelector: T => V, closings: (K, Observable[V]) => Observable[Any]): Observable[(K, Observable[V])] = {
+  def groupByUntil[K, V](keySelector: T => K, valueSelector: T => V)(closings: (K, Observable[V]) => Observable[Any]): Observable[(K, Observable[V])] = {
     val jKeySelector: Func1[_ >: T, _ <: K] = keySelector
     val jValueSelector: Func1[_ >: T, _ <: V] = valueSelector
     val jDurationSelector = new Func1[rx.observables.GroupedObservable[_ <: K, _ <: V], rx.Observable[_ <: Any]] {
@@ -2250,13 +2250,7 @@ trait Observable[+T]
    * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#join">RxJava Wiki: join()</a>
    * @see <a href="http://msdn.microsoft.com/en-us/library/hh229750.aspx">MSDN: Observable.Join</a>
    */
-  def join[S, R] (
-      other: Observable[S],
-      leftDurationSelector:  T => Observable[Any],
-      rightDurationSelector: S => Observable[Any],
-      resultSelector: (T,S) => R
-  ): Observable[R] = {
-
+  def join[S, R] (other: Observable[S])(leftDurationSelector:  T => Observable[Any], rightDurationSelector: S => Observable[Any], resultSelector: (T, S) => R): Observable[R] = {
     val outer : rx.Observable[_ <: T] = this.asJavaObservable
     val inner : rx.Observable[_ <: S] = other.asJavaObservable
     val left:  Func1[_ >: T, _<: rx.Observable[_ <: Any]] =   (t: T) => leftDurationSelector(t).asJavaObservable
@@ -2287,7 +2281,7 @@ trait Observable[+T]
    * @return an Observable that emits items based on combining those items emitted by the source Observables
    *         whose durations overlap
    */
-  def groupJoin[S, R](other: Observable[S], leftDuration: T => Observable[Any], rightDuration: S => Observable[Any], resultSelector: (T, Observable[S]) => R): Observable[R] = {
+  def groupJoin[S, R](other: Observable[S])(leftDuration: T => Observable[Any], rightDuration: S => Observable[Any], resultSelector: (T, Observable[S]) => R): Observable[R] = {
     val outer: rx.Observable[_ <: T] = this.asJavaObservable
     val inner: rx.Observable[_ <: S] = other.asJavaObservable
     val left: Func1[_ >: T, _ <: rx.Observable[_ <: Any]] = (t: T) => leftDuration(t).asJavaObservable
@@ -2480,18 +2474,16 @@ trait Observable[+T]
 
 
   /**
-   * Combines two observables, emitting some type `R` specified in the function f,
+   * Combines two observables, emitting some type `R` specified in the function `selector`,
    * each time an event is received from one of the source observables, where the aggregation
    * is defined by the given function.
    *
-   *@param that
-   *           The second source observable.
-   *@param f
-               The function that is used combine the emissions of the two observables.
-   *@return An Observable that combines the source Observables according to the function f.
+   * @param that The second source observable.
+   * @param selector The function that is used combine the emissions of the two observables.
+   * @return An Observable that combines the source Observables according to the function `selector`.
    */
-  def combineLatest[U,R](that: Observable[U], f: (T, U) => R): Observable[R] = {
-    toScalaObservable[R](rx.Observable.combineLatest[T, U, R](this.asJavaObservable, that.asJavaObservable, f))
+  def combineLatestWith[U, R](that: Observable[U])(selector: (T, U) => R): Observable[R] = {
+    toScalaObservable[R](rx.Observable.combineLatest[T, U, R](this.asJavaObservable, that.asJavaObservable, selector))
   }
 
   /**
@@ -3703,7 +3695,7 @@ trait Observable[+T]
    * @return an Observable that emits a `Boolean` value that indicates whether the two sequences are the same
    */
   def sequenceEqual[U >: T](that: Observable[U]): Observable[Boolean] = {
-    sequenceEqual(that, (_1: U, _2: U) => _1 == _2)
+    sequenceEqualWith(that)(_ == _)
   }
 
   /**
@@ -3716,7 +3708,7 @@ trait Observable[+T]
    * @param equality a function used to compare items emitted by each Observable
    * @return an Observable that emits a `Boolean` value that indicates whether the two sequences are the same based on the `equality` function.
    */
-  def sequenceEqual[U >: T](that: Observable[U], equality: (U, U) => Boolean): Observable[Boolean] = {
+  def sequenceEqualWith[U >: T](that: Observable[U])(equality: (U, U) => Boolean): Observable[Boolean] = {
     val thisJava: rx.Observable[_ <: U] = this.asJavaObservable
     val thatJava: rx.Observable[_ <: U] = that.asJavaObservable
     val equalityJava: Func2[_ >: U, _ >: U, java.lang.Boolean] = equality
@@ -4596,7 +4588,7 @@ object Observable {
    * @return an Observable that emits items that are the result of combining the items emitted by the source
    *         Observables by means of the given aggregation function
    */
-  def combineLatest[T, R](sources: Seq[Observable[T]], combineFunction: Seq[T] => R): Observable[R] = {
+  def combineLatest[T, R](sources: Seq[Observable[T]])(combineFunction: Seq[T] => R): Observable[R] = {
     val jSources = new java.util.ArrayList[rx.Observable[_ <: T]](sources.map(_.asJavaObservable).asJava)
     val jCombineFunction = new rx.functions.FuncN[R] {
       override def call(args: java.lang.Object*): R = combineFunction(args.map(_.asInstanceOf[T]))

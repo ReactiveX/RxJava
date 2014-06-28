@@ -187,10 +187,19 @@ class RxScalaDemo extends JUnitSuite {
     o.buffer(5).subscribe((l: Seq[Int]) => println(l.mkString("[", ", ", "]")))
   }
 
-  @Test def bufferExample() {
+  @Test def tumblingBufferExample() {
     val o = Observable.from(1 to 18).zip(Observable.interval(100 millis)).map(_._1)
     val boundary = Observable.interval(500 millis)
-    o.buffer(boundary).toBlocking.foreach((l: Seq[Int]) => println(l.mkString("[", ", ", "]")))
+    o.tumblingBuffer(boundary).toBlocking.foreach((l: Seq[Int]) => println(l.mkString("[", ", ", "]")))
+  }
+
+  @Test def slidingBufferExample() {
+    val open = Observable.interval(300 millis)
+    val closing = Observable.interval(600 millis)
+    val o = Observable.interval(100 millis).take(20).slidingBuffer(open)(_ => closing)
+    o.zipWithIndex.toBlocking.foreach {
+      case (seq, i) => println(s"Observable#$i emits $seq")
+    }
   }
 
   @Test def windowExample() {
@@ -199,10 +208,20 @@ class RxScalaDemo extends JUnitSuite {
     ).subscribe(output(_))
   }
 
-  @Test def windowExample2() {
+  @Test def tumblingExample() {
     val windowObservable = Observable.interval(500 millis)
     val o = Observable.from(1 to 20).zip(Observable.interval(100 millis)).map(_._1)
-    (for ((o, i) <- o.window(windowObservable).zipWithIndex; n <- o)
+    (for ((o, i) <- o.tumbling(windowObservable).zipWithIndex; n <- o)
+      yield s"Observable#$i emits $n"
+    ).toBlocking.foreach(println)
+  }
+
+  @Test def slidingExample() {
+    val open = Observable.interval(300 millis)
+    val closing = Observable.interval(600 millis)
+    val o = Observable.interval(100 millis).take(20).sliding(open)(_ => closing)
+    (for ((o, i) <- o.zipWithIndex;
+          n <- o)
       yield s"Observable#$i emits $n"
     ).toBlocking.foreach(println)
   }
@@ -336,14 +355,14 @@ class RxScalaDemo extends JUnitSuite {
 
   @Test def groupByUntilExample() {
     val numbers = Observable.interval(250 millis).take(14)
-    val grouped = numbers.groupByUntil[Long](x => x % 2, {case (key, obs) => obs.filter(x => x == 7)})
+    val grouped = numbers.groupByUntil(x => x % 2){ case (key, obs) => obs.filter(x => x == 7) }
     val sequenced = (grouped.map({ case (key, obs) => obs.toSeq })).flatten
     sequenced.subscribe(x => println(s"Emitted group: $x"))
   }
 
   @Test def groupByUntilExample2() {
     val numbers = Observable.interval(250 millis).take(14)
-    val grouped = numbers.groupByUntil[Long, Long](x => x % 2, x => x * 10, {case (key, obs) => Observable.interval(2 seconds)})
+    val grouped = numbers.groupByUntil(x => x % 2, x => x * 10){ case (key, obs) => Observable.interval(2 seconds) }
     val sequenced = (grouped.map({ case (key, obs) => obs.toSeq })).flatten
     sequenced.toBlocking.foreach(x => println(s"Emitted group: $x"))
   }
@@ -351,8 +370,7 @@ class RxScalaDemo extends JUnitSuite {
   @Test def combineLatestExample() {
     val firstCounter = Observable.interval(250 millis)
     val secondCounter = Observable.interval(550 millis)
-    val combinedCounter = firstCounter.combineLatest(secondCounter,
-      (x: Long, y: Long) => List(x,y)) take 10
+    val combinedCounter = firstCounter.combineLatestWith(secondCounter)(List(_, _)) take 10
 
     combinedCounter subscribe {x => println(s"Emitted group: $x")}
     waitFor(combinedCounter)
@@ -363,7 +381,7 @@ class RxScalaDemo extends JUnitSuite {
     val secondCounter = Observable.interval(550 millis)
     val thirdCounter = Observable.interval(850 millis)
     val sources = Seq(firstCounter, secondCounter, thirdCounter)
-    val combinedCounter = Observable.combineLatest(sources, (items: Seq[Long]) => items.toList).take(10)
+    val combinedCounter = Observable.combineLatest(sources)(_.toList).take(10)
 
     combinedCounter subscribe {x => println(s"Emitted group: $x")}
     waitFor(combinedCounter)
@@ -562,6 +580,12 @@ class RxScalaDemo extends JUnitSuite {
       }
     }
     o1.zip(iter).toBlocking.foreach(println(_))
+  }
+
+  @Test def zipWithExample() {
+    val xs = Observable.items(1, 3, 5, 7)
+    val ys = Observable.items(2, 4, 6, 8)
+    xs.zipWith(ys)(_ * _).subscribe(println(_))
   }
 
   @Test def takeFirstWithCondition() {
@@ -1070,7 +1094,7 @@ class RxScalaDemo extends JUnitSuite {
 
   @Test def multicastExample1(): Unit = {
     val unshared = Observable.from(1 to 4)
-    val shared = unshared.multicast(Subject())
+    val shared = unshared.multicast(Subject[Int]())
     shared.subscribe(n => println(s"subscriber 1 gets $n"))
     shared.subscribe(n => println(s"subscriber 2 gets $n"))
     shared.connect
@@ -1078,7 +1102,7 @@ class RxScalaDemo extends JUnitSuite {
 
   @Test def multicastExample2(): Unit = {
     val unshared = Observable.from(1 to 4)
-    val shared = unshared.multicast[Int, String](() => Subject(), o => o.map("No. " + _))
+    val shared = unshared.multicast(() => Subject[Int]())(o => o.map("No. " + _))
     shared.subscribe(n => println(s"subscriber 1 gets $n"))
     shared.subscribe(n => println(s"subscriber 2 gets $n"))
   }
@@ -1298,10 +1322,7 @@ class RxScalaDemo extends JUnitSuite {
 
   @Test def flatMapExample5() {
     val o = Observable.items(1, 10, 100, 1000)
-    o.flatMap(
-      (n: Int) => Observable.interval(200 millis).take(5),
-      (n: Int, m: Long) => n * m
-    ).toBlocking.foreach(println)
+    o.flatMapWith(_ => Observable.interval(200 millis).take(5))(_ * _).toBlocking.foreach(println)
   }
 
   @Test def flatMapIterableExample() {
@@ -1312,10 +1333,7 @@ class RxScalaDemo extends JUnitSuite {
 
   @Test def flatMapIterableExample2() {
     val o = Observable.items(1, 10, 100, 1000)
-    o.flatMapIterable(
-      (n: Int) => (1 to 5),
-      (n: Int, m: Int) => n * m
-    ).toBlocking.foreach(println)
+    o.flatMapIterableWith(_=> (1 to 5))(_ * _).toBlocking.foreach(println)
   }
 
   @Test def concatMapExample() {
@@ -1369,20 +1387,14 @@ class RxScalaDemo extends JUnitSuite {
   @Test def joinExample() {
     val o1 = Observable.interval(500 millis).map(n => "1: " + n)
     val o2 = Observable.interval(100 millis).map(n => "2: " + n)
-    val o = o1.join(o2,
-      (_: String) => Observable.timer(300 millis),
-      (_: String) => Observable.timer(200 millis),
-      (t1: String, t2: String) => (t1, t2))
+    val o = o1.join(o2)(_ => Observable.timer(300 millis), _ => Observable.timer(200 millis), (_, _))
     o.take(10).toBlocking.foreach(println)
   }
 
   @Test def groupJoinExample() {
     val o1 = Observable.interval(500 millis).map(n => "1: " + n)
     val o2 = Observable.interval(100 millis).map(n => "2: " + n)
-    val o = o1.groupJoin(o2,
-      (_: String) => Observable.timer(300 millis),
-      (_: String) => Observable.timer(200 millis),
-      (t1: String, t2: Observable[String]) => (t1, t2.toSeq.toBlocking.single))
+    val o = o1.groupJoin(o2)(_ => Observable.timer(300 millis), _ => Observable.timer(200 millis), (t1, t2) => (t1, t2.toSeq.toBlocking.single))
     o.take(3).toBlocking.foreach(println)
   }
 

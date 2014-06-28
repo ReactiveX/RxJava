@@ -128,7 +128,7 @@ class ObservableTests extends JUnitSuite {
   @Test def testJoin() {
      val xs = Observable.items(1,2,3)
      val ys = Observable.items("a")
-     val zs = xs.join[String,String](ys, x => Observable.never, y => Observable.never, (x,y) => y+x)
+     val zs = xs.join(ys)(_ => Observable.never, _ => Observable.never, (x, y) => y + x)
      assertEquals(List("a1", "a2", "a3"),zs.toBlocking.toList)
   }
 
