@@ -197,13 +197,19 @@ public class RxRingBuffer implements Subscription {
      * @param o
      * @param child
      */
-    public void emitWithoutQueue(Object o, Observer child) {
-        OUTSTANDING_REQUEST_UPDATER.decrementAndGet(this);
+    public boolean emitWithoutQueue(Object o, Observer child) {
+        // TODO this is a performance problem because it touches a volatile
+        int r = OUTSTANDING_REQUEST_UPDATER.decrementAndGet(this);
         if (o == null) {
             // this means a value has been given to us without being turned into a NULL_SENTINEL
             child.onNext(null);
         } else {
             on.accept(child, o);
+        }
+        if(r < THRESHOLD) {
+            return true;
+        } else {
+            return false;
         }
     }
 

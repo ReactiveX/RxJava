@@ -27,7 +27,6 @@ import rx.functions.Action1;
 import rx.internal.util.RxRingBuffer;
 import rx.internal.util.ScalarSynchronousObservable;
 import rx.internal.util.SubscriptionIndexedRingBuffer;
-import rx.internal.util.SubscriptionRandomList;
 import rx.internal.util.SynchronizedQueue;
 
 /**
@@ -217,6 +216,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
                             s.q.accept(o, actual);
                         }
                     }
+                    s.q.requestIfNeeded(s);
                 }
             }
 
@@ -292,8 +292,6 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
         public void request(int n) {
             // we always just want to receive all of them so we can subscribe to all and merge them
             parentProducer.request(-1);
-
-//            System.out.println("********************* MergeProducer request: " + n);
         }
 
     }
@@ -311,6 +309,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
         public InnerSubscriber(MergeSubscriber<T> parent) {
             this.parentSubscriber = parent;
             add(q);
+            q.requestIfNeeded(this);
         }
 
         @Override
@@ -318,7 +317,9 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
             boolean drain = false;
             if (parentSubscriber.getEmitLock()) {
                 try {
-                    parentSubscriber.actual.onNext(t);
+                    if (q.emitWithoutQueue(t, parentSubscriber.actual)) {
+                        q.requestIfNeeded(this);
+                    }
                 } finally {
                     drain = parentSubscriber.releaseEmitLock();
                 }

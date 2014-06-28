@@ -128,7 +128,7 @@ public final class SubscriptionIndexedRingBuffer<T extends Subscription> impleme
             return;
         }
 
-        // TODO migrate to drain?
+        // TODO migrate to drain (remove while we're doing this) so we don't have to immediately clear it in IndexedRingBuffer.releaseToPool?
         List<Throwable> es = subscriptions.forEach(UNSUBSCRIBE);
 
         if (!es.isEmpty()) {

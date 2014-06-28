@@ -610,7 +610,7 @@ public class OperatorMergeTest {
             }
         };
 
-        Observable.merge(o1.take(Producer.BUFFER_SIZE * 2), o2.take(Producer.BUFFER_SIZE * 2)).subscribe(testSubscriber);
+        Observable.merge(o1.take(Producer.BUFFER_SIZE * 2), o1.take(Producer.BUFFER_SIZE * 2)).subscribe(testSubscriber);
         testSubscriber.awaitTerminalEvent();
         if (testSubscriber.getOnErrorEvents().size() > 0) {
             testSubscriber.getOnErrorEvents().get(0).printStackTrace();
@@ -621,6 +621,32 @@ public class OperatorMergeTest {
         // it should be between the take num and requested batch size across the async boundary
         System.out.println("Generated 1: " + generated1.get());
         System.out.println("Generated 2: " + generated2.get());
+        assertTrue(generated1.get() >= Producer.BUFFER_SIZE * 2 && generated1.get() <= Producer.BUFFER_SIZE * 4);
+    }
+
+    @Test(timeout = 5000)
+    public void testBackpressure2() throws InterruptedException {
+        final AtomicInteger generated1 = new AtomicInteger();
+        Observable<Integer> o1 = createInfiniteObservable(generated1).subscribeOn(Schedulers.computation());
+
+        TestSubscriber<Integer> testSubscriber = new TestSubscriber<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                System.err.println("testSubscriber received => " + t + "  on thread " + Thread.currentThread());
+                super.onNext(t);
+            }
+        };
+
+        Observable.merge(o1.take(Producer.BUFFER_SIZE * 2), Observable.just(-99)).subscribe(testSubscriber);
+        testSubscriber.awaitTerminalEvent();
+        if (testSubscriber.getOnErrorEvents().size() > 0) {
+            testSubscriber.getOnErrorEvents().get(0).printStackTrace();
+        }
+        testSubscriber.assertNoErrors();
+        System.err.println(testSubscriber.getOnNextEvents());
+        assertEquals(Producer.BUFFER_SIZE * 2 + 1, testSubscriber.getOnNextEvents().size());
+        // it should be between the take num and requested batch size across the async boundary
+        System.out.println("Generated 1: " + generated1.get());
         assertTrue(generated1.get() >= Producer.BUFFER_SIZE * 2 && generated1.get() <= Producer.BUFFER_SIZE * 3);
     }
 
