@@ -110,7 +110,7 @@ public class OperatorParallelTest {
         assertEquals(NUM, count.get());
     }
 
-    @Test(timeout = 1000)
+    @Test
     public void testBackpressureViaObserveOn() {
         final AtomicInteger emitted = new AtomicInteger();
         TestSubscriber<String> ts = new TestSubscriber<String>();
@@ -142,7 +142,7 @@ public class OperatorParallelTest {
 
         }).observeOn(Schedulers.newThread()).take(2000).subscribe(ts);
         ts.awaitTerminalEvent();
-        System.out.println("emitted: " + emitted.get());
+        ts.assertNoErrors();
         assertTrue(emitted.get() < 3000); // should be < 3000
         assertEquals(2000, ts.getOnNextEvents().size());
     }
@@ -179,6 +179,7 @@ public class OperatorParallelTest {
 
         }).take(2000).subscribe(ts);
         ts.awaitTerminalEvent();
+        ts.assertNoErrors();
         System.out.println("emitted: " + emitted.get());
         assertEquals(2000, emitted.get()); // no async, so should be perfect
         assertEquals(2000, ts.getOnNextEvents().size());

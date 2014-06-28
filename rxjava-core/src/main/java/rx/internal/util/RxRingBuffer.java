@@ -127,7 +127,7 @@ public class RxRingBuffer implements Subscription {
 
     private static final NotificationLite<Object> on = NotificationLite.instance();
 
-    private final Queue<Object> queue;
+    private Queue<Object> queue;
 
     private final int size;
     private final int requestThreshold;
@@ -178,6 +178,7 @@ public class RxRingBuffer implements Subscription {
         if (pool != null) {
             Queue q = queue;
             q.clear();
+            queue = null;
             pool.returnObject(q);
         }
     }
@@ -222,6 +223,9 @@ public class RxRingBuffer implements Subscription {
     public void onNext(Object o) throws MissingBackpressureException {
         // we received a requested item
         OUTSTANDING_REQUEST_UPDATER.decrementAndGet(this);
+        if(queue == null) {
+            throw new IllegalStateException("This instance has been unsubscribed and the queue is no longer usable.");
+        }
         if (!queue.offer(on.next(o))) {
             throw new MissingBackpressureException();
         }
@@ -255,10 +259,16 @@ public class RxRingBuffer implements Subscription {
     }
 
     public int count() {
+        if(queue == null) {
+            throw new IllegalStateException("This instance has been unsubscribed and the queue is no longer usable.");
+        }
         return queue.size();
     }
 
     public Object poll() {
+        if(queue == null) {
+            throw new IllegalStateException("This instance has been unsubscribed and the queue is no longer usable.");
+        }
         Object o;
         o = queue.poll();
         if (o == null && terminalState != null) {
