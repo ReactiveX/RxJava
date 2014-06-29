@@ -118,8 +118,8 @@ public class OperatorMergePerf {
 
     @State(Scope.Thread)
     public static class InputForMergeN {
-                @Param({ "1", "100", "1000" })
-//        @Param({ "1000" })
+        @Param({ "1", "100", "1000" })
+        //        @Param({ "1000" })
         public int size;
 
         private Blackhole bh;
@@ -142,8 +142,8 @@ public class OperatorMergePerf {
     @State(Scope.Thread)
     public static class InputMillion extends InputWithIncrementingInteger {
 
-                @Param({ "1", "1000", "1000000" })
-//        @Param({ "1000" })
+        @Param({ "1", "1000", "1000000" })
+        //        @Param({ "1000" })
         public int size;
 
         @Override
@@ -156,8 +156,8 @@ public class OperatorMergePerf {
     @State(Scope.Thread)
     public static class InputThousand extends InputWithIncrementingInteger {
 
-                @Param({ "1", "1000" })
-//        @Param({ "1000" })
+        @Param({ "1", "1000" })
+        //        @Param({ "1000" })
         public int size;
 
         @Override

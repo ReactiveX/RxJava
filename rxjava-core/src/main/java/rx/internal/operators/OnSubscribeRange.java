@@ -81,7 +81,7 @@ public final class OnSubscribeRange implements OnSubscribe<Integer> {
                     o.onNext(i);
                 }
                 o.onCompleted();
-            } else {
+            } else if (n > 0) {
                 // backpressure is requested
                 int _c = REQUESTED_UPDATER.getAndAdd(this, n);
                 if (_c == 0) {
@@ -90,11 +90,11 @@ public final class OnSubscribeRange implements OnSubscribe<Integer> {
                          * This complicated logic is done to avoid touching the volatile `index` and `requested` values
                          * during the loop itself. If they are touched during the loop the performance is impacted significantly.
                          */
-                        int numLeft = (end - (index - start));
+                        int numLeft = start + (end - index);
                         int e = Math.min(numLeft, requested);
                         boolean completeOnFinish = numLeft < requested;
-                        int stopAt = e + (index - start);
-                        for (int i = index; i <= stopAt; i++) {
+                        int stopAt = e + index;
+                        for (int i = index; i < stopAt; i++) {
                             if (o.isUnsubscribed()) {
                                 return;
                             }

@@ -30,7 +30,6 @@ import rx.Observable.OnSubscribe;
 import rx.exceptions.MissingBackpressureException;
 import rx.functions.Func1;
 import rx.functions.Func2;
-import rx.internal.util.RxRingBuffer;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 
@@ -290,7 +289,7 @@ public class BackpressureTests {
         // emit next 1000 that are filtered out
         // take NUM
         // so emitted is at least 10000+1000+NUM + extra for buffer size/threshold
-        int expected = 10000 + 1000 + Producer.BUFFER_SIZE * 3 + RxRingBuffer.THRESHOLD;
+        int expected = 10000 + 1000 + Producer.BUFFER_SIZE * 3 + Producer.BUFFER_SIZE / 2;
 
         System.out.println("testTakeFilterSkipChain => Received: " + ts.getOnNextEvents().size() + "  Emitted: " + c.get() + " Expected: " + expected);
         assertEquals(NUM, ts.getOnNextEvents().size());

@@ -106,7 +106,7 @@ public class RxRingBufferSpmcTest extends RxRingBufferBase {
 
             @Override
             public void call() {
-                b.requestIfNeeded(s);
+                s.request(Producer.BUFFER_SIZE);
                 s.setProducer(p);
             }
 
@@ -116,14 +116,20 @@ public class RxRingBufferSpmcTest extends RxRingBufferBase {
 
             @Override
             public void call() {
+                int emitted = 0;
                 while (true) {
                     Object o = b.poll();
-                    if (o == null) {
-                        b.requestIfNeeded(s);
-                    } else {
+                    if (o != null) {
+                        emitted++;
                         poll.incrementAndGet();
+                    } else {
+                        if (emitted > 0) {
+                            s.request(emitted);
+                            emitted = 0;
+                        }
                     }
                 }
+
             }
 
         });
@@ -132,12 +138,17 @@ public class RxRingBufferSpmcTest extends RxRingBufferBase {
 
             @Override
             public void call() {
+                int emitted = 0;
                 while (true) {
                     Object o = b.poll();
-                    if (o == null) {
-                        b.requestIfNeeded(s);
-                    } else {
+                    if (o != null) {
+                        emitted++;
                         poll.incrementAndGet();
+                    } else {
+                        if (emitted > 0) {
+                            s.request(emitted);
+                            emitted = 0;
+                        }
                     }
                 }
             }

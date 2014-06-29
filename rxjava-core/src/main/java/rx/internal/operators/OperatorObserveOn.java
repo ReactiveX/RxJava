@@ -35,7 +35,8 @@ import rx.schedulers.TrampolineScheduler;
  * 
  * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/observeOn.png">
  * 
- * @param <T> the transmitted value type
+ * @param <T>
+ *            the transmitted value type
  */
 public final class OperatorObserveOn<T> implements Operator<T, T> {
 
@@ -89,7 +90,7 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
             // unsubscribe ourselves if the child unsubscribes, but not the other way around
             child.add(this);
             // signal that this is an async operator capable of receiving this many
-            queue.requestIfNeeded(this);
+            request(queue.capacity());
             child.setProducer(new Producer() {
 
                 @Override
@@ -149,9 +150,8 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
             }
         }
 
-        int sent = 0;
-
         private void pollQueue() {
+            int emitted = 0;
             while (true) {
                 while (!scheduledUnsubscribe.isUnsubscribed()) {
                     if (REQUESTED.getAndDecrement(this) != 0) {
@@ -161,9 +161,10 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
                             REQUESTED.incrementAndGet(this);
                             break;
                         } else {
-                            sent++;
-                            on.accept(child, o);
-                            queue.requestIfNeeded(this);
+                            if (!on.accept(child, o)) {
+                                // non-terminal event so let's increment count
+                                emitted++;
+                            }
                         }
                     } else {
                         // we hit the end ... so increment back to 0 again
@@ -172,6 +173,10 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
                     }
                 }
                 if (COUNTER_UPDATER.decrementAndGet(this) <= 0) {
+                    // request the number of items that we emitted in this poll loop
+                    if (emitted > 0) {
+                        request(emitted);
+                    }
                     break;
                 }
             }

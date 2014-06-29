@@ -24,6 +24,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 
 import rx.Observable;
+import rx.Producer;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.observers.TestSubscriber;
@@ -143,7 +144,8 @@ public class OperatorParallelTest {
         }).observeOn(Schedulers.newThread()).take(2000).subscribe(ts);
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
-        assertTrue(emitted.get() < 3000); // should be < 3000
+        System.out.println("testBackpressureViaObserveOn emitted => " + emitted.get());
+        assertTrue(emitted.get() < 2000 + Producer.BUFFER_SIZE); // should have no more than the buffer size beyond the 2000 in take
         assertEquals(2000, ts.getOnNextEvents().size());
     }
 

@@ -16,10 +16,8 @@
 package rx.internal.util;
 
 import java.util.Queue;
-import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 import rx.Observer;
-import rx.Subscriber;
 import rx.Subscription;
 import rx.exceptions.MissingBackpressureException;
 import rx.internal.operators.NotificationLite;
@@ -31,7 +29,7 @@ public class RxRingBuffer implements Subscription {
 
     public static RxRingBuffer getSpscInstance() {
         if (UnsafeAccess.isUnsafeAvailable()) {
-            return new RxRingBuffer(SPSC_POOL, SIZE, THRESHOLD);
+            return new RxRingBuffer(SPSC_POOL, SIZE);
         } else {
             return new RxRingBuffer();
         }
@@ -39,7 +37,7 @@ public class RxRingBuffer implements Subscription {
 
     public static RxRingBuffer getSpmcInstance() {
         if (UnsafeAccess.isUnsafeAvailable()) {
-            return new RxRingBuffer(SPMC_POOL, SIZE, THRESHOLD);
+            return new RxRingBuffer(SPMC_POOL, SIZE);
         } else {
             return new RxRingBuffer();
         }
@@ -130,17 +128,11 @@ public class RxRingBuffer implements Subscription {
     private Queue<Object> queue;
 
     private final int size;
-    private final int requestThreshold;
     private final ObjectPool<Queue<Object>> pool;
 
     private volatile Object terminalState;
 
-    public volatile int outstandingRequests = 0;
-
-    private static final AtomicIntegerFieldUpdater<RxRingBuffer> OUTSTANDING_REQUEST_UPDATER = AtomicIntegerFieldUpdater.newUpdater(RxRingBuffer.class, "outstandingRequests");
-
     public static final int SIZE = 1024;
-    public static final int THRESHOLD = 256;
 
     private static ObjectPool<Queue<Object>> SPSC_POOL = new ObjectPool<Queue<Object>>() {
 
@@ -160,18 +152,16 @@ public class RxRingBuffer implements Subscription {
 
     };
 
-    private RxRingBuffer(Queue queue, int size, int threshold) {
+    private RxRingBuffer(Queue queue, int size) {
         this.queue = queue;
         this.pool = null;
         this.size = size;
-        this.requestThreshold = size - threshold;
     }
 
-    private RxRingBuffer(ObjectPool<Queue<Object>> pool, int size, int threshold) {
+    private RxRingBuffer(ObjectPool<Queue<Object>> pool, int size) {
         this.pool = pool;
         this.queue = pool.borrowObject();
         this.size = size;
-        this.requestThreshold = size - threshold;
     }
 
     public void release() {
@@ -182,36 +172,14 @@ public class RxRingBuffer implements Subscription {
             pool.returnObject(q);
         }
     }
-    
+
     @Override
     public void unsubscribe() {
         release();
     }
 
     /* for unit tests */RxRingBuffer() {
-        this(new SynchronizedQueue<Queue>(SIZE), SIZE, THRESHOLD);
-    }
-
-    /**
-     * Directly emit to `child.onNext` while also decrementing the request counters used by `requestIfNeeded`.
-     * 
-     * @param o
-     * @param child
-     */
-    public boolean emitWithoutQueue(Object o, Observer child) {
-        // TODO this is a performance problem because it touches a volatile
-        int r = OUTSTANDING_REQUEST_UPDATER.decrementAndGet(this);
-        if (o == null) {
-            // this means a value has been given to us without being turned into a NULL_SENTINEL
-            child.onNext(null);
-        } else {
-            on.accept(child, o);
-        }
-        if(r < THRESHOLD) {
-            return true;
-        } else {
-            return false;
-        }
+        this(new SynchronizedQueue<Queue>(SIZE), SIZE);
     }
 
     /**
@@ -221,9 +189,7 @@ public class RxRingBuffer implements Subscription {
      *             if more onNext are sent than have been requested
      */
     public void onNext(Object o) throws MissingBackpressureException {
-        // we received a requested item
-        OUTSTANDING_REQUEST_UPDATER.decrementAndGet(this);
-        if(queue == null) {
+        if (queue == null) {
             throw new IllegalStateException("This instance has been unsubscribed and the queue is no longer usable.");
         }
         if (!queue.offer(on.next(o))) {
@@ -249,25 +215,21 @@ public class RxRingBuffer implements Subscription {
         return size - count();
     }
 
-    public int requested() {
-        // it can be 0 if onNext are sent without having been requested
-        return Math.max(0, outstandingRequests);
-    }
-
     public int capacity() {
         return size;
     }
 
     public int count() {
-        if(queue == null) {
-            throw new IllegalStateException("This instance has been unsubscribed and the queue is no longer usable.");
+        if (queue == null) {
+            return 0;
         }
         return queue.size();
     }
 
     public Object poll() {
-        if(queue == null) {
-            throw new IllegalStateException("This instance has been unsubscribed and the queue is no longer usable.");
+        if (queue == null) {
+            // we are unsubscribed and have released the undelrying queue
+            return null;
         }
         Object o;
         o = queue.poll();
@@ -287,68 +249,17 @@ public class RxRingBuffer implements Subscription {
         return on.isError(o);
     }
 
-    public void accept(Object o, Observer child) {
-        on.accept(child, o);
+    public boolean accept(Object o, Observer child) {
+        return on.accept(child, o);
     }
 
     public Throwable asError(Object o) {
         return on.getError(o);
     }
 
-    public void requestIfNeeded(Subscriber<?> s) {
-        /**
-         * Example behavior:
-         * 
-         * <pre> {@code
-         * outstanding  0      available    1024
-         * outstanding 1024    available    1024
-         *     onNext
-         * outstanding 1023    available    1023
-         *     onNext  
-         * outstanding 1022    available    1022
-         *     poll
-         * outstanding 1022    available    1023
-         *     onNext * 1000
-         * outstanding 22      available    23
-         *     poll * 100
-         * outstanding 22      available    123
-         *     poll * 500
-         * outstanding 22      available    523 
-         *     request a523 - o22 = 501
-         * outstanding 523     available    523 
-         *     onNext * 523
-         * outstanding 0       available    0
-         *     request a0 - o0 = 0
-         *     poll 1024
-         * outstanding 0       available    1024
-         *     request a1024 - o0 = 1024
-         * outstanding 1024    available    1024
-         * } </pre>
-         */
-        do {
-            int a = available();
-            int _o = outstandingRequests;
-            int o = _o;
-            if (o < 0) {
-                o = 0;
-            }
-            int r = a - o;
-            if (r > requestThreshold) {
-                int toSet = r + o;
-                if (OUTSTANDING_REQUEST_UPDATER.compareAndSet(this, _o, toSet)) {
-                    s.request(r - 1); // -1 is solving an off-by-one bug somewhere I can't figure out ... OperatorMergeTest.testConcurrencyWithBrokenOnCompleteContract fails without this
-                    return;
-                }
-            } else {
-                // nothing to request
-                return;
-            }
-        } while (true);
-    }
-
     @Override
     public boolean isUnsubscribed() {
-        return false;
+        return queue == null;
     }
 
 }

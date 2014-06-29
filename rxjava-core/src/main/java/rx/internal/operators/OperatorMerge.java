@@ -179,7 +179,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
             }
         }
 
-        private void drainQueuesIfNeeded() {
+        private boolean drainQueuesIfNeeded() {
             while (true) {
                 if (getEmitLock()) {
                     try {
@@ -193,12 +193,12 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
                         }
                     } finally {
                         if (!releaseEmitLock()) {
-                            return;
+                            return true;
                         }
                         // otherwise we'll loop and get whatever was added 
                     }
                 } else {
-                    return;
+                    return false;
                 }
             }
         }
@@ -208,15 +208,30 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
             @Override
             public void call(InnerSubscriber<T> s) {
                 if (s.q != null) {
+                    int emitted = 0;
                     Object o;
                     while ((o = s.q.poll()) != null) {
                         if (s.q.isCompleted(o)) {
                             completeInner(s);
                         } else {
-                            s.q.accept(o, actual);
+                            if (!s.q.accept(o, actual)) {
+                                emitted++;
+                            }
                         }
                     }
-                    s.q.requestIfNeeded(s);
+                    if (emitted > 0) {
+                        /*
+                         * `s.emitted` is not volatile (because of performance impact of making it so shown by JMH tests)
+                         * but `emitted` can ONLY be touched by the thread holding the `emitLock` which we're currently inside.
+                         * 
+                         * Entering and leaving the emitLock flushes all values so this is visible to us.
+                         */
+                        emitted += s.emitted;
+                        // TODO we may want to store this in s.emitted and only request if above batch
+                        // reset this since we have requested them all
+                        s.emitted = 0;
+                        s.request(emitted);
+                    }
                 }
             }
 
@@ -303,30 +318,45 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
         volatile int once;
         @SuppressWarnings("rawtypes")
         static final AtomicIntegerFieldUpdater<InnerSubscriber> ONCE_UPDATER = AtomicIntegerFieldUpdater.newUpdater(InnerSubscriber.class, "once");
-
         private final RxRingBuffer q = RxRingBuffer.getSpscInstance();
+        private boolean mayNeedToDrain = false;
+        /* protected by emitLock */
+        int emitted = 0;
 
         public InnerSubscriber(MergeSubscriber<T> parent) {
             this.parentSubscriber = parent;
             add(q);
-            q.requestIfNeeded(this);
+            request(q.capacity());
         }
 
         @Override
         public void onNext(T t) {
             boolean drain = false;
             if (parentSubscriber.getEmitLock()) {
+                if (mayNeedToDrain) {
+                    // drain the queue if there is anything in it before emitting the current value
+                    emitted += drainQueue();
+                    mayNeedToDrain = false;
+                }
                 try {
-                    if (q.emitWithoutQueue(t, parentSubscriber.actual)) {
-                        q.requestIfNeeded(this);
-                    }
+                    parentSubscriber.actual.onNext(t);
+                    emitted++;
                 } finally {
                     drain = parentSubscriber.releaseEmitLock();
+                }
+                if (emitted > 256) {
+                    // this is for batching requests when we're in a use case that isn't queueing, always fast-pathing the onNext
+                    request(emitted);
+                    // we are modifying this outside of the emit lock ... but this can be considered a "lazySet"
+                    // and it will be flushed before anything else touches it because the emitLock will be obtained
+                    // before any other usage of it
+                    emitted = 0;
                 }
             } else {
                 // can't emit so must enqueue
                 try {
-                    enqueueOnNext(t);
+                    q.onNext(t);
+                    mayNeedToDrain = true;
                     drain = true;
                 } catch (MissingBackpressureException e) {
                     onError(e);
@@ -343,7 +373,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
                  * r.o.OperatorMergePerf.mergeNSyncStreamsOfN     1000  thrpt         5       78.795        1.766    ops/s
                  * } </pre>
                  */
-                parentSubscriber.drainQueuesIfNeeded();
+                mayNeedToDrain = !parentSubscriber.drainQueuesIfNeeded();
             }
         }
 
@@ -362,19 +392,15 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
                 if (parentSubscriber.getEmitLock()) {
                     try {
                         // drain this queue first (before sending complete)
-                        if (q != null) {
-                            Object o;
-                            while ((o = q.poll()) != null) {
-                                q.accept(o, parentSubscriber.actual);
-                            }
-                        }
+                        drainQueue();
+                        // don't need to request(n) more here since we have a terminal state
                         parentSubscriber.completeInner(this);
                     } finally {
                         drain = parentSubscriber.releaseEmitLock();
                     }
                 } else {
                     // can't emit so must enqueue
-                    enqueueComplete();
+                    q.onCompleted();
                     drain = true;
                 }
                 if (drain) {
@@ -383,12 +409,16 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
             }
         }
 
-        private void enqueueOnNext(T t) throws MissingBackpressureException {
-            q.onNext(t);
-        }
-
-        private void enqueueComplete() {
-            q.onCompleted();
+        private int drainQueue() {
+            int emitted = 0;
+            if (q != null) {
+                Object o;
+                while ((o = q.poll()) != null) {
+                    emitted++;
+                    q.accept(o, parentSubscriber.actual);
+                }
+            }
+            return emitted;
         }
 
     }
