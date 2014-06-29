@@ -17,6 +17,7 @@ package rx.lang.scala.examples
 
 import rx.lang.scala.Observable
 import scala.concurrent.duration._
+import scala.language.postfixOps
 
 object Olympics {
   case class Medal(val year: Int, val games: String, val discipline: String, val medal: String, val athlete: String, val country: String)

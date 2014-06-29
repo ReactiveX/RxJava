@@ -56,27 +56,27 @@ class ObservableTests extends JUnitSuite {
     //correctly rejected:
     //val wrongDemat = Observable("hello").dematerialize
 
-    assertEquals(demat.toBlockingObservable.toIterable.toList, List(1, 2, 3))
+    assertEquals(demat.toBlocking.toIterable.toList, List(1, 2, 3))
 }
 
   @Test def TestScan() {
      val xs = Observable.items(0,1,2,3)
      val ys = xs.scan(0)(_+_)
-     assertEquals(List(0,0,1,3,6), ys.toBlockingObservable.toList)
+     assertEquals(List(0,0,1,3,6), ys.toBlocking.toList)
      val zs = xs.scan((x: Int, y:Int) => x*y)
-     assertEquals(List(0, 0, 0, 0), zs.toBlockingObservable.toList)
+     assertEquals(List(0, 0, 0, 0), zs.toBlocking.toList)
   }
 
   // Test that Java's firstOrDefault propagates errors.
   // If this changes (i.e. it suppresses errors and returns default) then Scala's firstOrElse
   // should be changed accordingly.
   @Test def testJavaFirstOrDefault() {
-    assertEquals(1, rx.Observable.from(1, 2).firstOrDefault(10).toBlockingObservable().single)
-    assertEquals(10, rx.Observable.empty().firstOrDefault(10).toBlockingObservable().single)
+    assertEquals(1, rx.Observable.from(1, 2).firstOrDefault(10).toBlocking().single)
+    assertEquals(10, rx.Observable.empty().firstOrDefault(10).toBlocking().single)
     val msg = "msg6251"
     var receivedMsg = "none"
     try {
-      rx.Observable.error(new Exception(msg)).firstOrDefault(10).toBlockingObservable().single
+      rx.Observable.error(new Exception(msg)).firstOrDefault(10).toBlocking().single
     } catch {
       case e: Exception => receivedMsg = e.getCause().getMessage()
     }
@@ -86,15 +86,15 @@ class ObservableTests extends JUnitSuite {
   @Test def testFirstOrElse() {
     def mustNotBeCalled: String = sys.error("this method should not be called")
     def mustBeCalled: String = "this is the default value"
-    assertEquals("hello", Observable.items("hello").firstOrElse(mustNotBeCalled).toBlockingObservable.single)
-    assertEquals("this is the default value", Observable.empty.firstOrElse(mustBeCalled).toBlockingObservable.single)
+    assertEquals("hello", Observable.items("hello").firstOrElse(mustNotBeCalled).toBlocking.single)
+    assertEquals("this is the default value", Observable.empty.firstOrElse(mustBeCalled).toBlocking.single)
   }
 
   @Test def testTestWithError() {
     val msg = "msg6251"
     var receivedMsg = "none"
     try {
-      Observable.error[Int](new Exception(msg)).firstOrElse(10).toBlockingObservable.single
+      Observable.error[Int](new Exception(msg)).firstOrElse(10).toBlocking.single
     } catch {
       case e: Exception => receivedMsg = e.getCause().getMessage()
     }
@@ -103,18 +103,18 @@ class ObservableTests extends JUnitSuite {
 
   @Test def testFromFuture() {
     val o = Observable from Future { 5 }
-    assertEquals(5, o.toBlockingObservable.single)
+    assertEquals(5, o.toBlocking.single)
   }
 
   @Test def testFromFutureWithDelay() {
     val o = Observable from Future { Thread.sleep(200); 42 }
-    assertEquals(42, o.toBlockingObservable.single)
+    assertEquals(42, o.toBlocking.single)
   }
 
   @Test def testFromFutureWithError() {
     val err = new Exception("ooops42")
     val o: Observable[Int] = Observable from Future { Thread.sleep(200); throw err }
-    assertEquals(List(Notification.OnError(err)), o.materialize.toBlockingObservable.toList)
+    assertEquals(List(Notification.OnError(err)), o.materialize.toBlocking.toList)
   }
 
   @Test def testFromFutureWithSubscribeOnlyAfterCompletion() {
@@ -122,14 +122,14 @@ class ObservableTests extends JUnitSuite {
     val o = Observable from f
     val res = Await.result(f, Duration.Inf)
     assertEquals(6, res)
-    assertEquals(6, o.toBlockingObservable.single)
+    assertEquals(6, o.toBlocking.single)
   }
 
   @Test def testJoin() {
      val xs = Observable.items(1,2,3)
      val ys = Observable.items("a")
      val zs = xs.join[String,String](ys, x => Observable.never, y => Observable.never, (x,y) => y+x)
-     assertEquals(List("a1", "a2", "a3"),zs.toBlockingObservable.toList)
+     assertEquals(List("a1", "a2", "a3"),zs.toBlocking.toList)
   }
 
   @Test def testTimestampWithScheduler() {
@@ -149,32 +149,32 @@ class ObservableTests extends JUnitSuite {
 
   @Test def testHead() {
     val o: Observable[String] = List("alice", "bob", "carol").toObservable.head
-    assertEquals(List("alice"), o.toBlockingObservable.toList)
+    assertEquals(List("alice"), o.toBlocking.toList)
   }
 
   @Test(expected = classOf[NoSuchElementException])
   def testHeadWithEmptyObservable() {
     val o: Observable[String] = List[String]().toObservable.head
-    o.toBlockingObservable.toList
+    o.toBlocking.toList
   }
 
   @Test def testTail() {
     val o: Observable[String] = List("alice", "bob", "carol").toObservable.tail
-    assertEquals(List("bob", "carol"), o.toBlockingObservable.toList)
-    assertEquals(List("bob", "carol"), o.toBlockingObservable.toList)
+    assertEquals(List("bob", "carol"), o.toBlocking.toList)
+    assertEquals(List("bob", "carol"), o.toBlocking.toList)
   }
 
   @Test(expected = classOf[UnsupportedOperationException])
   def testTailWithEmptyObservable() {
     val o: Observable[String] = List[String]().toObservable.tail
-    o.toBlockingObservable.toList
+    o.toBlocking.toList
   }
 
   @Test
   def testZipWithIndex() {
     val o = List("alice", "bob", "carol").toObservable.zipWithIndex.map(_._2)
-    assertEquals(List(0, 1, 2), o.toBlockingObservable.toList)
-    assertEquals(List(0, 1, 2), o.toBlockingObservable.toList)
+    assertEquals(List(0, 1, 2), o.toBlocking.toList)
+    assertEquals(List(0, 1, 2), o.toBlocking.toList)
   }
 
   @Test

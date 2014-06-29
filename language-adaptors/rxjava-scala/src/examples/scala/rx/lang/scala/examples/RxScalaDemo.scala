@@ -117,7 +117,7 @@ class RxScalaDemo extends JUnitSuite {
 
     val b = (first zip second) forall { case (a, b) => a == b }
 
-    assertTrue(b.toBlockingObservable.single)
+    assertTrue(b.toBlocking.single)
   }
 
   @Test def testObservableComparisonWithForComprehension() {
@@ -128,13 +128,13 @@ class RxScalaDemo extends JUnitSuite {
 
     val b1 = booleans.forall(identity)
 
-    assertTrue(b1.toBlockingObservable.single)
+    assertTrue(b1.toBlocking.single)
   }
 
   @Test def testStartWithIsUnnecessary() {
     val before = List(-2, -1, 0).toObservable
     val source = List(1, 2, 3).toObservable
-    println((before ++ source).toBlockingObservable.toList)
+    println((before ++ source).toBlocking.toList)
   }
 
   @Test def mergeTwoExample() {
@@ -152,7 +152,7 @@ class RxScalaDemo extends JUnitSuite {
   @Test def flattenManyExample() {
     val o = Observable.interval(500 millis).map(n => myInterval((n+1)*100))
     val stopper = Observable.interval(5 seconds)
-    o.flatten.takeUntil(stopper).toBlockingObservable.foreach(println(_))
+    o.flatten.takeUntil(stopper).toBlocking.foreach(println(_))
   }
 
   @Test def flattenSomeExample() {
@@ -161,7 +161,7 @@ class RxScalaDemo extends JUnitSuite {
       Observable.interval(200 millis),
       Observable.interval(400 millis),
       Observable.interval(800 millis)
-    ).toObservable.flatten.take(12).toBlockingObservable.foreach(println(_))
+    ).toObservable.flatten.take(12).toBlocking.foreach(println(_))
   }
 
   @Test def flattenExample() {
@@ -190,7 +190,7 @@ class RxScalaDemo extends JUnitSuite {
   @Test def bufferExample() {
     val o = Observable.from(1 to 18).zip(Observable.interval(100 millis)).map(_._1)
     val boundary = Observable.interval(500 millis)
-    o.buffer(boundary).toBlockingObservable.foreach((l: Seq[Int]) => println(l.mkString("[", ", ", "]")))
+    o.buffer(boundary).toBlocking.foreach((l: Seq[Int]) => println(l.mkString("[", ", ", "]")))
   }
 
   @Test def windowExample() {
@@ -208,7 +208,7 @@ class RxScalaDemo extends JUnitSuite {
   }
 
   @Test def testReduce() {
-    assertEquals(10, List(1, 2, 3, 4).toObservable.reduce(_ + _).toBlockingObservable.single)
+    assertEquals(10, List(1, 2, 3, 4).toObservable.reduce(_ + _).toBlocking.single)
   }
 
   @Test def testForeach() {
@@ -218,13 +218,13 @@ class RxScalaDemo extends JUnitSuite {
     // for (n <- numbers) println(n+10)
 
     // but on BlockingObservable, it is:
-    for (n <- numbers.toBlockingObservable) println(n+10)
+    for (n <- numbers.toBlocking) println(n+10)
   }
 
   @Test def testForComprehension() {
     val observables = List(List(1, 2, 3).toObservable, List(10, 20, 30).toObservable).toObservable
     val squares = (for (o <- observables; i <- o if i % 2 == 0) yield i*i)
-    assertEquals(squares.toBlockingObservable.toList, List(4, 100, 400, 900))
+    assertEquals(squares.toBlocking.toList, List(4, 100, 400, 900))
   }
 
   @Test def nextExample() {
@@ -275,21 +275,21 @@ class RxScalaDemo extends JUnitSuite {
     val m = List(1, 2, 3, 4).toObservable
     val g = m.groupBy(i => i % 2)
     val t = g.flatMap((p: (Int, Observable[Int])) => p._2)
-    assertEquals(List(1, 2, 3, 4), t.toBlockingObservable.toList)
+    assertEquals(List(1, 2, 3, 4), t.toBlocking.toList)
   }
 
   @Test def testGroupByThenFlatMapByForComprehension() {
     val m = List(1, 2, 3, 4).toObservable
     val g = m.groupBy(i => i % 2)
     val t = for ((i, o) <- g; n <- o) yield n
-    assertEquals(List(1, 2, 3, 4), t.toBlockingObservable.toList)
+    assertEquals(List(1, 2, 3, 4), t.toBlocking.toList)
   }
 
   @Test def testGroupByThenFlatMapByForComprehensionWithTiming() {
     val m = Observable.interval(100 millis).take(4)
     val g = m.groupBy(i => i % 2)
     val t = for ((i, o) <- g; n <- o) yield n
-    assertEquals(List(0, 1, 2, 3), t.toBlockingObservable.toList)
+    assertEquals(List(0, 1, 2, 3), t.toBlocking.toList)
   }
 
   @Test def timingTest() {
@@ -300,7 +300,7 @@ class RxScalaDemo extends JUnitSuite {
       println("Observable for modulo" + modulo + " started")
 
       if (firstOnly) numbers.take(1) else numbers
-    }).flatten.toBlockingObservable.foreach(println(_))
+    }).flatten.toBlocking.foreach(println(_))
   }
 
   @Test def timingTest1() {
@@ -311,7 +311,7 @@ class RxScalaDemo extends JUnitSuite {
     (for ((modulo, numbers) <- numbersByModulo3) yield {
       println("Observable for modulo" + modulo + " started at t = " + (System.currentTimeMillis - t0))
       numbers.map(n => s"${n} is in the modulo-$modulo group")
-    }).flatten.toBlockingObservable.foreach(println(_))
+    }).flatten.toBlocking.foreach(println(_))
   }
   
   @Test def testOlympicYearTicks() {
@@ -483,9 +483,9 @@ class RxScalaDemo extends JUnitSuite {
   }
 
   @Test def testSingleOption() {
-    assertEquals(None,    List(1, 2).toObservable.toBlockingObservable.singleOption)
-    assertEquals(Some(1), List(1).toObservable.toBlockingObservable.singleOption)
-    assertEquals(None,    List().toObservable.toBlockingObservable.singleOption)
+    assertEquals(None,    List(1, 2).toObservable.toBlocking.singleOption)
+    assertEquals(Some(1), List(1).toObservable.toBlocking.singleOption)
+    assertEquals(None,    List().toObservable.toBlocking.singleOption)
   }
 
   // We can't put a general average method into Observable.scala, because Scala's Numeric
@@ -496,47 +496,47 @@ class RxScalaDemo extends JUnitSuite {
   }
 
   @Test def averageExample() {
-    println(doubleAverage(Observable.empty).toBlockingObservable.single)
-    println(doubleAverage(List(0.0).toObservable).toBlockingObservable.single)
-    println(doubleAverage(List(4.44).toObservable).toBlockingObservable.single)
-    println(doubleAverage(List(1, 2, 3.5).toObservable).toBlockingObservable.single)
+    println(doubleAverage(Observable.empty).toBlocking.single)
+    println(doubleAverage(List(0.0).toObservable).toBlocking.single)
+    println(doubleAverage(List(4.44).toObservable).toBlocking.single)
+    println(doubleAverage(List(1, 2, 3.5).toObservable).toBlocking.single)
   }
 
   @Test def testSum() {
-    assertEquals(10, List(1, 2, 3, 4).toObservable.sum.toBlockingObservable.single)
-    assertEquals(6, List(4, 2).toObservable.sum.toBlockingObservable.single)
-    assertEquals(0, List[Int]().toObservable.sum.toBlockingObservable.single)
+    assertEquals(10, List(1, 2, 3, 4).toObservable.sum.toBlocking.single)
+    assertEquals(6, List(4, 2).toObservable.sum.toBlocking.single)
+    assertEquals(0, List[Int]().toObservable.sum.toBlocking.single)
   }
 
   @Test def testProduct() {
-    assertEquals(24, List(1, 2, 3, 4).toObservable.product.toBlockingObservable.single)
-    assertEquals(8, List(4, 2).toObservable.product.toBlockingObservable.single)
-    assertEquals(1, List[Int]().toObservable.product.toBlockingObservable.single)
+    assertEquals(24, List(1, 2, 3, 4).toObservable.product.toBlocking.single)
+    assertEquals(8, List(4, 2).toObservable.product.toBlocking.single)
+    assertEquals(1, List[Int]().toObservable.product.toBlocking.single)
   }
 
   @Test def mapWithIndexExample() {
     // We don't need mapWithIndex because we already have zipWithIndex, which we can easily
     // combine with map:
     List("a", "b", "c").toObservable.zipWithIndex.map(pair => pair._1 + " has index " + pair._2)
-      .toBlockingObservable.foreach(println(_))
+      .toBlocking.foreach(println(_))
 
     // Or even nicer with for-comprehension syntax:
     (for ((letter, index) <- List("a", "b", "c").toObservable.zipWithIndex) yield letter + " has index " + index)
-      .toBlockingObservable.foreach(println(_))
+      .toBlocking.foreach(println(_))
   }
 
   // source Observables are all known:
   @Test def zip3Example() {
     val o = Observable.zip(List(1, 2).toObservable, List(10, 20).toObservable, List(100, 200).toObservable)
     (for ((n1, n2, n3) <- o) yield s"$n1, $n2 and $n3")
-      .toBlockingObservable.foreach(println(_))
+      .toBlocking.foreach(println(_))
   }
 
   // source Observables are in an Observable:
   @Test def zipManyObservableExample() {
     val observables = List(List(1, 2).toObservable, List(10, 20).toObservable, List(100, 200).toObservable).toObservable
     (for (seq <- Observable.zip(observables)) yield seq.mkString("(", ", ", ")"))
-      .toBlockingObservable.foreach(println(_))
+      .toBlocking.foreach(println(_))
   }
 
   /**
@@ -546,7 +546,7 @@ class RxScalaDemo extends JUnitSuite {
   @Test def zipWithIterableBadExample() {
     val o1 = Observable.interval(100 millis, IOScheduler()).map(_ * 100).take(3)
     val o2 = Observable.from(0 until Int.MaxValue).doOnEach(i => println(i + " from o2"))
-    o1.zip(o2).toBlockingObservable.foreach(println(_))
+    o1.zip(o2).toBlocking.foreach(println(_))
   }
 
   /**
@@ -561,55 +561,55 @@ class RxScalaDemo extends JUnitSuite {
         i
       }
     }
-    o1.zip(iter).toBlockingObservable.foreach(println(_))
+    o1.zip(iter).toBlocking.foreach(println(_))
   }
 
   @Test def takeFirstWithCondition() {
     val condition: Int => Boolean = _ >= 3
-    assertEquals(3, List(1, 2, 3, 4).toObservable.filter(condition).first.toBlockingObservable.single)
+    assertEquals(3, List(1, 2, 3, 4).toObservable.filter(condition).first.toBlocking.single)
   }
 
   @Test def firstOrDefaultWithCondition() {
     val condition: Int => Boolean = _ >= 3
-    assertEquals(3, List(1, 2, 3, 4).toObservable.filter(condition).firstOrElse(10).toBlockingObservable.single)
-    assertEquals(10, List(-1, 0, 1).toObservable.filter(condition).firstOrElse(10).toBlockingObservable.single)
+    assertEquals(3, List(1, 2, 3, 4).toObservable.filter(condition).firstOrElse(10).toBlocking.single)
+    assertEquals(10, List(-1, 0, 1).toObservable.filter(condition).firstOrElse(10).toBlocking.single)
   }
 
   @Test def firstLastSingleExample() {
-    assertEquals(1, List(1, 2, 3, 4).toObservable.head.toBlockingObservable.single)
-    assertEquals(1, List(1, 2, 3, 4).toObservable.first.toBlockingObservable.single)
-    assertEquals(4, List(1, 2, 3, 4).toObservable.last.toBlockingObservable.single)
-    assertEquals(1, List(1).toObservable.single.toBlockingObservable.single)
+    assertEquals(1, List(1, 2, 3, 4).toObservable.head.toBlocking.single)
+    assertEquals(1, List(1, 2, 3, 4).toObservable.first.toBlocking.single)
+    assertEquals(4, List(1, 2, 3, 4).toObservable.last.toBlocking.single)
+    assertEquals(1, List(1).toObservable.single.toBlocking.single)
 
-    assertEquals(1, List(1, 2, 3, 4).toObservable.toBlockingObservable.head)
-    assertEquals(1, List(1, 2, 3, 4).toObservable.toBlockingObservable.first)
-    assertEquals(4, List(1, 2, 3, 4).toObservable.toBlockingObservable.last)
-    assertEquals(1, List(1).toObservable.toBlockingObservable.single)
+    assertEquals(1, List(1, 2, 3, 4).toObservable.toBlocking.head)
+    assertEquals(1, List(1, 2, 3, 4).toObservable.toBlocking.first)
+    assertEquals(4, List(1, 2, 3, 4).toObservable.toBlocking.last)
+    assertEquals(1, List(1).toObservable.toBlocking.single)
   }
 
   @Test def dropExample() {
     val o = List(1, 2, 3, 4).toObservable
-    assertEquals(List(3, 4), o.drop(2).toBlockingObservable.toList)
+    assertEquals(List(3, 4), o.drop(2).toBlocking.toList)
   }
 
   @Test def dropWithTimeExample() {
     val o = List(1, 2, 3, 4).toObservable.zip(
       Observable.interval(500 millis, IOScheduler())).map(_._1) // emit every 500 millis
     println(
-      o.drop(1250 millis, IOScheduler()).toBlockingObservable.toList // output List(3, 4)
+      o.drop(1250 millis, IOScheduler()).toBlocking.toList // output List(3, 4)
     )
   }
 
   @Test def dropRightExample() {
     val o = List(1, 2, 3, 4).toObservable
-    assertEquals(List(1, 2), o.dropRight(2).toBlockingObservable.toList)
+    assertEquals(List(1, 2), o.dropRight(2).toBlocking.toList)
   }
 
   @Test def dropRightWithTimeExample() {
     val o = List(1, 2, 3, 4).toObservable.zip(
       Observable.interval(500 millis, IOScheduler())).map(_._1) // emit every 500 millis
     println(
-      o.dropRight(750 millis, IOScheduler()).toBlockingObservable.toList // output List(1, 2)
+      o.dropRight(750 millis, IOScheduler()).toBlocking.toList // output List(1, 2)
     )
   }
 
@@ -618,7 +618,7 @@ class RxScalaDemo extends JUnitSuite {
       Observable.interval(700 millis, IOScheduler())).map(_._1) // emit every 700 millis
     val other = List(1).toObservable.delay(1 seconds)
     println(
-      o.dropUntil(other).toBlockingObservable.toList // output List("Bob", "Carlos")
+      o.dropUntil(other).toBlocking.toList // output List("Bob", "Carlos")
     )
   }
 
@@ -635,24 +635,24 @@ class RxScalaDemo extends JUnitSuite {
 
   @Test def parallelExample() {
     val t0 = System.currentTimeMillis()
-    Observable.from(1 to 10).parallel(work(_)).toBlockingObservable.foreach(println(_))
+    Observable.from(1 to 10).parallel(work(_)).toBlocking.foreach(println(_))
     println(s"Work took ${System.currentTimeMillis()-t0} ms")
   }
 
   @Test def exampleWithoutParallel() {
     val t0 = System.currentTimeMillis()
-    work(Observable.from(1 to 10)).toBlockingObservable.foreach(println(_))
+    work(Observable.from(1 to 10)).toBlocking.foreach(println(_))
     println(s"Work took ${System.currentTimeMillis()-t0} ms")
   }
 
   @Test def toSortedList() {
-    assertEquals(Seq(7, 8, 9, 10), List(10, 7, 8, 9).toObservable.toSeq.map(_.sorted).toBlockingObservable.single)
+    assertEquals(Seq(7, 8, 9, 10), List(10, 7, 8, 9).toObservable.toSeq.map(_.sorted).toBlocking.single)
     val f = (a: Int, b: Int) => b < a
-    assertEquals(Seq(10, 9, 8, 7), List(10, 7, 8, 9).toObservable.toSeq.map(_.sortWith(f)).toBlockingObservable.single)
+    assertEquals(Seq(10, 9, 8, 7), List(10, 7, 8, 9).toObservable.toSeq.map(_.sortWith(f)).toBlocking.single)
   }
 
   @Test def timestampExample() {
-    val timestamped = Observable.interval(100 millis).take(6).timestamp.toBlockingObservable
+    val timestamped = Observable.interval(100 millis).take(6).timestamp.toBlocking
     for ((millis, value) <- timestamped if value > 0) {
       println(value + " at t = " + millis)
     }
@@ -761,7 +761,7 @@ class RxScalaDemo extends JUnitSuite {
       .map(_.toLowerCase)
       .filter(_ == "rxscala")
       .size
-    println(s"RxScala appears ${count.toBlockingObservable.single} times in http://rxscala.github.io/")
+    println(s"RxScala appears ${count.toBlocking.single} times in http://rxscala.github.io/")
   }
 
   def output(s: String): Unit = println(s)
@@ -771,7 +771,7 @@ class RxScalaDemo extends JUnitSuite {
    *  will happen twice.
    */
   def waitFor[T](obs: Observable[T]): Unit = {
-    obs.toBlockingObservable.toIterable.last
+    obs.toBlocking.toIterable.last
   }
 
   @Test def doOnCompletedExample(): Unit = {
@@ -805,7 +805,7 @@ class RxScalaDemo extends JUnitSuite {
 
   @Test def timeoutExample(): Unit = {
     val other = List(100L, 200L, 300L).toObservable
-    val result = Observable.interval(100 millis).timeout(50 millis, other).toBlockingObservable.toList
+    val result = Observable.interval(100 millis).timeout(50 millis, other).toBlocking.toList
     println(result)
   }
 
@@ -820,14 +820,14 @@ class RxScalaDemo extends JUnitSuite {
         ComputationScheduler()).take(1)
     }
     val other = List(100L, 200L, 300L).toObservable
-    val result = Observable.interval(100 millis).timeout(firstTimeoutSelector, timeoutSelector, other).toBlockingObservable.toList
+    val result = Observable.interval(100 millis).timeout(firstTimeoutSelector, timeoutSelector, other).toBlocking.toList
     println(result)
   }
 
   @Test def ambExample(): Unit = {
     val o1 = List(100L, 200L, 300L).toObservable.delay(4 seconds)
     val o2 = List(1000L, 2000L, 3000L).toObservable.delay(2 seconds)
-    val result = o1.amb(o2).toBlockingObservable.toList
+    val result = o1.amb(o2).toBlocking.toList
     println(result)
   }
 
@@ -850,13 +850,13 @@ class RxScalaDemo extends JUnitSuite {
 
   @Test def delayExample(): Unit = {
     val o = List(100L, 200L, 300L).toObservable.delay(2 seconds)
-    val result = o.toBlockingObservable.toList
+    val result = o.toBlocking.toList
     println(result)
   }
 
   @Test def delayExample2(): Unit = {
     val o = List(100L, 200L, 300L).toObservable.delay(2 seconds, IOScheduler())
-    val result = o.toBlockingObservable.toList
+    val result = o.toBlocking.toList
     println(result)
   }
 
@@ -864,7 +864,7 @@ class RxScalaDemo extends JUnitSuite {
     val o = List(100, 500, 200).toObservable.delay(
       (i: Int) => Observable.items(i).delay(i millis)
     )
-    o.toBlockingObservable.foreach(println(_))
+    o.toBlocking.foreach(println(_))
   }
 
   @Test def delayExample4(): Unit = {
@@ -872,36 +872,36 @@ class RxScalaDemo extends JUnitSuite {
       () => Observable.interval(500 millis).take(1),
       (i: Int) => Observable.items(i).delay(i millis)
     )
-    o.toBlockingObservable.foreach(println(_))
+    o.toBlocking.foreach(println(_))
   }
 
   @Test def delaySubscriptionExample(): Unit = {
     val o = List(100L, 200L, 300L).toObservable.delaySubscription(2 seconds)
-    val result = o.toBlockingObservable.toList
+    val result = o.toBlocking.toList
     println(result)
   }
 
   @Test def delaySubscriptionExample2(): Unit = {
     val o = List(100L, 200L, 300L).toObservable.delaySubscription(2 seconds, IOScheduler())
-    val result = o.toBlockingObservable.toList
+    val result = o.toBlocking.toList
     println(result)
   }
 
   @Test def elementAtExample(): Unit = {
     val o = List("red", "green", "blue").toObservable
-    println(o.elementAt(2).toBlockingObservable.single)
+    println(o.elementAt(2).toBlocking.single)
   }
 
   @Test def elementAtOrDefaultExample(): Unit = {
     val o : Observable[Seq[Char]] = List("red".toList, "green".toList, "blue".toList).toObservable.elementAtOrDefault(3, "black".toSeq)
-    println(o.toBlockingObservable.single)
+    println(o.toBlocking.single)
   }
 
   @Test def toMapExample1(): Unit = {
     val o : Observable[String] = List("alice", "bob", "carol").toObservable
     val keySelector = (s: String) => s.head
     val m = o.toMap(keySelector)
-    println(m.toBlockingObservable.single)
+    println(m.toBlocking.single)
   }
 
   @Test def toMapExample2(): Unit = {
@@ -909,7 +909,7 @@ class RxScalaDemo extends JUnitSuite {
     val keySelector = (s: String) => s.head
     val valueSelector = (s: String) => s.tail
     val m = o.toMap(keySelector, valueSelector)
-    println(m.toBlockingObservable.single)
+    println(m.toBlocking.single)
   }
 
   @Test def toMapExample3(): Unit = {
@@ -918,7 +918,7 @@ class RxScalaDemo extends JUnitSuite {
     val valueSelector = (s: String) => s.tail
     val mapFactory = () => Map(('s',"tart"))
     val m = o.toMap(keySelector, valueSelector, mapFactory)
-    println(m.toBlockingObservable.single)
+    println(m.toBlocking.single)
   }
 
   @Test def toMultimapExample1(): Unit = {
@@ -957,30 +957,30 @@ class RxScalaDemo extends JUnitSuite {
 
   @Test def containsExample(): Unit = {
     val o1 = List(1, 2, 3).toObservable.contains(2)
-    assertTrue(o1.toBlockingObservable.single)
+    assertTrue(o1.toBlocking.single)
 
     val o2 = List(1, 2, 3).toObservable.contains(4)
-    assertFalse(o2.toBlockingObservable.single)
+    assertFalse(o2.toBlocking.single)
   }
 
   @Test def repeatExample1(): Unit = {
     val o : Observable[String] = List("alice", "bob", "carol").toObservable.repeat.take(6)
-    assertEquals(List("alice", "bob", "carol", "alice", "bob", "carol"), o.toBlockingObservable.toList)
+    assertEquals(List("alice", "bob", "carol", "alice", "bob", "carol"), o.toBlocking.toList)
   }
 
   @Test def repeatExample2(): Unit = {
     val o : Observable[String] = List("alice", "bob", "carol").toObservable.repeat(2)
-    assertEquals(List("alice", "bob", "carol", "alice", "bob", "carol"), o.toBlockingObservable.toList)
+    assertEquals(List("alice", "bob", "carol", "alice", "bob", "carol"), o.toBlocking.toList)
   }
 
   @Test def retryExample1(): Unit = {
     val o : Observable[String] = List("alice", "bob", "carol").toObservable
-    assertEquals(List("alice", "bob", "carol"), o.retry.toBlockingObservable.toList)
+    assertEquals(List("alice", "bob", "carol"), o.retry.toBlocking.toList)
   }
 
   @Test def retryExample2(): Unit = {
     val o : Observable[String] = List("alice", "bob", "carol").toObservable
-    assertEquals(List("alice", "bob", "carol"), o.retry(3).toBlockingObservable.toList)
+    assertEquals(List("alice", "bob", "carol"), o.retry(3).toBlocking.toList)
   }
 
   @Test def retryExample3(): Unit = {
@@ -1015,7 +1015,7 @@ class RxScalaDemo extends JUnitSuite {
           e => subscriber.onError(e),
           () => subscriber.onCompleted
         )
-    }.toBlockingObservable.toList
+    }.toBlocking.toList
     println(o)
   }
 
@@ -1061,7 +1061,7 @@ class RxScalaDemo extends JUnitSuite {
       .filter(_.isLetter)
       .lift(skipWithException(100))
     try {
-      o.toBlockingObservable.toList
+      o.toBlocking.toList
     }
     catch {
       case e: IllegalArgumentException => println("IllegalArgumentException from skipWithException")
@@ -1086,12 +1086,12 @@ class RxScalaDemo extends JUnitSuite {
   @Test def startWithExample(): Unit = {
     val o1 = List(3, 4).toObservable
     val o2 = 1 +: 2 +: o1
-    assertEquals(List(1, 2, 3, 4), o2.toBlockingObservable.toList)
+    assertEquals(List(1, 2, 3, 4), o2.toBlocking.toList)
   }
 
   @Test def appendExample(): Unit = {
     val o = List(1, 2).toObservable :+ 3 :+ 4
-    assertEquals(List(1, 2, 3, 4), o.toBlockingObservable.toList)
+    assertEquals(List(1, 2, 3, 4), o.toBlocking.toList)
   }
 
   @Test def sequenceEqualExampe(): Unit = {
@@ -1099,9 +1099,9 @@ class RxScalaDemo extends JUnitSuite {
     val o2 = List(1, 2, 3).toObservable
     val o3 = List(1, 2).toObservable
     val o4 = List(1.0, 2.0, 3.0).toObservable
-    assertTrue(o1.sequenceEqual(o2).toBlockingObservable.single)
-    assertFalse(o1.sequenceEqual(o3).toBlockingObservable.single)
-    assertTrue(o1.sequenceEqual(o4).toBlockingObservable.single)
+    assertTrue(o1.sequenceEqual(o2).toBlocking.single)
+    assertFalse(o1.sequenceEqual(o3).toBlocking.single)
+    assertTrue(o1.sequenceEqual(o4).toBlocking.single)
   }
 
   @Test def takeExample(): Unit = {
@@ -1109,12 +1109,12 @@ class RxScalaDemo extends JUnitSuite {
       .zip(Observable.interval(300 millis))
       .map(_._1)
       .take(2 seconds)
-    println(o.toBlockingObservable.toList)
+    println(o.toBlocking.toList)
   }
 
   @Test def takeRightExample(): Unit = {
     val o = (1 to 6).toObservable.takeRight(3)
-    assertEquals(List(4, 5, 6), o.toBlockingObservable.toList)
+    assertEquals(List(4, 5, 6), o.toBlocking.toList)
   }
 
   @Test def takeRightExample2(): Unit = {
@@ -1122,7 +1122,7 @@ class RxScalaDemo extends JUnitSuite {
       .zip(Observable.interval(100 millis))
       .map(_._1)
       .takeRight(300 millis)
-    println(o.toBlockingObservable.toList)
+    println(o.toBlocking.toList)
   }
 
   @Test def takeRightExample3(): Unit = {
@@ -1130,7 +1130,7 @@ class RxScalaDemo extends JUnitSuite {
       .zip(Observable.interval(100 millis))
       .map(_._1)
       .takeRight(2, 300 millis)
-    println(o.toBlockingObservable.toList)
+    println(o.toBlocking.toList)
   }
 
   @Test def timeIntervalExample(): Unit = {
@@ -1138,7 +1138,7 @@ class RxScalaDemo extends JUnitSuite {
       .zip(Observable.interval(100 millis))
       .map(_._1)
       .timeInterval
-    println(o.toBlockingObservable.toList)
+    println(o.toBlocking.toList)
   }
 
   @Test def schedulerExample1(): Unit = {
@@ -1236,12 +1236,12 @@ class RxScalaDemo extends JUnitSuite {
 
   @Test def parallelMergeExample() {
     val o: Observable[Observable[Int]] = (1 to 100).toObservable.map(_ => (1 to 10).toObservable)
-    assertEquals(100, o.size.toBlockingObservable.single)
-    assertEquals(1000, o.flatten.size.toBlockingObservable.single)
+    assertEquals(100, o.size.toBlocking.single)
+    assertEquals(1000, o.flatten.size.toBlocking.single)
 
     val o2: Observable[Observable[Int]] = o.parallelMerge(10, ComputationScheduler())
-    assertEquals(10, o2.size.toBlockingObservable.single)
-    assertEquals(1000, o2.flatten.size.toBlockingObservable.single)
+    assertEquals(10, o2.size.toBlocking.single)
+    assertEquals(1000, o2.flatten.size.toBlocking.single)
   }
 
   @Test def debounceExample() {
@@ -1254,7 +1254,7 @@ class RxScalaDemo extends JUnitSuite {
           Observable.interval(150 millis)
         }
     }
-    o.toBlockingObservable.foreach(println(_))
+    o.toBlocking.foreach(println(_))
   }
 
   @Test def flatMapExample() {
