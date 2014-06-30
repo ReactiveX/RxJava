@@ -36,7 +36,7 @@ public abstract class InputWithIncrementingInteger {
     public Observer<Integer> observer;
 
     public abstract int getSize();
-    
+
     @Setup
     public void setup(final Blackhole bh) {
         this.bh = bh;
@@ -104,6 +104,27 @@ public abstract class InputWithIncrementingInteger {
 
     public LatchedObserver<Integer> newLatchedObserver() {
         return new LatchedObserver<Integer>(bh);
+    }
+
+    public Subscriber<Integer> newSubscriber() {
+        return new Subscriber<Integer>() {
+
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(Integer t) {
+                bh.consume(t);
+            }
+
+        };
     }
 
 }

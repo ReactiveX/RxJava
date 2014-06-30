@@ -54,7 +54,7 @@ public final class SubscriptionList implements Subscription {
      * @param s
      *            the {@link Subscription} to add
      */
-    public void add(final Subscription s) {
+    public synchronized void add(final Subscription s) {
         if (unsubscribed) {
             s.unsubscribe();
         } else {
@@ -71,13 +71,19 @@ public final class SubscriptionList implements Subscription {
      */
     @Override
     public void unsubscribe() {
-        if (unsubscribed) {
-            return;
+        Collection<Subscription> toUnsubscribe = null;
+        synchronized (this) {
+            if (unsubscribed) {
+                return;
+            }
+            unsubscribed = true;
+            toUnsubscribe = subscriptions;
+            subscriptions = null;
         }
-        unsubscribed = true;
-        // we will only get here once
-        unsubscribeFromAll(subscriptions);
-        subscriptions = null;
+
+        if (toUnsubscribe != null) {
+            unsubscribeFromAll(toUnsubscribe);
+        }
     }
 
     private static void unsubscribeFromAll(Collection<Subscription> subscriptions) {
