@@ -51,7 +51,7 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
         this.op = null;
         this.cs = new SubscriptionList();
     }
-    
+
     protected Subscriber(int bufferRequest) {
         this.op = null;
         this.cs = new SubscriptionList();
@@ -62,7 +62,7 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
         this.op = op;
         this.cs = op.cs;
     }
-    
+
     protected Subscriber(Subscriber<?> op, int bufferRequest) {
         this.op = op;
         this.cs = op.cs;
@@ -74,7 +74,8 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
      * unsubscribed. If the list <em>is</em> marked as unsubscribed, {@code add} will indicate this by
      * explicitly unsubscribing the new {@code Subscription} as well.
      *
-     * @param s the {@code Subscription} to add
+     * @param s
+     *            the {@code Subscription} to add
      */
     public final void add(Subscription s) {
         cs.add(s);
@@ -100,12 +101,7 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
             if (p != null) {
                 shouldRequest = p;
             } else {
-                if (requested == -2) {
-                    // setProducer has already been called and passed on to a child so this would be a no-op ... fail instead
-                    throw new IllegalStateException("This Subscriber has no Producer to submit a request to");
-                } else {
-                    requested = n;
-                }
+                requested = n;
             }
         }
         // after releasing lock
@@ -129,7 +125,6 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
                 if (toRequest < 0) {
                     // we pass-thru to the next producer as nothing has been requested
                     setProducer = true;
-                    requested = -2; // special value specifying that we have passed on the producer so can't use setRequest here
                 }
 
             }

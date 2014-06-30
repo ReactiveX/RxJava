@@ -67,18 +67,6 @@ public class OperatorOnBackpressureBuffer<T> implements Operator<T, T> {
                 pollQueue(wip, requested, queue, child);
             }
 
-            @Override
-            protected Producer onSetProducer(final Producer producer) {
-                return new Producer() {
-
-                    @Override
-                    public void request(int n) {
-                        producer.request(n);
-                    }
-
-                };
-            }
-
         };
         
         // if child unsubscribes it should unsubscribe the parent, but not the other way around
