@@ -249,7 +249,7 @@ public class IndexedRingBuffer<E> implements Subscription {
      * @return int of next index to process, or last index seen if it exited early
      */
     public int forEach(Func1<? super E, Boolean> action, int startIndex) {
-        int endedAt = forEach(action, startIndex, SIZE);
+        int endedAt = forEach(action, startIndex, index.get());
         if (startIndex > 0 && endedAt == index.get()) {
             // start at the beginning again and go up to startIndex
             endedAt = forEach(action, 0, startIndex);
@@ -265,9 +265,17 @@ public class IndexedRingBuffer<E> implements Subscription {
         int maxIndex = index.get();
         int realIndex = startIndex;
         ElementSection<E> section = elements;
+
+        if (startIndex >= SIZE) {
+            int orig = startIndex;
+            // move into the correct section
+            section = getElementSection(startIndex);
+            startIndex = startIndex % SIZE;
+        }
+
         outer: while (section != null) {
-            for (int i = startIndex; i < endIndex; i++, realIndex++) {
-                if (realIndex >= maxIndex) {
+            for (int i = startIndex; i < SIZE; i++, realIndex++) {
+                if (realIndex >= maxIndex || realIndex >= endIndex) {
                     section = null;
                     break outer;
                 }
@@ -282,6 +290,7 @@ public class IndexedRingBuffer<E> implements Subscription {
                 }
             }
             section = section.next;
+            startIndex = 0; // reset to start for next section
         }
 
         // return the OutOfBounds index position if we processed all of them ... the one we should be less-than

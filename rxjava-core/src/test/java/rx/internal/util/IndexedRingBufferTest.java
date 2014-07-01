@@ -202,7 +202,23 @@ public class IndexedRingBufferTest {
         assertEquals(3, list.size());
         assertEquals(list, Arrays.asList("zero", "one", "two"));
         assertEquals(2, nextIndex); // 0, 1, 2 (// we ended early so we'll go back to the last index again next time)
+    }
 
+    @Test
+    public void testForEachAcrossSections() {
+        IndexedRingBuffer<Integer> buffer = IndexedRingBuffer.getInstance();
+        for (int i = 0; i < 10000; i++) {
+            buffer.add(i);
+        }
+
+        final ArrayList<String> list = new ArrayList<String>();
+        int nextIndex = buffer.forEach(accumulate(list), 5000);
+        assertEquals(10000, list.size());
+        assertEquals(5000, list.get(0));
+        assertEquals(9999, list.get(4999));
+        assertEquals(0, list.get(5000));
+        assertEquals(4999, list.get(9999));
+        assertEquals(5000, nextIndex);
     }
 
     @Test

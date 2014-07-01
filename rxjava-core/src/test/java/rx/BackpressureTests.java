@@ -45,7 +45,7 @@ public class BackpressureTests {
         ts.assertNoErrors();
         System.out.println("testObserveOn => Received: " + ts.getOnNextEvents().size() + "  Emitted: " + c.get());
         assertEquals(NUM, ts.getOnNextEvents().size());
-        assertTrue(c.get() < Producer.BUFFER_SIZE * 3);
+        assertTrue(c.get() < Producer.BUFFER_SIZE * 4);
     }
 
     @Test
@@ -70,7 +70,7 @@ public class BackpressureTests {
         ts.assertNoErrors();
         System.out.println("testObserveOnWithSlowConsumer => Received: " + ts.getOnNextEvents().size() + "  Emitted: " + c.get());
         assertEquals(NUM, ts.getOnNextEvents().size());
-        assertTrue(c.get() < Producer.BUFFER_SIZE * 1);
+        assertTrue(c.get() < Producer.BUFFER_SIZE * 2);
     }
 
     // currently the first starves the second
@@ -248,7 +248,7 @@ public class BackpressureTests {
             ts.assertNoErrors();
             System.out.println("testSubscribeOnScheduling => Received: " + ts.getOnNextEvents().size() + "  Emitted: " + c.get());
             assertEquals(NUM, ts.getOnNextEvents().size());
-            assertTrue(c.get() < Producer.BUFFER_SIZE * 3);
+            assertTrue(c.get() < Producer.BUFFER_SIZE * 4);
             Thread first = null;
             for (Thread t : threads) {
                 System.out.println("testSubscribeOnScheduling => thread: " + t);
