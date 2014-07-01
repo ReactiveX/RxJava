@@ -15,13 +15,10 @@
  */
 package rx.internal.util;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 import rx.Subscription;
-import rx.exceptions.CompositeException;
-import rx.functions.Action1;
+import rx.functions.Func1;
 
 /**
  * Similar to CompositeSubscription but giving extra access to internals so we can reuse a datastructure.
@@ -116,11 +113,20 @@ public final class SubscriptionIndexedRingBuffer<T extends Subscription> impleme
         }
     }
 
-    public List<Throwable> forEach(Action1<T> action) {
+    public int forEach(Func1<T, Boolean> action) {
+        return forEach(action, 0);
+    }
+    
+    /**
+     * 
+     * @param action
+     * @return int of last index seen if forEach exited early
+     */
+    public int forEach(Func1<T, Boolean> action, int startIndex) {
         if (unsubscribed == 1 || subscriptions == null) {
-            return Collections.emptyList();
+            return 0;
         }
-        return subscriptions.forEach(action);
+        return subscriptions.forEach(action, startIndex);
     }
 
     private static void unsubscribeFromAll(IndexedRingBuffer<? extends Subscription> subscriptions) {
@@ -129,30 +135,15 @@ public final class SubscriptionIndexedRingBuffer<T extends Subscription> impleme
         }
 
         // TODO migrate to drain (remove while we're doing this) so we don't have to immediately clear it in IndexedRingBuffer.releaseToPool?
-        List<Throwable> es = subscriptions.forEach(UNSUBSCRIBE);
-
-        if (!es.isEmpty()) {
-            if (es.size() == 1) {
-                Throwable t = es.get(0);
-                if (t instanceof RuntimeException) {
-                    throw (RuntimeException) t;
-                } else {
-                    throw new CompositeException(
-                            "Failed to unsubscribe to 1 or more subscriptions.", es);
-                }
-            } else {
-                throw new CompositeException(
-                        "Failed to unsubscribe to 2 or more subscriptions.", es);
-            }
-        }
-
+        subscriptions.forEach(UNSUBSCRIBE);
     }
 
-    private final static Action1<Subscription> UNSUBSCRIBE = new Action1<Subscription>() {
+    private final static Func1<Subscription, Boolean> UNSUBSCRIBE = new Func1<Subscription, Boolean>() {
 
         @Override
-        public void call(Subscription s) {
+        public Boolean call(Subscription s) {
             s.unsubscribe();
+            return Boolean.TRUE;
         }
     };
 

@@ -15,14 +15,11 @@
  */
 package rx.internal.util;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReferenceArray;
 
 import rx.Subscription;
-import rx.functions.Action1;
+import rx.functions.Func1;
 import rx.internal.util.unsafe.AtomicIntReferenceArray;
 import rx.internal.util.unsafe.UnsafeAccess;
 
@@ -103,7 +100,7 @@ public class IndexedRingBuffer<E> implements Subscription {
     }
 
     private IndexedRingBuffer() {
-        if(!UnsafeAccess.isUnsafeAvailable()) {
+        if (!UnsafeAccess.isUnsafeAvailable()) {
             throw new IllegalStateException("This does not work on systems without sun.misc.Unsafe");
         }
         // TODO need to make this class (or its users) have alternative support for non-Unsafe environments
@@ -241,14 +238,35 @@ public class IndexedRingBuffer<E> implements Subscription {
         return false;
     }
 
-    public List<Throwable> forEach(Action1<? super E> action) {
-        List<Throwable> es = null;
+    public int forEach(Func1<? super E, Boolean> action) {
+        return forEach(action, 0);
+    }
 
+    /**
+     * 
+     * @param action
+     *            that processes each item and returns true if it wants to continue to the next
+     * @return int of next index to process, or last index seen if it exited early
+     */
+    public int forEach(Func1<? super E, Boolean> action, int startIndex) {
+        int endedAt = forEach(action, startIndex, SIZE);
+        if (startIndex > 0 && endedAt == index.get()) {
+            // start at the beginning again and go up to startIndex
+            endedAt = forEach(action, 0, startIndex);
+        } else if (endedAt == index.get()) {
+            // start back at the beginning
+            endedAt = 0;
+        }
+        return endedAt;
+    }
+
+    private int forEach(Func1<? super E, Boolean> action, int startIndex, int endIndex) {
+        int lastIndex = startIndex;
         int maxIndex = index.get();
-        int realIndex = 0;
+        int realIndex = startIndex;
         ElementSection<E> section = elements;
         outer: while (section != null) {
-            for (int i = 0; i < SIZE; i++, realIndex++) {
+            for (int i = startIndex; i < endIndex; i++, realIndex++) {
                 if (realIndex >= maxIndex) {
                     section = null;
                     break outer;
@@ -257,23 +275,17 @@ public class IndexedRingBuffer<E> implements Subscription {
                 if (element == null) {
                     continue;
                 }
-                try {
-                    action.call(element);
-                } catch (Throwable e) {
-                    if (es == null) {
-                        es = new ArrayList<Throwable>();
-                    }
-                    es.add(e);
+                lastIndex = realIndex;
+                boolean continueLoop = action.call(element);
+                if (!continueLoop) {
+                    return lastIndex;
                 }
             }
             section = section.next;
         }
 
-        if (es == null) {
-            return Collections.emptyList();
-        } else {
-            return es;
-        }
+        // return the OutOfBounds index position if we processed all of them ... the one we should be less-than
+        return realIndex;
     }
 
     private static class ElementSection<E> {
