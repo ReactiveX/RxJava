@@ -15,6 +15,8 @@
  */
 package rx.lang.scala
 
+import scala.language.higherKinds
+
 /**
  Provides a mechanism for receiving push-based notifications.
 *
