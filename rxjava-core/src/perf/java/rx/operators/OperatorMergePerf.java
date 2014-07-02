@@ -19,8 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
 import org.openjdk.jmh.annotations.Param;
@@ -39,21 +39,25 @@ import rx.schedulers.Schedulers;
 @OutputTimeUnit(TimeUnit.SECONDS)
 public class OperatorMergePerf {
 
-    @State(Scope.Thread)
-    public static class Input extends InputWithIncrementingInteger {
+    // flatMap
+    @Benchmark
+    public void oneStreamOfNthatMergesIn1(final InputMillion input) throws InterruptedException {
+        Observable<Observable<Integer>> os = Observable.range(1, input.size).map(new Func1<Integer, Observable<Integer>>() {
 
-        @Param({ "1", "1000" })
-        public int size;
+            @Override
+            public Observable<Integer> call(Integer i) {
+                return Observable.just(i);
+            }
 
-        @Override
-        public int getSize() {
-            return size;
-        }
-
+        });
+        LatchedObserver<Integer> o = input.newLatchedObserver();
+        Observable.merge(os).subscribe(o);
+        o.latch.await();
     }
 
+    // flatMap
     @Benchmark
-    public void merge1SyncStreamOfN(final Input input) throws InterruptedException {
+    public void merge1SyncStreamOfN(final InputMillion input) throws InterruptedException {
         Observable<Observable<Integer>> os = Observable.just(1).map(new Func1<Integer, Observable<Integer>>() {
 
             @Override
@@ -66,9 +70,9 @@ public class OperatorMergePerf {
         Observable.merge(os).subscribe(o);
         o.latch.await();
     }
-    
+
     @Benchmark
-    public void mergeNSyncStreamsOfN(final Input input) throws InterruptedException {
+    public void mergeNSyncStreamsOfN(final InputThousand input) throws InterruptedException {
         Observable<Observable<Integer>> os = input.observable.map(new Func1<Integer, Observable<Integer>>() {
 
             @Override
@@ -83,7 +87,7 @@ public class OperatorMergePerf {
     }
 
     @Benchmark
-    public void mergeNAsyncStreamsOfN(final Input input) throws InterruptedException {
+    public void mergeNAsyncStreamsOfN(final InputThousand input) throws InterruptedException {
         Observable<Observable<Integer>> os = input.observable.map(new Func1<Integer, Observable<Integer>>() {
 
             @Override
@@ -98,7 +102,7 @@ public class OperatorMergePerf {
     }
 
     @Benchmark
-    public void mergeTwoAsyncStreamsOfN(final Input input) throws InterruptedException {
+    public void mergeTwoAsyncStreamsOfN(final InputThousand input) throws InterruptedException {
         LatchedObserver<Integer> o = input.newLatchedObserver();
         Observable<Integer> ob = Observable.range(0, input.size).subscribeOn(Schedulers.computation());
         Observable.merge(ob, ob).subscribe(o);
@@ -115,6 +119,7 @@ public class OperatorMergePerf {
     @State(Scope.Thread)
     public static class InputForMergeN {
         @Param({ "1", "100", "1000" })
+        //        @Param({ "1000" })
         public int size;
 
         private Blackhole bh;
@@ -134,4 +139,31 @@ public class OperatorMergePerf {
         }
     }
 
+    @State(Scope.Thread)
+    public static class InputMillion extends InputWithIncrementingInteger {
+
+        @Param({ "1", "1000", "1000000" })
+        //        @Param({ "1000" })
+        public int size;
+
+        @Override
+        public int getSize() {
+            return size;
+        }
+
+    }
+
+    @State(Scope.Thread)
+    public static class InputThousand extends InputWithIncrementingInteger {
+
+        @Param({ "1", "1000" })
+        //        @Param({ "1000" })
+        public int size;
+
+        @Override
+        public int getSize() {
+            return size;
+        }
+
+    }
 }

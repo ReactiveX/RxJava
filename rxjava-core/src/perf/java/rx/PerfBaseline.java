@@ -39,6 +39,16 @@ public class PerfBaseline {
     public void observableViaRange(Input input) throws InterruptedException {
         input.observable.subscribe(input.observer);
     }
+    
+    @Benchmark
+    public void observableConsumptionUnsafe(Input input) throws InterruptedException {
+        input.firehose.unsafeSubscribe(input.newSubscriber());
+    }
+
+    @Benchmark
+    public void observableViaRangeUnsafe(Input input) throws InterruptedException {
+        input.observable.unsafeSubscribe(input.newSubscriber());
+    }
 
     @Benchmark
     public void iterableViaForLoopConsumption(Input input) throws InterruptedException {
