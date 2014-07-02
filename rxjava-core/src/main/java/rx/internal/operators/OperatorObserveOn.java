@@ -172,12 +172,21 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
                         break;
                     }
                 }
-                if (COUNTER_UPDATER.decrementAndGet(this) <= 0) {
+                long c = COUNTER_UPDATER.decrementAndGet(this);
+                if (c <= 0) {
                     // request the number of items that we emitted in this poll loop
                     if (emitted > 0) {
                         request(emitted);
                     }
                     break;
+                } else {
+                    /*
+                     * Set down to 1 and then iterate again.
+                     * we lower it to 1 otherwise it could have grown very large while in the last poll loop
+                     * and then we can end up looping all those times again here before existing even once we've drained
+                     */
+                    COUNTER_UPDATER.set(this, 1);
+                    // we now loop again, and if anything tries scheduling again after this it will increment and cause us to loop again after
                 }
             }
         }
