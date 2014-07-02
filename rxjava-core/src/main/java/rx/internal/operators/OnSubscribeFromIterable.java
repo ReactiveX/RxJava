@@ -45,21 +45,6 @@ public final class OnSubscribeFromIterable<T> implements OnSubscribe<T> {
             o.onCompleted();
         }
         final Iterator<? extends T> it = is.iterator();
-        if (is instanceof Collection) {
-            @SuppressWarnings("rawtypes")
-            int size = ((Collection) is).size();
-            if (size < Producer.BUFFER_SIZE) {
-                while (it.hasNext()) {
-                    if (o.isUnsubscribed()) {
-                        return;
-                    }
-                    o.onNext(it.next());
-                }
-                o.onCompleted();
-                return;
-            }
-        }
-        // otherwise we do it via the producer to support backpressure
         o.setProducer(new IterableProducer<T>(o, it));
     }
 
