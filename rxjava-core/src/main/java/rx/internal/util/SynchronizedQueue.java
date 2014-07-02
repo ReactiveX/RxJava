@@ -125,7 +125,7 @@ public class SynchronizedQueue<T> implements Queue<T> {
         return list.toArray();
     }
 
-    public synchronized <T> T[] toArray(T[] a) {
+    public synchronized <R> R[] toArray(R[] a) {
         return list.toArray(a);
     }
 
