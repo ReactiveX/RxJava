@@ -158,9 +158,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
                     // do this within the lock
                     if (!enqueue) {
                         actual.onNext(((ScalarSynchronousObservable<T>) t).get());
-                        if (!mergeProducer.isInfinite) {
-                            request(1);
-                        }
+                        request(1);
                         if (r > 0) {
                             mergeProducer.REQUESTED.decrementAndGet(mergeProducer);
                         }
@@ -267,9 +265,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
                     // decrement the number we emitted from outstanding requests
                     mergeProducer.REQUESTED.getAndAdd(mergeProducer, -emittedWhileDraining);
                 }
-                if (!mergeProducer.isInfinite) {
-                    request(emittedWhileDraining);
-                }
+                request(emittedWhileDraining);
             }
         }
 

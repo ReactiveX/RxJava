@@ -852,11 +852,59 @@ public class OperatorMergeTest {
     }
 
     private Observable<Integer> mergeNAsyncStreamsOfN(final int outerSize, final int innerSize) {
-        Observable<Observable<Integer>> os = Observable.range(0, outerSize).map(new Func1<Integer, Observable<Integer>>() {
+        Observable<Observable<Integer>> os = Observable.range(1, outerSize).map(new Func1<Integer, Observable<Integer>>() {
 
             @Override
             public Observable<Integer> call(Integer i) {
-                return Observable.range(0, innerSize).subscribeOn(Schedulers.computation());
+                return Observable.range(1, innerSize).subscribeOn(Schedulers.computation());
+            }
+
+        });
+        return Observable.merge(os);
+    }
+    
+    @Test
+    public void merge1SyncStreamOf1() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        mergeNSyncStreamsOfN(1, 1).subscribe(ts);
+        ts.awaitTerminalEvent();
+        ts.assertNoErrors();
+        assertEquals(1, ts.getOnNextEvents().size());
+    }
+
+    @Test
+    public void merge1SyncStreamOf1000000() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        mergeNSyncStreamsOfN(1, 1000000).subscribe(ts);
+        ts.awaitTerminalEvent();
+        ts.assertNoErrors();
+        assertEquals(1000000, ts.getOnNextEvents().size());
+    }
+
+    @Test
+    public void merge1000SyncStreamOf1000() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        mergeNSyncStreamsOfN(1000, 1000).subscribe(ts);
+        ts.awaitTerminalEvent();
+        ts.assertNoErrors();
+        assertEquals(1000000, ts.getOnNextEvents().size());
+    }
+
+    @Test
+    public void merge1000000SyncStreamOf1() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        mergeNSyncStreamsOfN(1000000, 1).subscribe(ts);
+        ts.awaitTerminalEvent();
+        ts.assertNoErrors();
+        assertEquals(1000000, ts.getOnNextEvents().size());
+    }
+    
+    private Observable<Integer> mergeNSyncStreamsOfN(final int outerSize, final int innerSize) {
+        Observable<Observable<Integer>> os = Observable.range(1, outerSize).map(new Func1<Integer, Observable<Integer>>() {
+
+            @Override
+            public Observable<Integer> call(Integer i) {
+                return Observable.range(1, innerSize);
             }
 
         });
