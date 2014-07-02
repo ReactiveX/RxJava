@@ -116,7 +116,7 @@ public class OnErrorThrowable extends RuntimeException {
          *         the item that the Observable was trying to emit at the time of the exception
          */
         public OnNextValue(Object value) {
-            super("OnError while emitting onNext value: " + value);
+            super("OnError while emitting onNext.");
             this.value = value;
         }
 
