@@ -143,7 +143,7 @@ public final class MpscPaddedQueue<E> extends MpscLinkedQueueTailRef<E> {
     static final class Node<E> {
         E value;
         @SuppressWarnings(value = "rawtypes")
-        static final AtomicReferenceFieldUpdater<Node, Node> TAIL_UPDATER = AtomicReferenceFieldUpdater.newUpdater(Node.class, Node.class, "tail");
+        static final AtomicReferenceFieldUpdater<Node, Node> TAIL_UPDATER = AtomicReferenceFieldUpdater.newUpdater(Node.class, Node.class, "next");
         private volatile Node<E> next;
 
         Node(E value) {
