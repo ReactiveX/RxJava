@@ -15,8 +15,6 @@
  */
 package rx.internal.operators;
 
-import java.util.Queue;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 import java.util.concurrent.atomic.AtomicLongFieldUpdater;
 
@@ -29,7 +27,6 @@ import rx.functions.Func1;
 import rx.internal.util.RxRingBuffer;
 import rx.internal.util.ScalarSynchronousObservable;
 import rx.internal.util.SubscriptionIndexedRingBuffer;
-import rx.internal.util.SynchronizedQueue;
 
 /**
  * Flattens a list of {@link Observable}s into one {@code Observable}, without any transformation.
@@ -58,7 +55,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
 
         private SubscriptionIndexedRingBuffer<InnerSubscriber<T>> childrenSubscribers;
 
-        private Queue<Object> scalarValueQueue;
+        private RxRingBuffer scalarValueQueue = null;
         /* protected by lock on MergeSubscriber instance */
         private int missedEmitting = 0;
         private boolean emitLock = false;
@@ -81,11 +78,11 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
         public MergeSubscriber(Subscriber<? super T> actual) {
             this.actual = actual;
             this.mergeProducer = new MergeProducer<T>(this);
-            // we specifically want to receive all Observables without any backpressure
-            request(-1);
             // decoupled the subscription chain because we need to decouple and control backpressure
             actual.add(this);
             actual.setProducer(mergeProducer);
+            // we request backpressure so we can handle long-running Observables that are enqueueing, such as flatMap use cases
+            request(RxRingBuffer.SIZE);
         }
 
         /*
@@ -115,7 +112,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
             }
             MergeProducer<T> producerIfNeeded = null;
             // if we have received a request then we need to respect it, otherwise we fast-path
-            if (mergeProducer.requested > 0) {
+            if (!mergeProducer.isInfinite) {
                 producerIfNeeded = mergeProducer;
             }
             InnerSubscriber<T> i = new InnerSubscriber<T>(this, producerIfNeeded);
@@ -161,6 +158,9 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
                     // do this within the lock
                     if (!enqueue) {
                         actual.onNext(((ScalarSynchronousObservable<T>) t).get());
+                        if (!mergeProducer.isInfinite) {
+                            request(1);
+                        }
                         if (r > 0) {
                             mergeProducer.REQUESTED.decrementAndGet(mergeProducer);
                         }
@@ -177,9 +177,14 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
             if (enqueue) {
                 // enqueue the values for later delivery
                 if (scalarValueQueue == null) {
-                    scalarValueQueue = new SynchronizedQueue<Object>(); // look at alternative here
+                    scalarValueQueue = RxRingBuffer.getSpscInstance();
+                    add(scalarValueQueue);
                 }
-                scalarValueQueue.offer(on.next(((ScalarSynchronousObservable<T>) t).get()));
+                try {
+                    scalarValueQueue.onNext(((ScalarSynchronousObservable<T>) t).get());
+                } catch (MissingBackpressureException e) {
+                    onError(e);
+                }
                 return;
             }
         }
@@ -237,18 +242,19 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
          * ONLY call when holding the EmitLock.
          */
         private void drainScalarValueQueue() {
-            if (scalarValueQueue != null && scalarValueQueue.size() > 0) {
+            if (scalarValueQueue != null) {
                 long r = mergeProducer.requested;
+                int emittedWhileDraining = 0;
                 if (r < 0) {
                     // drain it all
                     Object o = null;
                     while ((o = scalarValueQueue.poll()) != null) {
                         on.accept(actual, o);
+                        emittedWhileDraining++;
                     }
                 } else if (r > 0) {
                     // drain what was requested
                     long toEmit = r;
-                    int emittedWhileDraining = 0;
                     for (int i = 0; i < toEmit; i++) {
                         Object o = scalarValueQueue.poll();
                         if (o == null) {
@@ -261,7 +267,9 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
                     // decrement the number we emitted from outstanding requests
                     mergeProducer.REQUESTED.getAndAdd(mergeProducer, -emittedWhileDraining);
                 }
-
+                if (!mergeProducer.isInfinite) {
+                    request(emittedWhileDraining);
+                }
             }
         }
 
@@ -377,19 +385,24 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
             this.ms = ms;
         }
 
+        private boolean isInfinite = false;
         private volatile long requested = 0;
         @SuppressWarnings("rawtypes")
         static final AtomicLongFieldUpdater<MergeProducer> REQUESTED = AtomicLongFieldUpdater.newUpdater(MergeProducer.class, "requested");
 
         @Override
         public void request(int n) {
+            // TODO ***************************************************************************************************************************
+            // TODO based on initial request let's route to different MergeSubscriber/InnerSubscriber impls ... if perf shows it helps
+            // TODO ***************************************************************************************************************************
             if (n < 0) {
+                isInfinite = true;
                 requested = -1;
             } else {
-                if (REQUESTED.getAndAdd(this, n) == 0) {
-                    ms.drainQueuesIfNeeded();
-                }
+                REQUESTED.getAndAdd(this, n);
             }
+            // needs to happen for both, as the -1 being set can occur in a delayed manner if something like `subscribeOn` is being used
+            ms.drainQueuesIfNeeded();
         }
 
     }
@@ -407,8 +420,6 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
         /* protected by emitLock */
         int emitted = 0;
 
-        static AtomicInteger c = new AtomicInteger();
-        
         public InnerSubscriber(MergeSubscriber<T> parent, MergeProducer<T> producer) {
             this.parentSubscriber = parent;
             this.producer = producer;
@@ -438,7 +449,9 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
 
         private void emit(T t, boolean complete) {
             boolean drain = false;
+            boolean enqueue = true;
             if (parentSubscriber.getEmitLock()) {
+                enqueue = false;
                 try {
                     // when we have the lock, nothing else can cause producer.requested to decrement, but it can increment at any time
                     if (mayNeedToDrain) {
@@ -465,8 +478,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
                             }
                         } else {
                             // no requests available, so enqueue it
-                            enqueue(t, complete);
-                            drain = true;
+                            enqueue = true;
                         }
                     }
                 } finally {
@@ -480,7 +492,8 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
                     // before any other usage of it
                     emitted = 0;
                 }
-            } else {
+            }
+            if (enqueue) {
                 enqueue(t, complete);
                 drain = true;
             }

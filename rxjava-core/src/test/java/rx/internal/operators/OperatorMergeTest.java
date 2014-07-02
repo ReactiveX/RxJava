@@ -693,7 +693,7 @@ public class OperatorMergeTest {
     }
 
     @Test(timeout = 5000)
-    public void testBackpressureDownstreamWithSynchronousScalarObservables() throws InterruptedException {
+    public void testBackpressureBothUpstreamAndDownstreamWithSynchronousScalarObservables() throws InterruptedException {
         final AtomicInteger generated1 = new AtomicInteger();
         Observable<Observable<Integer>> o1 = createInfiniteObservable(generated1).map(new Func1<Integer, Observable<Integer>>() {
 
@@ -730,6 +730,45 @@ public class OperatorMergeTest {
         assertEquals(Producer.BUFFER_SIZE * 2, testSubscriber.getOnNextEvents().size());
         // it should be between the take num and requested batch size across the async boundary
         assertTrue(generated1.get() >= Producer.BUFFER_SIZE * 2 && generated1.get() <= Producer.BUFFER_SIZE * 4);
+    }
+    
+    @Test(timeout = 5000)
+    public void testBackpressureBothUpstreamAndDownstreamWithRegularObservables() throws InterruptedException {
+        final AtomicInteger generated1 = new AtomicInteger();
+        Observable<Observable<Integer>> o1 = createInfiniteObservable(generated1).map(new Func1<Integer, Observable<Integer>>() {
+
+            @Override
+            public Observable<Integer> call(Integer t1) {
+                return Observable.from(1, 2, 3);
+            }
+
+        });
+
+        TestSubscriber<Integer> testSubscriber = new TestSubscriber<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                if (t < 100)
+                    try {
+                        // force a slow consumer
+                        Thread.sleep(2);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                //                System.err.println("testSubscriber received => " + t + "  on thread " + Thread.currentThread());
+                super.onNext(t);
+            }
+        };
+
+        Observable.merge(o1).observeOn(Schedulers.computation()).take(Producer.BUFFER_SIZE * 2).subscribe(testSubscriber);
+        testSubscriber.awaitTerminalEvent();
+        if (testSubscriber.getOnErrorEvents().size() > 0) {
+            testSubscriber.getOnErrorEvents().get(0).printStackTrace();
+        }
+        testSubscriber.assertNoErrors();
+        System.out.println("Generated 1: " + generated1.get());
+        System.err.println(testSubscriber.getOnNextEvents());
+        assertEquals(Producer.BUFFER_SIZE * 2, testSubscriber.getOnNextEvents().size());
+        assertTrue(generated1.get() >= Producer.BUFFER_SIZE && generated1.get() <= Producer.BUFFER_SIZE * 4);
     }
 
     @Test
@@ -794,22 +833,10 @@ public class OperatorMergeTest {
         assertEquals(10000, ts.getOnNextEvents().size());
     }
 
-    @Test(timeout=2000)
+    @Test(timeout = 2000)
     public void merge1000AsyncStreamOf1000() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        mergeNAsyncStreamsOfN(1000, 1000).doOnNext(new Action1<Integer>() {
-
-            int i = 0;
-
-            @Override
-            public void call(Integer t1) {
-                i++;
-                if (i % 10000 == 0 || i > 900000) {
-                    System.out.println(i++);
-                }
-            }
-
-        }).subscribe(ts);
+        mergeNAsyncStreamsOfN(1000, 1000).subscribe(ts);
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
         assertEquals(1000000, ts.getOnNextEvents().size());
