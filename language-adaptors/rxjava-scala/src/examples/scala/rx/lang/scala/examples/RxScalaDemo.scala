@@ -182,18 +182,23 @@ class RxScalaDemo extends JUnitSuite {
     ).toObservable.flatten(2).toBlocking.foreach(println(_))
   }
 
-  @Test def rangeAndBufferExample() {
+  @Test def tumblingBufferExample() {
     val o = Observable.from(1 to 18)
-    o.buffer(5).subscribe((l: Seq[Int]) => println(l.mkString("[", ", ", "]")))
+    o.tumblingBuffer(5).subscribe((l: Seq[Int]) => println(l.mkString("[", ", ", "]")))
   }
 
-  @Test def tumblingBufferExample() {
+  @Test def tumblingBufferExample2() {
     val o = Observable.from(1 to 18).zip(Observable.interval(100 millis)).map(_._1)
     val boundary = Observable.interval(500 millis)
     o.tumblingBuffer(boundary).toBlocking.foreach((l: Seq[Int]) => println(l.mkString("[", ", ", "]")))
   }
 
   @Test def slidingBufferExample() {
+    val o = Observable.from(1 to 18).slidingBuffer(4, 2)
+    o.subscribe(println(_))
+  }
+
+  @Test def slidingBufferExample2() {
     val open = Observable.interval(300 millis)
     val closing = Observable.interval(600 millis)
     val o = Observable.interval(100 millis).take(20).slidingBuffer(open)(_ => closing)
@@ -202,13 +207,18 @@ class RxScalaDemo extends JUnitSuite {
     }
   }
 
-  @Test def windowExample() {
-    (for ((o, i) <- Observable.from(1 to 18).window(5).zipWithIndex; n <- o)
+  @Test def slidingBufferExample3() {
+    val o = Observable.from(1 to 18).zip(Observable.interval(100 millis)).map(_._1)
+    o.slidingBuffer(500 millis, 200 millis).toBlocking.foreach((l: Seq[Int]) => println(l.mkString("[", ", ", "]")))
+  }
+
+  @Test def tumblingExample() {
+    (for ((o, i) <- Observable.from(1 to 18).tumbling(5).zipWithIndex; n <- o)
       yield s"Observable#$i emits $n"
     ).subscribe(output(_))
   }
 
-  @Test def tumblingExample() {
+  @Test def tumblingExample2() {
     val windowObservable = Observable.interval(500 millis)
     val o = Observable.from(1 to 20).zip(Observable.interval(100 millis)).map(_._1)
     (for ((o, i) <- o.tumbling(windowObservable).zipWithIndex; n <- o)
@@ -217,6 +227,22 @@ class RxScalaDemo extends JUnitSuite {
   }
 
   @Test def slidingExample() {
+    val o = Observable.from(1 to 18).sliding(4, 2)
+    (for ((o, i) <- o.zipWithIndex;
+          n <- o)
+      yield s"Observable#$i emits $n"
+    ).toBlocking.foreach(println)
+  }
+
+  @Test def slidingExample2() {
+    val o = Observable.interval(100 millis).take(20).sliding(500 millis, 200 millis)
+    (for ((o, i) <- o.zipWithIndex;
+          n <- o)
+      yield s"Observable#$i emits $n"
+    ).toBlocking.foreach(println)
+  }
+
+  @Test def slidingExample3() {
     val open = Observable.interval(300 millis)
     val closing = Observable.interval(600 millis)
     val o = Observable.interval(100 millis).take(20).sliding(open)(_ => closing)

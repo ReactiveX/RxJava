@@ -470,7 +470,7 @@ trait Observable[+T]
    *         An [[rx.lang.scala.Observable]] which produces connected non-overlapping buffers containing at most
    *         `count` produced values.
    */
-  def buffer(count: Int): Observable[Seq[T]] = {
+  def tumblingBuffer(count: Int): Observable[Seq[T]] = {
     val oJava: rx.Observable[_ <: java.util.List[_]] = asJavaObservable.buffer(count)
     Observable.jObsOfListToScObsOfSeq(oJava.asInstanceOf[rx.Observable[_ <: java.util.List[T]]])
   }
@@ -491,7 +491,7 @@ trait Observable[+T]
    *         An [[rx.lang.scala.Observable]] which produces buffers every `skip` values containing at most
    *         `count` produced values.
    */
-  def buffer(count: Int, skip: Int): Observable[Seq[T]] = {
+  def slidingBuffer(count: Int, skip: Int): Observable[Seq[T]] = {
     val oJava: rx.Observable[_ <: java.util.List[_]] = asJavaObservable.buffer(count, skip)
     Observable.jObsOfListToScObsOfSeq(oJava.asInstanceOf[rx.Observable[_ <: java.util.List[T]]])
   }
@@ -509,7 +509,7 @@ trait Observable[+T]
    * @return
    *         An [[rx.lang.scala.Observable]] which produces connected non-overlapping buffers with a fixed duration.
    */
-  def buffer(timespan: Duration): Observable[Seq[T]] = {
+  def tumblingBuffer(timespan: Duration): Observable[Seq[T]] = {
     val oJava: rx.Observable[_ <: java.util.List[_]] = asJavaObservable.buffer(timespan.length, timespan.unit)
     Observable.jObsOfListToScObsOfSeq(oJava.asInstanceOf[rx.Observable[_ <: java.util.List[T]]])
   }
@@ -529,7 +529,7 @@ trait Observable[+T]
    * @return
    *         An [[rx.lang.scala.Observable]] which produces connected non-overlapping buffers with a fixed duration.
    */
-  def buffer(timespan: Duration, scheduler: Scheduler): Observable[Seq[T]] = {
+  def tumblingBuffer(timespan: Duration, scheduler: Scheduler): Observable[Seq[T]] = {
     val oJava: rx.Observable[_ <: java.util.List[_]] = asJavaObservable.buffer(timespan.length, timespan.unit, scheduler)
     Observable.jObsOfListToScObsOfSeq(oJava.asInstanceOf[rx.Observable[_ <: java.util.List[T]]])
   }
@@ -549,7 +549,7 @@ trait Observable[+T]
    *         An [[rx.lang.scala.Observable]] which produces connected non-overlapping buffers which are emitted after
    *         a fixed duration or when the buffer has reached maximum capacity (which ever occurs first).
    */
-  def buffer(timespan: Duration, count: Int): Observable[Seq[T]] = {
+  def tumblingBuffer(timespan: Duration, count: Int): Observable[Seq[T]] = {
     val oJava: rx.Observable[_ <: java.util.List[_]] = asJavaObservable.buffer(timespan.length, timespan.unit, count)
     Observable.jObsOfListToScObsOfSeq(oJava.asInstanceOf[rx.Observable[_ <: java.util.List[T]]])
   }
@@ -571,7 +571,7 @@ trait Observable[+T]
    *         An [[rx.lang.scala.Observable]] which produces connected non-overlapping buffers which are emitted after
    *         a fixed duration or when the buffer has reached maximum capacity (which ever occurs first).
    */
-  def buffer(timespan: Duration, count: Int, scheduler: Scheduler): Observable[Seq[T]] = {
+  def tumblingBuffer(timespan: Duration, count: Int, scheduler: Scheduler): Observable[Seq[T]] = {
     val oJava: rx.Observable[_ <: java.util.List[_]] = asJavaObservable.buffer(timespan.length, timespan.unit, count, scheduler)
     Observable.jObsOfListToScObsOfSeq(oJava.asInstanceOf[rx.Observable[_ <: java.util.List[T]]])
   }
@@ -590,7 +590,7 @@ trait Observable[+T]
    *         An [[rx.lang.scala.Observable]] which produces new buffers periodically, and these are emitted after
    *         a fixed timespan has elapsed.
    */
-  def buffer(timespan: Duration, timeshift: Duration): Observable[Seq[T]] = {
+  def slidingBuffer(timespan: Duration, timeshift: Duration): Observable[Seq[T]] = {
     val span: Long = timespan.length
     val shift: Long = timespan.unit.convert(timeshift.length, timeshift.unit)
     val unit: TimeUnit = timespan.unit
@@ -614,7 +614,7 @@ trait Observable[+T]
    *         An [[rx.lang.scala.Observable]] which produces new buffers periodically, and these are emitted after
    *         a fixed timespan has elapsed.
    */
-  def buffer(timespan: Duration, timeshift: Duration, scheduler: Scheduler): Observable[Seq[T]] = {
+  def slidingBuffer(timespan: Duration, timeshift: Duration, scheduler: Scheduler): Observable[Seq[T]] = {
     val span: Long = timespan.length
     val shift: Long = timespan.unit.convert(timeshift.length, timeshift.unit)
     val unit: TimeUnit = timespan.unit
@@ -714,7 +714,7 @@ trait Observable[+T]
    *         An [[rx.lang.scala.Observable]] which produces connected non-overlapping windows containing at most
    *         `count` produced values.
    */
-  def window(count: Int): Observable[Observable[T]] = {
+  def tumbling(count: Int): Observable[Observable[T]] = {
     // this unnecessary ascription is needed because of this bug (without, compiler crashes):
     // https://issues.scala-lang.org/browse/SI-7818
     Observable.jObsOfJObsToScObsOfScObs(asJavaObservable.window(count)) : Observable[Observable[T]]
@@ -734,7 +734,7 @@ trait Observable[+T]
    *         An [[rx.lang.scala.Observable]] which produces windows every `skip` values containing at most
    *         `count` produced values.
    */
-  def window(count: Int, skip: Int): Observable[Observable[T]] = {
+  def sliding(count: Int, skip: Int): Observable[Observable[T]] = {
     Observable.jObsOfJObsToScObsOfScObs(asJavaObservable.window(count, skip))
       : Observable[Observable[T]] // SI-7818
   }
@@ -750,7 +750,7 @@ trait Observable[+T]
    * @return
    *         An [[rx.lang.scala.Observable]] which produces connected non-overlapping windows with a fixed duration.
    */
-  def window(timespan: Duration): Observable[Observable[T]] = {
+  def tumbling(timespan: Duration): Observable[Observable[T]] = {
     Observable.jObsOfJObsToScObsOfScObs(asJavaObservable.window(timespan.length, timespan.unit))
       : Observable[Observable[T]] // SI-7818
   }
@@ -768,7 +768,7 @@ trait Observable[+T]
    * @return
    *         An [[rx.lang.scala.Observable]] which produces connected non-overlapping windows with a fixed duration.
    */
-  def window(timespan: Duration, scheduler: Scheduler): Observable[Observable[T]] = {
+  def tumbling(timespan: Duration, scheduler: Scheduler): Observable[Observable[T]] = {
     Observable.jObsOfJObsToScObsOfScObs(asJavaObservable.window(timespan.length, timespan.unit, scheduler))
       : Observable[Observable[T]] // SI-7818
   }
@@ -788,7 +788,7 @@ trait Observable[+T]
    *         An [[rx.lang.scala.Observable]] which produces connected non-overlapping windows which are emitted after
    *         a fixed duration or when the window has reached maximum capacity (which ever occurs first).
    */
-  def window(timespan: Duration, count: Int): Observable[Observable[T]] = {
+  def tumbling(timespan: Duration, count: Int): Observable[Observable[T]] = {
     Observable.jObsOfJObsToScObsOfScObs(asJavaObservable.window(timespan.length, timespan.unit, count))
       : Observable[Observable[T]] // SI-7818
   }
@@ -810,7 +810,7 @@ trait Observable[+T]
    *         An [[rx.lang.scala.Observable]] which produces connected non-overlapping windows which are emitted after
    *         a fixed duration or when the window has reached maximum capacity (which ever occurs first).
    */
-  def window(timespan: Duration, count: Int, scheduler: Scheduler): Observable[Observable[T]] = {
+  def tumbling(timespan: Duration, count: Int, scheduler: Scheduler): Observable[Observable[T]] = {
     Observable.jObsOfJObsToScObsOfScObs(asJavaObservable.window(timespan.length, timespan.unit, count, scheduler))
       : Observable[Observable[T]] // SI-7818
   }
@@ -829,7 +829,7 @@ trait Observable[+T]
    *         An [[rx.lang.scala.Observable]] which produces new windows periodically, and these are emitted after
    *         a fixed timespan has elapsed.
    */
-  def window(timespan: Duration, timeshift: Duration): Observable[Observable[T]] = {
+  def sliding(timespan: Duration, timeshift: Duration): Observable[Observable[T]] = {
     val span: Long = timespan.length
     val shift: Long = timespan.unit.convert(timeshift.length, timeshift.unit)
     val unit: TimeUnit = timespan.unit
@@ -853,7 +853,7 @@ trait Observable[+T]
    *         An [[rx.lang.scala.Observable]] which produces new windows periodically, and these are emitted after
    *         a fixed timespan has elapsed.
    */
-  def window(timespan: Duration, timeshift: Duration, scheduler: Scheduler): Observable[Observable[T]] = {
+  def sliding(timespan: Duration, timeshift: Duration, scheduler: Scheduler): Observable[Observable[T]] = {
     val span: Long = timespan.length
     val shift: Long = timespan.unit.convert(timeshift.length, timeshift.unit)
     val unit: TimeUnit = timespan.unit
