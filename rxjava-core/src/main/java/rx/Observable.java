@@ -6834,15 +6834,29 @@ public class Observable<T> {
      */
     public final Subscription unsafeSubscribe(Subscriber<? super T> subscriber) {
         try {
-            onSubscribe.call(subscriber);
+            // allow the hook to intercept and/or decorate
+            hook.onSubscribeStart(this, onSubscribe).call(subscriber);
+            return hook.onSubscribeReturn(subscriber);
         } catch (Throwable e) {
-            if (e instanceof OnErrorNotImplementedException) {
-                throw (OnErrorNotImplementedException) e;
+            // special handling for certain Throwable/Error/Exception types
+            Exceptions.throwIfFatal(e);
+            // if an unhandled error occurs executing the onSubscribe we will propagate it
+            try {
+                subscriber.onError(hook.onSubscribeError(e));
+            } catch (OnErrorNotImplementedException e2) {
+                // special handling when onError is not implemented ... we just rethrow
+                throw e2;
+            } catch (Throwable e2) {
+                // if this happens it means the onError itself failed (perhaps an invalid function implementation)
+                // so we are unable to propagate the error correctly and will just throw
+                RuntimeException r = new RuntimeException("Error occurred attempting to subscribe [" + e.getMessage() + "] and then again while trying to pass to onError.", e2);
+                // TODO could the hook be the cause of the error in the on error handling.
+                hook.onSubscribeError(r);
+                // TODO why aren't we throwing the hook's return value.
+                throw r;
             }
-            // handle broken contracts: https://github.com/Netflix/RxJava/issues/1090
-            subscriber.onError(e);
+            return Subscriptions.empty();
         }
-        return subscriber;
     }
 
     /**
@@ -6880,30 +6894,31 @@ public class Observable<T> {
      *             if the {@link Subscriber}'s {@code onError} method itself threw a {@code Throwable}
      */
     public final Subscription subscribe(Subscriber<? super T> subscriber) {
-        // allow the hook to intercept and/or decorate
-        OnSubscribe<T> onSubscribeFunction = hook.onSubscribeStart(this, onSubscribe);
         // validate and proceed
         if (subscriber == null) {
             throw new IllegalArgumentException("observer can not be null");
         }
-        if (onSubscribeFunction == null) {
+        if (onSubscribe == null) {
             throw new IllegalStateException("onSubscribe function can not be null.");
             /*
              * the subscribe function can also be overridden but generally that's not the appropriate approach
              * so I won't mention that in the exception
              */
         }
+        /*
+         * See https://github.com/Netflix/RxJava/issues/216 for discussion on "Guideline 6.4: Protect calls
+         * to user code from within an Observer"
+         */
+        // if not already wrapped
+        if (!(subscriber instanceof SafeSubscriber)) {
+            // assign to `observer` so we return the protected version
+            subscriber = new SafeSubscriber<T>(subscriber);
+        }
+
+        // The code below is exactly the same an unsafeSubscribe but not used because it would add a sigificent depth to alreay huge call stacks.
         try {
-            /*
-             * See https://github.com/Netflix/RxJava/issues/216 for discussion on "Guideline 6.4: Protect calls
-             * to user code from within an Observer"
-             */
-            // if not already wrapped
-            if (!(subscriber instanceof SafeSubscriber)) {
-                // assign to `observer` so we return the protected version
-                subscriber = new SafeSubscriber<T>(subscriber);
-            }
-            onSubscribeFunction.call(subscriber);
+            // allow the hook to intercept and/or decorate
+            hook.onSubscribeStart(this, onSubscribe).call(subscriber);
             return hook.onSubscribeReturn(subscriber);
         } catch (Throwable e) {
             // special handling for certain Throwable/Error/Exception types
