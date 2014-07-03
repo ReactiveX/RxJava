@@ -781,7 +781,7 @@ public class OperatorMergeTest {
         testSubscriber.assertNoErrors();
         System.out.println("Generated 1: " + generated1.get());
         System.err.println(testSubscriber.getOnNextEvents());
-        System.out.println("done1 testBackpressureBothUpstreamAndDownstreamWithRegularObservables");
+        System.out.println("done1 testBackpressureBothUpstreamAndDownstreamWithRegularObservables ");
         assertEquals(RxRingBuffer.SIZE * 2, testSubscriber.getOnNextEvents().size());
         System.out.println("done2 testBackpressureBothUpstreamAndDownstreamWithRegularObservables");
         // we can't restrict this ... see comment above
