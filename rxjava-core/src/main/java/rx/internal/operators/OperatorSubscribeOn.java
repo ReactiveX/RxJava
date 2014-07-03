@@ -17,6 +17,7 @@ package rx.internal.operators;
 
 import rx.Observable;
 import rx.Observable.Operator;
+import rx.Producer;
 import rx.Scheduler;
 import rx.Scheduler.Worker;
 import rx.Subscriber;
@@ -57,7 +58,49 @@ public class OperatorSubscribeOn<T> implements Operator<T, Observable<T>> {
 
                     @Override
                     public void call() {
-                        o.unsafeSubscribe(subscriber);
+                        final Thread t = Thread.currentThread();
+                        o.unsafeSubscribe(new Subscriber<T>(subscriber) {
+
+                            @Override
+                            public void onCompleted() {
+                                subscriber.onCompleted();
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                subscriber.onError(e);
+                            }
+
+                            @Override
+                            public void onNext(T t) {
+                                subscriber.onNext(t);
+                            }
+
+                            @Override
+                            protected Producer onSetProducer(final Producer producer) {
+                                return new Producer() {
+
+                                    @Override
+                                    public void request(final int n) {
+                                        if (Thread.currentThread() == t) {
+                                            // don't schedule if we're already on the thread (primarily for first setProducer call)
+                                            // see unit test 'testSetProducerSynchronousRequest' for more context on this
+                                            producer.request(n);
+                                        } else {
+                                            inner.schedule(new Action0() {
+
+                                                @Override
+                                                public void call() {
+                                                    producer.request(n);
+                                                }
+                                            });
+                                        }
+                                    }
+
+                                };
+                            }
+
+                        });
                     }
                 });
             }

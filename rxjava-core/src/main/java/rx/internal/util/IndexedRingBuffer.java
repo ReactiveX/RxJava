@@ -187,6 +187,10 @@ public class IndexedRingBuffer<E> implements Subscription {
                 int sectionIndex = ri % SIZE;
                 i = getIndexSection(ri).array.getAndSet(sectionIndex, -1);
             }
+            if(i == index.get()) {
+                // if it was the last index removed, when we pick it up again we want to increment
+                index.getAndIncrement();
+            }
         } else {
             i = index.getAndIncrement();
         }
@@ -267,7 +271,6 @@ public class IndexedRingBuffer<E> implements Subscription {
         ElementSection<E> section = elements;
 
         if (startIndex >= SIZE) {
-            int orig = startIndex;
             // move into the correct section
             section = getElementSection(startIndex);
             startIndex = startIndex % SIZE;

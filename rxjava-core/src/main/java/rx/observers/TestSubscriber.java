@@ -158,10 +158,13 @@ public class TestSubscriber<T> extends Subscriber<T> {
      */
     public void assertNoErrors() {
         if (getOnErrorEvents().size() > 0) {
-            throw new AssertionError("Unexpected onError events: " + getOnErrorEvents().size(), getOnErrorEvents().get(0));
+            // can't use AssertionError because (message, cause) doesn't exist until Java 7
+            throw new RuntimeException("Unexpected onError events: " + getOnErrorEvents().size(), getOnErrorEvents().get(0));
+            // TODO possibly check for Java7+ and then use AssertionError at runtime (since we always compile with 7)
         }
     }
 
+    
     /**
      * Blocks until this Subscriber receives a notification that the Observable is complete (either an
      * {@code onCompleted} or {@code onError} notification).
