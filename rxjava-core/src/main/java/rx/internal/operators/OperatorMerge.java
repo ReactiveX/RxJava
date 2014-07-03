@@ -206,7 +206,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
 
         private void initScalarValueQueueIfNeeded() {
             if (scalarValueQueue == null) {
-                scalarValueQueue = RxRingBuffer.getSpscInstance();
+                scalarValueQueue = RxRingBuffer.getSpmcInstance();
                 add(scalarValueQueue);
             }
         }
@@ -445,7 +445,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
         volatile int once;
         @SuppressWarnings("rawtypes")
         static final AtomicIntegerFieldUpdater<InnerSubscriber> ONCE_UPDATER = AtomicIntegerFieldUpdater.newUpdater(InnerSubscriber.class, "once");
-        private final RxRingBuffer q = RxRingBuffer.getSpscInstance();
+        private final RxRingBuffer q = RxRingBuffer.getSpmcInstance();
         private boolean mayNeedToDrain = false;
         /* protected by emitLock */
         int emitted = 0;
