@@ -4886,6 +4886,7 @@ public class Observable<T> {
      * @return the source Observable modified so that its {@link Observer}s are notified on the specified
      *         {@link Scheduler}
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#observeon">RxJava Wiki: observeOn()</a>
+     * @see <a href="http://www.grahamlea.com/2014/07/rxjava-threading-examples/">RxJava Threading Examples</a>
      * @see #subscribeOn
      */
     public final Observable<T> observeOn(Scheduler scheduler) {
@@ -6952,6 +6953,7 @@ public class Observable<T> {
      * @return the source Observable modified so that its subscriptions happen on the
      *         specified {@link Scheduler}
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#subscribeon">RxJava Wiki: subscribeOn()</a>
+     * @see <a href="http://www.grahamlea.com/2014/07/rxjava-threading-examples/">RxJava Threading Examples</a>
      * @see #observeOn
      */
     public final Observable<T> subscribeOn(Scheduler scheduler) {
