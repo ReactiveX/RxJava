@@ -19,10 +19,14 @@ import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 import java.util.concurrent.atomic.AtomicLongFieldUpdater;
 
 import rx.Observable.Operator;
+import rx.Producer;
 import rx.Scheduler;
 import rx.Subscriber;
 import rx.Subscription;
+import rx.exceptions.MissingBackpressureException;
 import rx.functions.Action0;
+import rx.internal.util.RxRingBuffer;
+import rx.internal.util.SynchronizedSubscription;
 import rx.schedulers.ImmediateScheduler;
 import rx.schedulers.TrampolineScheduler;
 
@@ -31,7 +35,8 @@ import rx.schedulers.TrampolineScheduler;
  * 
  * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/observeOn.png">
  * 
- * @param <T> the transmitted value type
+ * @param <T>
+ *            the transmitted value type
  */
 public final class OperatorObserveOn<T> implements Operator<T, T> {
 
@@ -59,56 +64,76 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
 
     /** Observe through individual queue per observer. */
     private static final class ObserveOnSubscriber<T> extends Subscriber<T> {
-        final Subscriber<? super T> observer;
+        final Subscriber<? super T> child;
         private final Scheduler.Worker recursiveScheduler;
         private final ScheduledUnsubscribe scheduledUnsubscribe;
         final NotificationLite<T> on = NotificationLite.instance();
-        /** Guarded by this. */
-        private FastList queue = new FastList();
-        
+
+        private final RxRingBuffer queue = RxRingBuffer.getSpscInstance();
+        private boolean completed = false;
+
+        private volatile long requested = 0;
+        @SuppressWarnings("rawtypes")
+        static final AtomicLongFieldUpdater<ObserveOnSubscriber> REQUESTED = AtomicLongFieldUpdater.newUpdater(ObserveOnSubscriber.class, "requested");
+
         volatile long counter;
         @SuppressWarnings("rawtypes")
-        static final AtomicLongFieldUpdater<ObserveOnSubscriber> COUNTER_UPDATER
-                = AtomicLongFieldUpdater.newUpdater(ObserveOnSubscriber.class, "counter");
+        static final AtomicLongFieldUpdater<ObserveOnSubscriber> COUNTER_UPDATER = AtomicLongFieldUpdater.newUpdater(ObserveOnSubscriber.class, "counter");
 
-        public ObserveOnSubscriber(Scheduler scheduler, Subscriber<? super T> subscriber) {
-            super(subscriber);
-            this.observer = subscriber;
+        // do NOT pass the Subscriber through to couple the subscription chain ... unsubscribing on the parent should
+        // not prevent anything downstream from consuming, which will happen if the Subscription is chained
+        public ObserveOnSubscriber(Scheduler scheduler, Subscriber<? super T> child) {
+            this.child = child;
             this.recursiveScheduler = scheduler.createWorker();
-            this.scheduledUnsubscribe = new ScheduledUnsubscribe(recursiveScheduler);
-            subscriber.add(scheduledUnsubscribe);
+            this.scheduledUnsubscribe = new ScheduledUnsubscribe(recursiveScheduler, queue);
+            child.add(scheduledUnsubscribe);
+            // unsubscribe ourselves if the child unsubscribes, but not the other way around
+            child.add(this);
+            // signal that this is an async operator capable of receiving this many
+            request(queue.capacity());
+            child.setProducer(new Producer() {
+
+                @Override
+                public void request(int n) {
+                    REQUESTED.getAndAdd(ObserveOnSubscriber.this, n);
+                    schedule();
+                }
+
+            });
+            child.add(new SynchronizedSubscription(this));
         }
 
         @Override
         public void onNext(final T t) {
-            if (scheduledUnsubscribe.isUnsubscribed()) {
+            if (isUnsubscribed() || completed) {
                 return;
             }
-            synchronized (this) {
-                queue.add(on.next(t));
+            try {
+                queue.onNext(t);
+            } catch (MissingBackpressureException e) {
+                onError(e);
+                return;
             }
             schedule();
         }
 
         @Override
         public void onCompleted() {
-            if (scheduledUnsubscribe.isUnsubscribed()) {
+            if (isUnsubscribed() || completed) {
                 return;
             }
-            synchronized (this) {
-                queue.add(on.completed());
-            }
+            completed = true;
+            queue.onCompleted();
             schedule();
         }
 
         @Override
         public void onError(final Throwable e) {
-            if (scheduledUnsubscribe.isUnsubscribed()) {
+            if (isUnsubscribed() || completed) {
                 return;
             }
-            synchronized (this) {
-                queue.add(on.error(e));
-            }
+            completed = true;
+            queue.onError(e);
             schedule();
         }
 
@@ -126,59 +151,62 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
         }
 
         private void pollQueue() {
-            do {
-                FastList vs;
-                synchronized (this) {
-                    vs = queue;
-                    queue = new FastList();
-                }
-                for (Object v : vs.array) {
-                    if (v == null) {
+            int emitted = 0;
+            while (true) {
+                while (!scheduledUnsubscribe.isUnsubscribed()) {
+                    if (REQUESTED.getAndDecrement(this) != 0) {
+                        Object o = queue.poll();
+                        if (o == null) {
+                            // nothing in queue
+                            REQUESTED.incrementAndGet(this);
+                            break;
+                        } else {
+                            if (!on.accept(child, o)) {
+                                // non-terminal event so let's increment count
+                                emitted++;
+                            }
+                        }
+                    } else {
+                        // we hit the end ... so increment back to 0 again
+                        REQUESTED.incrementAndGet(this);
                         break;
                     }
-                    on.accept(observer, v);
                 }
-                if (COUNTER_UPDATER.addAndGet(this, -vs.size) <= 0) {
+                long c = COUNTER_UPDATER.decrementAndGet(this);
+                if (c <= 0) {
+                    // request the number of items that we emitted in this poll loop
+                    if (emitted > 0) {
+                        request(emitted);
+                    }
                     break;
+                } else {
+                    /*
+                     * Set down to 1 and then iterate again.
+                     * we lower it to 1 otherwise it could have grown very large while in the last poll loop
+                     * and then we can end up looping all those times again here before existing even once we've drained
+                     */
+                    COUNTER_UPDATER.set(this, 1);
+                    // we now loop again, and if anything tries scheduling again after this it will increment and cause us to loop again after
                 }
-            } while (true);
-        }
-
-    }
-
-    static final class FastList {
-        Object[] array;
-        int size;
-
-        public void add(Object o) {
-            int s = size;
-            Object[] a = array;
-            if (a == null) {
-                a = new Object[16];
-                array = a;
-            } else if (s == a.length) {
-                Object[] array2 = new Object[s + (s >> 2)];
-                System.arraycopy(a, 0, array2, 0, s);
-                a = array2;
-                array = a;
             }
-            a[s] = o;
-            size = s + 1;
         }
     }
+
     static final class ScheduledUnsubscribe implements Subscription {
         final Scheduler.Worker worker;
         volatile int once;
-        static final AtomicIntegerFieldUpdater<ScheduledUnsubscribe> ONCE_UPDATER
-                = AtomicIntegerFieldUpdater.newUpdater(ScheduledUnsubscribe.class, "once");
+        static final AtomicIntegerFieldUpdater<ScheduledUnsubscribe> ONCE_UPDATER = AtomicIntegerFieldUpdater.newUpdater(ScheduledUnsubscribe.class, "once");
+        final RxRingBuffer queue;
+        volatile boolean unsubscribed = false;
 
-        public ScheduledUnsubscribe(Scheduler.Worker worker) {
+        public ScheduledUnsubscribe(Scheduler.Worker worker, RxRingBuffer queue) {
             this.worker = worker;
+            this.queue = queue;
         }
 
         @Override
         public boolean isUnsubscribed() {
-            return once != 0;
+            return unsubscribed;
         }
 
         @Override
@@ -188,10 +216,11 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
                     @Override
                     public void call() {
                         worker.unsubscribe();
+                        unsubscribed = true;
                     }
                 });
             }
         }
-        
+
     }
 }

@@ -34,19 +34,39 @@ import rx.subscriptions.CompositeSubscription;
 public abstract class Subscriber<T> implements Observer<T>, Subscription {
 
     private final SubscriptionList cs;
+    private final Subscriber<?> op;
+    /* protected by `this` */
+    private Producer p;
+    /* protected by `this` */
+    private int requested = -1; // default to infinite
 
     @Deprecated
     protected Subscriber(CompositeSubscription cs) {
+        this.op = null;
         this.cs = new SubscriptionList();
         add(cs);
     }
 
     protected Subscriber() {
+        this.op = null;
         this.cs = new SubscriptionList();
     }
 
+    protected Subscriber(int bufferRequest) {
+        this.op = null;
+        this.cs = new SubscriptionList();
+        request(bufferRequest);
+    }
+
     protected Subscriber(Subscriber<?> op) {
+        this.op = op;
         this.cs = op.cs;
+    }
+
+    protected Subscriber(Subscriber<?> op, int bufferRequest) {
+        this.op = op;
+        this.cs = op.cs;
+        request(bufferRequest);
     }
 
     /**
@@ -54,7 +74,8 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
      * unsubscribed. If the list <em>is</em> marked as unsubscribed, {@code add} will indicate this by
      * explicitly unsubscribing the new {@code Subscription} as well.
      *
-     * @param s the {@code Subscription} to add
+     * @param s
+     *            the {@code Subscription} to add
      */
     public final void add(Subscription s) {
         cs.add(s);
@@ -72,5 +93,48 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
      */
     public final boolean isUnsubscribed() {
         return cs.isUnsubscribed();
+    }
+
+    public final void request(int n) {
+        Producer shouldRequest = null;
+        synchronized (this) {
+            if (p != null) {
+                shouldRequest = p;
+            } else {
+                requested = n;
+            }
+        }
+        // after releasing lock
+        if (shouldRequest != null) {
+            shouldRequest.request(n);
+        }
+    }
+
+    protected Producer onSetProducer(Producer producer) {
+        return producer;
+    }
+
+    public final void setProducer(Producer producer) {
+        producer = onSetProducer(producer);
+        int toRequest = requested;
+        boolean setProducer = false;
+        synchronized (this) {
+            p = producer;
+            if (op != null) {
+                // middle operator ... we pass thru unless a request has been made
+                if (toRequest < 0) {
+                    // we pass-thru to the next producer as nothing has been requested
+                    setProducer = true;
+                }
+
+            }
+        }
+        // do after releasing lock
+        if (setProducer) {
+            op.setProducer(p);
+        } else {
+            // we execute the request with whatever has been requested (or -1)
+            p.request(toRequest);
+        }
     }
 }

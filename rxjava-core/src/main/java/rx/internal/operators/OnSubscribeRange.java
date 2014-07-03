@@ -15,7 +15,10 @@
  */
 package rx.internal.operators;
 
+import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
+
 import rx.Observable.OnSubscribe;
+import rx.Producer;
 import rx.Subscriber;
 
 /**
@@ -32,14 +35,84 @@ public final class OnSubscribeRange implements OnSubscribe<Integer> {
     }
 
     @Override
-    public void call(Subscriber<? super Integer> o) {
-        for (int i = start; i <= end; i++) {
-            if (o.isUnsubscribed()) {
-                return;
+    public void call(final Subscriber<? super Integer> o) {
+        // need +1 as this is inclusive
+        if ((end - start + 1) < Producer.BUFFER_SIZE) {
+            int index = start;
+            while (index <= end) {
+                if (o.isUnsubscribed()) {
+                    return;
+                }
+                o.onNext(index++);
             }
-            o.onNext(i);
+            o.onCompleted();
+        } else {
+            // otherwise we do it via the producer to support backpressure
+            o.setProducer(new RangeProducer(o, start, end));
         }
-        o.onCompleted();
+
+    }
+
+    private static final class RangeProducer implements Producer {
+        private final Subscriber<? super Integer> o;
+        @SuppressWarnings("unused")
+        // accessed by REQUESTED_UPDATER
+        private volatile int requested;
+        private static final AtomicIntegerFieldUpdater<RangeProducer> REQUESTED_UPDATER = AtomicIntegerFieldUpdater.newUpdater(RangeProducer.class, "requested");
+        private volatile int index;
+        private final int end;
+        private final int start;
+
+        private RangeProducer(Subscriber<? super Integer> o, int start, int end) {
+            this.o = o;
+            this.index = start;
+            this.end = end;
+            this.start = start;
+        }
+
+        @Override
+        public void request(int n) {
+            if (n < 0) {
+                // fast-path without backpressure
+                for (int i = index; i <= end; i++) {
+                    if (o.isUnsubscribed()) {
+                        return;
+                    }
+                    o.onNext(i);
+                }
+                o.onCompleted();
+            } else if (n > 0) {
+                // backpressure is requested
+                int _c = REQUESTED_UPDATER.getAndAdd(this, n);
+                if (_c == 0) {
+                    while (true) {
+                        /*
+                         * This complicated logic is done to avoid touching the volatile `index` and `requested` values
+                         * during the loop itself. If they are touched during the loop the performance is impacted significantly.
+                         */
+                        int numLeft = start + (end - index);
+                        int e = Math.min(numLeft, requested);
+                        boolean completeOnFinish = numLeft < requested;
+                        int stopAt = e + index;
+                        for (int i = index; i < stopAt; i++) {
+                            if (o.isUnsubscribed()) {
+                                return;
+                            }
+                            o.onNext(i);
+                        }
+                        index += e;
+                        if (completeOnFinish) {
+                            o.onCompleted();
+                            return;
+                        }
+                        if (REQUESTED_UPDATER.addAndGet(this, -e) == 0) {
+                            // we're done emitting the number requested so return
+                            return;
+                        }
+                    }
+                }
+            }
+        }
     }
 
 }

@@ -16,7 +16,6 @@
 package rx.internal.util;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -25,11 +24,16 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
+import rx.Observable;
+import rx.Observable.OnSubscribe;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.exceptions.CompositeException;
-import rx.internal.util.SubscriptionList;
+import rx.observers.TestSubscriber;
+import rx.schedulers.Schedulers;
 
 public class SubscriptionListTest {
 
@@ -212,7 +216,6 @@ public class SubscriptionListTest {
         assertEquals(1, counter.get());
     }
 
-
     @Test
     public void testUnsubscribeIdempotence() {
         final AtomicInteger counter = new AtomicInteger();
@@ -238,6 +241,8 @@ public class SubscriptionListTest {
         assertEquals(1, counter.get());
     }
 
+    // exploring making SubscriptionList non-threadsafe https://github.com/Netflix/RxJava/pull/1384
+    @Ignore
     @Test(timeout = 1000)
     public void testUnsubscribeIdempotenceConcurrently()
             throws InterruptedException {
@@ -284,4 +289,67 @@ public class SubscriptionListTest {
         // we should have only unsubscribed once
         assertEquals(1, counter.get());
     }
+
+    /**
+     * Assert that a non-thread-safe SubscriptionList works okay being unsubscribed when everything is moved to a separate thread.
+     * <p>
+     * This should be okay as long as all notifications occurs on the new thread.
+     */
+    @Test
+    public void testOnSubscribeConcurrencyWithCustomThread() {
+        for (int i = 0; i < 100; i++) {
+            TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+            Observable.create(new OnSubscribe<Integer>() {
+
+                @Override
+                public void call(final Subscriber<? super Integer> s) {
+                    new Thread(new Runnable() {
+                        int i = 0;
+
+                        @Override
+                        public void run() {
+                            while (!s.isUnsubscribed()) {
+                                s.onNext(i++);
+                                if (i > 1000) {
+                                    s.onError(new RuntimeException("expected to be unsubscribed at 1000 => " + i));
+                                }
+                            }
+                        }
+                    }).start();
+                }
+
+            }).take(1000).subscribe(ts);
+            ts.awaitTerminalEvent();
+            ts.assertNoErrors();
+            // this should NOT be running on the main thread
+            assertTrue(!ts.getLastSeenThread().getName().contains("main"));
+        }
+    }
+
+    @Test
+    public void testOnSubscribeConcurrencyWithSubscribeOn() {
+        for (int i = 0; i < 100; i++) {
+            TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+            Observable.create(new OnSubscribe<Integer>() {
+
+                int i = 0;
+
+                @Override
+                public void call(final Subscriber<? super Integer> s) {
+                    while (!s.isUnsubscribed()) {
+                        s.onNext(i++);
+                        if (i > 1000) {
+                            s.onError(new RuntimeException("expected to be unsubscribed at 1000 => " + i));
+                        }
+                    }
+                }
+
+            }).subscribeOn(Schedulers.computation()).take(1000).subscribe(ts);
+            ts.awaitTerminalEvent();
+            ts.assertNoErrors();
+            // this should NOT be running on the main thread
+            assertTrue(!ts.getLastSeenThread().getName().contains("main"));
+        }
+    }
+
 }
