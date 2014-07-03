@@ -781,13 +781,16 @@ public class OperatorMergeTest {
         testSubscriber.assertNoErrors();
         System.out.println("Generated 1: " + generated1.get());
         System.err.println(testSubscriber.getOnNextEvents());
+        System.out.println("done1 testBackpressureBothUpstreamAndDownstreamWithRegularObservables");
         assertEquals(RxRingBuffer.SIZE * 2, testSubscriber.getOnNextEvents().size());
+        System.out.println("done2 testBackpressureBothUpstreamAndDownstreamWithRegularObservables");
         // we can't restrict this ... see comment above
         //        assertTrue(generated1.get() >= RxRingBuffer.SIZE && generated1.get() <= RxRingBuffer.SIZE * 4);
     }
 
     @Test
     public void mergeWithNullValues() {
+        System.out.println("mergeWithNullValues");
         TestSubscriber<String> ts = new TestSubscriber<String>();
         Observable.merge(Observable.from(null, "one"), Observable.from("two", null)).subscribe(ts);
         ts.assertTerminalEvent();
@@ -797,6 +800,7 @@ public class OperatorMergeTest {
 
     @Test
     public void mergeWithTerminalEventAfterUnsubscribe() {
+        System.out.println("mergeWithTerminalEventAfterUnsubscribe");
         TestSubscriber<String> ts = new TestSubscriber<String>();
         Observable<String> bad = Observable.create(new OnSubscribe<String>() {
 
