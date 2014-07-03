@@ -783,7 +783,7 @@ public class OperatorMergeTest {
         System.err.println(testSubscriber.getOnNextEvents());
         System.out.println("done1 testBackpressureBothUpstreamAndDownstreamWithRegularObservables ");
         assertEquals(RxRingBuffer.SIZE * 2, testSubscriber.getOnNextEvents().size());
-        System.out.println("done2 testBackpressureBothUpstreamAndDownstreamWithRegularObservables");
+        System.out.println("done2 testBackpressureBothUpstreamAndDownstreamWithRegularObservables ");
         // we can't restrict this ... see comment above
         //        assertTrue(generated1.get() >= RxRingBuffer.SIZE && generated1.get() <= RxRingBuffer.SIZE * 4);
     }
