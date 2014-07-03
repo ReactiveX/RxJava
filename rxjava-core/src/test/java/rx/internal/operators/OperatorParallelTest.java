@@ -112,6 +112,7 @@ public class OperatorParallelTest {
         assertEquals(NUM, count.get());
     }
 
+    // parallel does not support backpressure right now
     @Ignore
     @Test
     public void testBackpressureViaOuterObserveOn() {
@@ -150,7 +151,8 @@ public class OperatorParallelTest {
         assertTrue(emitted.get() < 2000 + RxRingBuffer.SIZE); // should have no more than the buffer size beyond the 2000 in take
         assertEquals(2000, ts.getOnNextEvents().size());
     }
-    
+
+    // parallel does not support backpressure right now
     @Ignore
     @Test
     public void testBackpressureOnInnerObserveOn() {
