@@ -16,15 +16,20 @@
 package rx.internal.operators;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import rx.Observable;
 import rx.functions.Action1;
 import rx.functions.Func1;
+import rx.internal.util.RxRingBuffer;
+import rx.observers.TestSubscriber;
+import rx.schedulers.Schedulers;
 
 public class OperatorParallelTest {
 
@@ -107,4 +112,121 @@ public class OperatorParallelTest {
         assertEquals(NUM, count.get());
     }
 
+    // parallel does not support backpressure right now
+    @Ignore
+    @Test
+    public void testBackpressureViaOuterObserveOn() {
+        final AtomicInteger emitted = new AtomicInteger();
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+        Observable.range(1, 100000).doOnNext(new Action1<Integer>() {
+
+            @Override
+            public void call(Integer t1) {
+                emitted.incrementAndGet();
+            }
+
+        }).parallel(new Func1<Observable<Integer>, Observable<String>>() {
+
+            @Override
+            public Observable<String> call(Observable<Integer> t1) {
+                return t1.map(new Func1<Integer, String>() {
+
+                    @Override
+                    public String call(Integer t) {
+                        try {
+                            Thread.sleep(1);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        return String.valueOf(t);
+                    }
+
+                });
+            }
+
+        }).observeOn(Schedulers.newThread()).take(20000).subscribe(ts);
+        ts.awaitTerminalEvent();
+        ts.assertNoErrors();
+        System.out.println("testBackpressureViaObserveOn emitted => " + emitted.get());
+        assertTrue(emitted.get() < 2000 + RxRingBuffer.SIZE); // should have no more than the buffer size beyond the 2000 in take
+        assertEquals(2000, ts.getOnNextEvents().size());
+    }
+
+    // parallel does not support backpressure right now
+    @Ignore
+    @Test
+    public void testBackpressureOnInnerObserveOn() {
+        final AtomicInteger emitted = new AtomicInteger();
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+        Observable.range(1, 100000).doOnNext(new Action1<Integer>() {
+
+            @Override
+            public void call(Integer t1) {
+                emitted.incrementAndGet();
+            }
+
+        }).parallel(new Func1<Observable<Integer>, Observable<String>>() {
+
+            @Override
+            public Observable<String> call(Observable<Integer> t1) {
+                return t1.map(new Func1<Integer, String>() {
+
+                    @Override
+                    public String call(Integer t) {
+                        try {
+                            Thread.sleep(1);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        return String.valueOf(t);
+                    }
+
+                });
+            }
+
+        }).take(20000).subscribe(ts);
+        ts.awaitTerminalEvent();
+        ts.assertNoErrors();
+        System.out.println("testBackpressureViaObserveOn emitted => " + emitted.get());
+        assertTrue(emitted.get() < 20000 + RxRingBuffer.SIZE); // should have no more than the buffer size beyond the 2000 in take
+        assertEquals(2000, ts.getOnNextEvents().size());
+    }
+
+    @Test(timeout = 1000)
+    public void testBackpressureViaSynchronousTake() {
+        final AtomicInteger emitted = new AtomicInteger();
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+        Observable.range(1, 100000).doOnNext(new Action1<Integer>() {
+
+            @Override
+            public void call(Integer t1) {
+                emitted.incrementAndGet();
+            }
+
+        }).parallel(new Func1<Observable<Integer>, Observable<String>>() {
+
+            @Override
+            public Observable<String> call(Observable<Integer> t1) {
+                return t1.map(new Func1<Integer, String>() {
+
+                    @Override
+                    public String call(Integer t) {
+                        try {
+                            Thread.sleep(1);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        return String.valueOf(t);
+                    }
+
+                });
+            }
+
+        }).take(2000).subscribe(ts);
+        ts.awaitTerminalEvent();
+        ts.assertNoErrors();
+        System.out.println("emitted: " + emitted.get());
+        assertEquals(2000, emitted.get()); // no async, so should be perfect
+        assertEquals(2000, ts.getOnNextEvents().size());
+    }
 }

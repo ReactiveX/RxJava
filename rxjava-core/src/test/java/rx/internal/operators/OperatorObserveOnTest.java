@@ -19,13 +19,16 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -33,18 +36,20 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Test;
 import org.mockito.InOrder;
-import static org.mockito.Matchers.anyInt;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 import rx.Observable;
+import rx.Observable.OnSubscribe;
 import rx.Observer;
 import rx.Scheduler;
+import rx.Subscriber;
 import rx.Subscription;
+import rx.exceptions.MissingBackpressureException;
 import rx.exceptions.TestException;
 import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Func1;
+import rx.internal.util.RxRingBuffer;
+import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 import rx.schedulers.TestScheduler;
 
@@ -73,21 +78,16 @@ public class OperatorObserveOnTest {
         Observer<String> observer = mock(Observer.class);
 
         InOrder inOrder = inOrder(observer);
+        TestSubscriber<String> ts = new TestSubscriber<String>(observer);
 
-        final CountDownLatch completedLatch = new CountDownLatch(1);
-        doAnswer(new Answer<Void>() {
+        obs.observeOn(Schedulers.computation()).subscribe(ts);
 
-            @Override
-            public Void answer(InvocationOnMock invocation) throws Throwable {
-                completedLatch.countDown();
-                return null;
+        ts.awaitTerminalEvent(1000, TimeUnit.MILLISECONDS);
+        if (ts.getOnErrorEvents().size() > 0) {
+            for (Throwable t : ts.getOnErrorEvents()) {
+                t.printStackTrace();
             }
-        }).when(observer).onCompleted();
-
-        obs.observeOn(Schedulers.computation()).subscribe(observer);
-
-        if (!completedLatch.await(1000, TimeUnit.MILLISECONDS)) {
-            fail("timed out waiting");
+            fail("failed with exception");
         }
 
         inOrder.verify(observer, times(1)).onNext("one");
@@ -247,6 +247,7 @@ public class OperatorObserveOnTest {
                     }
 
                 });
+
     }
 
     /**
@@ -368,29 +369,28 @@ public class OperatorObserveOnTest {
         x ^= (x << 4);
         return Math.abs((int) x % 100);
     }
-    
+
     @Test
     public void testDelayedErrorDeliveryWhenSafeSubscriberUnsubscribes() {
         TestScheduler testScheduler = new TestScheduler();
-        
-        Observable<Integer> source = Observable.concat(Observable.<Integer>error(new TestException()), Observable.just(1));
-        
-        
+
+        Observable<Integer> source = Observable.concat(Observable.<Integer> error(new TestException()), Observable.just(1));
+
         @SuppressWarnings("unchecked")
         Observer<Integer> o = mock(Observer.class);
         InOrder inOrder = inOrder(o);
-        
+
         source.observeOn(testScheduler).subscribe(o);
-        
+
         inOrder.verify(o, never()).onError(any(TestException.class));
-        
+
         testScheduler.advanceTimeBy(1, TimeUnit.SECONDS);
-        
+
         inOrder.verify(o).onError(any(TestException.class));
         inOrder.verify(o, never()).onNext(anyInt());
         inOrder.verify(o, never()).onCompleted();
     }
-
+    
     @Test
     public void testAfterUnsubscribeCalledThenObserverOnNextNeverCalled() {
         final TestScheduler testScheduler = new TestScheduler();
@@ -406,5 +406,200 @@ public class OperatorObserveOnTest {
         inOrder.verify(observer, never()).onNext(anyInt());
         inOrder.verify(observer, never()).onError(any(Exception.class));
         inOrder.verify(observer, never()).onCompleted();
+    }
+
+    @Test
+    public void testBackpressureWithTakeAfter() {
+        final AtomicInteger generated = new AtomicInteger();
+        Observable<Integer> observable = Observable.from(new Iterable<Integer>() {
+            @Override
+            public Iterator<Integer> iterator() {
+                return new Iterator<Integer>() {
+
+                    @Override
+                    public void remove() {
+                    }
+
+                    @Override
+                    public Integer next() {
+                        return generated.getAndIncrement();
+                    }
+
+                    @Override
+                    public boolean hasNext() {
+                        return true;
+                    }
+                };
+            }
+        });
+
+        TestSubscriber<Integer> testSubscriber = new TestSubscriber<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                System.err.println("c t = " + t + " thread " + Thread.currentThread());
+                super.onNext(t);
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {
+                }
+            }
+        };
+
+        observable
+                .observeOn(Schedulers.newThread())
+                .take(3)
+                .subscribe(testSubscriber);
+        testSubscriber.awaitTerminalEvent();
+        System.err.println(testSubscriber.getOnNextEvents());
+        testSubscriber.assertReceivedOnNext(Arrays.asList(0, 1, 2));
+        // it should be between the take num and requested batch size across the async boundary
+        System.out.println("Generated: " + generated.get());
+        assertTrue(generated.get() >= 3 && generated.get() <= RxRingBuffer.SIZE);
+    }
+
+    @Test
+    public void testBackpressureWithTakeAfterAndMultipleBatches() {
+        int numForBatches = RxRingBuffer.SIZE * 3 + 1; // should be 4 batches == ((3*n)+1) items
+        final AtomicInteger generated = new AtomicInteger();
+        Observable<Integer> observable = Observable.from(new Iterable<Integer>() {
+            @Override
+            public Iterator<Integer> iterator() {
+                return new Iterator<Integer>() {
+
+                    @Override
+                    public void remove() {
+                    }
+
+                    @Override
+                    public Integer next() {
+                        return generated.getAndIncrement();
+                    }
+
+                    @Override
+                    public boolean hasNext() {
+                        return true;
+                    }
+                };
+            }
+        });
+
+        TestSubscriber<Integer> testSubscriber = new TestSubscriber<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                //                System.err.println("c t = " + t + " thread " + Thread.currentThread());
+                super.onNext(t);
+            }
+        };
+
+        observable
+                .observeOn(Schedulers.newThread())
+                .take(numForBatches)
+                .subscribe(testSubscriber);
+        testSubscriber.awaitTerminalEvent();
+        System.err.println(testSubscriber.getOnNextEvents());
+        // it should be between the take num and requested batch size across the async boundary
+        System.out.println("Generated: " + generated.get());
+        assertTrue(generated.get() >= numForBatches && generated.get() <= numForBatches + RxRingBuffer.SIZE);
+    }
+
+    @Test
+    public void testBackpressureWithTakeBefore() {
+        final AtomicInteger generated = new AtomicInteger();
+        Observable<Integer> observable = Observable.from(new Iterable<Integer>() {
+            @Override
+            public Iterator<Integer> iterator() {
+                return new Iterator<Integer>() {
+
+                    @Override
+                    public void remove() {
+                    }
+
+                    @Override
+                    public Integer next() {
+                        return generated.getAndIncrement();
+                    }
+
+                    @Override
+                    public boolean hasNext() {
+                        return true;
+                    }
+                };
+            }
+        });
+
+        TestSubscriber<Integer> testSubscriber = new TestSubscriber<Integer>();
+        observable
+                .take(7)
+                .observeOn(Schedulers.newThread())
+                .subscribe(testSubscriber);
+
+        testSubscriber.awaitTerminalEvent();
+        testSubscriber.assertReceivedOnNext(Arrays.asList(0, 1, 2, 3, 4, 5, 6));
+        assertEquals(7, generated.get());
+    }
+
+    @Test
+    public void testQueueFullEmitsError() {
+        final CountDownLatch latch = new CountDownLatch(1);
+        Observable<Integer> observable = Observable.create(new OnSubscribe<Integer>() {
+
+            @Override
+            public void call(Subscriber<? super Integer> o) {
+                for (int i = 0; i < RxRingBuffer.SIZE + 10; i++) {
+                    o.onNext(i);
+                }
+                latch.countDown();
+                o.onCompleted();
+            }
+
+        });
+
+        TestSubscriber<Integer> testSubscriber = new TestSubscriber<Integer>(new Observer<Integer>() {
+
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(Integer t) {
+                // force it to be slow and wait until we have queued everything
+                try {
+                    latch.await(500, TimeUnit.MILLISECONDS);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        });
+        observable.observeOn(Schedulers.newThread()).subscribe(testSubscriber);
+
+        testSubscriber.awaitTerminalEvent();
+        List<Throwable> errors = testSubscriber.getOnErrorEvents();
+        assertEquals(1, errors.size());
+        System.out.println("Errors: " + errors);
+        Throwable t = errors.get(0);
+        if (t instanceof MissingBackpressureException) {
+            // success, we expect this
+        } else {
+            if (t.getCause() instanceof MissingBackpressureException) {
+                // this is also okay
+            } else {
+                fail("Expecting MissingBackpressureException");
+            }
+        }
+    }
+
+    @Test
+    public void testAsyncChild() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        Observable.range(0, 100000).observeOn(Schedulers.newThread()).observeOn(Schedulers.newThread()).subscribe(ts);
+        ts.awaitTerminalEvent();
+        ts.assertNoErrors();
     }
 }
