@@ -40,6 +40,7 @@ import org.mockito.stubbing.Answer;
 import rx.Observable;
 import rx.Observer;
 import rx.Scheduler;
+import rx.Subscription;
 import rx.exceptions.TestException;
 import rx.functions.Action0;
 import rx.functions.Action1;
@@ -388,5 +389,22 @@ public class OperatorObserveOnTest {
         inOrder.verify(o).onError(any(TestException.class));
         inOrder.verify(o, never()).onNext(anyInt());
         inOrder.verify(o, never()).onCompleted();
+    }
+
+    @Test
+    public void testAfterUnsubscribeCalledThenObserverOnNextNeverCalled() {
+        final TestScheduler testScheduler = new TestScheduler();
+        final Observer<Integer> observer = mock(Observer.class);
+        final Subscription subscription = Observable.from(1, 2, 3)
+                .observeOn(testScheduler)
+                .subscribe(observer);
+        subscription.unsubscribe();
+        testScheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+
+        final InOrder inOrder = inOrder(observer);
+
+        inOrder.verify(observer, never()).onNext(anyInt());
+        inOrder.verify(observer, never()).onError(any(Exception.class));
+        inOrder.verify(observer, never()).onCompleted();
     }
 }
