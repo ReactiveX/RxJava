@@ -52,23 +52,16 @@ public final class SubscriptionList implements Subscription {
      * indicate this by explicitly unsubscribing the new {@code Subscription} as well.
      *
      * @param s
-     *          the {@link Subscription} to add
+     *            the {@link Subscription} to add
      */
     public void add(final Subscription s) {
-        Subscription unsubscribe = null;
-        synchronized (this) {
-            if (unsubscribed) {
-                unsubscribe = s;
-            } else {
-                if (subscriptions == null) {
-                    subscriptions = new LinkedList<Subscription>();
-                }
-                subscriptions.add(s);
+        if (unsubscribed) {
+            s.unsubscribe();
+        } else {
+            if (subscriptions == null) {
+                subscriptions = new LinkedList<Subscription>();
             }
-        }
-        if (unsubscribe != null) {
-            // call after leaving the synchronized block so we're not holding a lock while executing this
-            unsubscribe.unsubscribe();
+            subscriptions.add(s);
         }
     }
 
@@ -78,14 +71,13 @@ public final class SubscriptionList implements Subscription {
      */
     @Override
     public void unsubscribe() {
-        synchronized (this) {
-            if (unsubscribed) {
-                return;
-            }
-            unsubscribed = true;
+        if (unsubscribed) {
+            return;
         }
+        unsubscribed = true;
         // we will only get here once
         unsubscribeFromAll(subscriptions);
+        subscriptions = null;
     }
 
     private static void unsubscribeFromAll(Collection<Subscription> subscriptions) {

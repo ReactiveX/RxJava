@@ -23,15 +23,18 @@ import rx.Scheduler;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Action0;
+import rx.internal.util.SynchronizedSubscription;
 import rx.schedulers.ImmediateScheduler;
 import rx.schedulers.TrampolineScheduler;
+import rx.subscriptions.Subscriptions;
 
 /**
  * Delivers events on the specified Scheduler asynchronously via an unbounded buffer.
  * 
  * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/observeOn.png">
  * 
- * @param <T> the transmitted value type
+ * @param <T>
+ *            the transmitted value type
  */
 public final class OperatorObserveOn<T> implements Operator<T, T> {
 
@@ -65,18 +68,18 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
         final NotificationLite<T> on = NotificationLite.instance();
         /** Guarded by this. */
         private FastList queue = new FastList();
-        
+
         volatile long counter;
         @SuppressWarnings("rawtypes")
-        static final AtomicLongFieldUpdater<ObserveOnSubscriber> COUNTER_UPDATER
-                = AtomicLongFieldUpdater.newUpdater(ObserveOnSubscriber.class, "counter");
+        static final AtomicLongFieldUpdater<ObserveOnSubscriber> COUNTER_UPDATER = AtomicLongFieldUpdater.newUpdater(ObserveOnSubscriber.class, "counter");
 
         public ObserveOnSubscriber(Scheduler scheduler, Subscriber<? super T> subscriber) {
-            super(subscriber);
             this.observer = subscriber;
             this.recursiveScheduler = scheduler.createWorker();
             this.scheduledUnsubscribe = new ScheduledUnsubscribe(recursiveScheduler);
             subscriber.add(scheduledUnsubscribe);
+            // connect the unsubscribe chain but over a synchronized subscription to pass over thread boundaries
+            subscriber.add(new SynchronizedSubscription(this));
         }
 
         @Override
@@ -166,11 +169,11 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
             size = s + 1;
         }
     }
+
     static final class ScheduledUnsubscribe implements Subscription {
         final Scheduler.Worker worker;
         volatile int once;
-        static final AtomicIntegerFieldUpdater<ScheduledUnsubscribe> ONCE_UPDATER
-                = AtomicIntegerFieldUpdater.newUpdater(ScheduledUnsubscribe.class, "once");
+        static final AtomicIntegerFieldUpdater<ScheduledUnsubscribe> ONCE_UPDATER = AtomicIntegerFieldUpdater.newUpdater(ScheduledUnsubscribe.class, "once");
 
         public ScheduledUnsubscribe(Scheduler.Worker worker) {
             this.worker = worker;
@@ -192,6 +195,6 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
                 });
             }
         }
-        
+
     }
 }
