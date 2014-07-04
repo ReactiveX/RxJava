@@ -45,17 +45,17 @@ dependencies {
 
     compile project(':rxjava-core')
     
-    provided 'junit:junit-dep:4.10'
-    provided 'org.mockito:mockito-core:1.8.5'
+    testCompile 'junit:junit-dep:4.10'
+    testCompile 'org.mockito:mockito-core:1.8.5'
     testCompile 'org.scalatest:scalatest_2.10:1.9.1'
 }
 
 tasks.compileScala {  
-    classpath = classpath + (configurations.compile + configurations.provided)
+    classpath = classpath + configurations.compile
 }
 
 tasks.compileExamplesScala {  
-    classpath = classpath + files(compileScala.destinationDir) + (configurations.compile + configurations.provided)
+    classpath = classpath + files(compileScala.destinationDir) + (configurations.compile + configurations.testCompile)
 }
 
 // Add RxJava core to Scaladoc input:
