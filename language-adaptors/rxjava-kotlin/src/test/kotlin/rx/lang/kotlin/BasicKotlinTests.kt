@@ -18,15 +18,11 @@ package rx.lang.kotlin
 
 import rx.Observable
 import org.junit.Test
-import rx.subscriptions.Subscriptions
 import org.mockito.Mockito.*
 import org.mockito.Matchers.*
-import rx.Observer
 import org.junit.Assert.*
 import rx.Notification
-import rx.Subscription
 import kotlin.concurrent.thread
-import rx.Observable.OnSubscribeFunc
 import rx.lang.kotlin.BasicKotlinTests.AsyncObservable
 import rx.Observable.OnSubscribe
 import rx.Subscriber
@@ -62,12 +58,12 @@ public class BasicKotlinTests : KotlinTests() {
 
     [Test]
     public fun testLast() {
-        assertEquals("three", Observable.from(listOf("one", "two", "three"))!!.toBlockingObservable()!!.last())
+        assertEquals("three", Observable.from(listOf("one", "two", "three"))!!.toBlocking()!!.last())
     }
 
     [Test]
     public fun testLastWithPredicate() {
-        assertEquals("two", Observable.from(listOf("one", "two", "three"))!!.toBlockingObservable()!!.last { x -> x!!.length == 3 })
+        assertEquals("two", Observable.from(listOf("one", "two", "three"))!!.toBlocking()!!.last { x -> x!!.length == 3 })
     }
 
     [Test]
@@ -150,21 +146,21 @@ public class BasicKotlinTests : KotlinTests() {
     [Test]
     public fun testFromWithIterable() {
         val list = listOf(1, 2, 3, 4, 5)
-        assertEquals(5, Observable.from(list)!!.count()!!.toBlockingObservable()!!.single())
+        assertEquals(5, Observable.from(list)!!.count()!!.toBlocking()!!.single())
     }
 
     [Test]
     public fun testFromWithObjects() {
         val list = listOf(1, 2, 3, 4, 5)
-        assertEquals(2, Observable.from(listOf(list, 6))!!.count()!!.toBlockingObservable()!!.single())
+        assertEquals(2, Observable.from(listOf(list, 6))!!.count()!!.toBlocking()!!.single())
     }
 
     [Test]
     public fun testStartWith() {
         val list = listOf(10, 11, 12, 13, 14)
         val startList = listOf(1, 2, 3, 4, 5)
-        assertEquals(6, Observable.from(list)!!.startWith(0)!!.count()!!.toBlockingObservable()!!.single())
-        assertEquals(10, Observable.from(list)!!.startWith(startList)!!.count()!!.toBlockingObservable()!!.single())
+        assertEquals(6, Observable.from(list)!!.startWith(0)!!.count()!!.toBlocking()!!.single())
+        assertEquals(10, Observable.from(list)!!.startWith(startList)!!.count()!!.toBlocking()!!.single())
     }
 
     [Test]
@@ -227,7 +223,7 @@ public class BasicKotlinTests : KotlinTests() {
 
     [Test]
     public fun testForEach() {
-        Observable.create(AsyncObservable())!!.toBlockingObservable()!!.forEach(received())
+        Observable.create(AsyncObservable())!!.toBlocking()!!.forEach(received())
         verify(a, times(1))!!.received(1)
         verify(a, times(1))!!.received(2)
         verify(a, times(1))!!.received(3)
@@ -235,20 +231,20 @@ public class BasicKotlinTests : KotlinTests() {
 
     [Test(expected = javaClass<RuntimeException>())]
     public fun testForEachWithError() {
-        Observable.create(AsyncObservable())!!.toBlockingObservable()!!.forEach { throw RuntimeException("err") }
+        Observable.create(AsyncObservable())!!.toBlocking()!!.forEach { throw RuntimeException("err") }
         fail("we expect an exception to be thrown")
     }
 
     [Test]
     public fun testLastOrDefault() {
-        assertEquals("two", Observable.from(listOf("one", "two"))!!.toBlockingObservable()!!.lastOrDefault("default") { x -> x!!.length == 3 })
-        assertEquals("default", Observable.from(listOf("one", "two"))!!.toBlockingObservable()!!.lastOrDefault("default") { x -> x!!.length > 3 })
+        assertEquals("two", Observable.from(listOf("one", "two"))!!.toBlocking()!!.lastOrDefault("default") { x -> x!!.length == 3 })
+        assertEquals("default", Observable.from(listOf("one", "two"))!!.toBlocking()!!.lastOrDefault("default") { x -> x!!.length > 3 })
     }
 
     [Test(expected = javaClass<IllegalArgumentException>())]
     public fun testSingle() {
-        assertEquals("one", Observable.from("one")!!.toBlockingObservable()!!.single { x -> x!!.length == 3 })
-        Observable.from(listOf("one", "two"))!!.toBlockingObservable()!!.single { x -> x!!.length == 3 }
+        assertEquals("one", Observable.from("one")!!.toBlocking()!!.single { x -> x!!.length == 3 })
+        Observable.from(listOf("one", "two"))!!.toBlocking()!!.single { x -> x!!.length == 3 }
         fail()
     }
 
@@ -271,7 +267,7 @@ public class BasicKotlinTests : KotlinTests() {
         val o2 = Observable.from(listOf(4, 5, 6))!!
         val o3 = Observable.from(listOf(7, 8, 9))!!
 
-        val values = Observable.zip(o1, o2, o3) { a, b, c -> listOf(a, b, c) }!!.toList()!!.toBlockingObservable()!!.single()!!
+        val values = Observable.zip(o1, o2, o3) { a, b, c -> listOf(a, b, c) }!!.toList()!!.toBlocking()!!.single()!!
         assertEquals(listOf(1, 4, 7), values[0])
         assertEquals(listOf(2, 5, 8), values[1])
         assertEquals(listOf(3, 6, 9), values[2])
@@ -283,7 +279,7 @@ public class BasicKotlinTests : KotlinTests() {
         val o2 = Observable.from(listOf(4, 5, 6))!!
         val o3 = Observable.from(listOf(7, 8, 9))!!
 
-        val values = Observable.zip(listOf(o1, o2, o3)) { args -> listOf(*args) }!!.toList()!!.toBlockingObservable()!!.single()!!
+        val values = Observable.zip(listOf(o1, o2, o3)) { args -> listOf(*args) }!!.toList()!!.toBlocking()!!.single()!!
         assertEquals(listOf(1, 4, 7), values[0])
         assertEquals(listOf(2, 5, 8), values[1])
         assertEquals(listOf(3, 6, 9), values[2])
@@ -296,10 +292,10 @@ public class BasicKotlinTests : KotlinTests() {
         Observable.from(listOf("one", "two", "three", "four", "five", "six"))!!
                 .groupBy { s -> s!!.length }!!
                 .flatMap { groupObervable ->
-            groupObervable!!.map { s ->
-                "Value: $s Group ${groupObervable.getKey()}"
-            }
-        }!!.toBlockingObservable()!!.forEach { s ->
+                    groupObervable!!.map { s ->
+                        "Value: $s Group ${groupObervable.getKey()}"
+                    }
+                }!!.toBlocking()!!.forEach { s ->
             println(s)
             count++
         }
@@ -343,7 +339,7 @@ public class BasicKotlinTests : KotlinTests() {
     }
 
     class TestOnSubscribe(val count: Int) : OnSubscribe<String> {
-        override fun call(op: Subscriber<in String>?)  {
+        override fun call(op: Subscriber<in String>?) {
             op!!.onNext("hello_$count")
             op.onCompleted()
         }

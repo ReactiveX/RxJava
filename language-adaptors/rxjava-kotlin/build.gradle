@@ -4,7 +4,7 @@ buildscript {
     }
 
     dependencies {
-        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:0.7.270'
+        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:0.8.11'
     }
 }
 
@@ -13,7 +13,7 @@ apply plugin: 'osgi'
 
 dependencies {
     compile project(':rxjava-core')
-    compile 'org.jetbrains.kotlin:kotlin-stdlib:0.7.270'
+    compile 'org.jetbrains.kotlin:kotlin-stdlib:0.8.11'
     provided 'junit:junit-dep:4.10'
     provided 'org.mockito:mockito-core:1.8.5'
 }
