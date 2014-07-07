@@ -16,6 +16,7 @@
 package rx.internal.util;
 
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.atomic.AtomicReferenceArray;
 
 import rx.Subscription;
@@ -62,7 +63,7 @@ public class IndexedRingBuffer<E> implements Subscription {
     }
 
     private final ElementSection<E> elements = new ElementSection<E>();
-    private final IndexSection removed = new IndexSection();
+    private final IndexSection removed = IndexSection.create();
     /* package for unit testing */final AtomicInteger index = new AtomicInteger();
     /* package for unit testing */final AtomicInteger removedIndex = new AtomicInteger();
     /* package for unit testing */static final int SIZE = 512;
@@ -86,7 +87,7 @@ public class IndexedRingBuffer<E> implements Subscription {
                 // (relative on Mac Intel i7) lazySet gets us ~30m vs ~26m ops/second in the JMH test (100 adds per release)
                 section.array.set(i, null);
             }
-            section = section.next;
+            section = section.next.get();
         }
 
         index.set(0);
@@ -100,10 +101,6 @@ public class IndexedRingBuffer<E> implements Subscription {
     }
 
     private IndexedRingBuffer() {
-        if (!UnsafeAccess.isUnsafeAvailable()) {
-            throw new IllegalStateException("This does not work on systems without sun.misc.Unsafe");
-        }
-        // TODO need to make this class (or its users) have alternative support for non-Unsafe environments
     }
 
     /**
@@ -182,12 +179,12 @@ public class IndexedRingBuffer<E> implements Subscription {
         if (ri >= 0) {
             if (ri < SIZE) {
                 // fast-path when we are in the first section
-                i = removed.array.getAndSet(ri, -1);
+                i = removed.getAndSet(ri, -1);
             } else {
                 int sectionIndex = ri % SIZE;
-                i = getIndexSection(ri).array.getAndSet(sectionIndex, -1);
+                i = getIndexSection(ri).getAndSet(sectionIndex, -1);
             }
-            if(i == index.get()) {
+            if (i == index.get()) {
                 // if it was the last index removed, when we pick it up again we want to increment
                 index.getAndIncrement();
             }
@@ -230,10 +227,10 @@ public class IndexedRingBuffer<E> implements Subscription {
         int i = removedIndex.getAndIncrement();
         if (i < SIZE) {
             // fast-path when we are in the first section
-            removed.array.set(i, elementIndex);
+            removed.set(i, elementIndex);
         } else {
             int sectionIndex = i % SIZE;
-            getIndexSection(i).array.set(sectionIndex, elementIndex);
+            getIndexSection(i).set(sectionIndex, elementIndex);
         }
     }
 
@@ -292,7 +289,7 @@ public class IndexedRingBuffer<E> implements Subscription {
                     return lastIndex;
                 }
             }
-            section = section.next;
+            section = section.next.get();
             startIndex = 0; // reset to start for next section
         }
 
@@ -301,60 +298,81 @@ public class IndexedRingBuffer<E> implements Subscription {
     }
 
     private static class ElementSection<E> {
-        final AtomicReferenceArray<E> array = new AtomicReferenceArray<E>(SIZE);
-        volatile ElementSection<E> next;
-        private static final long _nextOffset;
-
-        static {
-            try {
-                _nextOffset = UnsafeAccess.UNSAFE.objectFieldOffset(ElementSection.class.getDeclaredField("next"));
-            } catch (Exception ex) {
-                throw new Error(ex);
-            }
-        }
+        private final AtomicReferenceArray<E> array = new AtomicReferenceArray<E>(SIZE);
+        private final AtomicReference<ElementSection<E>> next = new AtomicReference<ElementSection<E>>();
 
         ElementSection<E> getNext() {
-            if (next != null) {
-                return next;
+            if (next.get() != null) {
+                return next.get();
             } else {
                 ElementSection<E> newSection = new ElementSection<E>();
-                if (UnsafeAccess.UNSAFE.compareAndSwapObject(this, _nextOffset, null, newSection)) {
+                if (next.compareAndSet(null, newSection)) {
                     // we won
                     return newSection;
                 } else {
                     // we lost so get the value that won
-                    return next;
+                    return next.get();
                 }
             }
         }
     }
 
-    private static class IndexSection {
-        final AtomicIntReferenceArray array = new AtomicIntReferenceArray(SIZE);
-        private volatile IndexSection next;
-        private static final long _nextOffset;
+    private static abstract class IndexSection {
 
-        static {
-            try {
-                _nextOffset = UnsafeAccess.UNSAFE.objectFieldOffset(IndexSection.class.getDeclaredField("next"));
-            } catch (Exception ex) {
-                throw new Error(ex);
+        public static IndexSection create() {
+            if (UnsafeAccess.isUnsafeAvailable()) {
+                return new IndexSectionUnsafe();
+            } else {
+                return new IndexSectionSafe();
             }
         }
 
+        public abstract int getAndSet(int expected, int newValue);
+
+        public abstract void set(int i, int elementIndex);
+
+        private final AtomicReference<IndexSection> _next = new AtomicReference<IndexSection>();
+
         IndexSection getNext() {
-            if (next != null) {
-                return next;
+            if (_next.get() != null) {
+                return _next.get();
             } else {
-                IndexSection newSection = new IndexSection();
-                if (UnsafeAccess.UNSAFE.compareAndSwapObject(this, _nextOffset, null, newSection)) {
+                IndexSection newSection = IndexSection.create();
+                if (_next.compareAndSet(null, newSection)) {
                     // we won
                     return newSection;
                 } else {
                     // we lost so get the value that won
-                    return next;
+                    return _next.get();
                 }
             }
         }
+
+    }
+
+    private static class IndexSectionUnsafe extends IndexSection {
+        private final AtomicIntReferenceArray unsafeArray = new AtomicIntReferenceArray(SIZE);
+
+        public int getAndSet(int expected, int newValue) {
+            return unsafeArray.getAndSet(expected, newValue);
+        }
+
+        public void set(int i, int elementIndex) {
+            unsafeArray.set(i, elementIndex);
+        }
+
+    }
+
+    private static class IndexSectionSafe extends IndexSection {
+        private final AtomicReferenceArray<Integer> safeArray = new AtomicReferenceArray<Integer>(SIZE);
+
+        public int getAndSet(int expected, int newValue) {
+            return safeArray.getAndSet(expected, newValue);
+        }
+
+        public void set(int i, int elementIndex) {
+            safeArray.set(i, elementIndex);
+        }
+
     }
 }
