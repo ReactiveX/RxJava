@@ -32,9 +32,7 @@ import rx.plugins.RxJavaPlugins;
  * document</a>:
  * <blockquote><p>
  * Messages sent to instances of the {@code IObserver} interface follow the following grammar:
- * </p><blockquote><p>
- * {@code OnNext* (OnCompleted | OnError)?}
- * </p></blockquote><p>
+ * </p><blockquote><p> {@code OnNext* (OnCompleted | OnError)?} </p></blockquote><p>
  * This grammar allows observable sequences to send any amount (0 or more) of {@code OnNext} messages to the
  * subscribed observer instance, optionally followed by a single success ({@code OnCompleted}) or failure
  * ({@code OnError}) message.
@@ -53,23 +51,17 @@ import rx.plugins.RxJavaPlugins;
  * <li>If {@code unsubscribe} is called, calls {@code completed} and forbids any further {@code onNext} calls.</li>
  * <li>When {@code onError} or {@code onComplete} occur, unsubscribes from the {@code Observable} (if executing asynchronously).</li>
  * </ul>
- * <p>
- * {@code SafeSubscriber} will not synchronize {@code onNext} execution. Use {@link SerializedSubscriber} to do
+ * <p> {@code SafeSubscriber} will not synchronize {@code onNext} execution. Use {@link SerializedSubscriber} to do
  * that.
  * 
  * @param <T>
- *         the type of item expected by the {@link Subscriber}
+ *            the type of item expected by the {@link Subscriber}
  */
 public class SafeSubscriber<T> extends Subscriber<T> {
 
     private final Subscriber<? super T> actual;
 
-    /** Terminal state indication if not zero. */
-    volatile int done;
-
-    @SuppressWarnings("rawtypes")
-    static final AtomicIntegerFieldUpdater<SafeSubscriber> DONE_UPDATER
-            = AtomicIntegerFieldUpdater.newUpdater(SafeSubscriber.class, "done");
+    boolean done = false;
 
     public SafeSubscriber(Subscriber<? super T> actual) {
         super(actual);
@@ -78,7 +70,8 @@ public class SafeSubscriber<T> extends Subscriber<T> {
 
     @Override
     public void onCompleted() {
-        if (DONE_UPDATER.getAndSet(this, 1) == 0) {
+        if (!done) {
+            done = true;
             try {
                 actual.onCompleted();
             } catch (Throwable e) {
@@ -99,7 +92,8 @@ public class SafeSubscriber<T> extends Subscriber<T> {
         // we handle here instead of another method so we don't add stacks to the frame
         // which can prevent it from being able to handle StackOverflow
         Exceptions.throwIfFatal(e);
-        if (DONE_UPDATER.getAndSet(this, 1) == 0) {
+        if (!done) {
+            done = true;
             _onError(e);
         }
     }
@@ -107,7 +101,7 @@ public class SafeSubscriber<T> extends Subscriber<T> {
     @Override
     public void onNext(T args) {
         try {
-            if (done == 0) {
+            if (!done) {
                 actual.onNext(args);
             }
         } catch (Throwable e) {
@@ -120,8 +114,7 @@ public class SafeSubscriber<T> extends Subscriber<T> {
     }
 
     /**
-     * The logic for {@code onError} without the {@code isFinished} check so it can be called from within
-     * {@code onCompleted}.
+     * The logic for {@code onError} without the {@code isFinished} check so it can be called from within {@code onCompleted}.
      * 
      * @see <a href="https://github.com/Netflix/RxJava/issues/630">the report of this bug</a>
      */

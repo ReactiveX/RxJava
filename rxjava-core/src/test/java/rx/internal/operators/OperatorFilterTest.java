@@ -20,12 +20,16 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import java.util.concurrent.CountDownLatch;
+
 import org.junit.Test;
 import org.mockito.Mockito;
 
 import rx.Observable;
 import rx.Observer;
+import rx.Subscriber;
 import rx.functions.Func1;
+import rx.internal.util.RxRingBuffer;
 
 public class OperatorFilterTest {
 
@@ -48,5 +52,97 @@ public class OperatorFilterTest {
         verify(observer, Mockito.never()).onNext("three");
         verify(observer, Mockito.never()).onError(any(Throwable.class));
         verify(observer, times(1)).onCompleted();
+    }
+
+    /**
+     * Make sure we are adjusting subscriber.request() for filtered items
+     */
+    @Test(timeout = 500)
+    public void testWithBackpressure() throws InterruptedException {
+        Observable<String> w = Observable.from("one", "two", "three");
+        Observable<String> o = w.filter(new Func1<String, Boolean>() {
+
+            @Override
+            public Boolean call(String t1) {
+                return t1.equals("three");
+            }
+        });
+
+        final CountDownLatch latch = new CountDownLatch(1);
+        Subscriber<String> s = new Subscriber<String>() {
+
+            @Override
+            public void onCompleted() {
+                System.out.println("onCompleted");
+                latch.countDown();
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                e.printStackTrace();
+                latch.countDown();
+            }
+
+            @Override
+            public void onNext(String t) {
+                System.out.println("Received: " + t);
+                // request more each time we receive
+                request(1);
+            }
+
+        };
+        // this means it will only request "one" and "two", expecting to receive them before requesting more
+        s.request(2);
+
+        o.subscribe(s);
+
+        // this will wait forever unless OperatorTake handles the request(n) on filtered items
+        latch.await();
+    }
+
+    /**
+     * Make sure we are adjusting subscriber.request() for filtered items
+     */
+    @Test(timeout = 500000)
+    public void testWithBackpressure2() throws InterruptedException {
+        Observable<Integer> w = Observable.range(1, RxRingBuffer.SIZE * 2);
+        Observable<Integer> o = w.filter(new Func1<Integer, Boolean>() {
+
+            @Override
+            public Boolean call(Integer t1) {
+                return t1 > 100;
+            }
+        });
+
+        final CountDownLatch latch = new CountDownLatch(1);
+        Subscriber<Integer> s = new Subscriber<Integer>() {
+
+            @Override
+            public void onCompleted() {
+                System.out.println("onCompleted");
+                latch.countDown();
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                e.printStackTrace();
+                latch.countDown();
+            }
+
+            @Override
+            public void onNext(Integer t) {
+                System.out.println("Received: " + t);
+                // request more each time we receive
+                request(1);
+            }
+
+        };
+        // this means it will only request 1 item and expect to receive more
+        s.request(1);
+
+        o.subscribe(s);
+
+        // this will wait forever unless OperatorTake handles the request(n) on filtered items
+        latch.await();
     }
 }

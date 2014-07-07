@@ -15,7 +15,12 @@
  */
 package rx.internal.operators;
 
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
+
 import rx.Observable.OnSubscribe;
+import rx.Producer;
 import rx.Subscriber;
 
 /**
@@ -35,17 +40,71 @@ public final class OnSubscribeFromIterable<T> implements OnSubscribe<T> {
     }
 
     @Override
-    public void call(Subscriber<? super T> o) {
-        for (T i : is) {
-            if (o.isUnsubscribed()) {
-                return;
+    public void call(final Subscriber<? super T> o) {
+        if (is == null) {
+            o.onCompleted();
+        }
+        final Iterator<? extends T> it = is.iterator();
+        o.setProducer(new IterableProducer<T>(o, it));
+    }
+
+    private static final class IterableProducer<T> implements Producer {
+        private final Subscriber<? super T> o;
+        private final Iterator<? extends T> it;
+
+        private volatile int requested = 0;
+        @SuppressWarnings("rawtypes")
+        private static final AtomicIntegerFieldUpdater<IterableProducer> REQUESTED_UPDATER = AtomicIntegerFieldUpdater.newUpdater(IterableProducer.class, "requested");
+
+        private IterableProducer(Subscriber<? super T> o, Iterator<? extends T> it) {
+            this.o = o;
+            this.it = it;
+        }
+
+        @Override
+        public void request(int n) {
+            if (n < 0) {
+                // fast-path without backpressure
+                while (it.hasNext()) {
+                    if (o.isUnsubscribed()) {
+                        return;
+                    }
+                    o.onNext(it.next());
+                }
+                o.onCompleted();
+            } else {
+                // backpressure is requested
+                int _c = REQUESTED_UPDATER.getAndAdd(this, n);
+                if (_c == 0) {
+                    while (true) {
+                        /*
+                         * This complicated logic is done to avoid touching the volatile `requested` value
+                         * during the loop itself. If it is touched during the loop the performance is impacted significantly.
+                         */
+                        int r = requested;
+                        int numToEmit = r;
+                        while (it.hasNext() && --numToEmit >= 0) {
+                            if (o.isUnsubscribed()) {
+                                return;
+                            }
+                            o.onNext(it.next());
+
+                        }
+
+                        if (!it.hasNext()) {
+                            o.onCompleted();
+                            return;
+                        }
+                        if (REQUESTED_UPDATER.addAndGet(this, -r) == 0) {
+                            // we're done emitting the number requested so return
+                            return;
+                        }
+
+                    }
+                }
             }
-            o.onNext(i);
+
         }
-        if (o.isUnsubscribed()) {
-            return;
-        }
-        o.onCompleted();
     }
 
 }

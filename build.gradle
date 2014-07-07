@@ -106,6 +106,7 @@ subprojects {
         maxHeapSize = "512m"
 		jvmArgs '-XX:+UnlockCommercialFeatures'
 		jvmArgs '-XX:+FlightRecorder'
+		jvmArgs '-XX:AutoBoxCacheMax=1000000'
 			
         if (project.hasProperty('jmh')) {
             args(jmh.split(' '))
