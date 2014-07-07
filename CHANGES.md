@@ -1,5 +1,19 @@
 # RxJava Releases #
 
+### Version 0.19.4 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.19.4%22)) ###
+
+* [Pull 1401] (https://github.com/Netflix/RxJava/pull/1401) OnError while emitting onNext value: object.toString
+* [Pull 1409] (https://github.com/Netflix/RxJava/pull/1409) Avoiding OperatorObserveOn from calling subscriber.onNext(..) after unsubscribe
+* [Pull 1406] (https://github.com/Netflix/RxJava/pull/1406) Kotlin M8
+* [Pull 1400] (https://github.com/Netflix/RxJava/pull/1400) Internal Data Structures
+* [Pull 1399] (https://github.com/Netflix/RxJava/pull/1399) Update Perf Tests
+* [Pull 1396] (https://github.com/Netflix/RxJava/pull/1396) RxScala: Fix the compiler warnings
+* [Pull 1397] (https://github.com/Netflix/RxJava/pull/1397) Adding the hooks unsafeSubscribe
+
+### Version 0.19.3 ###
+
+Upload to Maven Central was corrupted so release is skipped.
+
 ### Version 0.19.2 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.19.2%22)) ###
 
 * [Pull 1388] (https://github.com/Netflix/RxJava/pull/1388) CompositeException stops mutating nested Exceptions
