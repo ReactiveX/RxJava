@@ -72,11 +72,13 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
                 = AtomicLongFieldUpdater.newUpdater(ObserveOnSubscriber.class, "counter");
 
         public ObserveOnSubscriber(Scheduler scheduler, Subscriber<? super T> subscriber) {
-            super(subscriber);
             this.observer = subscriber;
             this.recursiveScheduler = scheduler.createWorker();
             this.scheduledUnsubscribe = new ScheduledUnsubscribe(recursiveScheduler);
-            subscriber.add(scheduledUnsubscribe);
+            add(scheduledUnsubscribe);
+
+            subscriber.add(recursiveScheduler);
+            subscriber.add(this);
         }
 
         @Override
