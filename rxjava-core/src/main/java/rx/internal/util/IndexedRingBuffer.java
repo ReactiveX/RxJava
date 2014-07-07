@@ -37,11 +37,11 @@ import rx.internal.util.unsafe.UnsafeAccess;
  * - adds + removes per second single-threaded => 8,760,000 for 10,000
  * 
  * <pre> {@code
- * Benchmark                                                (size)   Mode   Samples         Mean   Mean error    Units
- * r.i.u.PerfIndexedRingBuffer.indexedRingBufferAdd            100  thrpt         5   307403.329    17487.185    ops/s
- * r.i.u.PerfIndexedRingBuffer.indexedRingBufferAdd          10000  thrpt         5     1819.151      764.603    ops/s
- * r.i.u.PerfIndexedRingBuffer.indexedRingBufferAddRemove      100  thrpt         5   149649.075     4765.899    ops/s
- * r.i.u.PerfIndexedRingBuffer.indexedRingBufferAddRemove    10000  thrpt         5      825.304       14.079    ops/s
+ * Benchmark                                              (size)   Mode   Samples        Score  Score error    Units
+ * r.i.IndexedRingBufferPerf.indexedRingBufferAdd            100  thrpt         5   263571.721     9856.994    ops/s
+ * r.i.IndexedRingBufferPerf.indexedRingBufferAdd          10000  thrpt         5     1763.417      211.998    ops/s
+ * r.i.IndexedRingBufferPerf.indexedRingBufferAddRemove      100  thrpt         5   139850.115    17143.705    ops/s
+ * r.i.IndexedRingBufferPerf.indexedRingBufferAddRemove    10000  thrpt         5      809.982       72.931    ops/s
  * } </pre>
  * 
  * @param <E>
