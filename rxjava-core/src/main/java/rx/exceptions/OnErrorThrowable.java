@@ -116,7 +116,7 @@ public class OnErrorThrowable extends RuntimeException {
          *         the item that the Observable was trying to emit at the time of the exception
          */
         public OnNextValue(Object value) {
-            super("OnError while emitting onNext value: " + value);
+            super("OnError while emitting onNext value: " + renderValue(value));
             this.value = value;
         }
 
@@ -129,5 +129,25 @@ public class OnErrorThrowable extends RuntimeException {
             return value;
         }
 
+        /**
+         * Render the object if it is a basic type. This avoids the library making potentially expensive
+         * or calls to toString() which may throw exceptions. See PR #1401 for details.
+         *
+         * @param value
+         *        the item that the Observable was trying to emit at the time of the exception
+         * @return a string version of the object if primitive, otherwise the classname of the object
+         */
+        private static String renderValue(Object value){
+            if(value == null){
+                return "null";
+            }
+            if(value.getClass().isPrimitive()){
+                return value.toString();
+            }
+            if(value instanceof String){
+                return (String)value;
+            }
+            return value.getClass().getSimpleName() + ".class";
+        }
     }
 }
