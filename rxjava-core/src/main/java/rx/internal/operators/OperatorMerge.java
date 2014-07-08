@@ -449,6 +449,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
         private boolean mayNeedToDrain = false;
         /* protected by emitLock */
         int emitted = 0;
+        final int THRESHOLD = (int) (q.capacity() * 0.7);
 
         public InnerSubscriber(MergeSubscriber<T> parent, MergeProducer<T> producer) {
             this.parentSubscriber = parent;
@@ -535,7 +536,9 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
                             emitted++;
                         }
                     } else {
-                        if (producer.requested > 0) {
+                        // this needs to check q.count() as draining above may not have drained the full queue
+                        // perf tests show this to be okay, though different queue implementations could perform poorly with this
+                        if (producer.requested > 0 && q.count() == 0) {
                             if (complete) {
                                 parentSubscriber.completeInner(this);
                             } else {
@@ -551,8 +554,25 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
                 } finally {
                     drain = parentSubscriber.releaseEmitLock();
                 }
-                if (emitted > 256) {
+                if (emitted > THRESHOLD) {
                     // this is for batching requests when we're in a use case that isn't queueing, always fast-pathing the onNext
+                    /**
+                     * <pre> {@code
+                     * Without this batching:
+                     * 
+                     * Benchmark                                          (size)   Mode   Samples        Score  Score error    Units
+                     * r.o.OperatorMergePerf.merge1SyncStreamOfN               1  thrpt         5  5060743.715   100445.513    ops/s
+                     * r.o.OperatorMergePerf.merge1SyncStreamOfN            1000  thrpt         5    36606.582     1610.582    ops/s
+                     * r.o.OperatorMergePerf.merge1SyncStreamOfN         1000000  thrpt         5       38.476        0.973    ops/s
+                     * 
+                     * With this batching:
+                     * 
+                     * Benchmark                                          (size)   Mode   Samples        Score  Score error    Units
+                     * r.o.OperatorMergePerf.merge1SyncStreamOfN               1  thrpt         5  5367945.738   262740.137    ops/s
+                     * r.o.OperatorMergePerf.merge1SyncStreamOfN            1000  thrpt         5    62703.930     8496.036    ops/s
+                     * r.o.OperatorMergePerf.merge1SyncStreamOfN         1000000  thrpt         5       72.711        3.746    ops/s
+                     *} </pre>
+                     */
                     request(emitted);
                     // we are modifying this outside of the emit lock ... but this can be considered a "lazySet"
                     // and it will be flushed before anything else touches it because the emitLock will be obtained
