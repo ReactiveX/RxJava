@@ -16,12 +16,12 @@
 package rx.internal.util;
 
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicIntegerArray;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.atomic.AtomicReferenceArray;
 
 import rx.Subscription;
 import rx.functions.Func1;
-import rx.internal.util.unsafe.AtomicIntReferenceArray;
-import rx.internal.util.unsafe.UnsafeAccess;
 
 /**
  * Add/Remove without object allocation (after initial construction).
@@ -37,11 +37,11 @@ import rx.internal.util.unsafe.UnsafeAccess;
  * - adds + removes per second single-threaded => 8,760,000 for 10,000
  * 
  * <pre> {@code
- * Benchmark                                                (size)   Mode   Samples         Mean   Mean error    Units
- * r.i.u.PerfIndexedRingBuffer.indexedRingBufferAdd            100  thrpt         5   307403.329    17487.185    ops/s
- * r.i.u.PerfIndexedRingBuffer.indexedRingBufferAdd          10000  thrpt         5     1819.151      764.603    ops/s
- * r.i.u.PerfIndexedRingBuffer.indexedRingBufferAddRemove      100  thrpt         5   149649.075     4765.899    ops/s
- * r.i.u.PerfIndexedRingBuffer.indexedRingBufferAddRemove    10000  thrpt         5      825.304       14.079    ops/s
+ * Benchmark                                              (size)   Mode   Samples        Score  Score error    Units
+ * r.i.IndexedRingBufferPerf.indexedRingBufferAdd            100  thrpt         5   263571.721     9856.994    ops/s
+ * r.i.IndexedRingBufferPerf.indexedRingBufferAdd          10000  thrpt         5     1763.417      211.998    ops/s
+ * r.i.IndexedRingBufferPerf.indexedRingBufferAddRemove      100  thrpt         5   139850.115    17143.705    ops/s
+ * r.i.IndexedRingBufferPerf.indexedRingBufferAddRemove    10000  thrpt         5      809.982       72.931    ops/s
  * } </pre>
  * 
  * @param <E>
@@ -86,7 +86,7 @@ public class IndexedRingBuffer<E> implements Subscription {
                 // (relative on Mac Intel i7) lazySet gets us ~30m vs ~26m ops/second in the JMH test (100 adds per release)
                 section.array.set(i, null);
             }
-            section = section.next;
+            section = section.next.get();
         }
 
         index.set(0);
@@ -100,10 +100,6 @@ public class IndexedRingBuffer<E> implements Subscription {
     }
 
     private IndexedRingBuffer() {
-        if (!UnsafeAccess.isUnsafeAvailable()) {
-            throw new IllegalStateException("This does not work on systems without sun.misc.Unsafe");
-        }
-        // TODO need to make this class (or its users) have alternative support for non-Unsafe environments
     }
 
     /**
@@ -182,10 +178,14 @@ public class IndexedRingBuffer<E> implements Subscription {
         if (ri >= 0) {
             if (ri < SIZE) {
                 // fast-path when we are in the first section
-                i = removed.array.getAndSet(ri, -1);
+                i = removed.getAndSet(ri, -1);
             } else {
                 int sectionIndex = ri % SIZE;
-                i = getIndexSection(ri).array.getAndSet(sectionIndex, -1);
+                i = getIndexSection(ri).getAndSet(sectionIndex, -1);
+            }
+            if (i == index.get()) {
+                // if it was the last index removed, when we pick it up again we want to increment
+                index.getAndIncrement();
             }
         } else {
             i = index.getAndIncrement();
@@ -226,10 +226,10 @@ public class IndexedRingBuffer<E> implements Subscription {
         int i = removedIndex.getAndIncrement();
         if (i < SIZE) {
             // fast-path when we are in the first section
-            removed.array.set(i, elementIndex);
+            removed.set(i, elementIndex);
         } else {
             int sectionIndex = i % SIZE;
-            getIndexSection(i).array.set(sectionIndex, elementIndex);
+            getIndexSection(i).set(sectionIndex, elementIndex);
         }
     }
 
@@ -267,7 +267,6 @@ public class IndexedRingBuffer<E> implements Subscription {
         ElementSection<E> section = elements;
 
         if (startIndex >= SIZE) {
-            int orig = startIndex;
             // move into the correct section
             section = getElementSection(startIndex);
             startIndex = startIndex % SIZE;
@@ -289,7 +288,7 @@ public class IndexedRingBuffer<E> implements Subscription {
                     return lastIndex;
                 }
             }
-            section = section.next;
+            section = section.next.get();
             startIndex = 0; // reset to start for next section
         }
 
@@ -298,60 +297,54 @@ public class IndexedRingBuffer<E> implements Subscription {
     }
 
     private static class ElementSection<E> {
-        final AtomicReferenceArray<E> array = new AtomicReferenceArray<E>(SIZE);
-        volatile ElementSection<E> next;
-        private static final long _nextOffset;
-
-        static {
-            try {
-                _nextOffset = UnsafeAccess.UNSAFE.objectFieldOffset(ElementSection.class.getDeclaredField("next"));
-            } catch (Exception ex) {
-                throw new Error(ex);
-            }
-        }
+        private final AtomicReferenceArray<E> array = new AtomicReferenceArray<E>(SIZE);
+        private final AtomicReference<ElementSection<E>> next = new AtomicReference<ElementSection<E>>();
 
         ElementSection<E> getNext() {
-            if (next != null) {
-                return next;
+            if (next.get() != null) {
+                return next.get();
             } else {
                 ElementSection<E> newSection = new ElementSection<E>();
-                if (UnsafeAccess.UNSAFE.compareAndSwapObject(this, _nextOffset, null, newSection)) {
+                if (next.compareAndSet(null, newSection)) {
                     // we won
                     return newSection;
                 } else {
                     // we lost so get the value that won
-                    return next;
+                    return next.get();
                 }
             }
         }
     }
 
     private static class IndexSection {
-        final AtomicIntReferenceArray array = new AtomicIntReferenceArray(SIZE);
-        private volatile IndexSection next;
-        private static final long _nextOffset;
 
-        static {
-            try {
-                _nextOffset = UnsafeAccess.UNSAFE.objectFieldOffset(IndexSection.class.getDeclaredField("next"));
-            } catch (Exception ex) {
-                throw new Error(ex);
-            }
+        private final AtomicIntegerArray unsafeArray = new AtomicIntegerArray(SIZE);
+
+        public int getAndSet(int expected, int newValue) {
+            return unsafeArray.getAndSet(expected, newValue);
         }
 
+        public void set(int i, int elementIndex) {
+            unsafeArray.set(i, elementIndex);
+        }
+
+        private final AtomicReference<IndexSection> _next = new AtomicReference<IndexSection>();
+
         IndexSection getNext() {
-            if (next != null) {
-                return next;
+            if (_next.get() != null) {
+                return _next.get();
             } else {
                 IndexSection newSection = new IndexSection();
-                if (UnsafeAccess.UNSAFE.compareAndSwapObject(this, _nextOffset, null, newSection)) {
+                if (_next.compareAndSet(null, newSection)) {
                     // we won
                     return newSection;
                 } else {
                     // we lost so get the value that won
-                    return next;
+                    return _next.get();
                 }
             }
         }
+
     }
+
 }
