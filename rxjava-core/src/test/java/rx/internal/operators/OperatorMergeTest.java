@@ -669,7 +669,7 @@ public class OperatorMergeTest {
                 if (t < 100)
                     try {
                         // force a slow consumer
-                        Thread.sleep(2);
+                        Thread.sleep(1);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
