@@ -173,10 +173,12 @@ public class BackpressureTests {
         }).take(NUM).subscribe(ts);
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
-        System.out.println("testFlatMapAsync => Received: " + ts.getOnNextEvents().size() + "  Emitted: " + c.get());
+        System.out.println("testFlatMapAsync => Received: " + ts.getOnNextEvents().size() + "  Emitted: " + c.get() + " Size: " + RxRingBuffer.SIZE);
         assertEquals(NUM, ts.getOnNextEvents().size());
-        // expect less than 1 buffer since the flatMap is emitting 10 each time, so it is NUM/10 that will be taken.
-        assertTrue(c.get() <= RxRingBuffer.SIZE);
+        // even though we only need 10, it will request at least RxRingBuffer.SIZE, and then as it drains keep requesting more
+        // and then it will be non-deterministic when the take() causes the unsubscribe as it is scheduled on 10 different schedulers (threads)
+        // normally this number is ~250 but can get up to ~1200 when RxRingBuffer.SIZE == 1024
+        assertTrue(c.get() <= RxRingBuffer.SIZE * 2);
     }
 
     @Ignore
@@ -303,8 +305,13 @@ public class BackpressureTests {
         final AtomicInteger totalReceived = new AtomicInteger();
         final AtomicInteger batches = new AtomicInteger();
         final AtomicInteger received = new AtomicInteger();
-        incrementingIntegers(c).subscribe(new Subscriber<Integer>(100) {
+        incrementingIntegers(c).subscribe(new Subscriber<Integer>() {
 
+            @Override
+            public void onStart() {
+                request(100);
+            }
+            
             @Override
             public void onCompleted() {
 
@@ -344,8 +351,14 @@ public class BackpressureTests {
         final AtomicInteger received = new AtomicInteger();
         final AtomicInteger batches = new AtomicInteger();
         final CountDownLatch latch = new CountDownLatch(1);
-        incrementingIntegers(c).subscribeOn(Schedulers.newThread()).subscribe(new Subscriber<Integer>(100) {
+        incrementingIntegers(c).subscribeOn(Schedulers.newThread()).subscribe(new Subscriber<Integer>() {
 
+            @Override
+            public void onStart() {
+                request(100);
+            }
+            
+            
             @Override
             public void onCompleted() {
                 latch.countDown();

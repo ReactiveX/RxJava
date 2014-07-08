@@ -40,8 +40,13 @@ public class OperatorRangePerf {
         }
 
         public Subscriber<Integer> newSubscriber() {
-            return new Subscriber<Integer>(size) {
+            return new Subscriber<Integer>() {
 
+                @Override
+                public void onStart() {
+                    request(size);
+                }
+                
                 @Override
                 public void onCompleted() {
 

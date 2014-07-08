@@ -52,21 +52,9 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
         this.cs = new SubscriptionList();
     }
 
-    protected Subscriber(int bufferRequest) {
-        this.op = null;
-        this.cs = new SubscriptionList();
-        request(bufferRequest);
-    }
-
     protected Subscriber(Subscriber<?> op) {
         this.op = op;
         this.cs = op.cs;
-    }
-
-    protected Subscriber(Subscriber<?> op, int bufferRequest) {
-        this.op = op;
-        this.cs = op.cs;
-        request(bufferRequest);
     }
 
     /**
@@ -95,6 +83,10 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
         return cs.isUnsubscribed();
     }
 
+    public void onStart() {
+        // do nothing by default
+    }
+    
     public final void request(int n) {
         Producer shouldRequest = null;
         synchronized (this) {

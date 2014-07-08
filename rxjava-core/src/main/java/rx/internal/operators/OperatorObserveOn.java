@@ -83,8 +83,6 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
         // do NOT pass the Subscriber through to couple the subscription chain ... unsubscribing on the parent should
         // not prevent anything downstream from consuming, which will happen if the Subscription is chained
         public ObserveOnSubscriber(Scheduler scheduler, Subscriber<? super T> child) {
-         // signal that this is an async operator capable of receiving this many
-            super(RxRingBuffer.SIZE);
             this.child = child;
             this.recursiveScheduler = scheduler.createWorker();
             this.scheduledUnsubscribe = new ScheduledUnsubscribe(recursiveScheduler, queue);
@@ -102,6 +100,12 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
             child.add(recursiveScheduler);
             child.add(this);
             
+        }
+        
+        @Override
+        public void onStart() {
+            // signal that this is an async operator capable of receiving this many
+            request(RxRingBuffer.SIZE);
         }
 
         @Override
