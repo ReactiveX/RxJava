@@ -47,8 +47,14 @@ public final class OperatorTakeLast<T> implements Operator<T, T> {
         final QueueProducer<T> producer = new QueueProducer<T>(notification, deque, subscriber);
         subscriber.setProducer(producer);
 
-        // no backpressure up as it wants to receive and discard all but the last
-        return new Subscriber<T>(subscriber, -1) {
+        return new Subscriber<T>(subscriber) {
+
+            // no backpressure up as it wants to receive and discard all but the last
+            @Override
+            public void onStart() {
+                // we do this to break the chain of the child subscriber being passed through
+                request(-1);
+            }
 
             @Override
             public void onCompleted() {

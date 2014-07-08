@@ -303,8 +303,13 @@ public class BackpressureTests {
         final AtomicInteger totalReceived = new AtomicInteger();
         final AtomicInteger batches = new AtomicInteger();
         final AtomicInteger received = new AtomicInteger();
-        incrementingIntegers(c).subscribe(new Subscriber<Integer>(100) {
+        incrementingIntegers(c).subscribe(new Subscriber<Integer>() {
 
+            @Override
+            public void onStart() {
+                request(100);
+            }
+            
             @Override
             public void onCompleted() {
 
@@ -344,8 +349,14 @@ public class BackpressureTests {
         final AtomicInteger received = new AtomicInteger();
         final AtomicInteger batches = new AtomicInteger();
         final CountDownLatch latch = new CountDownLatch(1);
-        incrementingIntegers(c).subscribeOn(Schedulers.newThread()).subscribe(new Subscriber<Integer>(100) {
+        incrementingIntegers(c).subscribeOn(Schedulers.newThread()).subscribe(new Subscriber<Integer>() {
 
+            @Override
+            public void onStart() {
+                request(100);
+            }
+            
+            
             @Override
             public void onCompleted() {
                 latch.countDown();
