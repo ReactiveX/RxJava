@@ -8002,6 +8002,52 @@ public class Observable<T> {
     public final Observable<List<T>> toSortedList(Func2<? super T, ? super T, Integer> sortFunction) {
         return lift(new OperatorToObservableSortedList<T>(sortFunction));
     }
+    
+    /**
+     * Returns an Observable that emits the items emitted by the source Observable in a
+     * sorted order. Each item emitted by the Observable must implement {@link Comparable} with respect to all
+     * other items in the sequence.
+     * <p>
+     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toSortedList.png">
+     * <p>
+     * {@code sort} does not operate by default on a particular {@link Scheduler}.
+     * 
+     * @throws ClassCastException
+     *             if any item emitted by the Observable does not implement {@link Comparable} with respect to
+     *             all other items emitted by the Observable
+     * @return an Observable that emits the items emitted by the source Observable in
+     *         sorted order
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#sort">RxJava Wiki: sort()</a>
+     */
+    public final Observable<T> sort() {
+        return toSortedList().flatMap(new Func1<List<T>,Observable<T>>() {
+            @Override
+            public Observable<T> call(List<T> list) {
+                return from(list);
+            }});
+    }
+    
+    /**
+     * Returns an Observable that emits the items emitted by the source Observable in a
+     * sorted order based on a specified comparison function.
+     * <p>
+     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toSortedList.f.png">
+     * <p>
+     * {@code sort} does not operate by default on a particular {@link Scheduler}.
+     * 
+     * @param sortFunction
+     *            a function that compares two items emitted by the source Observable and returns an Integer
+     *            that indicates their sort order
+     * @return an Observable that emits the items emitted by the source Observable in sorted order
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#sort">RxJava Wiki: sort()</a>
+     */
+    public final Observable<T> sort(Func2<? super T, ? super T, Integer> sortFunction) {
+        return toSortedList(sortFunction).flatMap(new Func1<List<T>,Observable<T>>() {
+            @Override
+            public Observable<T> call(List<T> list) {
+                return from(list);
+            }});
+    }
 
     /**
      * Modifies the source Observable so that subscribers will unsubscribe from it on a specified
