@@ -15,6 +15,9 @@
  */
 package rx.functions;
 
-public interface Action1<T1> extends Action {
+/**
+ * A one-argument action.
+ */
+public interface Action1<T1> extends Action1Checked<T1> {
     public void call(T1 t1);
 }

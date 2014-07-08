@@ -18,6 +18,6 @@ package rx.functions;
 /**
  * A vector-argument action.
  */
-public interface ActionN extends Action {
+public interface ActionN extends ActionNChecked {
     void call(Object... args);
 }

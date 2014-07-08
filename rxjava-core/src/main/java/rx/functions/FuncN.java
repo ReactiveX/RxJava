@@ -15,6 +15,9 @@
  */
 package rx.functions;
 
-public interface FuncN<R> extends Function {
+/**
+ * A vector-argument function that returns a value.
+ */
+public interface FuncN<R> extends FuncNChecked<R> {
     public R call(Object... args);
 }

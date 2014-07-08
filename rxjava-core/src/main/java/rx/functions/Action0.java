@@ -15,6 +15,9 @@
  */
 package rx.functions;
 
-public interface Action0 extends Action {
+/**
+ * A zero-argument action.
+ */
+public interface Action0 extends Action0Checked {
     public void call();
 }

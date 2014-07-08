@@ -15,6 +15,9 @@
  */
 package rx.functions;
 
-public interface Func1<T1, R> extends Function {
+/**
+ * A one-argument function that returns a value.
+ */
+public interface Func1<T1, R> extends Func1Checked<T1, R> {
     public R call(T1 t1);
 }

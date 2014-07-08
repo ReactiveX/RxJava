@@ -15,6 +15,9 @@
  */
 package rx.functions;
 
-public interface Func3<T1, T2, T3, R> extends Function {
+/**
+ * A three-argument function that returns a value.
+ */
+public interface Func3<T1, T2, T3, R> extends Func3Checked<T1, T2, T3, R> {
     public R call(T1 t1, T2 t2, T3 t3);
 }
