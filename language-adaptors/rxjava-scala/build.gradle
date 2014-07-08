@@ -66,7 +66,7 @@ tasks.compileExamplesScala {
 task test(overwrite: true, dependsOn: testClasses) << {
     ant.taskdef(name: 'scalatest',
             classname: 'org.scalatest.tools.ScalaTestAntTask',
-            classpath: configurations.provided.asPath + ':' + configurations.testRuntime.asPath + ":" + compileScala.destinationDir
+            classpath: configurations.testCompile.asPath + ':' + configurations.testRuntime.asPath + ":" + compileScala.destinationDir
     )
     ant.scalatest(runpath: sourceSets.test.output.classesDir,
             haltonfailure: 'true',

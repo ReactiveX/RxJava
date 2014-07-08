@@ -2,12 +2,12 @@ apply plugin: 'osgi'
 
 dependencies {
     compile project(':rxjava-core')
-
-    // testing
-    provided 'junit:junit-dep:4.10'
     compile 'org.robovm:robovm-rt:0.0.12'
     compile 'org.robovm:robovm-objc:0.0.12'
     compile 'org.robovm:robovm-cocoatouch:0.0.12'
+
+    // testing
+    testCompile 'junit:junit-dep:4.10'
 }
 
 javadoc {

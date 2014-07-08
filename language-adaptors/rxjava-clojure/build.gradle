@@ -7,11 +7,11 @@ dependencies {
     // clojure
     compile 'org.clojure:clojure:1.4.+'
 
-    // this should be 'compile' for the 'examples' module ... can't figure that out right now so making 'provided'
-    provided 'clj-http:clj-http:0.6.4' // https://clojars.org/clj-http
+    // this should be 'compile' for the 'examples' module
+    testCompile 'clj-http:clj-http:0.6.4' // https://clojars.org/clj-http
 }
 
-tasks.compileExamplesClojure.classpath = files(tasks.compileClojure.destinationDir) + tasks.compileClojure.classpath
+tasks.compileExamplesClojure.classpath = files(tasks.compileClojure.destinationDir) + tasks.compileClojure.classpath + configurations.testCompile
 
 /*
  * Clojure
@@ -29,7 +29,7 @@ repositories {
 }
 
 /*
- * Add Counterclockwise and include 'provided' dependencies
+ * Add Counterclockwise and include 'testCompile' dependencies
  */
 eclipse {
   project {
@@ -38,7 +38,7 @@ eclipse {
 }
 
 tasks.clojureTest {
-    classpath = classpath + configurations.provided
+    classpath = classpath + configurations.testCompile
 }
 
 jar {
