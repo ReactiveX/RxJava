@@ -1159,6 +1159,47 @@ public class Observable<T> {
     }
 
     /**
+     * Converts an {@link Enumeration} sequence into an Observable that emits the items in the sequence.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png">
+     * 
+     * @param enumerable
+     *            the source {@link Enumeration} sequences
+     * @param <T>
+     *            the type of items in the {@link Enumeration} sequence and the type of items to be emitted by the
+     *            resulting Observable
+     * @return an Observable that emits each item in the source {@link Enumeration} sequence
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#wiki-from">RxJava Wiki: from()</a>
+     * @since 0.19
+     */
+    public final static <T> Observable<T> from(Enumerable<? extends T> enumerable) {
+        return create(new OnSubscribeFromEnumeration<T>(enumerable));
+    }
+
+    /**
+     * Converts an {@link Enumeration} sequence into an Observable that operates on the specified Scheduler,
+     * emitting each item from the sequence.
+     * <p>
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.s.png">
+     * 
+     * @param enumerable
+     *            the source {@link Enumeration} sequences
+     * @param scheduler
+     *            the Scheduler on which the Observable is to emit the items of the Enumeration
+     * @param <T>
+     *            the type of items in the {@link Enumeration} sequence and the type of items to be emitted by the
+     *            resulting Observable
+     * @return an Observable that emits each item in the source {@link Enumeration} sequence, on the specified
+     *         Scheduler
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#wiki-from">RxJava Wiki: from()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh212140.aspx">MSDN: Observable.ToObservable</a>
+     * @since 0.19
+     */
+    public final static <T> Observable<T> from(Enumerable<? extends T> enumerable, Scheduler scheduler) {
+        return create(new OnSubscribeFromEnumeration<T>(enumerable)).subscribeOn(scheduler);
+    }
+
+    /**
      * Converts an item into an Observable that emits that item.
      * <p>
      * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png">
