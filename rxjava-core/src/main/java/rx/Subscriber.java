@@ -79,6 +79,7 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
      * 
      * @return {@code true} if this Subscriber has unsubscribed from its subscriptions, {@code false} otherwise
      */
+    @Override
     public final boolean isUnsubscribed() {
         return cs.isUnsubscribed();
     }
@@ -108,9 +109,10 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
 
     public final void setProducer(Producer producer) {
         producer = onSetProducer(producer);
-        int toRequest = requested;
+        int toRequest;
         boolean setProducer = false;
         synchronized (this) {
+            toRequest = requested;
             p = producer;
             if (op != null) {
                 // middle operator ... we pass thru unless a request has been made

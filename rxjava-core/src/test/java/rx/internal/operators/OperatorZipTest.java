@@ -32,7 +32,9 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -42,6 +44,7 @@ import rx.Notification;
 import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Observer;
+import rx.Producer;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Action1;
@@ -1086,5 +1089,61 @@ public class OperatorZipTest {
             }
 
         });
+    }
+    @Test(timeout = 1000)
+    public void zipWithBackpressure() {
+        Observable<Integer> source = Observable.range(0, 1000000000);
+        
+        Observable<Integer> result = Observable.zip(source, source, new Func2<Integer, Integer, Integer>() {
+
+            @Override
+            public Integer call(Integer t1, Integer t2) {
+                return t1 + t2;
+            }
+        });
+        final int n = 10;
+        final AtomicBoolean hasProducer = new AtomicBoolean();
+        
+        @SuppressWarnings("unchecked")
+        final Observer<Integer> o = mock(Observer.class);
+        InOrder io = inOrder(o);
+        
+        result.subscribe(new Subscriber<Integer>() {
+            @Override
+            public void onStart() {
+                super.onStart();
+                request(n);
+            }
+            
+            @Override
+            public void onNext(Integer t) {
+                o.onNext(t);
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                o.onError(e);
+            }
+
+            @Override
+            public void onCompleted() {
+                o.onCompleted();
+            }
+
+            @Override
+            protected Producer onSetProducer(Producer producer) {
+                hasProducer.set(true);
+                return super.onSetProducer(producer);
+            }
+        });
+        
+        assertTrue(hasProducer.get());
+
+        for (int i = 0; i < n; i++) {
+            io.verify(o).onNext(i + i);
+        }
+        io.verifyNoMoreInteractions();
+        io.verify(o, never()).onError(any(Throwable.class));
+        io.verify(o, never()).onCompleted();
     }
 }
