@@ -1,5 +1,13 @@
 # RxJava Releases #
 
+### Version 0.19.6 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.19.6%22)) ###
+
+Inclusion of 'rxjava-contrib:rxjava-scalaz' in release.
+
+### Version 0.19.5 ###
+
+Upload to Maven Central was corrupted so release is skipped.
+
 ### Version 0.19.4 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.19.4%22)) ###
 
 * [Pull 1401] (https://github.com/Netflix/RxJava/pull/1401) OnError while emitting onNext value: object.toString
