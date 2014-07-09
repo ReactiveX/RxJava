@@ -17,5 +17,5 @@ include 'rxjava-core', \
 'rxjava-contrib:rxjava-debug', \
 'rxjava-contrib:rxjava-async-util', \
 'rxjava-contrib:rxjava-computation-expressions',\
-//'rxjava-contrib:rxjava-scalaz', \ 
+'rxjava-contrib:rxjava-scalaz', \
 'rxjava-contrib:rxjava-quasar'
