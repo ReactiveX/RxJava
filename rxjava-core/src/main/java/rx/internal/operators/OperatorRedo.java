@@ -32,6 +32,9 @@ package rx.internal.operators;
  */
 
 import static rx.Observable.create;
+
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import rx.Notification;
 import rx.Observable;
 import rx.Observable.OnSubscribe;
@@ -55,7 +58,7 @@ public final class OperatorRedo<T> implements OnSubscribe<T> {
                 public Notification<?> call(Notification<?> terminal) {
                     return Notification.createOnNext(null);
                 }
-            }).startWith(Notification.createOnNext(null));
+            });
         }
     };
 
@@ -155,6 +158,7 @@ public final class OperatorRedo<T> implements OnSubscribe<T> {
     private boolean stopOnComplete;
     private boolean stopOnError;
     private final Scheduler scheduler;
+    private final AtomicBoolean isLocked = new AtomicBoolean(true);
 
     private OperatorRedo(Observable<T> source, Func1<? super Observable<? extends Notification<?>>, ? extends Observable<?>> f, boolean stopOnComplete, boolean stopOnError,
             Scheduler scheduler) {
@@ -170,17 +174,16 @@ public final class OperatorRedo<T> implements OnSubscribe<T> {
         final Scheduler.Worker inner = scheduler.createWorker();
         child.add(inner);
 
-        final CompositeSubscription subscription = new CompositeSubscription();
-        child.add(subscription);
+        final CompositeSubscription sourceSubscriptions = new CompositeSubscription();
+        child.add(sourceSubscriptions);
 
         final PublishSubject<Notification<?>> terminals = PublishSubject.create();
 
-        final Action0 action = new Action0() {
+
+        final Action0 subscribeToSource = new Action0() {
             @Override
             public void call() {
-                // new subscription each time so if it unsubscribes itself it does not prevent retries
-                // by unsubscribing the child subscription
-                Subscriber<T> subscriber = new Subscriber<T>() {
+                Subscriber<T> terminalDelegatingSubscriber = new Subscriber<T>() {
                     @Override
                     public void onCompleted() {
                         unsubscribe();
@@ -198,8 +201,10 @@ public final class OperatorRedo<T> implements OnSubscribe<T> {
                         child.onNext(v);
                     }
                 };
-                subscription.add(subscriber);
-                source.unsafeSubscribe(subscriber);
+                // new subscription each time so if it unsubscribes itself it does not prevent retries
+                // by unsubscribing the child subscription
+                sourceSubscriptions.add(terminalDelegatingSubscriber);
+                source.unsafeSubscribe(terminalDelegatingSubscriber);
             }
         };
 
@@ -223,7 +228,10 @@ public final class OperatorRedo<T> implements OnSubscribe<T> {
                             public void onNext(Notification<?> t) {
                                 if (t.isOnCompleted() && stopOnComplete) child.onCompleted();
                                 else if (t.isOnError() && stopOnError) child.onError(t.getThrowable());
-                                else filteredTerminals.onNext(t);
+                                else {
+                                    isLocked.set(false);
+                                    filteredTerminals.onNext(t);
+                                }
                             }
                         };
                     }
@@ -246,12 +254,16 @@ public final class OperatorRedo<T> implements OnSubscribe<T> {
 
                     @Override
                     public void onNext(Object t) {
-                        if (!child.isUnsubscribed()) {
-                            child.add(inner.schedule(action));
+                        if (!isLocked.get() && !child.isUnsubscribed()) {
+                            // if (!child.isUnsubscribed()) {
+                            child.add(inner.schedule(subscribeToSource));
                         }
                     }
                 });
             }
         }));
+        if (!child.isUnsubscribed()) {
+            child.add(inner.schedule(subscribeToSource));
+        }
     }
 }

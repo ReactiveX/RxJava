@@ -37,17 +37,87 @@ import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Notification;
 import rx.Observer;
+import rx.Scheduler.Worker;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Func1;
+import rx.functions.Func2;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.Subscriptions;
 
 public class OperatorRetryTest {
+
+    @Test
+    public void iterativeBackoff() {
+        Observer<String> consumer = mock(Observer.class);
+        Observable<String> producer = Observable.create(new OnSubscribe<String>() {
+
+            private AtomicInteger count = new AtomicInteger(4);
+            long last = System.currentTimeMillis();
+
+            @Override
+            public void call(Subscriber<? super String> t1) {
+                System.out.println(count.get() + " @ " + String.valueOf(last - System.currentTimeMillis()));
+                last = System.currentTimeMillis();
+                if (count.getAndDecrement() == 0) {
+                    t1.onNext("hello");
+                    t1.onCompleted();
+                }
+                else 
+                    t1.onError(new RuntimeException());
+            }
+            
+        });
+        TestSubscriber<String> ts = new TestSubscriber<String>(consumer);
+        producer.retry(new Func1<Observable<? extends Notification<?>>, Observable<?>>() {
+
+            @Override
+            public Observable<?> call(Observable<? extends Notification<?>> attempts) {
+                // Worker w = Schedulers.computation().createWorker();
+                return attempts
+                    .map(new Func1<Notification<?>, Tuple>() {
+                        @Override
+                        public Tuple call(Notification<?> n) {
+                            return new Tuple(new Long(1), n);
+                        }})
+                    .scan(new Func2<Tuple, Tuple, Tuple>(){
+                        @Override
+                        public Tuple call(Tuple t, Tuple n) {
+                            return new Tuple(t.count + n.count, n.n);
+                        }})
+                    .flatMap(new Func1<Tuple, Observable<Long>>() {
+                        @Override
+                        public Observable<Long> call(Tuple t) {
+                            System.out.println("Retry # "+t.count);
+                            return t.count > 20 ? 
+                                Observable.<Long>error(t.n.getThrowable()) :
+                                Observable.timer(t.count *1L, TimeUnit.MILLISECONDS);
+                    }});
+            }
+        }).subscribe(ts);
+        ts.awaitTerminalEvent();
+
+        InOrder inOrder = inOrder(consumer);
+        inOrder.verify(consumer, never()).onError(any(Throwable.class));
+        inOrder.verify(consumer, times(1)).onNext("hello");
+        inOrder.verify(consumer, times(1)).onCompleted();
+        inOrder.verifyNoMoreInteractions();
+
+    }
+
+    public static class Tuple {
+        Long count;
+        Notification<?> n;
+
+        Tuple(Long c, Notification<?> n) {
+            count = c;
+            this.n = n;
+        }
+    }
 
     @Test
     public void testRetryIndefinitely() {
