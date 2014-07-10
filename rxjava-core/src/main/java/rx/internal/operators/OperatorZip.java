@@ -21,6 +21,7 @@ import java.util.concurrent.atomic.AtomicLongFieldUpdater;
 import rx.Observable;
 import rx.Observable.Operator;
 import rx.Observer;
+import rx.Producer;
 import rx.Subscriber;
 import rx.exceptions.OnErrorThrowable;
 import rx.functions.Func2;
@@ -136,11 +137,11 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
     }
 
     static final NotificationLite<Object> on = NotificationLite.instance();
-    private static final class Zip<R> {
+    private static final class Zip<R> implements Producer {
         @SuppressWarnings("rawtypes")
         final Observable[] os;
         final Object[] observers;
-        final Observer<? super R> observer;
+        final Subscriber<? super R> observer;
         final FuncN<? extends R> zipFunction;
         final CompositeSubscription childSubscription = new CompositeSubscription();
         volatile long counter;
@@ -165,10 +166,21 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
 
         @SuppressWarnings("unchecked")
         public void zip() {
+            observer.setProducer(this);
             for (int i = 0; i < os.length; i++) {
                 os[i].unsafeSubscribe((InnerObserver) observers[i]);
             }
         }
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public void request(int n) {
+            for (int i = 0; i < os.length; i++) {
+                ((InnerObserver) observers[i]).request(n);
+            }
+        }
+        
+        
 
         /**
          * check if we have values for each and emit if we do

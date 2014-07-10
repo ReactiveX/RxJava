@@ -79,6 +79,7 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
      * 
      * @return {@code true} if this Subscriber has unsubscribed from its subscriptions, {@code false} otherwise
      */
+    @Override
     public final boolean isUnsubscribed() {
         return cs.isUnsubscribed();
     }
