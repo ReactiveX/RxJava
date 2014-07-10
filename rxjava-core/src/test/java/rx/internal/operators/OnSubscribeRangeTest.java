@@ -25,6 +25,7 @@ import static org.mockito.Mockito.verify;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
@@ -127,6 +128,65 @@ public class OnSubscribeRangeTest {
         ts.assertReceivedOnNext(Collections.<Integer> emptyList());
         ts.request(-1); // infinite
         o.call(ts);
+        ts.assertReceivedOnNext(list);
+        ts.assertTerminalEvent();
+    }
+    void testWithBackpressureOneByOne(int start) {
+        Observable<Integer> source = Observable.range(start, 100);
+        
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        ts.request(1);
+        source.subscribe(ts);
+        
+        List<Integer> list = new ArrayList<Integer>(100);
+        for (int i = 0; i < 100; i++) {
+            list.add(i + start);
+            ts.request(1);
+        }
+        ts.assertReceivedOnNext(list);
+        ts.assertTerminalEvent();
+    }
+    void testWithBackpressureAllAtOnce(int start) {
+        Observable<Integer> source = Observable.range(start, 100);
+        
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        ts.request(100);
+        source.subscribe(ts);
+        
+        List<Integer> list = new ArrayList<Integer>(100);
+        for (int i = 0; i < 100; i++) {
+            list.add(i + start);
+        }
+        ts.assertReceivedOnNext(list);
+        ts.assertTerminalEvent();
+    }
+    @Test
+    public void testWithBackpressure1() {
+        for (int i = 0; i < 100; i++) {
+            testWithBackpressureOneByOne(i);
+        }
+    }
+    @Test
+    public void testWithBackpressureAllAtOnce() {
+        for (int i = 0; i < 100; i++) {
+            testWithBackpressureAllAtOnce(i);
+        }
+    }
+    @Test
+    public void testWithBackpressureRequestWayMore() {
+        Observable<Integer> source = Observable.range(50, 100);
+        
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        ts.request(150);
+        source.subscribe(ts);
+        
+        List<Integer> list = new ArrayList<Integer>(100);
+        for (int i = 0; i < 100; i++) {
+            list.add(i + 50);
+        }
+        
+        ts.request(50); // and then some
+        
         ts.assertReceivedOnNext(list);
         ts.assertTerminalEvent();
     }

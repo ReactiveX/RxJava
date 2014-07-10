@@ -45,15 +45,13 @@ public final class OnSubscribeRange implements OnSubscribe<Integer> {
         // accessed by REQUESTED_UPDATER
         private volatile int requested;
         private static final AtomicIntegerFieldUpdater<RangeProducer> REQUESTED_UPDATER = AtomicIntegerFieldUpdater.newUpdater(RangeProducer.class, "requested");
-        private volatile int index;
+        private int index;
         private final int end;
-        private final int start;
 
         private RangeProducer(Subscriber<? super Integer> o, int start, int end) {
             this.o = o;
             this.index = start;
             this.end = end;
-            this.start = start;
         }
 
         @Override
@@ -76,17 +74,20 @@ public final class OnSubscribeRange implements OnSubscribe<Integer> {
                          * This complicated logic is done to avoid touching the volatile `index` and `requested` values
                          * during the loop itself. If they are touched during the loop the performance is impacted significantly.
                          */
-                        int numLeft = start + (end - index);
-                        int e = Math.min(numLeft, requested);
-                        boolean completeOnFinish = numLeft < requested;
-                        int stopAt = e + index;
-                        for (int i = index; i < stopAt; i++) {
+                        int r = requested;
+                        int idx = index;
+                        int numLeft = end - idx + 1;
+                        int e = Math.min(numLeft, r);
+                        boolean completeOnFinish = numLeft <= r;
+                        int stopAt = e + idx;
+                        for (int i = idx; i < stopAt; i++) {
                             if (o.isUnsubscribed()) {
                                 return;
                             }
                             o.onNext(i);
                         }
-                        index += e;
+                        index = stopAt;
+                        
                         if (completeOnFinish) {
                             o.onCompleted();
                             return;
