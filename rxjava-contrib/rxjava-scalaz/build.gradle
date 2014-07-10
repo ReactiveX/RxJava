@@ -35,10 +35,6 @@ dependencies {
     testCompile 'junit:junit-dep:4.10'
 }
 
-tasks.compileScala {
-    classpath = classpath + (configurations.compile + configurations.provided)
-}
-
 task repl(type: Exec) {
     commandLine 'scala', '-cp', sourceSets.test.runtimeClasspath.asPath
     standardInput = System.in
