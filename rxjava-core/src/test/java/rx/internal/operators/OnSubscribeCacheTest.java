@@ -148,21 +148,21 @@ public class OnSubscribeCacheTest {
         assertTrue(test.getOnErrorEvents().isEmpty());
     }
 
-    @Test
+    @Test(timeout = 10000)
     public void testWithAsyncSubjectAndRepeat() {
         testWithCustomSubjectAndRepeat(AsyncSubject.<Integer>create(), 3, 3, 3, 3);
     }
-    @Test
+    @Test(timeout = 10000)
     public void testWithBehaviorSubjectAndRepeat() {
         // BehaviorSubject just completes when repeated
         testWithCustomSubjectAndRepeat(BehaviorSubject.create(0), 0, 1, 2, 3);
     }
-    @Test
+    @Test(timeout = 10000)
     public void testWithPublishSubjectAndRepeat() {
         // PublishSubject just completes when repeated
         testWithCustomSubjectAndRepeat(PublishSubject.<Integer>create(), 1, 2, 3);
     }
-    @Test
+    @Test(timeout = 10000)
     public void testWithReplaySubjectAndRepeat() {
         testWithCustomSubjectAndRepeat(ReplaySubject.<Integer>create(), 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3);
     }
