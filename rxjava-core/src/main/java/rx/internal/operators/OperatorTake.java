@@ -78,8 +78,8 @@ public final class OperatorTake<T> implements Operator<T, T> {
                 return new Producer() {
 
                     @Override
-                    public void request(int n) {
-                        int c = limit - count;
+                    public void request(long n) {
+                        long c = limit - count;
                         if (n < c) {
                             producer.request(n);
                         } else {
@@ -113,7 +113,7 @@ public final class OperatorTake<T> implements Operator<T, T> {
         child.setProducer(new Producer() {
 
             @Override
-            public void request(int n) {
+            public void request(long n) {
                 if (n < 0) {
                     // request up the limit that has been set, no point in asking for more, even if synchronous
                     parent.request(limit);

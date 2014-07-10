@@ -81,7 +81,7 @@ public class OperatorSubscribeOn<T> implements Operator<T, Observable<T>> {
                                 return new Producer() {
 
                                     @Override
-                                    public void request(final int n) {
+                                    public void request(final long n) {
                                         if (Thread.currentThread() == t) {
                                             // don't schedule if we're already on the thread (primarily for first setProducer call)
                                             // see unit test 'testSetProducerSynchronousRequest' for more context on this

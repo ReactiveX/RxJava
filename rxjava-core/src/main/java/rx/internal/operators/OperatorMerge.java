@@ -386,7 +386,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
         static final AtomicLongFieldUpdater<MergeProducer> REQUESTED = AtomicLongFieldUpdater.newUpdater(MergeProducer.class, "requested");
 
         @Override
-        public void request(int n) {
+        public void request(long n) {
             if (n < 0) {
                 requested = -1;
             } else {

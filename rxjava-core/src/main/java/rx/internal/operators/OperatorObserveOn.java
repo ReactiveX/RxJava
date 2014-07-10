@@ -90,7 +90,7 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
             child.setProducer(new Producer() {
 
                 @Override
-                public void request(int n) {
+                public void request(long n) {
                     REQUESTED.getAndAdd(ObserveOnSubscriber.this, n);
                     schedule();
                 }
