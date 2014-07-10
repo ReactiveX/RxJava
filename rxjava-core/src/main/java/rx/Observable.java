@@ -1049,8 +1049,6 @@ public class Observable<T> {
      * return value of the {@link Future#get} method of that object, by passing the object into the {@code from}
      * method.
      * <p>
-     * <em>Important note:</em> This Observable is blocking; you cannot unsubscribe from it.
-     * <p>
      * {@code from} does not operate by default on a particular {@link Scheduler}.
      * 
      * @param future
@@ -1073,8 +1071,6 @@ public class Observable<T> {
      * You can convert any object that supports the {@link Future} interface into an Observable that emits the
      * return value of the {@link Future#get} method of that object, by passing the object into the {@code from}
      * method.
-     * <p>
-     * <em>Important note:</em> This Observable is blocking; you cannot unsubscribe from it.
      * <p>
      * {@code from} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -1109,7 +1105,7 @@ public class Observable<T> {
      *            the source {@link Future}
      * @param scheduler
      *            the {@link Scheduler} to wait for the Future on. Use a Scheduler such as
-     *            {@link Schedulers#io()} that can block and wait on the Future
+     *            {@link rx.schedulers.Schedulers#computation()}, as there are no blocking calls invoked
      * @param <T>
      *            the type of object that the {@link Future} returns, and also the type of item to be emitted by
      *            the resulting Observable
@@ -1117,7 +1113,37 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from">RxJava Wiki: from()</a>
      */
     public final static <T> Observable<T> from(Future<? extends T> future, Scheduler scheduler) {
-        return create(OnSubscribeToObservableFuture.toObservableFuture(future)).subscribeOn(scheduler);
+        return create(OnSubscribeToObservableFuture.toObservableFuture(future, scheduler)).subscribeOn(scheduler);
+    }
+
+    /**
+     * Converts a {@link Future} into an Observable, with a timeout on the Future.
+     * <p>
+     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.Future.png">
+     * <p>
+     * You can convert any object that supports the {@link Future} interface into an Observable that emits the
+     * return value of the {@link Future#get} method of that object, by passing the object into the {@code from}
+     * method.
+     * <p>
+     * {@code from} does not operate by default on a particular {@link Scheduler}.
+     *
+     * @param future
+     *            the source {@link Future}
+     * @param timeout
+     *            the maximum time to wait before calling {@code get}
+     * @param unit
+     *            the {@link TimeUnit} of the {@code timeout} argument
+     * @param scheduler
+     *            the {@link Scheduler} to wait for the Future on. Use a Scheduler such as
+     *            {@link rx.schedulers.Schedulers#computation()}, as there are no blocking calls invoked
+     * @param <T>
+     *            the type of object that the {@link Future} returns, and also the type of item to be emitted by
+     *            the resulting Observable
+     * @return an Observable that emits the item from the source {@link Future}
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from">RxJava Wiki: from()</a>
+     */
+    public final static <T> Observable<T> from(Future<? extends T> future, long timeout, TimeUnit unit, Scheduler scheduler) {
+        return create(OnSubscribeToObservableFuture.toObservableFuture(future, timeout, unit, scheduler)).subscribeOn(scheduler);
     }
 
     /**
@@ -6913,10 +6939,10 @@ public class Observable<T> {
              * so I won't mention that in the exception
              */
         }
-        
+
         // new Subscriber so onStart it
         subscriber.onStart();
-        
+
         /*
          * See https://github.com/Netflix/RxJava/issues/216 for discussion on "Guideline 6.4: Protect calls
          * to user code from within an Observer"
