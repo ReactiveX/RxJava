@@ -108,9 +108,10 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
 
     public final void setProducer(Producer producer) {
         producer = onSetProducer(producer);
-        int toRequest = requested;
+        int toRequest;
         boolean setProducer = false;
         synchronized (this) {
+            toRequest = requested;
             p = producer;
             if (op != null) {
                 // middle operator ... we pass thru unless a request has been made
