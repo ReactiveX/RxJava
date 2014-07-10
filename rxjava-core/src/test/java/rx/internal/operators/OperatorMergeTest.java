@@ -973,4 +973,36 @@ public class OperatorMergeTest {
         return observable;
     }
 
+    @Test
+    public void mergeManyAsyncSingle() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        Observable<Observable<Integer>> os = Observable.range(1, 10000).map(new Func1<Integer, Observable<Integer>>() {
+
+            @Override
+            public Observable<Integer> call(final Integer i) {
+                return Observable.create(new OnSubscribe<Integer>() {
+
+                    @Override
+                    public void call(Subscriber<? super Integer> s) {
+                        if (i < 500) {
+                            try {
+                                Thread.sleep(1);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        s.onNext(i);
+                        s.onCompleted();
+                    }
+
+                }).subscribeOn(Schedulers.computation()).cache();
+            }
+
+        });
+        Observable.merge(os).subscribe(ts);
+        ts.awaitTerminalEvent();
+        ts.assertNoErrors();
+        assertEquals(10000, ts.getOnNextEvents().size());
+    }
+
 }
