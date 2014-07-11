@@ -54,6 +54,16 @@ public class CompositeExceptionTest {
     }
 
     @Test(timeout = 1000)
+    public void testOneIsCauseOfAnother() {
+        Throwable rootCause = new Throwable("RootCause");
+        Throwable throwable = new Throwable("1", rootCause);
+        CompositeException ce = new CompositeException("One is the cause of another",
+                Arrays.asList(rootCause, throwable));
+
+        assertEquals(1, ce.getExceptions().size());
+    }
+
+    @Test(timeout = 1000)
     public void testAttachCallingThreadStackParentThenChild() {
         CompositeException.attachCallingThreadStack(ex1, ex2);
         assertEquals("Ex2", ex1.getCause().getMessage());

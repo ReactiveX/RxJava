@@ -38,9 +38,9 @@ public final class CompositeException extends RuntimeException {
     public CompositeException(String messagePrefix, Collection<Throwable> errors) {
         List<Throwable> _exceptions = new ArrayList<Throwable>();
         CompositeExceptionCausalChain _cause = new CompositeExceptionCausalChain();
-        int count = 0;
+        int count = errors.size();
+        errors = removeDuplicatedCauses(errors);
         for (Throwable e : errors) {
-            count++;
             attachCallingThreadStack(_cause, e);
             _exceptions.add(e);
         }
@@ -71,6 +71,29 @@ public final class CompositeException extends RuntimeException {
     @Override
     public synchronized Throwable getCause() {
         return cause;
+    }
+
+    private Collection<Throwable> removeDuplicatedCauses(Collection<Throwable> errors) {
+        Set<Throwable> duplicated = new HashSet<Throwable>();
+        for (Throwable cause : errors) {
+            for (Throwable error : errors) {
+                if(cause == error || duplicated.contains(error)) {
+                    continue;
+                }
+                while (error.getCause() != null) {
+                    error = error.getCause();
+                    if (error == cause) {
+                        duplicated.add(cause);
+                        break;
+                    }
+                }
+            }
+        }
+        if (!duplicated.isEmpty()) {
+            errors = new ArrayList<Throwable>(errors);
+            errors.removeAll(duplicated);
+        }
+        return errors;
     }
 
     @SuppressWarnings("unused")
