@@ -98,7 +98,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
         @Override
         public void onNext(Observable<? extends T> t) {
             if (t instanceof ScalarSynchronousObservable) {
-                handleScalarSynchronousObservable(t);
+                handleScalarSynchronousObservable((ScalarSynchronousObservable)t);
             } else {
                 if (t == null || isUnsubscribed()) {
                     return;
@@ -128,7 +128,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
             request(1);
         }
 
-        private void handleScalarSynchronousObservable(Observable<? extends T> t) {
+        private void handleScalarSynchronousObservable(ScalarSynchronousObservable<? extends T> t) {
             // fast-path for scalar, synchronous values such as Observable.from(int)
             /**
              * Without this optimization:
@@ -154,8 +154,8 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
             }
         }
 
-        private void handleScalarSynchronousObservableWithoutRequestLimits(Observable<? extends T> t) {
-            T value = ((ScalarSynchronousObservable<T>) t).get();
+        private void handleScalarSynchronousObservableWithoutRequestLimits(ScalarSynchronousObservable<? extends T> t) {
+            T value = t.get();
             if (getEmitLock()) {
                 try {
                     actual.onNext(value);
@@ -177,14 +177,14 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
             }
         }
 
-        private void handleScalarSynchronousObservableWithRequestLimits(Observable<? extends T> t) {
+        private void handleScalarSynchronousObservableWithRequestLimits(ScalarSynchronousObservable<? extends T> t) {
             if (getEmitLock()) {
                 boolean emitted = false;
                 try {
                     long r = mergeProducer.requested;
                     if (r > 0) {
                         emitted = true;
-                        actual.onNext(((ScalarSynchronousObservable<T>) t).get());
+                        actual.onNext(t.get());
                         mergeProducer.REQUESTED.decrementAndGet(mergeProducer);
                         // we handle this Observable without ever incrementing the wip or touching other machinery so just return here
                         return;
@@ -203,7 +203,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
             // enqueue the values for later delivery
             initScalarValueQueueIfNeeded();
             try {
-                scalarValueQueue.onNext(((ScalarSynchronousObservable<T>) t).get());
+                scalarValueQueue.onNext(t.get());
             } catch (MissingBackpressureException e) {
                 onError(e);
             }
