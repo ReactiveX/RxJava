@@ -15,49 +15,19 @@
  */
 package rx.util.async;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.Future;
-import java.util.concurrent.FutureTask;
-
-import rx.Observable;
-import rx.Observer;
-import rx.Scheduler;
+import rx.*;
 import rx.Scheduler.Worker;
-import rx.Subscriber;
-import rx.Subscription;
-import rx.functions.Action0;
-import rx.functions.Action1;
-import rx.functions.Action2;
-import rx.functions.Action3;
-import rx.functions.Action4;
-import rx.functions.Action5;
-import rx.functions.Action6;
-import rx.functions.Action7;
-import rx.functions.Action8;
-import rx.functions.Action9;
-import rx.functions.ActionN;
-import rx.functions.Actions;
-import rx.functions.Func0;
-import rx.functions.Func1;
-import rx.functions.Func2;
-import rx.functions.Func3;
-import rx.functions.Func4;
-import rx.functions.Func5;
-import rx.functions.Func6;
-import rx.functions.Func7;
-import rx.functions.Func8;
-import rx.functions.Func9;
-import rx.functions.FuncN;
+import rx.functions.*;
 import rx.schedulers.Schedulers;
 import rx.subjects.AsyncSubject;
 import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
 import rx.subscriptions.SerialSubscription;
-import rx.util.async.operators.Functionals;
-import rx.util.async.operators.OperatorDeferFuture;
-import rx.util.async.operators.OperatorForEachFuture;
-import rx.util.async.operators.OperatorFromFunctionals;
-import rx.util.async.operators.OperatorStartFuture;
+import rx.util.async.operators.*;
+
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
 
 /**
  * Utility methods to convert functions and actions into asynchronous operations through the Observable/Observer
@@ -95,7 +65,7 @@ public final class Async {
      * Observable. Multiple subscriptions to this Observable observe the same return value.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/start.s.png">
-     *
+     * <p>
      * @param <T> the result value type
      * @param func function to run asynchronously
      * @param scheduler Scheduler to run the function on
@@ -111,7 +81,7 @@ public final class Async {
      * Convert a synchronous action call into an asynchronous function call through an Observable.
      * <p>
      * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.an.png">
-     *
+     * <p>
      * @param action the action to convert
      * @return a function that returns an Observable that executes the {@code action} and emits {@code null}
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Async-Operators#wiki-toasync-or-asyncaction-or-asyncfunc">RxJava Wiki: toAsync()</a>
