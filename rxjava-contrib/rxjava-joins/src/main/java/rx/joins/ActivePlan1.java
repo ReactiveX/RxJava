@@ -22,22 +22,22 @@ import rx.functions.Action1;
 /**
  * Represents an active plan.
  */
-public class ActivePlan1<T1> extends ActivePlan0 {
+public final class ActivePlan1<T1> extends ActivePlan0 {
     private final Action1<T1> onNext;
     private final Action0 onCompleted;
-    private final JoinObserver1<T1> first;
+    private final JoinObserver1<T1> jo1;
 
-    public ActivePlan1(JoinObserver1<T1> first, Action1<T1> onNext, Action0 onCompleted) {
+    ActivePlan1(JoinObserver1<T1> jo1, Action1<T1> onNext, Action0 onCompleted) {
         this.onNext = onNext;
         this.onCompleted = onCompleted;
-        this.first = first;
-        addJoinObserver(first);
+        this.jo1 = jo1;
+        addJoinObserver(jo1);
     }
 
     @Override
-    public void match() {
-        if (!first.queue().isEmpty()) {
-            Notification<T1> n1 = first.queue().peek();
+    protected void match() {
+        if (!jo1.queue().isEmpty()) {
+            Notification<T1> n1 = jo1.queue().peek();
             if (n1.isOnCompleted()) {
                 onCompleted.call();
             } else {

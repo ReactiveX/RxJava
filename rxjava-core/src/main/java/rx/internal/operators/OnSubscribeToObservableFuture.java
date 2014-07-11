@@ -24,15 +24,15 @@ import rx.functions.Action0;
 import rx.subscriptions.Subscriptions;
 
 /**
- * Converts a Future into an Observable.
+ * Converts a {@code Future} into an {@code Observable}.
  * <p>
  * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/from.Future.png">
  * <p>
- * You can convert any object that supports the Future interface into an Observable that emits the
- * return value of the get() method of that object, by using the from operation.
+ * You can convert any object that supports the {@code Future} interface into an {@code Observable} that emits
+ * the return value of the {@code get} method of that object, by using this operator.
  * <p>
- * This is blocking so the Subscription returned when calling
- * <code>Observable.unsafeSubscribe(Observer)</code> does nothing.
+ * This is blocking so the {@code Subscription} returned when calling
+ * {@code Observable.unsafeSubscribe(Observer)} does nothing.
  */
 public class OnSubscribeToObservableFuture {
     /* package accessible for unit tests */static class ToObservableFuture<T> implements OnSubscribe<T> {
@@ -40,24 +40,12 @@ public class OnSubscribeToObservableFuture {
         private final long time;
         private final TimeUnit unit;
 
-        /**
-         * @warn javadoc missing
-         * @param that
-         * @return
-         */
         public ToObservableFuture(Future<? extends T> that) {
             this.that = that;
             this.time = 0;
             this.unit = null;
         }
 
-        /**
-         * @warn javadoc missing
-         * @param that
-         * @param time
-         * @param unit
-         * @return
-         */
         public ToObservableFuture(Future<? extends T> that, long time, TimeUnit unit) {
             this.that = that;
             this.time = time;

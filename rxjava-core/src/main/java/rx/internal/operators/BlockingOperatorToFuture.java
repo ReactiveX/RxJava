@@ -52,7 +52,7 @@ public class BlockingOperatorToFuture {
         final AtomicReference<T> value = new AtomicReference<T>();
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
 
-        final Subscription s = that.subscribe(new Subscriber<T>() {
+        final Subscription s = that.single().subscribe(new Subscriber<T>() {
 
             @Override
             public void onCompleted() {
@@ -67,11 +67,8 @@ public class BlockingOperatorToFuture {
 
             @Override
             public void onNext(T v) {
-                if (!value.compareAndSet(null, v)) {
-                    // this means we received more than one value and must fail as a Future can handle only a single value
-                    error.compareAndSet(null, new IllegalStateException("Observable.toFuture() only supports sequences with a single value. Use .toList().toFuture() if multiple values are expected."));
-                    finished.countDown();
-                }
+                // "single" guarantees there is only one "onNext"
+                value.set(v);
             }
         });
 

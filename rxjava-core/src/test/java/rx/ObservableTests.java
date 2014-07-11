@@ -44,13 +44,15 @@ import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import rx.Observable.OnSubscribe;
 
+import rx.Observable.OnSubscribe;
+import rx.exceptions.OnErrorNotImplementedException;
 import rx.functions.Action1;
 import rx.functions.Action2;
 import rx.functions.Func1;
 import rx.functions.Func2;
 import rx.observables.ConnectableObservable;
+import rx.observers.TestSubscriber;
 import rx.schedulers.TestScheduler;
 import rx.subscriptions.BooleanSubscription;
 
@@ -993,5 +995,36 @@ public class ObservableTests {
 
         assertEquals("1-2-3", value);
     }
+    
+    @Test
+    public void testMergeWith() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        Observable.just(1).mergeWith(Observable.just(2)).subscribe(ts);
+        ts.assertReceivedOnNext(Arrays.asList(1, 2));
+    }
+    
+    @Test
+    public void testConcatWith() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        Observable.just(1).concatWith(Observable.just(2)).subscribe(ts);
+        ts.assertReceivedOnNext(Arrays.asList(1, 2));
+    }
+    
+    @Test
+    public void testAmbWith() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        Observable.just(1).ambWith(Observable.just(2)).subscribe(ts);
+        ts.assertReceivedOnNext(Arrays.asList(1));
+    }
 
+    @Test(expected = OnErrorNotImplementedException.class)
+    public void testSubscribeWithoutOnError() {
+        Observable<String> o = Observable.from("a", "b").flatMap(new Func1<String, Observable<String>>() {
+            @Override
+            public Observable<String> call(String s) {
+                return Observable.error(new Exception("test"));
+            }
+        });
+        o.subscribe();
+    }
 }

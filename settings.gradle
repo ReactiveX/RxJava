@@ -7,6 +7,7 @@ include 'rxjava-core', \
 'language-adaptors:rxjava-kotlin', \
 'rxjava-contrib:rxjava-swing', \
 //'rxjava-contrib:rxjava-javafx', \
+'rxjava-contrib:rxjava-ios', \
 'rxjava-contrib:rxjava-android', \
 'rxjava-contrib:rxjava-android-samples-build-wrapper', \
 'rxjava-contrib:rxjava-apache-http', \
@@ -16,4 +17,5 @@ include 'rxjava-core', \
 'rxjava-contrib:rxjava-debug', \
 'rxjava-contrib:rxjava-async-util', \
 'rxjava-contrib:rxjava-computation-expressions',\
+'rxjava-contrib:rxjava-scalaz', \
 'rxjava-contrib:rxjava-quasar'

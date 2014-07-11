@@ -38,12 +38,14 @@ import org.mockito.InOrder;
 import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Observer;
+import rx.Producer;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.internal.operators.OperatorTake;
 import rx.observers.Subscribers;
+import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 
 public class OperatorTakeTest {
@@ -303,12 +305,61 @@ public class OperatorTakeTest {
     public void testTakeObserveOn() {
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
+        TestSubscriber<Object> ts = new TestSubscriber<Object>(o);
         
-        INFINITE_OBSERVABLE.observeOn(Schedulers.newThread()).take(1).subscribe(o);
+        INFINITE_OBSERVABLE.onBackpressureDrop().observeOn(Schedulers.newThread()).take(1).subscribe(ts);
+        ts.awaitTerminalEvent();
+        ts.assertNoErrors();
         
         verify(o).onNext(1L);
         verify(o, never()).onNext(2L);
         verify(o).onCompleted();
         verify(o, never()).onError(any(Throwable.class));
+    }
+    
+    @Test
+    public void testProducerRequestThroughTake() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        ts.request(3);
+        final AtomicLong requested = new AtomicLong();
+        Observable.create(new OnSubscribe<Integer>() {
+
+            @Override
+            public void call(Subscriber<? super Integer> s) {
+                s.setProducer(new Producer() {
+
+                    @Override
+                    public void request(long n) {
+                        requested.set(n);
+                    }
+
+                });
+            }
+
+        }).take(3).subscribe(ts);
+        assertEquals(3, requested.get());
+    }
+    
+    @Test
+    public void testProducerRequestThroughTakeIsModified() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        ts.request(3);
+        final AtomicLong requested = new AtomicLong();
+        Observable.create(new OnSubscribe<Integer>() {
+
+            @Override
+            public void call(Subscriber<? super Integer> s) {
+                s.setProducer(new Producer() {
+
+                    @Override
+                    public void request(long n) {
+                        requested.set(n);
+                    }
+
+                });
+            }
+
+        }).take(1).subscribe(ts);
+        assertEquals(1, requested.get());
     }
 }

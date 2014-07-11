@@ -72,6 +72,10 @@ public final class SubscriptionList implements Subscription {
         }
     }
 
+    /**
+     * Unsubscribe from all of the subscriptions in the list, which stops the receipt of notifications on
+     * the associated {@code Subscriber}.
+     */
     @Override
     public void unsubscribe() {
         synchronized (this) {
@@ -84,10 +88,6 @@ public final class SubscriptionList implements Subscription {
         unsubscribeFromAll(subscriptions);
     }
 
-    /**
-     * @warn javadoc missing
-     * @param subscriptions
-     */
     private static void unsubscribeFromAll(Collection<Subscription> subscriptions) {
         if (subscriptions == null) {
             return;

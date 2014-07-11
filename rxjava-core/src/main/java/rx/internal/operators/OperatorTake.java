@@ -16,16 +16,18 @@
 package rx.internal.operators;
 
 import rx.Observable.Operator;
+import rx.Producer;
 import rx.Subscriber;
 
 /**
- * Returns an Observable that emits the first <code>num</code> items emitted by the source Observable.
+ * An {@code Observable} that emits the first {@code num} items emitted by the source {@code Observable}.
  * <p>
  * <img width="640" height="305" src="https://raw.githubusercontent.com/wiki/Netflix/RxJava/images/rx-operators/take.png" />
  * <p>
- * You can choose to pay attention only to the first <code>num</code> items emitted by an Observable by using
- * the {@code take} operation. This operation returns an Observable that will invoke a subscribing Observer's
- * {@code onNext} function a maximum of {@code num} times before invoking {@code onCompleted}.
+ * You can choose to pay attention only to the first {@code num} items emitted by an {@code Observable} by using
+ * the {@code take} operator. This operator returns an {@code Observable} that will invoke a subscriber's
+ * {@link Subscriber#onNext onNext} function a maximum of {@code num} times before invoking
+ * {@link Subscriber#onCompleted onCompleted}.
  */
 public final class OperatorTake<T> implements Operator<T, T> {
 
@@ -37,7 +39,7 @@ public final class OperatorTake<T> implements Operator<T, T> {
 
     @Override
     public Subscriber<? super T> call(final Subscriber<? super T> child) {
-        Subscriber<T> parent = new Subscriber<T>() {
+        final Subscriber<T> parent = new Subscriber<T>() {
 
             int count = 0;
             boolean completed = false;
@@ -68,13 +70,32 @@ public final class OperatorTake<T> implements Operator<T, T> {
                 }
             }
 
+            /**
+             * We want to adjust the requested values based on the `take` count.
+             */
+            @Override
+            protected Producer onSetProducer(final Producer producer) {
+                return new Producer() {
+
+                    @Override
+                    public void request(long n) {
+                        long c = limit - count;
+                        if (n < c) {
+                            producer.request(n);
+                        } else {
+                            producer.request(c);
+                        }
+                    }
+                };
+            }
+
         };
-        
+
         if (limit == 0) {
             child.onCompleted();
             parent.unsubscribe();
         }
-        
+
         /*
          * We decouple the parent and child subscription so there can be multiple take() in a chain such as for
          * the groupBy Observer use case where you may take(1) on groups and take(20) on the children.
@@ -85,6 +106,23 @@ public final class OperatorTake<T> implements Operator<T, T> {
          * register 'parent' with 'child'
          */
         child.add(parent);
+
+        /**
+         * Since we decoupled the subscription chain but want the request to flow through, we reconnect the producer here.
+         */
+        child.setProducer(new Producer() {
+
+            @Override
+            public void request(long n) {
+                if (n < 0) {
+                    // request up the limit that has been set, no point in asking for more, even if synchronous
+                    parent.request(limit);
+                } else {
+                    parent.request(n);
+                }
+            }
+        });
+
         return parent;
     }
 

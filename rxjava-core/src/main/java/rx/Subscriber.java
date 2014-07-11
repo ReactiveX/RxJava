@@ -19,7 +19,8 @@ import rx.internal.util.SubscriptionList;
 import rx.subscriptions.CompositeSubscription;
 
 /**
- * Provides a mechanism for receiving push-based notifications.
+ * Provides a mechanism for receiving push-based notifications from Observables, and permits manual
+ * unsubscribing from these Observables.
  * <p>
  * After a Subscriber calls an {@link Observable}'s {@link Observable#subscribe subscribe} method, the
  * {@link Observable} calls the Subscriber's {@link #onNext} method to emit items. A well-behaved
@@ -33,25 +34,36 @@ import rx.subscriptions.CompositeSubscription;
 public abstract class Subscriber<T> implements Observer<T>, Subscription {
 
     private final SubscriptionList cs;
+    private final Subscriber<?> op;
+    /* protected by `this` */
+    private Producer p;
+    /* protected by `this` */
+    private long requested = Long.MIN_VALUE; // default to not set
 
     @Deprecated
     protected Subscriber(CompositeSubscription cs) {
+        this.op = null;
         this.cs = new SubscriptionList();
         add(cs);
     }
 
     protected Subscriber() {
+        this.op = null;
         this.cs = new SubscriptionList();
     }
 
     protected Subscriber(Subscriber<?> op) {
+        this.op = op;
         this.cs = op.cs;
     }
 
     /**
-     * Registers an unsubscribe callback.
+     * Adds a {@link Subscription} to this Subscriber's list of subscriptions if this list is not marked as
+     * unsubscribed. If the list <em>is</em> marked as unsubscribed, {@code add} will indicate this by
+     * explicitly unsubscribing the new {@code Subscription} as well.
      *
-     * @warn param "s" undescribed
+     * @param s
+     *            the {@code Subscription} to add
      */
     public final void add(Subscription s) {
         cs.add(s);
@@ -63,11 +75,63 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
     }
 
     /**
-     * Indicates whether this Subscriber has unsubscribed from its Observable.
+     * Indicates whether this Subscriber has unsubscribed from its list of subscriptions.
      * 
-     * @return {@code true} if this Subscriber has unsubscribed from its Observable, {@code false} otherwise
+     * @return {@code true} if this Subscriber has unsubscribed from its subscriptions, {@code false} otherwise
      */
     public final boolean isUnsubscribed() {
         return cs.isUnsubscribed();
+    }
+
+    public void onStart() {
+        // do nothing by default
+    }
+    
+    public final void request(long n) {
+        Producer shouldRequest = null;
+        synchronized (this) {
+            if (p != null) {
+                shouldRequest = p;
+            } else {
+                requested = n;
+            }
+        }
+        // after releasing lock
+        if (shouldRequest != null) {
+            shouldRequest.request(n);
+        }
+    }
+
+    protected Producer onSetProducer(Producer producer) {
+        return producer;
+    }
+
+    public final void setProducer(Producer producer) {
+        producer = onSetProducer(producer);
+        long toRequest;
+        boolean setProducer = false;
+        synchronized (this) {
+            toRequest = requested;
+            p = producer;
+            if (op != null) {
+                // middle operator ... we pass thru unless a request has been made
+                if (toRequest == Long.MIN_VALUE) {
+                    // we pass-thru to the next producer as nothing has been requested
+                    setProducer = true;
+                }
+
+            }
+        }
+        // do after releasing lock
+        if (setProducer) {
+            op.setProducer(p);
+        } else {
+            // we execute the request with whatever has been requested (or -1)
+            if (toRequest == Long.MIN_VALUE) {
+                p.request(-1);
+            } else {
+                p.request(toRequest);
+            }
+        }
     }
 }

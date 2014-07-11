@@ -24,15 +24,19 @@ import rx.Observable.OnSubscribe;
 import rx.Subscriber;
 
 /**
- * Propagates the observable sequence that reacts first.
+ * Given multiple {@link Observable}s, propagates the one that first emits an item.
  */
 public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
 
     /**
-     * @warn javadoc missing
+     * Given two {@link Observable}s, propagates the one that first emits an item.
+     *
      * @param o1
+     *          the first {@code Observable}
      * @param o2
-     * @return
+     *          the second {@code Observable}
+     * @return an {@code Observable} that mirrors the one of the source {@code Observable}s that was first to
+     *         emit an item
      */
     public static <T> OnSubscribe<T> amb(Observable<? extends T> o1, Observable<? extends T> o2) {
         List<Observable<? extends T>> sources = new ArrayList<Observable<? extends T>>();
@@ -42,11 +46,16 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
     }
 
     /**
-     * @warn javadoc missing
+     * Given three {@link Observable}s, propagates the one that first emits an item.
+     *
      * @param o1
+     *          the first {@code Observable}
      * @param o2
+     *          the second {@code Observable}
      * @param o3
-     * @return
+     *          the third {@code Observable}
+     * @return an {@code Observable} that mirrors the one of the source {@code Observable}s that was first to
+     *         emit an item
      */
     public static <T> OnSubscribe<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3) {
         List<Observable<? extends T>> sources = new ArrayList<Observable<? extends T>>();
@@ -57,12 +66,18 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
     }
 
     /**
-     * @warn javadoc missing
+     * Given four {@link Observable}s, propagates the one that first emits an item.
+     *
      * @param o1
+     *          the first {@code Observable}
      * @param o2
+     *          the second {@code Observable}
      * @param o3
+     *          the third {@code Observable}
      * @param o4
-     * @return
+     *          the fourth {@code Observable}
+     * @return an {@code Observable} that mirrors the one of the source {@code Observable}s that was first to
+     *         emit an item
      */
     public static <T> OnSubscribe<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4) {
         List<Observable<? extends T>> sources = new ArrayList<Observable<? extends T>>();
@@ -74,13 +89,20 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
     }
 
     /**
-     * @warn javadoc missing
+     * Given five {@link Observable}s, propagates the one that first emits an item.
+     *
      * @param o1
+     *          the first {@code Observable}
      * @param o2
+     *          the second {@code Observable}
      * @param o3
+     *          the third {@code Observable}
      * @param o4
+     *          the fourth {@code Observable}
      * @param o5
-     * @return
+     *          the fifth {@code Observable}
+     * @return an {@code Observable} that mirrors the one of the source {@code Observable}s that was first to
+     *         emit an item
      */
     public static <T> OnSubscribe<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4, Observable<? extends T> o5) {
         List<Observable<? extends T>> sources = new ArrayList<Observable<? extends T>>();
@@ -93,14 +115,22 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
     }
 
     /**
-     * @warn javadoc missing
+     * Given six {@link Observable}s, propagates the one that first emits an item.
+     *
      * @param o1
+     *          the first {@code Observable}
      * @param o2
+     *          the second {@code Observable}
      * @param o3
+     *          the third {@code Observable}
      * @param o4
+     *          the fourth {@code Observable}
      * @param o5
+     *          the fifth {@code Observable}
      * @param o6
-     * @return
+     *          the sixth {@code Observable}
+     * @return an {@code Observable} that mirrors the one of the source {@code Observable}s that was first to
+     *         emit an item
      */
     public static <T> OnSubscribe<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4, Observable<? extends T> o5, Observable<? extends T> o6) {
         List<Observable<? extends T>> sources = new ArrayList<Observable<? extends T>>();
@@ -114,15 +144,24 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
     }
 
     /**
-     * @warn javadoc missing
+     * Given seven {@link Observable}s, propagates the one that first emits an item.
+     *
      * @param o1
+     *          the first {@code Observable}
      * @param o2
+     *          the second {@code Observable}
      * @param o3
+     *          the third {@code Observable}
      * @param o4
+     *          the fourth {@code Observable}
      * @param o5
+     *          the fifth {@code Observable}
      * @param o6
+     *          the sixth {@code Observable}
      * @param o7
-     * @return
+     *          the seventh {@code Observable}
+     * @return an {@code Observable} that mirrors the one of the source {@code Observable}s that was first to
+     *         emit an item
      */
     public static <T> OnSubscribe<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4, Observable<? extends T> o5, Observable<? extends T> o6, Observable<? extends T> o7) {
         List<Observable<? extends T>> sources = new ArrayList<Observable<? extends T>>();
@@ -137,16 +176,26 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
     }
 
     /**
-     * @warn javadoc missing
+     * Given eight {@link Observable}s, propagates the one that first emits an item.
+     *
      * @param o1
+     *          the first {@code Observable}
      * @param o2
+     *          the second {@code Observable}
      * @param o3
+     *          the third {@code Observable}
      * @param o4
+     *          the fourth {@code Observable}
      * @param o5
+     *          the fifth {@code Observable}
      * @param o6
+     *          the sixth {@code Observable}
      * @param o7
+     *          the seventh {@code Observable}
      * @param o8
-     * @return
+     *          the eighth {@code Observable}
+     * @return an {@code Observable} that mirrors the one of the source {@code Observable}s that was first to
+     *         emit an item
      */
     public static <T> OnSubscribe<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4, Observable<? extends T> o5, Observable<? extends T> o6, Observable<? extends T> o7, Observable<? extends T> o8) {
         List<Observable<? extends T>> sources = new ArrayList<Observable<? extends T>>();
@@ -162,17 +211,28 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
     }
 
     /**
-     * @warn javadoc missing
+     * Given nine {@link Observable}s, propagates the one that first emits an item.
+     *
      * @param o1
+     *          the first {@code Observable}
      * @param o2
+     *          the second {@code Observable}
      * @param o3
+     *          the third {@code Observable}
      * @param o4
+     *          the fourth {@code Observable}
      * @param o5
+     *          the fifth {@code Observable}
      * @param o6
+     *          the sixth {@code Observable}
      * @param o7
+     *          the seventh {@code Observable}
      * @param o8
+     *          the eighth {@code Observable}
      * @param o9
-     * @return
+     *          the ninth {@code Observable}
+     * @return an {@code Observable} that mirrors the one of the source {@code Observable}s that was first to
+     *         emit an item
      */
     public static <T> OnSubscribe<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4, Observable<? extends T> o5, Observable<? extends T> o6, Observable<? extends T> o7, Observable<? extends T> o8, Observable<? extends T> o9) {
         List<Observable<? extends T>> sources = new ArrayList<Observable<? extends T>>();
@@ -189,9 +249,12 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
     }
 
     /**
-     * @warn javadoc missing
+     * Given a set of {@link Observable}s, propagates the one that first emits an item.
+     *
      * @param sources
-     * @return
+     *          an {@code Iterable} of {@code Observable}s
+     * @return an {@code Observable} that mirrors the one of the {@code Observable}s in {@code sources} that was
+     *         the first to emit an item
      */
     public static <T> OnSubscribe<T> amb(final Iterable<? extends Observable<? extends T>> sources) {
         return new OnSubscribeAmb<T>(sources);

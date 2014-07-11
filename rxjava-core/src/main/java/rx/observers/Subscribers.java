@@ -22,7 +22,7 @@ import rx.functions.Action0;
 import rx.functions.Action1;
 
 /**
- * @warn javadoc class description missing
+ * Helper methods and utilities for creating and working with {@link Subscriber} objects.
  */
 public final class Subscribers {
     private Subscribers() {

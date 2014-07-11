@@ -17,11 +17,16 @@
 package rx.lang.scala
 
 import rx.functions.FuncN
-import rx.Observable.OnSubscribeFunc
 import rx.lang.scala.observables.ConnectableObservable
 import scala.concurrent.duration
 import java.util
 import collection.JavaConversions._
+import scala.collection.generic.CanBuildFrom
+import scala.annotation.unchecked.uncheckedVariance
+import scala.collection.{Iterable, Traversable, immutable}
+import scala.collection.mutable.ArrayBuffer
+import scala.language.higherKinds
+import scala.reflect.ClassTag
 
 
 /**
@@ -102,6 +107,7 @@ trait Observable[+T]
   import scala.collection.JavaConverters._
   import scala.collection.Seq
   import scala.concurrent.duration.{Duration, TimeUnit, MILLISECONDS}
+  import scala.collection.mutable
   import rx.functions._
   import rx.lang.scala.observables.BlockingObservable
   import ImplicitFunctionConversions._
@@ -234,7 +240,7 @@ trait Observable[+T]
    *                 enforced by the created `Subject`
    * @return an Observable that emits the items produced by multicasting the source Observable within a selector function
    */
-  def multicast[R >: T, U](subjectFactory: () => rx.lang.scala.Subject[R], selector: Observable[R] => Observable[U]): Observable[U] = {
+  def multicast[R >: T, U](subjectFactory: () => rx.lang.scala.Subject[R])(selector: Observable[R] => Observable[U]): Observable[U] = {
     val subjectFactoryJava: Func0[rx.subjects.Subject[_ >: T, _ <: R]] = () => subjectFactory().asJavaSubject
     val selectorJava: Func1[rx.Observable[R], rx.Observable[U]] =
       (jo: rx.Observable[R]) => selector(toScalaObservable[R](jo)).asJavaObservable.asInstanceOf[rx.Observable[U]]
@@ -368,7 +374,7 @@ trait Observable[+T]
    * is the minumum of the number of `onNext` invocations of `this` and `that`. 
    */
   def zip[U](that: Observable[U]): Observable[(T, U)] = {
-    zipWith(that, (t: T, u: U) => (t, u))
+    zipWith(that)((_, _))
   }
 
   /**
@@ -380,11 +386,11 @@ trait Observable[+T]
    * Note that the `other` Iterable is evaluated as items are observed from the source Observable; it is
    * not pre-consumed. This allows you to zip infinite streams on either side.
    *
-   * @param other the Iterable sequence
+   * @param that the Iterable sequence
    * @return an Observable that pairs up values from the source Observable and the `other` Iterable.
    */
-  def zip[U](other: Iterable[U]): Observable[(T, U)] = {
-    zipWith(other, (t: T, u: U) => (t, u))
+  def zip[U](that: Iterable[U]): Observable[(T, U)] = {
+    zipWith(that)((_, _))
   }
 
   /**
@@ -396,15 +402,15 @@ trait Observable[+T]
    * Note that the `other` Iterable is evaluated as items are observed from the source Observable; it is
    * not pre-consumed. This allows you to zip infinite streams on either side.
    *
-   * @param other the Iterable sequence
+   * @param that the Iterable sequence
    * @param selector a function that combines the pairs of items from the Observable and the Iterable to generate
    *                 the items to be emitted by the resulting Observable
    * @return an Observable that pairs up values from the source Observable and the `other` Iterable
    *         sequence and emits the results of `selector` applied to these pairs
    */
-  def zipWith[U, R](other: Iterable[U], selector: (T, U) => R): Observable[R] = {
+  def zipWith[U, R](that: Iterable[U])(selector: (T, U) => R): Observable[R] = {
     val thisJava = asJavaObservable.asInstanceOf[rx.Observable[T]]
-    toScalaObservable[R](thisJava.zip(other.asJava, selector))
+    toScalaObservable[R](thisJava.zip(that.asJava, selector))
   }
 
   /**
@@ -413,7 +419,7 @@ trait Observable[+T]
    * The number of `onNext` invocations of the resulting `Observable[(T, U)]`
    * is the minumum of the number of `onNext` invocations of `this` and `that`.
    */
-  def zipWith[U, R](that: Observable[U], selector: (T,U) => R): Observable[R] = {
+  def zipWith[U, R](that: Observable[U])(selector: (T, U) => R): Observable[R] = {
     toScalaObservable[R](rx.Observable.zip[T, U, R](this.asJavaObservable, that.asJavaObservable, selector))
   }
 
@@ -444,7 +450,7 @@ trait Observable[+T]
    * @return
    *         An [[rx.lang.scala.Observable]] which produces buffers which are created and emitted when the specified [[rx.lang.scala.Observable]]s publish certain objects.
    */
-  def buffer[Opening](openings: Observable[Opening], closings: Opening => Observable[Any]): Observable[Seq[T]] = {
+  def slidingBuffer[Opening](openings: Observable[Opening])(closings: Opening => Observable[Any]): Observable[Seq[T]] = {
     val opening: rx.Observable[_ <: Opening] = openings.asJavaObservable
     val closing: Func1[_ >: Opening, _ <: rx.Observable[_ <: Any]] = (o: Opening) => closings(o).asJavaObservable
     val jObs: rx.Observable[_ <: java.util.List[_]] = asJavaObservable.buffer[Opening, Any](opening, closing)
@@ -464,7 +470,7 @@ trait Observable[+T]
    *         An [[rx.lang.scala.Observable]] which produces connected non-overlapping buffers containing at most
    *         `count` produced values.
    */
-  def buffer(count: Int): Observable[Seq[T]] = {
+  def tumblingBuffer(count: Int): Observable[Seq[T]] = {
     val oJava: rx.Observable[_ <: java.util.List[_]] = asJavaObservable.buffer(count)
     Observable.jObsOfListToScObsOfSeq(oJava.asInstanceOf[rx.Observable[_ <: java.util.List[T]]])
   }
@@ -485,7 +491,7 @@ trait Observable[+T]
    *         An [[rx.lang.scala.Observable]] which produces buffers every `skip` values containing at most
    *         `count` produced values.
    */
-  def buffer(count: Int, skip: Int): Observable[Seq[T]] = {
+  def slidingBuffer(count: Int, skip: Int): Observable[Seq[T]] = {
     val oJava: rx.Observable[_ <: java.util.List[_]] = asJavaObservable.buffer(count, skip)
     Observable.jObsOfListToScObsOfSeq(oJava.asInstanceOf[rx.Observable[_ <: java.util.List[T]]])
   }
@@ -503,7 +509,7 @@ trait Observable[+T]
    * @return
    *         An [[rx.lang.scala.Observable]] which produces connected non-overlapping buffers with a fixed duration.
    */
-  def buffer(timespan: Duration): Observable[Seq[T]] = {
+  def tumblingBuffer(timespan: Duration): Observable[Seq[T]] = {
     val oJava: rx.Observable[_ <: java.util.List[_]] = asJavaObservable.buffer(timespan.length, timespan.unit)
     Observable.jObsOfListToScObsOfSeq(oJava.asInstanceOf[rx.Observable[_ <: java.util.List[T]]])
   }
@@ -523,7 +529,7 @@ trait Observable[+T]
    * @return
    *         An [[rx.lang.scala.Observable]] which produces connected non-overlapping buffers with a fixed duration.
    */
-  def buffer(timespan: Duration, scheduler: Scheduler): Observable[Seq[T]] = {
+  def tumblingBuffer(timespan: Duration, scheduler: Scheduler): Observable[Seq[T]] = {
     val oJava: rx.Observable[_ <: java.util.List[_]] = asJavaObservable.buffer(timespan.length, timespan.unit, scheduler)
     Observable.jObsOfListToScObsOfSeq(oJava.asInstanceOf[rx.Observable[_ <: java.util.List[T]]])
   }
@@ -543,7 +549,7 @@ trait Observable[+T]
    *         An [[rx.lang.scala.Observable]] which produces connected non-overlapping buffers which are emitted after
    *         a fixed duration or when the buffer has reached maximum capacity (which ever occurs first).
    */
-  def buffer(timespan: Duration, count: Int): Observable[Seq[T]] = {
+  def tumblingBuffer(timespan: Duration, count: Int): Observable[Seq[T]] = {
     val oJava: rx.Observable[_ <: java.util.List[_]] = asJavaObservable.buffer(timespan.length, timespan.unit, count)
     Observable.jObsOfListToScObsOfSeq(oJava.asInstanceOf[rx.Observable[_ <: java.util.List[T]]])
   }
@@ -565,7 +571,7 @@ trait Observable[+T]
    *         An [[rx.lang.scala.Observable]] which produces connected non-overlapping buffers which are emitted after
    *         a fixed duration or when the buffer has reached maximum capacity (which ever occurs first).
    */
-  def buffer(timespan: Duration, count: Int, scheduler: Scheduler): Observable[Seq[T]] = {
+  def tumblingBuffer(timespan: Duration, count: Int, scheduler: Scheduler): Observable[Seq[T]] = {
     val oJava: rx.Observable[_ <: java.util.List[_]] = asJavaObservable.buffer(timespan.length, timespan.unit, count, scheduler)
     Observable.jObsOfListToScObsOfSeq(oJava.asInstanceOf[rx.Observable[_ <: java.util.List[T]]])
   }
@@ -584,7 +590,7 @@ trait Observable[+T]
    *         An [[rx.lang.scala.Observable]] which produces new buffers periodically, and these are emitted after
    *         a fixed timespan has elapsed.
    */
-  def buffer(timespan: Duration, timeshift: Duration): Observable[Seq[T]] = {
+  def slidingBuffer(timespan: Duration, timeshift: Duration): Observable[Seq[T]] = {
     val span: Long = timespan.length
     val shift: Long = timespan.unit.convert(timeshift.length, timeshift.unit)
     val unit: TimeUnit = timespan.unit
@@ -608,7 +614,7 @@ trait Observable[+T]
    *         An [[rx.lang.scala.Observable]] which produces new buffers periodically, and these are emitted after
    *         a fixed timespan has elapsed.
    */
-  def buffer(timespan: Duration, timeshift: Duration, scheduler: Scheduler): Observable[Seq[T]] = {
+  def slidingBuffer(timespan: Duration, timeshift: Duration, scheduler: Scheduler): Observable[Seq[T]] = {
     val span: Long = timespan.length
     val shift: Long = timespan.unit.convert(timeshift.length, timeshift.unit)
     val unit: TimeUnit = timespan.unit
@@ -630,7 +636,7 @@ trait Observable[+T]
    * @return an Observable that emits buffered items from the source Observable when the boundary Observable
    *         emits an item
    */
-  def buffer(boundary: => Observable[Any]): Observable[Seq[T]] = {
+  def tumblingBuffer(boundary: => Observable[Any]): Observable[Seq[T]] = {
     val f = new Func0[rx.Observable[_ <: Any]]() {
       override def call(): rx.Observable[_ <: Any] = boundary.asJavaObservable
     }
@@ -651,7 +657,7 @@ trait Observable[+T]
    * @return an Observable that emits buffered items from the source Observable when the boundary Observable
    *         emits an item
    */
-  def buffer(boundary: Observable[Any], initialCapacity: Int): Observable[Seq[T]] = {
+  def tumblingBuffer(boundary: Observable[Any], initialCapacity: Int): Observable[Seq[T]] = {
     val thisJava = this.asJavaObservable.asInstanceOf[rx.Observable[T]]
     toScalaObservable(thisJava.buffer(boundary.asJavaObservable, initialCapacity)).map(_.asScala)
   }
@@ -668,7 +674,7 @@ trait Observable[+T]
    * @return An Observable which produces connected non-overlapping windows. The boundary of each window is
    *         determined by the items emitted from a specified boundary-governing Observable.
    */
-  def window(boundary: => Observable[Any]): Observable[Observable[T]] = {
+  def tumbling(boundary: => Observable[Any]): Observable[Observable[T]] = {
     val func = new Func0[rx.Observable[_ <: Any]]() {
       override def call(): rx.Observable[_ <: Any] = boundary.asJavaObservable
     }
@@ -691,7 +697,7 @@ trait Observable[+T]
    * @return
    *         An [[rx.lang.scala.Observable]] which produces windows which are created and emitted when the specified [[rx.lang.scala.Observable]]s publish certain objects.
    */
-  def window[Opening](openings: Observable[Opening], closings: Opening => Observable[Any]) = {
+  def sliding[Opening](openings: Observable[Opening])(closings: Opening => Observable[Any]) = {
     Observable.jObsOfJObsToScObsOfScObs(
       asJavaObservable.window[Opening, Any](openings.asJavaObservable, (op: Opening) => closings(op).asJavaObservable))
       : Observable[Observable[T]] // SI-7818
@@ -708,7 +714,7 @@ trait Observable[+T]
    *         An [[rx.lang.scala.Observable]] which produces connected non-overlapping windows containing at most
    *         `count` produced values.
    */
-  def window(count: Int): Observable[Observable[T]] = {
+  def tumbling(count: Int): Observable[Observable[T]] = {
     // this unnecessary ascription is needed because of this bug (without, compiler crashes):
     // https://issues.scala-lang.org/browse/SI-7818
     Observable.jObsOfJObsToScObsOfScObs(asJavaObservable.window(count)) : Observable[Observable[T]]
@@ -728,7 +734,7 @@ trait Observable[+T]
    *         An [[rx.lang.scala.Observable]] which produces windows every `skip` values containing at most
    *         `count` produced values.
    */
-  def window(count: Int, skip: Int): Observable[Observable[T]] = {
+  def sliding(count: Int, skip: Int): Observable[Observable[T]] = {
     Observable.jObsOfJObsToScObsOfScObs(asJavaObservable.window(count, skip))
       : Observable[Observable[T]] // SI-7818
   }
@@ -744,7 +750,7 @@ trait Observable[+T]
    * @return
    *         An [[rx.lang.scala.Observable]] which produces connected non-overlapping windows with a fixed duration.
    */
-  def window(timespan: Duration): Observable[Observable[T]] = {
+  def tumbling(timespan: Duration): Observable[Observable[T]] = {
     Observable.jObsOfJObsToScObsOfScObs(asJavaObservable.window(timespan.length, timespan.unit))
       : Observable[Observable[T]] // SI-7818
   }
@@ -762,7 +768,7 @@ trait Observable[+T]
    * @return
    *         An [[rx.lang.scala.Observable]] which produces connected non-overlapping windows with a fixed duration.
    */
-  def window(timespan: Duration, scheduler: Scheduler): Observable[Observable[T]] = {
+  def tumbling(timespan: Duration, scheduler: Scheduler): Observable[Observable[T]] = {
     Observable.jObsOfJObsToScObsOfScObs(asJavaObservable.window(timespan.length, timespan.unit, scheduler))
       : Observable[Observable[T]] // SI-7818
   }
@@ -782,7 +788,7 @@ trait Observable[+T]
    *         An [[rx.lang.scala.Observable]] which produces connected non-overlapping windows which are emitted after
    *         a fixed duration or when the window has reached maximum capacity (which ever occurs first).
    */
-  def window(timespan: Duration, count: Int): Observable[Observable[T]] = {
+  def tumbling(timespan: Duration, count: Int): Observable[Observable[T]] = {
     Observable.jObsOfJObsToScObsOfScObs(asJavaObservable.window(timespan.length, timespan.unit, count))
       : Observable[Observable[T]] // SI-7818
   }
@@ -804,7 +810,7 @@ trait Observable[+T]
    *         An [[rx.lang.scala.Observable]] which produces connected non-overlapping windows which are emitted after
    *         a fixed duration or when the window has reached maximum capacity (which ever occurs first).
    */
-  def window(timespan: Duration, count: Int, scheduler: Scheduler): Observable[Observable[T]] = {
+  def tumbling(timespan: Duration, count: Int, scheduler: Scheduler): Observable[Observable[T]] = {
     Observable.jObsOfJObsToScObsOfScObs(asJavaObservable.window(timespan.length, timespan.unit, count, scheduler))
       : Observable[Observable[T]] // SI-7818
   }
@@ -823,7 +829,7 @@ trait Observable[+T]
    *         An [[rx.lang.scala.Observable]] which produces new windows periodically, and these are emitted after
    *         a fixed timespan has elapsed.
    */
-  def window(timespan: Duration, timeshift: Duration): Observable[Observable[T]] = {
+  def sliding(timespan: Duration, timeshift: Duration): Observable[Observable[T]] = {
     val span: Long = timespan.length
     val shift: Long = timespan.unit.convert(timeshift.length, timeshift.unit)
     val unit: TimeUnit = timespan.unit
@@ -847,7 +853,7 @@ trait Observable[+T]
    *         An [[rx.lang.scala.Observable]] which produces new windows periodically, and these are emitted after
    *         a fixed timespan has elapsed.
    */
-  def window(timespan: Duration, timeshift: Duration, scheduler: Scheduler): Observable[Observable[T]] = {
+  def sliding(timespan: Duration, timeshift: Duration, scheduler: Scheduler): Observable[Observable[T]] = {
     val span: Long = timespan.length
     val shift: Long = timespan.unit.convert(timeshift.length, timeshift.unit)
     val unit: TimeUnit = timespan.unit
@@ -878,8 +884,8 @@ trait Observable[+T]
    *            an function to be invoked when the source Observable finishes
    * @return an Observable that emits the same items as the source Observable, then invokes the function
    */
-  def finallyDo(action: () => Unit): Observable[T] = {
-    toScalaObservable[T](asJavaObservable.finallyDo(action))
+  def finallyDo(action: => Unit): Observable[T] = {
+    toScalaObservable[T](asJavaObservable.finallyDo(() => action))
   }
 
   /**
@@ -944,7 +950,7 @@ trait Observable[+T]
    * @return an Observable that emits the results of applying a function to a pair of values emitted by the
    *         source Observable and the collection Observable
    */
-  def flatMap[U, R](collectionSelector: T => Observable[U], resultSelector: (T, U) => R): Observable[R] = {
+  def flatMapWith[U, R](collectionSelector: T => Observable[U])(resultSelector: (T, U) => R): Observable[R] = {
     val jCollectionSelector = new Func1[T, rx.Observable[_ <: U]] {
       override def call(t: T): rx.Observable[_ <: U] = collectionSelector(t).asJavaObservable
     }
@@ -961,7 +967,7 @@ trait Observable[+T]
    * @param collectionSelector a function that returns an Iterable sequence of values for when given an item emitted by the
    *                           source Observable
    * @return an Observable that emits the results of merging the items emitted by the source Observable with
-   *         the values in the Iterables corresponding to those items, as generated by `collectionSelector
+   *         the values in the Iterables corresponding to those items, as generated by `collectionSelector`
    */
   def flatMapIterable[R](collectionSelector: T => Iterable[R]): Observable[R] = {
     val jCollectionSelector = new Func1[T, java.lang.Iterable[_ <: R]] {
@@ -984,7 +990,7 @@ trait Observable[+T]
    *                       Iterable returned for that item by the `collectionSelector`
    * @return an Observable that emits the items returned by `resultSelector` for each item in the source Observable
    */
-  def flatMapIterable[U, R](collectionSelector: T => Iterable[U], resultSelector: (T, U) => R): Observable[R] = {
+  def flatMapIterableWith[U, R](collectionSelector: T => Iterable[U])(resultSelector: (T, U) => R): Observable[R] = {
     val jCollectionSelector = new Func1[T, java.lang.Iterable[_ <: U]] {
       override def call(t: T): java.lang.Iterable[_ <: U] = collectionSelector(t).asJava
     }
@@ -1209,6 +1215,30 @@ trait Observable[+T]
   }
 
   /**
+   * Intercepts `onError` notifications from the source Observable and replaces them with the
+   * `onNext` emissions of an Observable returned by a specified function. This allows the source
+   * sequence to continue even if it issues multiple `onError` notifications.
+   *
+   * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/onErrorFlatMap.png">
+   *
+   * @param resumeFunction a function that accepts an `Throwable` and an `Option` associated with this error representing
+   *                       the Throwable issued by the source Observable, and returns an Observable that emits items
+   *                       that will be emitted in place of the error. If no value is associated with the error, the value
+   *                       will be `None`.
+   * @return the original Observable, with appropriately modified behavior
+   */
+  def onErrorFlatMap[U >: T](resumeFunction: (Throwable, Option[Any]) => Observable[U]): Observable[U] = {
+    val f = new Func1[rx.exceptions.OnErrorThrowable, rx.Observable[_ <: U]] {
+      override def call(t: rx.exceptions.OnErrorThrowable): rx.Observable[_ <: U] = {
+        val v = if (t.isValueNull) Some(t.getValue) else None
+        resumeFunction(t.getCause, v).asJavaObservable
+      }
+    }
+    val thisJava = asJavaObservable.asInstanceOf[rx.Observable[U]]
+    toScalaObservable[U](thisJava.onErrorFlatMap(f))
+  }
+
+  /**
    * Returns an Observable that applies a function of your choosing to the first item emitted by a
    * source Observable, then feeds the result of that function along with the second item emitted
    * by the source Observable into the same function, and so on until all items have been emitted
@@ -1257,10 +1287,10 @@ trait Observable[+T]
    * @return an Observable that emits items that are the results of invoking the selector on a `ConnectableObservable`
    *         that shares a single subscription to the source Observable
    */
-  def replay[U >: T, R](selector: Observable[U] => Observable[R]): Observable[R] = {
-    val thisJava = this.asJavaObservable.asInstanceOf[rx.Observable[U]]
-    val fJava: Func1[rx.Observable[U], rx.Observable[R]] =
-      (jo: rx.Observable[U]) => selector(toScalaObservable[U](jo)).asJavaObservable.asInstanceOf[rx.Observable[R]]
+  def replay[R](selector: Observable[T] => Observable[R]): Observable[R] = {
+    val thisJava = this.asJavaObservable.asInstanceOf[rx.Observable[T]]
+    val fJava: Func1[rx.Observable[T], rx.Observable[R]] =
+      (jo: rx.Observable[T]) => selector(toScalaObservable[T](jo)).asJavaObservable.asInstanceOf[rx.Observable[R]]
     toScalaObservable[R](thisJava.replay(fJava))
   }
 
@@ -1278,10 +1308,10 @@ trait Observable[+T]
    *         a `ConnectableObservable` that shares a single subscription to the source Observable  replaying
    *         no more than `bufferSize` items
    */
-  def replay[U >: T, R](selector: Observable[U] => Observable[R], bufferSize: Int): Observable[R] = {
-    val thisJava = this.asJavaObservable.asInstanceOf[rx.Observable[U]]
-    val fJava: Func1[rx.Observable[U], rx.Observable[R]] =
-      (jo: rx.Observable[U]) => selector(toScalaObservable[U](jo)).asJavaObservable.asInstanceOf[rx.Observable[R]]
+  def replay[R](selector: Observable[T] => Observable[R], bufferSize: Int): Observable[R] = {
+    val thisJava = this.asJavaObservable.asInstanceOf[rx.Observable[T]]
+    val fJava: Func1[rx.Observable[T], rx.Observable[R]] =
+      (jo: rx.Observable[T]) => selector(toScalaObservable[T](jo)).asJavaObservable.asInstanceOf[rx.Observable[R]]
     toScalaObservable[R](thisJava.replay(fJava, bufferSize))
   }
 
@@ -1300,10 +1330,10 @@ trait Observable[+T]
    *         a `ConnectableObservable` that shares a single subscription to the source Observable, and
    *         replays no more than `bufferSize` items that were emitted within the window defined by `time`
    */
-  def replay[U >: T, R](selector: Observable[U] => Observable[R], bufferSize: Int, time: Duration): Observable[R] = {
-    val thisJava = this.asJavaObservable.asInstanceOf[rx.Observable[U]]
-    val fJava: Func1[rx.Observable[U], rx.Observable[R]] =
-      (jo: rx.Observable[U]) => selector(toScalaObservable[U](jo)).asJavaObservable.asInstanceOf[rx.Observable[R]]
+  def replay[R](selector: Observable[T] => Observable[R], bufferSize: Int, time: Duration): Observable[R] = {
+    val thisJava = this.asJavaObservable.asInstanceOf[rx.Observable[T]]
+    val fJava: Func1[rx.Observable[T], rx.Observable[R]] =
+      (jo: rx.Observable[T]) => selector(toScalaObservable[T](jo)).asJavaObservable.asInstanceOf[rx.Observable[R]]
     toScalaObservable[R](thisJava.replay(fJava, bufferSize, time.length, time.unit))
   }
 
@@ -1324,10 +1354,10 @@ trait Observable[+T]
    *         replays no more than `bufferSize` items that were emitted within the window defined by `time`
    * @throws IllegalArgumentException if `bufferSize` is less than zero
    */
-  def replay[U >: T, R](selector: Observable[U] => Observable[R], bufferSize: Int, time: Duration, scheduler: Scheduler): Observable[R] = {
-    val thisJava = this.asJavaObservable.asInstanceOf[rx.Observable[U]]
-    val fJava: Func1[rx.Observable[U], rx.Observable[R]] =
-      (jo: rx.Observable[U]) => selector(toScalaObservable[U](jo)).asJavaObservable.asInstanceOf[rx.Observable[R]]
+  def replay[R](selector: Observable[T] => Observable[R], bufferSize: Int, time: Duration, scheduler: Scheduler): Observable[R] = {
+    val thisJava = this.asJavaObservable.asInstanceOf[rx.Observable[T]]
+    val fJava: Func1[rx.Observable[T], rx.Observable[R]] =
+      (jo: rx.Observable[T]) => selector(toScalaObservable[T](jo)).asJavaObservable.asInstanceOf[rx.Observable[R]]
     toScalaObservable[R](thisJava.replay(fJava, bufferSize, time.length, time.unit, scheduler))
   }
 
@@ -1346,10 +1376,10 @@ trait Observable[+T]
    *         a `ConnectableObservable` that shares a single subscription to the source Observable,
    *         replaying no more than `bufferSize` notifications
    */
-  def replay[U >: T, R](selector: Observable[U] => Observable[R], bufferSize: Int, scheduler: Scheduler): Observable[R] = {
-    val thisJava = this.asJavaObservable.asInstanceOf[rx.Observable[U]]
-    val fJava: Func1[rx.Observable[U], rx.Observable[R]] =
-      (jo: rx.Observable[U]) => selector(toScalaObservable[U](jo)).asJavaObservable.asInstanceOf[rx.Observable[R]]
+  def replay[R](selector: Observable[T] => Observable[R], bufferSize: Int, scheduler: Scheduler): Observable[R] = {
+    val thisJava = this.asJavaObservable.asInstanceOf[rx.Observable[T]]
+    val fJava: Func1[rx.Observable[T], rx.Observable[R]] =
+      (jo: rx.Observable[T]) => selector(toScalaObservable[T](jo)).asJavaObservable.asInstanceOf[rx.Observable[R]]
     toScalaObservable[R](thisJava.replay(fJava, bufferSize, scheduler))
   }
 
@@ -1367,10 +1397,10 @@ trait Observable[+T]
    *         a `ConnectableObservable` that shares a single subscription to the source Observable,
    *         replaying all items that were emitted within the window defined by `time`
    */
-  def replay[U >: T, R](selector: Observable[U] => Observable[R], time: Duration, scheduler: Scheduler): Observable[R] = {
-    val thisJava = this.asJavaObservable.asInstanceOf[rx.Observable[U]]
-    val fJava: Func1[rx.Observable[U], rx.Observable[R]] =
-      (jo: rx.Observable[U]) => selector(toScalaObservable[U](jo)).asJavaObservable.asInstanceOf[rx.Observable[R]]
+  def replay[R](selector: Observable[T] => Observable[R], time: Duration, scheduler: Scheduler): Observable[R] = {
+    val thisJava = this.asJavaObservable.asInstanceOf[rx.Observable[T]]
+    val fJava: Func1[rx.Observable[T], rx.Observable[R]] =
+      (jo: rx.Observable[T]) => selector(toScalaObservable[T](jo)).asJavaObservable.asInstanceOf[rx.Observable[R]]
     toScalaObservable[R](thisJava.replay(fJava, time.length, time.unit, scheduler))
   }
 
@@ -1387,10 +1417,10 @@ trait Observable[+T]
    *         a `ConnectableObservable` that shares a single subscription to the source Observable,
    *         replaying all items
    */
-  def replay[U >: T, R](selector: Observable[U] => Observable[R], scheduler: Scheduler): Observable[R] = {
-    val thisJava = this.asJavaObservable.asInstanceOf[rx.Observable[U]]
-    val fJava: Func1[rx.Observable[U], rx.Observable[R]] =
-      (jo: rx.Observable[U]) => selector(toScalaObservable[U](jo)).asJavaObservable.asInstanceOf[rx.Observable[R]]
+  def replay[R](selector: Observable[T] => Observable[R], scheduler: Scheduler): Observable[R] = {
+    val thisJava = this.asJavaObservable.asInstanceOf[rx.Observable[T]]
+    val fJava: Func1[rx.Observable[T], rx.Observable[R]] =
+      (jo: rx.Observable[T]) => selector(toScalaObservable[T](jo)).asJavaObservable.asInstanceOf[rx.Observable[R]]
     toScalaObservable[R](thisJava.replay(fJava, scheduler))
   }
 
@@ -1419,8 +1449,8 @@ trait Observable[+T]
    * @param time the duration of the window in which the replayed items must have been emitted
    * @param scheduler the scheduler that is used as a time source for the window
    * @return a `ConnectableObservable` that shares a single subscription to the source Observable and
-   *         replays at most `bufferSize` items that were emitted during the window defined by `time``
-   * @throws IllegalArgumentException if `bufferSize` is less than zero
+   *         replays at most `bufferSize` items that were emitted during the window defined by `time`
+   *@throws IllegalArgumentException if `bufferSize` is less than zero
    */
   def replay(bufferSize: Int, time: Duration, scheduler: Scheduler): ConnectableObservable[T] = {
     new ConnectableObservable[T](asJavaObservable.replay(bufferSize, time.length, time.unit, scheduler))
@@ -1438,12 +1468,12 @@ trait Observable[+T]
    * @param time the duration of the window in which the replayed items must have been emitted
    * @return an Observable that emits items that are the results of invoking the selector on items emitted by
    *         a `ConnectableObservable` that shares a single subscription to the source Observable,
-   *         replaying all items that were emitted within the window defined by `time``
+   *         replaying all items that were emitted within the window defined by `time`
    */
-  def replay[U >: T, R](selector: Observable[U] => Observable[R], time: Duration): Observable[R] = {
-    val thisJava = this.asJavaObservable.asInstanceOf[rx.Observable[U]]
-    val fJava: Func1[rx.Observable[U], rx.Observable[R]] =
-      (jo: rx.Observable[U]) => selector(toScalaObservable[U](jo)).asJavaObservable.asInstanceOf[rx.Observable[R]]
+  def replay[R](selector: Observable[T] => Observable[R], time: Duration): Observable[R] = {
+    val thisJava = this.asJavaObservable.asInstanceOf[rx.Observable[T]]
+    val fJava: Func1[rx.Observable[T], rx.Observable[R]] =
+      (jo: rx.Observable[T]) => selector(toScalaObservable[T](jo)).asJavaObservable.asInstanceOf[rx.Observable[R]]
     toScalaObservable[R](thisJava.replay(fJava, time.length, time.unit))
   }
 
@@ -1596,9 +1626,9 @@ trait Observable[+T]
    * @param initialValue the initial value to be emitted by the resulting Observable
    * @return a `ConnectableObservable` that shares a single subscription to the underlying Observable and starts with `initialValue`
    */
-  def publish[U >: T](initialValue: U): ConnectableObservable[U] = {
-    val thisJava = this.asJavaObservable.asInstanceOf[rx.Observable[U]]
-    new ConnectableObservable[U](thisJava.publish(initialValue))
+  def publish[T](initialValue: T): ConnectableObservable[T] = {
+    val thisJava = this.asJavaObservable.asInstanceOf[rx.Observable[T]]
+    new ConnectableObservable[T](thisJava.publish(initialValue))
   }
 
   /**
@@ -1613,10 +1643,10 @@ trait Observable[+T]
    * @return an Observable that emits the results of invoking the selector on the items emitted by a `ConnectableObservable`
    *         that shares a single subscription to the underlying sequence
    */
-  def publish[U >: T, R](selector: Observable[U] => Observable[R]): Observable[R] = {
-    val thisJava = this.asJavaObservable.asInstanceOf[rx.Observable[U]]
-    val fJava: Func1[rx.Observable[U], rx.Observable[R]] =
-      (jo: rx.Observable[U]) => selector(toScalaObservable[U](jo)).asJavaObservable.asInstanceOf[rx.Observable[R]]
+  def publish[R](selector: Observable[T] => Observable[R]): Observable[R] = {
+    val thisJava = this.asJavaObservable.asInstanceOf[rx.Observable[T]]
+    val fJava: Func1[rx.Observable[T], rx.Observable[R]] =
+      (jo: rx.Observable[T]) => selector(toScalaObservable[T](jo)).asJavaObservable.asInstanceOf[rx.Observable[R]]
     toScalaObservable[R](thisJava.publish(fJava))
   }
 
@@ -1634,10 +1664,10 @@ trait Observable[+T]
    * @return an Observable that emits `initialValue` followed by the results of invoking the selector
    *         on a `ConnectableObservable` that shares a single subscription to the underlying Observable
    */
-  def publish[U >: T, R](selector: Observable[U] => Observable[R], initialValue: U): Observable[R] = {
-    val thisJava = this.asJavaObservable.asInstanceOf[rx.Observable[U]]
-    val fJava: Func1[rx.Observable[U], rx.Observable[R]] =
-      (jo: rx.Observable[U]) => selector(toScalaObservable[U](jo)).asJavaObservable.asInstanceOf[rx.Observable[R]]
+  def publish[R](selector: Observable[T] => Observable[R], initialValue: T @uncheckedVariance): Observable[R] = {
+    val thisJava = this.asJavaObservable.asInstanceOf[rx.Observable[T]]
+    val fJava: Func1[rx.Observable[T], rx.Observable[R]] =
+      (jo: rx.Observable[T]) => selector(toScalaObservable[T](jo)).asJavaObservable.asInstanceOf[rx.Observable[R]]
     toScalaObservable[R](thisJava.publish(fJava, initialValue))
   }
 
@@ -1941,7 +1971,7 @@ trait Observable[+T]
    * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#wiki-skipuntil">RxJava Wiki: skipUntil()</a>
    * @see <a href="http://msdn.microsoft.com/en-us/library/hh229358.aspx">MSDN: Observable.SkipUntil</a>
    */
-  def dropUntil[E](other: Observable[E]): Observable[T] = {
+  def dropUntil(other: Observable[Any]): Observable[T] = {
     toScalaObservable[T](asJavaObservable.skipUntil(other))
   }
 
@@ -2099,12 +2129,10 @@ trait Observable[+T]
    * @param that
    *            the Observable whose first emitted item will cause `takeUntil` to stop
    *            emitting items from the source Observable
-   * @tparam E
-   *            the type of items emitted by `other`
-   * @return an Observable that emits the items of the source Observable until such time as
+    * @return an Observable that emits the items of the source Observable until such time as
    *         `other` emits its first item
    */
-  def takeUntil[E](that: Observable[E]): Observable[T] = {
+  def takeUntil(that: Observable[Any]): Observable[T] = {
     toScalaObservable[T](asJavaObservable.takeUntil(that.asJavaObservable))
   }
 
@@ -2161,12 +2189,41 @@ trait Observable[+T]
    * @return an Observable that emits `(key, observable)` pairs, where `observable`
    *         contains all items for which `f` returned `key` before `closings` emits a value.
    */
-  def groupByUntil[K](f: T => K, closings: (K, Observable[T])=>Observable[Any]): Observable[(K, Observable[T])] = {
+  def groupByUntil[K](f: T => K)(closings: (K, Observable[T])=>Observable[Any]): Observable[(K, Observable[T])] = {
     val fclosing: Func1[_ >: rx.observables.GroupedObservable[K, _ <: T], _ <: rx.Observable[_ <: Any]] =
       (jGrObs: rx.observables.GroupedObservable[K, _ <: T]) => closings(jGrObs.getKey, toScalaObservable[T](jGrObs)).asJavaObservable
     val o1 = asJavaObservable.groupByUntil[K, Any](f, fclosing) : rx.Observable[_ <: rx.observables.GroupedObservable[K, _ <: T]]
     val func = (o: rx.observables.GroupedObservable[K, _ <: T]) => (o.getKey, toScalaObservable[T](o))
     toScalaObservable[(K, Observable[T])](o1.map[(K, Observable[T])](func))
+  }
+
+  /**
+   * Groups the items emitted by an [[Observable]] (transformed by a selector) according to a specified key selector function
+   * until the duration Observable expires for the key.
+   *
+   * <img width="640" height="375" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/groupByUntil.png">
+   *
+   * <em>Note:</em> The `Observable` in the pair `(K, Observable[V])` will cache the items it is to emit until such time as it
+   * is subscribed to. For this reason, in order to avoid memory leaks, you should not simply ignore those `Observable` that
+   * do not concern you. Instead, you can signal to them that they may discard their buffers by applying an operator like `take(0)` to them.
+   *
+   * @param keySelector a function to extract the key for each item
+   * @param valueSelector a function to map each item emitted by the source [[Observable]] to an item emitted by one
+   *                      of the resulting `Observable[V]`s
+   * @param closings a function to signal the expiration of a group
+   * @return an [[Observable]] that emits pairs of key and `Observable[V]`, each of which corresponds to a key
+   *         value and each of which emits all items emitted by the source [[Observable]] during that
+   *         key's duration that share that same key value, transformed by the value selector
+   */
+  def groupByUntil[K, V](keySelector: T => K, valueSelector: T => V)(closings: (K, Observable[V]) => Observable[Any]): Observable[(K, Observable[V])] = {
+    val jKeySelector: Func1[_ >: T, _ <: K] = keySelector
+    val jValueSelector: Func1[_ >: T, _ <: V] = valueSelector
+    val jDurationSelector = new Func1[rx.observables.GroupedObservable[_ <: K, _ <: V], rx.Observable[_ <: Any]] {
+      override def call(jgo: rx.observables.GroupedObservable[_ <: K, _ <: V]): rx.Observable[_ <: Any] = closings(jgo.getKey, toScalaObservable[V](jgo))
+    }
+    val f = (o: rx.observables.GroupedObservable[K, _ <: V]) => (o.getKey, toScalaObservable[V](o))
+    val jo = asJavaObservable.groupByUntil[K, V, Any](jKeySelector, jValueSelector, jDurationSelector).map[(K, Observable[V])](f)
+    toScalaObservable[(K, Observable[V])](jo)
   }
 
   /**
@@ -2191,13 +2248,7 @@ trait Observable[+T]
    * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#join">RxJava Wiki: join()</a>
    * @see <a href="http://msdn.microsoft.com/en-us/library/hh229750.aspx">MSDN: Observable.Join</a>
    */
-  def join[S, R] (
-      other: Observable[S],
-      leftDurationSelector:  T => Observable[Any],
-      rightDurationSelector: S => Observable[Any],
-      resultSelector: (T,S) => R
-  ): Observable[R] = {
-
+  def join[S, R] (other: Observable[S])(leftDurationSelector:  T => Observable[Any], rightDurationSelector: S => Observable[Any], resultSelector: (T, S) => R): Observable[R] = {
     val outer : rx.Observable[_ <: T] = this.asJavaObservable
     val inner : rx.Observable[_ <: S] = other.asJavaObservable
     val left:  Func1[_ >: T, _<: rx.Observable[_ <: Any]] =   (t: T) => leftDurationSelector(t).asJavaObservable
@@ -2211,6 +2262,53 @@ trait Observable[+T]
         right.asInstanceOf[Func1[S, rx.Observable[Any]]],
         f.asInstanceOf[Func2[T,S,R]])
     )
+  }
+
+  /**
+   * Returns an Observable that correlates two Observables when they overlap in time and groups the results.
+   *
+   * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/groupJoin.png">
+   *
+   * @param other the other Observable to correlate items from the source Observable with
+   * @param leftDuration a function that returns an Observable whose emissions indicate the duration of the values of
+   *                     the source Observable
+   * @param rightDuration a function that returns an Observable whose emissions indicate the duration of the values of
+   *                      the `other` Observable
+   * @param resultSelector a function that takes an item emitted by each Observable and returns the value to be emitted
+   *                       by the resulting Observable
+   * @return an Observable that emits items based on combining those items emitted by the source Observables
+   *         whose durations overlap
+   */
+  def groupJoin[S, R](other: Observable[S])(leftDuration: T => Observable[Any], rightDuration: S => Observable[Any], resultSelector: (T, Observable[S]) => R): Observable[R] = {
+    val outer: rx.Observable[_ <: T] = this.asJavaObservable
+    val inner: rx.Observable[_ <: S] = other.asJavaObservable
+    val left: Func1[_ >: T, _ <: rx.Observable[_ <: Any]] = (t: T) => leftDuration(t).asJavaObservable
+    val right: Func1[_ >: S, _ <: rx.Observable[_ <: Any]] = (s: S) => rightDuration(s).asJavaObservable
+    val f: Func2[_ >: T, _ >: rx.Observable[S], _ <: R] = (t: T, o: rx.Observable[S]) => resultSelector(t, toScalaObservable[S](o))
+    toScalaObservable[R](
+      outer.asInstanceOf[rx.Observable[T]].groupJoin[S, Any, Any, R](
+        inner.asInstanceOf[rx.Observable[S]],
+        left.asInstanceOf[Func1[T, rx.Observable[Any]]],
+        right.asInstanceOf[Func1[S, rx.Observable[Any]]],
+        f)
+    )
+  }
+
+  /**
+   * Returns a new Observable by applying a function that you supply to each item emitted by the source
+   * Observable that returns an Observable, and then emitting the items emitted by the most recently emitted
+   * of these Observables.
+   *
+   * <img width="640" height="350" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/switchMap.png">
+   *
+   * @param f a function that, when applied to an item emitted by the source Observable, returns an Observable
+   * @return an Observable that emits the items emitted by the Observable returned from applying a function to
+   *         the most recently emitted item emitted by the source Observable
+   */
+  def switchMap[R](f: T => Observable[R]): Observable[R] = {
+    toScalaObservable[R](asJavaObservable.switchMap[R](new Func1[T, rx.Observable[_ <: R]] {
+      def call(t: T): rx.Observable[_ <: R] = f(t).asJavaObservable
+    }))
   }
 
   /**
@@ -2306,6 +2404,28 @@ trait Observable[+T]
   }
 
   /**
+   * Flattens an Observable that emits Observables into a single Observable that emits the items emitted by
+   * those Observables, without any transformation, while limiting the maximum number of concurrent
+   * subscriptions to these Observables.
+   *
+   * <img width="640" height="370" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.oo.png">
+   *
+   * You can combine the items emitted by multiple Observables so that they appear as a single Observable, by
+   * using the `flatten` method.
+   *
+   * @param maxConcurrent the maximum number of Observables that may be subscribed to concurrently
+   * @return an Observable that emits items that are the result of flattening the Observables emitted by the `source` Observable
+   * @throws IllegalArgumentException  if `maxConcurrent` is less than or equal to 0
+   */
+  def flatten[U](maxConcurrent: Int)(implicit evidence: Observable[T] <:< Observable[Observable[U]]): Observable[U] = {
+    val o2: Observable[Observable[U]] = this
+    val o3: Observable[rx.Observable[_ <: U]] = o2.map(_.asJavaObservable)
+    val o4: rx.Observable[_ <: rx.Observable[_ <: U]] = o3.asJavaObservable
+    val o5 = rx.Observable.merge[U](o4, maxConcurrent)
+    toScalaObservable[U](o5)
+  }
+
+  /**
    * This behaves like `flatten` except that if any of the merged Observables
    * notify of an error via [[rx.lang.scala.Observer.onError onError]], this method will
    * refrain from propagating that error notification until all of the merged Observables have
@@ -2352,18 +2472,16 @@ trait Observable[+T]
 
 
   /**
-   * Combines two observables, emitting some type `R` specified in the function f,
+   * Combines two observables, emitting some type `R` specified in the function `selector`,
    * each time an event is received from one of the source observables, where the aggregation
    * is defined by the given function.
    *
-   *@param that
-   *           The second source observable.
-   *@param f
-               The function that is used combine the emissions of the two observables.
-   *@return An Observable that combines the source Observables according to the function f.
+   * @param that The second source observable.
+   * @param selector The function that is used combine the emissions of the two observables.
+   * @return An Observable that combines the source Observables according to the function `selector`.
    */
-  def combineLatest[U,R](that: Observable[U], f: (T, U) => R): Observable[R] = {
-    toScalaObservable[R](rx.Observable.combineLatest[T, U, R](this.asJavaObservable, that.asJavaObservable, f))
+  def combineLatestWith[U, R](that: Observable[U])(selector: (T, U) => R): Observable[R] = {
+    toScalaObservable[R](rx.Observable.combineLatest[T, U, R](this.asJavaObservable, that.asJavaObservable, selector))
   }
 
   /**
@@ -2612,8 +2730,8 @@ trait Observable[+T]
    *         the source Observable takes longer to arrive than the time window defined by the
    *         selector for the previously emitted item
    */
-  def timeout[V](timeoutSelector: T => Observable[V]): Observable[T] = {
-    toScalaObservable[T](asJavaObservable.timeout({ t: T => timeoutSelector(t).asJavaObservable.asInstanceOf[rx.Observable[V]] }))
+  def timeout(timeoutSelector: T => Observable[Any]): Observable[T] = {
+    toScalaObservable[T](asJavaObservable.timeout({ t: T => timeoutSelector(t).asJavaObservable.asInstanceOf[rx.Observable[Any]] }))
   }
 
   /**
@@ -2635,10 +2753,10 @@ trait Observable[+T]
    *         fallback Observable if a item emitted by the source Observable takes longer to arrive
    *         than the time window defined by the selector for the previously emitted item
    */
-  def timeout[V, O >: T](timeoutSelector: T => Observable[V], other: Observable[O]): Observable[O] = {
-    val thisJava = this.asJavaObservable.asInstanceOf[rx.Observable[O]]
-    toScalaObservable[O](thisJava.timeout(
-      { t: O => timeoutSelector(t.asInstanceOf[T]).asJavaObservable.asInstanceOf[rx.Observable[V]] },
+  def timeout[U >: T](timeoutSelector: T => Observable[Any], other: Observable[U]): Observable[U] = {
+    val thisJava = this.asJavaObservable.asInstanceOf[rx.Observable[U]]
+    toScalaObservable[U](thisJava.timeout(
+      { t: U => timeoutSelector(t.asInstanceOf[T]).asJavaObservable.asInstanceOf[rx.Observable[Any]] },
       other.asJavaObservable))
   }
 
@@ -2659,10 +2777,10 @@ trait Observable[+T]
    * @return an Observable that mirrors the source Observable, but emits a TimeoutException if either the first item or any subsequent item doesn't
    *         arrive within the time windows specified by the timeout selectors
    */
-  def timeout[U, V](firstTimeoutSelector: () => Observable[U], timeoutSelector: T => Observable[V]): Observable[T] = {
+  def timeout(firstTimeoutSelector: () => Observable[Any], timeoutSelector: T => Observable[Any]): Observable[T] = {
     toScalaObservable[T](asJavaObservable.timeout(
-      { firstTimeoutSelector().asJavaObservable.asInstanceOf[rx.Observable[U]] },
-      { t: T => timeoutSelector(t).asJavaObservable.asInstanceOf[rx.Observable[V]] }))
+      { firstTimeoutSelector().asJavaObservable.asInstanceOf[rx.Observable[Any]] },
+      { t: T => timeoutSelector(t).asJavaObservable.asInstanceOf[rx.Observable[Any]] }))
   }
 
   /**
@@ -2681,14 +2799,14 @@ trait Observable[+T]
    *            item must arrive in order to continue the sequence
    * @param other
    *            the fallback Observable to switch to if the source Observable times out
-   * @return an Observable that mirrors the source Observable, but switches to the {@code other} Observable if either the first item emitted by the source Observable or any
+   * @return an Observable that mirrors the source Observable, but switches to the `other` Observable if either the first item emitted by the source Observable or any
    *         subsequent item don't arrive within time windows defined by the timeout selectors
    */
-  def timeout[U, V, O >: T](firstTimeoutSelector: () => Observable[U], timeoutSelector: T => Observable[V], other: Observable[O]): Observable[O] = {
-    val thisJava = this.asJavaObservable.asInstanceOf[rx.Observable[O]]
-    toScalaObservable[O](thisJava.timeout(
-      { firstTimeoutSelector().asJavaObservable.asInstanceOf[rx.Observable[U]] },
-      { t: O => timeoutSelector(t.asInstanceOf[T]).asJavaObservable.asInstanceOf[rx.Observable[V]] },
+  def timeout[U >: T](firstTimeoutSelector: () => Observable[Any], timeoutSelector: T => Observable[Any], other: Observable[U]): Observable[U] = {
+    val thisJava = this.asJavaObservable.asInstanceOf[rx.Observable[U]]
+    toScalaObservable[U](thisJava.timeout(
+      { firstTimeoutSelector().asJavaObservable.asInstanceOf[rx.Observable[Any]] },
+      { t: U => timeoutSelector(t.asInstanceOf[T]).asJavaObservable.asInstanceOf[rx.Observable[Any]] },
       other.asJavaObservable))
   }
 
@@ -2862,13 +2980,14 @@ trait Observable[+T]
 
   /**
    * If the source Observable completes after emitting a single item, return an Observable that emits that
-   * item. If the source Observable emits more than one item or no items, throw an `NoSuchElementException`.
+   * item. If the source Observable emits more than one item or no items, notify of an `IllegalArgumentException`
+   * or `NoSuchElementException` respectively.
    * 
    * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/single.png">
    * 
    * @return an Observable that emits the single item emitted by the source Observable
-   * @throws NoSuchElementException
-   *             if the source emits more than one item or no items
+   * @throws IllegalArgumentException if the source emits more than one item
+   * @throws NoSuchElementException if the source emits no items
    * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#wiki-single-and-singleordefault">RxJava Wiki: single()</a>
    * @see "MSDN: Observable.singleAsync()"
    */
@@ -2907,6 +3026,26 @@ trait Observable[+T]
    */
   def singleOrElse[U >: T](default: => U): Observable[U] = {
     singleOption.map {
+      case Some(element) => element
+      case None => default
+    }
+  }
+
+  /**
+   * Returns an Observable that emits the items emitted by the source Observable or a specified default item
+   * if the source Observable is empty.
+   *
+   * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/defaultIfEmpty.png">
+   *
+   * @param default the item to emit if the source Observable emits no items. This is a by-name parameter, so it is
+   *                only evaluated if the source Observable doesn't emit anything.
+   * @return an Observable that emits either the specified default item if the source Observable emits no
+   *         items, or the items emitted by the source Observable
+   */
+  def orElse[U >: T](default: => U): Observable[U] = {
+    val jObservableOption = map(Some(_)).asJavaObservable.asInstanceOf[rx.Observable[Option[T]]]
+    val o = toScalaObservable[Option[T]](jObservableOption.defaultIfEmpty(None))
+    o map {
       case Some(element) => element
       case None => default
     }
@@ -3024,6 +3163,22 @@ trait Observable[+T]
   }
 
   /**
+   * Returns an Observable that mirrors the source Observable, resubscribing to it if it calls `onError`
+   * and the predicate returns true for that specific exception and retry count.
+   *
+   * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/retry.png">
+   *
+   * @param predicate the predicate that determines if a resubscription may happen in case of a specific exception and retry count
+   * @return the source Observable modified with retry logic
+   */
+  def retry(predicate: (Int, Throwable) => Boolean): Observable[T] = {
+    val f = new Func2[java.lang.Integer, Throwable, java.lang.Boolean] {
+      def call(times: java.lang.Integer, e: Throwable): java.lang.Boolean = predicate(times, e)
+    }
+    toScalaObservable[T](asJavaObservable.retry(f))
+  }
+
+  /**
    * Returns an Observable that repeats the sequence of items emitted by the source Observable indefinitely.
    * <p>
    * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/repeat.o.png">
@@ -3093,7 +3248,7 @@ trait Observable[+T]
    */
   @deprecated("Use `toBlocking` instead", "0.19")
   def toBlockingObservable: BlockingObservable[T] = {
-    new BlockingObservable[T](asJavaObservable.toBlocking)
+    new BlockingObservable[T](this)
   }
 
   /**
@@ -3105,7 +3260,7 @@ trait Observable[+T]
    * @since 0.19
    */
   def toBlocking: BlockingObservable[T] = {
-    new BlockingObservable[T](asJavaObservable.toBlocking)
+    new BlockingObservable[T](this)
   }
 
   /**
@@ -3247,8 +3402,8 @@ trait Observable[+T]
    *                    `onCompleted`
    * @return the source Observable with the side-effecting behavior applied
    */
-  def doOnCompleted(onCompleted: () => Unit): Observable[T] = {
-    toScalaObservable[T](asJavaObservable.doOnCompleted(onCompleted))
+  def doOnCompleted(onCompleted: => Unit): Observable[T] = {
+    toScalaObservable[T](asJavaObservable.doOnCompleted(() => onCompleted))
   }
 
   /**
@@ -3302,8 +3457,8 @@ trait Observable[+T]
    * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#wiki-doonterminate">RxJava Wiki: doOnTerminate()</a>
    * @see <a href="http://msdn.microsoft.com/en-us/library/hh229804.aspx">MSDN: Observable.Do</a>
    */
-  def doOnTerminate(onTerminate: () => Unit): Observable[T] = {
-    toScalaObservable[T](asJavaObservable.doOnTerminate(onTerminate))
+  def doOnTerminate(onTerminate: => Unit): Observable[T] = {
+    toScalaObservable[T](asJavaObservable.doOnTerminate(() => onTerminate))
   }
 
   /**
@@ -3457,7 +3612,7 @@ trait Observable[+T]
    * @return an Observable that emits the item at the specified position in the sequence emitted by the source
    *         Observable, or the default item if that index is outside the bounds of the source sequence
    * @throws IndexOutOfBoundsException
-   *             if {@code index} is less than 0
+   *             if `index` is less than 0
    */
   def elementAtOrDefault[U >: T](index: Int, default: U): Observable[U] = {
     val thisJava = asJavaObservable.asInstanceOf[rx.Observable[U]]
@@ -3466,7 +3621,7 @@ trait Observable[+T]
 
   /**
    * Return an Observable that emits a single Map containing all items emitted by the source Observable,
-   * mapped by the keys returned by a specified {@code keySelector} function.
+   * mapped by the keys returned by a specified `keySelector` function.
    * <p>
    * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toMap.png">
    * <p>
@@ -3538,7 +3693,7 @@ trait Observable[+T]
    * @return an Observable that emits a `Boolean` value that indicates whether the two sequences are the same
    */
   def sequenceEqual[U >: T](that: Observable[U]): Observable[Boolean] = {
-    sequenceEqual(that, (_1: U, _2: U) => _1 == _2)
+    sequenceEqualWith(that)(_ == _)
   }
 
   /**
@@ -3551,7 +3706,7 @@ trait Observable[+T]
    * @param equality a function used to compare items emitted by each Observable
    * @return an Observable that emits a `Boolean` value that indicates whether the two sequences are the same based on the `equality` function.
    */
-  def sequenceEqual[U >: T](that: Observable[U], equality: (U, U) => Boolean): Observable[Boolean] = {
+  def sequenceEqualWith[U >: T](that: Observable[U])(equality: (U, U) => Boolean): Observable[Boolean] = {
     val thisJava: rx.Observable[_ <: U] = this.asJavaObservable
     val thatJava: rx.Observable[_ <: U] = that.asJavaObservable
     val equalityJava: Func2[_ >: U, _ >: U, java.lang.Boolean] = equality
@@ -3602,6 +3757,371 @@ trait Observable[+T]
   def lift[R](operator: Subscriber[R] => Subscriber[T]): Observable[R] = {
     toScalaObservable(asJavaObservable.lift(toJavaOperator[T, R](operator)))
   }
+
+  /**
+   * Converts the source `Observable[T]` into an `Observable[Observable[T]]` that emits the source Observable as its single emission.
+   *
+   * <img width="640" height="350" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/nest.png">
+   *
+   * @return an Observable that emits a single item: the source Observable
+   */
+  def nest: Observable[Observable[T]] = {
+    toScalaObservable(asJavaObservable.nest).map(toScalaObservable[T](_))
+  }
+
+  /**
+   * Subscribes to the [[Observable]] and receives notifications for each element.
+   *
+   * Alias to `subscribe(T => Unit)`.
+   *
+   * @param onNext function to execute for each item.
+   * @throws IllegalArgumentException if `onNext` is null
+   * @since 0.19
+   */
+  def foreach(onNext: T => Unit): Unit = {
+    asJavaObservable.subscribe(onNext)
+  }
+
+  /**
+   * Subscribes to the [[Observable]] and receives notifications for each element and error events.
+   *
+   * Alias to `subscribe(T => Unit, Throwable => Unit)`.
+   *
+   * @param onNext function to execute for each item.
+   * @param onError function to execute when an error is emitted.
+   * @throws IllegalArgumentException if `onNext` is null, or if `onError` is null
+   * @since 0.19
+   */
+  def foreach(onNext: T => Unit, onError: Throwable => Unit): Unit = {
+    asJavaObservable.subscribe(onNext, onError)
+  }
+
+  /**
+   * Subscribes to the [[Observable]] and receives notifications for each element and the terminal events.
+   *
+   * Alias to `subscribe(T => Unit, Throwable => Unit, () => Unit)`.
+   *
+   * @param onNext function to execute for each item.
+   * @param onError function to execute when an error is emitted.
+   * @param onComplete function to execute when completion is signalled.
+   * @throws IllegalArgumentException if `onNext` is null, or if `onError` is null, or if `onComplete` is null
+   * @since 0.19
+   */
+  def foreach(onNext: T => Unit, onError: Throwable => Unit, onComplete: () => Unit): Unit = {
+    asJavaObservable.subscribe(onNext, onError, onComplete)
+  }
+
+  /**
+   * Pivots a sequence of `(K1, Observable[(K2, Observable[U])])`s emitted by an `Observable` so as to swap the group
+   * and and the set on which their items are grouped.
+   * <p>
+   * <img width="640" height="580" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/pivot.png">
+   *
+   * For example an `Observable` such as `this =  Observable[(String, Observable[(Boolean, Observable[Integer])])`:
+   * <ul>
+   * <li>o1.odd: 1, 3, 5, 7, 9 on Thread 1</li>
+   * <li>o1.even: 2, 4, 6, 8, 10 on Thread 1</li>
+   * <li>o2.odd: 11, 13, 15, 17, 19 on Thread 2</li>
+   * <li>o2.even: 12, 14, 16, 18, 20 on Thread 2</li>
+   * </ul>
+   * is pivoted to become `this =  Observable[(Boolean, Observable[(String, Observable[Integer])])`:
+   *
+   * <ul>
+   * <li>odd.o1: 1, 3, 5, 7, 9 on Thread 1</li>
+   * <li>odd.o2: 11, 13, 15, 17, 19 on Thread 2</li>
+   * <li>even.o1: 2, 4, 6, 8, 10 on Thread 1</li>
+   * <li>even.o2: 12, 14, 16, 18, 20 on Thread 2</li>
+   * </ul>
+   * <p>
+   * <img width="640" height="1140" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/pivot.ex.png">
+   * <p>
+   * <em>Note:</em> A `(K, Observable[_])` will cache the items it is to emit until such time as it
+   * is subscribed to. For this reason, in order to avoid memory leaks, you should not simply ignore those
+   * `(K, Observable[_])`s that do not concern you. Instead, you can signal to them that they may
+   * discard their buffers by applying an operator like `take(0)` to them.
+   *
+   * @return an `Observable`containing a stream of nested `(K1, Observable[(K2, Observable[U])])`s with swapped
+   *         inner-outer keys.
+   */
+  def pivot[U, K1, K2](implicit evidence: Observable[T] <:< Observable[(K1, Observable[(K2, Observable[U])])]): Observable[(K2, Observable[(K1, Observable[U])])] = {
+    import rx.observables.{GroupedObservable => JGroupedObservable}
+    val f1 = new Func1[(K1, Observable[(K2, Observable[U])]), JGroupedObservable[K1, JGroupedObservable[K2, U]]]() {
+      override def call(t1: (K1, Observable[(K2, Observable[U])])): JGroupedObservable[K1, JGroupedObservable[K2, U]] = {
+        val jo = t1._2.asJavaObservable.asInstanceOf[rx.Observable[(K2, Observable[U])]].map[JGroupedObservable[K2, U]](new Func1[(K2, Observable[U]), JGroupedObservable[K2, U]]() {
+          override def call(t2: (K2, Observable[U])): JGroupedObservable[K2, U] = {
+            JGroupedObservable.from(t2._1, t2._2.asJavaObservable.asInstanceOf[rx.Observable[U]])
+          }
+        })
+        JGroupedObservable.from(t1._1, jo)
+      }
+    }
+    val o1: Observable[(K1, Observable[(K2, Observable[U])])] = this
+    val o2 = toScalaObservable[JGroupedObservable[K2, JGroupedObservable[K1, U]]](rx.Observable.pivot(o1.asJavaObservable.map(f1)))
+    o2.map {
+      (jgo1: JGroupedObservable[K2, JGroupedObservable[K1, U]]) => {
+        val jo = jgo1.map[(K1, Observable[U])](new Func1[JGroupedObservable[K1, U], (K1, Observable[U])]() {
+          override def call(jgo2: JGroupedObservable[K1, U]): (K1, Observable[U]) = (jgo2.getKey, toScalaObservable[U](jgo2))
+        })
+        (jgo1.getKey, toScalaObservable[(K1, Observable[U])](jo))
+      }
+    }
+  }
+
+  /**
+   * Returns an Observable that counts the total number of items emitted by the source Observable and emits this count as a 64-bit Long.
+   *
+   * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/longCount.png">
+   *
+   * @return an Observable that emits a single item: the number of items emitted by the source Observable as a 64-bit Long item
+   */
+  def longCount: Observable[Long] = {
+    toScalaObservable[java.lang.Long](asJavaObservable.longCount()).map(_.longValue())
+  }
+
+  /**
+   * Returns an Observable that emits a single `Map` that contains an `Seq` of items emitted by the
+   * source Observable keyed by a specified `keySelector` function.
+   *
+   * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toMultiMap.png">
+   *
+   * @param keySelector the function that extracts the key from the source items to be used as key in the HashMap
+   * @return an Observable that emits a single item: a `Map` that contains an `Seq` of items mapped from
+   *         the source Observable
+   */
+  def toMultimap[K](keySelector: T => K): Observable[scala.collection.Map[K, Seq[T]]] = {
+    toMultimap(keySelector, k => k)
+  }
+
+  /**
+   * Returns an Observable that emits a single `Map` that contains an `Seq` of values extracted by a
+   * specified `valueSelector` function from items emitted by the source Observable, keyed by a
+   * specified `keySelector` function.
+   *
+   * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toMultiMap.png">
+   *
+   * @param keySelector the function that extracts a key from the source items to be used as key in the HashMap
+   * @param valueSelector the function that extracts a value from the source items to be used as value in the HashMap
+   * @return an Observable that emits a single item: a `Map` that contains an `Seq` of items mapped from
+   *         the source Observable
+   */
+  def toMultimap[K, V](keySelector: T => K, valueSelector: T => V): Observable[scala.collection.Map[K, Seq[V]]] = {
+    toMultimap(keySelector, valueSelector, () => mutable.Map[K, mutable.Buffer[V]]())
+  }
+
+  /**
+   * Returns an Observable that emits a single `mutable.Map[K, mutable.Buffer[V]]`, returned by a specified `mapFactory` function, that
+   * contains values, extracted by a specified `valueSelector` function from items emitted by the source Observable and
+   * keyed by the `keySelector` function. `mutable.Map[K, B]` is the same instance create by `mapFactory`.
+   *
+   * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toMultiMap.png">
+   *
+   * @param keySelector the function that extracts a key from the source items to be used as the key in the Map
+   * @param valueSelector the function that extracts a value from the source items to be used as the value in the Map
+   * @param mapFactory he function that returns a `mutable.Map[K, mutable.Buffer[V]]` instance to be used
+   * @return an Observable that emits a single item: a `mutable.Map[K, mutable.Buffer[V]]` that contains items mapped
+   *         from the source Observable
+   */
+  def toMultimap[K, V, M <: mutable.Map[K, mutable.Buffer[V]]](keySelector: T => K, valueSelector: T => V, mapFactory: () => M): Observable[M] = {
+    toMultimap[K, V, mutable.Buffer[V], M](keySelector, valueSelector, mapFactory, k => mutable.Buffer[V]())
+  }
+
+  /**
+   * Returns an Observable that emits a single `mutable.Map[K, B]`, returned by a specified `mapFactory` function, that
+   * contains values extracted by a specified `valueSelector` function from items emitted by the source Observable, and
+   * keyed by the `keySelector` function. `mutable.Map[K, B]` is the same instance create by `mapFactory`.
+   *
+   * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toMultiMap.png">
+   *
+   * @param keySelector the function that extracts a key from the source items to be used as the key in the Map
+   * @param valueSelector the function that extracts a value from the source items to be used as the value in the Map
+   * @param mapFactory the function that returns a Map instance to be used
+   * @param bufferFactory the function that returns a `mutable.Buffer[V]` instance for a particular key to be used in the Map
+   * @return an Observable that emits a single item: a `mutable.Map[K, B]` that contains mapped items from the source Observable.
+   */
+  def toMultimap[K, V, B <: mutable.Buffer[V], M <: mutable.Map[K, B]](keySelector: T => K, valueSelector: T => V, mapFactory: () => M, bufferFactory: K => B): Observable[M] = {
+    // It's complicated to convert `mutable.Map[K, mutable.Buffer[V]]` to `java.util.Map[K, java.util.Collection[V]]`,
+    // so RxScala implements `toMultimap` directly.
+    // Choosing `mutable.Buffer/Map` is because `append/update` is necessary to implement an efficient `toMultimap`.
+    lift {
+      (subscriber: Subscriber[M]) => {
+        val map = mapFactory()
+        Subscriber[T](
+          subscriber,
+          (t: T) => {
+            val key = keySelector(t)
+            val values = map.get(key) match {
+              case Some(v) => v
+              case None => bufferFactory(key)
+            }
+            values += valueSelector(t)
+            map += key -> values: Unit
+          },
+          e => subscriber.onError(e),
+          () => {
+            subscriber.onNext(map)
+            subscriber.onCompleted()
+          }
+        )
+      }
+    }
+  }
+
+  /**
+   * Returns an Observable that emits a single item, a collection composed of all the items emitted by
+   * the source Observable.
+   *
+   * Be careful not to use this operator on Observables that emit infinite or very large numbers
+   * of items, as you do not have the option to unsubscribe.
+   *
+   * @tparam Col the collection type to build.
+   * @return an Observable that emits a single item, a collection containing all of the items emitted by
+   *         the source Observable.
+   */
+  def to[Col[_]](implicit cbf: CanBuildFrom[Nothing, T, Col[T @uncheckedVariance]]): Observable[Col[T @uncheckedVariance]] = {
+    lift {
+      (subscriber: Subscriber[Col[T]]) => {
+        val b = cbf()
+        Subscriber[T](
+          subscriber,
+          (t: T) => {
+            b += t: Unit
+          },
+          e => subscriber.onError(e),
+          () => {
+            subscriber.onNext(b.result)
+            subscriber.onCompleted()
+          }
+        )
+      }
+    }
+  }
+
+  /**
+   * Returns an Observable that emits a single item, a `Traversable` composed of all the items emitted by
+   * the source Observable.
+   *
+   * Be careful not to use this operator on Observables that emit infinite or very large numbers
+   * of items, as you do not have the option to unsubscribe.
+   *
+   * @return an Observable that emits a single item, a `Traversable` containing all of the items emitted by
+   *         the source Observable.
+   */
+  def toTraversable: Observable[Traversable[T]] = to[Traversable]
+
+  /**
+   * Returns an Observable that emits a single item, a `List` composed of all the items emitted by
+   * the source Observable.
+   *
+   * Be careful not to use this operator on Observables that emit infinite or very large numbers
+   * of items, as you do not have the option to unsubscribe.
+   *
+   * @return an Observable that emits a single item, a `List` containing all of the items emitted by
+   *         the source Observable.
+   */
+  def toList: Observable[List[T]] = to[List]
+
+  /**
+   * Returns an Observable that emits a single item, an `Iterable` composed of all the items emitted by
+   * the source Observable.
+   *
+   * Be careful not to use this operator on Observables that emit infinite or very large numbers
+   * of items, as you do not have the option to unsubscribe.
+   *
+   * @return an Observable that emits a single item, an `Iterable` containing all of the items emitted by
+   *         the source Observable.
+   */
+  def toIterable: Observable[Iterable[T]] = to[Iterable]
+
+  /**
+   * Returns an Observable that emits a single item, an `Iterator` composed of all the items emitted by
+   * the source Observable.
+   *
+   * Be careful not to use this operator on Observables that emit infinite or very large numbers
+   * of items, as you do not have the option to unsubscribe.
+   *
+   * @return an Observable that emits a single item, an `Iterator` containing all of the items emitted by
+   *         the source Observable.
+   */
+  def toIterator: Observable[Iterator[T]] = toIterable.map(_.iterator)
+
+  /**
+   * Returns an Observable that emits a single item, a `Stream` composed of all the items emitted by
+   * the source Observable.
+   *
+   * Be careful not to use this operator on Observables that emit infinite or very large numbers
+   * of items, as you do not have the option to unsubscribe.
+   *
+   * @return an Observable that emits a single item, a `Stream` containing all of the items emitted by
+   *         the source Observable.
+   */
+  def toStream: Observable[Stream[T]] = to[Stream]
+
+  /**
+   * Returns an Observable that emits a single item, an `IndexedSeq` composed of all the items emitted by
+   * the source Observable.
+   *
+   * Be careful not to use this operator on Observables that emit infinite or very large numbers
+   * of items, as you do not have the option to unsubscribe.
+   *
+   * @return an Observable that emits a single item, an `IndexedSeq` containing all of the items emitted by
+   *         the source Observable.
+   */
+  def toIndexedSeq: Observable[immutable.IndexedSeq[T]] = to[immutable.IndexedSeq]
+
+  /**
+   * Returns an Observable that emits a single item, a `Vector` composed of all the items emitted by
+   * the source Observable.
+   *
+   * Be careful not to use this operator on Observables that emit infinite or very large numbers
+   * of items, as you do not have the option to unsubscribe.
+   *
+   * @return an Observable that emits a single item, a `Vector` containing all of the items emitted by
+   *         the source Observable.
+   */
+  def toVector: Observable[Vector[T]] = to[Vector]
+
+  /**
+   * Returns an Observable that emits a single item, a `Buffer` composed of all the items emitted by
+   * the source Observable.
+   *
+   * Be careful not to use this operator on Observables that emit infinite or very large numbers
+   * of items, as you do not have the option to unsubscribe.
+   *
+   * @return an Observable that emits a single item, a `Buffer` containing all of the items emitted by
+   *         the source Observable.
+   */
+  def toBuffer[U >: T]: Observable[mutable.Buffer[U]] = { // use U >: T because Buffer is invariant
+    val us: Observable[U] = this
+    us.to[ArrayBuffer]
+  }
+
+  /**
+   * Returns an Observable that emits a single item, a `Set` composed of all the items emitted by
+   * the source Observable.
+   *
+   * Be careful not to use this operator on Observables that emit infinite or very large numbers
+   * of items, as you do not have the option to unsubscribe.
+   *
+   * @return an Observable that emits a single item, a `Set` containing all of the items emitted by
+   *         the source Observable.
+   */
+  def toSet[U >: T]: Observable[immutable.Set[U]] = { // use U >: T because Set is invariant
+    val us: Observable[U] = this
+    us.to[immutable.Set]
+  }
+
+  /**
+   * Returns an Observable that emits a single item, an `Array` composed of all the items emitted by
+   * the source Observable.
+   *
+   * Be careful not to use this operator on Observables that emit infinite or very large numbers
+   * of items, as you do not have the option to unsubscribe.
+   *
+   * @return an Observable that emits a single item, an `Array` containing all of the items emitted by
+   *         the source Observable.
+   */
+  def toArray[U >: T : ClassTag]: Observable[Array[U]] = // use U >: T because Array is invariant
+    toBuffer[U].map(_.toArray)
 }
 
 /**
@@ -3651,13 +4171,15 @@ object Observable {
    * @return
    *         an Observable that, when an [[rx.lang.scala.Observer]] subscribes to it, will execute the given function.
    */
-  @deprecated("Use `apply[T](Subscriber[T] => Unit)` instead", "0.17.0")
   def create[T](func: Observer[T] => Subscription): Observable[T] = {
-    toScalaObservable[T](rx.Observable.create(new OnSubscribeFunc[T] {
-      def onSubscribe(t1: rx.Observer[_ >: T]): rx.Subscription = {
-        func(Observer(t1))
+    Observable(
+      (subscriber: Subscriber[T]) => {
+        val s = func(subscriber)
+        if (s != null && s != subscriber) {
+          subscriber.add(s)
+        }
       }
-    }))
+    )
   }
 
   /*
@@ -3692,7 +4214,7 @@ object Observable {
    * See `<a href="https://github.com/Netflix/RxJava/blob/master/language-adaptors/rxjava-scala/src/examples/scala/rx/lang/scala/examples/RxScalaDemo.scala">RxScalaDemo</a>.createExampleGood`
    * and `<a href="https://github.com/Netflix/RxJava/blob/master/language-adaptors/rxjava-scala/src/examples/scala/rx/lang/scala/examples/RxScalaDemo.scala">RxScalaDemo</a>.createExampleGood2`.
    *
-   * @param T
+   * @tparam T
    *            the type of the items that this Observable emits
    * @param f
    *            a function that accepts a `Subscriber[T]`, and invokes its `onNext`,
@@ -3719,6 +4241,21 @@ object Observable {
    */
   def error[T](exception: Throwable): Observable[T] = {
     toScalaObservable[T](rx.Observable.error(exception))
+  }
+
+  /**
+   * Returns an Observable that invokes an `Observer`'s `onError` method on the
+   * specified Scheduler.
+   *
+   * <img width="640" height="190" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/error.s.png">
+   *
+   * @param exception the particular Throwable to pass to `onError`
+   * @param scheduler the Scheduler on which to call `onError`
+   * @tparam T the type of the items (ostensibly) emitted by the Observable
+   * @return an Observable that invokes the `Observer`'s `onError` method, on the specified Scheduler
+   */
+  def error[T](exception: Throwable, scheduler: Scheduler): Observable[T] = {
+    toScalaObservable[T](rx.Observable.error(exception, scheduler))
   }
 
   /**
@@ -3808,7 +4345,7 @@ object Observable {
    * the sequence before it completes.
    *
    * @param iterable the source `Iterable` sequence
-   * @param T the type of items in the `Iterable` sequence and the
+   * @tparam T the type of items in the `Iterable` sequence and the
    *            type of items to be emitted by the resulting Observable
    * @return an Observable that emits each item in the source `Iterable`
    *         sequence
@@ -3923,7 +4460,6 @@ object Observable {
    */
   def interval(duration: Duration): Observable[Long] = {
     toScalaObservable[java.lang.Long](rx.Observable.interval(duration.length, duration.unit)).map(_.longValue())
-    /*XXX*/
   }
 
   /**
@@ -3956,7 +4492,6 @@ object Observable {
    */
   def timer(initialDelay: Duration, period: Duration): Observable[Long] = {
     toScalaObservable[java.lang.Long](rx.Observable.timer(initialDelay.toNanos, period.toNanos, duration.NANOSECONDS)).map(_.longValue())
-    /*XXX*/
   }
 
   /**
@@ -4037,6 +4572,26 @@ object Observable {
    */
   def amb[T](sources: Observable[T]*): Observable[T] = {
     toScalaObservable[T](rx.Observable.amb[T](sources.map(_.asJavaObservable).asJava))
+  }
+
+  /**
+   * Combines a list of source Observables by emitting an item that aggregates the latest values of each of
+   * the source Observables each time an item is received from any of the source Observables, where this
+   * aggregation is defined by a specified function.
+   *
+   * @tparam T the common base type of source values
+   * @tparam R the result type
+   * @param sources the list of source Observables
+   * @param combineFunction the aggregation function used to combine the items emitted by the source Observables
+   * @return an Observable that emits items that are the result of combining the items emitted by the source
+   *         Observables by means of the given aggregation function
+   */
+  def combineLatest[T, R](sources: Seq[Observable[T]])(combineFunction: Seq[T] => R): Observable[R] = {
+    val jSources = new java.util.ArrayList[rx.Observable[_ <: T]](sources.map(_.asJavaObservable).asJava)
+    val jCombineFunction = new rx.functions.FuncN[R] {
+      override def call(args: java.lang.Object*): R = combineFunction(args.map(_.asInstanceOf[T]))
+    }
+    toScalaObservable[R](rx.Observable.combineLatest[T, R](jSources, jCombineFunction))
   }
 }
 

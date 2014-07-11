@@ -24,7 +24,7 @@ import java.util.Map;
 public abstract class ActivePlan0 {
     protected final Map<JoinObserver, JoinObserver> joinObservers = new HashMap<JoinObserver, JoinObserver>();
 
-    public abstract void match();
+    protected abstract void match();
 
     protected void addJoinObserver(JoinObserver joinObserver) {
         joinObservers.put(joinObserver, joinObserver);

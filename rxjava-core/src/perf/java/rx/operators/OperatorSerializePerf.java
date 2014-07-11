@@ -17,137 +17,122 @@ package rx.operators;
 
 import java.util.concurrent.TimeUnit;
 
-import org.openjdk.jmh.annotations.GenerateMicroBenchmark;
+import org.openjdk.jmh.annotations.BenchmarkMode;
+import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.Mode;
+import org.openjdk.jmh.annotations.OutputTimeUnit;
 import org.openjdk.jmh.annotations.Param;
 import org.openjdk.jmh.annotations.Scope;
-import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
-import org.openjdk.jmh.logic.BlackHole;
+import org.openjdk.jmh.infra.Blackhole;
 
 import rx.Observable;
 import rx.Observable.OnSubscribe;
-import rx.Observer;
 import rx.Subscriber;
-import rx.observers.TestSubscriber;
+import rx.jmh.InputWithIncrementingInteger;
+import rx.jmh.LatchedObserver;
 import rx.schedulers.Schedulers;
 
+@BenchmarkMode(Mode.Throughput)
+@OutputTimeUnit(TimeUnit.SECONDS)
 public class OperatorSerializePerf {
 
-    public static void main(String[] args) {
+    @State(Scope.Thread)
+    public static class Input extends InputWithIncrementingInteger {
 
+        @Param({ "1", "1000", "1000000" })
+        public int size;
+
+        @Override
+        public int getSize() {
+            return size;
+        }
     }
 
-    @GenerateMicroBenchmark
-    public void noSerializationSingleThreaded(Input input) {
-        TestSubscriber<Long> ts = input.newSubscriber();
-        input.firehose.subscribe(ts);
-        ts.awaitTerminalEvent();
+    @Benchmark
+    public void noSerializationSingleThreaded(Input input) throws InterruptedException {
+        LatchedObserver<Integer> o = input.newLatchedObserver();
+        input.firehose.subscribe(o);
+        o.latch.await();
     }
 
-    @GenerateMicroBenchmark
-    public void serializedSingleStream(Input input) {
-        TestSubscriber<Long> ts = input.newSubscriber();
-        input.firehose.serialize().subscribe(ts);
-        ts.awaitTerminalEvent();
+    @Benchmark
+    public void serializedSingleStream(Input input) throws InterruptedException {
+        LatchedObserver<Integer> o = input.newLatchedObserver();
+        input.firehose.serialize().subscribe(o);
+        o.latch.await();
     }
 
-    @GenerateMicroBenchmark
-    public void serializedTwoStreamsSlightlyContended(final Input input) {
-        TestSubscriber<Long> ts = input.newSubscriber();
-        Observable.create(new OnSubscribe<Long>() {
+    @Benchmark
+    public void serializedTwoStreamsHighlyContended(final Input input) throws InterruptedException {
+        LatchedObserver<Integer> o = input.newLatchedObserver();
+        Observable.create(new OnSubscribe<Integer>() {
 
             @Override
-            public void call(Subscriber<? super Long> s) {
-                // break the contract here and concurrently onNext
-                input.interval.subscribeOn(Schedulers.computation()).unsafeSubscribe(s);
-                input.interval.subscribeOn(Schedulers.computation()).unsafeSubscribe(s);
-                // they will be serialized after
-            }
-
-        }).serialize().subscribe(ts);
-        ts.awaitTerminalEvent();
-    }
-
-    @GenerateMicroBenchmark
-    public void serializedTwoStreamsHighlyContended(final Input input) {
-        TestSubscriber<Long> ts = input.newSubscriber();
-        Observable.create(new OnSubscribe<Long>() {
-
-            @Override
-            public void call(Subscriber<? super Long> s) {
+            public void call(Subscriber<? super Integer> s) {
                 // break the contract here and concurrently onNext
                 input.firehose.subscribeOn(Schedulers.computation()).unsafeSubscribe(s);
                 input.firehose.subscribeOn(Schedulers.computation()).unsafeSubscribe(s);
                 // they will be serialized after
             }
 
-        }).serialize().subscribe(ts);
-        ts.awaitTerminalEvent();
+        }).serialize().subscribe(o);
+        o.latch.await();
     }
 
-    @GenerateMicroBenchmark
-    public void serializedTwoStreamsOneFastOneSlow(final Input input) {
-        TestSubscriber<Long> ts = input.newSubscriber();
-        Observable.create(new OnSubscribe<Long>() {
-
-            @Override
-            public void call(final Subscriber<? super Long> s) {
-                // break the contract here and concurrently onNext
-                input.interval.subscribeOn(Schedulers.computation()).unsafeSubscribe(s);
-                input.firehose.subscribeOn(Schedulers.computation()).unsafeSubscribe(s);
-                // they will be serialized after
-            }
-
-        }).serialize().subscribe(ts);
-        ts.awaitTerminalEvent();
-    }
-
-    @State(Scope.Benchmark)
-    public static class Input {
+    @State(Scope.Thread)
+    public static class InputWithInterval extends InputWithIncrementingInteger {
 
         @Param({ "1", "1000" })
         public int size;
 
-        public Observable<Long> firehose;
-        public Observable<Long> interval;
+        public Observable<Integer> interval;
 
-        private BlackHole bh;
-
-        @Setup
-        public void setup(final BlackHole bh) {
-            this.bh = bh;
-            firehose = Observable.create(new OnSubscribe<Long>() {
-                @Override
-                public void call(Subscriber<? super Long> o) {
-                    for (long value = 0; value < size; value++) {
-                        if (o.isUnsubscribed())
-                            return;
-                        o.onNext(value);
-                    }
-                    o.onCompleted();
-                }
-            });
-
-            interval = Observable.timer(0, 1, TimeUnit.MILLISECONDS).take(size);
+        @Override
+        public int getSize() {
+            return size;
         }
 
-        public TestSubscriber<Long> newSubscriber() {
-            return new TestSubscriber<Long>(new Observer<Long>() {
-                @Override
-                public void onCompleted() {
-                }
+        @Override
+        public void setup(Blackhole bh) {
+            super.setup(bh);
 
-                @Override
-                public void onError(Throwable e) {
-                    throw new RuntimeException(e);
-                }
-
-                @Override
-                public void onNext(Long value) {
-                    bh.consume(value);
-                }
-            });
+            interval = Observable.timer(0, 1, TimeUnit.MILLISECONDS).take(size).cast(Integer.class);
         }
-
     }
+
+    @Benchmark
+    public void serializedTwoStreamsSlightlyContended(final InputWithInterval input) throws InterruptedException {
+        LatchedObserver<Integer> o = input.newLatchedObserver();
+        Observable.create(new OnSubscribe<Integer>() {
+
+            @Override
+            public void call(Subscriber<? super Integer> s) {
+                // break the contract here and concurrently onNext
+                input.interval.subscribeOn(Schedulers.computation()).unsafeSubscribe(s);
+                input.interval.subscribeOn(Schedulers.computation()).unsafeSubscribe(s);
+                // they will be serialized after
+            }
+
+        }).serialize().subscribe(o);
+        o.latch.await();
+    }
+
+    @Benchmark
+    public void serializedTwoStreamsOneFastOneSlow(final InputWithInterval input) throws InterruptedException {
+        LatchedObserver<Integer> o = input.newLatchedObserver();
+        Observable.create(new OnSubscribe<Integer>() {
+
+            @Override
+            public void call(final Subscriber<? super Integer> s) {
+                // break the contract here and concurrently onNext
+                input.interval.subscribeOn(Schedulers.computation()).unsafeSubscribe(s);
+                input.firehose.subscribeOn(Schedulers.computation()).unsafeSubscribe(s);
+                // they will be serialized after
+            }
+
+        }).serialize().subscribe(o);
+        o.latch.await();
+    }
+
 }

@@ -15,21 +15,46 @@
  */
 package rx.operators;
 
-import org.openjdk.jmh.annotations.GenerateMicroBenchmark;
+import java.util.concurrent.TimeUnit;
+
+import org.openjdk.jmh.annotations.BenchmarkMode;
+import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.Mode;
+import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Param;
+import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.State;
 
 import rx.Observable.Operator;
 import rx.functions.Func1;
 import rx.internal.operators.OperatorMap;
 import rx.jmh.InputWithIncrementingInteger;
-import rx.observers.TestSubscriber;
 
+@BenchmarkMode(Mode.Throughput)
+@OutputTimeUnit(TimeUnit.SECONDS)
 public class OperatorMapPerf {
 
-    @GenerateMicroBenchmark
-    public void mapIdentityFunction(InputWithIncrementingInteger input) throws InterruptedException {
-        TestSubscriber<Integer> ts = input.newSubscriber();
-        input.observable.lift(MAP_OPERATOR).subscribe(ts);
-        ts.awaitTerminalEvent();
+    @State(Scope.Thread)
+    public static class Input extends InputWithIncrementingInteger {
+
+        @Param({ "1", "1000", "1000000" })
+        public int size;
+
+        @Override
+        public int getSize() {
+            return size;
+        }
+
+    }
+
+    @Benchmark
+    public void mapPassThruViaLift(Input input) throws InterruptedException {
+        input.observable.lift(MAP_OPERATOR).subscribe(input.observer);
+    }
+
+    @Benchmark
+    public void mapPassThru(Input input) throws InterruptedException {
+        input.observable.map(IDENTITY_FUNCTION).subscribe(input.observer);
     }
 
     private static final Func1<Integer, Integer> IDENTITY_FUNCTION = new Func1<Integer, Integer>() {

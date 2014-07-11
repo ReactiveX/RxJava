@@ -15,32 +15,77 @@
  */
 package rx.internal.util;
 
-import java.util.concurrent.atomic.AtomicReference;
+import static java.util.concurrent.atomic.AtomicReferenceFieldUpdater.newUpdater;
+
 import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 
+import rx.internal.util.MpscPaddedQueue.Node;
+
+abstract class MpscLinkedQueuePad0<E> {
+    long p00, p01, p02, p03, p04, p05, p06, p07;
+    long p30, p31, p32, p33, p34, p35, p36, p37;
+}
+
+abstract class MpscLinkedQueueHeadRef<E> extends MpscLinkedQueuePad0<E> {
+    @SuppressWarnings("rawtypes")
+    private static final AtomicReferenceFieldUpdater<MpscLinkedQueueHeadRef, Node> UPDATER =
+        newUpdater(MpscLinkedQueueHeadRef.class, Node.class, "headRef");
+    private volatile Node<E> headRef;
+
+    protected final Node<E> headRef() {
+        return headRef;
+    }
+    protected final void headRef(Node<E> val) {
+        headRef = val;
+    }
+    protected final void lazySetHeadRef(Node<E> newVal) {
+        UPDATER.lazySet(this, newVal);
+    }
+}
+
+abstract class MpscLinkedQueuePad1<E> extends MpscLinkedQueueHeadRef<E> {
+    long p00, p01, p02, p03, p04, p05, p06, p07;
+    long p30, p31, p32, p33, p34, p35, p36, p37;
+}
+
+abstract class MpscLinkedQueueTailRef<E> extends MpscLinkedQueuePad1<E> {
+    @SuppressWarnings("rawtypes")
+    private static final AtomicReferenceFieldUpdater<MpscLinkedQueueTailRef, Node> UPDATER =
+        newUpdater(MpscLinkedQueueTailRef.class, Node.class, "tailRef");
+    private volatile Node<E> tailRef;
+    protected final Node<E> tailRef() {
+        return tailRef;
+    }
+    protected final void tailRef(Node<E> val) {
+        tailRef = val;
+    }
+    @SuppressWarnings("unchecked")
+    protected final Node<E> getAndSetTailRef(Node<E> newVal) {
+        return (Node<E>) UPDATER.getAndSet(this, newVal);
+    }
+}
 /**
  * A multiple-producer single consumer queue implementation with padded reference to tail to avoid cache-line
  * thrashing. Based on Netty's <a href='https://github.com/netty/netty/blob/master/common/src/main/java/io/netty/util/internal/MpscLinkedQueue.java'>MpscQueue implementation</a>
- * but using {@code AtomicReferenceFieldUpdater} instead of {@code Unsafe}.
- *
+ * but using {@code AtomicReferenceFieldUpdater} instead of {@code Unsafe}.<br>
+ * Original algorithm presented <a
+ * href="http://www.1024cores.net/home/lock-free-algorithms/queues/non-intrusive-mpsc-node-based-queue"> on 1024
+ * Cores</a> by D. Vyukov.<br>
+ * Data structure modified to avoid false sharing between head and tail references as per implementation of
+ * MpscLinkedQueue on <a href="https://github.com/JCTools/JCTools">JCTools project</a>.
+ * 
  * @param <E> the element type
  */
-public final class MpscPaddedQueue<E> extends AtomicReference<MpscPaddedQueue.Node<E>> {
-    @SuppressWarnings(value = "rawtypes")
-    static final AtomicReferenceFieldUpdater<PaddedNode, Node> TAIL_UPDATER = AtomicReferenceFieldUpdater.newUpdater(PaddedNode.class, Node.class, "tail");
-    /** */
-    private static final long serialVersionUID = 1L;
-    /** The padded tail reference. */
-    final PaddedNode<E> tail;
-
+public final class MpscPaddedQueue<E> extends MpscLinkedQueueTailRef<E> {
+    long p00, p01, p02, p03, p04, p05, p06, p07;
+    long p30, p31, p32, p33, p34, p35, p36, p37;
     /**
      * Initializes the empty queue.
      */
     public MpscPaddedQueue() {
-        Node<E> first = new Node<E>(null);
-        tail = new PaddedNode<E>();
-        tail.tail = first;
-        set(first);
+        Node<E> stub = new Node<E>(null);
+        headRef(stub);
+        tailRef(stub);
     }
 
     /**
@@ -50,7 +95,7 @@ public final class MpscPaddedQueue<E> extends AtomicReference<MpscPaddedQueue.No
      */
     public void offer(E v) {
         Node<E> n = new Node<E>(v);
-        getAndSet(n).set(n);
+        getAndSetTailRef(n).next(n);
     }
 
     /**
@@ -64,25 +109,23 @@ public final class MpscPaddedQueue<E> extends AtomicReference<MpscPaddedQueue.No
         }
         E v = n.value;
         n.value = null; // do not retain this value as the node still stays in the queue
-        TAIL_UPDATER.lazySet(tail, n);
+        lazySetHeadRef(n);
         return v;
     }
-
+    
     /**
      * Check if there is a node available without changing anything.
      * @return
      */
     private Node<E> peekNode() {
         for (;;) {
-            @SuppressWarnings(value = "unchecked")
-            Node<E> t = TAIL_UPDATER.get(tail);
-            Node<E> n = t.get();
-            if (n != null || get() == t) {
+            Node<E> t = headRef();
+            Node<E> n = t.next();
+            if (n != null || headRef() == t) {
                 return n;
             }
         }
     }
-
     /**
      * Clears the queue.
      */
@@ -94,44 +137,25 @@ public final class MpscPaddedQueue<E> extends AtomicReference<MpscPaddedQueue.No
         }
     }
 
-    /** Class that contains a Node reference padded around to fit a typical cache line. */
-    static final class PaddedNode<E> {
-        /** Padding, public to prevent optimizing it away. */
-        public int p1;
-        volatile Node<E> tail;
-        /** Padding, public to prevent optimizing it away. */
-        public long p2;
-        /** Padding, public to prevent optimizing it away. */
-        public long p3;
-        /** Padding, public to prevent optimizing it away. */
-        public long p4;
-        /** Padding, public to prevent optimizing it away. */
-        public long p5;
-        /** Padding, public to prevent optimizing it away. */
-        public long p6;
-    }
-
     /**
      * Regular node with value and reference to the next node.
      */
     static final class Node<E> {
-
         E value;
         @SuppressWarnings(value = "rawtypes")
-        static final AtomicReferenceFieldUpdater<Node, Node> TAIL_UPDATER = AtomicReferenceFieldUpdater.newUpdater(Node.class, Node.class, "tail");
-        volatile Node<E> tail;
+        static final AtomicReferenceFieldUpdater<Node, Node> TAIL_UPDATER = AtomicReferenceFieldUpdater.newUpdater(Node.class, Node.class, "next");
+        private volatile Node<E> next;
 
-        public Node(E value) {
+        Node(E value) {
             this.value = value;
         }
 
-        public void set(Node<E> newTail) {
-            TAIL_UPDATER.lazySet(this, newTail);
+        void next(Node<E> newNext) {
+            TAIL_UPDATER.lazySet(this, newNext);
         }
 
-        @SuppressWarnings(value = "unchecked")
-        public Node<E> get() {
-            return TAIL_UPDATER.get(this);
+        Node<E> next() {
+            return next;
         }
     }
     

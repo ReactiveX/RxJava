@@ -15,13 +15,25 @@
  */
 package rx.internal.operators;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
+import java.util.Arrays;
+
 import org.junit.Test;
 import org.mockito.InOrder;
+
 import rx.Observable;
 import rx.Observer;
-
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.*;
+import rx.functions.Func1;
+import rx.internal.util.RxRingBuffer;
+import rx.observers.TestSubscriber;
+import rx.schedulers.Schedulers;
 
 public class OperatorTakeLastTest {
 
@@ -98,6 +110,42 @@ public class OperatorTakeLastTest {
     @Test(expected = IndexOutOfBoundsException.class)
     public void testTakeLastWithNegativeCount() {
         Observable.from("one").takeLast(-1);
+    }
+
+    @Test
+    public void testBackpressure1() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        Observable.range(1, 100000).takeLast(1).observeOn(Schedulers.newThread()).map(newSlowProcessor()).subscribe(ts);
+        ts.awaitTerminalEvent();
+        ts.assertNoErrors();
+        ts.assertReceivedOnNext(Arrays.asList(100000));
+    }
+
+    @Test
+    public void testBackpressure2() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        Observable.range(1, 100000).takeLast(RxRingBuffer.SIZE * 4).observeOn(Schedulers.newThread()).map(newSlowProcessor()).subscribe(ts);
+        ts.awaitTerminalEvent();
+        ts.assertNoErrors();
+        assertEquals(RxRingBuffer.SIZE * 4, ts.getOnNextEvents().size());
+    }
+
+    private Func1<Integer, Integer> newSlowProcessor() {
+        return new Func1<Integer, Integer>() {
+            int c = 0;
+
+            @Override
+            public Integer call(Integer i) {
+                if (c++ < 100) {
+                    try {
+                        Thread.sleep(1);
+                    } catch (InterruptedException e) {
+                    }
+                }
+                return i;
+            }
+
+        };
     }
 
 }

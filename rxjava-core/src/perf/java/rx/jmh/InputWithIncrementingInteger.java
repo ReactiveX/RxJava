@@ -15,60 +15,116 @@
  */
 package rx.jmh;
 
-import org.openjdk.jmh.annotations.Param;
-import org.openjdk.jmh.annotations.Scope;
+import java.util.Iterator;
+
 import org.openjdk.jmh.annotations.Setup;
-import org.openjdk.jmh.annotations.State;
-import org.openjdk.jmh.logic.BlackHole;
+import org.openjdk.jmh.infra.Blackhole;
 
 import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Observer;
 import rx.Subscriber;
-import rx.observers.TestSubscriber;
 
 /**
  * Exposes an Observable and Observer that increments n Integers and consumes them in a Blackhole.
  */
-@State(Scope.Thread)
-public class InputWithIncrementingInteger {
-    @Param({ "1", "1024", "1048576" })
-    public int size;
-
+public abstract class InputWithIncrementingInteger {
+    public Iterable<Integer> iterable;
     public Observable<Integer> observable;
-    private BlackHole bh;
+    public Observable<Integer> firehose;
+    public Blackhole bh;
+    public Observer<Integer> observer;
+
+    public abstract int getSize();
 
     @Setup
-    public void setup(final BlackHole bh) {
+    public void setup(final Blackhole bh) {
         this.bh = bh;
-        observable = Observable.create(new OnSubscribe<Integer>() {
-            @Override
-            public void call(Subscriber<? super Integer> o) {
-                for (int value = 0; value < size; value++) {
-                    if (o.isUnsubscribed())
-                        return;
-                    o.onNext(value);
-                }
-                o.onCompleted();
-            }
-        });
-    }
+        observable = Observable.range(0, getSize());
 
-    public TestSubscriber<Integer> newSubscriber() {
-        return new TestSubscriber<Integer>(new Observer<Integer>() {
+        firehose = Observable.create(new OnSubscribe<Integer>() {
+
+            @Override
+            public void call(Subscriber<? super Integer> s) {
+                for (int i = 0; i < getSize(); i++) {
+                    s.onNext(i);
+                }
+                s.onCompleted();
+            }
+
+        });
+
+        iterable = new Iterable<Integer>() {
+
+            @Override
+            public Iterator<Integer> iterator() {
+                return new Iterator<Integer>() {
+
+                    int i = 0;
+
+                    @Override
+                    public boolean hasNext() {
+                        return i < getSize();
+                    }
+
+                    @Override
+                    public Integer next() {
+                        return i++;
+                    }
+
+                    @Override
+                    public void remove() {
+
+                    }
+
+                };
+            }
+
+        };
+        observer = new Observer<Integer>() {
+
             @Override
             public void onCompleted() {
+
             }
 
             @Override
             public void onError(Throwable e) {
-                throw new RuntimeException(e);
+
             }
 
             @Override
-            public void onNext(Integer value) {
-                bh.consume(value);
+            public void onNext(Integer t) {
+                bh.consume(t);
             }
-        });
+
+        };
+
     }
+
+    public LatchedObserver<Integer> newLatchedObserver() {
+        return new LatchedObserver<Integer>(bh);
+    }
+
+    public Subscriber<Integer> newSubscriber() {
+        return new Subscriber<Integer>() {
+
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(Integer t) {
+                bh.consume(t);
+            }
+
+        };
+    }
+
 }

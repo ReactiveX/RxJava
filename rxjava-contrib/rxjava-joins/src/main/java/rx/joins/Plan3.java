@@ -28,9 +28,9 @@ import rx.functions.Func3;
 /**
  * Represents an execution plan for join patterns.
  */
-public class Plan3<T1, T2, T3, R> extends Plan0<R> {
-    protected Pattern3<T1, T2, T3> expression;
-    protected Func3<T1, T2, T3, R> selector;
+public final class Plan3<T1, T2, T3, R> extends Plan0<R> {
+    protected final Pattern3<T1, T2, T3> expression;
+    protected final Func3<T1, T2, T3, R> selector;
 
     public Plan3(Pattern3<T1, T2, T3> expression, Func3<T1, T2, T3, R> selector) {
         this.expression = expression;
@@ -42,14 +42,15 @@ public class Plan3<T1, T2, T3, R> extends Plan0<R> {
             final Observer<R> observer, final Action1<ActivePlan0> deactivate) {
         Action1<Throwable> onError = Actions.onErrorFrom(observer);
 
-        final JoinObserver1<T1> firstJoinObserver = createObserver(externalSubscriptions, expression.first(), onError);
-        final JoinObserver1<T2> secondJoinObserver = createObserver(externalSubscriptions, expression.second(), onError);
-        final JoinObserver1<T3> thirdJoinObserver = createObserver(externalSubscriptions, expression.third(), onError);
+        final JoinObserver1<T1> jo1 = createObserver(externalSubscriptions, expression.o1(), onError);
+        final JoinObserver1<T2> jo2 = createObserver(externalSubscriptions, expression.o2(), onError);
+        final JoinObserver1<T3> jo3 = createObserver(externalSubscriptions, expression.o3(), onError);
 
         final AtomicReference<ActivePlan3<T1, T2, T3>> self = new AtomicReference<ActivePlan3<T1, T2, T3>>();
 
-        ActivePlan3<T1, T2, T3> activePlan = new ActivePlan3<T1, T2, T3>(firstJoinObserver, secondJoinObserver,
-                thirdJoinObserver, new Action3<T1, T2, T3>() {
+        ActivePlan3<T1, T2, T3> activePlan = new ActivePlan3<T1, T2, T3>(
+        		jo1, jo2, jo3, 
+            new Action3<T1, T2, T3>() {
                     @Override
                     public void call(T1 t1, T2 t2, T3 t3) {
                         R result;
@@ -65,18 +66,19 @@ public class Plan3<T1, T2, T3, R> extends Plan0<R> {
                 new Action0() {
                     @Override
                     public void call() {
-                        firstJoinObserver.removeActivePlan(self.get());
-                        secondJoinObserver.removeActivePlan(self.get());
-                        thirdJoinObserver.removeActivePlan(self.get());
-                        deactivate.call(self.get());
+                    	ActivePlan0 ap = self.get();
+                        jo1.removeActivePlan(ap);
+                        jo2.removeActivePlan(ap);
+                        jo3.removeActivePlan(ap);
+                        deactivate.call(ap);
                     }
                 });
 
         self.set(activePlan);
 
-        firstJoinObserver.addActivePlan(activePlan);
-        secondJoinObserver.addActivePlan(activePlan);
-        thirdJoinObserver.addActivePlan(activePlan);
+        jo1.addActivePlan(activePlan);
+        jo2.addActivePlan(activePlan);
+        jo3.addActivePlan(activePlan);
 
         return activePlan;
     }

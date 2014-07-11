@@ -55,12 +55,12 @@ public class ExtensionTests : KotlinTests() {
 
     [Test]
     public fun testLast() {
-        assertEquals("three", listOf("one", "two", "three").asObservable().toBlockingObservable()!!.last())
+        assertEquals("three", listOf("one", "two", "three").asObservable().toBlocking()!!.last())
     }
 
     [Test]
     public fun testLastWithPredicate() {
-        assertEquals("two", listOf("one", "two", "three").asObservable().toBlockingObservable()!!.last { x -> x!!.length == 3 })
+        assertEquals("two", listOf("one", "two", "three").asObservable().toBlocking()!!.last { x -> x!!.length == 3 })
     }
 
     [Test]
@@ -139,15 +139,15 @@ public class ExtensionTests : KotlinTests() {
 
     [Test]
     public fun testFromWithIterable() {
-        assertEquals(5, listOf(1, 2, 3, 4, 5).asObservable().count()!!.toBlockingObservable()!!.single())
+        assertEquals(5, listOf(1, 2, 3, 4, 5).asObservable().count()!!.toBlocking()!!.single())
     }
 
     [Test]
     public fun testStartWith() {
         val list = listOf(10, 11, 12, 13, 14)
         val startList = listOf(1, 2, 3, 4, 5)
-        assertEquals(6, list.asObservable().startWith(0)!!.count()!!.toBlockingObservable()!!.single())
-        assertEquals(10, list.asObservable().startWith(startList)!!.count()!!.toBlockingObservable()!!.single())
+        assertEquals(6, list.asObservable().startWith(0)!!.count()!!.toBlocking()!!.single())
+        assertEquals(10, list.asObservable().startWith(startList)!!.count()!!.toBlocking()!!.single())
     }
 
     [Test]
@@ -210,7 +210,7 @@ public class ExtensionTests : KotlinTests() {
 
     [Test]
     public fun testForEach() {
-        asyncObservable.asObservable().toBlockingObservable()!!.forEach(received())
+        asyncObservable.asObservable().toBlocking()!!.forEach(received())
         verify(a, times(1))!!.received(1)
         verify(a, times(1))!!.received(2)
         verify(a, times(1))!!.received(3)
@@ -218,14 +218,14 @@ public class ExtensionTests : KotlinTests() {
 
     [Test(expected = javaClass<RuntimeException>())]
     public fun testForEachWithError() {
-        asyncObservable.asObservable().toBlockingObservable()!!.forEach { throw RuntimeException("err") }
+        asyncObservable.asObservable().toBlocking()!!.forEach { throw RuntimeException("err") }
         fail("we expect an exception to be thrown")
     }
 
     [Test]
     public fun testLastOrDefault() {
-        assertEquals("two", ("one" to"two").asObservable().toBlockingObservable()!!.lastOrDefault("default") { x -> x!!.length == 3 })
-        assertEquals("default", ("one" to"two").asObservable().toBlockingObservable()!!.lastOrDefault("default") { x -> x!!.length > 3 })
+        assertEquals("two", ("one" to"two").asObservable().toBlocking()!!.lastOrDefault("default") { x -> x!!.length == 3 })
+        assertEquals("default", ("one" to"two").asObservable().toBlocking()!!.lastOrDefault("default") { x -> x!!.length > 3 })
     }
 
     [Test]
@@ -247,7 +247,7 @@ public class ExtensionTests : KotlinTests() {
         val o2 = Triple(4, 5, 6).asObservable()
         val o3 = Triple(7, 8, 9).asObservable()
 
-        val values = Observable.zip(o1, o2, o3) { a, b, c -> listOf(a, b, c) }!!.toList()!!.toBlockingObservable()!!.single()!!
+        val values = Observable.zip(o1, o2, o3) { a, b, c -> listOf(a, b, c) }!!.toList()!!.toBlocking()!!.single()!!
         assertEquals(listOf(1, 4, 7), values[0])
         assertEquals(listOf(2, 5, 8), values[1])
         assertEquals(listOf(3, 6, 9), values[2])

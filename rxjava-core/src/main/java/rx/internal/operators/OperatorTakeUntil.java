@@ -16,10 +16,8 @@
 package rx.internal.operators;
 
 import rx.Observable;
+import rx.Observable.Operator;
 import rx.Subscriber;
-import rx.functions.Func1;
-
-import static rx.Observable.Operator;
 
 /**
  * Returns an Observable that emits the items from the source Observable until another Observable
@@ -27,89 +25,55 @@ import static rx.Observable.Operator;
  * <p>
  * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/takeUntil.png">
  */
-public final class OperatorTakeUntil {
+public final class OperatorTakeUntil<T, E> implements Operator<T, T> {
 
-    /**
-     * Returns the values from the source observable sequence until the other observable sequence produces a value.
-     * 
-     * @param source
-     *            the source sequence to propagate elements for.
-     * @param other
-     *            the observable sequence that terminates propagation of elements of the source sequence.
-     * @param <T>
-     *            the type of source.
-     * @param <E>
-     *            the other type.
-     * @return An observable sequence containing the elements of the source sequence up to the point the other sequence interrupted further propagation.
-     */
-    public static <T, E> Observable<T> takeUntil(final Observable<? extends T> source, final Observable<? extends E> other) {
-        Observable<Object> s = source.lift(new SourceObservable<T>());
-        Observable<Object> o = other.lift(new OtherObservable<E>());
+    private final Observable<? extends E> other;
 
-        Observable<Object> result = Observable.merge(s, o);
+    public OperatorTakeUntil(final Observable<? extends E> other) {
+        this.other = other;
+    }
 
-        final NotificationLite<T> notification = NotificationLite.instance();
+    @Override
+    public Subscriber<? super T> call(final Subscriber<? super T> child) {
+        final Subscriber<T> parent = new Subscriber<T>(child) {
 
-        return result.takeWhile(new Func1<Object, Boolean>() {
             @Override
-            public Boolean call(Object args) {
-                return !notification.isCompleted(args);
+            public void onCompleted() {
+                child.onCompleted();
             }
-        }).map(new Func1<Object, T>() {
+
             @Override
-            public T call(Object args) {
-                return notification.getValue(args);
+            public void onError(Throwable e) {
+                child.onError(e);
             }
+
+            @Override
+            public void onNext(T t) {
+                child.onNext(t);
+            }
+
+        };
+
+        other.unsafeSubscribe(new Subscriber<E>(child) {
+
+            @Override
+            public void onCompleted() {
+                parent.onCompleted();
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                parent.onError(e);
+            }
+
+            @Override
+            public void onNext(E t) {
+                parent.onCompleted();
+            }
+
         });
+
+        return parent;
     }
 
-    private final static class SourceObservable<T> implements Operator<Object, T> {
-
-        private final NotificationLite<T> notification = NotificationLite.instance();
-
-        @Override
-        public Subscriber<? super T> call(final Subscriber<? super Object> subscriber) {
-            return new Subscriber<T>(subscriber) {
-                @Override
-                public void onCompleted() {
-                    subscriber.onNext(notification.completed());
-                }
-
-                @Override
-                public void onError(Throwable e) {
-                    subscriber.onError(e);
-                }
-
-                @Override
-                public void onNext(T args) {
-                    subscriber.onNext(notification.next(args));
-                }
-            };
-        }
-    }
-
-    private final static class OtherObservable<E> implements Operator<Object, E> {
-
-        private final NotificationLite<E> notification = NotificationLite.instance();
-
-        @Override
-        public Subscriber<? super E> call(final Subscriber<? super Object> subscriber) {
-            return new Subscriber<E>(subscriber) {
-                @Override
-                public void onCompleted() {
-                    subscriber.onNext(notification.completed());
-                }
-
-                @Override
-                public void onError(Throwable e) {
-                    subscriber.onError(e);
-                }
-
-                @Override
-                public void onNext(E args) {
-                    subscriber.onNext(notification.completed());
-                }
-            };
-        }
-    }
 }

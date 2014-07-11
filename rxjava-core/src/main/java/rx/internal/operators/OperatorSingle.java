@@ -56,6 +56,7 @@ public final class OperatorSingle<T> implements Operator<T, T> {
                 if (isNonEmpty) {
                     hasTooManyElements = true;
                     subscriber.onError(new IllegalArgumentException("Sequence contains too many elements"));
+                    unsubscribe();
                 } else {
                     this.value = value;
                     isNonEmpty = true;

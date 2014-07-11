@@ -1,5 +1,62 @@
 # RxJava Releases #
 
+### Version 0.19.6 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.19.6%22)) ###
+
+Inclusion of 'rxjava-contrib:rxjava-scalaz' in release.
+
+### Version 0.19.5 ###
+
+Upload to Maven Central was corrupted so release is skipped.
+
+### Version 0.19.4 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.19.4%22)) ###
+
+* [Pull 1401] (https://github.com/Netflix/RxJava/pull/1401) OnError while emitting onNext value: object.toString
+* [Pull 1409] (https://github.com/Netflix/RxJava/pull/1409) Avoiding OperatorObserveOn from calling subscriber.onNext(..) after unsubscribe
+* [Pull 1406] (https://github.com/Netflix/RxJava/pull/1406) Kotlin M8
+* [Pull 1400] (https://github.com/Netflix/RxJava/pull/1400) Internal Data Structures
+* [Pull 1399] (https://github.com/Netflix/RxJava/pull/1399) Update Perf Tests
+* [Pull 1396] (https://github.com/Netflix/RxJava/pull/1396) RxScala: Fix the compiler warnings
+* [Pull 1397] (https://github.com/Netflix/RxJava/pull/1397) Adding the hooks unsafeSubscribe
+
+### Version 0.19.3 ###
+
+Upload to Maven Central was corrupted so release is skipped.
+
+### Version 0.19.2 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.19.2%22)) ###
+
+* [Pull 1388] (https://github.com/Netflix/RxJava/pull/1388) CompositeException stops mutating nested Exceptions
+* [Pull 1387] (https://github.com/Netflix/RxJava/pull/1387) Upgrade to JMH 0.9
+* [Pull 1297] (https://github.com/Netflix/RxJava/pull/1297) [RxScala] rxjava-scalaz: providing some type class instances
+* [Pull 1332] (https://github.com/Netflix/RxJava/pull/1332) IOSSchedulers for RoboVM
+* [Pull 1380] (https://github.com/Netflix/RxJava/pull/1380) Variety of Fixes
+* [Pull 1379] (https://github.com/Netflix/RxJava/pull/1379) Parallel Operator Rewrite
+* [Pull 1378] (https://github.com/Netflix/RxJava/pull/1378) BugFix: Pivot Concurrency
+* [Pull 1376] (https://github.com/Netflix/RxJava/pull/1376) Revision of JMH Tests
+* [Pull 1375] (https://github.com/Netflix/RxJava/pull/1375) RxScala: Add idiomatic toXXX methods
+* [Pull 1367] (https://github.com/Netflix/RxJava/pull/1367) Fix the bug that 'flatMap' swallows OnErrorNotImplementedException
+* [Pull 1374] (https://github.com/Netflix/RxJava/pull/1374) Fix head/tail false sharing issues 
+* [Pull 1369] (https://github.com/Netflix/RxJava/pull/1369) DebugHook got miswired before
+* [Pull 1361] (https://github.com/Netflix/RxJava/pull/1361) Fix a race condition if queued actions have been handled already
+* [Pull 1336] (https://github.com/Netflix/RxJava/pull/1336) RxScala: Add the rest missing methods to BlockingObservable
+* [Pull 1362] (https://github.com/Netflix/RxJava/pull/1362) RxScala: Fix #1340 and #1343
+* [Pull 1359] (https://github.com/Netflix/RxJava/pull/1359) Fixed padding of the integer and node classes
+
+### Version 0.19.1 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.19.1%22)) ###
+
+* [Pull 1357] (https://github.com/Netflix/RxJava/pull/1357) MergeWith, ConcatWith, AmbWith
+* [Pull 1345] (https://github.com/Netflix/RxJava/pull/1345) RxScala: Simplify doOnCompleted/Terminate, finallyDo callback usage
+* [Pull 1337] (https://github.com/Netflix/RxJava/pull/1337) Make Future receive NoSuchElementException when the BlockingObservable is empty
+* [Pull 1335] (https://github.com/Netflix/RxJava/pull/1335) RxAndroid: Bump build tools to 19.1 and android plugin to 0.11
+* [Pull 1327] (https://github.com/Netflix/RxJava/pull/1327) Join patterns extension for 4..9 and N arity joins.
+* [Pull 1321] (https://github.com/Netflix/RxJava/pull/1321) RxAndroid: Ensuring Runnables posted with delay to a Handler are removed when unsubcribed
+* [Pull 1347] (https://github.com/Netflix/RxJava/pull/1347) Allow use of the returned subscription to cancel periodic scheduling 
+* [Pull 1355] (https://github.com/Netflix/RxJava/pull/1355) Don't add the subscriber to the manager if it unsubscribed during the onStart call
+* [Pull 1350] (https://github.com/Netflix/RxJava/pull/1350) Baseline Performance Tests
+* [Pull 1316] (https://github.com/Netflix/RxJava/pull/1316) RxScala: Add the rest operators
+* [Pull 1324] (https://github.com/Netflix/RxJava/pull/1324) TrampolineScheduler & Unsubscribe
+* [Pull 1311] (https://github.com/Netflix/RxJava/pull/1311) Tiny integration test change
+
+
 ### Version 0.19.0 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.19.0%22)) ###
 
 #### Performance and Object Allocation

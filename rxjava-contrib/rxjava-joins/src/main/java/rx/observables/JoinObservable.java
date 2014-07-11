@@ -6,7 +6,12 @@ import rx.joins.Pattern2;
 import rx.joins.Plan0;
 import rx.joins.operators.OperatorJoinPatterns;
 
-public class JoinObservable<T> {
+/**
+ * Represents an observable that supports join operations.
+ *
+ * @param <T> the value type joined
+ */
+public final class JoinObservable<T> {
 
     private final Observable<T> o;
 
@@ -14,6 +19,11 @@ public class JoinObservable<T> {
         this.o = o;
     }
 
+    /**
+     * Creates a JoinObservable from a regular Observable.
+     * @param o the observable to wrap
+     * @return the created JoinObservable instance
+     */
     public static <T> JoinObservable<T> from(Observable<T> o) {
         return new JoinObservable<T>(o);
     }

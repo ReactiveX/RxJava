@@ -30,10 +30,15 @@ import rx.exceptions.Exceptions;
 public final class BlockingOperatorMostRecent {
 
     /**
-     * @warn mostRecent() missing javadocs
+     * Returns an {@code Iterable} that always returns the item most recently emitted by the {@code Observable}.
+     *
      * @param source
+     *            the source {@code Observable}
      * @param initialValue
-     * @return
+     *            a default item to return from the {@code Iterable} if {@code source} has not yet emitted any
+     *            items
+     * @return an {@code Iterable} that always returns the item most recently emitted by {@code source}, or
+     *         {@code initialValue} if {@code source} has not yet emitted any items
      */
     public static <T> Iterable<T> mostRecent(final Observable<? extends T> source, final T initialValue) {
 

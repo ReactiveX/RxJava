@@ -22,8 +22,8 @@ sourceSets {
 dependencies {
     compile project(':rxjava-core')
     compile 'org.jruby:jruby:1.7+'
-    provided 'junit:junit-dep:4.10'
-    provided 'org.mockito:mockito-core:1.8.5'
+    testCompile 'junit:junit-dep:4.10'
+    testCompile 'org.mockito:mockito-core:1.8.5'
     rspec 'org.jruby:jruby-complete:1.7.4'
     rspec 'org.rubygems:rspec:2.14.1'
 }

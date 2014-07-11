@@ -21,36 +21,54 @@ import rx.functions.Func3;
 /**
  * Represents a join pattern over observable sequences.
  */
-public class Pattern3<T1, T2, T3> implements Pattern {
-    private final Observable<T1> first;
-    private final Observable<T2> second;
-    private final Observable<T3> third;
+public final class Pattern3<T1, T2, T3> implements Pattern {
+    private final Observable<T1> o1;
+    private final Observable<T2> o2;
+    private final Observable<T3> o3;
 
-    public Pattern3(Observable<T1> first, Observable<T2> second,
-            Observable<T3> third) {
-        this.first = first;
-        this.second = second;
-        this.third = third;
+    public Pattern3(Observable<T1> o1, Observable<T2> o2,
+            Observable<T3> o3) {
+        this.o1 = o1;
+        this.o2 = o2;
+        this.o3 = o3;
     }
 
-    public Observable<T1> first() {
-        return first;
+    Observable<T1> o1() {
+        return o1;
     }
 
-    public Observable<T2> second() {
-        return second;
+    Observable<T2> o2() {
+        return o2;
     }
 
-    public Observable<T3> third() {
-        return third;
+    Observable<T3> o3() {
+        return o3;
     }
 
-    //    public <T4> Pattern4<T1, T2, T3, T4> and(Observable<T4> other) {
-    //        if (other == null) {
-    //            throw new NullPointerException();
-    //        }
-    //        return new Pattern4<T1, T2, T3, T4>(first, second, third, other);
-    //    }
+    /**
+     * Creates a pattern that matches when all three observable sequences have an available element.
+     * 
+     * @param other
+     *            Observable sequence to match with the two previous sequences.
+     * @return Pattern object that matches when all observable sequences have an available element.
+     */
+    public <T4> Pattern4<T1, T2, T3, T4> and(Observable<T4> other) {
+        if (other == null) {
+            throw new NullPointerException();
+        }
+        return new Pattern4<T1, T2, T3, T4>(o1, o2, o3, other);
+    }
+    
+    /**
+     * Matches when all observable sequences have an available
+     * element and projects the elements by invoking the selector function.
+     * 
+     * @param selector
+     *            the function that will be invoked for elements in the source sequences.
+     * @return the plan for the matching
+     * @throws NullPointerException
+     *             if selector is null
+     */
     public <R> Plan0<R> then(Func3<T1, T2, T3, R> selector) {
         if (selector == null) {
             throw new NullPointerException();

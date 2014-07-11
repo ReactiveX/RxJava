@@ -46,13 +46,14 @@ import rx.subscriptions.Subscriptions;
  * {@code pivot} and trades off the possibility of memory leak for deterministic functionality.
  *
  * @see <a href="https://github.com/Netflix/RxJava/issues/844">the Github issue describing the time gap problem</a>
- * @warn type param "T" undescribed
  * @param <T>
+ *            the type of the items to be buffered
  */
 public class BufferUntilSubscriber<T> extends Subject<T, T> {
 
     /**
      * @warn create() undescribed
+     * @return
      */
     public static <T> BufferUntilSubscriber<T> create() {
         State<T> state = new State<T>();
@@ -79,9 +80,6 @@ public class BufferUntilSubscriber<T> extends Subject<T, T> {
         }
         void setObserverRef(Observer<? super T> o) {
             observerRef = o;
-        }
-        boolean casObserverRef(Observer<? super T> expected, Observer<? super T> next) {
-            return OBSERVER_UPDATER.compareAndSet(this, expected, next);
         }
     }
     
@@ -187,7 +185,7 @@ public class BufferUntilSubscriber<T> extends Subject<T, T> {
             }
             // now we can safely change over to the actual and get rid of the pass-thru
             // but only if not unsubscribed
-            state.casObserverRef(this, actual);
+            state.setObserverRef(actual);
         }
 
     }

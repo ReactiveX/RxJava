@@ -34,9 +34,12 @@ import rx.exceptions.Exceptions;
 public final class BlockingOperatorNext {
 
     /**
-     * @warn next() missing javadocs
+     * Returns an {@code Iterable} that blocks until the {@code Observable} emits another item, then returns
+     * that item.
+     *
      * @param items
-     * @return
+     *            the {@code Observable} to observe
+     * @return an {@code Iterable} that behaves like a blocking version of {@code items}
      */
     public static <T> Iterable<T> next(final Observable<? extends T> items) {
         return new Iterable<T>() {

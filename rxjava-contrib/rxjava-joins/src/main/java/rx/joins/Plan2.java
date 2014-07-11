@@ -28,9 +28,9 @@ import rx.functions.Func2;
 /**
  * Represents an execution plan for join patterns.
  */
-public class Plan2<T1, T2, R> extends Plan0<R> {
-    protected Pattern2<T1, T2> expression;
-    protected Func2<T1, T2, R> selector;
+public final class Plan2<T1, T2, R> extends Plan0<R> {
+    protected final Pattern2<T1, T2> expression;
+    protected final Func2<T1, T2, R> selector;
 
     public Plan2(Pattern2<T1, T2> expression, Func2<T1, T2, R> selector) {
         this.expression = expression;
@@ -42,12 +42,12 @@ public class Plan2<T1, T2, R> extends Plan0<R> {
             final Observer<R> observer, final Action1<ActivePlan0> deactivate) {
         Action1<Throwable> onError = Actions.onErrorFrom(observer);
 
-        final JoinObserver1<T1> firstJoinObserver = createObserver(externalSubscriptions, expression.first(), onError);
-        final JoinObserver1<T2> secondJoinObserver = createObserver(externalSubscriptions, expression.second(), onError);
+        final JoinObserver1<T1> jo1 = createObserver(externalSubscriptions, expression.o1(), onError);
+        final JoinObserver1<T2> jo2 = createObserver(externalSubscriptions, expression.o2(), onError);
 
         final AtomicReference<ActivePlan2<T1, T2>> self = new AtomicReference<ActivePlan2<T1, T2>>();
 
-        ActivePlan2<T1, T2> activePlan = new ActivePlan2<T1, T2>(firstJoinObserver, secondJoinObserver, new Action2<T1, T2>() {
+        ActivePlan2<T1, T2> activePlan = new ActivePlan2<T1, T2>(jo1, jo2, new Action2<T1, T2>() {
             @Override
             public void call(T1 t1, T2 t2) {
                 R result;
@@ -63,16 +63,17 @@ public class Plan2<T1, T2, R> extends Plan0<R> {
                 new Action0() {
                     @Override
                     public void call() {
-                        firstJoinObserver.removeActivePlan(self.get());
-                        secondJoinObserver.removeActivePlan(self.get());
-                        deactivate.call(self.get());
+                    	ActivePlan0 ap = self.get();
+                        jo1.removeActivePlan(ap);
+                        jo2.removeActivePlan(ap);
+                        deactivate.call(ap);
                     }
                 });
 
         self.set(activePlan);
 
-        firstJoinObserver.addActivePlan(activePlan);
-        secondJoinObserver.addActivePlan(activePlan);
+        jo1.addActivePlan(activePlan);
+        jo2.addActivePlan(activePlan);
 
         return activePlan;
     }
