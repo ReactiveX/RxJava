@@ -1664,7 +1664,6 @@ trait Observable[+T]
    * @return an Observable that emits `initialValue` followed by the results of invoking the selector
    *         on a `ConnectableObservable` that shares a single subscription to the underlying Observable
    */
-  import annotation.unchecked._
   def publish[R](selector: Observable[T] => Observable[R], initialValue: T @uncheckedVariance): Observable[R] = {
     val thisJava = this.asJavaObservable.asInstanceOf[rx.Observable[T]]
     val fJava: Func1[rx.Observable[T], rx.Observable[R]] =
@@ -2884,7 +2883,7 @@ trait Observable[+T]
    * @return an Observable that emits only the very first item from the source, or a default value
    *         if the source Observable completes without emitting any item.
    */
-  def headOrElse(default: => T@uncheckedVariance): Observable[T] = firstOrElse(default)
+  def headOrElse[U >: T](default: => U): Observable[U] = firstOrElse(default)
 
   /**
    * Returns an Observable that emits only the very first item emitted by the source Observable, or raises an
