@@ -321,7 +321,7 @@ public class OperatorTakeTest {
     public void testProducerRequestThroughTake() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         ts.request(3);
-        final AtomicInteger requested = new AtomicInteger();
+        final AtomicLong requested = new AtomicLong();
         Observable.create(new OnSubscribe<Integer>() {
 
             @Override
@@ -329,7 +329,7 @@ public class OperatorTakeTest {
                 s.setProducer(new Producer() {
 
                     @Override
-                    public void request(int n) {
+                    public void request(long n) {
                         requested.set(n);
                     }
 
@@ -344,7 +344,7 @@ public class OperatorTakeTest {
     public void testProducerRequestThroughTakeIsModified() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         ts.request(3);
-        final AtomicInteger requested = new AtomicInteger();
+        final AtomicLong requested = new AtomicLong();
         Observable.create(new OnSubscribe<Integer>() {
 
             @Override
@@ -352,7 +352,7 @@ public class OperatorTakeTest {
                 s.setProducer(new Producer() {
 
                     @Override
-                    public void request(int n) {
+                    public void request(long n) {
                         requested.set(n);
                     }
 

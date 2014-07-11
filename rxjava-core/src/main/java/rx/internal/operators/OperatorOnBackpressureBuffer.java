@@ -17,7 +17,7 @@ package rx.internal.operators;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import rx.Observable.Operator;
 import rx.Producer;
@@ -32,13 +32,13 @@ public class OperatorOnBackpressureBuffer<T> implements Operator<T, T> {
         // TODO get a different queue implementation
         // TODO start with size hint
         final ConcurrentLinkedQueue<Object> queue = new ConcurrentLinkedQueue<Object>();
-        final AtomicInteger wip = new AtomicInteger();
-        final AtomicInteger requested = new AtomicInteger();
+        final AtomicLong wip = new AtomicLong();
+        final AtomicLong requested = new AtomicLong();
 
         child.setProducer(new Producer() {
 
             @Override
-            public void request(int n) {
+            public void request(long n) {
                 if (requested.getAndAdd(n) == 0) {
                     pollQueue(wip, requested, queue, child);
                 }
@@ -75,7 +75,7 @@ public class OperatorOnBackpressureBuffer<T> implements Operator<T, T> {
         return parent;
     }
 
-    private void pollQueue(AtomicInteger wip, AtomicInteger requested, Queue<Object> queue, Subscriber<? super T> child) {
+    private void pollQueue(AtomicLong wip, AtomicLong requested, Queue<Object> queue, Subscriber<? super T> child) {
         // TODO can we do this without putting everything in the queue first so we can fast-path the case when we don't need to queue?
         if (requested.get() > 0) {
             // only one draining at a time

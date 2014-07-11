@@ -15,9 +15,8 @@
  */
 package rx.internal.operators;
 
-import java.util.Collection;
 import java.util.Iterator;
-import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
+import java.util.concurrent.atomic.AtomicLongFieldUpdater;
 
 import rx.Observable.OnSubscribe;
 import rx.Producer;
@@ -52,9 +51,9 @@ public final class OnSubscribeFromIterable<T> implements OnSubscribe<T> {
         private final Subscriber<? super T> o;
         private final Iterator<? extends T> it;
 
-        private volatile int requested = 0;
+        private volatile long requested = 0;
         @SuppressWarnings("rawtypes")
-        private static final AtomicIntegerFieldUpdater<IterableProducer> REQUESTED_UPDATER = AtomicIntegerFieldUpdater.newUpdater(IterableProducer.class, "requested");
+        private static final AtomicLongFieldUpdater<IterableProducer> REQUESTED_UPDATER = AtomicLongFieldUpdater.newUpdater(IterableProducer.class, "requested");
 
         private IterableProducer(Subscriber<? super T> o, Iterator<? extends T> it) {
             this.o = o;
@@ -62,7 +61,7 @@ public final class OnSubscribeFromIterable<T> implements OnSubscribe<T> {
         }
 
         @Override
-        public void request(int n) {
+        public void request(long n) {
             if (n < 0) {
                 // fast-path without backpressure
                 while (it.hasNext()) {
@@ -74,15 +73,15 @@ public final class OnSubscribeFromIterable<T> implements OnSubscribe<T> {
                 o.onCompleted();
             } else {
                 // backpressure is requested
-                int _c = REQUESTED_UPDATER.getAndAdd(this, n);
+                long _c = REQUESTED_UPDATER.getAndAdd(this, n);
                 if (_c == 0) {
                     while (true) {
                         /*
                          * This complicated logic is done to avoid touching the volatile `requested` value
                          * during the loop itself. If it is touched during the loop the performance is impacted significantly.
                          */
-                        int r = requested;
-                        int numToEmit = r;
+                        long r = requested;
+                        long numToEmit = r;
                         while (it.hasNext() && --numToEmit >= 0) {
                             if (o.isUnsubscribed()) {
                                 return;

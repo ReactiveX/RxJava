@@ -17,7 +17,7 @@ package rx.internal.operators;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
+import java.util.concurrent.atomic.AtomicLongFieldUpdater;
 
 import rx.Observable.Operator;
 import rx.Producer;
@@ -96,9 +96,9 @@ public final class OperatorTakeLast<T> implements Operator<T, T> {
             this.subscriber = subscriber;
         }
 
-        private volatile int requested = 0;
+        private volatile long requested = 0;
         @SuppressWarnings("rawtypes")
-        private static final AtomicIntegerFieldUpdater<QueueProducer> REQUESTED_UPDATER = AtomicIntegerFieldUpdater.newUpdater(QueueProducer.class, "requested");
+        private static final AtomicLongFieldUpdater<QueueProducer> REQUESTED_UPDATER = AtomicLongFieldUpdater.newUpdater(QueueProducer.class, "requested");
 
         void startEmitting() {
             if (!emittingStarted) {
@@ -108,8 +108,8 @@ public final class OperatorTakeLast<T> implements Operator<T, T> {
         }
 
         @Override
-        public void request(int n) {
-            int _c = 0;
+        public void request(long n) {
+            long _c = 0;
             if (n < 0) {
                 requested = -1;
             } else {
@@ -122,7 +122,7 @@ public final class OperatorTakeLast<T> implements Operator<T, T> {
             emit(_c);
         }
 
-        void emit(int previousRequested) {
+        void emit(long previousRequested) {
             if (requested < 0) {
                 // fast-path without backpressure
                 try {
@@ -142,7 +142,7 @@ public final class OperatorTakeLast<T> implements Operator<T, T> {
                          * This complicated logic is done to avoid touching the volatile `requested` value
                          * during the loop itself. If it is touched during the loop the performance is impacted significantly.
                          */
-                        int numToEmit = requested;
+                        long numToEmit = requested;
                         int emitted = 0;
                         Object o;
                         while (--numToEmit >= 0 && (o = deque.poll()) != null) {

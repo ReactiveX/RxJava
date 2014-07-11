@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Test;
 
@@ -226,11 +227,11 @@ public class OperatorSubscribeOnTest {
 
             @Override
             public Subscriber<? super Integer> call(final Subscriber<? super Integer> child) {
-                final AtomicInteger requested = new AtomicInteger();
+                final AtomicLong requested = new AtomicLong();
                 child.setProducer(new Producer() {
 
                     @Override
-                    public void request(int n) {
+                    public void request(long n) {
                         if (!requested.compareAndSet(0, n)) {
                             child.onError(new RuntimeException("Expected to receive request before onNext but didn't"));
                         }

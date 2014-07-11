@@ -22,6 +22,7 @@ import static org.junit.Assert.fail;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -452,7 +453,7 @@ public class BackpressureTests {
     private static Observable<Integer> incrementingIntegers(final AtomicInteger counter, final ConcurrentLinkedQueue<Thread> threadsSeen) {
         return Observable.create(new OnSubscribe<Integer>() {
 
-            final AtomicInteger requested = new AtomicInteger();
+            final AtomicLong requested = new AtomicLong();
 
             @Override
             public void call(final Subscriber<? super Integer> s) {
@@ -460,7 +461,7 @@ public class BackpressureTests {
                     int i = 0;
 
                     @Override
-                    public void request(int n) {
+                    public void request(long n) {
                         if (n == 0) {
                             // nothing to do
                             return;
@@ -468,7 +469,7 @@ public class BackpressureTests {
                         if (threadsSeen != null) {
                             threadsSeen.offer(Thread.currentThread());
                         }
-                        int _c = requested.getAndAdd(n);
+                        long _c = requested.getAndAdd(n);
                         if (_c == 0) {
                             while (!s.isUnsubscribed()) {
                                 s.onNext(i++);

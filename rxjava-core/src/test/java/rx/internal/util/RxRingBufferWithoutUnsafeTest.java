@@ -57,7 +57,7 @@ public class RxRingBufferWithoutUnsafeTest extends RxRingBufferBase {
             AtomicInteger c = new AtomicInteger();
 
             @Override
-            public void request(final int n) {
+            public void request(final long n) {
                 System.out.println("request[" + c.incrementAndGet() + "]: " + n + "  Thread: " + Thread.currentThread());
                 w1.schedule(new Action0() {
 
