@@ -15,22 +15,17 @@
  */
 package rx.exceptions;
 
-import java.io.PrintStream;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 /**
  * Exception that is a composite of 1 or more other exceptions.
- * A CompositeException does not modify the structure of any exception it wraps, but at print-time
- * iterates through the list of contained Throwables to print them all.
- *
- * Its invariant is to contains an immutable, ordered (by insertion order), unique list of non-composite exceptions.
- * This list may be queried by {@code #getExceptions()}
+ * <p>
+ * Use <code>getMessage()</code> to retrieve a concatenation of the composite exceptions.
  */
 public final class CompositeException extends RuntimeException {
 
@@ -38,21 +33,20 @@ public final class CompositeException extends RuntimeException {
 
     private final List<Throwable> exceptions;
     private final String message;
+    private final Throwable cause;
 
     public CompositeException(String messagePrefix, Collection<Throwable> errors) {
-        Set<Throwable> deDupedExceptions = new LinkedHashSet<Throwable>();
         List<Throwable> _exceptions = new ArrayList<Throwable>();
-        for (Throwable ex: errors) {
-            if (ex instanceof CompositeException) {
-                deDupedExceptions.addAll(((CompositeException) ex).getExceptions());
-            } else {
-                deDupedExceptions.add(ex);
-            }
+        CompositeExceptionCausalChain _cause = new CompositeExceptionCausalChain();
+        int count = 0;
+        for (Throwable e : errors) {
+            count++;
+            attachCallingThreadStack(_cause, e);
+            _exceptions.add(e);
         }
-
-        _exceptions.addAll(deDupedExceptions);
         this.exceptions = Collections.unmodifiableList(_exceptions);
-        this.message = exceptions.size() + " exceptions occurred. See them in causal chain below.";
+        this.message = count + " exceptions occurred. See them in causal chain below.";
+        this.cause = _cause;
     }
 
     public CompositeException(Collection<Throwable> errors) {
@@ -76,106 +70,57 @@ public final class CompositeException extends RuntimeException {
 
     @Override
     public synchronized Throwable getCause() {
-        return null;
+        return cause;
     }
 
-    /**
-     * All of the following printStackTrace functionality is derived from JDK Throwable printStackTrace.
-     * In particular, the PrintStreamOrWriter abstraction is copied wholesale.
-     *
-     * Changes from the official JDK implementation:
-     * * No infinite loop detection
-     * * Smaller critical section holding printStream lock
-     * * Explicit knowledge about exceptions List that this loops through
-     */
-    @Override
-    public void printStackTrace() {
-        printStackTrace(System.err);
-    }
-
-    @Override
-    public void printStackTrace(PrintStream s) {
-        printStackTrace(new WrappedPrintStream(s));
-    }
-
-    @Override
-    public void printStackTrace(PrintWriter s) {
-        printStackTrace(new WrappedPrintWriter(s));
-    }
-
-    /**
-     * Special handling for printing out a CompositeException
-     * Loop through all inner exceptions and print them out
-     * @param s stream to print to
-     */
-    private void printStackTrace(PrintStreamOrWriter s) {
-        StringBuilder bldr = new StringBuilder();
-        bldr.append(this).append("\n");
-        for (StackTraceElement myStackElement: getStackTrace()) {
-            bldr.append("\tat ").append(myStackElement).append("\n");
+    @SuppressWarnings("unused")
+    // useful when debugging but don't want to make part of publicly supported API
+    private static String getStackTraceAsString(StackTraceElement[] stack) {
+        StringBuilder s = new StringBuilder();
+        boolean firstLine = true;
+        for (StackTraceElement e : stack) {
+            if (e.toString().startsWith("java.lang.Thread.getStackTrace")) {
+                // we'll ignore this one
+                continue;
+            }
+            if (!firstLine) {
+                s.append("\n\t");
+            }
+            s.append(e.toString());
+            firstLine = false;
         }
-        int i = 1;
-        for (Throwable ex: exceptions) {
-            bldr.append("  ComposedException ").append(i).append(" :").append("\n");
-            appendStackTrace(bldr, ex, "\t");
-            i++;
+        return s.toString();
+    }
+
+    /* package-private */ static void attachCallingThreadStack(Throwable e, Throwable cause) {
+        Set<Throwable> seenCauses = new HashSet<Throwable>();
+
+        while (e.getCause() != null) {
+            e = e.getCause();
+            if (seenCauses.contains(e.getCause())) {
+                break;
+            } else {
+                seenCauses.add(e.getCause());
+            }
         }
-        synchronized (s.lock()) {
-            s.println(bldr.toString());
+        // we now have 'e' as the last in the chain
+        try {
+            e.initCause(cause);
+        } catch (Throwable t) {
+            // ignore
+            // the javadocs say that some Throwables (depending on how they're made) will never
+            // let me call initCause without blowing up even if it returns null
         }
     }
 
-    private void appendStackTrace(StringBuilder bldr, Throwable ex, String prefix) {
-        bldr.append(prefix).append(ex).append("\n");
-        for (StackTraceElement stackElement: ex.getStackTrace()) {
-            bldr.append("\t\tat ").append(stackElement).append("\n");
-        }
-        if (ex.getCause() != null) {
-            bldr.append("\tCaused by: ");
-            appendStackTrace(bldr, ex.getCause(), "");
-        }
-    }
+    /* package-private */ final static class CompositeExceptionCausalChain extends RuntimeException {
+        private static final long serialVersionUID = 3875212506787802066L;
+        /* package-private */ static String MESSAGE = "Chain of Causes for CompositeException In Order Received =>";
 
-    private abstract static class PrintStreamOrWriter {
-        /** Returns the object to be locked when using this StreamOrWriter */
-        abstract Object lock();
-
-        /** Prints the specified string as a line on this StreamOrWriter */
-        abstract void println(Object o);
-    }
-
-    /**
-     * Same abstraction and implementation as in JDK to allow PrintStream and PrintWriter to share implementation
-     */
-    private static class WrappedPrintStream extends PrintStreamOrWriter {
-        private final PrintStream printStream;
-
-        WrappedPrintStream(PrintStream printStream) {
-            this.printStream = printStream;
-        }
-
-        Object lock() {
-            return printStream;
-        }
-
-        void println(Object o) {
-            printStream.println(o);
+        @Override
+        public String getMessage() {
+            return MESSAGE;
         }
     }
 
-    private static class WrappedPrintWriter extends PrintStreamOrWriter {
-        private final PrintWriter printWriter;
-
-        WrappedPrintWriter(PrintWriter printWriter) {
-            this.printWriter = printWriter;
-        }
-
-        Object lock() {
-            return printWriter;
-        }
-
-        void println(Object o) {
-            printWriter.println(o);
-        }
-    }
 }
