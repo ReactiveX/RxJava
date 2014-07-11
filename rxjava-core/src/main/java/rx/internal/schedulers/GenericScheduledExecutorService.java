@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rx.schedulers;
+package rx.internal.schedulers;
 
 import rx.Scheduler;
 import rx.internal.util.RxThreadFactory;
@@ -30,9 +30,9 @@ import java.util.concurrent.ScheduledExecutorService;
  * <p>
  * NOTE: No actual work should be done on tasks submitted to this executor. Submit a task with the appropriate delay which then in turn invokes
  * the work asynchronously on the appropriate {@link Scheduler} implementation. This means for example that you would not use this approach
- * along with {@link TrampolineScheduler} or {@link ImmediateScheduler}.
+ * along with {@link rx.schedulers.TrampolineScheduler} or {@link rx.schedulers.ImmediateScheduler}.
  */
-/* package */final class GenericScheduledExecutorService {
+public final class GenericScheduledExecutorService {
 
     private static final String THREAD_NAME_PREFIX = "RxScheduledExecutorPool-";
     private static final RxThreadFactory THREAD_FACTORY = new RxThreadFactory(THREAD_NAME_PREFIX);
