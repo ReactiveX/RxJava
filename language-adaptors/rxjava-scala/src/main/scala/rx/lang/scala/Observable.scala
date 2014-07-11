@@ -1643,10 +1643,10 @@ trait Observable[+T]
    * @return an Observable that emits the results of invoking the selector on the items emitted by a `ConnectableObservable`
    *         that shares a single subscription to the underlying sequence
    */
-  def publish[U >: T, R](selector: Observable[U] => Observable[R]): Observable[R] = {
-    val thisJava = this.asJavaObservable.asInstanceOf[rx.Observable[U]]
-    val fJava: Func1[rx.Observable[U], rx.Observable[R]] =
-      (jo: rx.Observable[U]) => selector(toScalaObservable[U](jo)).asJavaObservable.asInstanceOf[rx.Observable[R]]
+  def publish[R](selector: Observable[T] => Observable[R]): Observable[R] = {
+    val thisJava = this.asJavaObservable.asInstanceOf[rx.Observable[T]]
+    val fJava: Func1[rx.Observable[T], rx.Observable[R]] =
+      (jo: rx.Observable[T]) => selector(toScalaObservable[T](jo)).asJavaObservable.asInstanceOf[rx.Observable[R]]
     toScalaObservable[R](thisJava.publish(fJava))
   }
 
