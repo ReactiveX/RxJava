@@ -61,12 +61,14 @@ public class NewThreadWorker extends Scheduler.Worker implements Subscription, R
     public ScheduledAction scheduleActual(final Action0 action, long delayTime, TimeUnit unit) {
         final ScheduledAction run = new ScheduledAction(action);
         if (delayTime <= 0) {
+            run.add(Subscriptions.from(run));
             actionQueue.offer(run);
         } else {
             Future<?> f = GenericScheduledExecutorService.getInstance().schedule(new Runnable() {
                 @Override
                 public void run() {
                 if (!run.isUnsubscribed()) {
+                    run.add(Subscriptions.from(run));
                     actionQueue.offer(run);
                 }
                 }
