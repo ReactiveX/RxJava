@@ -185,7 +185,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
                     if (r > 0) {
                         emitted = true;
                         actual.onNext(t.get());
-                        mergeProducer.REQUESTED.decrementAndGet(mergeProducer);
+                        MergeProducer.REQUESTED.decrementAndGet(mergeProducer);
                         // we handle this Observable without ever incrementing the wip or touching other machinery so just return here
                         return;
                     }
@@ -295,7 +295,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
                         }
                     }
                     // decrement the number we emitted from outstanding requests
-                    mergeProducer.REQUESTED.getAndAdd(mergeProducer, -emittedWhileDraining);
+                    MergeProducer.REQUESTED.getAndAdd(mergeProducer, -emittedWhileDraining);
                 }
                 return emittedWhileDraining;
             }
@@ -500,7 +500,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
                             } else {
                                 parentSubscriber.actual.onNext(t);
                                 emitted++;
-                                producer.REQUESTED.decrementAndGet(producer);
+                                MergeProducer.REQUESTED.decrementAndGet(producer);
                             }
                         } else {
                             // no requests available, so enqueue it
@@ -587,7 +587,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
             }
 
             // decrement the number we emitted from outstanding requests
-            producer.REQUESTED.getAndAdd(producer, -emitted);
+            MergeProducer.REQUESTED.getAndAdd(producer, -emitted);
             return emitted;
         }
 
