@@ -17,6 +17,7 @@ package rx.android.schedulers;
 
 import java.util.concurrent.TimeUnit;
 
+import android.os.Looper;
 import rx.Scheduler;
 import rx.Subscription;
 import rx.functions.Action0;
@@ -79,7 +80,11 @@ public class HandlerThreadScheduler extends Scheduler {
             scheduledAction.addParent(compositeSubscription);
             compositeSubscription.add(scheduledAction);
 
-            handler.postDelayed(scheduledAction, unit.toMillis(delayTime));
+            if (Looper.myLooper() == handler.getLooper() && delayTime == 0L) {
+                scheduledAction.run();
+            } else {
+                handler.postDelayed(scheduledAction, unit.toMillis(delayTime));
+            }
 
             return scheduledAction;
         }
