@@ -521,7 +521,7 @@ class RxScalaDemo extends JUnitSuite {
 
   @Test def exampleWithReplay5() {
     val numbers = Observable.interval(100 millis).take(10)
-    val sharedNumbers = numbers.replay[Long, Long]((o: Observable[Long]) => o.map(_ * 2))
+    val sharedNumbers = numbers.replay(o => o.map(_ * 2))
     sharedNumbers.subscribe(n => println(s"subscriber gets $n"))
     waitFor(sharedNumbers)
   }
