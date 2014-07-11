@@ -276,9 +276,9 @@ public class RxRingBuffer implements Subscription {
         Object o;
         o = queue.poll();
         /*
-         * benjchristensen July 10 2014 => The check for 'queue.size() == 0' came from a very rare concurrency bug where poll()
+         * benjchristensen July 10 2014 => The check for 'queue.isEmpty()' came from a very rare concurrency bug where poll()
          * is invoked, then an "onNext + onCompleted/onError" arrives before hitting the if check below. In that case,
-         * "o == null" and there is a terminal state, but now "queue.size() > 0" and we should NOT return the terminalState.
+         * "o == null" and there is a terminal state, but now "queue.isEmpty()" and we should NOT return the terminalState.
          * 
          * The queue.size() check is a double-check that works to handle this, without needing to synchronize poll with on*
          * or needing to enqueue terminalState.
@@ -286,14 +286,24 @@ public class RxRingBuffer implements Subscription {
          * This did make me consider eliminating the 'terminalState' ref and enqueuing it ... but then that requires
          * a +1 of the size, or -1 of how many onNext can be sent. See comment on 'terminalState' above for why it
          * is currently the way it is.
-         * 
-         * This performs fine as long as we don't use a queue implementation where the size() impl has to scan the whole list,
-         * such as ConcurrentLinkedQueue.
          */
-        if (o == null && terminalState != null && queue.size() == 0) {
+        if (o == null && terminalState != null && queue.isEmpty()) {
             o = terminalState;
             // once emitted we clear so a poll loop will finish
             terminalState = null;
+        }
+        return o;
+    }
+    
+    public Object peek() {
+        if (queue == null) {
+            // we are unsubscribed and have released the undelrying queue
+            return null;
+        }
+        Object o;
+        o = queue.peek();
+        if (o == null && terminalState != null && queue.isEmpty()) {
+            o = terminalState;
         }
         return o;
     }
@@ -304,6 +314,10 @@ public class RxRingBuffer implements Subscription {
 
     public boolean isError(Object o) {
         return on.isError(o);
+    }
+
+    public Object getValue(Object o) {
+        return on.getValue(o);
     }
 
     public boolean accept(Object o, Observer child) {

@@ -24,7 +24,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import rx.Observable.OnSubscribe;
@@ -75,9 +74,6 @@ public class BackpressureTests {
         assertTrue(c.get() < RxRingBuffer.SIZE * 2);
     }
 
-    // currently the first starves the second
-    // is it possible to make 2 synchronous streams fairly merge without the first starving all others?
-    @Ignore
     @Test
     public void testMergeSync() {
         int NUM = (int) ((int) RxRingBuffer.SIZE * 4.1);
@@ -92,12 +88,13 @@ public class BackpressureTests {
         System.out.println("Expected: " + NUM + " got: " + ts.getOnNextEvents().size());
         System.out.println("testMergeSync => Received: " + ts.getOnNextEvents().size() + "  Emitted: " + c1.get() + " / " + c2.get());
         assertEquals(NUM, ts.getOnNextEvents().size());
-        assertTrue(c1.get() < RxRingBuffer.SIZE * 3);
-        assertTrue(c2.get() < RxRingBuffer.SIZE * 3);
+        // either one can starve the other, but neither should be capable of doing more than 5 batches (taking 4.1)
+        // TODO is it possible to make this deterministic rather than one possibly starving the other?
+        // benjchristensen => In general I'd say it's not worth trying to make it so, as "fair" algoritms generally take a performance hit
+        assertTrue(c1.get() < RxRingBuffer.SIZE * 5);
+        assertTrue(c2.get() < RxRingBuffer.SIZE * 5);
     }
 
-    // currently the first starves the second
-    @Ignore
     @Test
     public void testMergeAsync() {
         int NUM = (int) ((int) RxRingBuffer.SIZE * 4.1);
@@ -113,12 +110,13 @@ public class BackpressureTests {
         ts.assertNoErrors();
         System.out.println("testMergeAsync => Received: " + ts.getOnNextEvents().size() + "  Emitted: " + c1.get() + " / " + c2.get());
         assertEquals(NUM, ts.getOnNextEvents().size());
-        assertTrue(c1.get() < RxRingBuffer.SIZE * 3);
-        assertTrue(c2.get() < RxRingBuffer.SIZE * 3);
+        // either one can starve the other, but neither should be capable of doing more than 5 batches (taking 4.1)
+        // TODO is it possible to make this deterministic rather than one possibly starving the other?
+        // benjchristensen => In general I'd say it's not worth trying to make it so, as "fair" algoritms generally take a performance hit
+        assertTrue(c1.get() < RxRingBuffer.SIZE * 5);
+        assertTrue(c2.get() < RxRingBuffer.SIZE * 5);
     }
 
-    // currently the first starves the second
-    @Ignore
     @Test
     public void testMergeAsyncThenObserveOn() {
         int NUM = (int) ((int) RxRingBuffer.SIZE * 4.1);
@@ -134,8 +132,11 @@ public class BackpressureTests {
         ts.assertNoErrors();
         System.out.println("testMergeAsyncThenObserveOn => Received: " + ts.getOnNextEvents().size() + "  Emitted: " + c1.get() + " / " + c2.get());
         assertEquals(NUM, ts.getOnNextEvents().size());
-        assertTrue(c1.get() < RxRingBuffer.SIZE * 3);
-        assertTrue(c2.get() < RxRingBuffer.SIZE * 3);
+        // either one can starve the other, but neither should be capable of doing more than 5 batches (taking 4.1)
+        // TODO is it possible to make this deterministic rather than one possibly starving the other?
+        // benjchristensen => In general I'd say it's not worth trying to make it so, as "fair" algoritms generally take a performance hit
+        assertTrue(c1.get() < RxRingBuffer.SIZE * 5);
+        assertTrue(c2.get() < RxRingBuffer.SIZE * 5);
     }
 
     @Test
@@ -182,8 +183,7 @@ public class BackpressureTests {
         assertTrue(c.get() <= RxRingBuffer.SIZE * 2);
     }
 
-    @Ignore
-    @Test(timeout = 2000)
+    @Test
     public void testZipSync() {
         int NUM = (int) ((int) RxRingBuffer.SIZE * 4.1);
         AtomicInteger c1 = new AtomicInteger();
@@ -206,12 +206,11 @@ public class BackpressureTests {
         ts.assertNoErrors();
         System.out.println("testZipSync => Received: " + ts.getOnNextEvents().size() + "  Emitted: " + c1.get() + " / " + c2.get());
         assertEquals(NUM, ts.getOnNextEvents().size());
-        assertTrue(c1.get() < RxRingBuffer.SIZE * 3);
-        assertTrue(c2.get() < RxRingBuffer.SIZE * 3);
+        assertTrue(c1.get() < RxRingBuffer.SIZE * 5);
+        assertTrue(c2.get() < RxRingBuffer.SIZE * 5);
     }
 
-    @Ignore
-    @Test(timeout = 2000)
+    @Test
     public void testZipAsync() {
         int NUM = (int) ((int) RxRingBuffer.SIZE * 2.1);
         AtomicInteger c1 = new AtomicInteger();
@@ -312,7 +311,7 @@ public class BackpressureTests {
             public void onStart() {
                 request(100);
             }
-            
+
             @Override
             public void onCompleted() {
 
@@ -358,8 +357,7 @@ public class BackpressureTests {
             public void onStart() {
                 request(100);
             }
-            
-            
+
             @Override
             public void onCompleted() {
                 latch.countDown();
