@@ -113,15 +113,15 @@ public final class SubscriptionRandomList<T extends Subscription> implements Sub
     }
 
     public void forEach(Action1<T> action) {
-        Object[] ss;
+        T[] ss=null;
         synchronized (this) {
             if (unsubscribed || subscriptions == null) {
                 return;
             }
-            ss = subscriptions.toArray();
+            ss = subscriptions.toArray(ss);
         }
-        for (Object t : ss) {
-            action.call((T) t);
+        for (T t : ss) {
+            action.call(t);
         }
     }
 
