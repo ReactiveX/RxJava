@@ -83,10 +83,8 @@ public class NewThreadWorker extends Scheduler.Worker implements Subscription, R
 
         workerThread.interrupt();
 
-        Iterator<ScheduledAction> scheduleActionIterator = actionQueue.iterator();
-        while (scheduleActionIterator.hasNext()) {
-            ScheduledAction scheduledAction = scheduleActionIterator.next();
-            scheduleActionIterator.remove();
+        ScheduledAction scheduledAction;
+        while ((scheduledAction = actionQueue.poll()) != null) {
             scheduledAction.unsubscribe();
         }
     }
