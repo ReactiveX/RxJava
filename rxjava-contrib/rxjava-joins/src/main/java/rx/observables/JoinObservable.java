@@ -31,7 +31,7 @@ public final class JoinObservable<T> {
     /**
      * Returns a Pattern that matches when both Observables emit an item.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/and_then_when.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/and_then_when.png" alt="">
      * 
      * @param right
      *            an Observable to match with the source Observable
@@ -48,7 +48,7 @@ public final class JoinObservable<T> {
     /**
      * Joins together the results from several patterns via their plans.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/and_then_when.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/and_then_when.png" alt="">
      * 
      * @param plans
      *            a series of plans created by use of the {@link #then} Observer on patterns
@@ -68,7 +68,7 @@ public final class JoinObservable<T> {
     /**
      * Joins together the results from several patterns via their plans.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/and_then_when.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/and_then_when.png" alt="">
      * 
      * @param plans
      *            a series of plans created by use of the {@link #then} Observer on patterns
@@ -85,7 +85,7 @@ public final class JoinObservable<T> {
     /**
      * Joins the results from a pattern via its plan.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/and_then_when.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/and_then_when.png" alt="">
      * 
      * @param p1
      *            the plan to join, created by use of the {@link #then} Observer on a pattern
@@ -101,7 +101,7 @@ public final class JoinObservable<T> {
     /**
      * Joins together the results from two patterns via their plans.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/and_then_when.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/and_then_when.png" alt="">
      * 
      * @param p1
      *            a plan, created by use of the {@link #then} Observer on a pattern
@@ -119,7 +119,7 @@ public final class JoinObservable<T> {
     /**
      * Joins together the results from three patterns via their plans.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/and_then_when.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/and_then_when.png" alt="">
      * 
      * @param p1
      *            a plan, created by use of the {@link #then} Observer on a pattern
@@ -139,7 +139,7 @@ public final class JoinObservable<T> {
     /**
      * Joins together the results from four patterns via their plans.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/and_then_when.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/and_then_when.png" alt="">
      * 
      * @param p1
      *            a plan, created by use of the {@link #then} Observer on a pattern
@@ -161,7 +161,7 @@ public final class JoinObservable<T> {
     /**
      * Joins together the results from five patterns via their plans.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/and_then_when.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/and_then_when.png" alt="">
      * 
      * @param p1
      *            a plan, created by use of the {@link #then} Observer on a pattern
@@ -185,7 +185,7 @@ public final class JoinObservable<T> {
     /**
      * Joins together the results from six patterns via their plans.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/and_then_when.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/and_then_when.png" alt="">
      * 
      * @param p1
      *            a plan, created by use of the {@link #then} Observer on a pattern
@@ -211,7 +211,7 @@ public final class JoinObservable<T> {
     /**
      * Joins together the results from seven patterns via their plans.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/and_then_when.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/and_then_when.png" alt="">
      * 
      * @param p1
      *            a plan, created by use of the {@link #then} Observer on a pattern
@@ -239,7 +239,7 @@ public final class JoinObservable<T> {
     /**
      * Joins together the results from eight patterns via their plans.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/and_then_when.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/and_then_when.png" alt="">
      * 
      * @param p1
      *            a plan, created by use of the {@link #then} Observer on a pattern
@@ -269,7 +269,7 @@ public final class JoinObservable<T> {
     /**
      * Joins together the results from nine patterns via their plans.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/and_then_when.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/and_then_when.png" alt="">
      * 
      * @param p1
      *            a plan, created by use of the {@link #then} Observer on a pattern
@@ -302,7 +302,7 @@ public final class JoinObservable<T> {
      * Matches when the Observable has an available item and projects the item by invoking the selector
      * function.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/and_then_when.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/and_then_when.png" alt="">
      * 
      * @param selector
      *            selector that will be invoked for items emitted by the source Observable

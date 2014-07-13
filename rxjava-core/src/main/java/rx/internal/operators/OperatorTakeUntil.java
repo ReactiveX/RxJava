@@ -23,7 +23,7 @@ import rx.Subscriber;
  * Returns an Observable that emits the items from the source Observable until another Observable
  * emits an item.
  * <p>
- * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/takeUntil.png">
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/takeUntil.png" alt="">
  */
 public final class OperatorTakeUntil<T, E> implements Operator<T, T> {
 

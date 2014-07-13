@@ -39,7 +39,7 @@ import rx.subscriptions.CompositeSubscription;
  * Returns an Observable that emits the results of a function applied to sets of items emitted, in
  * sequence, by two or more other Observables.
  * <p>
- * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/zip.png">
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/zip.png" alt="">
  * <p>
  * The zip operation applies this function in strict sequence, so the first item emitted by the new
  * Observable will be the result of the function applied to the first item emitted by each zipped

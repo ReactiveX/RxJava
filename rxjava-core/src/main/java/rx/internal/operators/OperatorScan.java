@@ -26,11 +26,11 @@ import rx.functions.Func2;
  * so on until all items have been emitted by the source Observable, emitting the result of each of these
  * iterations.
  * <p>
- * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/scan.png">
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/scan.png" alt="">
  * <p>
  * This sort of function is sometimes called an accumulator.
  * <p>
- * Note that when you pass a seed to <code>scan()</code> the resulting Observable will emit that seed as its
+ * Note that when you pass a seed to {@code scan} the resulting Observable will emit that seed as its
  * first emitted item.
  */
 public final class OperatorScan<R, T> implements Operator<R, T> {

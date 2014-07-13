@@ -28,12 +28,12 @@ import rx.subjects.Subject;
  * This method has similar behavior to {@link Observable#replay()} except that this auto-subscribes
  * to the source Observable rather than returning a connectable Observable.
  * <p>
- * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/cache.png">
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/cache.png" alt="">
  * <p>
  * This is useful with an Observable that you want to cache responses when you can't control the
  * subscribe/unsubscribe behavior of all the Observers.
  * <p>
- * NOTE: You sacrifice the ability to unsubscribe from the origin when you use this operator, so be
+ * <em>Note:</em> You sacrifice the ability to unsubscribe from the origin when you use this operator, so be
  * careful not to use this operator on Observables that emit infinite or very large numbers of
  * items, as this will use up memory.
  * 

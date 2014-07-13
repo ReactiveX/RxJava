@@ -24,7 +24,7 @@ import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
  * Subject that, once an {@link Observer} has subscribed, emits all subsequently observed items to the
  * subscriber.
  * <p>
- * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/S.PublishSubject.png">
+ * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/S.PublishSubject.png" alt="">
  * <p>
  * Example usage:
  * <p>

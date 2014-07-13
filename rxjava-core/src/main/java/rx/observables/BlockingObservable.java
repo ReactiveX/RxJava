@@ -41,7 +41,7 @@ import rx.internal.operators.BlockingOperatorToIterator;
  * The documentation for this interface makes use of a form of marble diagram that has been modified to
  * illustrate blocking operators. The following legend explains these marble diagrams:
  * <p>
- * <img width="640" height="301" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.legend.png">
+ * <img width="640" height="301" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.legend.png" alt="">
  * <p>
  * For more information see the
  * <a href="https://github.com/Netflix/RxJava/wiki/Blocking-Observable-Operators">Blocking
@@ -78,7 +78,7 @@ public class BlockingObservable<T> {
      * This is similar to {@link Observable#subscribe(Subscriber)}, but it blocks. Because it blocks it does not
      * need the {@link Subscriber#onCompleted()} or {@link Subscriber#onError(Throwable)} methods.
      * <p>
-     * <img width="640" height="330" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.forEach.png">
+     * <img width="640" height="330" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.forEach.png" alt="">
      * 
      * @param onNext
      *            the {@link Action1} to invoke for each item emitted by the {@code BlockingObservable}
@@ -142,7 +142,7 @@ public class BlockingObservable<T> {
     /**
      * Returns an {@link Iterator} that iterates over all items emitted by this {@code BlockingObservable}.
      * <p>
-     * <img width="640" height="315" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.getIterator.png">
+     * <img width="640" height="315" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.getIterator.png" alt="">
      * 
      * @return an {@link Iterator} that can iterate over the items emitted by this {@code BlockingObservable}
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Blocking-Observable-Operators#transformations-tofuture-toiterable-and-toiteratorgetiterator">RxJava Wiki: getIterator()</a>
@@ -217,7 +217,7 @@ public class BlockingObservable<T> {
      * Returns the last item emitted by this {@code BlockingObservable}, or throws
      * {@code NoSuchElementException} if this {@code BlockingObservable} emits no items.
      * <p>
-     * <img width="640" height="315" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.last.png">
+     * <img width="640" height="315" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.last.png" alt="">
      * 
      * @return the last item emitted by this {@code BlockingObservable}
      * @throws NoSuchElementException
@@ -233,7 +233,7 @@ public class BlockingObservable<T> {
      * Returns the last item emitted by this {@code BlockingObservable} that matches a predicate, or throws
      * {@code NoSuchElementException} if it emits no such items.
      * <p>
-     * <img width="640" height="315" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.last.p.png">
+     * <img width="640" height="315" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.last.p.png" alt="">
      * 
      * @param predicate
      *            a predicate function to evaluate items emitted by the {@code BlockingObservable}
@@ -251,7 +251,7 @@ public class BlockingObservable<T> {
      * Returns the last item emitted by this {@code BlockingObservable}, or a default value if it emits no
      * items.
      * <p>
-     * <img width="640" height="310" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.lastOrDefault.png">
+     * <img width="640" height="310" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.lastOrDefault.png" alt="">
      * 
      * @param defaultValue
      *            a default value to return if this {@code BlockingObservable} emits no items
@@ -268,7 +268,7 @@ public class BlockingObservable<T> {
      * Returns the last item emitted by this {@code BlockingObservable} that matches a predicate, or a default
      * value if it emits no such items.
      * <p>
-     * <img width="640" height="315" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.lastOrDefault.p.png">
+     * <img width="640" height="315" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.lastOrDefault.p.png" alt="">
      * 
      * @param defaultValue
      *            a default value to return if this {@code BlockingObservable} emits no matching items
@@ -287,7 +287,7 @@ public class BlockingObservable<T> {
      * Returns an {@link Iterable} that always returns the item most recently emitted by this
      * {@code BlockingObservable}.
      * <p>
-     * <img width="640" height="490" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.mostRecent.png">
+     * <img width="640" height="490" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.mostRecent.png" alt="">
      * 
      * @param initialValue
      *            the initial value that the {@link Iterable} sequence will yield if this
@@ -305,7 +305,7 @@ public class BlockingObservable<T> {
      * Returns an {@link Iterable} that blocks until this {@code BlockingObservable} emits another item, then
      * returns that item.
      * <p>
-     * <img width="640" height="490" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.next.png">
+     * <img width="640" height="490" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.next.png" alt="">
      * 
      * @return an {@link Iterable} that blocks upon each iteration until this {@code BlockingObservable} emits
      *         a new item, whereupon the Iterable returns that item
@@ -338,7 +338,7 @@ public class BlockingObservable<T> {
      * If this {@code BlockingObservable} completes after emitting a single item, return that item, otherwise
      * throw a {@code NoSuchElementException}.
      * <p>
-     * <img width="640" height="315" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.single.png">
+     * <img width="640" height="315" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.single.png" alt="">
      * 
      * @return the single item emitted by this {@code BlockingObservable}
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Blocking-Observable-Operators#single-and-singleordefault">RxJava Wiki: single()</a>
@@ -352,7 +352,7 @@ public class BlockingObservable<T> {
      * If this {@code BlockingObservable} completes after emitting a single item that matches a given predicate,
      * return that item, otherwise throw a {@code NoSuchElementException}.
      * <p>
-     * <img width="640" height="315" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.single.p.png">
+     * <img width="640" height="315" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.single.p.png" alt="">
      * 
      * @param predicate
      *            a predicate function to evaluate items emitted by this {@link BlockingObservable}
@@ -369,7 +369,7 @@ public class BlockingObservable<T> {
      * more than one item, throw an {@code IllegalArgumentException}; if it emits no items, return a default
      * value.
      * <p>
-     * <img width="640" height="315" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.singleOrDefault.png">
+     * <img width="640" height="315" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.singleOrDefault.png" alt="">
      * 
      * @param defaultValue
      *            a default value to return if this {@code BlockingObservable} emits no items
@@ -387,7 +387,7 @@ public class BlockingObservable<T> {
      * return that item; if it emits more than one such item, throw an {@code IllegalArgumentException}; if it
      * emits no items, return a default value.
      * <p>
-     * <img width="640" height="315" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.singleOrDefault.p.png">
+     * <img width="640" height="315" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.singleOrDefault.p.png" alt="">
      * 
      * @param defaultValue
      *            a default value to return if this {@code BlockingObservable} emits no matching items
@@ -411,7 +411,7 @@ public class BlockingObservable<T> {
      * <p>
      * If the {@code BlockingObservable} may emit more than one item, use {@code Observable.toList().toBlocking().toFuture()}.
      * <p>
-     * <img width="640" height="395" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.toFuture.png">
+     * <img width="640" height="395" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.toFuture.png" alt="">
      * 
      * @return a {@link Future} that expects a single item to be emitted by this {@code BlockingObservable}
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Blocking-Observable-Operators#transformations-tofuture-toiterable-and-toiteratorgetiterator">RxJava Wiki: toFuture()</a>
@@ -423,7 +423,7 @@ public class BlockingObservable<T> {
     /**
      * Converts this {@code BlockingObservable} into an {@link Iterable}.
      * <p>
-     * <img width="640" height="315" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.toIterable.png">
+     * <img width="640" height="315" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.toIterable.png" alt="">
      * 
      * @return an {@link Iterable} version of this {@code BlockingObservable}
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Blocking-Observable-Operators#transformations-tofuture-toiterable-and-toiteratorgetiterator">RxJava Wiki: toIterable()</a>

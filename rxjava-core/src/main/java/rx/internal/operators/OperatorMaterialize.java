@@ -21,13 +21,12 @@ import rx.Subscriber;
 import rx.plugins.RxJavaPlugins;
 
 /**
- * Turns all of the notifications from an Observable into <code>onNext</code> emissions, and marks
+ * Turns all of the notifications from an Observable into {@code onNext} emissions, and marks
  * them with their original notification types within {@link Notification} objects.
  * <p>
- * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/materialize.png">
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/materialize.png" alt="">
  * <p>
- * See <a href="http://msdn.microsoft.com/en-us/library/hh229453(v=VS.103).aspx">here</a> for the
- * Microsoft Rx equivalent.
+ * See <a href="http://msdn.microsoft.com/en-us/library/hh229453.aspx">here</a> for the Microsoft Rx equivalent.
  */
 public final class OperatorMaterialize<T> implements Operator<Notification<T>, T> {
 

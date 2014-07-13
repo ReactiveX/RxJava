@@ -20,12 +20,12 @@ import rx.Subscriber;
 import rx.functions.Action0;
 
 /**
- * Registers an action to be called after an Observable invokes onComplete or onError.
+ * Registers an action to be called after an Observable invokes {@code onComplete} or {@code onError}.
  * <p>
- * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/finallyDo.png">
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/finallyDo.png" alt="">
  * <p>
- * See also the <a href="http://msdn.microsoft.com/en-us/library/hh212133(v=vs.103).aspx">MSDN
- * Observable.Finally method</a>
+ * See also the <a href="http://msdn.microsoft.com/en-us/library/hh212133.aspx">MSDN Observable.Finally
+ * method</a>
  * 
  * @param <T> the value type
  */

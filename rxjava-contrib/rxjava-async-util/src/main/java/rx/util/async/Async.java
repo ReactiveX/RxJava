@@ -45,7 +45,7 @@ public final class Async {
      * Note: The function is called immediately and once, not whenever an observer subscribes to the resulting
      * Observable. Multiple subscriptions to this Observable observe the same return value.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/start.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/start.png" alt="">
      *
      * @param <T> the result value type
      * @param func function to run asynchronously
@@ -64,7 +64,7 @@ public final class Async {
      * Note: The function is called immediately and once, not whenever an observer subscribes to the resulting
      * Observable. Multiple subscriptions to this Observable observe the same return value.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/start.s.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/start.s.png" alt="">
      * <p>
      * @param <T> the result value type
      * @param func function to run asynchronously
@@ -80,7 +80,7 @@ public final class Async {
     /**
      * Convert a synchronous action call into an asynchronous function call through an Observable.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.an.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.an.png" alt="">
      * <p>
      * @param action the action to convert
      * @return a function that returns an Observable that executes the {@code action} and emits {@code null}
@@ -94,7 +94,7 @@ public final class Async {
     /**
      * Convert a synchronous function call into an asynchronous function call through an Observable.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.png" alt="">
      *
      * @param <R> the result value type
      * @param func the function to convert
@@ -109,7 +109,7 @@ public final class Async {
     /**
      * Convert a synchronous action call into an asynchronous function call through an Observable.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.an.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.an.png" alt="">
      *
      * @param <T1> first parameter type of the action
      * @param action the action to convert
@@ -124,7 +124,7 @@ public final class Async {
     /**
      * Convert a synchronous function call into an asynchronous function call through an Observable.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.png" alt="">
      *
      * @param <T1> first parameter type of the action
      * @param <R> the result type
@@ -140,7 +140,7 @@ public final class Async {
     /**
      * Convert a synchronous action call into an asynchronous function call through an Observable.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.an.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.an.png" alt="">
      *
      * @param <T1> the first parameter type
      * @param <T2> the second parameter type
@@ -156,7 +156,7 @@ public final class Async {
     /**
      * Convert a synchronous function call into an asynchronous function call through an Observable.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.png" alt="">
      *
      * @param <T1> the first parameter type
      * @param <T2> the second parameter type
@@ -173,7 +173,7 @@ public final class Async {
     /**
      * Convert a synchronous action call into an asynchronous function call through an Observable.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.an.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.an.png" alt="">
      *
      * @param <T1> the first parameter type
      * @param <T2> the second parameter type
@@ -190,7 +190,7 @@ public final class Async {
     /**
      * Convert a synchronous function call into an asynchronous function call through an Observable.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.png" alt="">
      *
      * @param <T1> the first parameter type
      * @param <T2> the second parameter type
@@ -208,7 +208,7 @@ public final class Async {
     /**
      * Convert a synchronous action call into an asynchronous function call through an Observable.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.an.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.an.png" alt="">
      *
      * @param <T1> the first parameter type
      * @param <T2> the second parameter type
@@ -226,7 +226,7 @@ public final class Async {
     /**
      * Convert a synchronous function call into an asynchronous function call through an Observable.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.png" alt="">
      *
      * @param <T1> the first parameter type
      * @param <T2> the second parameter type
@@ -245,7 +245,7 @@ public final class Async {
     /**
      * Convert a synchronous action call into an asynchronous function call through an Observable.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.an.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.an.png" alt="">
      *
      * @param <T1> the first parameter type
      * @param <T2> the second parameter type
@@ -264,7 +264,7 @@ public final class Async {
     /**
      * Convert a synchronous function call into an asynchronous function call through an Observable.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.png" alt="">
      *
      * @param <T1> the first parameter type
      * @param <T2> the second parameter type
@@ -284,7 +284,7 @@ public final class Async {
     /**
      * Convert a synchronous action call into an asynchronous function call through an Observable.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.an.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.an.png" alt="">
      *
      * @param <T1> the first parameter type
      * @param <T2> the second parameter type
@@ -304,7 +304,7 @@ public final class Async {
     /**
      * Convert a synchronous function call into an asynchronous function call through an Observable.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.png" alt="">
      *
      * @param <T1> the first parameter type
      * @param <T2> the second parameter type
@@ -325,7 +325,7 @@ public final class Async {
     /**
      * Convert a synchronous action call into an asynchronous function call through an Observable.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.an.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.an.png" alt="">
      *
      * @param <T1> the first parameter type
      * @param <T2> the second parameter type
@@ -346,7 +346,7 @@ public final class Async {
     /**
      * Convert a synchronous function call into an asynchronous function call through an Observable.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.png" alt="">
      *
      * @param <T1> the first parameter type
      * @param <T2> the second parameter type
@@ -368,7 +368,7 @@ public final class Async {
     /**
      * Convert a synchronous action call into an asynchronous function call through an Observable.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.an.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.an.png" alt="">
      *
      * @param <T1> the first parameter type
      * @param <T2> the second parameter type
@@ -390,7 +390,7 @@ public final class Async {
     /**
      * Convert a synchronous function call into an asynchronous function call through an Observable.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.png" alt="">
      *
      * @param <T1> the first parameter type
      * @param <T2> the second parameter type
@@ -413,7 +413,7 @@ public final class Async {
     /**
      * Convert a synchronous action call into an asynchronous function call through an Observable.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.an.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.an.png" alt="">
      *
      * @param <T1> the first parameter type
      * @param <T2> the second parameter type
@@ -436,7 +436,7 @@ public final class Async {
     /**
      * Convert a synchronous function call into an asynchronous function call through an Observable.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.png" alt="">
      *
      * @param <T1> the first parameter type
      * @param <T2> the second parameter type
@@ -460,7 +460,7 @@ public final class Async {
     /**
      * Convert a synchronous action call into an asynchronous function call through an Observable.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.an.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.an.png" alt="">
      *
      * @param action the action to convert
      * @return a function that returns an Observable that executes the {@code action} and emits {@code null}
@@ -473,7 +473,7 @@ public final class Async {
     /**
      * Convert a synchronous function call into an asynchronous function call through an Observable.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.png" alt="">
      *
      * @param <R> the result type
      * @param func the function to convert
@@ -487,7 +487,7 @@ public final class Async {
     /**
      * Convert a synchronous action call into an asynchronous function call through an Observable.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.ans.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.ans.png" alt="">
      *
      * @param action the action to convert
      * @param scheduler the Scheduler used to execute the {@code action}
@@ -502,7 +502,7 @@ public final class Async {
     /**
      * Convert a synchronous function call into an asynchronous function call through an Observable.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.s.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.s.png" alt="">
      *
      * @param <R> the result type
      * @param func the function to convert
@@ -541,7 +541,7 @@ public final class Async {
     /**
      * Convert a synchronous action call into an asynchronous function call through an Observable.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.ans.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.ans.png" alt="">
      *
      * @param <T1> the first parameter type
      * @param action the Action to convert
@@ -557,7 +557,7 @@ public final class Async {
     /**
      * Convert a synchronous function call into an asynchronous function call through an Observable.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.s.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.s.png" alt="">
      *
      * @param <T1> the first parameter type
      * @param <R> the result type
@@ -597,7 +597,7 @@ public final class Async {
     /**
      * Convert a synchronous action call into an asynchronous function call through an Observable.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.ans.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.ans.png" alt="">
      *
      * @param <T1> the first parameter type
      * @param <T2> the second parameter type
@@ -614,7 +614,7 @@ public final class Async {
     /**
      * Convert a synchronous function call into an asynchronous function call through an Observable.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.s.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.s.png" alt="">
      *
      * @param <T1> the first parameter type
      * @param <T2> the second parameter type
@@ -655,7 +655,7 @@ public final class Async {
     /**
      * Convert a synchronous action call into an asynchronous function call through an Observable.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.ans.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.ans.png" alt="">
      *
      * @param <T1> the first parameter type
      * @param <T2> the second parameter type
@@ -673,7 +673,7 @@ public final class Async {
     /**
      * Convert a synchronous function call into an asynchronous function call through an Observable.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.s.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.s.png" alt="">
      *
      * @param <T1> the first parameter type
      * @param <T2> the second parameter type
@@ -715,7 +715,7 @@ public final class Async {
     /**
      * Convert a synchronous action call into an asynchronous function call through an Observable.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.ans.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.ans.png" alt="">
      *
      * @param <T1> the first parameter type
      * @param <T2> the second parameter type
@@ -734,7 +734,7 @@ public final class Async {
     /**
      * Convert a synchronous function call into an asynchronous function call through an Observable.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.s.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.s.png" alt="">
      *
      * @param <T1> the first parameter type
      * @param <T2> the second parameter type
@@ -777,7 +777,7 @@ public final class Async {
     /**
      * Convert a synchronous action call into an asynchronous function call through an Observable.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.ans.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.ans.png" alt="">
      *
      * @param <T1> the first parameter type
      * @param <T2> the second parameter type
@@ -797,7 +797,7 @@ public final class Async {
     /**
      * Convert a synchronous function call into an asynchronous function call through an Observable.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.s.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.s.png" alt="">
      *
      * @param <T1> the first parameter type
      * @param <T2> the second parameter type
@@ -841,7 +841,7 @@ public final class Async {
     /**
      * Convert a synchronous action call into an asynchronous function call through an Observable.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.ans.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.ans.png" alt="">
      *
      * @param <T1> the first parameter type
      * @param <T2> the second parameter type
@@ -862,7 +862,7 @@ public final class Async {
     /**
      * Convert a synchronous function call into an asynchronous function call through an Observable.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.s.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.s.png" alt="">
      *
      * @param <T1> the first parameter type
      * @param <T2> the second parameter type
@@ -907,7 +907,7 @@ public final class Async {
     /**
      * Convert a synchronous action call into an asynchronous function call through an Observable.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.ans.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.ans.png" alt="">
      *
      * @param <T1> the first parameter type
      * @param <T2> the second parameter type
@@ -929,7 +929,7 @@ public final class Async {
     /**
      * Convert a synchronous function call into an asynchronous function call through an Observable.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.s.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.s.png" alt="">
      *
      * @param <T1> the first parameter type
      * @param <T2> the second parameter type
@@ -975,7 +975,7 @@ public final class Async {
     /**
      * Convert a synchronous action call into an asynchronous function call through an Observable.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.ans.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.ans.png" alt="">
      *
      * @param <T1> the first parameter type
      * @param <T2> the second parameter type
@@ -998,7 +998,7 @@ public final class Async {
     /**
      * Convert a synchronous function call into an asynchronous function call through an Observable.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.s.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.s.png" alt="">
      *
      * @param <T1> the first parameter type
      * @param <T2> the second parameter type
@@ -1045,7 +1045,7 @@ public final class Async {
     /**
      * Convert a synchronous action call into an asynchronous function call through an Observable.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.ans.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.ans.png" alt="">
      *
      * @param <T1> the first parameter type
      * @param <T2> the second parameter type
@@ -1069,7 +1069,7 @@ public final class Async {
     /**
      * Convert a synchronous function call into an asynchronous function call through an Observable.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.s.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.s.png" alt="">
      *
      * @param <T1> the first parameter type
      * @param <T2> the second parameter type
@@ -1117,7 +1117,7 @@ public final class Async {
     /**
      * Convert a synchronous action call into an asynchronous function call through an Observable.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.ans.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.ans.png" alt="">
      *
      * @param action the action to convert
      * @param scheduler the Scheduler used to execute the {@code action}
@@ -1131,7 +1131,7 @@ public final class Async {
     /**
      * Convert a synchronous function call into an asynchronous function call through an Observable.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.s.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toAsync.s.png" alt="">
      *
      * @param <R> the result type
      * @param func the function to convert
@@ -1169,7 +1169,7 @@ public final class Async {
     /**
      * Convert a synchronous action call into an asynchronous function call through an Observable.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/asyncAction.n.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/asyncAction.n.png" alt="">
      * <p>
      * Alias for toAsync(ActionN) intended for dynamic languages.
      *
@@ -1184,7 +1184,7 @@ public final class Async {
     /**
      * Convert a synchronous action call into an asynchronous function call through an Observable.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/asyncAction.ns.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/asyncAction.ns.png" alt="">
      * <p>
      * Alias for toAsync(ActionN, Scheduler) intended for dynamic languages.
      *
@@ -1200,7 +1200,7 @@ public final class Async {
     /**
      * Convert a synchronous function call into an asynchronous function call through an Observable.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/asyncFunc.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/asyncFunc.png" alt="">
      * <p>
      * Alias for toAsync(FuncN) intended for dynamic languages.
      *
@@ -1216,7 +1216,7 @@ public final class Async {
     /**
      * Convert a synchronous function call into an asynchronous function call through an Observable.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/asyncFunc.s.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/asyncFunc.s.png" alt="">
      * <p>
      * Alias for {@code toAsync(FuncN, Scheduler)} intended for dynamic languages.
      *
@@ -1235,7 +1235,7 @@ public final class Async {
      * <p>
      * <em>Important note</em> subscribing to the resulting Observable blocks until the future completes.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startFuture.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startFuture.png" alt="">
      *
      * @param <T> the result type
      * @param functionAsync the asynchronous function to run
@@ -1251,7 +1251,7 @@ public final class Async {
      * Invokes the asynchronous function immediately, surfacing the result through an Observable and waits on
      * the specified Scheduler.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startFuture.s.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startFuture.s.png" alt="">
      *
      * @param <T> the result type
      * @param functionAsync the asynchronous function to run
@@ -1270,7 +1270,7 @@ public final class Async {
      * <p>
      * <em>Important note</em> subscribing to the resulting Observable blocks until the future completes.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/deferFuture.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/deferFuture.png" alt="">
      *
      * @param <T> the result type
      * @param observableFactoryAsync the asynchronous function to start for each observer
@@ -1286,7 +1286,7 @@ public final class Async {
      * Returns an Observable that starts the specified asynchronous factory function whenever a new observer
      * subscribes.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/deferFuture.s.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/deferFuture.s.png" alt="">
      *
      * @param <T> the result type
      * @param observableFactoryAsync the asynchronous function to start for each observer
@@ -1307,7 +1307,7 @@ public final class Async {
      * <em>Important note:</em> The returned task blocks indefinitely unless the {@code run()} method is called
      * or the task is scheduled on an Executor.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/forEachFuture.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/forEachFuture.png" alt="">
      *
      * @param <T> the source value type
      * @param source the source Observable
@@ -1330,7 +1330,7 @@ public final class Async {
      * <em>Important note:</em> The returned task blocks indefinitely unless the {@code run()} method is called
      * or the task is scheduled on an Executor.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/forEachFuture.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/forEachFuture.png" alt="">
      *
      * @param <T> the source value type
      * @param source the source Observable
@@ -1355,7 +1355,7 @@ public final class Async {
      * <em>Important note:</em> The returned task blocks indefinitely unless the {@code run()} method is called
      * or the task is scheduled on an Executor.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/forEachFuture.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/forEachFuture.png" alt="">
      *
      * @param <T> the source value type
      * @param source the source Observable
@@ -1379,7 +1379,7 @@ public final class Async {
      * Subscribes to the given source and calls the callback for each emitted item, and surfaces the completion
      * or error through a Future, scheduled on the given scheduler.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/forEachFuture.s.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/forEachFuture.s.png" alt="">
      *
      * @param <T> the source value type
      * @param source the source Observable
@@ -1403,7 +1403,7 @@ public final class Async {
      * Subscribes to the given source and calls the callback for each emitted item, and surfaces the completion
      * or error through a Future, scheduled on the given Scheduler.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/forEachFuture.s.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/forEachFuture.s.png" alt="">
      *
      * @param <T> the source value type
      * @param source the source Observable
@@ -1429,7 +1429,7 @@ public final class Async {
      * Subscribes to the given source and calls the callback for each emitted item, and surfaces the completion
      * or error through a Future, scheduled on the given Scheduler.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/forEachFuture.s.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/forEachFuture.s.png" alt="">
      *
      * @param <T> the source value type
      * @param source the source Observable
@@ -1455,7 +1455,7 @@ public final class Async {
     /**
      * Return an Observable that calls the given action and emits the given result when an Observer subscribes.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/fromAction.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/fromAction.png" alt="">
      * <p>
      * The action is run on the default thread pool for computation.
      *
@@ -1473,7 +1473,7 @@ public final class Async {
      * Return an Observable that calls the given Callable and emits its result or Exception when an Observer
      * subscribes.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/fromCallable.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/fromCallable.png" alt="">
      * <p>
      * The Callable is called on the default thread pool for computation.
      * 
@@ -1492,7 +1492,7 @@ public final class Async {
      * Return an Observable that calls the given Runnable and emits the given result when an Observer
      * subscribes.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/fromRunnable.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/fromRunnable.png" alt="">
      * <p>
      * The Runnable is called on the default thread pool for computation.
      * 
@@ -1510,7 +1510,7 @@ public final class Async {
     /**
      * Return an Observable that calls the given action and emits the given result when an Observer subscribes.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/fromAction.s.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/fromAction.s.png" alt="">
      * 
      * @param <R> the return type
      * @param action the action to invoke on each subscription
@@ -1527,7 +1527,7 @@ public final class Async {
      * Return an Observable that calls the given Callable and emits its result or Exception when an Observer
      * subscribes.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/fromCallable.s.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/fromCallable.s.png" alt="">
      * 
      * @param <R> the return type
      * @param callable the callable to call on each subscription
@@ -1545,7 +1545,7 @@ public final class Async {
      * Return an Observable that calls the given Runnable and emits the given result when an Observer
      * subscribes.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/fromRunnable.s.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/fromRunnable.s.png" alt="">
      * 
      * @param <R> the return type
      * @param run the runnable to invoke on each subscription

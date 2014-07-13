@@ -25,10 +25,9 @@ import java.util.Deque;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Returns an Observable that emits the last <code>count</code> items emitted by the source
- * Observable.
+ * Returns an Observable that emits the last <code>count</code> items emitted by the source Observable.
  * <p>
- * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/last.png">
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/last.png" alt="">
  */
 public final class OperatorTakeLastTimed<T> implements Operator<T, T> {
 

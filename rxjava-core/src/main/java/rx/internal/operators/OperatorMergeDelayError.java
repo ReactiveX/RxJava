@@ -26,19 +26,19 @@ import rx.subscriptions.CompositeSubscription;
 
 /**
  * This behaves like {@link OperatorMerge} except that if any of the merged Observables notify of
- * an error via <code>onError</code>, mergeDelayError will refrain from propagating that error
+ * an error via {@code onError}, {@code mergeDelayError} will refrain from propagating that error
  * notification until all of the merged Observables have finished emitting items.
  * <p>
- * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/mergeDelayError.png">
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/mergeDelayError.png" alt="">
  * <p>
- * Even if multiple merged Observables send <code>onError</code> notifications, mergeDelayError will
- * only invoke the <code>onError</code> method of its Observers once.
+ * Even if multiple merged Observables send {@code onError} notifications, {@code mergeDelayError} will
+ * only invoke the {@code onError} method of its Observers once.
  * <p>
  * This operation allows an Observer to receive all successfully emitted items from all of the
  * source Observables without being interrupted by an error notification from one of them.
  * <p>
- * NOTE: If this is used on an Observable that never completes, it will never call
- * <code>onError</code> and will effectively swallow errors.
+ * <em>Note:</em> If this is used on an Observable that never completes, it will never call
+ * {@code onError} and will effectively swallow errors.
  *
  * @param <T> the source and result value type
  */

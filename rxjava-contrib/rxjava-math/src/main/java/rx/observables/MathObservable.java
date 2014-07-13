@@ -42,7 +42,7 @@ public class MathObservable<T> {
     /**
      * Returns an Observable that emits the average of the Doubles emitted by the source Observable.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/average.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/average.png" alt="">
      * 
      * @param source
      *            source Observable to compute the average of
@@ -58,7 +58,7 @@ public class MathObservable<T> {
     /**
      * Returns an Observable that emits the average of the Floats emitted by the source Observable.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/average.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/average.png" alt="">
      * 
      * @param source
      *            source Observable to compute the average of
@@ -74,7 +74,7 @@ public class MathObservable<T> {
     /**
      * Returns an Observable that emits the average of the Integers emitted by the source Observable.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/average.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/average.png" alt="">
      * 
      * @param source
      *            source Observable to compute the average of
@@ -92,7 +92,7 @@ public class MathObservable<T> {
     /**
      * Returns an Observable that emits the average of the Longs emitted by the source Observable.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/average.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/average.png" alt="">
      * 
      * @param source
      *            source Observable to compute the average of
@@ -110,7 +110,7 @@ public class MathObservable<T> {
      * numeric value. If there is more than one item with the same maximum value, it emits the last-emitted of
      * these.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/max.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/max.png" alt="">
      * 
      * @param source
      *            an Observable to scan for the maximum emitted item
@@ -128,7 +128,7 @@ public class MathObservable<T> {
      * Returns an Observable that emits the single numerically minimum item emitted by the source Observable.
      * If there is more than one such item, it returns the last-emitted one.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/min.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/min.png" alt="">
      * 
      * @param source
      *            an Observable to determine the minimum item of
@@ -144,7 +144,7 @@ public class MathObservable<T> {
     /**
      * Returns an Observable that emits the sum of all the Doubles emitted by the source Observable.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/sum.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/sum.png" alt="">
      * 
      * @param source
      *            the source Observable to compute the sum of
@@ -160,7 +160,7 @@ public class MathObservable<T> {
     /**
      * Returns an Observable that emits the sum of all the Floats emitted by the source Observable.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/sum.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/sum.png" alt="">
      * 
      * @param source
      *            the source Observable to compute the sum of
@@ -176,7 +176,7 @@ public class MathObservable<T> {
     /**
      * Returns an Observable that emits the sum of all the Integers emitted by the source Observable.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/sum.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/sum.png" alt="">
      * 
      * @param source
      *            source Observable to compute the sum of
@@ -192,7 +192,7 @@ public class MathObservable<T> {
     /**
      * Returns an Observable that emits the sum of all the Longs emitted by the source Observable.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/sum.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/sum.png" alt="">
      * 
      * @param source
      *            source Observable to compute the sum of
@@ -209,7 +209,7 @@ public class MathObservable<T> {
      * Returns an Observable that transforms items emitted by the source Observable into Doubles by using a
      * function you provide and then emits the Double average of the complete sequence of transformed values.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/average.f.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/average.f.png" alt="">
      * 
      * @param valueExtractor
      *            the function to transform an item emitted by the source Observable into a Double
@@ -226,7 +226,7 @@ public class MathObservable<T> {
      * Returns an Observable that transforms items emitted by the source Observable into Floats by using a
      * function you provide and then emits the Float average of the complete sequence of transformed values.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/average.f.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/average.f.png" alt="">
      * 
      * @param valueExtractor
      *            the function to transform an item emitted by the source Observable into a Float
@@ -243,7 +243,7 @@ public class MathObservable<T> {
      * Returns an Observable that transforms items emitted by the source Observable into Integers by using a
      * function you provide and then emits the Integer average of the complete sequence of transformed values.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/average.f.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/average.f.png" alt="">
      * 
      * @param valueExtractor
      *            the function to transform an item emitted by the source Observable into an Integer
@@ -260,7 +260,7 @@ public class MathObservable<T> {
      * Returns an Observable that transforms items emitted by the source Observable into Longs by using a
      * function you provide and then emits the Long average of the complete sequence of transformed values.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/average.f.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/average.f.png" alt="">
      * 
      * @param valueExtractor
      *            the function to transform an item emitted by the source Observable into a Long
@@ -278,7 +278,7 @@ public class MathObservable<T> {
      * specified comparator. If there is more than one item with the same maximum value, it emits the
      * last-emitted of these.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/max.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/max.png" alt="">
      * 
      * @param comparator
      *            the comparer used to compare items
@@ -297,7 +297,7 @@ public class MathObservable<T> {
      * Returns an Observable that emits the minimum item emitted by the source Observable, according to a
      * specified comparator. If there is more than one such item, it returns the last-emitted one.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/min.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/min.png" alt="">
      * 
      * @param comparator
      *            the comparer used to compare elements
@@ -316,7 +316,7 @@ public class MathObservable<T> {
      * Returns an Observable that extracts a Double from each of the items emitted by the source Observable via
      * a function you specify, and then emits the sum of these Doubles.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/sum.f.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/sum.f.png" alt="">
      * 
      * @param valueExtractor
      *            the function to extract a Double from each item emitted by the source Observable
@@ -333,7 +333,7 @@ public class MathObservable<T> {
      * Returns an Observable that extracts a Float from each of the items emitted by the source Observable via
      * a function you specify, and then emits the sum of these Floats.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/sum.f.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/sum.f.png" alt="">
      * 
      * @param valueExtractor
      *            the function to extract a Float from each item emitted by the source Observable
@@ -350,7 +350,7 @@ public class MathObservable<T> {
      * Returns an Observable that extracts an Integer from each of the items emitted by the source Observable
      * via a function you specify, and then emits the sum of these Integers.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/sum.f.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/sum.f.png" alt="">
      * 
      * @param valueExtractor
      *            the function to extract an Integer from each item emitted by the source Observable
@@ -367,7 +367,7 @@ public class MathObservable<T> {
      * Returns an Observable that extracts a Long from each of the items emitted by the source Observable via a
      * function you specify, and then emits the sum of these Longs.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/sum.f.png">
+     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/sum.f.png" alt="">
      * 
      * @param valueExtractor
      *            the function to extract a Long from each item emitted by the source Observable
