@@ -61,8 +61,8 @@ public final class ScheduledAction extends FutureTask<Void> implements Subscript
     @Override
     public void unsubscribe() {
         if (ONCE_UPDATER.compareAndSet(this, 0, 1)) {
-            super.cancel(true);
             cancel.unsubscribe();
+            super.cancel(true);
         }
     }
 

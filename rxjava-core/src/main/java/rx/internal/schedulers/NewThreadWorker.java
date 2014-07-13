@@ -18,9 +18,10 @@ package rx.internal.schedulers;
 import rx.Scheduler;
 import rx.Subscription;
 import rx.functions.Action0;
+import rx.internal.util.unsafe.MpscLinkedBlockingQueue;
+import rx.internal.util.unsafe.UnsafeAccess;
 import rx.subscriptions.Subscriptions;
 
-import java.util.Iterator;
 import java.util.concurrent.*;
 
 /**
@@ -34,7 +35,11 @@ public class NewThreadWorker extends Scheduler.Worker implements Subscription, R
 
     /* package */
     public NewThreadWorker(ThreadFactory threadFactory) {
-        actionQueue = new LinkedBlockingQueue<ScheduledAction>();
+        if (UnsafeAccess.isUnsafeAvailable()) {
+            actionQueue = new MpscLinkedBlockingQueue<ScheduledAction>();
+        } else {
+            actionQueue = new LinkedBlockingQueue<ScheduledAction>();
+        }
         workerThread = threadFactory.newThread(this);
         workerThread.start();
     }
