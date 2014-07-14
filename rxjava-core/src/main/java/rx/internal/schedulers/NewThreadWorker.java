@@ -103,10 +103,7 @@ public class NewThreadWorker extends Scheduler.Worker implements Subscription, R
     public void run() {
         while (!isUnsubscribed) {
             try {
-                ScheduledAction scheduledAction = actionQueue.take();
-                if (scheduledAction != null && !scheduledAction.isUnsubscribed()) {
-                    scheduledAction.run();
-                }
+                actionQueue.take().run();
             } catch (InterruptedException ignored) {}
         }
     }
