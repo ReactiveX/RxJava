@@ -122,21 +122,16 @@ public class IndexedRingBuffer<E> implements Subscription {
     }
 
     public E remove(int index) {
-        try {
-            E e;
-            if (index < SIZE) {
-                // fast-path when we are in the first section
-                e = elements.array.getAndSet(index, null);
-            } else {
-                int sectionIndex = index % SIZE;
-                e = getElementSection(index).array.getAndSet(sectionIndex, null);
-            }
-            pushRemovedIndex(index);
-            return e;
-        } catch (NullPointerException ne) {
-            ne.printStackTrace();
-            throw ne;
+        E e;
+        if (index < SIZE) {
+            // fast-path when we are in the first section
+            e = elements.array.getAndSet(index, null);
+        } else {
+            int sectionIndex = index % SIZE;
+            e = getElementSection(index).array.getAndSet(sectionIndex, null);
         }
+        pushRemovedIndex(index);
+        return e;
     }
 
     private IndexSection getIndexSection(int index) {

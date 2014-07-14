@@ -86,6 +86,7 @@ public final class SubscriptionList implements Subscription {
         }
         // we will only get here once
         unsubscribeFromAll(subscriptions);
+        subscriptions = null;
     }
 
     private static void unsubscribeFromAll(Collection<Subscription> subscriptions) {

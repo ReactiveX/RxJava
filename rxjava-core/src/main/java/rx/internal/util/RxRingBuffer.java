@@ -260,6 +260,13 @@ public class RxRingBuffer implements Subscription {
         }
         return queue.size();
     }
+    
+    public boolean isEmpty() {
+        if (queue == null) {
+            return true;
+        }
+        return queue.isEmpty();
+    }
 
     public Object poll() {
         if (queue == null) {
