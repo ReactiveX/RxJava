@@ -2398,7 +2398,7 @@ public class Observable<T> {
      * and and the set on which their items are grouped.
      * <p>
      * <img width="640" height="580" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/pivot.png" alt="">
-     *
+     * <p>
      * For example an {@code Observable} such as this =&gt;
      * 
      * {@code Observable<GroupedObservable<String, GroupedObservable<Boolean, Integer>>>}:
@@ -6013,7 +6013,7 @@ public class Observable<T> {
 
     /**
      * Returns a new {@link Observable} that multicasts (shares) the original {@link Observable}. As long as
-     * there is more than 1 {@link Subscriber} this {@link Observable} will be subscribed and emitting data. 
+     * there is more than one {@link Subscriber} this {@link Observable} will be subscribed and emitting data. 
      * When all subscribers have unsubscribed it will unsubscribe from the source {@link Observable}. 
      * <p>
      * This is an alias for {@link #publish()}.{@link ConnectableObservable#refCount()}.
@@ -6022,7 +6022,7 @@ public class Observable<T> {
      * <p>
      * {@code share} does not operate by default on a particular {@link Scheduler}.
      * 
-     * @return a {@link Observable} that upon connection causes the source Observable to emit items
+     * @return an {@code Observable} that upon connection causes the source {@code Observable} to emit items
      *         to its {@link Observer}s
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Connectable-Observable-Operators#connectableobservablerefcount">RxJava Wiki: refCount()</a>
      * @since 0.19
@@ -7528,9 +7528,9 @@ public class Observable<T> {
     }
 
     /**
-     * Returns an Observable that mirrors the source Observable, but notifies observers of a TimeoutException if
-     * either the first item emitted by the source Observable or any subsequent item don't arrive within time
-     * windows defined by other Observables.
+     * Returns an Observable that mirrors the source Observable, but notifies observers of a
+     * {@code TimeoutException} if either the first item emitted by the source Observable or any subsequent item
+     * doesn't arrive within time windows defined by other Observables.
      * <p>
      * <img width="640" height="400" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timeout5.png" alt="">
      * <p>
@@ -7547,9 +7547,9 @@ public class Observable<T> {
      *            a function that returns an Observable for each item emitted by the source Observable and that
      *            determines the timeout window in which the subsequent source item must arrive in order to
      *            continue the sequence
-     * @return an Observable that mirrors the source Observable, but notifies observers of a TimeoutException if
-     *         either the first item or any subsequent item doesn't arrive within the time windows specified by
-     *         the timeout selectors
+     * @return an Observable that mirrors the source Observable, but notifies observers of a
+     *         {@code TimeoutException} if either the first item or any subsequent item doesn't arrive within
+     *         the time windows specified by the timeout selectors
      */
     public final <U, V> Observable<T> timeout(Func0<? extends Observable<U>> firstTimeoutSelector, Func1<? super T, ? extends Observable<V>> timeoutSelector) {
         return timeout(firstTimeoutSelector, timeoutSelector, null);
@@ -7557,7 +7557,7 @@ public class Observable<T> {
 
     /**
      * Returns an Observable that mirrors the source Observable, but switches to a fallback Observable if either
-     * the first item emitted by the source Observable or any subsequent item don't arrive within time windows
+     * the first item emitted by the source Observable or any subsequent item doesn't arrive within time windows
      * defined by other Observables.
      * <p>
      * <img width="640" height="400" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timeout6.png" alt="">
@@ -7578,8 +7578,8 @@ public class Observable<T> {
      * @param other
      *            the fallback Observable to switch to if the source Observable times out
      * @return an Observable that mirrors the source Observable, but switches to the {@code other} Observable if
-     *         either the first item emitted by the source Observable or any subsequent item don't arrive within
-     *         time windows defined by the timeout selectors
+     *         either the first item emitted by the source Observable or any subsequent item doesn't arrive
+     *         within time windows defined by the timeout selectors
      * @throws NullPointerException
      *             if {@code timeoutSelector} is null
      */
@@ -7591,10 +7591,10 @@ public class Observable<T> {
     }
 
     /**
-     * Returns an Observable that mirrors the source Observable, but notifies observers of a TimeoutException if
-     * an item emitted by the source Observable doesn't arrive within a window of time after the emission of the
-     * previous item, where that period of time is measured by an Observable that is a function of the previous
-     * item.
+     * Returns an Observable that mirrors the source Observable, but notifies observers of a
+     * {@code TimeoutException} if an item emitted by the source Observable doesn't arrive within a window of
+     * time after the emission of the previous item, where that period of time is measured by an Observable that
+     * is a function of the previous item.
      * <p>
      * <img width="640" height="400" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timeout3.png" alt="">
      * <p>
@@ -7607,9 +7607,9 @@ public class Observable<T> {
      * @param timeoutSelector
      *            a function that returns an observable for each item emitted by the source
      *            Observable and that determines the timeout window for the subsequent item
-     * @return an Observable that mirrors the source Observable, but notifies observers of a TimeoutException if
-     *         an item emitted by the source Observable takes longer to arrive than the time window defined by
-     *         the selector for the previously emitted item
+     * @return an Observable that mirrors the source Observable, but notifies observers of a
+     *         {@code TimeoutException} if an item emitted by the source Observable takes longer to arrive than
+     *         the time window defined by the selector for the previously emitted item
      */
     public final <V> Observable<T> timeout(Func1<? super T, ? extends Observable<V>> timeoutSelector) {
         return timeout(null, timeoutSelector, null);
