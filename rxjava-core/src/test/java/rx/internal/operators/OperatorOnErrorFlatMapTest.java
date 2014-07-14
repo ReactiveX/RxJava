@@ -86,4 +86,33 @@ public class OperatorOnErrorFlatMapTest {
         ts.assertReceivedOnNext(Arrays.asList("Value=1", "Error=2", "Error=3", "Error=4", "Error=5", "Value=6"));
     }
 
+    @Test
+    public void testOnErrorFlatMapAfterFlatMap() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        Observable.from(1, 2, 3).flatMap(new Func1<Integer, Observable<Integer>>() {
+
+            @Override
+            public Observable<Integer> call(Integer i) {
+                System.out.println("i: " + i);
+                if (i == 1) {
+                    return Observable.error(new RuntimeException("error"));
+                } else {
+                    return Observable.just(i);
+                }
+            }
+
+        }).onErrorFlatMap(new Func1<OnErrorThrowable, Observable<Integer>>() {
+
+            @Override
+            public Observable<Integer> call(OnErrorThrowable t) {
+                System.err.println(t);
+                return Observable.just(-1);
+            }
+            
+        }).subscribe(ts);
+        // we won't receive a terminal event so don't wait for one
+        ts.assertNoErrors();
+        ts.assertReceivedOnNext(Arrays.asList(-1, 2, 3));
+    }
+
 }

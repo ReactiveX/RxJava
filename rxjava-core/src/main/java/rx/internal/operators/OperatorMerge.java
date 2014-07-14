@@ -72,7 +72,15 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
         @Override
         public void onError(Throwable e) {
             actual.onError(e);
-            unsubscribe();
+        }
+
+        void errorInner(InnerSubscriber<T> s, Throwable e) {
+            try {
+                WIP_UPDATER.decrementAndGet(this);
+                actual.onError(e);
+            } finally {
+                childrenSubscriptions.remove(s);
+            }
         }
 
         @Override
@@ -114,7 +122,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
         public void onError(Throwable e) {
             Exceptions.throwIfFatal(e);
             if (ONCE_UPDATER.compareAndSet(this, 0, 1)) {
-                parent.onError(e);
+                parent.errorInner(this, e);
             }
         }
 

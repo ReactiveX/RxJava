@@ -107,7 +107,6 @@ public class SerializedObserver<T> implements Observer<T> {
             if (terminated) {
                 return;
             }
-            terminated = true;
             if (emitting) {
                 if (queue == null) {
                     queue = new FastList();
@@ -121,6 +120,9 @@ public class SerializedObserver<T> implements Observer<T> {
         }
         drainQueue(list);
         actual.onError(e);
+        synchronized(this) {
+            emitting = false;
+        }
     }
 
     @Override
