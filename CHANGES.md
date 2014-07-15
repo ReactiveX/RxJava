@@ -1,5 +1,181 @@
 # RxJava Releases #
 
+### Version 0.20.0-RC1 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.20.0-RC1%22)) ###
+
+
+Version 0.20.0-RC1 is a preview release that adds backpressure support to RxJava as per issue [#1000](https://github.com/Netflix/RxJava/issues/1000). It has been done in a way that is mostly additive and most existing code will not be affected by these additions. A section below on "Breaking Changes" will discuss use cases that do break and how to deal with them.
+
+This release has been tested successfully in Netflix production canaries, but that does not exercise all use cases or operators, nor does it leverage the newly added backpressure functionality (though the backpressure code paths are used).
+
+
+#### Outstanding Work
+
+- The `zip` operator has not yet been upgraded to support backpressure. The work is almost done and it will be included in the next release.
+- Not all operators have yet been reviewed for whether they need to be changed in any way. 
+- Temporal operators (like `buffer`, `window`, `sample`, etc) need to be modified to disable backpressure upstream (using `request(Long.MAX_VALUE)`) and a decision made about how downstream backpressure requests will be supported.
+- Ensure all code works on Android. New data structures rely on `sun.misc.Unsafe` but are conditionally used only when it is available. We need to ensure those conditions are working and the alternative implementations are adequate. The default buffer size of 1024 also needs to be reviewed for whether it is a correct default for all systems, or needs to be modified by environment (such as smaller for Android).
+- Ensure use cases needing backpressure all work.
+
+#### Signature Changes
+
+A new type `Producer` has been added:
+
+```java
+public interface Producer {
+    public void request(long n);
+}
+```
+
+The `Subscriber` type now has these methods added:
+
+```java
+public abstract class Subscriber<T> implements Observer<T>, Subscription {
+	public void onStart();
+	public final void request(long n);
+	public final void setProducer(Producer producer);
+	protected Producer onSetProducer(Producer producer);
+}
+```
+
+
+#### Examples
+
+
+This trivial example shows requesting values one at a time:
+
+```java
+Observable.from(1, 2, 3, 4).subscribe(new Subscriber<Integer>() {
+
+    @Override
+    public void onStart() {
+        request(1);
+    }
+
+    @Override
+    public void onCompleted() {
+    }
+
+    @Override
+    public void onError(Throwable e) {
+    }
+
+    @Override
+    public void onNext(Integer t) {
+        request(1);
+    }
+
+});
+```
+
+The [OnSubscribeFromIterable](https://github.com/Netflix/RxJava/blob/master/rxjava-core/src/main/java/rx/internal/operators/OnSubscribeFromIterable.java) operator shows how an `Iterable` is consumed with backpressure.
+
+Some hi-lights (modified for simplicity rather than performance and completeness):
+
+```java
+public final class OnSubscribeFromIterable<T> implements OnSubscribe<T> {
+
+    @Override
+    public void call(final Subscriber<? super T> o) {
+        final Iterator<? extends T> it = is.iterator();
+		// instead of emitting directly to the Subscriber, it emits a Producer
+        o.setProducer(new IterableProducer<T>(o, it));
+    }
+	
+	private static final class IterableProducer<T> implements Producer {
+	
+        public void request(long n) {
+            int _c = requested.getAndAdd(n);
+            if (_c == 0) {
+                while (it.hasNext()) {
+                    if (o.isUnsubscribed()) {
+                        return;
+                    }
+                    T t = it.next();
+                    o.onNext(t);
+                    if (requested.decrementAndGet() == 0) {
+                        // we're done emitting the number requested so return
+                        return;
+                    }
+                }
+
+                o.onCompleted();
+            }
+
+        }
+	}
+}
+```
+
+The [`observeOn` operator](https://github.com/Netflix/RxJava/blob/master/rxjava-core/src/main/java/rx/internal/operators/OperatorObserveOn.java#L85) is a sterotypical example of queuing on one side of a thread and draining on the other, now with backpressure.
+
+```java
+private static final class ObserveOnSubscriber<T> extends Subscriber<T> {
+        @Override
+        public void onStart() {
+            // signal that this is an async operator capable of receiving this many
+            request(RxRingBuffer.SIZE);
+        }
+		
+        @Override
+        public void onNext(final T t) {
+            try {
+				// enqueue
+                queue.onNext(t);
+            } catch (MissingBackpressureException e) {
+				// fail if the upstream has not obeyed our backpressure requests
+                onError(e);
+                return;
+            }
+			// attempt to schedule draining if needed
+            schedule();
+        }
+		
+		// the scheduling polling will then drain the queue and invoke `request(n)` to request more after draining
+}
+```
+
+
+#### Breaking Changes
+
+The use of `Producer` has been added in such a way that it is optional and additive, but some operators that used to have unbounded queues are now bounded. This means that if a source `Observable` emits faster than the `Observer` can consume them, a `MissingBackpressureException` can be emitted via `onError`.
+
+This semantic change can break existing code.
+
+There are two ways of resolving this:
+
+1) Modify the source `Observable` to use `Producer` and support backpressure.
+2) Use newly added operators such as `onBackpressureBuffer` or `onBackpressureDrop` to choose a strategy for the source `Observable` of how to behave when it emits more data than the consuming `Observer` is capable of handling. Use of `onBackpressureBuffer` effectively returns it to having an unbounded buffer and behaving like version 0.19 or earlier.
+
+Example:
+
+```java
+sourceObservable.onBackpressureBuffer().subscribe(slowConsumer);
+```
+
+#### Relation to Reactive Streams
+
+Contributors to RxJava are involved in defining the [Reactive Streams](https://github.com/reactive-streams/reactive-streams/) spec. RxJava 1.0 is trying to comply with the semantic rules but is not attempting to comply with the type signatures. It will however have a separate module that acts as a bridge between the RxJava `Observable` and the Reactive Stream types.
+
+The reasons for this are:
+
+- Rx has `Observer.onCompleted` whereas Reactive Streams has `onComplete`. This is a massive breaking change to remove a "d".
+- The RxJava `Subscription` is used also a "Closeable"/"Disposable" and it does not work well to make it now also be used for `request(n)`, hence the separate type `Producer` in RxJava. It was attempted to reuse `rx.Subscription` but it couldn't be done without massive breaking changes.
+- Reactive Streams uses `onSubscribe(Subscription s)` whereas RxJava injects the `Subscription` as the `Subscriber`. Again, this change could not be done without major breaking changes.
+- RxJava 1.0 needs to be backwards compatible with the major Rx contracts established during the 0.x roadmap.
+- Reactive Streams is not yet 1.0 and despite significant progress, it is a moving target. 
+
+Considering these things, the major semantics of `request(long n)` for backpressure are compatible and this will allow interop with a bridge between the interfaces. As the Reactive Streams spec matures, RxJava 2.0 may choose to fully adopt the types in the future while RxJava 1.x retains the current signatures.
+
+
+#### How to Help
+
+First, please test this release against your existing code to help us determine if we have broken anything. 
+
+Second, try to solve backpressure use cases and provide feedback on what works and what doesn't work.
+
+Thank you!
+
+
 ### Version 0.19.6 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.19.6%22)) ###
 
 Inclusion of 'rxjava-contrib:rxjava-scalaz' in release.
