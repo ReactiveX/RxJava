@@ -32,7 +32,7 @@ import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
 /**
  * Subject that buffers all items it observes and replays them to any {@link Observer} that subscribes.
  * <p>
- * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/S.ReplaySubject.png">
+ * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/S.ReplaySubject.png" alt="">
  * <p>
  * Example usage:
  * <p>

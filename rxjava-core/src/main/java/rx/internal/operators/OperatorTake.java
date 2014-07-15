@@ -22,7 +22,7 @@ import rx.Subscriber;
 /**
  * An {@code Observable} that emits the first {@code num} items emitted by the source {@code Observable}.
  * <p>
- * <img width="640" height="305" src="https://raw.githubusercontent.com/wiki/Netflix/RxJava/images/rx-operators/take.png" />
+ * <img width="640" height="305" src="https://raw.githubusercontent.com/wiki/Netflix/RxJava/images/rx-operators/take.png" alt="" />
  * <p>
  * You can choose to pay attention only to the first {@code num} items emitted by an {@code Observable} by using
  * the {@code take} operator. This operator returns an {@code Observable} that will invoke a subscriber's
@@ -78,8 +78,8 @@ public final class OperatorTake<T> implements Operator<T, T> {
                 return new Producer() {
 
                     @Override
-                    public void request(int n) {
-                        int c = limit - count;
+                    public void request(long n) {
+                        long c = limit - count;
                         if (n < c) {
                             producer.request(n);
                         } else {
@@ -113,7 +113,7 @@ public final class OperatorTake<T> implements Operator<T, T> {
         child.setProducer(new Producer() {
 
             @Override
-            public void request(int n) {
+            public void request(long n) {
                 if (n < 0) {
                     // request up the limit that has been set, no point in asking for more, even if synchronous
                     parent.request(limit);

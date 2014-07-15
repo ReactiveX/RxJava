@@ -34,7 +34,6 @@ import rx.functions.Func1;
  *            the type of the items emitted by the {@code GroupedObservable}
  * @see Observable#groupBy(Func1)
  * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#groupby-and-groupbyuntil">RxJava Wiki: groupBy() and groupByUntil()</a>
- * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#pivot">RxJava Wiki: pivot()</a>
  */
 public class GroupedObservable<K, T> extends Observable<T> {
     private final K key;

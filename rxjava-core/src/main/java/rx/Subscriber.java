@@ -38,7 +38,7 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
     /* protected by `this` */
     private Producer p;
     /* protected by `this` */
-    private int requested = Integer.MIN_VALUE; // default to not set
+    private long requested = Long.MIN_VALUE; // default to not set
 
     @Deprecated
     protected Subscriber(CompositeSubscription cs) {
@@ -87,7 +87,7 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
         // do nothing by default
     }
     
-    public final void request(int n) {
+    public final void request(long n) {
         Producer shouldRequest = null;
         synchronized (this) {
             if (p != null) {
@@ -108,14 +108,14 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
 
     public final void setProducer(Producer producer) {
         producer = onSetProducer(producer);
-        int toRequest;
+        long toRequest;
         boolean setProducer = false;
         synchronized (this) {
             toRequest = requested;
             p = producer;
             if (op != null) {
                 // middle operator ... we pass thru unless a request has been made
-                if (toRequest == Integer.MIN_VALUE) {
+                if (toRequest == Long.MIN_VALUE) {
                     // we pass-thru to the next producer as nothing has been requested
                     setProducer = true;
                 }
@@ -126,9 +126,9 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
         if (setProducer) {
             op.setProducer(p);
         } else {
-            // we execute the request with whatever has been requested (or -1)
-            if (toRequest == Integer.MIN_VALUE) {
-                p.request(-1);
+            // we execute the request with whatever has been requested (or Long.MAX_VALUE)
+            if (toRequest == Long.MIN_VALUE) {
+                p.request(Long.MAX_VALUE);
             } else {
                 p.request(toRequest);
             }

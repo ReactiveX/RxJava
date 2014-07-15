@@ -15,7 +15,7 @@
  */
 package rx.internal.operators;
 
-import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
+import java.util.concurrent.atomic.AtomicLongFieldUpdater;
 
 import rx.Observable.OnSubscribe;
 import rx.Producer;
@@ -43,9 +43,9 @@ public final class OnSubscribeRange implements OnSubscribe<Integer> {
         private final Subscriber<? super Integer> o;
         @SuppressWarnings("unused")
         // accessed by REQUESTED_UPDATER
-        private volatile int requested;
-        private static final AtomicIntegerFieldUpdater<RangeProducer> REQUESTED_UPDATER = AtomicIntegerFieldUpdater.newUpdater(RangeProducer.class, "requested");
-        private int index;
+        private volatile long requested;
+        private static final AtomicLongFieldUpdater<RangeProducer> REQUESTED_UPDATER = AtomicLongFieldUpdater.newUpdater(RangeProducer.class, "requested");
+        private long index;
         private final int end;
 
         private RangeProducer(Subscriber<? super Integer> o, int start, int end) {
@@ -55,36 +55,36 @@ public final class OnSubscribeRange implements OnSubscribe<Integer> {
         }
 
         @Override
-        public void request(int n) {
-            if (n < 0) {
+        public void request(long n) {
+            if (n == Long.MAX_VALUE) {
                 // fast-path without backpressure
-                for (int i = index; i <= end; i++) {
+                for (long i = index; i <= end; i++) {
                     if (o.isUnsubscribed()) {
                         return;
                     }
-                    o.onNext(i);
+                    o.onNext((int) i);
                 }
                 o.onCompleted();
             } else if (n > 0) {
                 // backpressure is requested
-                int _c = REQUESTED_UPDATER.getAndAdd(this, n);
+                long _c = REQUESTED_UPDATER.getAndAdd(this, n);
                 if (_c == 0) {
                     while (true) {
                         /*
                          * This complicated logic is done to avoid touching the volatile `index` and `requested` values
                          * during the loop itself. If they are touched during the loop the performance is impacted significantly.
                          */
-                        int r = requested;
-                        int idx = index;
-                        int numLeft = end - idx + 1;
-                        int e = Math.min(numLeft, r);
+                        long r = requested;
+                        long idx = index;
+                        long numLeft = end - idx + 1;
+                        long e = Math.min(numLeft, r);
                         boolean completeOnFinish = numLeft <= r;
-                        int stopAt = e + idx;
-                        for (int i = idx; i < stopAt; i++) {
+                        long stopAt = e + idx;
+                        for (long i = idx; i < stopAt; i++) {
                             if (o.isUnsubscribed()) {
                                 return;
                             }
-                            o.onNext(i);
+                            o.onNext((int) i);
                         }
                         index = stopAt;
                         

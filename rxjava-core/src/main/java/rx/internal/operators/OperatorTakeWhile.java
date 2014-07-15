@@ -24,7 +24,7 @@ import rx.functions.Func2;
  * Returns an Observable that emits items emitted by the source Observable as long as a specified
  * condition is true.
  * <p>
- * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/takeWhile.png">
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/takeWhile.png" alt="">
  */
 public final class OperatorTakeWhile<T> implements Operator<T, T> {
 

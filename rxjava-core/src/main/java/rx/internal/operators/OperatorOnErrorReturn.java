@@ -26,7 +26,7 @@ import rx.plugins.RxJavaPlugins;
  * Instruct an Observable to emit a particular item to its Observer's <code>onNext</code> method
  * rather than invoking <code>onError</code> if it encounters an error.
  * <p>
- * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/onErrorReturn.png">
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/onErrorReturn.png" alt="">
  * <p>
  * By default, when an Observable encounters an error that prevents it from emitting the expected
  * item to its Observer, the Observable invokes its Observer's <code>onError</code> method, and then

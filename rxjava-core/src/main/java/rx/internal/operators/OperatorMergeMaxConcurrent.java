@@ -27,7 +27,7 @@ import rx.subscriptions.CompositeSubscription;
 /**
  * Flattens a list of Observables into one Observable sequence, without any transformation.
  * <p>
- * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/merge.png">
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/merge.png" alt="">
  * <p>
  * You can combine the items emitted by multiple Observables so that they act like a single
  * Observable, by using the merge operation.

@@ -31,9 +31,9 @@ import rx.schedulers.ImmediateScheduler;
 import rx.schedulers.TrampolineScheduler;
 
 /**
- * Delivers events on the specified Scheduler asynchronously via an unbounded buffer.
+ * Delivers events on the specified {@code Scheduler} asynchronously via an unbounded buffer.
  * 
- * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/observeOn.png">
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/observeOn.png" alt="">
  * 
  * @param <T>
  *            the transmitted value type
@@ -90,7 +90,7 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
             child.setProducer(new Producer() {
 
                 @Override
-                public void request(int n) {
+                public void request(long n) {
                     REQUESTED.getAndAdd(ObserveOnSubscriber.this, n);
                     schedule();
                 }

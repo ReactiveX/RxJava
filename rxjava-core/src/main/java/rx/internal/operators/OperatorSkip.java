@@ -23,10 +23,10 @@ import rx.Subscriber;
  * Returns an Observable that skips the first <code>num</code> items emitted by the source
  * Observable.
  * <p>
- * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/skip.png">
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/skip.png" alt="">
  * <p>
  * You can ignore the first <code>num</code> items emitted by an Observable and attend only to
- * those items that come after, by modifying the Observable with the skip operation.
+ * those items that come after, by modifying the Observable with the {@code skip} operator.
  */
 public final class OperatorSkip<T> implements Observable.Operator<T, T> {
 
@@ -66,18 +66,18 @@ public final class OperatorSkip<T> implements Observable.Operator<T, T> {
                 return new Producer() {
 
                     @Override
-                    public void request(int n) {
-                        // add the skip num to the requested amount, since we'll skip everything and then emit to the buffer downstream
-                        if (n > 0) {
-                            producer.request(n + (toSkip - skipped));
-                        } else {
+                    public void request(long n) {
+                        if (n == Long.MAX_VALUE) {
                             // infinite so leave it alone
                             producer.request(n);
+                        } else if (n > 0) {
+                            // add the skip num to the requested amount, since we'll skip everything and then emit to the buffer downstream
+                            producer.request(n + (toSkip - skipped));
                         }
                     }
                 };
             }
-            
+
         };
     }
 }
