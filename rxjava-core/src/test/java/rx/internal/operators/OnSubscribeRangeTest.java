@@ -126,7 +126,7 @@ public class OnSubscribeRangeTest {
         OnSubscribeRange o = new OnSubscribeRange(1, list.size());
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         ts.assertReceivedOnNext(Collections.<Integer> emptyList());
-        ts.request(-1); // infinite
+        ts.request(Long.MAX_VALUE); // infinite
         o.call(ts);
         ts.assertReceivedOnNext(list);
         ts.assertTerminalEvent();

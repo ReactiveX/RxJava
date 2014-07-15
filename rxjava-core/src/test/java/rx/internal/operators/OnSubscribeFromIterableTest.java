@@ -143,7 +143,7 @@ public class OnSubscribeFromIterableTest {
         OnSubscribeFromIterable<Integer> o = new OnSubscribeFromIterable<Integer>(Arrays.asList(1, 2, 3, 4, 5));
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         ts.assertReceivedOnNext(Collections.<Integer> emptyList());
-        ts.request(-1); // infinite
+        ts.request(Long.MAX_VALUE); // infinite
         o.call(ts);
         ts.assertReceivedOnNext(Arrays.asList(1, 2, 3, 4, 5));
         ts.assertTerminalEvent();

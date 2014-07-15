@@ -126,9 +126,9 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
         if (setProducer) {
             op.setProducer(p);
         } else {
-            // we execute the request with whatever has been requested (or -1)
+            // we execute the request with whatever has been requested (or Long.MAX_VALUE)
             if (toRequest == Long.MIN_VALUE) {
-                p.request(-1);
+                p.request(Long.MAX_VALUE);
             } else {
                 p.request(toRequest);
             }
