@@ -4911,10 +4911,22 @@ public class Observable<T> {
         }).cast(klass);
     }
 
+    /**
+     * Instructs an Observable that is emitting items faster than its observer can consume them to buffer these
+     * items indefinitely until they can be emitted.
+     *
+     * @return
+     * @since 0.20
+     */
     public final Observable<T> onBackpressureBuffer() {
         return lift(new OperatorOnBackpressureBuffer<T>());
     }
-    
+
+    /**
+     * @warn javadoc missing
+     * @return
+     * @since 0.20
+     */
     public final Observable<T> onBackpressureDrop() {
         return lift(new OperatorOnBackpressureDrop<T>());
     }

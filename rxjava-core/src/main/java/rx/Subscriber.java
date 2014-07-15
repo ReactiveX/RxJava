@@ -83,10 +83,26 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
         return cs.isUnsubscribed();
     }
 
+    /**
+     * This method is invoked when the Subscriber and Observable have been connected but the Observable has
+     * not yet begun to emit items or send notifications to the Subscriber. Override this method to add any
+     * useful initialization to your subscription, for instance to initiate backpressure.
+     *
+     * @since 0.20
+     */
     public void onStart() {
         // do nothing by default
     }
     
+    /**
+     * Request a certain maximum number of emitted items from the Observable this Subscriber is subscribed to.
+     * This is a way of requesting backpressure. To disable backpressure, pass {@code Long.MAX_VALUE} to this
+     * method.
+     *
+     * @param n the maximum number of items you want the Observable to emit to the Subscriber at this time, or
+     *           {@code Long.MAX_VALUE} if you want the Observable to emit items at its own pace
+     * @since 0.20
+     */
     public final void request(long n) {
         Producer shouldRequest = null;
         synchronized (this) {
@@ -102,10 +118,21 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
         }
     }
 
+    /**
+     * @warn javadoc description missing
+     * @return
+     * @since 0.20
+     */
     protected Producer onSetProducer(Producer producer) {
         return producer;
     }
 
+    /**
+     * @warn javadoc description missing
+     * @warn param producer not described
+     * @param producer
+     * @since 0.20
+     */
     public final void setProducer(Producer producer) {
         producer = onSetProducer(producer);
         long toRequest;

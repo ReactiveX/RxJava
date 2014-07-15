@@ -15,8 +15,20 @@
  */
 package rx;
 
+/**
+ * @warn javadoc description missing
+ * @since 0.20
+ */
 public interface Producer {
 
+    /**
+     * Request a certain maximum number of items from this Producer. This is a way of requesting backpressure.
+     * To disable backpressure, pass {@code Long.MAX_VALUE} to this method.
+     *
+     * @param n the maximum number of items you want this Producer to produce, or {@code Long.MAX_VALUE} if you
+     *          want the Producer to produce items at its own pace
+     * @since 0.20
+     */
     public void request(long n);
 
 }
