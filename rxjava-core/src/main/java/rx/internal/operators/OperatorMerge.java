@@ -391,8 +391,8 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
 
         @Override
         public void request(long n) {
-            if (n < 0) {
-                requested = -1;
+            if (n == Long.MAX_VALUE) {
+                requested = Long.MAX_VALUE;
             } else {
                 REQUESTED.getAndAdd(this, n);
                 ms.drainQueuesIfNeeded();

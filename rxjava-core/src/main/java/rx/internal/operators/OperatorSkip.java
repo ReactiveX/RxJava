@@ -67,17 +67,17 @@ public final class OperatorSkip<T> implements Observable.Operator<T, T> {
 
                     @Override
                     public void request(long n) {
-                        // add the skip num to the requested amount, since we'll skip everything and then emit to the buffer downstream
-                        if (n > 0) {
-                            producer.request(n + (toSkip - skipped));
-                        } else {
+                        if (n == Long.MAX_VALUE) {
                             // infinite so leave it alone
                             producer.request(n);
+                        } else if (n > 0) {
+                            // add the skip num to the requested amount, since we'll skip everything and then emit to the buffer downstream
+                            producer.request(n + (toSkip - skipped));
                         }
                     }
                 };
             }
-            
+
         };
     }
 }

@@ -64,7 +64,7 @@ public class SubscriberTest {
             }
 
         });
-        assertEquals(-1, r.get());
+        assertEquals(Long.MAX_VALUE, r.get());
     }
 
     @Test
@@ -154,8 +154,8 @@ public class SubscriberTest {
             }
 
         });
-        // this will be -1 because it is decoupled and nothing requsted on the Operator subscriber
-        assertEquals(-1, r.get());
+        // this will be Long.MAX_VALUE because it is decoupled and nothing requsted on the Operator subscriber
+        assertEquals(Long.MAX_VALUE, r.get());
     }
 
     @Test

@@ -62,7 +62,7 @@ public final class OnSubscribeFromIterable<T> implements OnSubscribe<T> {
 
         @Override
         public void request(long n) {
-            if (n < 0) {
+            if (n == Long.MAX_VALUE) {
                 // fast-path without backpressure
                 while (it.hasNext()) {
                     if (o.isUnsubscribed()) {
@@ -71,7 +71,7 @@ public final class OnSubscribeFromIterable<T> implements OnSubscribe<T> {
                     o.onNext(it.next());
                 }
                 o.onCompleted();
-            } else {
+            } else if(n > 0) {
                 // backpressure is requested
                 long _c = REQUESTED_UPDATER.getAndAdd(this, n);
                 if (_c == 0) {

@@ -56,7 +56,7 @@ public final class OnSubscribeRange implements OnSubscribe<Integer> {
 
         @Override
         public void request(long n) {
-            if (n < 0) {
+            if (n == Long.MAX_VALUE) {
                 // fast-path without backpressure
                 for (long i = index; i <= end; i++) {
                     if (o.isUnsubscribed()) {
