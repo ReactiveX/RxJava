@@ -54,7 +54,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
         private int wip;
         private boolean completed;
 
-        private SubscriptionIndexedRingBuffer<InnerSubscriber<T>> childrenSubscribers;
+        private volatile SubscriptionIndexedRingBuffer<InnerSubscriber<T>> childrenSubscribers;
 
         private RxRingBuffer scalarValueQueue = null;
 
@@ -245,11 +245,12 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
                         emitted = drainScalarValueQueue();
                         drainChildrenQueues();
                     } finally {
-                        if (!releaseEmitLock()) {
-                            return true;
-                        }
+                        boolean moreToDrain = releaseEmitLock();
                         // request outside of lock
                         request(emitted);
+                        if (!moreToDrain) {
+                            return true;
+                        }
                         // otherwise we'll loop and get whatever was added 
                     }
                 } else {
@@ -351,25 +352,27 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
             }
             if (c) {
                 // complete outside of lock
-                actual.onCompleted();
+                drainAndComplete();
             }
         }
 
         void completeInner(InnerSubscriber<T> s) {
-            try {
-                boolean sendOnComplete = false;
-                synchronized (this) {
-                    wip--;
-                    if (wip == 0 && completed) {
-                        sendOnComplete = true;
-                    }
+            boolean sendOnComplete = false;
+            synchronized (this) {
+                wip--;
+                if (wip == 0 && completed) {
+                    sendOnComplete = true;
                 }
-                if (sendOnComplete) {
-                    actual.onCompleted();
-                }
-            } finally {
-                childrenSubscribers.remove(s.sindex);
             }
+            childrenSubscribers.remove(s.sindex);
+            if (sendOnComplete) {
+                drainAndComplete();
+            }
+        }
+
+        private void drainAndComplete() {
+            drainQueuesIfNeeded(); // TODO need to confirm whether this is needed or not
+            actual.onCompleted();
         }
 
     }
@@ -403,9 +406,10 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
         final MergeSubscriber<T> parentSubscriber;
         final MergeProducer<T> producer;
         /** Make sure the inner termination events are delivered only once. */
-        volatile int once;
+        volatile int terminated;
         @SuppressWarnings("rawtypes")
-        static final AtomicIntegerFieldUpdater<InnerSubscriber> ONCE_UPDATER = AtomicIntegerFieldUpdater.newUpdater(InnerSubscriber.class, "once");
+        static final AtomicIntegerFieldUpdater<InnerSubscriber> ONCE_TERMINATED = AtomicIntegerFieldUpdater.newUpdater(InnerSubscriber.class, "terminated");
+
         private final RxRingBuffer q = RxRingBuffer.getSpmcInstance();
         /* protected by emitLock */
         int emitted = 0;
@@ -426,14 +430,14 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
         @Override
         public void onError(Throwable e) {
             // it doesn't go through queues, it immediately onErrors and tears everything down
-            if (ONCE_UPDATER.compareAndSet(this, 0, 1)) {
+            if (ONCE_TERMINATED.compareAndSet(this, 0, 1)) {
                 parentSubscriber.onError(e);
             }
         }
 
         @Override
         public void onCompleted() {
-            if (ONCE_UPDATER.compareAndSet(this, 0, 1)) {
+            if (ONCE_TERMINATED.compareAndSet(this, 0, 1)) {
                 emit(null, true);
             }
         }
