@@ -42,7 +42,6 @@ import static org.mockito.Mockito.times;
 public class OperatorLocalBroadcastRegisterTest {
 
     @Test
-    @SuppressWarnings("unchecked")
     public void testLocalBroadcast() {
         String action = "TEST_ACTION";
         IntentFilter intentFilter = new IntentFilter(action);
@@ -64,6 +63,7 @@ public class OperatorLocalBroadcastRegisterTest {
         inOrder.verify(observer, times(1)).onNext(intent);
 
         subscription.unsubscribe();
+        localBroadcastManager.sendBroadcast(intent);
         inOrder.verify(observer, never()).onNext(any(Intent.class));
 
         inOrder.verify(observer, never()).onError(any(Throwable.class));
