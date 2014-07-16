@@ -38,7 +38,7 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
     /* protected by `this` */
     private Producer p;
     /* protected by `this` */
-    private long requested = Long.MIN_VALUE; // default to not set
+    private Long requested = null; // default to null
 
     @Deprecated
     protected Subscriber(CompositeSubscription cs) {
@@ -84,17 +84,6 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
     }
 
     /**
-     * This method is invoked when the Subscriber and Observable have been connected but the Observable has
-     * not yet begun to emit items or send notifications to the Subscriber. Override this method to add any
-     * useful initialization to your subscription, for instance to initiate backpressure.
-     *
-     * @since 0.20
-     */
-    public void onStart() {
-        // do nothing by default
-    }
-    
-    /**
      * Request a certain maximum number of emitted items from the Observable this Subscriber is subscribed to.
      * This is a way of requesting backpressure. To disable backpressure, pass {@code Long.MAX_VALUE} to this
      * method.
@@ -120,33 +109,22 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
 
     /**
      * @warn javadoc description missing
-     * @return
-     * @since 0.20
-     */
-    protected Producer onSetProducer(Producer producer) {
-        return producer;
-    }
-
-    /**
-     * @warn javadoc description missing
      * @warn param producer not described
      * @param producer
      * @since 0.20
      */
-    public final void setProducer(Producer producer) {
-        producer = onSetProducer(producer);
-        long toRequest;
+    public void setProducer(Producer producer) {
+        Long toRequest;
         boolean setProducer = false;
         synchronized (this) {
             toRequest = requested;
             p = producer;
             if (op != null) {
                 // middle operator ... we pass thru unless a request has been made
-                if (toRequest == Long.MIN_VALUE) {
+                if (toRequest == null) {
                     // we pass-thru to the next producer as nothing has been requested
                     setProducer = true;
                 }
-
             }
         }
         // do after releasing lock
@@ -154,7 +132,7 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
             op.setProducer(p);
         } else {
             // we execute the request with whatever has been requested (or Long.MAX_VALUE)
-            if (toRequest == Long.MIN_VALUE) {
+            if (toRequest == null) {
                 p.request(Long.MAX_VALUE);
             } else {
                 p.request(toRequest);

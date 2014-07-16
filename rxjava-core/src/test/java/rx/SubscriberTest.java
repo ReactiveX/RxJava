@@ -324,6 +324,31 @@ public class SubscriberTest {
         final AtomicReference<Producer> producer1 = new AtomicReference<Producer>();
         final AtomicReference<Producer> producer2 = new AtomicReference<Producer>();
         final AtomicReference<Producer> gotProducer = new AtomicReference<Producer>();
+        final Subscriber<Integer> subscriber = new Subscriber<Integer>() {
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(Integer t) {
+                System.out.println(t);
+                request(1);
+            }
+
+            @Override
+            public void setProducer(Producer producer) {
+                gotProducer.set(producer);
+                super.setProducer(producer);
+            }
+        };
+        subscriber.request(1);
+
         Observable.create(new OnSubscribe<Integer>() {
 
             @Override
@@ -362,14 +387,7 @@ public class SubscriberTest {
                 producer2.set(p2);
                 child.setProducer(p2);
 
-                return new Subscriber<Integer>(child) {
-
-                    // we request "5" and this decouples the Producer chain while retaining the Subscription chain
-                    @Override
-                    public void onStart() {
-                        request(5);
-                    }
-
+                final Subscriber<Integer> subscriber = new Subscriber<Integer>(child) {
                     @Override
                     public void onCompleted() {
                     }
@@ -383,38 +401,13 @@ public class SubscriberTest {
                     }
 
                 };
+
+                // we request "5" and this decouples the Producer chain while retaining the Subscription chain
+                subscriber.request(5);
+                return subscriber;
             }
 
-        }).subscribe(new Subscriber<Integer>() {
-
-            @Override
-            public void onStart() {
-                request(1);
-            }
-
-            @Override
-            public void onCompleted() {
-
-            }
-
-            @Override
-            public void onError(Throwable e) {
-
-            }
-
-            @Override
-            public void onNext(Integer t) {
-                System.out.println(t);
-                request(1);
-            }
-
-            @Override
-            protected Producer onSetProducer(Producer producer) {
-                gotProducer.set(producer);
-                return producer;
-            }
-
-        });
+        }).subscribe(subscriber);
 
         if (gotProducer.get() != producer2.get()) {
             throw new IllegalStateException("Expecting the producer from lift");
@@ -430,6 +423,32 @@ public class SubscriberTest {
         final AtomicReference<Producer> producer1 = new AtomicReference<Producer>();
         final AtomicReference<Producer> producer2 = new AtomicReference<Producer>();
         final AtomicReference<Producer> gotProducer = new AtomicReference<Producer>();
+        final Subscriber<Integer> subscriber = new Subscriber<Integer>() {
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(Integer t) {
+                System.out.println(t);
+                request(1);
+            }
+
+            @Override
+            public void setProducer(Producer producer) {
+                gotProducer.set(producer);
+                super.setProducer(producer);
+            }
+        };
+
+        subscriber.request(1);
+
         Observable.create(new OnSubscribe<Integer>() {
 
             @Override
@@ -468,14 +487,7 @@ public class SubscriberTest {
                 producer2.set(p2);
                 child.setProducer(p2);
 
-                return new Subscriber<Integer>(child) {
-
-                    // we request "5" and this decouples the Producer chain while retaining the Subscription chain
-                    @Override
-                    public void onStart() {
-                        request(5);
-                    }
-
+                final Subscriber<Integer> subscriber = new Subscriber<Integer>(child) {
                     @Override
                     public void onCompleted() {
                     }
@@ -487,149 +499,18 @@ public class SubscriberTest {
                     @Override
                     public void onNext(Integer t) {
                     }
-
                 };
+                // we request "5" and this decouples the Producer chain while retaining the Subscription chain
+                subscriber.request(5);
+                return subscriber;
             }
 
-        }).unsafeSubscribe(new Subscriber<Integer>() {
-
-            @Override
-            public void onStart() {
-                request(1);
-            }
-
-            @Override
-            public void onCompleted() {
-
-            }
-
-            @Override
-            public void onError(Throwable e) {
-
-            }
-
-            @Override
-            public void onNext(Integer t) {
-                System.out.println(t);
-                request(1);
-            }
-
-            @Override
-            protected Producer onSetProducer(Producer producer) {
-                gotProducer.set(producer);
-                return producer;
-            }
-
-        });
+        }).unsafeSubscribe(subscriber);
 
         if (gotProducer.get() != producer2.get()) {
             throw new IllegalStateException("Expecting the producer from lift");
         }
         assertEquals(requested1.get(), 5);
         assertEquals(requested2.get(), 1);
-    }
-
-    @Test
-    public void testOnStartCalledOnceViaSubscribe() {
-        final AtomicInteger c = new AtomicInteger();
-        Observable.from(1, 2, 3, 4).take(2).subscribe(new Subscriber<Integer>() {
-
-            @Override
-            public void onStart() {
-                c.incrementAndGet();
-                request(1);
-            }
-
-            @Override
-            public void onCompleted() {
-
-            }
-
-            @Override
-            public void onError(Throwable e) {
-
-            }
-
-            @Override
-            public void onNext(Integer t) {
-                System.out.println(t);
-                request(1);
-            }
-
-        });
-
-        assertEquals(1, c.get());
-    }
-
-    @Test
-    public void testOnStartCalledOnceViaUnsafeSubscribe() {
-        final AtomicInteger c = new AtomicInteger();
-        Observable.from(1, 2, 3, 4).take(2).unsafeSubscribe(new Subscriber<Integer>() {
-
-            @Override
-            public void onStart() {
-                c.incrementAndGet();
-                request(1);
-            }
-
-            @Override
-            public void onCompleted() {
-
-            }
-
-            @Override
-            public void onError(Throwable e) {
-
-            }
-
-            @Override
-            public void onNext(Integer t) {
-                System.out.println(t);
-                request(1);
-            }
-
-        });
-
-        assertEquals(1, c.get());
-    }
-
-    @Test
-    public void testOnStartCalledOnceViaLift() {
-        final AtomicInteger c = new AtomicInteger();
-        Observable.from(1, 2, 3, 4).lift(new Operator<Integer, Integer>() {
-
-            @Override
-            public Subscriber<? super Integer> call(final Subscriber<? super Integer> child) {
-                return new Subscriber<Integer>() {
-
-                    @Override
-                    public void onStart() {
-                        c.incrementAndGet();
-                        request(1);
-                    }
-
-                    @Override
-                    public void onCompleted() {
-                        child.onCompleted();
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        child.onError(e);
-                    }
-
-                    @Override
-                    public void onNext(Integer t) {
-                        System.out.println(t);
-                        child.onNext(t);
-                        request(1);
-                    }
-
-                };
-            }
-
-        }).subscribe();
-
-        assertEquals(1, c.get());
     }
 }

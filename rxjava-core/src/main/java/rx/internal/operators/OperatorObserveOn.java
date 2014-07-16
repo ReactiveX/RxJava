@@ -99,12 +99,6 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
             add(scheduledUnsubscribe);
             child.add(recursiveScheduler);
             child.add(this);
-            
-        }
-        
-        @Override
-        public void onStart() {
-            // signal that this is an async operator capable of receiving this many
             request(RxRingBuffer.SIZE);
         }
 

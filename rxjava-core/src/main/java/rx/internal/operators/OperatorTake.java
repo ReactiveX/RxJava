@@ -74,9 +74,8 @@ public final class OperatorTake<T> implements Operator<T, T> {
              * We want to adjust the requested values based on the `take` count.
              */
             @Override
-            protected Producer onSetProducer(final Producer producer) {
-                return new Producer() {
-
+            public void setProducer(final Producer producer) {
+                child.setProducer(new Producer() {
                     @Override
                     public void request(long n) {
                         long c = limit - count;
@@ -86,7 +85,7 @@ public final class OperatorTake<T> implements Operator<T, T> {
                             producer.request(c);
                         }
                     }
-                };
+                });
             }
 
         };

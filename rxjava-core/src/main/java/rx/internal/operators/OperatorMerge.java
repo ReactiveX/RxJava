@@ -84,10 +84,6 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
             // decoupled the subscription chain because we need to decouple and control backpressure
             actual.add(this);
             actual.setProducer(mergeProducer);
-        }
-
-        @Override
-        public void onStart() {
             // we request backpressure so we can handle long-running Observables that are enqueueing, such as flatMap use cases
             // we decouple the Producer chain while keeping the Subscription chain together (perf benefit) via super(actual)
             request(RxRingBuffer.SIZE);

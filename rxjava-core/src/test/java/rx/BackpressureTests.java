@@ -306,13 +306,7 @@ public class BackpressureTests {
         final AtomicInteger totalReceived = new AtomicInteger();
         final AtomicInteger batches = new AtomicInteger();
         final AtomicInteger received = new AtomicInteger();
-        incrementingIntegers(c).subscribe(new Subscriber<Integer>() {
-
-            @Override
-            public void onStart() {
-                request(100);
-            }
-            
+        final Subscriber<Integer> subscriber = new Subscriber<Integer>() {
             @Override
             public void onCompleted() {
 
@@ -337,7 +331,9 @@ public class BackpressureTests {
                 }
             }
 
-        });
+        };
+        subscriber.request(100);
+        incrementingIntegers(c).subscribe(subscriber);
 
         System.out.println("testUserSubscriberUsingRequestSync => Received: " + totalReceived.get() + "  Emitted: " + c.get() + " Request Batches: " + batches.get());
         assertEquals(2000, c.get());
@@ -352,14 +348,7 @@ public class BackpressureTests {
         final AtomicInteger received = new AtomicInteger();
         final AtomicInteger batches = new AtomicInteger();
         final CountDownLatch latch = new CountDownLatch(1);
-        incrementingIntegers(c).subscribeOn(Schedulers.newThread()).subscribe(new Subscriber<Integer>() {
-
-            @Override
-            public void onStart() {
-                request(100);
-            }
-            
-            
+        final Subscriber<Integer> subscriber = new Subscriber<Integer>() {
             @Override
             public void onCompleted() {
                 latch.countDown();
@@ -385,7 +374,9 @@ public class BackpressureTests {
                 }
             }
 
-        });
+        };
+        subscriber.request(100);
+        incrementingIntegers(c).subscribeOn(Schedulers.newThread()).subscribe(subscriber);
 
         latch.await();
         System.out.println("testUserSubscriberUsingRequestAsync => Received: " + totalReceived.get() + "  Emitted: " + c.get() + " Request Batches: " + batches.get());
