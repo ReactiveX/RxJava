@@ -24,8 +24,8 @@ import android.os.Handler;
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
-import rx.android.subscriptions.AndroidSubscriptions;
 import rx.functions.Action0;
+import rx.subscriptions.Subscriptions;
 
 public class OperatorBroadcastRegister implements Observable.OnSubscribe<Intent> {
 
@@ -50,7 +50,7 @@ public class OperatorBroadcastRegister implements Observable.OnSubscribe<Intent>
             }
         };
 
-        final Subscription subscription = AndroidSubscriptions.unsubscribeInUiThread(new Action0() {
+        final Subscription subscription = Subscriptions.create(new Action0() {
             @Override
             public void call() {
                 context.unregisterReceiver(broadcastReceiver);
