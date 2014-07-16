@@ -159,7 +159,6 @@ public class Observable<T> {
                 try {
                     Subscriber<? super T> st = hook.onLift(lift).call(o);
                     // new Subscriber created and being subscribed with so 'onStart' it
-                    st.onStart();
                     onSubscribe.call(st);
                 } catch (Throwable e) {
                     // localized capture of errors rather than it skipping all operators 
@@ -6852,8 +6851,6 @@ public class Observable<T> {
      */
     public final Subscription unsafeSubscribe(Subscriber<? super T> subscriber) {
         try {
-            // new Subscriber so onStart it
-            subscriber.onStart();
             // allow the hook to intercept and/or decorate
             hook.onSubscribeStart(this, onSubscribe).call(subscriber);
             return hook.onSubscribeReturn(subscriber);
@@ -6925,9 +6922,6 @@ public class Observable<T> {
              * so I won't mention that in the exception
              */
         }
-        
-        // new Subscriber so onStart it
-        subscriber.onStart();
         
         /*
          * See https://github.com/Netflix/RxJava/issues/216 for discussion on "Guideline 6.4: Protect calls

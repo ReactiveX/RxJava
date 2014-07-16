@@ -62,9 +62,8 @@ public final class OperatorSkip<T> implements Observable.Operator<T, T> {
             }
 
             @Override
-            protected Producer onSetProducer(final Producer producer) {
-                return new Producer() {
-
+            public void setProducer(final Producer producer) {
+                child.setProducer(new Producer() {
                     @Override
                     public void request(long n) {
                         if (n == Long.MAX_VALUE) {
@@ -75,7 +74,7 @@ public final class OperatorSkip<T> implements Observable.Operator<T, T> {
                             producer.request(n + (toSkip - skipped));
                         }
                     }
-                };
+                });
             }
 
         };

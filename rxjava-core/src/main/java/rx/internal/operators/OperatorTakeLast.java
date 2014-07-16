@@ -46,15 +46,7 @@ public final class OperatorTakeLast<T> implements Operator<T, T> {
         final QueueProducer<T> producer = new QueueProducer<T>(notification, deque, subscriber);
         subscriber.setProducer(producer);
 
-        return new Subscriber<T>(subscriber) {
-
-            // no backpressure up as it wants to receive and discard all but the last
-            @Override
-            public void onStart() {
-                // we do this to break the chain of the child subscriber being passed through
-                request(Long.MAX_VALUE);
-            }
-
+        final Subscriber<T> subscriber2 = new Subscriber<T>(subscriber) {
             @Override
             public void onCompleted() {
                 deque.offer(notification.completed());
@@ -80,6 +72,10 @@ public final class OperatorTakeLast<T> implements Operator<T, T> {
                 deque.offerLast(notification.next(value));
             }
         };
+        // no backpressure up as it wants to receive and discard all but the last
+        // we do this to break the chain of the child subscriber being passed through
+        subscriber2.request(Long.MAX_VALUE);
+        return subscriber2;
     }
 
     private static final class QueueProducer<T> implements Producer {
