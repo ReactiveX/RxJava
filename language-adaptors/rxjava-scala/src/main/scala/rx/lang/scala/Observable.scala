@@ -1842,10 +1842,7 @@ trait Observable[+T]
    *         Observable satisfy the predicate; otherwise, `false`
    */
   def forall(predicate: T => Boolean): Observable[Boolean] = {
-    // type mismatch; found : rx.Observable[java.lang.Boolean] required: rx.Observable[_ <: scala.Boolean]
-    // new Observable[Boolean](asJavaNotification.all(predicate))
-    // it's more fun in Scala:
-    this.map(predicate).foldLeft(true)(_ && _)
+    toScalaObservable[java.lang.Boolean](asJavaObservable.all(predicate)).map(_.booleanValue())
   }
 
   /**
@@ -4122,6 +4119,35 @@ trait Observable[+T]
    */
   def toArray[U >: T : ClassTag]: Observable[Array[U]] = // use U >: T because Array is invariant
     toBuffer[U].map(_.toArray)
+
+  /**
+   * Returns an [[Observable]] which only emits elements which do not satisfy a predicate.
+   *
+   * @param p the predicate used to test elements.
+   * @return Returns an [[Observable]] which only emits elements which do not satisfy a predicate.
+   */
+  def filterNot(p: T => Boolean): Observable[T] = {
+    filter(!p(_))
+  }
+
+  /**
+   * Return an [[Observable]] which emits the number of elements in the source [[Observable]] which satisfy a predicate.
+   *
+   * @param p the predicate used to test elements.
+   * @return an [[Observable]] which emits the number of elements in the source [[Observable]] which satisfy a predicate.
+   */
+  def count(p: T => Boolean): Observable[Int] = {
+    filter(p).length
+  }
+
+  /**
+   * Return an [[Observable]] emitting one single `Boolean`, which is `true` if the source [[Observable]] emits any element, and `false` otherwise.
+   *
+   * @return an [[Observable]] emitting one single Boolean`, which is `true` if the source  [[Observable]] emits any element, and `false otherwise.
+   */
+  def nonEmpty: Observable[Boolean] = {
+    isEmpty.map(!_)
+  }
 }
 
 /**
