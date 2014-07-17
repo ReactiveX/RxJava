@@ -2394,50 +2394,6 @@ public class Observable<T> {
     }
 
     /**
-     * Pivots a sequence of {@code GroupedObservable}s emitted by an {@code Observable} so as to swap the group
-     * and and the set on which their items are grouped.
-     * <p>
-     * <img width="640" height="580" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/pivot.png" alt="">
-     * <p>
-     * For example an {@code Observable} such as this =&gt;
-     * 
-     * {@code Observable<GroupedObservable<String, GroupedObservable<Boolean, Integer>>>}:
-     * <ul>
-     * <li>o1.odd: 1, 3, 5, 7, 9 on Thread 1</li>
-     * <li>o1.even: 2, 4, 6, 8, 10 on Thread 1</li>
-     * <li>o2.odd: 11, 13, 15, 17, 19 on Thread 2</li>
-     * <li>o2.even: 12, 14, 16, 18, 20 on Thread 2</li>
-     * </ul>
-     * is pivoted to become this =&gt;
-     * 
-     * {@code Observable<GroupedObservable<Boolean, GroupedObservable<String, Integer>>>}:
-     * <ul>
-     * <li>odd.o1: 1, 3, 5, 7, 9 on Thread 1</li>
-     * <li>odd.o2: 11, 13, 15, 17, 19 on Thread 2</li>
-     * <li>even.o1: 2, 4, 6, 8, 10 on Thread 1</li>
-     * <li>even.o2: 12, 14, 16, 18, 20 on Thread 2</li>
-     * </ul>
-     * <p>
-     * <img width="640" height="1140" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/pivot.ex.png" alt="">
-     * <p>
-     * <em>Note:</em> A {@link GroupedObservable} will cache the items it is to emit until such time as it
-     * is subscribed to. For this reason, in order to avoid memory leaks, you should not simply ignore those
-     * {@code GroupedObservable}s that do not concern you. Instead, you can signal to them that they may
-     * discard their buffers by applying an operator like {@link #take}{@code (0)} to them.
-     * <p>
-     * {@code pivot} does not operate by default on a particular {@link Scheduler}.
-     * 
-     * @param groups
-                 the {@link GroupedObservable} to pivot
-     * @return an {@code Observable} containing a stream of nested {@code GroupedObservable}s with swapped
-     *         inner-outer keys.
-     * @since 0.17
-     */
-    public static final <K1, K2, T> Observable<GroupedObservable<K2, GroupedObservable<K1, T>>> pivot(Observable<GroupedObservable<K1, GroupedObservable<K2, T>>> groups) {
-        return groups.lift(new OperatorPivot<K1, K2, T>());
-    }
-
-    /**
      * Returns an Observable that emits a sequence of Integers within a specified range.
      * <p>
      * <img width="640" height="195" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/range.png" alt="">
