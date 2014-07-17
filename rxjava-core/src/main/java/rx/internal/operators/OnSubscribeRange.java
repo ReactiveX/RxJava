@@ -64,7 +64,9 @@ public final class OnSubscribeRange implements OnSubscribe<Integer> {
                     }
                     o.onNext((int) i);
                 }
-                o.onCompleted();
+                if (!o.isUnsubscribed()) {
+                    o.onCompleted();
+                }
             } else if (n > 0) {
                 // backpressure is requested
                 long _c = REQUESTED_UPDATER.getAndAdd(this, n);
