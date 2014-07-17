@@ -103,7 +103,7 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
      *           {@code Long.MAX_VALUE} if you want the Observable to emit items at its own pace
      * @since 0.20
      */
-    public final void request(long n) {
+    protected final void request(long n) {
         Producer shouldRequest = null;
         synchronized (this) {
             if (p != null) {
@@ -120,21 +120,11 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
 
     /**
      * @warn javadoc description missing
-     * @return
-     * @since 0.20
-     */
-    protected Producer onSetProducer(Producer producer) {
-        return producer;
-    }
-
-    /**
-     * @warn javadoc description missing
      * @warn param producer not described
      * @param producer
      * @since 0.20
      */
-    public final void setProducer(Producer producer) {
-        producer = onSetProducer(producer);
+    public void setProducer(Producer producer) {
         long toRequest;
         boolean setProducer = false;
         synchronized (this) {

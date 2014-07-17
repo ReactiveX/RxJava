@@ -106,6 +106,14 @@ public class TestSubscriber<T> extends Subscriber<T> {
         lastSeenThread = Thread.currentThread();
         testObserver.onNext(t);
     }
+    
+    /**
+     * Allow calling the protected {@link #request(long)} from unit tests.
+     * @param n
+     */
+    public void requestMore(long n) {
+        request(n);
+    }
 
     /**
      * Get the sequence of items observed by this Subscriber, as an ordered {@link List}.

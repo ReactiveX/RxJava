@@ -208,13 +208,13 @@ public class OperatorSubscribeOnTest {
             }
 
         });
-        ts.request(10);
+        ts.requestMore(10);
         Observable.range(1, 10000000).subscribeOn(Schedulers.newThread()).take(20).subscribe(ts);
         latch.await();
         Thread t = ts.getLastSeenThread();
         System.out.println("First schedule: " + t);
         assertTrue(t.getName().startsWith("Rx"));
-        ts.request(10);
+        ts.requestMore(10);
         ts.awaitTerminalEvent();
         System.out.println("After reschedule: " + ts.getLastSeenThread());
         assertEquals(t, ts.getLastSeenThread());
