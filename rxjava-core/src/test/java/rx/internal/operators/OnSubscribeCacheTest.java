@@ -34,6 +34,7 @@ import rx.functions.Func1;
 import rx.functions.Func2;
 import rx.internal.operators.OnSubscribeCache;
 import rx.observers.TestObserver;
+import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 import rx.subjects.AsyncSubject;
 import rx.subjects.BehaviorSubject;
@@ -93,7 +94,8 @@ public class OnSubscribeCacheTest {
         }
         assertEquals(1, counter.get());
     }
-    void testWithCustomSubjectAndRepeat(Subject<Integer, Integer> subject, Integer... expected) {
+
+    private void testWithCustomSubjectAndRepeat(Subject<Integer, Integer> subject, Integer... expected) {
         Observable<Integer> source0 = Observable.from(1, 2, 3)
                 .subscribeOn(Schedulers.io())
                 .flatMap(new Func1<Integer, Observable<Integer>>() {
@@ -107,9 +109,9 @@ public class OnSubscribeCacheTest {
                         });
                     }
                 });
-        
+
         Observable<Integer> source1 = Observable.create(new OnSubscribeCache<Integer>(source0, subject));
-        
+
         Observable<Integer> source2 = source1
                 .repeat(4)
                 .zip(Observable.timer(0, 10, TimeUnit.MILLISECONDS, Schedulers.newThread()), new Func2<Integer, Long, Integer>() {
@@ -117,52 +119,36 @@ public class OnSubscribeCacheTest {
                     public Integer call(Integer t1, Long t2) {
                         return t1;
                     }
-                    
+
                 });
-        final CountDownLatch cdl = new CountDownLatch(1);
-        TestObserver<Integer> test = new TestObserver<Integer>(new Observer<Integer>() {
-            @Override
-            public void onNext(Integer t) {
-            }
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        source2.subscribe(ts);
 
-            @Override
-            public void onError(Throwable e) {
-                cdl.countDown();
-            }
-
-            @Override
-            public void onCompleted() {
-                cdl.countDown();
-            }
-        });
-        source2.subscribe(test);
-
-        try {
-            cdl.await(20, TimeUnit.SECONDS);
-        } catch (InterruptedException ex) {
-            fail("Interrupted");
-        }
-        
-        test.assertReceivedOnNext(Arrays.asList(expected));
-        test.assertTerminalEvent();
-        assertTrue(test.getOnErrorEvents().isEmpty());
+        ts.awaitTerminalEvent();
+        ts.assertNoErrors();
+        System.out.println(ts.getOnNextEvents());
+        ts.assertReceivedOnNext(Arrays.asList(expected));
     }
+
     @Test(timeout = 10000)
     public void testWithAsyncSubjectAndRepeat() {
-        testWithCustomSubjectAndRepeat(AsyncSubject.<Integer>create(), 3, 3, 3, 3);
+        testWithCustomSubjectAndRepeat(AsyncSubject.<Integer> create(), 3, 3, 3, 3);
     }
+
     @Test(timeout = 10000)
     public void testWithBehaviorSubjectAndRepeat() {
         // BehaviorSubject just completes when repeated
         testWithCustomSubjectAndRepeat(BehaviorSubject.create(0), 0, 1, 2, 3);
     }
+
     @Test(timeout = 10000)
     public void testWithPublishSubjectAndRepeat() {
         // PublishSubject just completes when repeated
-        testWithCustomSubjectAndRepeat(PublishSubject.<Integer>create(), 1, 2, 3);
+        testWithCustomSubjectAndRepeat(PublishSubject.<Integer> create(), 1, 2, 3);
     }
-    @Test(timeout = 10000)
+
+    @Test
     public void testWithReplaySubjectAndRepeat() {
-        testWithCustomSubjectAndRepeat(ReplaySubject.<Integer>create(), 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3);
+        testWithCustomSubjectAndRepeat(ReplaySubject.<Integer> create(), 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3);
     }
 }
