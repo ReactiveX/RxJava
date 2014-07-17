@@ -105,14 +105,14 @@ public class OnSubscribeRangeTest {
         OnSubscribeRange o = new OnSubscribeRange(1, RxRingBuffer.SIZE);
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         ts.assertReceivedOnNext(Collections.<Integer> emptyList());
-        ts.request(1);
+        ts.requestMore(1);
         o.call(ts);
         ts.assertReceivedOnNext(Arrays.asList(1));
-        ts.request(2);
+        ts.requestMore(2);
         ts.assertReceivedOnNext(Arrays.asList(1, 2, 3));
-        ts.request(3);
+        ts.requestMore(3);
         ts.assertReceivedOnNext(Arrays.asList(1, 2, 3, 4, 5, 6));
-        ts.request(RxRingBuffer.SIZE);
+        ts.requestMore(RxRingBuffer.SIZE);
         ts.assertTerminalEvent();
     }
 
@@ -126,7 +126,7 @@ public class OnSubscribeRangeTest {
         OnSubscribeRange o = new OnSubscribeRange(1, list.size());
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         ts.assertReceivedOnNext(Collections.<Integer> emptyList());
-        ts.request(Long.MAX_VALUE); // infinite
+        ts.requestMore(Long.MAX_VALUE); // infinite
         o.call(ts);
         ts.assertReceivedOnNext(list);
         ts.assertTerminalEvent();
@@ -135,13 +135,13 @@ public class OnSubscribeRangeTest {
         Observable<Integer> source = Observable.range(start, 100);
         
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        ts.request(1);
+        ts.requestMore(1);
         source.subscribe(ts);
         
         List<Integer> list = new ArrayList<Integer>(100);
         for (int i = 0; i < 100; i++) {
             list.add(i + start);
-            ts.request(1);
+            ts.requestMore(1);
         }
         ts.assertReceivedOnNext(list);
         ts.assertTerminalEvent();
@@ -150,7 +150,7 @@ public class OnSubscribeRangeTest {
         Observable<Integer> source = Observable.range(start, 100);
         
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        ts.request(100);
+        ts.requestMore(100);
         source.subscribe(ts);
         
         List<Integer> list = new ArrayList<Integer>(100);
@@ -177,7 +177,7 @@ public class OnSubscribeRangeTest {
         Observable<Integer> source = Observable.range(50, 100);
         
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        ts.request(150);
+        ts.requestMore(150);
         source.subscribe(ts);
         
         List<Integer> list = new ArrayList<Integer>(100);
@@ -185,7 +185,7 @@ public class OnSubscribeRangeTest {
             list.add(i + 50);
         }
         
-        ts.request(50); // and then some
+        ts.requestMore(50); // and then some
         
         ts.assertReceivedOnNext(list);
         ts.assertTerminalEvent();

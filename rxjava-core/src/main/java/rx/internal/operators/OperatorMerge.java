@@ -339,7 +339,7 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
                         // TODO we may want to store this in s.emitted and only request if above batch
                         // reset this since we have requested them all
                         s.emitted = 0;
-                        s.request(emitted);
+                        s.requestMore(emitted);
                     }
                     if (emitted == r) {
                         // we emitted as many as were requested so stop the forEach loop
@@ -492,6 +492,10 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
             if (ONCE_TERMINATED.compareAndSet(this, 0, 1)) {
                 emit(null, true);
             }
+        }
+
+        public void requestMore(long n) {
+            request(n);
         }
 
         private void emit(T t, boolean complete) {
