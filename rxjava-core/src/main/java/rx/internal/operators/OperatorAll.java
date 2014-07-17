@@ -45,6 +45,9 @@ public final class OperatorAll<T> implements Operator<Boolean, T> {
                     child.onNext(false);
                     child.onCompleted();
                     unsubscribe();
+                } else {
+                	// if we drop values we must replace them upstream as downstream won't receive and request more
+                	request(1);
                 }
             }
 

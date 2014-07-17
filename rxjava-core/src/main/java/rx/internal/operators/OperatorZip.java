@@ -15,13 +15,15 @@
  */
 package rx.internal.operators;
 
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicLongFieldUpdater;
 
 import rx.Observable;
 import rx.Observable.Operator;
 import rx.Observer;
+import rx.Producer;
 import rx.Subscriber;
+import rx.exceptions.MissingBackpressureException;
 import rx.exceptions.OnErrorThrowable;
 import rx.functions.Func2;
 import rx.functions.Func3;
@@ -33,6 +35,7 @@ import rx.functions.Func8;
 import rx.functions.Func9;
 import rx.functions.FuncN;
 import rx.functions.Functions;
+import rx.internal.util.RxRingBuffer;
 import rx.subscriptions.CompositeSubscription;
 
 /**
@@ -48,7 +51,9 @@ import rx.subscriptions.CompositeSubscription;
  * <p>
  * The resulting Observable returned from zip will invoke <code>onNext</code> as many times as the
  * number of <code>onNext</code> invocations of the source Observable that emits the fewest items.
- * @param <R> the result type
+ * 
+ * @param <R>
+ *            the result type
  */
 public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
     /*
@@ -104,69 +109,106 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
 
     @SuppressWarnings("rawtypes")
     @Override
-    public Subscriber<? super Observable[]> call(final Subscriber<? super R> observer) {
-        return new Subscriber<Observable[]>(observer) {
-
-            boolean started = false;
-
-            @Override
-            public void onCompleted() {
-                if (!started) {
-                    // this means we have not received a valid onNext before termination so we emit the onCompleted
-                    observer.onCompleted();
-                }
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                observer.onError(e);
-            }
-
-            @Override
-            public void onNext(Observable[] observables) {
-                if (observables == null || observables.length == 0) {
-                    observer.onCompleted();
-                } else {
-                    started = true;
-                    new Zip<R>(observables, observer, zipFunction).zip();
-                }
-            }
-
-        };
+    public Subscriber<? super Observable[]> call(final Subscriber<? super R> child) {
+        final Zip<R> zipper = new Zip<R>(child, zipFunction);
+        final ZipProducer<R> producer = new ZipProducer<R>(zipper);
+        child.setProducer(producer);
+        final ZipSubscriber subscriber = new ZipSubscriber(child, zipper, producer);
+        return subscriber;
     }
 
-    static final NotificationLite<Object> on = NotificationLite.instance();
+    private final class ZipSubscriber extends Subscriber<Observable[]> {
+
+        final Subscriber<? super R> child;
+        final Zip<R> zipper;
+        final ZipProducer<R> producer;
+
+        public ZipSubscriber(Subscriber<? super R> child, Zip<R> zipper, ZipProducer<R> producer) {
+            super(child);
+            this.child = child;
+            this.zipper = zipper;
+            this.producer = producer;
+        }
+
+        boolean started = false;
+
+        @Override
+        public void onCompleted() {
+            if (!started) {
+                // this means we have not received a valid onNext before termination so we emit the onCompleted
+                child.onCompleted();
+            }
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            child.onError(e);
+        }
+
+        @Override
+        public void onNext(Observable[] observables) {
+            if (observables == null || observables.length == 0) {
+                child.onCompleted();
+            } else {
+                started = true;
+                zipper.start(observables, producer);
+            }
+        }
+
+    }
+
+    private static final class ZipProducer<R> extends AtomicLong implements Producer {
+
+        private Zip<R> zipper;
+
+        public ZipProducer(Zip<R> zipper) {
+            this.zipper = zipper;
+        }
+
+        @Override
+        public void request(long n) {
+            addAndGet(n);
+            // try and claim emission if no other threads are doing so
+            zipper.tick();
+        }
+
+    }
+
     private static final class Zip<R> {
-        @SuppressWarnings("rawtypes")
-        final Observable[] os;
-        final Object[] observers;
-        final Observer<? super R> observer;
-        final FuncN<? extends R> zipFunction;
-        final CompositeSubscription childSubscription = new CompositeSubscription();
+        private final Observer<? super R> child;
+        private final FuncN<? extends R> zipFunction;
+        private final CompositeSubscription childSubscription = new CompositeSubscription();
+
         volatile long counter;
         @SuppressWarnings("rawtypes")
-        static final AtomicLongFieldUpdater<Zip> COUNTER_UPDATER
-                = AtomicLongFieldUpdater.newUpdater(Zip.class, "counter");
+        static final AtomicLongFieldUpdater<Zip> COUNTER_UPDATER = AtomicLongFieldUpdater.newUpdater(Zip.class, "counter");
+
+        static final int THRESHOLD = (int) (RxRingBuffer.SIZE * 0.7);
+        int emitted = 0; // not volatile/synchronized as accessed inside COUNTER_UPDATER block
+
+        /* initialized when started in `start` */
+        private Object[] observers;
+        private AtomicLong requested;
 
         @SuppressWarnings("rawtypes")
-        public Zip(Observable[] os, final Subscriber<? super R> observer, FuncN<? extends R> zipFunction) {
-            this.os = os;
-            this.observer = observer;
+        public Zip(final Subscriber<? super R> child, FuncN<? extends R> zipFunction) {
+            this.child = child;
             this.zipFunction = zipFunction;
+            child.add(childSubscription);
+        }
+
+        @SuppressWarnings("unchecked")
+        public void start(@SuppressWarnings("rawtypes") Observable[] os, AtomicLong requested) {
             observers = new Object[os.length];
+            this.requested = requested;
             for (int i = 0; i < os.length; i++) {
-                InnerObserver io = new InnerObserver();
+                InnerSubscriber io = new InnerSubscriber();
                 observers[i] = io;
                 childSubscription.add(io);
             }
 
-            observer.add(childSubscription);
-        }
-
-        @SuppressWarnings("unchecked")
-        public void zip() {
             for (int i = 0; i < os.length; i++) {
-                os[i].unsafeSubscribe((InnerObserver) observers[i]);
+                os[i].unsafeSubscribe((InnerSubscriber) observers[i]);
             }
         }
 
@@ -179,51 +221,64 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
          */
         @SuppressWarnings("unchecked")
         void tick() {
+            if (observers == null) {
+                // nothing yet to do (initial request from Producer)
+                return;
+            }
             if (COUNTER_UPDATER.getAndIncrement(this) == 0) {
                 do {
-                    final Object[] vs = new Object[observers.length];
-                    boolean allHaveValues = true;
-                    for (int i = 0; i < observers.length; i++) {
-                        Object n = ((InnerObserver) observers[i]).items.peek();
+                    // we only emit if requested > 0
+                    if (requested.get() > 0) {
+                        final Object[] vs = new Object[observers.length];
+                        boolean allHaveValues = true;
+                        for (int i = 0; i < observers.length; i++) {
+                            RxRingBuffer buffer = ((InnerSubscriber) observers[i]).items;
+                            Object n = buffer.peek();
 
-                        if (n == null) {
-                            allHaveValues = false;
-                            continue;
-                        }
+                            if (n == null) {
+                                allHaveValues = false;
+                                continue;
+                            }
 
-                        switch (on.kind(n)) {
-                        case OnNext:
-                            vs[i] = on.getValue(n);
-                            break;
-                        case OnCompleted:
-                            observer.onCompleted();
-                            // we need to unsubscribe from all children since children are
-                            // independently subscribed
-                            childSubscription.unsubscribe();
-                            return;
-                        default:
-                            // shouldn't get here
-                        }
-                    }
-                    if (allHaveValues) {
-                        try {
-                            // all have something so emit
-                            observer.onNext(zipFunction.call(vs));
-                        } catch (Throwable e) {
-                            observer.onError(OnErrorThrowable.addValueAsLastCause(e, vs));
-                            return;
-                        }
-                        // now remove them
-                        for (Object obj : observers) {
-                            InnerObserver io = (InnerObserver)obj;
-                            io.items.poll();
-                            // eagerly check if the next item on this queue is an onComplete
-                            if (on.isCompleted(io.items.peek())) {
-                                // it is an onComplete so shut down
-                                observer.onCompleted();
-                                // we need to unsubscribe from all children since children are independently subscribed
+                            if (buffer.isCompleted(n)) {
+                                child.onCompleted();
+                                // we need to unsubscribe from all children since children are
+                                // independently subscribed
                                 childSubscription.unsubscribe();
                                 return;
+                            } else {
+                                vs[i] = buffer.getValue(n);
+                            }
+                        }
+                        if (allHaveValues) {
+                            try {
+                                // all have something so emit
+                                child.onNext(zipFunction.call(vs));
+                                // we emitted so decrement the requested counter
+                                requested.decrementAndGet();
+                                emitted++;
+                            } catch (Throwable e) {
+                                child.onError(OnErrorThrowable.addValueAsLastCause(e, vs));
+                                return;
+                            }
+                            // now remove them
+                            for (Object obj : observers) {
+                                RxRingBuffer buffer = ((InnerSubscriber) obj).items;
+                                buffer.poll();
+                                // eagerly check if the next item on this queue is an onComplete
+                                if (buffer.isCompleted(buffer.peek())) {
+                                    // it is an onComplete so shut down
+                                    child.onCompleted();
+                                    // we need to unsubscribe from all children since children are independently subscribed
+                                    childSubscription.unsubscribe();
+                                    return;
+                                }
+                            }
+                            if (emitted > THRESHOLD) {
+                                for (Object obj : observers) {
+                                    ((InnerSubscriber) obj).request(emitted);
+                                }
+                                emitted = 0;
                             }
                         }
                     }
@@ -235,27 +290,36 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
         // used to observe each Observable we are zipping together
         // it collects all items in an internal queue
         @SuppressWarnings("rawtypes")
-        final class InnerObserver extends Subscriber {
+        final class InnerSubscriber extends Subscriber {
             // Concurrent* since we need to read it from across threads
-            final ConcurrentLinkedQueue items = new ConcurrentLinkedQueue();
+            final RxRingBuffer items = RxRingBuffer.getSpmcInstance();
+
+            @Override
+            public void onStart() {
+                request(RxRingBuffer.SIZE);
+            }
 
             @SuppressWarnings("unchecked")
             @Override
             public void onCompleted() {
-                items.add(on.completed());
+                items.onCompleted();
                 tick();
             }
 
             @Override
             public void onError(Throwable e) {
-                // emit error and shut down
-                observer.onError(e);
+                // emit error immediately and shut down
+                child.onError(e);
             }
 
             @SuppressWarnings("unchecked")
             @Override
             public void onNext(Object t) {
-                items.add(on.next(t));
+                try {
+                    items.onNext(t);
+                } catch (MissingBackpressureException e) {
+                    onError(e);
+                }
                 tick();
             }
         };

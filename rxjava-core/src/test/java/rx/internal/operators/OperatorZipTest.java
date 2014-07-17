@@ -16,6 +16,7 @@
 package rx.internal.operators;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.inOrder;
@@ -28,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.concurrent.CountDownLatch;
@@ -49,7 +51,9 @@ import rx.functions.Func2;
 import rx.functions.Func3;
 import rx.functions.FuncN;
 import rx.functions.Functions;
+import rx.internal.util.RxRingBuffer;
 import rx.observers.TestSubscriber;
+import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 
 public class OperatorZipTest {
@@ -103,7 +107,7 @@ public class OperatorZipTest {
     @SuppressWarnings("unchecked")
     /* mock calls don't do generics */
     @Test
-    public void testZippingDifferentLengthObservableSequences1() {
+    public void testStartpingDifferentLengthObservableSequences1() {
         Observer<String> w = mock(Observer.class);
 
         TestObservable w1 = new TestObservable();
@@ -136,7 +140,7 @@ public class OperatorZipTest {
     }
 
     @Test
-    public void testZippingDifferentLengthObservableSequences2() {
+    public void testStartpingDifferentLengthObservableSequences2() {
         @SuppressWarnings("unchecked")
         Observer<String> w = mock(Observer.class);
 
@@ -436,7 +440,7 @@ public class OperatorZipTest {
     @SuppressWarnings("unchecked")
     /* mock calls don't do generics */
     @Test
-    public void testZip2Types() {
+    public void testStart2Types() {
         Func2<String, Integer, String> zipr = getConcatStringIntegerZipr();
 
         /* define a Observer to receive aggregated events */
@@ -455,7 +459,7 @@ public class OperatorZipTest {
     @SuppressWarnings("unchecked")
     /* mock calls don't do generics */
     @Test
-    public void testZip3Types() {
+    public void testStart3Types() {
         Func3<String, Integer, int[], String> zipr = getConcatStringIntegerIntArrayZipr();
 
         /* define a Observer to receive aggregated events */
@@ -753,7 +757,7 @@ public class OperatorZipTest {
     }
 
     @Test
-    public void testZipWithOnCompletedTwice() {
+    public void testStartWithOnCompletedTwice() {
         // issue: https://groups.google.com/forum/#!topic/rxjava/79cWTv3TFp0
         // The problem is the original "zip" implementation does not wrap
         // an internal observer with a SafeObserver. However, in the "zip",
@@ -798,7 +802,7 @@ public class OperatorZipTest {
     }
 
     @Test
-    public void testZip() {
+    public void testStart() {
         Observable<String> os = OBSERVABLE_OF_5_INTEGERS
                 .zip(OBSERVABLE_OF_5_INTEGERS, new Func2<Integer, Integer, String>() {
 
@@ -825,11 +829,10 @@ public class OperatorZipTest {
     }
 
     @Test
-    public void testZipAsync() throws InterruptedException {
+    public void testStartAsync() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
-        final CountDownLatch infiniteObservables = new CountDownLatch(2);
-        Observable<String> os = ASYNC_OBSERVABLE_OF_INFINITE_INTEGERS(infiniteObservables)
-                .zip(ASYNC_OBSERVABLE_OF_INFINITE_INTEGERS(infiniteObservables), new Func2<Integer, Integer, String>() {
+        Observable<String> os = ASYNC_OBSERVABLE_OF_INFINITE_INTEGERS(new CountDownLatch(1)).onBackpressureBuffer()
+                .zip(ASYNC_OBSERVABLE_OF_INFINITE_INTEGERS(new CountDownLatch(1)).onBackpressureBuffer(), new Func2<Integer, Integer, String>() {
 
                     @Override
                     public String call(Integer a, Integer b) {
@@ -837,40 +840,20 @@ public class OperatorZipTest {
                     }
                 }).take(5);
 
-        final ArrayList<String> list = new ArrayList<String>();
-        os.subscribe(new Observer<String>() {
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+        os.subscribe(ts);
 
-            @Override
-            public void onCompleted() {
-                latch.countDown();
-            }
+        ts.awaitTerminalEvent();
+        ts.assertNoErrors();
 
-            @Override
-            public void onError(Throwable e) {
-                e.printStackTrace();
-                latch.countDown();
-            }
-
-            @Override
-            public void onNext(String s) {
-                System.out.println(s);
-                list.add(s);
-            }
-        });
-
-        latch.await(2000, TimeUnit.MILLISECONDS);
-        if (!infiniteObservables.await(2000, TimeUnit.MILLISECONDS)) {
-            throw new RuntimeException("didn't unsubscribe");
-        }
-
-        assertEquals(5, list.size());
-        assertEquals("1-1", list.get(0));
-        assertEquals("2-2", list.get(1));
-        assertEquals("5-5", list.get(4));
+        assertEquals(5, ts.getOnNextEvents().size());
+        assertEquals("1-1", ts.getOnNextEvents().get(0));
+        assertEquals("2-2", ts.getOnNextEvents().get(1));
+        assertEquals("5-5", ts.getOnNextEvents().get(4));
     }
 
     @Test
-    public void testZipInfiniteAndFinite() throws InterruptedException {
+    public void testStartInfiniteAndFinite() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
         final CountDownLatch infiniteObservable = new CountDownLatch(1);
         Observable<String> os = OBSERVABLE_OF_5_INTEGERS
@@ -974,7 +957,7 @@ public class OperatorZipTest {
     }
 
     @Test
-    public void testZipEmptyObservables() {
+    public void testStartEmptyObservables() {
 
         Observable<String> o = Observable.zip(Observable.<Integer> empty(), Observable.<String> empty(), new Func2<Integer, String, String>() {
 
@@ -999,7 +982,7 @@ public class OperatorZipTest {
     }
 
     @Test
-    public void testZipEmptyList() {
+    public void testStartEmptyList() {
 
         final Object invoked = new Object();
         Collection<Observable<Object>> observables = Collections.emptyList();
@@ -1023,7 +1006,7 @@ public class OperatorZipTest {
      * and last() expects at least a single response.
      */
     @Test(expected = NoSuchElementException.class)
-    public void testZipEmptyListBlocking() {
+    public void testStartEmptyListBlocking() {
 
         final Object invoked = new Object();
         Collection<Observable<Object>> observables = Collections.emptyList();
@@ -1037,6 +1020,154 @@ public class OperatorZipTest {
         });
 
         o.toBlocking().last();
+    }
+
+    @Test
+    public void testBackpressureSync() {
+        AtomicInteger generatedA = new AtomicInteger();
+        AtomicInteger generatedB = new AtomicInteger();
+        Observable<Integer> o1 = createInfiniteObservable(generatedA);
+        Observable<Integer> o2 = createInfiniteObservable(generatedB);
+
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+        Observable.zip(o1, o2, new Func2<Integer, Integer, String>() {
+
+            @Override
+            public String call(Integer t1, Integer t2) {
+                return t1 + "-" + t2;
+            }
+
+        }).take(RxRingBuffer.SIZE * 2).subscribe(ts);
+
+        ts.awaitTerminalEvent();
+        ts.assertNoErrors();
+        assertEquals(RxRingBuffer.SIZE * 2, ts.getOnNextEvents().size());
+        assertTrue(generatedA.get() < (RxRingBuffer.SIZE * 3));
+        assertTrue(generatedB.get() < (RxRingBuffer.SIZE * 3));
+    }
+
+    @Test
+    public void testBackpressureAsync() {
+        AtomicInteger generatedA = new AtomicInteger();
+        AtomicInteger generatedB = new AtomicInteger();
+        Observable<Integer> o1 = createInfiniteObservable(generatedA).subscribeOn(Schedulers.computation());
+        Observable<Integer> o2 = createInfiniteObservable(generatedB).subscribeOn(Schedulers.computation());
+
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+        Observable.zip(o1, o2, new Func2<Integer, Integer, String>() {
+
+            @Override
+            public String call(Integer t1, Integer t2) {
+                return t1 + "-" + t2;
+            }
+
+        }).take(RxRingBuffer.SIZE * 2).subscribe(ts);
+
+        ts.awaitTerminalEvent();
+        ts.assertNoErrors();
+        assertEquals(RxRingBuffer.SIZE * 2, ts.getOnNextEvents().size());
+        assertTrue(generatedA.get() < (RxRingBuffer.SIZE * 3));
+        assertTrue(generatedB.get() < (RxRingBuffer.SIZE * 3));
+    }
+
+    @Test
+    public void testDownstreamBackpressureRequestsWithFiniteSyncObservables() {
+        AtomicInteger generatedA = new AtomicInteger();
+        AtomicInteger generatedB = new AtomicInteger();
+        Observable<Integer> o1 = createInfiniteObservable(generatedA).take(RxRingBuffer.SIZE * 2);
+        Observable<Integer> o2 = createInfiniteObservable(generatedB).take(RxRingBuffer.SIZE * 2);
+
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+        Observable.zip(o1, o2, new Func2<Integer, Integer, String>() {
+
+            @Override
+            public String call(Integer t1, Integer t2) {
+                return t1 + "-" + t2;
+            }
+
+        }).observeOn(Schedulers.computation()).take(RxRingBuffer.SIZE * 2).subscribe(ts);
+
+        ts.awaitTerminalEvent();
+        ts.assertNoErrors();
+        assertEquals(RxRingBuffer.SIZE * 2, ts.getOnNextEvents().size());
+        System.out.println("Generated => A: " + generatedA.get() + " B: " + generatedB.get());
+        assertTrue(generatedA.get() < (RxRingBuffer.SIZE * 3));
+        assertTrue(generatedB.get() < (RxRingBuffer.SIZE * 3));
+    }
+
+    @Test
+    public void testDownstreamBackpressureRequestsWithInfiniteAsyncObservables() {
+        AtomicInteger generatedA = new AtomicInteger();
+        AtomicInteger generatedB = new AtomicInteger();
+        Observable<Integer> o1 = createInfiniteObservable(generatedA).subscribeOn(Schedulers.computation());
+        Observable<Integer> o2 = createInfiniteObservable(generatedB).subscribeOn(Schedulers.computation());
+
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+        Observable.zip(o1, o2, new Func2<Integer, Integer, String>() {
+
+            @Override
+            public String call(Integer t1, Integer t2) {
+                return t1 + "-" + t2;
+            }
+
+        }).observeOn(Schedulers.computation()).take(RxRingBuffer.SIZE * 2).subscribe(ts);
+
+        ts.awaitTerminalEvent();
+        ts.assertNoErrors();
+        assertEquals(RxRingBuffer.SIZE * 2, ts.getOnNextEvents().size());
+        System.out.println("Generated => A: " + generatedA.get() + " B: " + generatedB.get());
+        assertTrue(generatedA.get() < (RxRingBuffer.SIZE * 4));
+        assertTrue(generatedB.get() < (RxRingBuffer.SIZE * 4));
+    }
+
+    @Test
+    public void testDownstreamBackpressureRequestsWithInfiniteSyncObservables() {
+        AtomicInteger generatedA = new AtomicInteger();
+        AtomicInteger generatedB = new AtomicInteger();
+        Observable<Integer> o1 = createInfiniteObservable(generatedA);
+        Observable<Integer> o2 = createInfiniteObservable(generatedB);
+
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+        Observable.zip(o1, o2, new Func2<Integer, Integer, String>() {
+
+            @Override
+            public String call(Integer t1, Integer t2) {
+                return t1 + "-" + t2;
+            }
+
+        }).observeOn(Schedulers.computation()).take(RxRingBuffer.SIZE * 2).subscribe(ts);
+
+        ts.awaitTerminalEvent();
+        ts.assertNoErrors();
+        assertEquals(RxRingBuffer.SIZE * 2, ts.getOnNextEvents().size());
+        System.out.println("Generated => A: " + generatedA.get() + " B: " + generatedB.get());
+        assertTrue(generatedA.get() < (RxRingBuffer.SIZE * 4));
+        assertTrue(generatedB.get() < (RxRingBuffer.SIZE * 4));
+    }
+
+    private Observable<Integer> createInfiniteObservable(final AtomicInteger generated) {
+        Observable<Integer> observable = Observable.from(new Iterable<Integer>() {
+            @Override
+            public Iterator<Integer> iterator() {
+                return new Iterator<Integer>() {
+
+                    @Override
+                    public void remove() {
+                    }
+
+                    @Override
+                    public Integer next() {
+                        return generated.getAndIncrement();
+                    }
+
+                    @Override
+                    public boolean hasNext() {
+                        return true;
+                    }
+                };
+            }
+        });
+        return observable;
     }
 
     Observable<Integer> OBSERVABLE_OF_5_INTEGERS = OBSERVABLE_OF_5_INTEGERS(new AtomicInteger());
