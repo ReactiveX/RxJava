@@ -15,6 +15,8 @@
  */
 package rx.internal.operators;
 
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 import java.util.concurrent.atomic.AtomicLongFieldUpdater;
 
@@ -22,7 +24,9 @@ import rx.Observable;
 import rx.Observable.Operator;
 import rx.Producer;
 import rx.Subscriber;
+import rx.exceptions.CompositeException;
 import rx.exceptions.MissingBackpressureException;
+import rx.exceptions.OnErrorThrowable;
 import rx.functions.Func1;
 import rx.internal.util.RxRingBuffer;
 import rx.internal.util.ScalarSynchronousObservable;
@@ -33,17 +37,26 @@ import rx.internal.util.SubscriptionIndexedRingBuffer;
  * <p>
  * <img width="640" height="380" src="https://raw.githubusercontent.com/wiki/Netflix/RxJava/images/rx-operators/merge.png" alt="">
  * <p>
- * You can combine the items emitted by multiple {@code Observable}s so that they act like a single
- * {@code Observable}, by using the merge operation.
+ * You can combine the items emitted by multiple {@code Observable}s so that they act like a single {@code Observable}, by using the merge operation.
  * 
  * @param <T>
  *            the type of the items emitted by both the source and merged {@code Observable}s
  */
-public final class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
+public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
+
+    public OperatorMerge() {
+        this.delayErrors = false;
+    }
+
+    public OperatorMerge(boolean delayErrors) {
+        this.delayErrors = delayErrors;
+    }
+
+    private final boolean delayErrors;
 
     @Override
     public Subscriber<Observable<? extends T>> call(final Subscriber<? super T> child) {
-        return new MergeSubscriber<T>(child);
+        return new MergeSubscriber<T>(child, delayErrors);
 
     }
 
@@ -53,6 +66,8 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
         private final MergeProducer<T> mergeProducer;
         private int wip;
         private boolean completed;
+        private final boolean delayErrors;
+        private ConcurrentLinkedQueue<Throwable> exceptions;
 
         private volatile SubscriptionIndexedRingBuffer<InnerSubscriber<T>> childrenSubscribers;
 
@@ -77,10 +92,11 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
          * } </pre>
          */
 
-        public MergeSubscriber(Subscriber<? super T> actual) {
+        public MergeSubscriber(Subscriber<? super T> actual, boolean delayErrors) {
             super(actual);
             this.actual = actual;
             this.mergeProducer = new MergeProducer<T>(this);
+            this.delayErrors = delayErrors;
             // decoupled the subscription chain because we need to decouple and control backpressure
             actual.add(this);
             actual.setProducer(mergeProducer);
@@ -337,8 +353,26 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
 
         @Override
         public void onError(Throwable e) {
-            actual.onError(e);
-            unsubscribe();
+            if (delayErrors) {
+                synchronized (this) {
+                    if (exceptions == null) {
+                        exceptions = new ConcurrentLinkedQueue<Throwable>();
+                    }
+                }
+                exceptions.add(e);
+                boolean sendOnComplete = false;
+                synchronized (this) {
+                    wip--;
+                    if (wip == 0 && completed) {
+                        sendOnComplete = true;
+                    }
+                }
+                if (sendOnComplete) {
+                    drainAndComplete();
+                }
+            } else {
+                actual.onError(e);
+            }
         }
 
         @Override
@@ -372,7 +406,25 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
 
         private void drainAndComplete() {
             drainQueuesIfNeeded(); // TODO need to confirm whether this is needed or not
-            actual.onCompleted();
+            if (delayErrors) {
+                Queue<Throwable> es = null;
+                synchronized (this) {
+                    es = exceptions;
+                }
+                if (es != null) {
+                    if (es.isEmpty()) {
+                        actual.onCompleted();
+                    } else if (es.size() == 1) {
+                        actual.onError(es.poll());
+                    } else {
+                        actual.onError(new CompositeException(es));
+                    }
+                } else {
+                    actual.onCompleted();
+                }
+            } else {
+                actual.onCompleted();
+            }
         }
 
     }
@@ -493,7 +545,12 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
                         if (complete) {
                             parentSubscriber.completeInner(this);
                         } else {
-                            parentSubscriber.actual.onNext(t);
+                            try {
+                                parentSubscriber.actual.onNext(t);
+                            } catch (Throwable e) {
+                                // special error handling due to complexity of merge
+                                onError(OnErrorThrowable.addValueAsLastCause(e, t));
+                            }
                             emitted++;
                         }
                     } else {
@@ -503,7 +560,12 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
                             if (complete) {
                                 parentSubscriber.completeInner(this);
                             } else {
-                                parentSubscriber.actual.onNext(t);
+                                try {
+                                    parentSubscriber.actual.onNext(t);
+                                } catch (Throwable e) {
+                                    // special error handling due to complexity of merge
+                                    onError(OnErrorThrowable.addValueAsLastCause(e, t));
+                                }
                                 emitted++;
                                 producer.REQUESTED.decrementAndGet(producer);
                             }
@@ -585,8 +647,13 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
                 } else if (q.isCompleted(o)) {
                     parentSubscriber.completeInner(this);
                 } else {
-                    if (!q.accept(o, parentSubscriber.actual)) {
-                        emitted++;
+                    try {
+                        if (!q.accept(o, parentSubscriber.actual)) {
+                            emitted++;
+                        }
+                    } catch (Throwable e) {
+                        // special error handling due to complexity of merge
+                        onError(OnErrorThrowable.addValueAsLastCause(e, o));
                     }
                 }
             }
@@ -604,8 +671,13 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
                 if (q.isCompleted(o)) {
                     parentSubscriber.completeInner(this);
                 } else {
-                    if (!q.accept(o, parentSubscriber.actual)) {
-                        emitted++;
+                    try {
+                        if (!q.accept(o, parentSubscriber.actual)) {
+                            emitted++;
+                        }
+                    } catch (Throwable e) {
+                        // special error handling due to complexity of merge
+                        onError(OnErrorThrowable.addValueAsLastCause(e, o));
                     }
                 }
             }
