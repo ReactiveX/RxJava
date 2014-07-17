@@ -77,8 +77,8 @@ public class OperatorSubscribeOn<T> implements Operator<T, Observable<T>> {
                             }
 
                             @Override
-                            protected Producer onSetProducer(final Producer producer) {
-                                return new Producer() {
+                            public void setProducer(final Producer producer) {
+                                subscriber.setProducer(new Producer() {
 
                                     @Override
                                     public void request(final long n) {
@@ -97,7 +97,7 @@ public class OperatorSubscribeOn<T> implements Operator<T, Observable<T>> {
                                         }
                                     }
 
-                                };
+                                });
                             }
 
                         });

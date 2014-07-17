@@ -34,7 +34,7 @@ public class OperatorOnBackpressureDropTest {
     public void testNoBackpressureSupport() {
         TestSubscriber<Long> ts = new TestSubscriber<Long>();
         // this will be ignored
-        ts.request(100);
+        ts.requestMore(100);
         // we take 500 so it unsubscribes
         infinite.take(500).subscribe(ts);
         // it completely ignores the `request(100)` and we get 500
@@ -64,16 +64,16 @@ public class OperatorOnBackpressureDropTest {
 
         });
         // this will be ignored
-        ts.request(100);
+        ts.requestMore(100);
         // we take 500 so it unsubscribes
         infinite.subscribeOn(Schedulers.computation()).onBackpressureDrop().take(500).subscribe(ts);
         // it completely ignores the `request(100)` and we get 500
         l1.await();
         assertEquals(100, ts.getOnNextEvents().size());
-        ts.request(50);
+        ts.requestMore(50);
         l2.await();
         assertEquals(150, ts.getOnNextEvents().size());
-        ts.request(350);
+        ts.requestMore(350);
         ts.awaitTerminalEvent();
         assertEquals(500, ts.getOnNextEvents().size());
         ts.assertNoErrors();

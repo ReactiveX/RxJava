@@ -320,7 +320,7 @@ public class OperatorTakeTest {
     @Test
     public void testProducerRequestThroughTake() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        ts.request(3);
+        ts.requestMore(3);
         final AtomicLong requested = new AtomicLong();
         Observable.create(new OnSubscribe<Integer>() {
 
@@ -343,7 +343,7 @@ public class OperatorTakeTest {
     @Test
     public void testProducerRequestThroughTakeIsModified() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        ts.request(3);
+        ts.requestMore(3);
         final AtomicLong requested = new AtomicLong();
         Observable.create(new OnSubscribe<Integer>() {
 

@@ -74,8 +74,8 @@ public final class OperatorTake<T> implements Operator<T, T> {
              * We want to adjust the requested values based on the `take` count.
              */
             @Override
-            protected Producer onSetProducer(final Producer producer) {
-                return new Producer() {
+            public void setProducer(final Producer producer) {
+                child.setProducer(new Producer() {
 
                     @Override
                     public void request(long n) {
@@ -86,7 +86,7 @@ public final class OperatorTake<T> implements Operator<T, T> {
                             producer.request(c);
                         }
                     }
-                };
+                });
             }
 
         };
@@ -106,22 +106,6 @@ public final class OperatorTake<T> implements Operator<T, T> {
          * register 'parent' with 'child'
          */
         child.add(parent);
-
-        /**
-         * Since we decoupled the subscription chain but want the request to flow through, we reconnect the producer here.
-         */
-        child.setProducer(new Producer() {
-
-            @Override
-            public void request(long n) {
-                if (n < 0) {
-                    // request up the limit that has been set, no point in asking for more, even if synchronous
-                    parent.request(limit);
-                } else {
-                    parent.request(n);
-                }
-            }
-        });
 
         return parent;
     }
