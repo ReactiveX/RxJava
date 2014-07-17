@@ -70,7 +70,9 @@ public final class OnSubscribeFromIterable<T> implements OnSubscribe<T> {
                     }
                     o.onNext(it.next());
                 }
-                o.onCompleted();
+                if (!o.isUnsubscribed()) {
+                    o.onCompleted();
+                }
             } else if(n > 0) {
                 // backpressure is requested
                 long _c = REQUESTED_UPDATER.getAndAdd(this, n);

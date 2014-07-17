@@ -47,9 +47,9 @@ public class OperatorDoOnEach<T> implements Operator<T, T> {
                     onError(e);
                     return;
                 }
-                observer.onCompleted();
                 // Set `done` here so that the error in `doOnEachObserver.onCompleted()` can be noticed by observer
                 done = true;
+                observer.onCompleted();
             }
 
             @Override
@@ -57,6 +57,7 @@ public class OperatorDoOnEach<T> implements Operator<T, T> {
                 if (done) {
                     return;
                 }
+                done = true;
                 try {
                     doOnEachObserver.onError(e);
                 } catch (Throwable e2) {
@@ -64,7 +65,6 @@ public class OperatorDoOnEach<T> implements Operator<T, T> {
                     return;
                 }
                 observer.onError(e);
-                done = true;
             }
 
             @Override
