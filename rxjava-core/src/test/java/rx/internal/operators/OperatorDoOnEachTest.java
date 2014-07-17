@@ -15,6 +15,7 @@
  */
 package rx.internal.operators;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -29,6 +30,9 @@ import rx.Observable;
 import rx.Observer;
 import rx.functions.Action1;
 import rx.functions.Func1;
+
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class OperatorDoOnEachTest {
 
@@ -114,4 +118,55 @@ public class OperatorDoOnEachTest {
 
     }
 
+    @Test
+    public void testIssue1451Case1() {
+        // https://github.com/Netflix/RxJava/issues/1451
+        int[] nums = {1, 2, 3};
+        final AtomicInteger count = new AtomicInteger();
+        for (final int n : nums) {
+            Observable
+                    .from(Boolean.TRUE, Boolean.FALSE)
+                    .takeWhile(new Func1<Boolean, Boolean>() {
+                        @Override
+                        public Boolean call(Boolean value) {
+                            return value;
+                        }
+                    })
+                    .toList()
+                    .doOnNext(new Action1<List<Boolean>>() {
+                        @Override
+                        public void call(List<Boolean> booleans) {
+                            count.incrementAndGet();
+                        }
+                    })
+                    .subscribe();
+        }
+        assertEquals(nums.length, count.get());
+    }
+
+    @Test
+    public void testIssue1451Case2() {
+        // https://github.com/Netflix/RxJava/issues/1451
+        int[] nums = {1, 2, 3};
+        final AtomicInteger count = new AtomicInteger();
+        for (final int n : nums) {
+            Observable
+                    .from(Boolean.TRUE, Boolean.FALSE, Boolean.FALSE)
+                    .takeWhile(new Func1<Boolean, Boolean>() {
+                        @Override
+                        public Boolean call(Boolean value) {
+                            return value;
+                        }
+                    })
+                    .toList()
+                    .doOnNext(new Action1<List<Boolean>>() {
+                        @Override
+                        public void call(List<Boolean> booleans) {
+                            count.incrementAndGet();
+                        }
+                    })
+                    .subscribe();
+        }
+        assertEquals(nums.length, count.get());
+    }
 }

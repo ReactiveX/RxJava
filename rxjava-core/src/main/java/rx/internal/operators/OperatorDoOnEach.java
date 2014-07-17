@@ -33,8 +33,14 @@ public class OperatorDoOnEach<T> implements Operator<T, T> {
     @Override
     public Subscriber<? super T> call(final Subscriber<? super T> observer) {
         return new Subscriber<T>(observer) {
+
+            private boolean done = false;
+
             @Override
             public void onCompleted() {
+                if (done) {
+                    return;
+                }
                 try {
                     doOnEachObserver.onCompleted();
                 } catch (Throwable e) {
@@ -42,10 +48,15 @@ public class OperatorDoOnEach<T> implements Operator<T, T> {
                     return;
                 }
                 observer.onCompleted();
+                // Set `done` here so that the error in `doOnEachObserver.onCompleted()` can be noticed by observer
+                done = true;
             }
 
             @Override
             public void onError(Throwable e) {
+                if (done) {
+                    return;
+                }
                 try {
                     doOnEachObserver.onError(e);
                 } catch (Throwable e2) {
@@ -53,10 +64,14 @@ public class OperatorDoOnEach<T> implements Operator<T, T> {
                     return;
                 }
                 observer.onError(e);
+                done = true;
             }
 
             @Override
             public void onNext(T value) {
+                if (done) {
+                    return;
+                }
                 try {
                     doOnEachObserver.onNext(value);
                 } catch (Throwable e) {
