@@ -276,7 +276,7 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
                             }
                             if (emitted > THRESHOLD) {
                                 for (Object obj : observers) {
-                                    ((InnerSubscriber) obj).request(emitted);
+                                    ((InnerSubscriber) obj).requestMore(emitted);
                                 }
                                 emitted = 0;
                             }
@@ -297,6 +297,10 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
             @Override
             public void onStart() {
                 request(RxRingBuffer.SIZE);
+            }
+            
+            public void requestMore(long n) {
+                request(n);
             }
 
             @SuppressWarnings("unchecked")
