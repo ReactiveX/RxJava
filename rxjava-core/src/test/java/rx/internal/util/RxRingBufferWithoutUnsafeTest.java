@@ -24,9 +24,9 @@ import org.junit.Test;
 
 import rx.Producer;
 import rx.Scheduler;
-import rx.Subscriber;
 import rx.exceptions.MissingBackpressureException;
 import rx.functions.Action0;
+import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 
 public class RxRingBufferWithoutUnsafeTest extends RxRingBufferBase {
@@ -57,7 +57,7 @@ public class RxRingBufferWithoutUnsafeTest extends RxRingBufferBase {
             AtomicInteger c = new AtomicInteger();
 
             @Override
-            public void request(final int n) {
+            public void request(final long n) {
                 System.out.println("request[" + c.incrementAndGet() + "]: " + n + "  Thread: " + Thread.currentThread());
                 w1.schedule(new Action0() {
 
@@ -83,32 +83,14 @@ public class RxRingBufferWithoutUnsafeTest extends RxRingBufferBase {
             }
 
         };
-        final Subscriber<String> s = new Subscriber<String>() {
-
-            @Override
-            public void onCompleted() {
-
-            }
-
-            @Override
-            public void onError(Throwable e) {
-
-            }
-
-            @Override
-            public void onNext(String t) {
-
-            }
-
-        };
-
+        final TestSubscriber<String> ts = new TestSubscriber<String>();
 
         w1.schedule(new Action0() {
 
             @Override
             public void call() {
-                s.request(RxRingBuffer.SIZE);
-                s.setProducer(p);
+                ts.requestMore(RxRingBuffer.SIZE);
+                ts.setProducer(p);
             }
 
         });
@@ -125,7 +107,7 @@ public class RxRingBufferWithoutUnsafeTest extends RxRingBufferBase {
                         poll.incrementAndGet();
                     } else {
                         if (emitted > 0) {
-                            s.request(emitted);
+                            ts.requestMore(emitted);
                             emitted = 0;
                         }
                     }
@@ -147,7 +129,7 @@ public class RxRingBufferWithoutUnsafeTest extends RxRingBufferBase {
                         poll.incrementAndGet();
                     } else {
                         if (emitted > 0) {
-                            s.request(emitted);
+                            ts.requestMore(emitted);
                             emitted = 0;
                         }
                     }

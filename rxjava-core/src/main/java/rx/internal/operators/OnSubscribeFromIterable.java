@@ -15,9 +15,8 @@
  */
 package rx.internal.operators;
 
-import java.util.Collection;
 import java.util.Iterator;
-import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
+import java.util.concurrent.atomic.AtomicLongFieldUpdater;
 
 import rx.Observable.OnSubscribe;
 import rx.Producer;
@@ -26,7 +25,7 @@ import rx.Subscriber;
 /**
  * Converts an {@code Iterable} sequence into an {@code Observable}.
  * <p>
- * <img width="640" height="310" src="https://raw.githubusercontent.com/wiki/Netflix/RxJava/images/rx-operators/toObservable.png" />
+ * <img width="640" height="310" src="https://raw.githubusercontent.com/wiki/Netflix/RxJava/images/rx-operators/toObservable.png" alt="" />
  * <p>
  * You can convert any object that supports the Iterable interface into an Observable that emits each item in
  * the object, with the {@code toObservable} operation.
@@ -52,9 +51,9 @@ public final class OnSubscribeFromIterable<T> implements OnSubscribe<T> {
         private final Subscriber<? super T> o;
         private final Iterator<? extends T> it;
 
-        private volatile int requested = 0;
+        private volatile long requested = 0;
         @SuppressWarnings("rawtypes")
-        private static final AtomicIntegerFieldUpdater<IterableProducer> REQUESTED_UPDATER = AtomicIntegerFieldUpdater.newUpdater(IterableProducer.class, "requested");
+        private static final AtomicLongFieldUpdater<IterableProducer> REQUESTED_UPDATER = AtomicLongFieldUpdater.newUpdater(IterableProducer.class, "requested");
 
         private IterableProducer(Subscriber<? super T> o, Iterator<? extends T> it) {
             this.o = o;
@@ -62,8 +61,8 @@ public final class OnSubscribeFromIterable<T> implements OnSubscribe<T> {
         }
 
         @Override
-        public void request(int n) {
-            if (n < 0) {
+        public void request(long n) {
+            if (n == Long.MAX_VALUE) {
                 // fast-path without backpressure
                 while (it.hasNext()) {
                     if (o.isUnsubscribed()) {
@@ -71,18 +70,20 @@ public final class OnSubscribeFromIterable<T> implements OnSubscribe<T> {
                     }
                     o.onNext(it.next());
                 }
-                o.onCompleted();
-            } else {
+                if (!o.isUnsubscribed()) {
+                    o.onCompleted();
+                }
+            } else if(n > 0) {
                 // backpressure is requested
-                int _c = REQUESTED_UPDATER.getAndAdd(this, n);
+                long _c = REQUESTED_UPDATER.getAndAdd(this, n);
                 if (_c == 0) {
                     while (true) {
                         /*
                          * This complicated logic is done to avoid touching the volatile `requested` value
                          * during the loop itself. If it is touched during the loop the performance is impacted significantly.
                          */
-                        int r = requested;
-                        int numToEmit = r;
+                        long r = requested;
+                        long numToEmit = r;
                         while (it.hasNext() && --numToEmit >= 0) {
                             if (o.isUnsubscribed()) {
                                 return;

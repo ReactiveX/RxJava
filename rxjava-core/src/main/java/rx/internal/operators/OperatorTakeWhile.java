@@ -24,7 +24,7 @@ import rx.functions.Func2;
  * Returns an Observable that emits items emitted by the source Observable as long as a specified
  * condition is true.
  * <p>
- * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/takeWhile.png">
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/takeWhile.png" alt="">
  */
 public final class OperatorTakeWhile<T> implements Operator<T, T> {
 
@@ -49,12 +49,15 @@ public final class OperatorTakeWhile<T> implements Operator<T, T> {
 
             private int counter = 0;
 
+            private boolean done = false;
+
             @Override
             public void onNext(T args) {
                 boolean isSelected;
                 try {
                     isSelected = predicate.call(args, counter++);
                 } catch (Throwable e) {
+                    done = true;
                     subscriber.onError(e);
                     unsubscribe();
                     return;
@@ -62,6 +65,7 @@ public final class OperatorTakeWhile<T> implements Operator<T, T> {
                 if (isSelected) {
                     subscriber.onNext(args);
                 } else {
+                    done = true;
                     subscriber.onCompleted();
                     unsubscribe();
                 }
@@ -69,12 +73,16 @@ public final class OperatorTakeWhile<T> implements Operator<T, T> {
 
             @Override
             public void onCompleted() {
-                subscriber.onCompleted();
+                if (!done) {
+                    subscriber.onCompleted();
+                }
             }
 
             @Override
             public void onError(Throwable e) {
-                subscriber.onError(e);
+                if (!done) {
+                    subscriber.onError(e);
+                }
             }
 
         };

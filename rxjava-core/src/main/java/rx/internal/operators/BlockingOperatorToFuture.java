@@ -30,7 +30,7 @@ import rx.Subscription;
 /**
  * Returns a Future representing the single value emitted by an Observable.
  * <p>
- * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.toFuture.png">
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.toFuture.png" alt="">
  * <p>
  * The toFuture operation throws an exception if the Observable emits more than one item. If the
  * Observable may emit more than item, use <code>toList().toFuture()</code>.

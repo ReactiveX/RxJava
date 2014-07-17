@@ -346,4 +346,22 @@ class ObservableTests extends JUnitSuite {
     val o = Observable.items(1, 2, 3).toArray
     assertArrayEquals(Array(1, 2, 3), o.toBlocking.single)
   }
+
+  @Test
+  def testFilterNot() {
+    val o = Observable.items(1, 2, 3).filterNot(_ > 2)
+    assertEquals(List(1, 2), o.toBlocking.toList)
+  }
+
+  @Test
+  def testCount() {
+    assertEquals(1, Observable.items(1, 2, 3).count(_ > 2).toBlocking.single)
+    assertEquals(2, Observable.items(1, 2, 3).count(_ <= 2).toBlocking.single)
+  }
+
+  @Test
+  def testNonEmpty() {
+    assertEquals(false, Observable.empty.nonEmpty.toBlocking.single)
+    assertEquals(true, Observable.items(1, 2, 3).nonEmpty.toBlocking.single)
+  }
 }

@@ -23,10 +23,9 @@ import rx.Subscriber;
  * Reverses the effect of {@link OperatorMaterialize} by transforming the Notification objects
  * emitted by a source Observable into the items or notifications they represent.
  * <p>
- * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/dematerialize.png">
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/dematerialize.png" alt="">
  * <p>
- * See <a href="http://msdn.microsoft.com/en-us/library/hh229047(v=vs.103).aspx">here</a> for the
- * Microsoft Rx equivalent.
+ * See <a href="http://msdn.microsoft.com/en-us/library/hh229047.aspx">here</a> for the Microsoft Rx equivalent.
  * 
  * @param <T> the wrapped value type
  */

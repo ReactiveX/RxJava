@@ -29,7 +29,7 @@ import rx.exceptions.Exceptions;
 /**
  * Returns an Iterable that blocks until the Observable emits another item, then returns that item.
  * <p>
- * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.next.png">
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.next.png" alt="">
  */
 public final class BlockingOperatorNext {
 

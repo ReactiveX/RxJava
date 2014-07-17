@@ -32,7 +32,7 @@ import rx.observers.SerializedSubscriber;
  * the source Observables emits an item, by combining the latest emissions from each source
  * Observable with a specified function.
  * <p>
- * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/combineLatest.png">
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/combineLatest.png" alt="">
  * 
  * @param <T> the common basetype of the source values
  * @param <R> the result type of the combinator function

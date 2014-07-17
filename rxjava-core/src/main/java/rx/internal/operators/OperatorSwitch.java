@@ -27,8 +27,7 @@ import rx.subscriptions.SerialSubscription;
  * Transforms an Observable that emits Observables into a single Observable that
  * emits the items emitted by the most recently published of those Observables.
  * <p>
- * <img width="640" src=
- * "https://github.com/Netflix/RxJava/wiki/images/rx-operators/switchDo.png">
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/switchDo.png" alt="">
  * 
  * @param <T> the value type
  */

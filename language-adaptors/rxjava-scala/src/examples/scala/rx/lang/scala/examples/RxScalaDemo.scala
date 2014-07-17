@@ -521,7 +521,7 @@ class RxScalaDemo extends JUnitSuite {
 
   @Test def exampleWithReplay5() {
     val numbers = Observable.interval(100 millis).take(10)
-    val sharedNumbers = numbers.replay[Long, Long]((o: Observable[Long]) => o.map(_ * 2))
+    val sharedNumbers = numbers.replay(o => o.map(_ * 2))
     sharedNumbers.subscribe(n => println(s"subscriber gets $n"))
     waitFor(sharedNumbers)
   }
@@ -1424,20 +1424,4 @@ class RxScalaDemo extends JUnitSuite {
     o.take(3).toBlocking.foreach(println)
   }
 
-  @Test def pivotExample() {
-    val o1 = (1 to 20).toObservable.groupBy(i => if (i <= 10) "x" else "y").map {
-      case (t: String, o: Observable[Int]) => (t, o.groupBy(i => i % 2 == 0))
-    }
-    println("o1:")
-    (for ((k1, o) <- o1;
-          (k2, vs) <- o;
-          v <- vs
-    ) yield (k1, k2, v)).subscribe(println(_))
-    val o2 = o1.pivot
-    println("o2:")
-    (for ((k1, o) <- o2;
-          (k2, vs) <- o;
-          v <- vs
-    ) yield (k1, k2, v)).subscribe(println(_))
-  }
 }

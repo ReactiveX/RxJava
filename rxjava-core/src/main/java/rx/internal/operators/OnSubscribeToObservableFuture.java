@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 package rx.internal.operators;
+
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import rx.Observable.OnSubscribe;
 import rx.Scheduler;
@@ -23,18 +27,14 @@ import rx.functions.Action0;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.Subscriptions;
 
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
 /**
  * Converts a {@code Future} into an {@code Observable}.
- * <p/>
- * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/from.Future.png">
- * <p/>
+ * <p>
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/from.Future.png" alt="">
+ * <p>
  * You can convert any object that supports the {@code Future} interface into an {@code Observable} that emits
  * the return value of the {@code get} method of that object, by using this operator.
- * <p/>
+ * <p>
  * This is non blocking implementation. If a future value is not available, a task will be scheduled
  * with initial delay of {@code INITIAL_DELAY_MICRO_SEC} or a user provided timeout if the latter is smaller.
  * The delay will be doubled each time the task is run and the future value is still not available.

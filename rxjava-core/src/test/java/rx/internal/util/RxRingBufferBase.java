@@ -41,7 +41,7 @@ public abstract class RxRingBufferBase {
     public void missingBackpressureException() throws MissingBackpressureException {
         RxRingBuffer b = createRingBuffer();
         TestSubscriber<Object> s = new TestSubscriber<Object>();
-        s.request(RxRingBuffer.SIZE);
+        s.requestMore(RxRingBuffer.SIZE);
         for (int i = 0; i < RxRingBuffer.SIZE; i++) {
             b.onNext("one");
         }
@@ -95,7 +95,7 @@ public abstract class RxRingBufferBase {
     public void roomForError() throws MissingBackpressureException {
         RxRingBuffer b = createRingBuffer();
         TestSubscriber<Object> s = new TestSubscriber<Object>();
-        s.request(RxRingBuffer.SIZE);
+        s.requestMore(RxRingBuffer.SIZE);
         for (int i = 0; i < RxRingBuffer.SIZE; i++) {
             b.onNext("one");
         }
@@ -113,7 +113,7 @@ public abstract class RxRingBufferBase {
     public void multipleTerminalEventsOnComplete() throws MissingBackpressureException {
         RxRingBuffer b = createRingBuffer();
         TestSubscriber<Object> s = new TestSubscriber<Object>();
-        s.request(RxRingBuffer.SIZE);
+        s.requestMore(RxRingBuffer.SIZE);
         for (int i = 0; i < RxRingBuffer.SIZE; i++) {
             b.onNext("one");
         }
@@ -131,7 +131,7 @@ public abstract class RxRingBufferBase {
     public void multipleTerminalEventsOnError() throws MissingBackpressureException {
         RxRingBuffer b = createRingBuffer();
         TestSubscriber<Object> s = new TestSubscriber<Object>();
-        s.request(RxRingBuffer.SIZE);
+        s.requestMore(RxRingBuffer.SIZE);
         for (int i = 0; i < RxRingBuffer.SIZE; i++) {
             b.onNext("one");
         }

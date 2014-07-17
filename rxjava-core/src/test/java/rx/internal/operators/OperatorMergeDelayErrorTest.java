@@ -67,7 +67,8 @@ public class OperatorMergeDelayErrorTest {
         verify(stringObserver, times(1)).onNext("three");
         verify(stringObserver, times(1)).onNext("four");
         verify(stringObserver, times(0)).onNext("five");
-        verify(stringObserver, times(0)).onNext("six");
+        // despite not expecting it ... we don't do anything to prevent it if the source Observable keeps sending after onError
+        verify(stringObserver, times(1)).onNext("six");
     }
 
     @Test
@@ -87,7 +88,8 @@ public class OperatorMergeDelayErrorTest {
         verify(stringObserver, times(1)).onNext("three");
         verify(stringObserver, times(1)).onNext("four");
         verify(stringObserver, times(0)).onNext("five");
-        verify(stringObserver, times(0)).onNext("six");
+        // despite not expecting it ... we don't do anything to prevent it if the source Observable keeps sending after onError
+        verify(stringObserver, times(1)).onNext("six");
         verify(stringObserver, times(1)).onNext("seven");
         verify(stringObserver, times(1)).onNext("eight");
         verify(stringObserver, times(1)).onNext("nine");
@@ -159,8 +161,6 @@ public class OperatorMergeDelayErrorTest {
             throw new RuntimeException(e);
         }
 
-        verify(stringObserver, times(1)).onError(any(NullPointerException.class));
-        verify(stringObserver, never()).onCompleted();
         verify(stringObserver, times(1)).onNext("one");
         verify(stringObserver, times(1)).onNext("two");
         verify(stringObserver, times(1)).onNext("three");
@@ -170,6 +170,8 @@ public class OperatorMergeDelayErrorTest {
         verify(stringObserver, times(1)).onNext("seven");
         verify(stringObserver, times(1)).onNext("eight");
         verify(stringObserver, times(1)).onNext("nine");
+        verify(stringObserver, times(1)).onError(any(NullPointerException.class));
+        verify(stringObserver, never()).onCompleted();
     }
 
     @Test
@@ -187,7 +189,8 @@ public class OperatorMergeDelayErrorTest {
         verify(stringObserver, times(0)).onNext("three");
         verify(stringObserver, times(1)).onNext("four");
         verify(stringObserver, times(0)).onNext("five");
-        verify(stringObserver, times(0)).onNext("six");
+        // despite not expecting it ... we don't do anything to prevent it if the source Observable keeps sending after onError
+        verify(stringObserver, times(1)).onNext("six");
     }
 
     @Test

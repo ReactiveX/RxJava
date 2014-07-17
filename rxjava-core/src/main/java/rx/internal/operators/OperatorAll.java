@@ -23,7 +23,7 @@ import rx.functions.Func1;
  * Returns an Observable that emits a Boolean that indicates whether all items emitted by an
  * Observable satisfy a condition.
  * <p>
- * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/all.png">
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/all.png" alt="">
  */
 public final class OperatorAll<T> implements Operator<Boolean, T> {
     private final Func1<? super T, Boolean> predicate;
@@ -45,6 +45,9 @@ public final class OperatorAll<T> implements Operator<Boolean, T> {
                     child.onNext(false);
                     child.onCompleted();
                     unsubscribe();
+                } else {
+                	// if we drop values we must replace them upstream as downstream won't receive and request more
+                	request(1);
                 }
             }
 

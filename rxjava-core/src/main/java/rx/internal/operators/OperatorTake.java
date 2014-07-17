@@ -22,7 +22,7 @@ import rx.Subscriber;
 /**
  * An {@code Observable} that emits the first {@code num} items emitted by the source {@code Observable}.
  * <p>
- * <img width="640" height="305" src="https://raw.githubusercontent.com/wiki/Netflix/RxJava/images/rx-operators/take.png" />
+ * <img width="640" height="305" src="https://raw.githubusercontent.com/wiki/Netflix/RxJava/images/rx-operators/take.png" alt="" />
  * <p>
  * You can choose to pay attention only to the first {@code num} items emitted by an {@code Observable} by using
  * the {@code take} operator. This operator returns an {@code Observable} that will invoke a subscriber's
@@ -74,19 +74,19 @@ public final class OperatorTake<T> implements Operator<T, T> {
              * We want to adjust the requested values based on the `take` count.
              */
             @Override
-            protected Producer onSetProducer(final Producer producer) {
-                return new Producer() {
+            public void setProducer(final Producer producer) {
+                child.setProducer(new Producer() {
 
                     @Override
-                    public void request(int n) {
-                        int c = limit - count;
+                    public void request(long n) {
+                        long c = limit - count;
                         if (n < c) {
                             producer.request(n);
                         } else {
                             producer.request(c);
                         }
                     }
-                };
+                });
             }
 
         };
@@ -106,22 +106,6 @@ public final class OperatorTake<T> implements Operator<T, T> {
          * register 'parent' with 'child'
          */
         child.add(parent);
-
-        /**
-         * Since we decoupled the subscription chain but want the request to flow through, we reconnect the producer here.
-         */
-        child.setProducer(new Producer() {
-
-            @Override
-            public void request(int n) {
-                if (n < 0) {
-                    // request up the limit that has been set, no point in asking for more, even if synchronous
-                    parent.request(limit);
-                } else {
-                    parent.request(n);
-                }
-            }
-        });
 
         return parent;
     }

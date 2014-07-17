@@ -127,14 +127,14 @@ public class OnSubscribeFromIterableTest {
         OnSubscribeFromIterable<Integer> o = new OnSubscribeFromIterable<Integer>(list);
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         ts.assertReceivedOnNext(Collections.<Integer> emptyList());
-        ts.request(1);
+        ts.requestMore(1);
         o.call(ts);
         ts.assertReceivedOnNext(Arrays.asList(1));
-        ts.request(2);
+        ts.requestMore(2);
         ts.assertReceivedOnNext(Arrays.asList(1, 2, 3));
-        ts.request(3);
+        ts.requestMore(3);
         ts.assertReceivedOnNext(Arrays.asList(1, 2, 3, 4, 5, 6));
-        ts.request(list.size());
+        ts.requestMore(list.size());
         ts.assertTerminalEvent();
     }
 
@@ -143,7 +143,7 @@ public class OnSubscribeFromIterableTest {
         OnSubscribeFromIterable<Integer> o = new OnSubscribeFromIterable<Integer>(Arrays.asList(1, 2, 3, 4, 5));
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         ts.assertReceivedOnNext(Collections.<Integer> emptyList());
-        ts.request(-1); // infinite
+        ts.requestMore(Long.MAX_VALUE); // infinite
         o.call(ts);
         ts.assertReceivedOnNext(Arrays.asList(1, 2, 3, 4, 5));
         ts.assertTerminalEvent();

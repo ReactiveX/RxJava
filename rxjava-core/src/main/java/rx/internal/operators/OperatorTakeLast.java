@@ -17,17 +17,16 @@ package rx.internal.operators;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
+import java.util.concurrent.atomic.AtomicLongFieldUpdater;
 
 import rx.Observable.Operator;
 import rx.Producer;
 import rx.Subscriber;
 
 /**
- * Returns an Observable that emits the last <code>count</code> items emitted by the source
- * Observable.
+ * Returns an Observable that emits the last <code>count</code> items emitted by the source Observable.
  * <p>
- * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/last.png">
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/last.png" alt="">
  */
 public final class OperatorTakeLast<T> implements Operator<T, T> {
 
@@ -53,7 +52,7 @@ public final class OperatorTakeLast<T> implements Operator<T, T> {
             @Override
             public void onStart() {
                 // we do this to break the chain of the child subscriber being passed through
-                request(-1);
+                request(Long.MAX_VALUE);
             }
 
             @Override
@@ -96,9 +95,9 @@ public final class OperatorTakeLast<T> implements Operator<T, T> {
             this.subscriber = subscriber;
         }
 
-        private volatile int requested = 0;
+        private volatile long requested = 0;
         @SuppressWarnings("rawtypes")
-        private static final AtomicIntegerFieldUpdater<QueueProducer> REQUESTED_UPDATER = AtomicIntegerFieldUpdater.newUpdater(QueueProducer.class, "requested");
+        private static final AtomicLongFieldUpdater<QueueProducer> REQUESTED_UPDATER = AtomicLongFieldUpdater.newUpdater(QueueProducer.class, "requested");
 
         void startEmitting() {
             if (!emittingStarted) {
@@ -108,10 +107,10 @@ public final class OperatorTakeLast<T> implements Operator<T, T> {
         }
 
         @Override
-        public void request(int n) {
-            int _c = 0;
-            if (n < 0) {
-                requested = -1;
+        public void request(long n) {
+            long _c = 0;
+            if (n == Long.MAX_VALUE) {
+                requested = Long.MAX_VALUE;
             } else {
                 _c = REQUESTED_UPDATER.getAndAdd(this, n);
             }
@@ -122,7 +121,7 @@ public final class OperatorTakeLast<T> implements Operator<T, T> {
             emit(_c);
         }
 
-        void emit(int previousRequested) {
+        void emit(long previousRequested) {
             if (requested < 0) {
                 // fast-path without backpressure
                 try {
@@ -142,7 +141,7 @@ public final class OperatorTakeLast<T> implements Operator<T, T> {
                          * This complicated logic is done to avoid touching the volatile `requested` value
                          * during the loop itself. If it is touched during the loop the performance is impacted significantly.
                          */
-                        int numToEmit = requested;
+                        long numToEmit = requested;
                         int emitted = 0;
                         Object o;
                         while (--numToEmit >= 0 && (o = deque.poll()) != null) {

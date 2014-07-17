@@ -36,7 +36,7 @@ import rx.subscriptions.Subscriptions;
  * <p>
  * The documentation for this class makes use of marble diagrams. The following legend explains these diagrams:
  * <p>
- * <img width="640" height="301" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/legend.png">
+ * <img width="640" height="301" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/legend.png" alt="">
  * <p>
  * For more information see the <a href="https://github.com/Netflix/RxJava/wiki/Observable">RxJava Wiki</a>
  * 
@@ -66,7 +66,7 @@ public class Observable<T> {
      * Returns an Observable that will execute the specified function when a {@link Subscriber} subscribes to
      * it.
      * <p>
-     * <img width="640" height="200" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/create.png">
+     * <img width="640" height="200" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/create.png" alt="">
      * <p>
      * Write the function you pass to {@code create} so that it behaves as an Observable: It should invoke the
      * Subscriber's {@link Subscriber#onNext onNext}, {@link Subscriber#onError onError}, and
@@ -182,7 +182,7 @@ public class Observable<T> {
     /**
      * Mirrors the one Observable in an Iterable of several Observables that first emits an item.
      * <p>
-     * <img width="640" height="385" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/amb.png">
+     * <img width="640" height="385" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/amb.png" alt="">
      * <p>
      * {@code amb} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -200,7 +200,7 @@ public class Observable<T> {
     /**
      * Given two Observables, mirrors the one that first emits an item.
      * <p>
-     * <img width="640" height="385" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/amb.png">
+     * <img width="640" height="385" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/amb.png" alt="">
      * <p>
      * {@code amb} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -220,7 +220,7 @@ public class Observable<T> {
     /**
      * Given three Observables, mirrors the one that first emits an item.
      * <p>
-     * <img width="640" height="385" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/amb.png">
+     * <img width="640" height="385" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/amb.png" alt="">
      * <p>
      * {@code amb} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -242,7 +242,7 @@ public class Observable<T> {
     /**
      * Given four Observables, mirrors the one that first emits an item.
      * <p>
-     * <img width="640" height="385" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/amb.png">
+     * <img width="640" height="385" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/amb.png" alt="">
      * <p>
      * {@code amb} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -266,7 +266,7 @@ public class Observable<T> {
     /**
      * Given five Observables, mirrors the one that first emits an item.
      * <p>
-     * <img width="640" height="385" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/amb.png">
+     * <img width="640" height="385" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/amb.png" alt="">
      * <p>
      * {@code amb} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -292,7 +292,7 @@ public class Observable<T> {
     /**
      * Given six Observables, mirrors the one that first emits an item.
      * <p>
-     * <img width="640" height="385" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/amb.png">
+     * <img width="640" height="385" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/amb.png" alt="">
      * <p>
      * {@code amb} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -320,7 +320,7 @@ public class Observable<T> {
     /**
      * Given seven Observables, mirrors the one that first emits an item.
      * <p>
-     * <img width="640" height="385" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/amb.png">
+     * <img width="640" height="385" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/amb.png" alt="">
      * <p>
      * {@code amb} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -350,7 +350,7 @@ public class Observable<T> {
     /**
      * Given eight Observables, mirrors the one that first emits an item.
      * <p>
-     * <img width="640" height="385" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/amb.png">
+     * <img width="640" height="385" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/amb.png" alt="">
      * <p>
      * {@code amb} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -382,7 +382,7 @@ public class Observable<T> {
     /**
      * Given nine Observables, mirrors the one that first emits an item.
      * <p>
-     * <img width="640" height="385" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/amb.png">
+     * <img width="640" height="385" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/amb.png" alt="">
      * <p>
      * {@code amb} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -418,7 +418,7 @@ public class Observable<T> {
      * source Observables each time an item is received from either of the source Observables, where this
      * aggregation is defined by a specified function.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/combineLatest.png">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/combineLatest.png" alt="">
      * <p>
      * {@code combineLatest} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -442,7 +442,7 @@ public class Observable<T> {
      * source Observables each time an item is received from any of the source Observables, where this
      * aggregation is defined by a specified function.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/combineLatest.png">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/combineLatest.png" alt="">
      * <p>
      * {@code combineLatest} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -468,7 +468,7 @@ public class Observable<T> {
      * source Observables each time an item is received from any of the source Observables, where this
      * aggregation is defined by a specified function.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/combineLatest.png">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/combineLatest.png" alt="">
      * <p>
      * {@code combineLatest} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -497,7 +497,7 @@ public class Observable<T> {
      * source Observables each time an item is received from any of the source Observables, where this
      * aggregation is defined by a specified function.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/combineLatest.png">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/combineLatest.png" alt="">
      * <p>
      * {@code combineLatest} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -528,7 +528,7 @@ public class Observable<T> {
      * source Observables each time an item is received from any of the source Observables, where this
      * aggregation is defined by a specified function.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/combineLatest.png">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/combineLatest.png" alt="">
      * <p>
      * {@code combineLatest} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -561,7 +561,7 @@ public class Observable<T> {
      * source Observables each time an item is received from any of the source Observables, where this
      * aggregation is defined by a specified function.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/combineLatest.png">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/combineLatest.png" alt="">
      * <p>
      * {@code combineLatest} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -596,7 +596,7 @@ public class Observable<T> {
      * source Observables each time an item is received from any of the source Observables, where this
      * aggregation is defined by a specified function.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/combineLatest.png">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/combineLatest.png" alt="">
      * <p>
      * {@code combineLatest} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -633,7 +633,7 @@ public class Observable<T> {
      * source Observables each time an item is received from any of the source Observables, where this
      * aggregation is defined by a specified function.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/combineLatest.png">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/combineLatest.png" alt="">
      * <p>
      * {@code combineLatest} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -694,7 +694,7 @@ public class Observable<T> {
      * Returns an Observable that emits the items emitted by each of the Observables emitted by the source
      * Observable, one after the other, without interleaving them.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/concat.png">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/concat.png" alt="">
      * <p>
      * {@code concat} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -713,7 +713,7 @@ public class Observable<T> {
      * Returns an Observable that emits the items emitted by two Observables, one after the other, without
      * interleaving them.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/concat.png">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/concat.png" alt="">
      * <p>
      * {@code concat} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -734,7 +734,7 @@ public class Observable<T> {
      * Returns an Observable that emits the items emitted by three Observables, one after the other, without
      * interleaving them.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/concat.png">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/concat.png" alt="">
      * <p>
      * {@code concat} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -757,7 +757,7 @@ public class Observable<T> {
      * Returns an Observable that emits the items emitted by four Observables, one after the other, without
      * interleaving them.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/concat.png">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/concat.png" alt="">
      * <p>
      * {@code concat} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -782,7 +782,7 @@ public class Observable<T> {
      * Returns an Observable that emits the items emitted by five Observables, one after the other, without
      * interleaving them.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/concat.png">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/concat.png" alt="">
      * <p>
      * {@code concat} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -809,7 +809,7 @@ public class Observable<T> {
      * Returns an Observable that emits the items emitted by six Observables, one after the other, without
      * interleaving them.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/concat.png">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/concat.png" alt="">
      * <p>
      * {@code concat} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -838,7 +838,7 @@ public class Observable<T> {
      * Returns an Observable that emits the items emitted by seven Observables, one after the other, without
      * interleaving them.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/concat.png">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/concat.png" alt="">
      * <p>
      * {@code concat} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -869,7 +869,7 @@ public class Observable<T> {
      * Returns an Observable that emits the items emitted by eight Observables, one after the other, without
      * interleaving them.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/concat.png">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/concat.png" alt="">
      * <p>
      * {@code concat} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -902,7 +902,7 @@ public class Observable<T> {
      * Returns an Observable that emits the items emitted by nine Observables, one after the other, without
      * interleaving them.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/concat.png">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/concat.png" alt="">
      * <p>
      * {@code concat} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -938,7 +938,7 @@ public class Observable<T> {
      * that subscribes. That is, for each subscriber, the actual Observable that subscriber observes is
      * determined by the factory function.
      * <p>
-     * <img width="640" height="340" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/defer.png">
+     * <img width="640" height="340" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/defer.png" alt="">
      * <p>
      * The defer Observer allows you to defer or delay emitting items from an Observable until such time as an
      * Observer subscribes to the Observable. This allows an {@link Observer} to easily obtain updates or a
@@ -963,7 +963,7 @@ public class Observable<T> {
      * Returns an Observable that emits no items to the {@link Observer} and immediately invokes its
      * {@link Observer#onCompleted onCompleted} method.
      * <p>
-     * <img width="640" height="190" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/empty.png">
+     * <img width="640" height="190" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/empty.png" alt="">
      * <p>
      * {@code empty} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -982,7 +982,7 @@ public class Observable<T> {
      * Returns an Observable that emits no items to the {@link Observer} and immediately invokes its
      * {@link Observer#onCompleted onCompleted} method on the specified Scheduler.
      * <p>
-     * <img width="640" height="190" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/empty.s.png">
+     * <img width="640" height="190" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/empty.s.png" alt="">
      * 
      * @param scheduler
      *            the Scheduler to use to call the {@link Observer#onCompleted onCompleted} method
@@ -1002,7 +1002,7 @@ public class Observable<T> {
      * Returns an Observable that invokes an {@link Observer}'s {@link Observer#onError onError} method when the
      * Observer subscribes to it.
      * <p>
-     * <img width="640" height="190" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/error.png">
+     * <img width="640" height="190" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/error.png" alt="">
      * <p>
      * {@code error} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -1023,7 +1023,7 @@ public class Observable<T> {
      * Returns an Observable that invokes an {@link Observer}'s {@link Observer#onError onError} method on the
      * specified Scheduler.
      * <p>
-     * <img width="640" height="190" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/error.s.png">
+     * <img width="640" height="190" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/error.s.png" alt="">
      * 
      * @param exception
      *            the particular Throwable to pass to {@link Observer#onError onError}
@@ -1043,7 +1043,7 @@ public class Observable<T> {
     /**
      * Converts a {@link Future} into an Observable.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.Future.png">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.Future.png" alt="">
      * <p>
      * You can convert any object that supports the {@link Future} interface into an Observable that emits the
      * return value of the {@link Future#get} method of that object, by passing the object into the {@code from}
@@ -1066,7 +1066,7 @@ public class Observable<T> {
     /**
      * Converts a {@link Future} into an Observable, with a timeout on the Future.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.Future.png">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.Future.png" alt="">
      * <p>
      * You can convert any object that supports the {@link Future} interface into an Observable that emits the
      * return value of the {@link Future#get} method of that object, by passing the object into the {@code from}
@@ -1093,7 +1093,7 @@ public class Observable<T> {
     /**
      * Converts a {@link Future}, operating on a specified {@link Scheduler}, into an Observable.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.Future.s.png">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.Future.s.png" alt="">
      * <p>
      * You can convert any object that supports the {@link Future} interface into an Observable that emits the
      * return value of the {@link Future#get} method of that object, by passing the object into the {@code from}
@@ -1149,7 +1149,7 @@ public class Observable<T> {
     /**
      * Converts an {@link Iterable} sequence into an Observable that emits the items in the sequence.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png" alt="">
      * <p>
      * {@code from} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -1169,7 +1169,7 @@ public class Observable<T> {
      * Converts an {@link Iterable} sequence into an Observable that operates on the specified Scheduler,
      * emitting each item from the sequence.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.s.png">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.s.png" alt="">
      * 
      * @param iterable
      *            the source {@link Iterable} sequence
@@ -1190,7 +1190,7 @@ public class Observable<T> {
     /**
      * Converts an item into an Observable that emits that item.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png" alt="">
      * <p>
      * {@code from} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -1208,7 +1208,7 @@ public class Observable<T> {
     /**
      * Converts two items into an Observable that emits those items.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png" alt="">
      * <p>
      * {@code from} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -1230,7 +1230,7 @@ public class Observable<T> {
     /**
      * Converts three items into an Observable that emits those items.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png" alt="">
      * <p>
      * {@code from} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -1254,7 +1254,7 @@ public class Observable<T> {
     /**
      * Converts four items into an Observable that emits those items.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png" alt="">
      * <p>
      * {@code from} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -1280,7 +1280,7 @@ public class Observable<T> {
     /**
      * Converts five items into an Observable that emits those items.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png" alt="">
      * <p>
      * {@code from} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -1308,7 +1308,7 @@ public class Observable<T> {
     /**
      * Converts six items into an Observable that emits those items.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png" alt="">
      * <p>
      * {@code from} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -1338,7 +1338,7 @@ public class Observable<T> {
     /**
      * Converts seven items into an Observable that emits those items.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png" alt="">
      * <p>
      * {@code from} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -1370,7 +1370,7 @@ public class Observable<T> {
     /**
      * Converts eight items into an Observable that emits those items.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png" alt="">
      * <p>
      * {@code from} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -1404,7 +1404,7 @@ public class Observable<T> {
     /**
      * Converts nine items into an Observable that emits those items.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png" alt="">
      * <p>
      * {@code from} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -1440,7 +1440,7 @@ public class Observable<T> {
     /**
      * Converts ten items into an Observable that emits those items.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png" alt="">
      * <p>
      * {@code from} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -1478,7 +1478,7 @@ public class Observable<T> {
     /**
      * Converts an Array into an Observable that emits the items in the Array.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png" alt="">
      * <p>
      * {@code from} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -1496,7 +1496,7 @@ public class Observable<T> {
     /**
      * Converts an Array into an Observable that emits the items in the Array on a specified Scheduler.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png" alt="">
      * 
      * @param items
      *            the source Array
@@ -1514,7 +1514,7 @@ public class Observable<T> {
     /**
      * Returns an Observable that emits a sequential number every specified interval of time.
      * <p>
-     * <img width="640" height="195" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/interval.png">
+     * <img width="640" height="195" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/interval.png" alt="">
      * <p>
      * {@code interval} operates by default on the {@code computation} {@link Scheduler}.
      * 
@@ -1534,7 +1534,7 @@ public class Observable<T> {
      * Returns an Observable that emits a sequential number every specified interval of time, on a
      * specified Scheduler.
      * <p>
-     * <img width="640" height="200" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/interval.s.png">
+     * <img width="640" height="200" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/interval.s.png" alt="">
      * 
      * @param interval
      *            interval size in time units (see below)
@@ -1553,7 +1553,7 @@ public class Observable<T> {
     /**
      * Returns an Observable that emits a single item and then completes.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/just.png">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/just.png" alt="">
      * <p>
      * To convert any object into an Observable that emits that object, pass that object into the {@code just}
      * method.
@@ -1579,7 +1579,7 @@ public class Observable<T> {
     /**
      * Returns an Observable that emits a single item and then completes, on a specified Scheduler.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/just.s.png">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/just.s.png" alt="">
      * 
      * @param value
      *            the item to emit
@@ -1598,7 +1598,7 @@ public class Observable<T> {
     /**
      * Flattens an Iterable of Observables into one Observable, without any transformation.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.png">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.png" alt="">
      * <p>
      * You can combine the items emitted by multiple Observables so that they appear as a single Observable, by
      * using the {@code merge} method.
@@ -1620,7 +1620,7 @@ public class Observable<T> {
      * Flattens an Iterable of Observables into one Observable, without any transformation, while limiting the
      * number of concurrent subscriptions to these Observables.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.png">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.png" alt="">
      * <p>
      * You can combine the items emitted by multiple Observables so that they appear as a single Observable, by
      * using the {@code merge} method.
@@ -1647,7 +1647,7 @@ public class Observable<T> {
      * number of concurrent subscriptions to these Observables, and subscribing to these Observables on a
      * specified Scheduler.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.png">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.png" alt="">
      * <p>
      * You can combine the items emitted by multiple Observables so that they appear as a single Observable, by
      * using the {@code merge} method.
@@ -1673,7 +1673,7 @@ public class Observable<T> {
      * Flattens an Iterable of Observables into one Observable, without any transformation, subscribing to these
      * Observables on a specified Scheduler.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.png">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.png" alt="">
      * <p>
      * You can combine the items emitted by multiple Observables so that they appear as a single Observable, by
      * using the {@code merge} method.
@@ -1695,7 +1695,7 @@ public class Observable<T> {
      * Flattens an Observable that emits Observables into a single Observable that emits the items emitted by
      * those Observables, without any transformation.
      * <p>
-     * <img width="640" height="370" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.oo.png">
+     * <img width="640" height="370" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.oo.png" alt="">
      * <p>
      * You can combine the items emitted by multiple Observables so that they appear as a single Observable, by
      * using the {@code merge} method.
@@ -1718,7 +1718,7 @@ public class Observable<T> {
      * those Observables, without any transformation, while limiting the maximum number of concurrent
      * subscriptions to these Observables.
      * <p>
-     * <img width="640" height="370" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.oo.png">
+     * <img width="640" height="370" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.oo.png" alt="">
      * <p>
      * You can combine the items emitted by multiple Observables so that they appear as a single Observable, by
      * using the {@code merge} method.
@@ -1743,7 +1743,7 @@ public class Observable<T> {
     /**
      * Flattens two Observables into a single Observable, without any transformation.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.png">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.png" alt="">
      * <p>
      * You can combine items emitted by multiple Observables so that they appear as a single Observable, by
      * using the {@code merge} method.
@@ -1766,7 +1766,7 @@ public class Observable<T> {
     /**
      * Flattens three Observables into a single Observable, without any transformation.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.png">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.png" alt="">
      * <p>
      * You can combine items emitted by multiple Observables so that they appear as a single Observable, by
      * using the {@code merge} method.
@@ -1791,7 +1791,7 @@ public class Observable<T> {
     /**
      * Flattens four Observables into a single Observable, without any transformation.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.png">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.png" alt="">
      * <p>
      * You can combine items emitted by multiple Observables so that they appear as a single Observable, by
      * using the {@code merge} method.
@@ -1818,7 +1818,7 @@ public class Observable<T> {
     /**
      * Flattens five Observables into a single Observable, without any transformation.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.png">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.png" alt="">
      * <p>
      * You can combine items emitted by multiple Observables so that they appear as a single Observable, by
      * using the {@code merge} method.
@@ -1847,7 +1847,7 @@ public class Observable<T> {
     /**
      * Flattens six Observables into a single Observable, without any transformation.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.png">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.png" alt="">
      * <p>
      * You can combine items emitted by multiple Observables so that they appear as a single Observable, by
      * using the {@code merge} method.
@@ -1878,7 +1878,7 @@ public class Observable<T> {
     /**
      * Flattens seven Observables into a single Observable, without any transformation.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.png">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.png" alt="">
      * <p>
      * You can combine items emitted by multiple Observables so that they appear as a single Observable, by
      * using the {@code merge} method.
@@ -1911,7 +1911,7 @@ public class Observable<T> {
     /**
      * Flattens eight Observables into a single Observable, without any transformation.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.png">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.png" alt="">
      * <p>
      * You can combine items emitted by multiple Observables so that they appear as a single Observable, by
      * using the {@code merge} method.
@@ -1945,7 +1945,7 @@ public class Observable<T> {
     /**
      * Flattens nine Observables into a single Observable, without any transformation.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.png">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.png" alt="">
      * <p>
      * You can combine items emitted by multiple Observables so that they appear as a single Observable, by
      * using the {@code merge} method.
@@ -1982,7 +1982,7 @@ public class Observable<T> {
     /**
      * Flattens an Array of Observables into one Observable, without any transformation.
      * <p>
-     * <img width="640" height="370" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.io.png">
+     * <img width="640" height="370" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.io.png" alt="">
      * <p>
      * You can combine items emitted by multiple Observables so that they appear as a single Observable, by
      * using the {@code merge} method.
@@ -2003,7 +2003,7 @@ public class Observable<T> {
      * Flattens an Array of Observables into one Observable, without any transformation, traversing the array on
      * a specified Scheduler.
      * <p>
-     * <img width="640" height="370" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.ios.png">
+     * <img width="640" height="370" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.ios.png" alt="">
      * <p>
      * You can combine items emitted by multiple Observables so that they appear as a single Observable, by
      * using the {@code merge} method.
@@ -2029,7 +2029,7 @@ public class Observable<T> {
      * error via {@link Observer#onError onError}, {@code mergeDelayError} will refrain from propagating that
      * error notification until all of the merged Observables have finished emitting items.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeDelayError.png">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeDelayError.png" alt="">
      * <p>
      * Even if multiple merged Observables send {@code onError} notifications, {@code mergeDelayError} will only
      * invoke the {@code onError} method of its Observers once.
@@ -2056,7 +2056,7 @@ public class Observable<T> {
      * notify of an error via {@link Observer#onError onError}, {@code mergeDelayError} will refrain from
      * propagating that error notification until all of the merged Observables have finished emitting items.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeDelayError.png">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeDelayError.png" alt="">
      * <p>
      * Even if both merged Observables send {@code onError} notifications, {@code mergeDelayError} will only
      * invoke the {@code onError} method of its Observers once.
@@ -2085,7 +2085,7 @@ public class Observable<T> {
      * from propagating that error notification until all of the merged Observables have finished emitting
      * items.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeDelayError.png">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeDelayError.png" alt="">
      * <p>
      * Even if multiple merged Observables send {@code onError} notifications, {@code mergeDelayError} will only
      * invoke the {@code onError} method of its Observers once.
@@ -2116,7 +2116,7 @@ public class Observable<T> {
      * will refrain from propagating that error notification until all of the merged Observables have finished
      * emitting items.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeDelayError.png">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeDelayError.png" alt="">
      * <p>
      * Even if multiple merged Observables send {@code onError} notifications, {@code mergeDelayError} will only
      * invoke the {@code onError} method of its Observers once.
@@ -2149,7 +2149,7 @@ public class Observable<T> {
      * {@code mergeDelayError} will refrain from propagating that error notification until all of the merged
      * Observables have finished emitting items.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeDelayError.png">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeDelayError.png" alt="">
      * <p>
      * Even if multiple merged Observables send {@code onError} notifications, {@code mergeDelayError} will only
      * invoke the {@code onError} method of its Observers once.
@@ -2184,7 +2184,7 @@ public class Observable<T> {
      * {@code mergeDelayError} will refrain from propagating that error notification until all of the merged
      * Observables have finished emitting items.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeDelayError.png">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeDelayError.png" alt="">
      * <p>
      * Even if multiple merged Observables send {@code onError} notifications, {@code mergeDelayError} will only
      * invoke the {@code onError} method of its Observers once.
@@ -2222,7 +2222,7 @@ public class Observable<T> {
      * {@code mergeDelayError} will refrain from propagating that error notification until all of the merged
      * Observables have finished emitting items.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeDelayError.png">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeDelayError.png" alt="">
      * <p>
      * Even if multiple merged Observables send {@code onError} notifications, {@code mergeDelayError} will only
      * invoke the {@code onError} method of its Observers once.
@@ -2261,7 +2261,7 @@ public class Observable<T> {
      * {@code mergeDelayError} will refrain from propagating that error notification until all of the merged
      * Observables have finished emitting items.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeDelayError.png">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeDelayError.png" alt="">
      * <p>
      * Even if multiple merged Observables send {@code onError} notifications, {@code mergeDelayError} will only
      * invoke the {@code onError} method of its Observers once.
@@ -2303,7 +2303,7 @@ public class Observable<T> {
      * {@code mergeDelayError} will refrain from propagating that error notification until all of the merged
      * Observables have finished emitting items.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeDelayError.png">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeDelayError.png" alt="">
      * <p>
      * Even if multiple merged Observables send {@code onError} notifications, {@code mergeDelayError} will only
      * invoke the {@code onError} method of its Observers once.
@@ -2340,7 +2340,7 @@ public class Observable<T> {
      * Converts the source {@code Observable<T>} into an {@code Observable<Observable<T>>} that emits the
      * source Observable as its single emission.
      * <p>
-     * <img width="640" height="350" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/nest.png">
+     * <img width="640" height="350" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/nest.png" alt="">
      * <p>
      * {@code nest} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -2354,7 +2354,7 @@ public class Observable<T> {
     /**
      * Returns an Observable that never sends any items or notifications to an {@link Observer}.
      * <p>
-     * <img width="640" height="185" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/never.png">
+     * <img width="640" height="185" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/never.png" alt="">
      * <p>
      * This Observable is useful primarily for testing purposes.
      * <p>
@@ -2378,7 +2378,7 @@ public class Observable<T> {
      * {@code parallelObservables} is 8, the items emitted by the 100 original Observables will be distributed
      * among 8 Observables emitted by the resulting Observable.
      * <p>
-     * <img width="640" height="535" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/parallelMerge.png">
+     * <img width="640" height="535" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/parallelMerge.png" alt="">
      * <p>
      * This is a mechanism for efficiently processing <i>n</i> number of Observables on a smaller <i>m</i>
      * number of resources (typically CPU cores).
@@ -2403,7 +2403,7 @@ public class Observable<T> {
      * {@code parallelObservables} is 8, the items emitted by the 100 original Observables will be distributed
      * among 8 Observables emitted by the resulting Observable.
      * <p>
-     * <img width="640" height="535" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/parallelMerge.png">
+     * <img width="640" height="535" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/parallelMerge.png" alt="">
      * <p>
      * This is a mechanism for efficiently processing <i>n</i> number of Observables on a smaller <i>m</i>
      * number of resources (typically CPU cores).
@@ -2420,53 +2420,9 @@ public class Observable<T> {
     }
 
     /**
-     * Pivots a sequence of {@code GroupedObservable}s emitted by an {@code Observable} so as to swap the group
-     * and and the set on which their items are grouped.
-     * <p>
-     * <img width="640" height="580" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/pivot.png">
-     *
-     * For example an {@code Observable} such as this =&gt;
-     * 
-     * {@code Observable<GroupedObservable<String, GroupedObservable<Boolean, Integer>>>}:
-     * <ul>
-     * <li>o1.odd: 1, 3, 5, 7, 9 on Thread 1</li>
-     * <li>o1.even: 2, 4, 6, 8, 10 on Thread 1</li>
-     * <li>o2.odd: 11, 13, 15, 17, 19 on Thread 2</li>
-     * <li>o2.even: 12, 14, 16, 18, 20 on Thread 2</li>
-     * </ul>
-     * is pivoted to become this =&gt;
-     * 
-     * {@code Observable<GroupedObservable<Boolean, GroupedObservable<String, Integer>>>}:
-     * <ul>
-     * <li>odd.o1: 1, 3, 5, 7, 9 on Thread 1</li>
-     * <li>odd.o2: 11, 13, 15, 17, 19 on Thread 2</li>
-     * <li>even.o1: 2, 4, 6, 8, 10 on Thread 1</li>
-     * <li>even.o2: 12, 14, 16, 18, 20 on Thread 2</li>
-     * </ul>
-     * <p>
-     * <img width="640" height="1140" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/pivot.ex.png">
-     * <p>
-     * <em>Note:</em> A {@link GroupedObservable} will cache the items it is to emit until such time as it
-     * is subscribed to. For this reason, in order to avoid memory leaks, you should not simply ignore those
-     * {@code GroupedObservable}s that do not concern you. Instead, you can signal to them that they may
-     * discard their buffers by applying an operator like {@link #take}{@code (0)} to them.
-     * <p>
-     * {@code pivot} does not operate by default on a particular {@link Scheduler}.
-     * 
-     * @param groups
-                 the {@link GroupedObservable} to pivot
-     * @return an {@code Observable} containing a stream of nested {@code GroupedObservable}s with swapped
-     *         inner-outer keys.
-     * @since 0.17
-     */
-    public static final <K1, K2, T> Observable<GroupedObservable<K2, GroupedObservable<K1, T>>> pivot(Observable<GroupedObservable<K1, GroupedObservable<K2, T>>> groups) {
-        return groups.lift(new OperatorPivot<K1, K2, T>());
-    }
-
-    /**
      * Returns an Observable that emits a sequence of Integers within a specified range.
      * <p>
-     * <img width="640" height="195" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/range.png">
+     * <img width="640" height="195" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/range.png" alt="">
      * <p>
      * {@code range} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -2501,7 +2457,7 @@ public class Observable<T> {
      * Returns an Observable that emits a sequence of Integers within a specified range, on a specified
      * Scheduler.
      * <p>
-     * <img width="640" height="195" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/range.s.png">
+     * <img width="640" height="195" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/range.s.png" alt="">
      * 
      * @param start
      *            the value of the first Integer in the sequence
@@ -2521,7 +2477,7 @@ public class Observable<T> {
      * Returns an Observable that emits a Boolean value that indicates whether two Observable sequences are the
      * same by comparing the items emitted by each Observable pairwise.
      * <p>
-     * <img width="640" height="385" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/sequenceEqual.png">
+     * <img width="640" height="385" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/sequenceEqual.png" alt="">
      * <p>
      * {@code sequenceEqual} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -2551,7 +2507,7 @@ public class Observable<T> {
      * same by comparing the items emitted by each Observable pairwise based on the results of a specified
      * equality function.
      * <p>
-     * <img width="640" height="385" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/sequenceEqual.png">
+     * <img width="640" height="385" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/sequenceEqual.png" alt="">
      * <p>
      * {@code sequenceEqual} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -2575,7 +2531,7 @@ public class Observable<T> {
      * Converts an Observable that emits Observables into an Observable that emits the items emitted by the
      * most recently emitted of those Observables.
      * <p>
-     * <img width="640" height="370" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/switchDo.png">
+     * <img width="640" height="370" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/switchDo.png" alt="">
      * <p>
      * {@code switchOnNext} subscribes to an Observable that emits Observables. Each time it observes one of
      * these emitted Observables, the Observable returned by {@code switchOnNext} begins emitting the items
@@ -2599,7 +2555,7 @@ public class Observable<T> {
      * Returns an Observable that emits a {@code 0L} after the {@code initialDelay} and ever increasing numbers
      * after each {@code period} of time thereafter.
      * <p>
-     * <img width="640" height="200" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timer.p.png">
+     * <img width="640" height="200" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timer.p.png" alt="">
      * <p>
      * {@code timer} operates by default on the {@code computation} {@link Scheduler}.
      * 
@@ -2622,7 +2578,7 @@ public class Observable<T> {
      * Returns an Observable that emits a {@code 0L} after the {@code initialDelay} and ever increasing numbers
      * after each {@code period} of time thereafter, on a specified {@link Scheduler}.
      * <p>
-     * <img width="640" height="200" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timer.ps.png">
+     * <img width="640" height="200" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timer.ps.png" alt="">
      * 
      * @param initialDelay
      *            the initial delay time to wait before emitting the first value of 0L
@@ -2644,7 +2600,7 @@ public class Observable<T> {
     /**
      * Returns an Observable that emits one item after a specified delay, and then completes.
      * <p>
-     * <img width="640" height="200" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timer.png">
+     * <img width="640" height="200" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timer.png" alt="">
      * <p>
      * {@code timer} operates by default on the {@code computation} {@link Scheduler}.
      * 
@@ -2663,7 +2619,7 @@ public class Observable<T> {
      * Returns an Observable that emits one item after a specified delay, on a specified Scheduler, and then
      * completes.
      * <p>
-     * <img width="640" height="200" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timer.s.png">
+     * <img width="640" height="200" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timer.s.png" alt="">
      * 
      * @param delay
      *            the initial delay before emitting a single 0L
@@ -2682,7 +2638,7 @@ public class Observable<T> {
     /**
      * Constructs an Observable that creates a dependent resource object.
      * <p>
-     * <img width="640" height="400" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/using.png">
+     * <img width="640" height="400" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/using.png" alt="">
      * <p>
      * {@code using} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -2710,7 +2666,7 @@ public class Observable<T> {
      * The resulting {@code Observable<R>} returned from {@code zip} will invoke {@code onNext} as many times as
      * the number of {@code onNext} invokations of the source Observable that emits the fewest items.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/zip.png">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/zip.png" alt="">
      * <p>
      * {@code zip} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -2742,7 +2698,7 @@ public class Observable<T> {
      * The resulting {@code Observable<R>} returned from {@code zip} will invoke {@code onNext} as many times as
      * the number of {@code onNext} invokations of the source Observable that emits the fewest items.
      * <p>
-     * <img width="640" height="370" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/zip.o.png">
+     * <img width="640" height="370" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/zip.o.png" alt="">
      * <p>
      * {@code zip} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -2769,7 +2725,7 @@ public class Observable<T> {
      * Returns an Observable that emits the results of a function of your choosing applied to combinations of
      * two items emitted, in sequence, by two other Observables.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/zip.png">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/zip.png" alt="">
      * <p>
      * {@code zip} applies this function in strict sequence, so the first item emitted by the new Observable
      * will be the result of the function applied to the first item emitted by {@code o1} and the first item
@@ -2800,7 +2756,7 @@ public class Observable<T> {
      * Returns an Observable that emits the results of a function of your choosing applied to combinations of
      * three items emitted, in sequence, by three other Observables.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/zip.png">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/zip.png" alt="">
      * <p>
      * {@code zip} applies this function in strict sequence, so the first item emitted by the new Observable
      * will be the result of the function applied to the first item emitted by {@code o1}, the first item
@@ -2834,7 +2790,7 @@ public class Observable<T> {
      * Returns an Observable that emits the results of a function of your choosing applied to combinations of
      * four items emitted, in sequence, by four other Observables.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/zip.png">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/zip.png" alt="">
      * <p>
      * {@code zip} applies this function in strict sequence, so the first item emitted by the new Observable
      * will be the result of the function applied to the first item emitted by {@code o1}, the first item
@@ -2870,7 +2826,7 @@ public class Observable<T> {
      * Returns an Observable that emits the results of a function of your choosing applied to combinations of
      * five items emitted, in sequence, by five other Observables.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/zip.png">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/zip.png" alt="">
      * <p>
      * {@code zip} applies this function in strict sequence, so the first item emitted by the new Observable
      * will be the result of the function applied to the first item emitted by {@code o1}, the first item
@@ -2908,7 +2864,7 @@ public class Observable<T> {
      * Returns an Observable that emits the results of a function of your choosing applied to combinations of
      * six items emitted, in sequence, by six other Observables.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/zip.png">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/zip.png" alt="">
      * <p>
      * {@code zip} applies this function in strict sequence, so the first item emitted by the new Observable
      * will be the result of the function applied to the first item emitted by each source Observable, the
@@ -2948,7 +2904,7 @@ public class Observable<T> {
      * Returns an Observable that emits the results of a function of your choosing applied to combinations of
      * seven items emitted, in sequence, by seven other Observables.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/zip.png">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/zip.png" alt="">
      * <p>
      * {@code zip} applies this function in strict sequence, so the first item emitted by the new Observable
      * will be the result of the function applied to the first item emitted by each source Observable, the
@@ -2990,7 +2946,7 @@ public class Observable<T> {
      * Returns an Observable that emits the results of a function of your choosing applied to combinations of
      * eight items emitted, in sequence, by eight other Observables.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/zip.png">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/zip.png" alt="">
      * <p>
      * {@code zip} applies this function in strict sequence, so the first item emitted by the new Observable
      * will be the result of the function applied to the first item emitted by each source Observable, the
@@ -3034,7 +2990,7 @@ public class Observable<T> {
      * Returns an Observable that emits the results of a function of your choosing applied to combinations of
      * nine items emitted, in sequence, by nine other Observables.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/zip.png">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/zip.png" alt="">
      * <p>
      * {@code zip} applies this function in strict sequence, so the first item emitted by the new Observable
      * will be the result of the function applied to the first item emitted by each source Observable, the
@@ -3080,7 +3036,7 @@ public class Observable<T> {
      * Returns an Observable that emits a Boolean that indicates whether all of the items emitted by the source
      * Observable satisfy a condition.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/all.png">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/all.png" alt="">
      * <p>
      * {@code all} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -3097,7 +3053,7 @@ public class Observable<T> {
     /**
      * Mirrors the first Observable (current or provided) that emits an item.
      * <p>
-     * <img width="640" height="385" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/amb.png">
+     * <img width="640" height="385" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/amb.png" alt="">
      * <p>
      * {@code amb} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -3131,7 +3087,7 @@ public class Observable<T> {
      * Observable emits connected, non-overlapping buffers. It emits the current buffer and replaces it with a
      * new buffer whenever the Observable produced by the specified {@code bufferClosingSelector} emits an item.
      * <p>
-     * <img width="640" height="395" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/buffer1.png">
+     * <img width="640" height="395" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/buffer1.png" alt="">
      * <p>
      * This version of {@code buffer} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -3153,7 +3109,7 @@ public class Observable<T> {
      * Observable completes or encounters an error, the resulting Observable emits the current buffer and
      * propagates the notification from the source Observable.
      * <p>
-     * <img width="640" height="320" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/buffer3.png">
+     * <img width="640" height="320" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/buffer3.png" alt="">
      * <p>
      * This version of {@code buffer} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -3173,7 +3129,7 @@ public class Observable<T> {
      * Observable completes or encounters an error, the resulting Observable emits the current buffer and
      * propagates the notification from the source Observable.
      * <p>
-     * <img width="640" height="320" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/buffer4.png">
+     * <img width="640" height="320" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/buffer4.png" alt="">
      * <p>
      * This version of {@code buffer} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -3198,7 +3154,7 @@ public class Observable<T> {
      * Observable completes or encounters an error, the resulting Observable emits the current buffer and
      * propagates the notification from the source Observable.
      * <p>
-     * <img width="640" height="320" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/buffer7.png">
+     * <img width="640" height="320" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/buffer7.png" alt="">
      * <p>
      * This version of {@code buffer} operates by default on the {@code computation} {@link Scheduler}.
      * 
@@ -3223,7 +3179,7 @@ public class Observable<T> {
      * {@code timespan} argument. When the source Observable completes or encounters an error, the resulting
      * Observable emits the current buffer and propagates the notification from the source Observable.
      * <p>
-     * <img width="640" height="320" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/buffer7.s.png">
+     * <img width="640" height="320" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/buffer7.s.png" alt="">
      * 
      * @param timespan
      *            the period of time each buffer collects items before it is emitted
@@ -3247,7 +3203,7 @@ public class Observable<T> {
      * {@code timespan} argument. When the source Observable completes or encounters an error, the resulting
      * Observable emits the current buffer and propagates the notification from the source Observable.
      * <p>
-     * <img width="640" height="320" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/buffer5.png">
+     * <img width="640" height="320" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/buffer5.png" alt="">
      * <p>
      * This version of {@code buffer} operates by default on the {@code computation} {@link Scheduler}.
      * 
@@ -3271,7 +3227,7 @@ public class Observable<T> {
      * first). When the source Observable completes or encounters an error, the resulting Observable emits the
      * current buffer and propagates the notification from the source Observable.
      * <p>
-     * <img width="640" height="320" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/buffer6.png">
+     * <img width="640" height="320" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/buffer6.png" alt="">
      * <p>
      * This version of {@code buffer} operates by default on the {@code computation} {@link Scheduler}.
      * 
@@ -3299,7 +3255,7 @@ public class Observable<T> {
      * encounters an error, the resulting Observable emits the current buffer and propagates the notification
      * from the source Observable.
      * <p>
-     * <img width="640" height="320" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/buffer6.s.png">
+     * <img width="640" height="320" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/buffer6.s.png" alt="">
      * 
      * @param timespan
      *            the period of time each buffer collects items before it is emitted and replaced with a new
@@ -3326,7 +3282,7 @@ public class Observable<T> {
      * encounters an error, the resulting Observable emits the current buffer and propagates the notification
      * from the source Observable.
      * <p>
-     * <img width="640" height="320" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/buffer5.s.png">
+     * <img width="640" height="320" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/buffer5.s.png" alt="">
      * 
      * @param timespan
      *            the period of time each buffer collects items before it is emitted and replaced with a new
@@ -3348,7 +3304,7 @@ public class Observable<T> {
      * Observable emits buffers that it creates when the specified {@code bufferOpenings} Observable emits an
      * item, and closes when the Observable returned from {@code bufferClosingSelector} emits an item.
      * <p>
-     * <img width="640" height="470" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/buffer2.png">
+     * <img width="640" height="470" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/buffer2.png" alt="">
      * <p>
      * This version of {@code buffer} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -3369,7 +3325,7 @@ public class Observable<T> {
      * Returns an Observable that emits non-overlapping buffered items from the source Observable each time the
      * specified boundary Observable emits an item.
      * <p>
-     * <img width="640" height="395" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/buffer8.png">
+     * <img width="640" height="395" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/buffer8.png" alt="">
      * <p>
      * Completion of either the source or the boundary Observable causes the returned Observable to emit the
      * latest buffer and complete.
@@ -3393,7 +3349,7 @@ public class Observable<T> {
      * Returns an Observable that emits non-overlapping buffered items from the source Observable each time the
      * specified boundary Observable emits an item.
      * <p>
-     * <img width="640" height="395" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/buffer8.png">
+     * <img width="640" height="395" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/buffer8.png" alt="">
      * <p>
      * Completion of either the source or the boundary Observable causes the returned Observable to emit the
      * latest buffer and complete.
@@ -3421,7 +3377,7 @@ public class Observable<T> {
      * Observable rather than returning a {@link ConnectableObservable} for which you must call
      * {@code connect} to activate the subscription.
      * <p>
-     * <img width="640" height="410" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/cache.png">
+     * <img width="640" height="410" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/cache.png" alt="">
      * <p>
      * This is useful when you want an Observable to cache responses and you can't control the
      * subscribe/unsubscribe behavior of all the {@link Subscriber}s.
@@ -3452,7 +3408,7 @@ public class Observable<T> {
      * Returns an Observable that emits the items emitted by the source Observable, converted to the specified
      * type.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/cast.png">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/cast.png" alt="">
      * <p>
      * {@code cast} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -3472,7 +3428,7 @@ public class Observable<T> {
      * Collects items emitted by the source Observable into a single mutable data structure and returns an
      * Observable that emits this structure.
      * <p>
-     * <img width="640" height="330" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/collect.png">
+     * <img width="640" height="330" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/collect.png" alt="">
      * <p>
      * This is a simplified version of {@code reduce} that does not need to return the state on each pass.
      * <p>
@@ -3504,7 +3460,7 @@ public class Observable<T> {
      * emitted by the source Observable, where that function returns an Observable, and then emitting the items
      * that result from concatinating those resulting Observables.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/concatMap.png">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/concatMap.png" alt="">
      * <p>
      * {@code concatMap} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -3522,7 +3478,7 @@ public class Observable<T> {
      * Returns an Observable that emits the items emitted from the current Observable, then the next, one after
      * the other, without interleaving them.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/concat.png">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/concat.png" alt="">
      * <p>
      * {@code concat} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -3542,7 +3498,7 @@ public class Observable<T> {
      * Returns an Observable that emits a Boolean that indicates whether the source Observable emitted a
      * specified item.
      * <p>
-     * <img width="640" height="320" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/contains.png">
+     * <img width="640" height="320" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/contains.png" alt="">
      * <p>
      * {@code contains} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -3564,7 +3520,7 @@ public class Observable<T> {
     /**
      * Returns an Observable that emits the count of the total number of items emitted by the source Observable.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/count.png">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/count.png" alt="">
      * <p>
      * {@code count} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -3586,7 +3542,7 @@ public class Observable<T> {
      * Returns an Observable that mirrors the source Observable, except that it drops items emitted by the
      * source Observable that are followed by another item within a computed debounce duration.
      * <p>
-     * <img width="640" height="425" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/debounce.f.png">
+     * <img width="640" height="425" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/debounce.f.png" alt="">
      * <p>
      * This version of {@code debounce} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -3609,7 +3565,7 @@ public class Observable<T> {
      * <em>Note:</em> If items keep being emitted by the source Observable faster than the timeout then no items
      * will be emitted by the resulting Observable.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/debounce.png">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/debounce.png" alt="">
      * <p>
      * Information on debounce vs throttle:
      * <p>
@@ -3643,7 +3599,7 @@ public class Observable<T> {
      * <em>Note:</em> If items keep being emitted by the source Observable faster than the timeout then no items
      * will be emitted by the resulting Observable.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/debounce.s.png">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/debounce.s.png" alt="">
      * <p>
      * Information on debounce vs throttle:
      * <p>
@@ -3674,7 +3630,7 @@ public class Observable<T> {
      * Returns an Observable that emits the items emitted by the source Observable or a specified default item
      * if the source Observable is empty.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/defaultIfEmpty.png">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/defaultIfEmpty.png" alt="">
      * <p>
      * {@code defaultIfEmpty} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -3693,7 +3649,7 @@ public class Observable<T> {
      * Returns an Observable that delays the subscription to and emissions from the souce Observable via another
      * Observable on a per-item basis.
      * <p>
-     * <img width="640" height="450" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/delay.oo.png">
+     * <img width="640" height="450" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/delay.oo.png" alt="">
      * <p>
      * <em>Note:</em> the resulting Observable will immediately propagate any {@code onError} notification
      * from the source Observable.
@@ -3724,7 +3680,7 @@ public class Observable<T> {
      * Returns an Observable that delays the emissions of the source Observable via another Observable on a
      * per-item basis.
      * <p>
-     * <img width="640" height="450" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/delay.o.png">
+     * <img width="640" height="450" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/delay.o.png" alt="">
      * <p>
      * <em>Note:</em> the resulting Observable will immediately propagate any {@code onError} notification
      * from the source Observable.
@@ -3748,7 +3704,7 @@ public class Observable<T> {
      * Returns an Observable that emits the items emitted by the source Observable shifted forward in time by a
      * specified delay. Error notifications from the source Observable are not delayed.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/delay.png">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/delay.png" alt="">
      * <p>
      * This version of {@code delay} operates by default on the {@code compuation} {@link Scheduler}.
      * 
@@ -3768,7 +3724,7 @@ public class Observable<T> {
      * Returns an Observable that emits the items emitted by the source Observable shifted forward in time by a
      * specified delay. Error notifications from the source Observable are not delayed.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/delay.s.png">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/delay.s.png" alt="">
      * 
      * @param delay
      *            the delay to shift the source by
@@ -3787,7 +3743,7 @@ public class Observable<T> {
     /**
      * Returns an Observable that delays the subscription to the source Observable by a given amount of time.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/delaySubscription.png">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/delaySubscription.png" alt="">
      * <p>
      * This version of {@code delay} operates by default on the {@code compuation} {@link Scheduler}.
      * 
@@ -3805,7 +3761,7 @@ public class Observable<T> {
      * Returns an Observable that delays the subscription to the source Observable by a given amount of time,
      * both waiting and subscribing on a given Scheduler.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/delaySubscription.s.png">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/delaySubscription.s.png" alt="">
      * 
      * @param delay
      *            the time to delay the subscription
@@ -3825,7 +3781,7 @@ public class Observable<T> {
      * {@link Notification} objects emitted by the source Observable into the items or notifications they
      * represent.
      * <p>
-     * <img width="640" height="335" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/dematerialize.png">
+     * <img width="640" height="335" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/dematerialize.png" alt="">
      * <p>
      * {@code dematerialize} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -3844,7 +3800,7 @@ public class Observable<T> {
     /**
      * Returns an Observable that emits all items emitted by the source Observable that are distinct.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/distinct.png">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/distinct.png" alt="">
      * <p>
      * {@code distinct} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -3861,7 +3817,7 @@ public class Observable<T> {
      * Returns an Observable that emits all items emitted by the source Observable that are distinct according
      * to a key selector function.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/distinct.key.png">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/distinct.key.png" alt="">
      * <p>
      * {@code distinct} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -3880,7 +3836,7 @@ public class Observable<T> {
      * Returns an Observable that emits all items emitted by the source Observable that are distinct from their
      * immediate predecessors.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/distinctUntilChanged.png">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/distinctUntilChanged.png" alt="">
      * <p>
      * {@code distinctUntilChanged} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -3897,7 +3853,7 @@ public class Observable<T> {
      * Returns an Observable that emits all items emitted by the source Observable that are distinct from their
      * immediate predecessors, according to a key selector function.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/distinctUntilChanged.key.png">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/distinctUntilChanged.key.png" alt="">
      * <p>
      * {@code distinctUntilChanged} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -3916,7 +3872,7 @@ public class Observable<T> {
     /**
      * Modifies the source Observable so that it invokes an action when it calls {@code onCompleted}.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/doOnCompleted.png">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/doOnCompleted.png" alt="">
      * <p>
      * {@code doOnCompleted} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -3949,7 +3905,7 @@ public class Observable<T> {
     /**
      * Modifies the source Observable so that it invokes an action for each item it emits.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/doOnEach.png">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/doOnEach.png" alt="">
      * <p>
      * {@code doOnEach} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -3984,7 +3940,7 @@ public class Observable<T> {
     /**
      * Modifies the source Observable so that it notifies an Observer for each item it emits.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/doOnEach.png">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/doOnEach.png" alt="">
      * <p>
      * {@code doOnEach} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -4001,7 +3957,7 @@ public class Observable<T> {
     /**
      * Modifies the source Observable so that it invokes an action if it calls {@code onError}.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/doOnError.png">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/doOnError.png" alt="">
      * <p>
      * {@code doOnError} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -4034,7 +3990,7 @@ public class Observable<T> {
     /**
      * Modifies the source Observable so that it invokes an action when it calls {@code onNext}.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/doOnNext.png">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/doOnNext.png" alt="">
      * <p>
      * {@code doOnNext} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -4068,7 +4024,7 @@ public class Observable<T> {
      * Modifies the source Observable so that it invokes an action when it calls {@code onCompleted} or
      * {@code onError}.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/doOnTerminate.png">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/doOnTerminate.png" alt="">
      * <p>
      * This differs from {@code finallyDo} in that this happens <em>before</em> the {@code onCompleted} or
      * {@code onError} notification.
@@ -4107,7 +4063,7 @@ public class Observable<T> {
      * Returns an Observable that emits the single item at a specified index in a sequence of emissions from a
      * source Observbable.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/elementAt.png">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/elementAt.png" alt="">
      * <p>
      * {@code elementAt} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -4129,7 +4085,7 @@ public class Observable<T> {
      * Returns an Observable that emits the item found at a specified index in a sequence of emissions from a
      * source Observable, or a default item if that index is out of range.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/elementAtOrDefault.png">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/elementAtOrDefault.png" alt="">
      * <p>
      * {@code elementAtOrDefault} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -4152,7 +4108,7 @@ public class Observable<T> {
      * specified condition, otherwise {@code false}. <em>Note:</em> this always emits {@code false} if the
      * source Observable is empty.
      * <p>
-     * <img width="640" height="320" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/exists.png">
+     * <img width="640" height="320" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/exists.png" alt="">
      * <p>
      * In Rx.Net this is the {@code any} Observer but we renamed it in RxJava to better match Java naming
      * idioms.
@@ -4173,7 +4129,7 @@ public class Observable<T> {
     /**
      * Filters items emitted by an Observable by only emitting those that satisfy a specified predicate.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/filter.png">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/filter.png" alt="">
      * <p>
      * {@code filter} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -4192,7 +4148,7 @@ public class Observable<T> {
      * Registers an {@link Action0} to be called when this Observable invokes either
      * {@link Observer#onCompleted onCompleted} or {@link Observer#onError onError}.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/finallyDo.png">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/finallyDo.png" alt="">
      * <p>
      * {@code finallyDo} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -4211,7 +4167,7 @@ public class Observable<T> {
      * Returns an Observable that emits only the very first item emitted by the source Observable, or notifies
      * of an {@code NoSuchElementException} if the source Observable is empty.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/first.png">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/first.png" alt="">
      * <p>
      * {@code first} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -4228,7 +4184,7 @@ public class Observable<T> {
      * Returns an Observable that emits only the very first item emitted by the source Observable that satisfies
      * a specified condition, or notifies of an {@code NoSuchElementException} if no such items are emitted.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/firstN.png">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/firstN.png" alt="">
      * <p>
      * {@code first} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -4247,7 +4203,7 @@ public class Observable<T> {
      * Returns an Observable that emits only the very first item emitted by the source Observable, or a default
      * item if the source Observable completes without emitting anything.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/firstOrDefault.png">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/firstOrDefault.png" alt="">
      * <p>
      * {@code firstOrDefault} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -4266,7 +4222,7 @@ public class Observable<T> {
      * Returns an Observable that emits only the very first item emitted by the source Observable that satisfies
      * a specified condition, or a default item if the source Observable emits no such items.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/firstOrDefaultN.png">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/firstOrDefaultN.png" alt="">
      * <p>
      * {@code firstOrDefault} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -4289,7 +4245,7 @@ public class Observable<T> {
      * by the source Observable, where that function returns an Observable, and then merging those resulting
      * Observables and emitting the results of this merger.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/flatMap.png">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/flatMap.png" alt="">
      * <p>
      * {@code flatMap} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -4375,7 +4331,7 @@ public class Observable<T> {
      * Groups the items emitted by an {@code Observable} according to a specified criterion, and emits these
      * grouped items as {@link GroupedObservable}s, one {@code GroupedObservable} per group.
      * <p>
-     * <img width="640" height="360" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/groupBy.png">
+     * <img width="640" height="360" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/groupBy.png" alt="">
      * <p>
      * <em>Note:</em> A {@link GroupedObservable} will cache the items it is to emit until such time as it
      * is subscribed to. For this reason, in order to avoid memory leaks, you should not simply ignore those
@@ -4401,7 +4357,7 @@ public class Observable<T> {
      * Groups the items emitted by an {@code Observable} according to a specified key selector function until
      * the duration {@code Observable} expires for the key.
      * <p>
-     * <img width="640" height="375" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/groupByUntil.png">
+     * <img width="640" height="375" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/groupByUntil.png" alt="">
      * <p>
      * <em>Note:</em> A {@link GroupedObservable} will cache the items it is to emit until such time as it
      * is subscribed to. For this reason, in order to avoid memory leaks, you should not simply ignore those
@@ -4428,7 +4384,7 @@ public class Observable<T> {
      * Groups the items emitted by an {@code Observable} (transformed by a selector) according to a specified
      * key selector function until the duration Observable expires for the key.
      * <p>
-     * <img width="640" height="375" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/groupByUntil.png">
+     * <img width="640" height="375" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/groupByUntil.png" alt="">
      * <p>
      * <em>Note:</em> A {@link GroupedObservable} will cache the items it is to emit until such time as it
      * is subscribed to. For this reason, in order to avoid memory leaks, you should not simply ignore those
@@ -4457,7 +4413,7 @@ public class Observable<T> {
     /**
      * Returns an Observable that correlates two Observables when they overlap in time and groups the results.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/groupJoin.png">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/groupJoin.png" alt="">
      * <p>
      * {@code groupJoin} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -4486,7 +4442,7 @@ public class Observable<T> {
     /**
      * Ignores all items emitted by the source Observable and only calls {@code onCompleted} or {@code onError}.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/ignoreElements.png">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/ignoreElements.png" alt="">
      * <p>
      * {@code ignoreElements} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -4505,7 +4461,7 @@ public class Observable<T> {
      * In Rx.Net this is negated as the {@code any} Observer but we renamed this in RxJava to better match Java
      * naming idioms.
      * <p>
-     * <img width="640" height="320" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/isEmpty.png">
+     * <img width="640" height="320" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/isEmpty.png" alt="">
      * <p>
      * {@code isEmpty} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -4520,7 +4476,7 @@ public class Observable<T> {
     /**
      * Correlates the items emitted by two Observables based on overlapping durations.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/join_.png">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/join_.png" alt="">
      * <p>
      * {@code join} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -4550,7 +4506,7 @@ public class Observable<T> {
      * Returns an Observable that emits the last item emitted by the source Observable or notifies observers of
      * a {@code NoSuchElementException} if the source Observable is empty.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/last.png">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/last.png" alt="">
      * <p>
      * {@code last} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -4567,7 +4523,7 @@ public class Observable<T> {
      * Returns an Observable that emits only the last item emitted by the source Observable that satisfies a
      * given condition, or notifies of a {@code NoSuchElementException} if no such items are emitted.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/last.p.png">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/last.p.png" alt="">
      * <p>
      * {@code last} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -4588,7 +4544,7 @@ public class Observable<T> {
      * Returns an Observable that emits only the last item emitted by the source Observable, or a default item
      * if the source Observable completes without emitting any items.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/lastOrDefault.png">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/lastOrDefault.png" alt="">
      * <p>
      * {@code lastOrDefault} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -4607,7 +4563,7 @@ public class Observable<T> {
      * Returns an Observable that emits only the last item emitted by the source Observable that satisfies a
      * specified condition, or a default item if no such item is emitted by the source Observable.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/lastOrDefault.p.png">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/lastOrDefault.p.png" alt="">
      * <p>
      * {@code lastOrDefault} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -4630,7 +4586,7 @@ public class Observable<T> {
      * <p>
      * Alias of {@link #take(int)} to match Java 8 Stream API naming convention.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/take.png">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/take.png" alt="">
      * <p>
      * This method returns an Observable that will invoke a subscribing {@link Observer}'s
      * {@link Observer#onNext onNext} function a maximum of {@code num} times before invoking
@@ -4653,7 +4609,7 @@ public class Observable<T> {
      * Returns an Observable that counts the total number of items emitted by the source Observable and emits
      * this count as a 64-bit Long.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/longCount.png">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/longCount.png" alt="">
      * <p>
      * {@code longCount} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -4676,7 +4632,7 @@ public class Observable<T> {
      * Returns an Observable that applies a specified function to each item emitted by the source Observable and
      * emits the results of these function applications.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/map.png">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/map.png" alt="">
      * <p>
      * {@code map} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -4695,7 +4651,7 @@ public class Observable<T> {
      * Returns an Observable that represents all of the emissions <em>and</em> notifications from the source
      * Observable into emissions marked with their original types within {@link Notification} objects.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/materialize.png">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/materialize.png" alt="">
      * <p>
      * {@code materialize} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -4713,7 +4669,7 @@ public class Observable<T> {
      * source Observable, where that function returns an Observable, and then merging those resulting
      * Observables and emitting the results of this merger.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeMap.png">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeMap.png" alt="">
      * <p>
      * {@code mergeMap} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -4734,7 +4690,7 @@ public class Observable<T> {
      * Returns an Observable that applies a function to each item emitted or notification raised by the source
      * Observable and then flattens the Observables returned from these functions and emits the resulting items.
      * <p>
-     * <img width="640" height="410" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeMap.nce.png">
+     * <img width="640" height="410" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeMap.nce.png" alt="">
      * <p>
      * {@code mergeMap} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -4762,7 +4718,7 @@ public class Observable<T> {
      * Returns an Observable that emits the results of a specified function to the pair of values emitted by the
      * source Observable and a specified collection Observable.
      * <p>
-     * <img width="640" height="390" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeMap.r.png">
+     * <img width="640" height="390" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeMap.r.png" alt="">
      * <p>
      * {@code mergeMap} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -4787,7 +4743,7 @@ public class Observable<T> {
      * Returns an Observable that merges each item emitted by the source Observable with the values in an
      * Iterable corresponding to that item that is generated by a selector.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeMapIterable.png">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeMapIterable.png" alt="">
      * <p>
      * {@code mergeMapIterable} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -4807,7 +4763,7 @@ public class Observable<T> {
      * Returns an Observable that emits the results of applying a function to the pair of values from the source
      * Observable and an Iterable corresponding to that item that is generated by a selector.
      * <p>
-     * <img width="640" height="390" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeMapIterable.r.png">
+     * <img width="640" height="390" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeMapIterable.r.png" alt="">
      * <p>
      * {@code mergeMapIterable} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -4832,7 +4788,7 @@ public class Observable<T> {
     /**
      * Flattens this and another Observable into a single Observable, without any transformation.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.png">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.png" alt="">
      * <p>
      * You can combine items emitted by multiple Observables so that they appear as a single Observable, by
      * using the {@code merge} method.
@@ -4902,7 +4858,7 @@ public class Observable<T> {
      * Modifies an Observable to perform its emissions and notifications on a specified {@link Scheduler},
      * asynchronously with an unbounded buffer.
      * <p>
-     * <img width="640" height="308" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/observeOn.png">
+     * <img width="640" height="308" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/observeOn.png" alt="">
      * 
      * @param scheduler
      *            the {@link Scheduler} to notify {@link Observer}s on
@@ -4919,7 +4875,7 @@ public class Observable<T> {
     /**
      * Filters the items emitted by an Observable, only emitting those of the specified type.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/ofClass.png">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/ofClass.png" alt="">
      * <p>
      * {@code ofType} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -4937,10 +4893,22 @@ public class Observable<T> {
         }).cast(klass);
     }
 
+    /**
+     * Instructs an Observable that is emitting items faster than its observer can consume them to buffer these
+     * items indefinitely until they can be emitted.
+     *
+     * @return
+     * @since 0.20
+     */
     public final Observable<T> onBackpressureBuffer() {
         return lift(new OperatorOnBackpressureBuffer<T>());
     }
-    
+
+    /**
+     * @warn javadoc missing
+     * @return
+     * @since 0.20
+     */
     public final Observable<T> onBackpressureDrop() {
         return lift(new OperatorOnBackpressureDrop<T>());
     }
@@ -4949,7 +4917,7 @@ public class Observable<T> {
      * Instructs an Observable to pass control to another Observable rather than invoking
      * {@link Observer#onError onError} if it encounters an error.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/onErrorResumeNext.png">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/onErrorResumeNext.png" alt="">
      * <p>
      * By default, when an Observable encounters an error that prevents it from emitting the expected item to
      * its {@link Observer}, the Observable invokes its Observer's {@code onError} method, and then quits
@@ -4980,7 +4948,7 @@ public class Observable<T> {
      * Instructs an Observable to pass control to another Observable rather than invoking
      * {@link Observer#onError onError} if it encounters an error.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/onErrorResumeNext.png">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/onErrorResumeNext.png" alt="">
      * <p>
      * By default, when an Observable encounters an error that prevents it from emitting the expected item to
      * its {@link Observer}, the Observable invokes its Observer's {@code onError} method, and then quits
@@ -5011,7 +4979,7 @@ public class Observable<T> {
      * Instructs an Observable to emit an item (returned by a specified function) rather than invoking
      * {@link Observer#onError onError} if it encounters an error.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/onErrorReturn.png">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/onErrorReturn.png" alt="">
      * <p>
      * By default, when an Observable encounters an error that prevents it from emitting the expected item to
      * its {@link Observer}, the Observable invokes its Observer's {@code onError} method, and then quits
@@ -5040,7 +5008,7 @@ public class Observable<T> {
      * {@code onNext} emissions of an Observable returned by a specified function. This allows the source
      * sequence to continue even if it issues multiple {@code onError} notifications.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/onErrorFlatMap.png">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/onErrorFlatMap.png" alt="">
      * <p>
      * {@code onErrorFlatMap} does not operate by default on a particular {@link Scheduler}.
      *
@@ -5063,7 +5031,7 @@ public class Observable<T> {
      * This differs from {@link #onErrorResumeNext} in that this one does not handle {@link java.lang.Throwable}
      * or {@link java.lang.Error} but lets those continue through.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/onExceptionResumeNextViaObservable.png">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/onExceptionResumeNextViaObservable.png" alt="">
      * <p>
      * By default, when an Observable encounters an exception that prevents it from emitting the expected item
      * to its {@link Observer}, the Observable invokes its Observer's {@code onError} method, and then quits
@@ -5094,7 +5062,7 @@ public class Observable<T> {
      * Performs work on the source Observable in parallel by sharding it on a {@link Schedulers#computation()}
      * {@link Scheduler}, and returns the resulting Observable.
      * <p>
-     * <img width="640" height="475" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/parallel.png">
+     * <img width="640" height="475" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/parallel.png" alt="">
      * <p>
      * {@code parallel} operates by default on the {@code computation} {@link Scheduler}.
      * 
@@ -5113,7 +5081,7 @@ public class Observable<T> {
      * Performs work on the source Observable<T> in parallel by sharding it on a {@link Scheduler}, and returns
      * the resulting Observable.
      * <p>
-     * <img width="640" height="475" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/parallel.png">
+     * <img width="640" height="475" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/parallel.png" alt="">
      * 
      * @param f
      *            a {@link Func1} that applies Observable Observers to {@code Observable<T>} in parallel and
@@ -5133,7 +5101,7 @@ public class Observable<T> {
      * {@link ConnectableObservable#connect connect} method is called before it begins emitting items to those
      * {@link Observer}s that have subscribed to it.
      * <p>
-     * <img width="640" height="510" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/publishConnect.png">
+     * <img width="640" height="510" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/publishConnect.png" alt="">
      * <p>
      * {@code publish} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -5149,7 +5117,7 @@ public class Observable<T> {
      * Returns an Observable that emits the results of invoking a specified selector on items emitted by a
      * {@link ConnectableObservable} that shares a single subscription to the underlying sequence.
      * <p>
-     * <img width="640" height="510" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/publishConnect.f.png">
+     * <img width="640" height="510" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/publishConnect.f.png" alt="">
      * <p>
      * {@code publish} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -5175,7 +5143,7 @@ public class Observable<T> {
      * selector on items emitted by a {@link ConnectableObservable} that shares a single subscription to the
      * source Observable.
      * <p>
-     * <img width="640" height="510" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/publishConnect.if.png">
+     * <img width="640" height="510" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/publishConnect.if.png" alt="">
      * <p>
      * {@code publish} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -5204,7 +5172,7 @@ public class Observable<T> {
      * the source Observable. A Connectable Observable resembles an ordinary Observable, except that it does not
      * begin emitting items when it is subscribed to, but only when its <code>connect()</code> method is called.
      * <p>
-     * <img width="640" height="510" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/publishConnect.i.png">
+     * <img width="640" height="510" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/publishConnect.i.png" alt="">
      * <p>
      * {@code publish} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -5222,7 +5190,7 @@ public class Observable<T> {
      * A Connectable Observable resembles an ordinary Observable, except that it does not begin emitting items
      * when it is subscribed to, but only when its <code>connect()</code> method is called. 
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/publishLast.png">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/publishLast.png" alt="">
      * <p>
      * {@code publishLast} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -5237,7 +5205,7 @@ public class Observable<T> {
      * Returns an Observable that emits an item that results from invoking a specified selector on the last item
      * emitted by a {@link ConnectableObservable} that shares a single subscription to the source Observable.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/publishLast.f.png">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/publishLast.f.png" alt="">
      * <p>
      * {@code publishLast} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -5264,7 +5232,7 @@ public class Observable<T> {
      * Observable into the same function, and so on until all items have been emitted by the source Observable,
      * and emits the final result from the final call to your function as its sole item.
      * <p>
-     * <img width="640" height="320" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/reduce.png">
+     * <img width="640" height="320" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/reduce.png" alt="">
      * <p>
      * This technique, which is called "reduce" here, is sometimes called "aggregate," "fold," "accumulate,"
      * "compress," or "inject" in other programming contexts. Groovy, for instance, has an {@code inject} method
@@ -5299,7 +5267,7 @@ public class Observable<T> {
      * emitted by an Observable into the same function, and so on until all items have been emitted by the
      * source Observable, emitting the final result from the final call to your function as its sole item.
      * <p>
-     * <img width="640" height="325" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/reduceSeed.png">
+     * <img width="640" height="325" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/reduceSeed.png" alt="">
      * <p>
      * This technique, which is called "reduce" here, is sometimec called "aggregate," "fold," "accumulate,"
      * "compress," or "inject" in other programming contexts. Groovy, for instance, has an {@code inject} method
@@ -5325,7 +5293,7 @@ public class Observable<T> {
     /**
      * Returns an Observable that repeats the sequence of items emitted by the source Observable indefinitely.
      * <p>
-     * <img width="640" height="309" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/repeat.o.png">
+     * <img width="640" height="309" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/repeat.o.png" alt="">
      * <p>
      * {@code repeat} operates by default on the {@code trampoline} {@link Scheduler}.
      * 
@@ -5341,7 +5309,7 @@ public class Observable<T> {
      * Returns an Observable that repeats the sequence of items emitted by the source Observable indefinitely,
      * on a particular Scheduler.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/repeat.os.png">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/repeat.os.png" alt="">
      * 
      * @param scheduler
      *            the Scheduler to emit the items on
@@ -5357,7 +5325,7 @@ public class Observable<T> {
      * Returns an Observable that repeats the sequence of items emitted by the source Observable at most
      * {@code count} times.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/repeat.on.png">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/repeat.on.png" alt="">
      * <p>
      * {@code repeat} operates by default on the {@code trampoline} {@link Scheduler}.
      * 
@@ -5383,7 +5351,7 @@ public class Observable<T> {
      * Returns an Observable that repeats the sequence of items emitted by the source Observable at most
      * {@code count} times, on a particular Scheduler.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/repeat.ons.png">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/repeat.ons.png" alt="">
      * 
      * @param count
      *            the number of times the source Observable items are repeated, a count of 0 will yield an empty
@@ -5406,7 +5374,7 @@ public class Observable<T> {
      * Observable resembles an ordinary Observable, except that it does not begin emitting items when it is
      * subscribed to, but only when its <code>connect()</code> method is called.
      * <p>
-     * <img width="640" height="515" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.png">
+     * <img width="640" height="515" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.png" alt="">
      * <p>
      * This version of {@code replay} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -5422,7 +5390,7 @@ public class Observable<T> {
      * Returns an Observable that emits items that are the results of invoking a specified selector on the items
      * emitted by a {@link ConnectableObservable} that shares a single subscription to the source Observable.
      * <p>
-     * <img width="640" height="450" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.f.png">
+     * <img width="640" height="450" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.f.png" alt="">
      * <p>
      * This version of {@code replay} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -5450,7 +5418,7 @@ public class Observable<T> {
      * emitted by a {@link ConnectableObservable} that shares a single subscription to the source Observable,
      * replaying {@code bufferSize} notifications.
      * <p>
-     * <img width="640" height="440" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.fn.png">
+     * <img width="640" height="440" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.fn.png" alt="">
      * <p>
      * This version of {@code replay} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -5481,7 +5449,7 @@ public class Observable<T> {
      * emitted by a {@link ConnectableObservable} that shares a single subscription to the source Observable,
      * replaying no more than {@code bufferSize} items that were emitted within a specified time window.
      * <p>
-     * <img width="640" height="445" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.fnt.png">
+     * <img width="640" height="445" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.fnt.png" alt="">
      * <p>
      * This version of {@code replay} operates by default on the {@code computation} {@link Scheduler}.
      * 
@@ -5512,7 +5480,7 @@ public class Observable<T> {
      * emitted by a {@link ConnectableObservable} that shares a single subscription to the source Observable,
      * replaying no more than {@code bufferSize} items that were emitted within a specified time window.
      * <p>
-     * <img width="640" height="445" height="440" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.fnts.png">
+     * <img width="640" height="445" height="440" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.fnts.png" alt="">
      * 
      * @param <R>
      *            the type of items emitted by the resulting Observable
@@ -5553,7 +5521,7 @@ public class Observable<T> {
      * emitted by a {@link ConnectableObservable} that shares a single subscription to the source Observable,
      * replaying a maximum of {@code bufferSize} items.
      * <p>
-     * <img width="640" height="440" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.fns.png">
+     * <img width="640" height="440" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.fns.png" alt="">
      * 
      * @param <R>
      *            the type of items emitted by the resulting Observable
@@ -5584,7 +5552,7 @@ public class Observable<T> {
      * emitted by a {@link ConnectableObservable} that shares a single subscription to the source Observable,
      * replaying all items that were emitted within a specified time window.
      * <p>
-     * <img width="640" height="435" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.ft.png">
+     * <img width="640" height="435" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.ft.png" alt="">
      * <p>
      * This version of {@code replay} does operates by default on the {@code computation} {@link Scheduler}.
      * 
@@ -5612,7 +5580,7 @@ public class Observable<T> {
      * emitted by a {@link ConnectableObservable} that shares a single subscription to the source Observable,
      * replaying all items that were emitted within a specified time window.
      * <p>
-     * <img width="640" height="440" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.fts.png">
+     * <img width="640" height="440" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.fts.png" alt="">
      * 
      * @param <R>
      *            the type of items emitted by the resulting Observable
@@ -5644,7 +5612,7 @@ public class Observable<T> {
      * Returns an Observable that emits items that are the results of invoking a specified selector on items
      * emitted by a {@link ConnectableObservable} that shares a single subscription to the source Observable.
      * <p>
-     * <img width="640" height="445" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.fs.png">
+     * <img width="640" height="445" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.fs.png" alt="">
      * 
      * @param <R>
      *            the type of items emitted by the resulting Observable
@@ -5674,7 +5642,7 @@ public class Observable<T> {
      * an ordinary Observable, except that it does not begin emitting items when it is subscribed to, but only
      * when its <code>connect()</code> method is called.
      * <p>
-     * <img width="640" height="515" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.n.png">
+     * <img width="640" height="515" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.n.png" alt="">
      * <p>
      * This version of {@code replay} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -5695,7 +5663,7 @@ public class Observable<T> {
      * Observable resembles an ordinary Observable, except that it does not begin emitting items when it is
      * subscribed to, but only when its <code>connect()</code> method is called. 
      * <p>
-     * <img width="640" height="515" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.nt.png">
+     * <img width="640" height="515" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.nt.png" alt="">
      * <p>
      * This version of {@code replay} operates by default on the {@code computation} {@link Scheduler}.
      * 
@@ -5721,7 +5689,7 @@ public class Observable<T> {
      * Connectable Observable resembles an ordinary Observable, except that it does not begin emitting items
      * when it is subscribed to, but only when its <code>connect()</code> method is called.
      * <p>
-     * <img width="640" height="515" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.nts.png">
+     * <img width="640" height="515" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.nts.png" alt="">
      * 
      * @param bufferSize
      *            the buffer size that limits the number of items that can be replayed
@@ -5752,7 +5720,7 @@ public class Observable<T> {
      * an ordinary Observable, except that it does not begin emitting items when it is subscribed to, but only
      * when its <code>connect()</code> method is called. 
      * <p>
-     * <img width="640" height="515" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.ns.png">
+     * <img width="640" height="515" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.ns.png" alt="">
      * 
      * @param bufferSize
      *            the buffer size that limits the number of items that can be replayed
@@ -5775,7 +5743,7 @@ public class Observable<T> {
      * resembles an ordinary Observable, except that it does not begin emitting items when it is subscribed to,
      * but only when its <code>connect()</code> method is called. 
      * <p>
-     * <img width="640" height="515" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.t.png">
+     * <img width="640" height="515" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.t.png" alt="">
      * <p>
      * This version of {@code replay} operates by default on the {@code computation} {@link Scheduler}.
      * 
@@ -5798,7 +5766,7 @@ public class Observable<T> {
      * resembles an ordinary Observable, except that it does not begin emitting items when it is subscribed to,
      * but only when its <code>connect()</code> method is called. 
      * <p>
-     * <img width="640" height="515" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.ts.png">
+     * <img width="640" height="515" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.ts.png" alt="">
      * 
      * @param time
      *            the duration of the window in which the replayed items must have been emitted
@@ -5821,7 +5789,7 @@ public class Observable<T> {
      * {@link Scheduler}. A Connectable Observable resembles an ordinary Observable, except that it does not
      * begin emitting items when it is subscribed to, but only when its <code>connect()</code> method is called.
      * <p>
-     * <img width="640" height="515" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.s.png">
+     * <img width="640" height="515" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.s.png" alt="">
      * 
      * @param scheduler
      *            the Scheduler on which the Observers will observe the emitted items
@@ -5839,7 +5807,7 @@ public class Observable<T> {
      * Returns an Observable that mirrors the source Observable, resubscribing to it if it calls {@code onError}
      * (infinite retry count).
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/retry.png">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/retry.png" alt="">
      * <p>
      * If the source Observable calls {@link Observer#onError}, this method will resubscribe to the source
      * Observable rather than propagating the {@code onError} call.
@@ -5862,7 +5830,7 @@ public class Observable<T> {
      * Returns an Observable that mirrors the source Observable, resubscribing to it if it calls {@code onError}
      * up to a specified number of retries.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/retry.png">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/retry.png" alt="">
      * <p>
      * If the source Observable calls {@link Observer#onError}, this method will resubscribe to the source
      * Observable for a maximum of {@code retryCount} resubscriptions rather than propagating the
@@ -5886,7 +5854,7 @@ public class Observable<T> {
      * Returns an Observable that mirrors the source Observable, resubscribing to it if it calls {@code onError}
      * and the predicate returns true for that specific exception and retry count.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/retry.png">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/retry.png" alt="">
      * <p>
      * {@code retry} operates by default on the {@code trampoline} {@link Scheduler}.
      *
@@ -5905,7 +5873,7 @@ public class Observable<T> {
      * Returns an Observable that emits the most recently emitted item (if any) emitted by the source Observable
      * within periodic time intervals.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/sample.png">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/sample.png" alt="">
      * <p>
      * {@code sample} operates by default on the {@code computation} {@link Scheduler}.
      * 
@@ -5925,7 +5893,7 @@ public class Observable<T> {
      * Returns an Observable that emits the most recently emitted item (if any) emitted by the source Observable
      * within periodic time intervals, where the intervals are defined on a particular Scheduler.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/sample.s.png">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/sample.s.png" alt="">
      * 
      * @param period
      *            the sampling rate
@@ -5946,7 +5914,7 @@ public class Observable<T> {
      * emits the most recently emitted item (if any) emitted by the source Observable since the previous
      * emission from the {@code sampler} Observable.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/sample.o.png">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/sample.o.png" alt="">
      * <p>
      * This version of {@code sample} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -5966,7 +5934,7 @@ public class Observable<T> {
      * Observable into the same function, and so on until all items have been emitted by the source Observable,
      * emitting the result of each of these iterations.
      * <p>
-     * <img width="640" height="320" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/scan.png">
+     * <img width="640" height="320" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/scan.png" alt="">
      * <p>
      * This sort of function is sometimes called an accumulator.
      * <p>
@@ -5990,7 +5958,7 @@ public class Observable<T> {
      * the source Observable into the same function, and so on until all items have been emitted by the source
      * Observable, emitting the result of each of these iterations.
      * <p>
-     * <img width="640" height="320" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/scanSeed.png">
+     * <img width="640" height="320" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/scanSeed.png" alt="">
      * <p>
      * This sort of function is sometimes called an accumulator.
      * <p>
@@ -6024,7 +5992,7 @@ public class Observable<T> {
      * {@code onNext} from two different threads concurrently. You can force such an Observable to be
      * well-behaved and sequential by applying the {@code serialize} method to it.
      * <p>
-     * <img width="640" height="400" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/synchronize.png">
+     * <img width="640" height="400" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/synchronize.png" alt="">
      * <p>
      * {@code serialize} does not operate by default on a particular {@link Scheduler}.
      *
@@ -6039,16 +6007,16 @@ public class Observable<T> {
 
     /**
      * Returns a new {@link Observable} that multicasts (shares) the original {@link Observable}. As long as
-     * there is more than 1 {@link Subscriber} this {@link Observable} will be subscribed and emitting data. 
+     * there is more than one {@link Subscriber} this {@link Observable} will be subscribed and emitting data. 
      * When all subscribers have unsubscribed it will unsubscribe from the source {@link Observable}. 
      * <p>
      * This is an alias for {@link #publish()}.{@link ConnectableObservable#refCount()}.
      * <p>
-     * <img width="640" height="510" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/publishRefCount.png">
+     * <img width="640" height="510" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/publishRefCount.png" alt="">
      * <p>
      * {@code share} does not operate by default on a particular {@link Scheduler}.
      * 
-     * @return a {@link Observable} that upon connection causes the source Observable to emit items
+     * @return an {@code Observable} that upon connection causes the source {@code Observable} to emit items
      *         to its {@link Observer}s
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Connectable-Observable-Operators#connectableobservablerefcount">RxJava Wiki: refCount()</a>
      * @since 0.19
@@ -6062,7 +6030,7 @@ public class Observable<T> {
      * emits only a single item. If the source Observable emits more than one item or no items, notify of an
      * {@code IllegalArgumentException} or {@code NoSuchElementException} respectively.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/single.png">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/single.png" alt="">
      * <p>
      * {@code single} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -6084,7 +6052,7 @@ public class Observable<T> {
      * such item or no such items, notify of an {@code IllegalArgumentException} or
      * {@code NoSuchElementException} respectively.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/single.p.png">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/single.p.png" alt="">
      * <p>
      * {@code single} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -6108,7 +6076,7 @@ public class Observable<T> {
      * emits only a single item, or a default item if the source Observable emits no items. If the source
      * Observable emits more than one item, throw an {@code IllegalArgumentException}.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/singleOrDefault.png">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/singleOrDefault.png" alt="">
      * <p>
      * {@code singleOrDefault} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -6131,7 +6099,7 @@ public class Observable<T> {
      * no such items. If the source Observable emits more than one such item, throw an
      * {@code IllegalArgumentException}.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/singleOrDefault.p.png">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/singleOrDefault.p.png" alt="">
      * <p>
      * {@code singleOrDefault} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -6154,7 +6122,7 @@ public class Observable<T> {
      * Returns an Observable that skips the first {@code num} items emitted by the source Observable and emits
      * the remainder.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/skip.png">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/skip.png" alt="">
      * <p>
      * This version of {@code skip} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -6172,7 +6140,7 @@ public class Observable<T> {
      * Returns an Observable that skips values emitted by the source Observable before a specified time window
      * elapses.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/skip.t.png">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/skip.t.png" alt="">
      * <p>
      * This version of {@code skip} operates by default on the {@code computation} {@link Scheduler}.
      * 
@@ -6192,7 +6160,7 @@ public class Observable<T> {
      * Returns an Observable that skips values emitted by the source Observable before a specified time window
      * on a specified {@link Scheduler} elapses.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/skip.ts.png">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/skip.ts.png" alt="">
      * 
      * @param time
      *            the length of the time window to skip
@@ -6212,7 +6180,7 @@ public class Observable<T> {
      * Returns an Observable that drops a specified number of items from the end of the sequence emitted by the
      * source Observable.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/skipLast.png">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/skipLast.png" alt="">
      * <p>
      * This Observer accumulates a queue long enough to store the first {@code count} items. As more items are
      * received, items are taken from the front of the queue and emitted by the returned Observable. This causes
@@ -6237,7 +6205,7 @@ public class Observable<T> {
      * Returns an Observable that drops items emitted by the source Observable during a specified time window
      * before the source completes.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/skipLast.t.png">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/skipLast.t.png" alt="">
      * <p>
      * Note: this action will cache the latest items arriving in the specified time window.
      * <p>
@@ -6260,7 +6228,7 @@ public class Observable<T> {
      * Returns an Observable that drops items emitted by the source Observable during a specified time window
      * (defined on a specified scheduler) before the source completes.
      * <p>
-     * <img width="640" height="340" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/skipLast.ts.png">
+     * <img width="640" height="340" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/skipLast.ts.png" alt="">
      * <p>
      * Note: this action will cache the latest items arriving in the specified time window.
      *
@@ -6283,7 +6251,7 @@ public class Observable<T> {
      * Returns an Observable that skips items emitted by the source Observable until a second Observable emits
      * an item.
      * <p>
-     * <img width="640" height="375" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/skipUntil.png">
+     * <img width="640" height="375" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/skipUntil.png" alt="">
      * <p>
      * {@code skipUntil} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -6303,7 +6271,7 @@ public class Observable<T> {
      * Returns an Observable that skips all items emitted by the source Observable as long as a specified
      * condition holds true, but emits all further source items as soon as the condition becomes false.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/skipWhile.png">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/skipWhile.png" alt="">
      * <p>
      * {@code skipWhile} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -6322,7 +6290,7 @@ public class Observable<T> {
      * Returns an Observable that skips all items emitted by the source Observable as long as a specified
      * condition holds true, but emits all further source items as soon as the condition becomes false.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/skipWhileWithIndex.png">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/skipWhileWithIndex.png" alt="">
      * <p>
      * {@code skipWhileWithIndex} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -6342,7 +6310,7 @@ public class Observable<T> {
      * Returns an Observable that emits the items in a specified {@link Observable} before it begins to emit
      * items emitted by the source Observable.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.o.png">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.o.png" alt="">
      * <p>
      * {@code startWith} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -6360,7 +6328,7 @@ public class Observable<T> {
      * Returns an Observable that emits the items in a specified {@link Iterable} before it begins to emit items
      * emitted by the source Observable.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.png">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.png" alt="">
      * <p>
      * {@code startWith} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -6378,7 +6346,7 @@ public class Observable<T> {
      * Returns an Observable that emits the items in a specified {@link Iterable}, on a specified
      * {@link Scheduler}, before it begins to emit items emitted by the source Observable.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.s.png">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.s.png" alt="">
      * 
      * @param values
      *            an Iterable that contains the items you want the modified Observable to emit first
@@ -6397,7 +6365,7 @@ public class Observable<T> {
      * Returns an Observable that emits a specified item before it begins to emit items emitted by the source
      * Observable.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.png">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.png" alt="">
      * <p>
      * {@code startWith} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -6415,7 +6383,7 @@ public class Observable<T> {
      * Returns an Observable that emits the specified items before it begins to emit items emitted by the source
      * Observable.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.png">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.png" alt="">
      * <p>
      * {@code startWith} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -6435,7 +6403,7 @@ public class Observable<T> {
      * Returns an Observable that emits the specified items before it begins to emit items emitted by the source
      * Observable.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.png">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.png" alt="">
      * <p>
      * {@code startWith} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -6457,7 +6425,7 @@ public class Observable<T> {
      * Returns an Observable that emits the specified items before it begins to emit items emitted by the source
      * Observable.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.png">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.png" alt="">
      * <p>
      * {@code startWith} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -6481,7 +6449,7 @@ public class Observable<T> {
      * Returns an Observable that emits the specified items before it begins to emit items emitted by the source
      * Observable.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.png">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.png" alt="">
      * <p>
      * {@code startWith} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -6507,7 +6475,7 @@ public class Observable<T> {
      * Returns an Observable that emits the specified items before it begins to emit items emitted by the source
      * Observable.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.png">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.png" alt="">
      * <p>
      * {@code startWith} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -6535,7 +6503,7 @@ public class Observable<T> {
      * Returns an Observable that emits the specified items before it begins to emit items emitted by the source
      * Observable.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.png">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.png" alt="">
      * <p>
      * {@code startWith} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -6565,7 +6533,7 @@ public class Observable<T> {
      * Returns an Observable that emits the specified items before it begins to emit items emitted by the source
      * Observable.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.png">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.png" alt="">
      * <p>
      * {@code startWith} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -6597,7 +6565,7 @@ public class Observable<T> {
      * Returns an Observable that emits the specified items before it begins to emit items emitted by the source
      * Observable.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.png">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.png" alt="">
      * <p>
      * {@code startWith} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -6631,7 +6599,7 @@ public class Observable<T> {
      * Returns an Observable that emits the items from a specified array, on a specified Scheduler, before it
      * begins to emit items emitted by the source Observable.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.s.png">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.s.png" alt="">
      * 
      * @param values
      *            the items you want the modified Observable to emit first
@@ -6983,7 +6951,7 @@ public class Observable<T> {
     /**
      * Asynchronously subscribes Observers to this Observable on the specified {@link Scheduler}.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/subscribeOn.png">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/subscribeOn.png" alt="">
      * 
      * @param scheduler
      *            the {@link Scheduler} to perform subscription actions on
@@ -7002,7 +6970,7 @@ public class Observable<T> {
      * Observable that returns an Observable, and then emitting the items emitted by the most recently emitted
      * of these Observables.
      * <p>
-     * <img width="640" height="350" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/switchMap.png">
+     * <img width="640" height="350" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/switchMap.png" alt="">
      * <p>
      * {@code switchMap} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -7018,7 +6986,7 @@ public class Observable<T> {
     /**
      * Returns an Observable that emits only the first {@code num} items emitted by the source Observable.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/take.png">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/take.png" alt="">
      * <p>
      * This method returns an Observable that will invoke a subscribing {@link Observer}'s
      * {@link Observer#onNext onNext} function a maximum of {@code num} times before invoking
@@ -7040,7 +7008,7 @@ public class Observable<T> {
      * Returns an Observable that emits those items emitted by source Observable before a specified time runs
      * out.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/take.t.png">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/take.t.png" alt="">
      * <p>
      * This version of {@code take} operates by default on the {@code computation} {@link Scheduler}.
      * 
@@ -7059,7 +7027,7 @@ public class Observable<T> {
      * Returns an Observable that emits those items emitted by source Observable before a specified time (on a
      * specified Scheduler) runs out.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/take.ts.png">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/take.ts.png" alt="">
      * 
      * @param time
      *            the length of the time window
@@ -7079,7 +7047,7 @@ public class Observable<T> {
      * Returns an Observable that emits only the very first item emitted by the source Observable that satisfies
      * a specified condition.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/takeFirstN.png">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/takeFirstN.png" alt="">
      * <p>
      * {@code takeFirst} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -7098,7 +7066,7 @@ public class Observable<T> {
     /**
      * Returns an Observable that emits only the last {@code count} items emitted by the source Observable.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/takeLast.n.png">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/takeLast.n.png" alt="">
      * <p>
      * This version of {@code takeLast} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -7118,7 +7086,7 @@ public class Observable<T> {
      * Returns an Observable that emits at most a specified number of items from the source Observable that were
      * emitted in a specified window of time before the Observable completed.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/takeLast.tn.png">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/takeLast.tn.png" alt="">
      * <p>
      * This version of {@code takeLast} operates by default on the {@code computation} {@link Scheduler}.
      * 
@@ -7140,7 +7108,7 @@ public class Observable<T> {
      * emitted in a specified window of time before the Observable completed, where the timing information is
      * provided by a given Scheduler.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/takeLast.tns.png">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/takeLast.tns.png" alt="">
      * 
      * @param count
      *            the maximum number of items to emit
@@ -7164,7 +7132,7 @@ public class Observable<T> {
      * Returns an Observable that emits the items from the source Observable that were emitted in a specified
      * window of time before the Observable completed.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/takeLast.t.png">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/takeLast.t.png" alt="">
      * <p>
      * This version of {@code takeLast} operates by default on the {@code computation} {@link Scheduler}.
      * 
@@ -7184,7 +7152,7 @@ public class Observable<T> {
      * window of time before the Observable completed, where the timing information is provided by a specified
      * Scheduler.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/takeLast.ts.png">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/takeLast.ts.png" alt="">
      * 
      * @param time
      *            the length of the time window
@@ -7204,7 +7172,7 @@ public class Observable<T> {
      * Returns an Observable that emits a single List containing the last {@code count} elements emitted by the
      * source Observable.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/takeLastBuffer.png">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/takeLastBuffer.png" alt="">
      * 
      * @param count
      *            the number of items to emit in the list
@@ -7219,7 +7187,7 @@ public class Observable<T> {
      * Returns an Observable that emits a single List containing at most {@code count} items from the source
      * Observable that were emitted during a specified window of time before the source Observable completed.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/takeLastBuffer.tn.png">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/takeLastBuffer.tn.png" alt="">
      * <p>
      * This version of {@code takeLastBuffer} operates by default on the {@code computation} {@link Scheduler}.
      * 
@@ -7242,7 +7210,7 @@ public class Observable<T> {
      * Observable that were emitted during a specified window of time (on a specified Scheduler) before the
      * source Observable completed.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/takeLastBuffer.tns.png">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/takeLastBuffer.tns.png" alt="">
      * 
      * @param count
      *            the maximum number of items to emit
@@ -7264,7 +7232,7 @@ public class Observable<T> {
      * Returns an Observable that emits a single List containing those items from the source Observable that
      * were emitted during a specified window of time before the source Observable completed.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/takeLastBuffer.t.png">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/takeLastBuffer.t.png" alt="">
      * <p>
      * This version of {@code takeLastBuffer} operates by default on the {@code computation} {@link Scheduler}.
      * 
@@ -7284,7 +7252,7 @@ public class Observable<T> {
      * were emitted during a specified window of time before the source Observable completed, where the timing
      * information is provided by the given Scheduler.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/takeLastBuffer.ts.png">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/takeLastBuffer.ts.png" alt="">
      * 
      * @param time
      *            the length of the time window
@@ -7304,7 +7272,7 @@ public class Observable<T> {
      * Returns an Observable that emits the items emitted by the source Observable until a second Observable
      * emits an item.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/takeUntil.png">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/takeUntil.png" alt="">
      * <p>
      * {@code takeUntil} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -7324,7 +7292,7 @@ public class Observable<T> {
      * Returns an Observable that emits items emitted by the source Observable so long as each item satisfied a
      * specified condition, and then completes as soon as this condition is not satisfied.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/takeWhile.png">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/takeWhile.png" alt="">
      * <p>
      * {@code takeWhile} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -7343,7 +7311,7 @@ public class Observable<T> {
      * remains true, where the predicate operates on both the item and its index relative to the complete
      * sequence of emitted items.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/takeWhileWithIndex.png">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/takeWhileWithIndex.png" alt="">
      * <p>
      * {@code takeWhile} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -7366,7 +7334,7 @@ public class Observable<T> {
      * This differs from {@link #throttleLast} in that this only tracks passage of time whereas
      * {@link #throttleLast} ticks at scheduled intervals.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/throttleFirst.png">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/throttleFirst.png" alt="">
      * <p>
      * {@code throttleFirst} operates by default on the {@code computation} {@link Scheduler}.
      * 
@@ -7388,7 +7356,7 @@ public class Observable<T> {
      * This differs from {@link #throttleLast} in that this only tracks passage of time whereas
      * {@link #throttleLast} ticks at scheduled intervals.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/throttleFirst.s.png">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/throttleFirst.s.png" alt="">
      * 
      * @param skipDuration
      *            time to wait before emitting another item after emitting the last item
@@ -7411,7 +7379,7 @@ public class Observable<T> {
      * This differs from {@link #throttleFirst} in that this ticks along at a scheduled interval whereas
      * {@link #throttleFirst} does not tick, it just tracks passage of time.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/throttleLast.png">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/throttleLast.png" alt="">
      * <p>
      * {@code throttleLast} operates by default on the {@code computation} {@link Scheduler}.
      * 
@@ -7435,7 +7403,7 @@ public class Observable<T> {
      * This differs from {@link #throttleFirst} in that this ticks along at a scheduled interval whereas
      * {@link #throttleFirst} does not tick, it just tracks passage of time.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/throttleLast.s.png">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/throttleLast.s.png" alt="">
      * 
      * @param intervalDuration
      *            duration of windows within which the last item emitted by the source Observable will be
@@ -7460,7 +7428,7 @@ public class Observable<T> {
      * <em>Note:</em> If the source Observable keeps emitting items more frequently than the length of the time
      * window then no items will be emitted by the resulting Observable.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/throttleWithTimeout.png">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/throttleWithTimeout.png" alt="">
      * <p>
      * Information on debounce vs throttle:
      * <p>
@@ -7494,7 +7462,7 @@ public class Observable<T> {
      * <em>Note:</em> If the source Observable keeps emitting items more frequently than the length of the time
      * window then no items will be emitted by the resulting Observable.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/throttleWithTimeout.s.png">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/throttleWithTimeout.s.png" alt="">
      * <p>
      * Information on debounce vs throttle:
      * <p>
@@ -7525,7 +7493,7 @@ public class Observable<T> {
      * Returns an Observable that emits records of the time interval between consecutive items emitted by the
      * source Observable.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timeInterval.png">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timeInterval.png" alt="">
      * <p>
      * {@code timeInterval} operates by default on the {@code immediate} {@link Scheduler}.
      * 
@@ -7541,7 +7509,7 @@ public class Observable<T> {
      * Returns an Observable that emits records of the time interval between consecutive items emitted by the
      * source Observable, where this interval is computed on a specified Scheduler.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timeInterval.s.png">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timeInterval.s.png" alt="">
      * 
      * @param scheduler
      *            the {@link Scheduler} used to compute time intervals
@@ -7554,11 +7522,11 @@ public class Observable<T> {
     }
 
     /**
-     * Returns an Observable that mirrors the source Observable, but notifies observers of a TimeoutException if
-     * either the first item emitted by the source Observable or any subsequent item don't arrive within time
-     * windows defined by other Observables.
+     * Returns an Observable that mirrors the source Observable, but notifies observers of a
+     * {@code TimeoutException} if either the first item emitted by the source Observable or any subsequent item
+     * doesn't arrive within time windows defined by other Observables.
      * <p>
-     * <img width="640" height="400" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timeout5.png">
+     * <img width="640" height="400" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timeout5.png" alt="">
      * <p>
      * This version of {@code timeout} operates by default on the {@code immediate} {@link Scheduler}.
      * 
@@ -7573,9 +7541,9 @@ public class Observable<T> {
      *            a function that returns an Observable for each item emitted by the source Observable and that
      *            determines the timeout window in which the subsequent source item must arrive in order to
      *            continue the sequence
-     * @return an Observable that mirrors the source Observable, but notifies observers of a TimeoutException if
-     *         either the first item or any subsequent item doesn't arrive within the time windows specified by
-     *         the timeout selectors
+     * @return an Observable that mirrors the source Observable, but notifies observers of a
+     *         {@code TimeoutException} if either the first item or any subsequent item doesn't arrive within
+     *         the time windows specified by the timeout selectors
      */
     public final <U, V> Observable<T> timeout(Func0<? extends Observable<U>> firstTimeoutSelector, Func1<? super T, ? extends Observable<V>> timeoutSelector) {
         return timeout(firstTimeoutSelector, timeoutSelector, null);
@@ -7583,10 +7551,10 @@ public class Observable<T> {
 
     /**
      * Returns an Observable that mirrors the source Observable, but switches to a fallback Observable if either
-     * the first item emitted by the source Observable or any subsequent item don't arrive within time windows
+     * the first item emitted by the source Observable or any subsequent item doesn't arrive within time windows
      * defined by other Observables.
      * <p>
-     * <img width="640" height="400" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timeout6.png">
+     * <img width="640" height="400" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timeout6.png" alt="">
      * <p>
      * This version of {@code timeout} operates by default on the {@code immediate} {@link Scheduler}.
      * 
@@ -7604,8 +7572,8 @@ public class Observable<T> {
      * @param other
      *            the fallback Observable to switch to if the source Observable times out
      * @return an Observable that mirrors the source Observable, but switches to the {@code other} Observable if
-     *         either the first item emitted by the source Observable or any subsequent item don't arrive within
-     *         time windows defined by the timeout selectors
+     *         either the first item emitted by the source Observable or any subsequent item doesn't arrive
+     *         within time windows defined by the timeout selectors
      * @throws NullPointerException
      *             if {@code timeoutSelector} is null
      */
@@ -7617,12 +7585,12 @@ public class Observable<T> {
     }
 
     /**
-     * Returns an Observable that mirrors the source Observable, but notifies observers of a TimeoutException if
-     * an item emitted by the source Observable doesn't arrive within a window of time after the emission of the
-     * previous item, where that period of time is measured by an Observable that is a function of the previous
-     * item.
+     * Returns an Observable that mirrors the source Observable, but notifies observers of a
+     * {@code TimeoutException} if an item emitted by the source Observable doesn't arrive within a window of
+     * time after the emission of the previous item, where that period of time is measured by an Observable that
+     * is a function of the previous item.
      * <p>
-     * <img width="640" height="400" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timeout3.png">
+     * <img width="640" height="400" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timeout3.png" alt="">
      * <p>
      * Note: The arrival of the first source item is never timed out.
      * <p>
@@ -7633,9 +7601,9 @@ public class Observable<T> {
      * @param timeoutSelector
      *            a function that returns an observable for each item emitted by the source
      *            Observable and that determines the timeout window for the subsequent item
-     * @return an Observable that mirrors the source Observable, but notifies observers of a TimeoutException if
-     *         an item emitted by the source Observable takes longer to arrive than the time window defined by
-     *         the selector for the previously emitted item
+     * @return an Observable that mirrors the source Observable, but notifies observers of a
+     *         {@code TimeoutException} if an item emitted by the source Observable takes longer to arrive than
+     *         the time window defined by the selector for the previously emitted item
      */
     public final <V> Observable<T> timeout(Func1<? super T, ? extends Observable<V>> timeoutSelector) {
         return timeout(null, timeoutSelector, null);
@@ -7647,7 +7615,7 @@ public class Observable<T> {
      * previous item, where that period of time is measured by an Observable that is a function of the previous
      * item.
      * <p>
-     * <img width="640" height="400" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timeout4.png">
+     * <img width="640" height="400" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timeout4.png" alt="">
      * <p>
      * Note: The arrival of the first source item is never timed out.
      * <p>
@@ -7673,7 +7641,7 @@ public class Observable<T> {
      * item. If the next item isn't emitted within the specified timeout duration starting from its predecessor,
      * the resulting Observable terminates and notifies observers of a {@code TimeoutException}.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timeout.1.png">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timeout.1.png" alt="">
      * <p>
      * This version of {@code timeout} operates by default on the {@code computation} {@link Scheduler}.
      * 
@@ -7695,7 +7663,7 @@ public class Observable<T> {
      * item. If the next item isn't emitted within the specified timeout duration starting from its predecessor,
      * the resulting Observable begins instead to mirror a fallback Observable.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timeout.2.png">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timeout.2.png" alt="">
      * <p>
      * This version of {@code timeout} operates by default on the {@code computation} {@link Scheduler}.
      * 
@@ -7718,7 +7686,7 @@ public class Observable<T> {
      * item using a specified Scheduler. If the next item isn't emitted within the specified timeout duration
      * starting from its predecessor, the resulting Observable begins instead to mirror a fallback Observable.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timeout.2s.png">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timeout.2s.png" alt="">
      * 
      * @param timeout
      *            maximum duration between items before a timeout occurs
@@ -7743,7 +7711,7 @@ public class Observable<T> {
      * specified timeout duration starting from its predecessor, the resulting Observable terminates and
      * notifies observers of a {@code TimeoutException}.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timeout.1s.png">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timeout.1s.png" alt="">
      * 
      * @param timeout
      *            maximum duration between items before a timeout occurs
@@ -7764,7 +7732,7 @@ public class Observable<T> {
      * Returns an Observable that emits each item emitted by the source Observable, wrapped in a
      * {@link Timestamped} object.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timestamp.png">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timestamp.png" alt="">
      * <p>
      * {@code timestamp} operates by default on the {@code immediate} {@link Scheduler}.
      * 
@@ -7780,7 +7748,7 @@ public class Observable<T> {
      * Returns an Observable that emits each item emitted by the source Observable, wrapped in a
      * {@link Timestamped} object whose timestamps are provided by a specified Scheduler.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timestamp.s.png">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timestamp.s.png" alt="">
      * 
      * @param scheduler
      *            the {@link Scheduler} to use as a time source
@@ -7822,7 +7790,7 @@ public class Observable<T> {
      * Returns an Observable that emits a single item, a list composed of all the items emitted by the source
      * Observable.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toList.png">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toList.png" alt="">
      * <p>
      * Normally, an Observable that returns multiple items will do so by invoking its {@link Observer}'s
      * {@link Observer#onNext onNext} method for each such item. You can change this behavior, instructing the
@@ -7847,7 +7815,7 @@ public class Observable<T> {
      * Returns an Observable that emits a single HashMap containing all items emitted by the source Observable,
      * mapped by the keys returned by a specified {@code keySelector} function.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toMap.png">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toMap.png" alt="">
      * <p>
      * If more than one source item maps to the same key, the HashMap will contain the latest of those items.
      * <p>
@@ -7868,7 +7836,7 @@ public class Observable<T> {
      * Returns an Observable that emits a single HashMap containing values corresponding to items emitted by the
      * source Observable, mapped by the keys returned by a specified {@code keySelector} function.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toMap.png">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toMap.png" alt="">
      * <p>
      * If more than one source item maps to the same key, the HashMap will contain a single entry that
      * corresponds to the latest of those items.
@@ -7892,7 +7860,7 @@ public class Observable<T> {
      * Returns an Observable that emits a single Map, returned by a specified {@code mapFactory} function, that
      * contains keys and values extracted from the items emitted by the source Observable.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toMap.png">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toMap.png" alt="">
      * <p>
      * {@code toMap} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -7914,7 +7882,7 @@ public class Observable<T> {
      * Returns an Observable that emits a single HashMap that contains an ArrayList of items emitted by the
      * source Observable keyed by a specified {@code keySelector} function.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toMultiMap.png">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toMultiMap.png" alt="">
      * <p>
      * {@code toMultiMap} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -7934,7 +7902,7 @@ public class Observable<T> {
      * specified {@code valueSelector} function from items emitted by the source Observable, keyed by a
      * specified {@code keySelector} function.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toMultiMap.png">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toMultiMap.png" alt="">
      * <p>
      * {@code toMultiMap} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -7956,7 +7924,7 @@ public class Observable<T> {
      * contains an ArrayList of values, extracted by a specified {@code valueSelector} function from items
      * emitted by the source Observable and keyed by the {@code keySelector} function.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toMultiMap.png">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toMultiMap.png" alt="">
      * <p>
      * {@code toMultiMap} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -7979,7 +7947,7 @@ public class Observable<T> {
      * contains a custom collection of values, extracted by a specified {@code valueSelector} function from
      * items emitted by the source Observable, and keyed by the {@code keySelector} function.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toMultiMap.png">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toMultiMap.png" alt="">
      * <p>
      * {@code toMultiMap} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -8004,7 +7972,7 @@ public class Observable<T> {
      * sorted order. Each item emitted by the Observable must implement {@link Comparable} with respect to all
      * other items in the sequence.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toSortedList.png">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toSortedList.png" alt="">
      * <p>
      * {@code toSortedList} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -8023,7 +7991,7 @@ public class Observable<T> {
      * Returns an Observable that emits a list that contains the items emitted by the source Observable, in a
      * sorted order based on a specified comparison function.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toSortedList.f.png">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toSortedList.f.png" alt="">
      * <p>
      * {@code toSortedList} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -8057,7 +8025,7 @@ public class Observable<T> {
      * Observable emits connected, non-overlapping windows. It emits the current window and opens a new one
      * whenever the Observable produced by the specified {@code closingSelector} emits an item.
      * <p>
-     * <img width="640" height="485" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/window1.png">
+     * <img width="640" height="485" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/window1.png" alt="">
      * <p>
      * This version of {@code window} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -8079,7 +8047,7 @@ public class Observable<T> {
      * Observable completes or encounters an error, the resulting Observable emits the current window and
      * propagates the notification from the source Observable.
      * <p>
-     * <img width="640" height="400" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/window3.png">
+     * <img width="640" height="400" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/window3.png" alt="">
      * <p>
      * This version of {@code window} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -8099,7 +8067,7 @@ public class Observable<T> {
      * the source Observable completes or encounters an error, the resulting Observable emits the current window
      * and propagates the notification from the source Observable.
      * <p>
-     * <img width="640" height="365" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/window4.png">
+     * <img width="640" height="365" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/window4.png" alt="">
      * <p>
      * This version of {@code window} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -8123,7 +8091,7 @@ public class Observable<T> {
      * Observable completes or Observable completes or encounters an error, the resulting Observable emits the
      * current window and propagates the notification from the source Observable.
      * <p>
-     * <img width="640" height="335" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/window7.png">
+     * <img width="640" height="335" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/window7.png" alt="">
      * <p>
      * This version of {@code window} operates by default on the {@code computation} {@link Scheduler}.
      * 
@@ -8147,7 +8115,7 @@ public class Observable<T> {
      * Observable completes or Observable completes or encounters an error, the resulting Observable emits the
      * current window and propagates the notification from the source Observable.
      * <p>
-     * <img width="640" height="335" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/window7.s.png">
+     * <img width="640" height="335" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/window7.s.png" alt="">
      * 
      * @param timespan
      *            the period of time each window collects items before it should be emitted
@@ -8170,7 +8138,7 @@ public class Observable<T> {
      * {@code timespan} argument. When the source Observable completes or encounters an error, the resulting
      * Observable emits the current window and propagates the notification from the source Observable.
      * <p>
-     * <img width="640" height="375" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/window5.png">
+     * <img width="640" height="375" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/window5.png" alt="">
      * <p>
      * This version of {@code window} operates by default on the {@code computation} {@link Scheduler}.
      * 
@@ -8194,7 +8162,7 @@ public class Observable<T> {
      * reached first). When the source Observable completes or encounters an error, the resulting Observable
      * emits the current window and propagates the notification from the source Observable.
      * <p>
-     * <img width="640" height="370" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/window6.png">
+     * <img width="640" height="370" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/window6.png" alt="">
      * <p>
      * This version of {@code window} operates by default on the {@code computation} {@link Scheduler}.
      * 
@@ -8221,7 +8189,7 @@ public class Observable<T> {
      * first). When the source Observable completes or encounters an error, the resulting Observable emits the
      * current window and propagates the notification from the source Observable.
      * <p>
-     * <img width="640" height="370" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/window6.s.png">
+     * <img width="640" height="370" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/window6.s.png" alt="">
      * 
      * @param timespan
      *            the period of time each window collects items before it should be emitted and replaced with a
@@ -8247,7 +8215,7 @@ public class Observable<T> {
      * {@code timespan} argument. When the source Observable completes or encounters an error, the resulting
      * Observable emits the current window and propagates the notification from the source Observable.
      * <p>
-     * <img width="640" height="375" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/window5.s.png">
+     * <img width="640" height="375" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/window5.s.png" alt="">
      * 
      * @param timespan
      *            the period of time each window collects items before it should be emitted and replaced with a
@@ -8270,7 +8238,7 @@ public class Observable<T> {
      * the {@code windowOpenings} Observable emits an item and when the Observable returned by
      * {@code closingSelector} emits an item.
      * <p>
-     * <img width="640" height="550" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/window2.png">
+     * <img width="640" height="550" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/window2.png" alt="">
      * <p>
      * This version of {@code window} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -8292,7 +8260,7 @@ public class Observable<T> {
      * where the boundary of each window is determined by the items emitted from a specified boundary-governing
      * Observable.
      * <p>
-     * <img width="640" height="475" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/window8.png">
+     * <img width="640" height="475" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/window8.png" alt="">
      * <p>
      * This version of {@code window} does not operate by default on a particular {@link Scheduler}.
      * 
@@ -8312,7 +8280,7 @@ public class Observable<T> {
      * Returns an Observable that emits items that are the result of applying a specified function to pairs of
      * values, one each from the source Observable and a specified Iterable sequence.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/zip.i.png">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/zip.i.png" alt="">
      * <p>
      * Note that the {@code other} Iterable is evaluated as items are observed from the source Observable; it is
      * not pre-consumed. This allows you to zip infinite streams on either side.
@@ -8339,7 +8307,7 @@ public class Observable<T> {
      * Returns an Observable that emits items that are the result of applying a specified function to pairs of
      * values, one each from the source Observable and another specified Observable.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/zip.png">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/zip.png" alt="">
      * <p>
      * {@code zip} does not operate by default on a particular {@link Scheduler}.
      * 

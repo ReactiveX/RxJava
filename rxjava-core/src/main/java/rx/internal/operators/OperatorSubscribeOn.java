@@ -24,9 +24,9 @@ import rx.Subscriber;
 import rx.functions.Action0;
 
 /**
- * Subscribes Observers on the specified Scheduler.
+ * Subscribes Observers on the specified {@code Scheduler}.
  * <p>
- * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/subscribeOn.png">
+ * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/subscribeOn.png" alt="">
  */
 public class OperatorSubscribeOn<T> implements Operator<T, Observable<T>> {
 
@@ -77,11 +77,11 @@ public class OperatorSubscribeOn<T> implements Operator<T, Observable<T>> {
                             }
 
                             @Override
-                            protected Producer onSetProducer(final Producer producer) {
-                                return new Producer() {
+                            public void setProducer(final Producer producer) {
+                                subscriber.setProducer(new Producer() {
 
                                     @Override
-                                    public void request(final int n) {
+                                    public void request(final long n) {
                                         if (Thread.currentThread() == t) {
                                             // don't schedule if we're already on the thread (primarily for first setProducer call)
                                             // see unit test 'testSetProducerSynchronousRequest' for more context on this
@@ -97,7 +97,7 @@ public class OperatorSubscribeOn<T> implements Operator<T, Observable<T>> {
                                         }
                                     }
 
-                                };
+                                });
                             }
 
                         });

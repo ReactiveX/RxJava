@@ -25,6 +25,10 @@ import rx.internal.util.unsafe.SpmcArrayQueue;
 import rx.internal.util.unsafe.SpscArrayQueue;
 import rx.internal.util.unsafe.UnsafeAccess;
 
+/**
+ * This assumes Spsc or Spmc usage. This means only a single producer calling the on* methods. This is the Rx contract of an Observer.
+ * Concurrent invocations of on* methods will not be thread-safe.
+ */
 public class RxRingBuffer implements Subscription {
 
     public static RxRingBuffer getSpscInstance() {
@@ -70,6 +74,29 @@ public class RxRingBuffer implements Subscription {
      * Benchmark                                        Mode   Samples        Score  Score error    Units
      * r.i.RxRingBufferPerf.ringBufferAddRemove1       thrpt         5 23951121.098  1982380.330    ops/s
      * r.i.RxRingBufferPerf.ringBufferAddRemove1000    thrpt         5     1142.351       33.592    ops/s
+     * 
+     * With SynchronizedQueue (synchronized LinkedList)
+     * 
+     * r.i.RxRingBufferPerf.createUseAndDestroy1       thrpt         5 33231667.136   685757.510    ops/s
+     * r.i.RxRingBufferPerf.createUseAndDestroy1000    thrpt         5    74623.614     5493.766    ops/s
+     * r.i.RxRingBufferPerf.ringBufferAddRemove1       thrpt         5 22907359.257   707026.632    ops/s
+     * r.i.RxRingBufferPerf.ringBufferAddRemove1000    thrpt         5    22222.410      320.829    ops/s
+     * 
+     * With ArrayBlockingQueue
+     * 
+     * Benchmark                                            Mode   Samples        Score  Score error    Units
+     * r.i.RxRingBufferPerf.createUseAndDestroy1       thrpt         5  2389804.664    68990.804    ops/s
+     * r.i.RxRingBufferPerf.createUseAndDestroy1000    thrpt         5    27384.274     1411.789    ops/s
+     * r.i.RxRingBufferPerf.ringBufferAddRemove1       thrpt         5 26497037.559    91176.247    ops/s
+     * r.i.RxRingBufferPerf.ringBufferAddRemove1000    thrpt         5    17985.144      237.771    ops/s
+     * 
+     * With ArrayBlockingQueue and Object Pool
+     * 
+     * Benchmark                                            Mode   Samples        Score  Score error    Units
+     * r.i.RxRingBufferPerf.createUseAndDestroy1       thrpt         5 12465685.522   399070.770    ops/s
+     * r.i.RxRingBufferPerf.createUseAndDestroy1000    thrpt         5    27701.294      395.217    ops/s
+     * r.i.RxRingBufferPerf.ringBufferAddRemove1       thrpt         5 26399625.086   695639.436    ops/s
+     * r.i.RxRingBufferPerf.ringBufferAddRemove1000    thrpt         5    17985.427      253.190    ops/s
      * 
      * With SpscArrayQueue (single consumer, so failing 1 unit test)
      *  - requires access to Unsafe
@@ -130,7 +157,15 @@ public class RxRingBuffer implements Subscription {
     private final int size;
     private final ObjectPool<Queue<Object>> pool;
 
-    private volatile Object terminalState;
+    /**
+     * We store the terminal state separately so it doesn't count against the size.
+     * We don't just +1 the size since some of the queues require sizes that are a power of 2.
+     * This is a subjective thing ... wanting to keep the size (ie 1024) the actual number of onNext
+     * that can be sent rather than something like 1023 onNext + 1 terminal event. It also simplifies
+     * checking that we have received only 1 terminal event, as we don't need to peek at the last item
+     * or retain a boolean flag.
+     */
+    public volatile Object terminalState;
 
     public static final int SIZE = 1024;
 
@@ -225,6 +260,13 @@ public class RxRingBuffer implements Subscription {
         }
         return queue.size();
     }
+    
+    public boolean isEmpty() {
+        if (queue == null) {
+            return true;
+        }
+        return queue.isEmpty();
+    }
 
     public Object poll() {
         if (queue == null) {
@@ -233,10 +275,35 @@ public class RxRingBuffer implements Subscription {
         }
         Object o;
         o = queue.poll();
-        if (o == null && terminalState != null) {
+        /*
+         * benjchristensen July 10 2014 => The check for 'queue.isEmpty()' came from a very rare concurrency bug where poll()
+         * is invoked, then an "onNext + onCompleted/onError" arrives before hitting the if check below. In that case,
+         * "o == null" and there is a terminal state, but now "queue.isEmpty()" and we should NOT return the terminalState.
+         * 
+         * The queue.size() check is a double-check that works to handle this, without needing to synchronize poll with on*
+         * or needing to enqueue terminalState.
+         * 
+         * This did make me consider eliminating the 'terminalState' ref and enqueuing it ... but then that requires
+         * a +1 of the size, or -1 of how many onNext can be sent. See comment on 'terminalState' above for why it
+         * is currently the way it is.
+         */
+        if (o == null && terminalState != null && queue.isEmpty()) {
             o = terminalState;
             // once emitted we clear so a poll loop will finish
             terminalState = null;
+        }
+        return o;
+    }
+    
+    public Object peek() {
+        if (queue == null) {
+            // we are unsubscribed and have released the undelrying queue
+            return null;
+        }
+        Object o;
+        o = queue.peek();
+        if (o == null && terminalState != null && queue.isEmpty()) {
+            o = terminalState;
         }
         return o;
     }
@@ -247,6 +314,10 @@ public class RxRingBuffer implements Subscription {
 
     public boolean isError(Object o) {
         return on.isError(o);
+    }
+
+    public Object getValue(Object o) {
+        return on.getValue(o);
     }
 
     public boolean accept(Object o, Observer child) {

@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Test;
 
@@ -207,13 +208,13 @@ public class OperatorSubscribeOnTest {
             }
 
         });
-        ts.request(10);
+        ts.requestMore(10);
         Observable.range(1, 10000000).subscribeOn(Schedulers.newThread()).take(20).subscribe(ts);
         latch.await();
         Thread t = ts.getLastSeenThread();
         System.out.println("First schedule: " + t);
         assertTrue(t.getName().startsWith("Rx"));
-        ts.request(10);
+        ts.requestMore(10);
         ts.awaitTerminalEvent();
         System.out.println("After reschedule: " + ts.getLastSeenThread());
         assertEquals(t, ts.getLastSeenThread());
@@ -226,11 +227,11 @@ public class OperatorSubscribeOnTest {
 
             @Override
             public Subscriber<? super Integer> call(final Subscriber<? super Integer> child) {
-                final AtomicInteger requested = new AtomicInteger();
+                final AtomicLong requested = new AtomicLong();
                 child.setProducer(new Producer() {
 
                     @Override
-                    public void request(int n) {
+                    public void request(long n) {
                         if (!requested.compareAndSet(0, n)) {
                             child.onError(new RuntimeException("Expected to receive request before onNext but didn't"));
                         }

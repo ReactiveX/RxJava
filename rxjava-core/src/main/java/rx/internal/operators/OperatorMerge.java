@@ -15,6 +15,8 @@
  */
 package rx.internal.operators;
 
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 import java.util.concurrent.atomic.AtomicLongFieldUpdater;
 
@@ -22,7 +24,9 @@ import rx.Observable;
 import rx.Observable.Operator;
 import rx.Producer;
 import rx.Subscriber;
+import rx.exceptions.CompositeException;
 import rx.exceptions.MissingBackpressureException;
+import rx.exceptions.OnErrorThrowable;
 import rx.functions.Func1;
 import rx.internal.util.RxRingBuffer;
 import rx.internal.util.ScalarSynchronousObservable;
@@ -31,18 +35,28 @@ import rx.internal.util.SubscriptionIndexedRingBuffer;
 /**
  * Flattens a list of {@link Observable}s into one {@code Observable}, without any transformation.
  * <p>
- * <img width="640" height="380" src="https://raw.githubusercontent.com/wiki/Netflix/RxJava/images/rx-operators/merge.png">
+ * <img width="640" height="380" src="https://raw.githubusercontent.com/wiki/Netflix/RxJava/images/rx-operators/merge.png" alt="">
  * <p>
  * You can combine the items emitted by multiple {@code Observable}s so that they act like a single {@code Observable}, by using the merge operation.
  * 
  * @param <T>
  *            the type of the items emitted by both the source and merged {@code Observable}s
  */
-public final class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
+public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
+
+    public OperatorMerge() {
+        this.delayErrors = false;
+    }
+
+    public OperatorMerge(boolean delayErrors) {
+        this.delayErrors = delayErrors;
+    }
+
+    private final boolean delayErrors;
 
     @Override
     public Subscriber<Observable<? extends T>> call(final Subscriber<? super T> child) {
-        return new MergeSubscriber<T>(child);
+        return new MergeSubscriber<T>(child, delayErrors);
 
     }
 
@@ -52,8 +66,10 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
         private final MergeProducer<T> mergeProducer;
         private int wip;
         private boolean completed;
+        private final boolean delayErrors;
+        private ConcurrentLinkedQueue<Throwable> exceptions;
 
-        private SubscriptionIndexedRingBuffer<InnerSubscriber<T>> childrenSubscribers;
+        private volatile SubscriptionIndexedRingBuffer<InnerSubscriber<T>> childrenSubscribers;
 
         private RxRingBuffer scalarValueQueue = null;
 
@@ -76,10 +92,11 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
          * } </pre>
          */
 
-        public MergeSubscriber(Subscriber<? super T> actual) {
+        public MergeSubscriber(Subscriber<? super T> actual, boolean delayErrors) {
             super(actual);
             this.actual = actual;
             this.mergeProducer = new MergeProducer<T>(this);
+            this.delayErrors = delayErrors;
             // decoupled the subscription chain because we need to decouple and control backpressure
             actual.add(this);
             actual.setProducer(mergeProducer);
@@ -91,7 +108,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
             // we decouple the Producer chain while keeping the Subscription chain together (perf benefit) via super(actual)
             request(RxRingBuffer.SIZE);
         }
-        
+
         /*
          * This is expected to be executed sequentially as per the Rx contract or it will not work.
          */
@@ -244,11 +261,12 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
                         emitted = drainScalarValueQueue();
                         drainChildrenQueues();
                     } finally {
-                        if (!releaseEmitLock()) {
-                            return true;
-                        }
+                        boolean moreToDrain = releaseEmitLock();
                         // request outside of lock
                         request(emitted);
+                        if (!moreToDrain) {
+                            return true;
+                        }
                         // otherwise we'll loop and get whatever was added 
                     }
                 } else {
@@ -309,12 +327,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
                 if (s.q != null) {
                     long r = mergeProducer.requested;
                     int emitted = 0;
-                    if (r < 0) {
-                        emitted += drainAll(s);
-                    } else if (r > 0) {
-                        emitted += drainRequested(s, r);
-                    }
-
+                    emitted += s.drainQueue();
                     if (emitted > 0) {
                         /*
                          * `s.emitted` is not volatile (because of performance impact of making it so shown by JMH tests)
@@ -326,7 +339,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
                         // TODO we may want to store this in s.emitted and only request if above batch
                         // reset this since we have requested them all
                         s.emitted = 0;
-                        s.request(emitted);
+                        s.requestMore(emitted);
                     }
                     if (emitted == r) {
                         // we emitted as many as were requested so stop the forEach loop
@@ -336,52 +349,30 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
                 return Boolean.TRUE;
             }
 
-            private int drainRequested(InnerSubscriber<T> s, long r) {
-                int emitted = 0;
-                // drain what was requested
-                long toEmit = r;
-                Object o;
-                for (int i = 0; i < toEmit; i++) {
-                    o = s.q.poll();
-                    if (o == null) {
-                        // no more items
-                        break;
-                    } else if (s.q.isCompleted(o)) {
-                        completeInner(s);
-                    } else {
-                        if (!s.q.accept(o, actual)) {
-                            emitted++;
-                        }
-                    }
-                }
-
-                // decrement the number we emitted from outstanding requests
-                mergeProducer.REQUESTED.getAndAdd(mergeProducer, -emitted);
-                return emitted;
-            }
-
-            private int drainAll(InnerSubscriber<T> s) {
-                int emitted = 0;
-                // drain it all
-                Object o;
-                while ((o = s.q.poll()) != null) {
-                    if (s.q.isCompleted(o)) {
-                        completeInner(s);
-                    } else {
-                        if (!s.q.accept(o, actual)) {
-                            emitted++;
-                        }
-                    }
-                }
-                return emitted;
-            }
-
         };
 
         @Override
         public void onError(Throwable e) {
-            actual.onError(e);
-            unsubscribe();
+            if (delayErrors) {
+                synchronized (this) {
+                    if (exceptions == null) {
+                        exceptions = new ConcurrentLinkedQueue<Throwable>();
+                    }
+                }
+                exceptions.add(e);
+                boolean sendOnComplete = false;
+                synchronized (this) {
+                    wip--;
+                    if (wip == 0 && completed) {
+                        sendOnComplete = true;
+                    }
+                }
+                if (sendOnComplete) {
+                    drainAndComplete();
+                }
+            } else {
+                actual.onError(e);
+            }
         }
 
         @Override
@@ -395,24 +386,44 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
             }
             if (c) {
                 // complete outside of lock
-                actual.onCompleted();
+                drainAndComplete();
             }
         }
 
         void completeInner(InnerSubscriber<T> s) {
-            try {
-                boolean sendOnComplete = false;
-                synchronized (this) {
-                    wip--;
-                    if (wip == 0 && completed) {
-                        sendOnComplete = true;
-                    }
+            boolean sendOnComplete = false;
+            synchronized (this) {
+                wip--;
+                if (wip == 0 && completed) {
+                    sendOnComplete = true;
                 }
-                if (sendOnComplete) {
+            }
+            childrenSubscribers.remove(s.sindex);
+            if (sendOnComplete) {
+                drainAndComplete();
+            }
+        }
+
+        private void drainAndComplete() {
+            drainQueuesIfNeeded(); // TODO need to confirm whether this is needed or not
+            if (delayErrors) {
+                Queue<Throwable> es = null;
+                synchronized (this) {
+                    es = exceptions;
+                }
+                if (es != null) {
+                    if (es.isEmpty()) {
+                        actual.onCompleted();
+                    } else if (es.size() == 1) {
+                        actual.onError(es.poll());
+                    } else {
+                        actual.onError(new CompositeException(es));
+                    }
+                } else {
                     actual.onCompleted();
                 }
-            } finally {
-                childrenSubscribers.remove(s.sindex);
+            } else {
+                actual.onCompleted();
             }
         }
 
@@ -431,9 +442,9 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
         static final AtomicLongFieldUpdater<MergeProducer> REQUESTED = AtomicLongFieldUpdater.newUpdater(MergeProducer.class, "requested");
 
         @Override
-        public void request(int n) {
-            if (n < 0) {
-                requested = -1;
+        public void request(long n) {
+            if (n == Long.MAX_VALUE) {
+                requested = Long.MAX_VALUE;
             } else {
                 REQUESTED.getAndAdd(this, n);
                 ms.drainQueuesIfNeeded();
@@ -447,11 +458,11 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
         final MergeSubscriber<T> parentSubscriber;
         final MergeProducer<T> producer;
         /** Make sure the inner termination events are delivered only once. */
-        volatile int once;
+        volatile int terminated;
         @SuppressWarnings("rawtypes")
-        static final AtomicIntegerFieldUpdater<InnerSubscriber> ONCE_UPDATER = AtomicIntegerFieldUpdater.newUpdater(InnerSubscriber.class, "once");
+        static final AtomicIntegerFieldUpdater<InnerSubscriber> ONCE_TERMINATED = AtomicIntegerFieldUpdater.newUpdater(InnerSubscriber.class, "terminated");
+
         private final RxRingBuffer q = RxRingBuffer.getSpmcInstance();
-        private boolean mayNeedToDrain = false;
         /* protected by emitLock */
         int emitted = 0;
         final int THRESHOLD = (int) (q.capacity() * 0.7);
@@ -471,16 +482,20 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
         @Override
         public void onError(Throwable e) {
             // it doesn't go through queues, it immediately onErrors and tears everything down
-            if (ONCE_UPDATER.compareAndSet(this, 0, 1)) {
+            if (ONCE_TERMINATED.compareAndSet(this, 0, 1)) {
                 parentSubscriber.onError(e);
             }
         }
 
         @Override
         public void onCompleted() {
-            if (ONCE_UPDATER.compareAndSet(this, 0, 1)) {
+            if (ONCE_TERMINATED.compareAndSet(this, 0, 1)) {
                 emit(null, true);
             }
+        }
+
+        public void requestMore(long n) {
+            request(n);
         }
 
         private void emit(T t, boolean complete) {
@@ -526,18 +541,20 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
             if (parentSubscriber.getEmitLock()) {
                 enqueue = false;
                 try {
-                    // when we have the lock, nothing else can cause producer.requested to decrement, but it can increment at any time
-                    if (mayNeedToDrain) {
-                        // drain the queue if there is anything in it before emitting the current value
-                        emitted += drainQueue();
-                        mayNeedToDrain = false;
-                    }
+                    // drain the queue if there is anything in it before emitting the current value
+                    emitted += drainQueue();
+                    //                    }
                     if (producer == null) {
                         // no backpressure requested
                         if (complete) {
                             parentSubscriber.completeInner(this);
                         } else {
-                            parentSubscriber.actual.onNext(t);
+                            try {
+                                parentSubscriber.actual.onNext(t);
+                            } catch (Throwable e) {
+                                // special error handling due to complexity of merge
+                                onError(OnErrorThrowable.addValueAsLastCause(e, t));
+                            }
                             emitted++;
                         }
                     } else {
@@ -547,7 +564,12 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
                             if (complete) {
                                 parentSubscriber.completeInner(this);
                             } else {
-                                parentSubscriber.actual.onNext(t);
+                                try {
+                                    parentSubscriber.actual.onNext(t);
+                                } catch (Throwable e) {
+                                    // special error handling due to complexity of merge
+                                    onError(OnErrorThrowable.addValueAsLastCause(e, t));
+                                }
                                 emitted++;
                                 producer.REQUESTED.decrementAndGet(producer);
                             }
@@ -600,7 +622,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
                  * r.o.OperatorMergePerf.mergeNSyncStreamsOfN     1000  thrpt         5       78.795        1.766    ops/s
                  * } </pre>
                  */
-                mayNeedToDrain = !parentSubscriber.drainQueuesIfNeeded();
+                parentSubscriber.drainQueuesIfNeeded();
             }
         }
 
@@ -611,41 +633,67 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
                 } else {
                     q.onNext(t);
                 }
-                mayNeedToDrain = true;
             } catch (MissingBackpressureException e) {
                 onError(e);
             }
         }
 
-        private int drainQueue() {
-            int emittedWhileDraining = 0;
-            if (q != null) {
-                if (producer == null) {
-                    Object o;
-                    while ((o = q.poll()) != null) {
-                        if (!q.accept(o, parentSubscriber.actual)) {
-                            // non-terminal event so let's increment count
-                            emittedWhileDraining++;
-                        }
-                    }
+        private int drainRequested() {
+            int emitted = 0;
+            // drain what was requested
+            long toEmit = producer.requested;
+            Object o;
+            for (int i = 0; i < toEmit; i++) {
+                o = q.poll();
+                if (o == null) {
+                    // no more items
+                    break;
+                } else if (q.isCompleted(o)) {
+                    parentSubscriber.completeInner(this);
                 } else {
-                    long toEmit = producer.requested;
-                    for (int i = 0; i < toEmit; i++) {
-                        Object o = q.poll();
-                        if (o == null) {
-                            break;
-                        } else {
-                            if (!q.accept(o, parentSubscriber.actual)) {
-                                // non-terminal event so let's increment count
-                                emittedWhileDraining++;
-                            }
+                    try {
+                        if (!q.accept(o, parentSubscriber.actual)) {
+                            emitted++;
                         }
+                    } catch (Throwable e) {
+                        // special error handling due to complexity of merge
+                        onError(OnErrorThrowable.addValueAsLastCause(e, o));
                     }
-                    // decrement the number we emitted from outstanding requests
-                    producer.REQUESTED.getAndAdd(producer, -emittedWhileDraining);
                 }
             }
-            return emittedWhileDraining;
+
+            // decrement the number we emitted from outstanding requests
+            producer.REQUESTED.getAndAdd(producer, -emitted);
+            return emitted;
+        }
+
+        private int drainAll() {
+            int emitted = 0;
+            // drain it all
+            Object o;
+            while ((o = q.poll()) != null) {
+                if (q.isCompleted(o)) {
+                    parentSubscriber.completeInner(this);
+                } else {
+                    try {
+                        if (!q.accept(o, parentSubscriber.actual)) {
+                            emitted++;
+                        }
+                    } catch (Throwable e) {
+                        // special error handling due to complexity of merge
+                        onError(OnErrorThrowable.addValueAsLastCause(e, o));
+                    }
+                }
+            }
+            return emitted;
+        }
+
+        private int drainQueue() {
+            if (producer != null) {
+                return drainRequested();
+            } else {
+                return drainAll();
+            }
         }
     }
 }

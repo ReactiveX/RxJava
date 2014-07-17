@@ -18,6 +18,7 @@ package rx;
 import static org.junit.Assert.assertEquals;
 
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
@@ -36,11 +37,11 @@ public class SubscriberTest {
     public void testRequestFromFinalSubscribeWithRequestValue() {
         Subscriber<String> s = new TestSubscriber<String>();
         s.request(10);
-        final AtomicInteger r = new AtomicInteger();
+        final AtomicLong r = new AtomicLong();
         s.setProducer(new Producer() {
 
             @Override
-            public void request(int n) {
+            public void request(long n) {
                 r.set(n);
             }
 
@@ -54,16 +55,16 @@ public class SubscriberTest {
     @Test
     public void testRequestFromFinalSubscribeWithoutRequestValue() {
         Subscriber<String> s = new TestSubscriber<String>();
-        final AtomicInteger r = new AtomicInteger();
+        final AtomicLong r = new AtomicLong();
         s.setProducer(new Producer() {
 
             @Override
-            public void request(int n) {
+            public void request(long n) {
                 r.set(n);
             }
 
         });
-        assertEquals(-1, r.get());
+        assertEquals(Long.MAX_VALUE, r.get());
     }
 
     @Test
@@ -97,13 +98,13 @@ public class SubscriberTest {
         s.request(10);
         Subscriber<? super String> ns = o.call(s);
 
-        final AtomicInteger r = new AtomicInteger();
+        final AtomicLong r = new AtomicLong();
         // set set the producer at the top of the chain (ns) and it should flow through the operator to the (s) subscriber
         // and then it should request up with the value set on the final Subscriber (s)
         ns.setProducer(new Producer() {
 
             @Override
-            public void request(int n) {
+            public void request(long n) {
                 r.set(n);
             }
 
@@ -142,25 +143,25 @@ public class SubscriberTest {
         s.request(10);
         Subscriber<? super String> ns = o.call(s);
 
-        final AtomicInteger r = new AtomicInteger();
+        final AtomicLong r = new AtomicLong();
         // set set the producer at the top of the chain (ns) and it should flow through the operator to the (s) subscriber
         // and then it should request up with the value set on the final Subscriber (s)
         ns.setProducer(new Producer() {
 
             @Override
-            public void request(int n) {
+            public void request(long n) {
                 r.set(n);
             }
 
         });
-        // this will be -1 because it is decoupled and nothing requsted on the Operator subscriber
-        assertEquals(-1, r.get());
+        // this will be Long.MAX_VALUE because it is decoupled and nothing requsted on the Operator subscriber
+        assertEquals(Long.MAX_VALUE, r.get());
     }
 
     @Test
     public void testRequestFromDecoupledOperatorThatRequestsN() {
         Subscriber<String> s = new TestSubscriber<String>();
-        final AtomicInteger innerR = new AtomicInteger();
+        final AtomicLong innerR = new AtomicLong();
         Operator<String, String> o = new Operator<String, String>() {
 
             @Override
@@ -169,7 +170,7 @@ public class SubscriberTest {
                 child.setProducer(new Producer() {
 
                     @Override
-                    public void request(int n) {
+                    public void request(long n) {
                         innerR.set(n);
                     }
 
@@ -202,13 +203,13 @@ public class SubscriberTest {
         s.request(10);
         Subscriber<? super String> ns = o.call(s);
 
-        final AtomicInteger r = new AtomicInteger();
+        final AtomicLong r = new AtomicLong();
         // set set the producer at the top of the chain (ns) and it should flow through the operator to the (s) subscriber
         // and then it should request up with the value set on the final Subscriber (s)
         ns.setProducer(new Producer() {
 
             @Override
-            public void request(int n) {
+            public void request(long n) {
                 r.set(n);
             }
 
@@ -221,7 +222,7 @@ public class SubscriberTest {
     public void testRequestToObservable() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         ts.request(3);
-        final AtomicInteger requested = new AtomicInteger();
+        final AtomicLong requested = new AtomicLong();
         Observable.create(new OnSubscribe<Integer>() {
 
             @Override
@@ -229,7 +230,7 @@ public class SubscriberTest {
                 s.setProducer(new Producer() {
 
                     @Override
-                    public void request(int n) {
+                    public void request(long n) {
                         requested.set(n);
                     }
 
@@ -244,7 +245,7 @@ public class SubscriberTest {
     public void testRequestThroughMap() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         ts.request(3);
-        final AtomicInteger requested = new AtomicInteger();
+        final AtomicLong requested = new AtomicLong();
         Observable.create(new OnSubscribe<Integer>() {
 
             @Override
@@ -252,7 +253,7 @@ public class SubscriberTest {
                 s.setProducer(new Producer() {
 
                     @Override
-                    public void request(int n) {
+                    public void request(long n) {
                         requested.set(n);
                     }
 
@@ -274,7 +275,7 @@ public class SubscriberTest {
     public void testRequestThroughTakeThatReducesRequest() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         ts.request(3);
-        final AtomicInteger requested = new AtomicInteger();
+        final AtomicLong requested = new AtomicLong();
         Observable.create(new OnSubscribe<Integer>() {
 
             @Override
@@ -282,7 +283,7 @@ public class SubscriberTest {
                 s.setProducer(new Producer() {
 
                     @Override
-                    public void request(int n) {
+                    public void request(long n) {
                         requested.set(n);
                     }
 
@@ -297,7 +298,7 @@ public class SubscriberTest {
     public void testRequestThroughTakeWhereRequestIsSmallerThanTake() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         ts.request(3);
-        final AtomicInteger requested = new AtomicInteger();
+        final AtomicLong requested = new AtomicLong();
         Observable.create(new OnSubscribe<Integer>() {
 
             @Override
@@ -305,7 +306,7 @@ public class SubscriberTest {
                 s.setProducer(new Producer() {
 
                     @Override
-                    public void request(int n) {
+                    public void request(long n) {
                         requested.set(n);
                     }
 
@@ -314,218 +315,6 @@ public class SubscriberTest {
 
         }).take(10).subscribe(ts);
         assertEquals(3, requested.get());
-    }
-
-    @Test
-    public void testSetProducerFromOperator() {
-        final AtomicInteger requested1 = new AtomicInteger();
-        final AtomicInteger requested2 = new AtomicInteger();
-        final AtomicReference<Producer> producer1 = new AtomicReference<Producer>();
-        final AtomicReference<Producer> producer2 = new AtomicReference<Producer>();
-        final AtomicReference<Producer> gotProducer = new AtomicReference<Producer>();
-        Observable.create(new OnSubscribe<Integer>() {
-
-            @Override
-            public void call(final Subscriber<? super Integer> s) {
-                Producer p1 = new Producer() {
-                    int index = 0;
-
-                    @Override
-                    public void request(int n) {
-                        requested1.set(n);
-                        System.out.println("onSubscribe => requested: " + n);
-                        for (int i = 0; i < n; i++) {
-                            s.onNext(index++);
-                        }
-                    }
-
-                };
-                producer1.set(p1);
-                s.setProducer(p1);
-            }
-
-        }).lift(new Operator<Integer, Integer>() {
-
-            @Override
-            public Subscriber<? super Integer> call(final Subscriber<? super Integer> child) {
-
-                Producer p2 = new Producer() {
-
-                    @Override
-                    public void request(int n) {
-                        System.out.println("lift => requested: " + n);
-                        requested2.set(n);
-                    }
-
-                };
-                producer2.set(p2);
-                child.setProducer(p2);
-
-                return new Subscriber<Integer>(child) {
-
-                    // we request "5" and this decouples the Producer chain while retaining the Subscription chain
-                    @Override
-                    public void onStart() {
-                        request(5);
-                    }
-
-                    @Override
-                    public void onCompleted() {
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                    }
-
-                    @Override
-                    public void onNext(Integer t) {
-                    }
-
-                };
-            }
-
-        }).subscribe(new Subscriber<Integer>() {
-
-            @Override
-            public void onStart() {
-                request(1);
-            }
-
-            @Override
-            public void onCompleted() {
-
-            }
-
-            @Override
-            public void onError(Throwable e) {
-
-            }
-
-            @Override
-            public void onNext(Integer t) {
-                System.out.println(t);
-                request(1);
-            }
-
-            @Override
-            protected Producer onSetProducer(Producer producer) {
-                gotProducer.set(producer);
-                return producer;
-            }
-
-        });
-
-        if (gotProducer.get() != producer2.get()) {
-            throw new IllegalStateException("Expecting the producer from lift");
-        }
-        assertEquals(requested1.get(), 5);
-        assertEquals(requested2.get(), 1);
-    }
-
-    @Test
-    public void testSetProducerFromOperatorWithUnsafeSubscribe() {
-        final AtomicInteger requested1 = new AtomicInteger();
-        final AtomicInteger requested2 = new AtomicInteger();
-        final AtomicReference<Producer> producer1 = new AtomicReference<Producer>();
-        final AtomicReference<Producer> producer2 = new AtomicReference<Producer>();
-        final AtomicReference<Producer> gotProducer = new AtomicReference<Producer>();
-        Observable.create(new OnSubscribe<Integer>() {
-
-            @Override
-            public void call(final Subscriber<? super Integer> s) {
-                Producer p1 = new Producer() {
-                    int index = 0;
-
-                    @Override
-                    public void request(int n) {
-                        requested1.set(n);
-                        System.out.println("onSubscribe => requested: " + n);
-                        for (int i = 0; i < n; i++) {
-                            s.onNext(index++);
-                        }
-                    }
-
-                };
-                producer1.set(p1);
-                s.setProducer(p1);
-            }
-
-        }).lift(new Operator<Integer, Integer>() {
-
-            @Override
-            public Subscriber<? super Integer> call(final Subscriber<? super Integer> child) {
-
-                Producer p2 = new Producer() {
-
-                    @Override
-                    public void request(int n) {
-                        System.out.println("lift => requested: " + n);
-                        requested2.set(n);
-                    }
-
-                };
-                producer2.set(p2);
-                child.setProducer(p2);
-
-                return new Subscriber<Integer>(child) {
-
-                    // we request "5" and this decouples the Producer chain while retaining the Subscription chain
-                    @Override
-                    public void onStart() {
-                        request(5);
-                    }
-
-                    @Override
-                    public void onCompleted() {
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                    }
-
-                    @Override
-                    public void onNext(Integer t) {
-                    }
-
-                };
-            }
-
-        }).unsafeSubscribe(new Subscriber<Integer>() {
-
-            @Override
-            public void onStart() {
-                request(1);
-            }
-
-            @Override
-            public void onCompleted() {
-
-            }
-
-            @Override
-            public void onError(Throwable e) {
-
-            }
-
-            @Override
-            public void onNext(Integer t) {
-                System.out.println(t);
-                request(1);
-            }
-
-            @Override
-            protected Producer onSetProducer(Producer producer) {
-                gotProducer.set(producer);
-                return producer;
-            }
-
-        });
-
-        if (gotProducer.get() != producer2.get()) {
-            throw new IllegalStateException("Expecting the producer from lift");
-        }
-        assertEquals(requested1.get(), 5);
-        assertEquals(requested2.get(), 1);
     }
 
     @Test

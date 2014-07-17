@@ -15,7 +15,7 @@
  */
 package rx.internal.operators;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import rx.Observable.Operator;
 import rx.Producer;
@@ -25,12 +25,12 @@ public class OperatorOnBackpressureDrop<T> implements Operator<T, T> {
 
     @Override
     public Subscriber<? super T> call(final Subscriber<? super T> child) {
-        final AtomicInteger requested = new AtomicInteger();
+        final AtomicLong requested = new AtomicLong();
 
         child.setProducer(new Producer() {
 
             @Override
-            public void request(int n) {
+            public void request(long n) {
                 requested.getAndAdd(n);
             }
 

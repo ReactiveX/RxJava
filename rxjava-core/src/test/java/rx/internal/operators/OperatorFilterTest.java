@@ -30,6 +30,7 @@ import rx.Observer;
 import rx.Subscriber;
 import rx.functions.Func1;
 import rx.internal.util.RxRingBuffer;
+import rx.observers.TestSubscriber;
 
 public class OperatorFilterTest {
 
@@ -69,7 +70,7 @@ public class OperatorFilterTest {
         });
 
         final CountDownLatch latch = new CountDownLatch(1);
-        Subscriber<String> s = new Subscriber<String>() {
+        TestSubscriber<String> ts = new TestSubscriber<String>() {
 
             @Override
             public void onCompleted() {
@@ -92,9 +93,9 @@ public class OperatorFilterTest {
 
         };
         // this means it will only request "one" and "two", expecting to receive them before requesting more
-        s.request(2);
+        ts.requestMore(2);
 
-        o.subscribe(s);
+        o.subscribe(ts);
 
         // this will wait forever unless OperatorTake handles the request(n) on filtered items
         latch.await();
@@ -115,32 +116,31 @@ public class OperatorFilterTest {
         });
 
         final CountDownLatch latch = new CountDownLatch(1);
-        Subscriber<Integer> s = new Subscriber<Integer>() {
-
+        final TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
+            
             @Override
             public void onCompleted() {
                 System.out.println("onCompleted");
                 latch.countDown();
             }
-
+            
             @Override
             public void onError(Throwable e) {
                 e.printStackTrace();
                 latch.countDown();
             }
-
+            
             @Override
             public void onNext(Integer t) {
                 System.out.println("Received: " + t);
                 // request more each time we receive
                 request(1);
             }
-
         };
         // this means it will only request 1 item and expect to receive more
-        s.request(1);
+        ts.requestMore(1);
 
-        o.subscribe(s);
+        o.subscribe(ts);
 
         // this will wait forever unless OperatorTake handles the request(n) on filtered items
         latch.await();
