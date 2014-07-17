@@ -88,27 +88,6 @@ public class BasicKotlinTests : KotlinTests() {
     }
 
     [Test]
-    public fun testMergeDelayError() {
-        Observable.mergeDelayError(
-                Observable.from(listOf(1, 2, 3)),
-                Observable.merge(
-                        Observable.from(6),
-                        Observable.error(NullPointerException()),
-                        Observable.from(7)
-                ),
-                Observable.from(listOf(4, 5))
-        )!!.subscribe(received(), { e -> a!!.error(e) })
-        verify(a, times(1))!!.received(1)
-        verify(a, times(1))!!.received(2)
-        verify(a, times(1))!!.received(3)
-        verify(a, times(1))!!.received(4)
-        verify(a, times(1))!!.received(5)
-        verify(a, times(1))!!.received(6)
-        verify(a, times(0))!!.received(7)
-        verify(a, times(1))!!.error(any(javaClass<NullPointerException>()))
-    }
-
-    [Test]
     public fun testMerge() {
         Observable.merge(
                 Observable.from(listOf(1, 2, 3)),
