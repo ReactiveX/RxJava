@@ -84,24 +84,6 @@ public class ExtensionTests : KotlinTests() {
         verify(a, times(0))!!.error(any(javaClass<Exception>()))
     }
 
-    [Test]
-    public fun testMergeDelayError() {
-        Triple(listOf(1, 2, 3).asObservable(),
-                Triple(6.asObservable(),
-                        NullPointerException().asObservable<Int>(),
-                        7.asObservable()
-                ).merge(),
-                listOf(4, 5).asObservable()
-        ).mergeDelayError().subscribe(received(), { e -> a!!.error(e) })
-        verify(a, times(1))!!.received(1)
-        verify(a, times(1))!!.received(2)
-        verify(a, times(1))!!.received(3)
-        verify(a, times(1))!!.received(4)
-        verify(a, times(1))!!.received(5)
-        verify(a, times(1))!!.received(6)
-        verify(a, times(0))!!.received(7)
-        verify(a, times(1))!!.error(any(javaClass<NullPointerException>()))
-    }
 
     [Test]
     public fun testMerge() {
