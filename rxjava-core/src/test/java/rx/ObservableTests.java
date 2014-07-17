@@ -1027,4 +1027,29 @@ public class ObservableTests {
         });
         o.subscribe();
     }
+
+    @Test
+    public void testTakeWhileToList() {
+        int[] nums = {1, 2, 3};
+        final AtomicInteger count = new AtomicInteger();
+        for(final int n: nums) {
+            Observable
+                    .from(Boolean.TRUE, Boolean.FALSE)
+                    .takeWhile(new Func1<Boolean, Boolean>() {
+                        @Override
+                        public Boolean call(Boolean value) {
+                            return value;
+                        }
+                    })
+                    .toList()
+                    .doOnNext(new Action1<List<Boolean>>() {
+                        @Override
+                        public void call(List<Boolean> booleans) {
+                            count.incrementAndGet();
+                        }
+                    })
+                    .subscribe();
+        }
+        assertEquals(nums.length, count.get());
+    }
 }
