@@ -91,27 +91,6 @@ def class ObservableTests {
     }
 
     @Test
-    public void testMergeDelayError() {
-        Observable.mergeDelayError(
-                Observable.from(1, 2, 3),
-                Observable.merge(
-                Observable.from(6),
-                Observable.error(new NullPointerException()),
-                Observable.from(7)),
-                Observable.from(4, 5))
-                .subscribe( { result -> a.received(result)}, { exception -> a.error(exception)});
-
-        verify(a, times(1)).received(1);
-        verify(a, times(1)).received(2);
-        verify(a, times(1)).received(3);
-        verify(a, times(1)).received(4);
-        verify(a, times(1)).received(5);
-        verify(a, times(1)).received(6);
-        verify(a, times(0)).received(7);
-        verify(a, times(1)).error(any(NullPointerException.class));
-    }
-
-    @Test
     public void testMerge() {
         Observable.merge(
                 Observable.from(1, 2, 3),
