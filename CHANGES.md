@@ -4,9 +4,9 @@
 
 Version 0.20.0-RC2 preview release adds support for backpressure to the `zip` operators, fixes bugs and removes the `Subscribe.onSetProducer` method.
 
-This means signature changes are now:
+This means signature changes are modified to be:
 
-A new type `Producer` has been added:
+The new type `Producer` ->
 
 ```java
 public interface Producer {
@@ -14,7 +14,7 @@ public interface Producer {
 }
 ```
 
-The `Subscriber` type now has these methods added:
+New methods added to `Subscriber` ->
 
 ```java
 public abstract class Subscriber<T> implements Observer<T>, Subscription {
