@@ -136,7 +136,20 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
             }
             MergeProducer<T> producerIfNeeded = null;
             // if we have received a request then we need to respect it, otherwise we fast-path
-            if (mergeProducer.requested >= 0) {
+            if (mergeProducer.requested != Long.MAX_VALUE) {
+                /**
+                 * <pre> {@code
+                 * With this optimization:
+                 * 
+                 * r.o.OperatorMergePerf.merge1SyncStreamOfN      1000  thrpt         5    57100.080     4686.331    ops/s
+                 * r.o.OperatorMergePerf.merge1SyncStreamOfN   1000000  thrpt         5       60.875        1.622    ops/s
+                 *  
+                 * Without this optimization:
+                 * 
+                 * r.o.OperatorMergePerf.merge1SyncStreamOfN      1000  thrpt         5    29863.945     1858.002    ops/s
+                 * r.o.OperatorMergePerf.merge1SyncStreamOfN   1000000  thrpt         5       30.516        1.087    ops/s
+                 * } </pre>
+                 */
                 producerIfNeeded = mergeProducer;
             }
             InnerSubscriber<T> i = new InnerSubscriber<T>(this, producerIfNeeded);
