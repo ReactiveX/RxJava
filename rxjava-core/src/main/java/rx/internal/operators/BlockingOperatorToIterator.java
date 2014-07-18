@@ -19,6 +19,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import rx.Notification;
 import rx.Observable;
@@ -89,7 +90,13 @@ public class BlockingOperatorToIterator {
 
             private Notification<? extends T> take() {
                 try {
-                    return notifications.take();
+                    Notification<? extends T> n = notifications.poll(10000, TimeUnit.MILLISECONDS);
+                    if(n == null) {
+                        System.err.println("Timed out waiting for value. File a bug at github.com/Netflix/RxJava");
+                        throw new RuntimeException("Timed out waiting for value. File a bug at github.com/Netflix/RxJava");
+                    } else {
+                        return n;
+                    }
                 } catch (InterruptedException e) {
                     throw Exceptions.propagate(e);
                 }

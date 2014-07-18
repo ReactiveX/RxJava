@@ -44,6 +44,39 @@ import rx.internal.util.SubscriptionIndexedRingBuffer;
  */
 public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
 
+    /*
+     * benjchristensen => This class is complex and I'm not a fan of it despite writing it. I want to give some background
+     * as to why for anyone who wants to try and help improve it.
+     * 
+     * One of my first implementations that added backpressure support (Producer.request) was fairly elegant and used a simple
+     * queue draining approach. It was simple to understand as all onNext were added to their queues, then a single winner
+     * would drain the queues, similar to observeOn. It killed the Netflix API when I canaried it. There were two problems:
+     * (1) performance and (2) object allocation overhead causing massive GC pressure. Remember that merge is one of the most
+     * used operators (mostly due to flatmap) and is therefore critical to and a limiter of performance in any application.
+     * 
+     * All subsequent work on this class and the various fast-paths and branches within it have been to achieve the needed functionality
+     * while reducing or eliminating object allocation and keeping performance acceptable.
+     * 
+     * This has meant adopting strategies such as:
+     * 
+     * - ring buffers instead of growable queues
+     * - object pooling
+     * - skipping request logic when downstream does not need backpressure
+     * - ScalarValueQueue for optimizing synchronous single-value Observables
+     * - adopting data structures that use Unsafe (and gating them based on environment so non-Oracle JVMs still work)
+     * 
+     * It has definitely increased the complexity and maintenance cost of this class, but the performance gains have been significant.
+     * 
+     * The biggest cost of the increased complexity is concurrency bugs and reasoning through what's going on.
+     * 
+     * I'd love to have contributions that improve this class, but keep in mind the performance and GC pressure.
+     * The benchmarks I use are in the JMH OperatorMergePerf class. GC memory pressure is tested using Java Flight Recorder
+     * to track object allocation.
+     * 
+     * TODO There is still a known concurrency bug somewhere either in this class, in SubscriptionIndexedRingBuffer or their relationship.
+     * See https://github.com/Netflix/RxJava/issues/1420 for more information on this.
+     */
+
     public OperatorMerge() {
         this.delayErrors = false;
     }
