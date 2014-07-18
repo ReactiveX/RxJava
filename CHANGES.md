@@ -1,5 +1,39 @@
 # RxJava Releases #
 
+### Version 0.20.0-RC2 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.20.0-RC2%22)) ###
+
+Version 0.20.0-RC2 preview release adds support for backpressure to the `zip` operators, fixes bugs and removes the `Subscribe.onSetProducer` method.
+
+This means signature changes are now:
+
+A new type `Producer` has been added:
+
+```java
+public interface Producer {
+    public void request(long n);
+}
+```
+
+The `Subscriber` type now has these methods added:
+
+```java
+public abstract class Subscriber<T> implements Observer<T>, Subscription {
+	public void onStart();
+	protected final void request(long n);
+	public final void setProducer(Producer producer);
+}
+```
+
+
+* [Pull 1448] (https://github.com/Netflix/RxJava/pull/1448) RxScala: Add Scala idiomatic methods
+* [Pull 1446] (https://github.com/Netflix/RxJava/pull/1446) Zip with Backpressure Support
+* [Pull 1454] (https://github.com/Netflix/RxJava/pull/1454) doOnEachObserver fix
+* [Pull 1457] (https://github.com/Netflix/RxJava/pull/1457) MergeDelayError & OnErrorFlatMap w/ Merge
+* [Pull 1458] (https://github.com/Netflix/RxJava/pull/1458) Remove Pivot Operator
+* [Pull 1459] (https://github.com/Netflix/RxJava/pull/1459) Remove Subscriber.onSetProducer
+* [Pull 1462] (https://github.com/Netflix/RxJava/pull/1462) Merge Perf Fix: Re-enable fast-path
+* [Pull 1463] (https://github.com/Netflix/RxJava/pull/1463) Merge Bug: Missing Emissions
+
 ### Version 0.20.0-RC1 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.20.0-RC1%22)) ###
 
 
