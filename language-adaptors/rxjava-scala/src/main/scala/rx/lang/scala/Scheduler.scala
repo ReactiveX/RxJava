@@ -26,7 +26,7 @@ import rx.lang.scala.JavaConversions._
  */
 trait Scheduler {
 
-  private [scala] val asJavaScheduler: rx.Scheduler
+  protected def asJavaScheduler: rx.Scheduler
 
   /**
    * Parallelism available to a Scheduler.
