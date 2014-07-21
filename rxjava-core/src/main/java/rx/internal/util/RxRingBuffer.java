@@ -173,7 +173,7 @@ public class RxRingBuffer implements Subscription {
 
         @Override
         protected SpscArrayQueue<Object> createObject() {
-            return new SpscArrayQueue(SIZE);
+            return new SpscArrayQueue<Object>(SIZE);
         }
 
     };
@@ -182,12 +182,12 @@ public class RxRingBuffer implements Subscription {
 
         @Override
         protected SpmcArrayQueue<Object> createObject() {
-            return new SpmcArrayQueue(SIZE);
+            return new SpmcArrayQueue<Object>(SIZE);
         }
 
     };
 
-    private RxRingBuffer(Queue queue, int size) {
+    private RxRingBuffer(Queue<Object> queue, int size) {
         this.queue = queue;
         this.pool = null;
         this.size = size;
@@ -201,7 +201,7 @@ public class RxRingBuffer implements Subscription {
 
     public void release() {
         if (pool != null) {
-            Queue q = queue;
+            Queue<Object> q = queue;
             q.clear();
             queue = null;
             pool.returnObject(q);
@@ -214,7 +214,7 @@ public class RxRingBuffer implements Subscription {
     }
 
     /* for unit tests */RxRingBuffer() {
-        this(new SynchronizedQueue<Queue>(SIZE), SIZE);
+        this(new SynchronizedQueue<Object>(SIZE), SIZE);
     }
 
     /**

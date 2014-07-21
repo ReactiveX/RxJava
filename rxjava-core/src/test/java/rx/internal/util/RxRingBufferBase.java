@@ -15,23 +15,15 @@
  */
 package rx.internal.util;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.Arrays;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
-import rx.Producer;
-import rx.Scheduler;
-import rx.Subscriber;
 import rx.exceptions.MissingBackpressureException;
-import rx.functions.Action0;
 import rx.observers.TestSubscriber;
-import rx.schedulers.Schedulers;
 
 public abstract class RxRingBufferBase {
 
@@ -59,7 +51,6 @@ public abstract class RxRingBufferBase {
 
         RxRingBuffer b = createRingBuffer();
 
-        TestSubscriber<Object> s = new TestSubscriber<Object>();
         try {
             for (int i = 0; i < RxRingBuffer.SIZE; i++) {
                 //                System.out.println("Add: " + i);
@@ -82,7 +73,6 @@ public abstract class RxRingBufferBase {
     @Test
     public void addAndPoll() throws MissingBackpressureException {
         RxRingBuffer b = createRingBuffer();
-        TestSubscriber<Object> s = new TestSubscriber<Object>();
         b.onNext("o");
         b.onNext("o");
         b.poll();

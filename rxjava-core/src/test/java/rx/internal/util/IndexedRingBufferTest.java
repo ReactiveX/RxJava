@@ -211,13 +211,13 @@ public class IndexedRingBufferTest {
             buffer.add(i);
         }
 
-        final ArrayList<String> list = new ArrayList<String>();
+        final ArrayList<Integer> list = new ArrayList<Integer>();
         int nextIndex = buffer.forEach(accumulate(list), 5000);
         assertEquals(10000, list.size());
-        assertEquals(5000, list.get(0));
-        assertEquals(9999, list.get(4999));
-        assertEquals(0, list.get(5000));
-        assertEquals(4999, list.get(9999));
+        assertEquals(Integer.valueOf(5000), list.get(0));
+        assertEquals(Integer.valueOf(9999), list.get(4999));
+        assertEquals(Integer.valueOf(0), list.get(5000));
+        assertEquals(Integer.valueOf(4999), list.get(9999));
         assertEquals(5000, nextIndex);
     }
 
@@ -364,11 +364,11 @@ public class IndexedRingBufferTest {
         assertEquals(0, exceptions.size());
     }
 
-    private Func1<Object, Boolean> accumulate(final ArrayList list) {
-        return new Func1<Object, Boolean>() {
+    private <T> Func1<T, Boolean> accumulate(final ArrayList<T> list) {
+        return new Func1<T, Boolean>() {
 
             @Override
-            public Boolean call(Object t1) {
+            public Boolean call(T t1) {
                 list.add(t1);
                 return true;
             }
