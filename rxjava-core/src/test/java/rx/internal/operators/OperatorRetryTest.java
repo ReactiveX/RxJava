@@ -73,7 +73,7 @@ public class OperatorRetryTest {
             
         });
         TestSubscriber<String> ts = new TestSubscriber<String>(consumer);
-        producer.retry(new Func1<Observable<? extends Notification<?>>, Observable<?>>() {
+        producer.retryWhen(new Func1<Observable<? extends Notification<?>>, Observable<?>>() {
 
             @Override
             public Observable<?> call(Observable<? extends Notification<?>> attempts) {
@@ -146,7 +146,7 @@ public class OperatorRetryTest {
         int NUM_RETRIES = 2;
         Observable<String> origin = Observable.create(new FuncWithErrors(NUM_RETRIES));
         TestSubscriber<String> subscriber = new TestSubscriber<String>(observer);
-        origin.retry(new Func1<Observable<? extends Notification<?>>, Observable<? extends Notification<?>>>() {
+        origin.retryWhen(new Func1<Observable<? extends Notification<?>>, Observable<? extends Notification<?>>>() {
             @Override
             public Observable<? extends Notification<?>> call(Observable<? extends Notification<?>> t1) {
                 return t1.observeOn(Schedulers.computation()).map(new Func1<Notification<?>, Notification<?>>() {
@@ -177,7 +177,7 @@ public class OperatorRetryTest {
         Observer<String> observer = mock(Observer.class);
         int NUM_RETRIES = 2;
         Observable<String> origin = Observable.create(new FuncWithErrors(NUM_RETRIES));
-        origin.retry(new Func1<Observable<? extends Notification<?>>, Observable<? extends Notification<?>>>() {
+        origin.retryWhen(new Func1<Observable<? extends Notification<?>>, Observable<? extends Notification<?>>>() {
             @Override
             public Observable<? extends Notification<?>> call(Observable<? extends Notification<?>> t1) {
                 return t1.map(new Func1<Notification<?>, Notification<?>>() {
@@ -208,7 +208,7 @@ public class OperatorRetryTest {
         Observer<String> observer = mock(Observer.class);
         Observable<String> origin = Observable.create(new FuncWithErrors(1));
         TestSubscriber<String> subscriber = new TestSubscriber<String>(observer);
-        origin.retry(new Func1<Observable<? extends Notification<?>>, Observable<? extends Notification<?>>>() {
+        origin.retryWhen(new Func1<Observable<? extends Notification<?>>, Observable<? extends Notification<?>>>() {
             @Override
             public Observable<? extends Notification<?>> call(Observable<? extends Notification<?>> t1) {
                 return Observable.empty();
@@ -228,7 +228,7 @@ public class OperatorRetryTest {
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
         Observable<String> origin = Observable.create(new FuncWithErrors(2));
-        origin.retry(new Func1<Observable<? extends Notification<?>>, Observable<? extends Notification<?>>>() {
+        origin.retryWhen(new Func1<Observable<? extends Notification<?>>, Observable<? extends Notification<?>>>() {
             @Override
             public Observable<? extends Notification<?>> call(Observable<? extends Notification<?>> t1) {
                 return Observable.error(new RuntimeException());

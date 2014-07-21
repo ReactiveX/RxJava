@@ -48,7 +48,7 @@ import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.CompositeSubscription;
 
-public final class OperatorRedo<T> implements OnSubscribe<T> {
+public final class OnSubscribeRedo<T> implements OnSubscribe<T> {
 
     static final Func1<Observable<? extends Notification<?>>, Observable<?>> REDO_INIFINITE = new Func1<Observable<? extends Notification<?>>, Observable<?>>() {
         @Override
@@ -117,11 +117,11 @@ public final class OperatorRedo<T> implements OnSubscribe<T> {
     }
 
     public static <T> Observable<T> retry(Observable<T> source, Func1<? super Observable<? extends Notification<?>>, ? extends Observable<?>> notificationHandler) {
-        return create(new OperatorRedo<T>(source, notificationHandler, true, false, Schedulers.trampoline()));
+        return create(new OnSubscribeRedo<T>(source, notificationHandler, true, false, Schedulers.trampoline()));
     }
 
     public static <T> Observable<T> retry(Observable<T> source, Func1<? super Observable<? extends Notification<?>>, ? extends Observable<?>> notificationHandler, Scheduler scheduler) {
-        return create(new OperatorRedo<T>(source, notificationHandler, true, false, scheduler));
+        return create(new OnSubscribeRedo<T>(source, notificationHandler, true, false, scheduler));
     }
 
     public static <T> Observable<T> repeat(Observable<T> source) {
@@ -142,15 +142,15 @@ public final class OperatorRedo<T> implements OnSubscribe<T> {
     }
 
     public static <T> Observable<T> repeat(Observable<T> source, Func1<? super Observable<? extends Notification<?>>, ? extends Observable<?>> notificationHandler) {
-        return create(new OperatorRedo<T>(source, notificationHandler, false, true, Schedulers.trampoline()));
+        return create(new OnSubscribeRedo<T>(source, notificationHandler, false, true, Schedulers.trampoline()));
     }
 
     public static <T> Observable<T> repeat(Observable<T> source, Func1<? super Observable<? extends Notification<?>>, ? extends Observable<?>> notificationHandler, Scheduler scheduler) {
-        return create(new OperatorRedo<T>(source, notificationHandler, false, true, scheduler));
+        return create(new OnSubscribeRedo<T>(source, notificationHandler, false, true, scheduler));
     }
 
     public static <T> Observable<T> redo(Observable<T> source, Func1<? super Observable<? extends Notification<?>>, ? extends Observable<?>> notificationHandler, Scheduler scheduler) {
-        return create(new OperatorRedo<T>(source, notificationHandler, false, false, scheduler));
+        return create(new OnSubscribeRedo<T>(source, notificationHandler, false, false, scheduler));
     }
 
     private Observable<T> source;
@@ -160,7 +160,7 @@ public final class OperatorRedo<T> implements OnSubscribe<T> {
     private final Scheduler scheduler;
     private final AtomicBoolean isLocked = new AtomicBoolean(true);
 
-    private OperatorRedo(Observable<T> source, Func1<? super Observable<? extends Notification<?>>, ? extends Observable<?>> f, boolean stopOnComplete, boolean stopOnError,
+    private OnSubscribeRedo(Observable<T> source, Func1<? super Observable<? extends Notification<?>>, ? extends Observable<?>> f, boolean stopOnComplete, boolean stopOnError,
             Scheduler scheduler) {
         this.source = source;
         this.f = f;
