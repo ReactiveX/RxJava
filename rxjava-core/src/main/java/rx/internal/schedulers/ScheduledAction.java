@@ -19,28 +19,35 @@ import rx.Subscription;
 import rx.functions.Action0;
 import rx.subscriptions.CompositeSubscription;
 
+import java.util.concurrent.Callable;
+import java.util.concurrent.FutureTask;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 /**
  * A {@code Runnable} that executes an {@code Action0} and can be cancelled. The analogue is the
  * {@code Subscriber} in respect of an {@code Observer}.
  */
-public final class ScheduledAction implements Runnable, Subscription {
+public final class ScheduledAction extends FutureTask<Void> implements Subscription {
     final CompositeSubscription cancel;
-    final Action0 action;
     volatile int once;
     static final AtomicIntegerFieldUpdater<ScheduledAction> ONCE_UPDATER
             = AtomicIntegerFieldUpdater.newUpdater(ScheduledAction.class, "once");
 
-    public ScheduledAction(Action0 action) {
-        this.action = action;
+    public ScheduledAction(final Action0 action) {
+        super(new Callable<Void>() {
+            @Override
+            public Void call() throws Exception {
+                action.call();
+                return null;
+            }
+        });
         this.cancel = new CompositeSubscription();
     }
 
     @Override
     public void run() {
         try {
-            action.call();
+            super.run();
         } finally {
             unsubscribe();
         }
@@ -55,6 +62,7 @@ public final class ScheduledAction implements Runnable, Subscription {
     public void unsubscribe() {
         if (ONCE_UPDATER.compareAndSet(this, 0, 1)) {
             cancel.unsubscribe();
+            super.cancel(true);
         }
     }
 

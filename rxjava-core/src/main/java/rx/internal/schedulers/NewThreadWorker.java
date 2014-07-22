@@ -18,20 +18,30 @@ package rx.internal.schedulers;
 import rx.Scheduler;
 import rx.Subscription;
 import rx.functions.Action0;
+import rx.internal.util.unsafe.MpscLinkedBlockingQueue;
+import rx.internal.util.unsafe.UnsafeAccess;
 import rx.subscriptions.Subscriptions;
 
 import java.util.concurrent.*;
 
 /**
- * @warn class description missing
+ * A {@code Runnable} that is used by Schedulers to schedule actions to be run on
+ * a single thread in a serialized order.
  */
-public class NewThreadWorker extends Scheduler.Worker implements Subscription {
-    private final ScheduledExecutorService executor;
-    volatile boolean isUnsubscribed;
+public class NewThreadWorker extends Scheduler.Worker implements Subscription, Runnable {
+    private volatile boolean isUnsubscribed;
+    private final BlockingQueue<ScheduledAction> actionQueue;
+    private final Thread workerThread;
 
     /* package */
     public NewThreadWorker(ThreadFactory threadFactory) {
-        executor = Executors.newScheduledThreadPool(1, threadFactory);
+        if (UnsafeAccess.isUnsafeAvailable()) {
+            actionQueue = new MpscLinkedBlockingQueue<ScheduledAction>();
+        } else {
+            actionQueue = new LinkedBlockingQueue<ScheduledAction>();
+        }
+        workerThread = threadFactory.newThread(this);
+        workerThread.start();
     }
 
     @Override
@@ -48,21 +58,26 @@ public class NewThreadWorker extends Scheduler.Worker implements Subscription {
     }
 
     /**
-     * @warn javadoc missing
-     * @param action
-     * @param delayTime
-     * @param unit
-     * @return
+     * @param action the action to be scheduled and called
+     * @param delayTime how long to wait before the action should be called
+     * @param unit time unit of the delay before calling the action
+     * @return A ScheduledAction instance that will execute the action and can be cancelled
      */
     public ScheduledAction scheduleActual(final Action0 action, long delayTime, TimeUnit unit) {
-        ScheduledAction run = new ScheduledAction(action);
-        Future<?> f;
+        final ScheduledAction run = new ScheduledAction(action);
         if (delayTime <= 0) {
-            f = executor.submit(run);
+            actionQueue.offer(run);
         } else {
-            f = executor.schedule(run, delayTime, unit);
+            Future<?> f = GenericScheduledExecutorService.getInstance().schedule(new Runnable() {
+                @Override
+                public void run() {
+                if (!run.isUnsubscribed()) {
+                    actionQueue.offer(run);
+                }
+                }
+            }, delayTime, unit);
+            run.add(Subscriptions.from(f));
         }
-        run.add(Subscriptions.from(f));
 
         return run;
     }
@@ -70,11 +85,26 @@ public class NewThreadWorker extends Scheduler.Worker implements Subscription {
     @Override
     public void unsubscribe() {
         isUnsubscribed = true;
-        executor.shutdownNow();
+
+        workerThread.interrupt();
+
+        ScheduledAction scheduledAction;
+        while ((scheduledAction = actionQueue.poll()) != null) {
+            scheduledAction.unsubscribe();
+        }
     }
 
     @Override
     public boolean isUnsubscribed() {
         return isUnsubscribed;
+    }
+
+    @Override
+    public void run() {
+        while (!isUnsubscribed) {
+            try {
+                actionQueue.take().run();
+            } catch (InterruptedException ignored) {}
+        }
     }
 }
