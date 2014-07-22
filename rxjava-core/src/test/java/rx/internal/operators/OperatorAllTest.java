@@ -15,6 +15,7 @@
  */
 package rx.internal.operators;
 
+import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -24,6 +25,8 @@ import org.junit.Test;
 import rx.Observable;
 import rx.Observer;
 import rx.functions.Func1;
+
+import java.util.Arrays;
 
 public class OperatorAllTest {
 
@@ -97,5 +100,17 @@ public class OperatorAllTest {
 
         verify(observer).onError(error);
         verifyNoMoreInteractions(observer);
+    }
+
+    @Test
+    public void testFollowingFirst() {
+        Observable<Integer> o = Observable.from(Arrays.asList(1, 3, 5, 6));
+        Observable<Boolean> allOdd = o.all(new Func1<Integer, Boolean>() {
+            @Override
+            public Boolean call(Integer i) {
+                return i % 2 == 1;
+            }
+        });
+        assertFalse(allOdd.toBlocking().first());
     }
 }
