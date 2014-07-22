@@ -39,6 +39,7 @@ public final class OperatorAny<T> implements Operator<Boolean, T> {
         return new Subscriber<T>(child) {
             boolean hasElements;
             boolean done;
+
             @Override
             public void onNext(T t) {
                 hasElements = true;
@@ -48,6 +49,9 @@ public final class OperatorAny<T> implements Operator<Boolean, T> {
                     child.onNext(!returnOnEmpty);
                     child.onCompleted();
                     unsubscribe();
+                } else {
+                    // if we drop values we must replace them upstream as downstream won't receive and request more
+                    request(1);
                 }
             }
 
@@ -68,7 +72,7 @@ public final class OperatorAny<T> implements Operator<Boolean, T> {
                     child.onCompleted();
                 }
             }
-            
+
         };
     }
 }
