@@ -81,7 +81,7 @@ public class OperatorParallelTest {
         assertEquals("finalCount", NUM, count.get());
     }
 
-    @Test(timeout = 1000)
+    @Test(timeout = 10000)
     public void testParallelWithNestedAsyncWork() {
         int NUM = 20;
         final AtomicInteger count = new AtomicInteger();
@@ -192,7 +192,7 @@ public class OperatorParallelTest {
         assertEquals(2000, ts.getOnNextEvents().size());
     }
 
-    @Test(timeout = 1000)
+    @Test(timeout = 10000)
     public void testBackpressureViaSynchronousTake() {
         final AtomicInteger emitted = new AtomicInteger();
         TestSubscriber<String> ts = new TestSubscriber<String>();
