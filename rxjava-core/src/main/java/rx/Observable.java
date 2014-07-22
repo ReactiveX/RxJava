@@ -3360,14 +3360,12 @@ public class Observable<T> {
      * begin cacheing items. This only happens when the first Subscriber calls the resulting Observable's
      * {@code subscribe} method.
      * <p>
-     *
      * <em>Note:</em> You sacrifice the ability to unsubscribe from the origin when you use the {@code cache}
      * Observer so be careful not to use this Observer on Observables that emit an infinite or very large number
      * of items that will use up memory.
      * <p>
      * {@code cache} does not operate by default on a particular {@link Scheduler}.
      * 
-     * @warn description may be out-of-date
      * @return an Observable that, when first subscribed to, caches all of its items and notifications for the
      *         benefit of subsequent subscribers
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#cache">RxJava Wiki: cache()</a>
@@ -3391,18 +3389,17 @@ public class Observable<T> {
      * begin cacheing items. This only happens when the first Subscriber calls the resulting Observable's
      * {@code subscribe} method.
      * <p>
-     *
      * <em>Note:</em> You sacrifice the ability to unsubscribe from the origin when you use the {@code cache}
      * Observer so be careful not to use this Observer on Observables that emit an infinite or very large number
      * of items that will use up memory.
      * <p>
      * {@code cache} does not operate by default on a particular {@link Scheduler}.
      * 
-     * @warn description may be out-of-date
      * @param capacity hint for number of items to cache (for optimizing underlying data structure)
      * @return an Observable that, when first subscribed to, caches all of its items and notifications for the
      *         benefit of subsequent subscribers
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#cache">RxJava Wiki: cache()</a>
+     * @since 0.20
      */
     public final Observable<T> cache(int capacity) {
         return create(new OnSubscribeCache<T>(this, capacity));
