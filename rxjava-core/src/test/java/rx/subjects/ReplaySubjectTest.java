@@ -44,10 +44,14 @@ public class ReplaySubjectTest {
 
     private final Throwable testException = new Throwable();
 
+    public ReplaySubject createReplaySubject() {
+        return ReplaySubject.create();
+    }
+
     @SuppressWarnings("unchecked")
     @Test
     public void testCompleted() {
-        ReplaySubject<String> subject = ReplaySubject.create();
+        ReplaySubject<String> subject = createReplaySubject();
 
         Observer<String> o1 = mock(Observer.class);
         subject.subscribe(o1);
@@ -71,7 +75,7 @@ public class ReplaySubjectTest {
 
     @Test
     public void testCompletedStopsEmittingData() {
-        ReplaySubject<Integer> channel = ReplaySubject.create();
+        ReplaySubject<Integer> channel = createReplaySubject();
         @SuppressWarnings("unchecked")
         Observer<Object> observerA = mock(Observer.class);
         @SuppressWarnings("unchecked")
@@ -139,7 +143,7 @@ public class ReplaySubjectTest {
 
     @Test
     public void testCompletedAfterError() {
-        ReplaySubject<String> subject = ReplaySubject.create();
+        ReplaySubject<String> subject = createReplaySubject();
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
@@ -170,7 +174,7 @@ public class ReplaySubjectTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testError() {
-        ReplaySubject<String> subject = ReplaySubject.create();
+        ReplaySubject<String> subject = createReplaySubject();
 
         Observer<String> observer = mock(Observer.class);
         subject.subscribe(observer);
@@ -202,7 +206,7 @@ public class ReplaySubjectTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testSubscribeMidSequence() {
-        ReplaySubject<String> subject = ReplaySubject.create();
+        ReplaySubject<String> subject = createReplaySubject();
 
         Observer<String> observer = mock(Observer.class);
         subject.subscribe(observer);
@@ -226,7 +230,7 @@ public class ReplaySubjectTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testUnsubscribeFirstObserver() {
-        ReplaySubject<String> subject = ReplaySubject.create();
+        ReplaySubject<String> subject = createReplaySubject();
 
         Observer<String> observer = mock(Observer.class);
         Subscription subscription = subject.subscribe(observer);
@@ -313,7 +317,7 @@ public class ReplaySubjectTest {
 
         };
 
-        ReplaySubject<String> subject = ReplaySubject.create();
+        ReplaySubject<String> subject = createReplaySubject();
         subject.subscribe(observer1);
         subject.onNext("one");
         assertEquals("one", lastValueForObserver1.get());
@@ -355,7 +359,7 @@ public class ReplaySubjectTest {
     }
     @Test
     public void testSubscriptionLeak() {
-        ReplaySubject<Object> replaySubject = ReplaySubject.create();
+        ReplaySubject<Object> replaySubject = createReplaySubject();
         
         Subscription s = replaySubject.subscribe();
 
@@ -367,7 +371,7 @@ public class ReplaySubjectTest {
     }
     @Test(timeout = 1000)
     public void testUnsubscriptionCase() {
-        ReplaySubject<String> src = ReplaySubject.create();
+        ReplaySubject<String> src = createReplaySubject();
         
         for (int i = 0; i < 10; i++) {
             @SuppressWarnings("unchecked")
@@ -408,7 +412,7 @@ public class ReplaySubjectTest {
     }
     @Test
     public void testTerminateOnce() {
-        ReplaySubject<Integer> source = ReplaySubject.create();
+        ReplaySubject<Integer> source = createReplaySubject();
         source.onNext(1);
         source.onNext(2);
         source.onCompleted();

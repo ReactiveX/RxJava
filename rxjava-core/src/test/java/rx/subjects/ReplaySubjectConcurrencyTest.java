@@ -48,9 +48,13 @@ public class ReplaySubjectConcurrencyTest {
         }
     }
 
+    public ReplaySubject createReplaySubject() {
+        return ReplaySubject.create();
+    }
+
     @Test(timeout = 4000)
     public void testReplaySubjectConcurrentSubscribersDoingReplayDontBlockEachOther() throws InterruptedException {
-        final ReplaySubject<Long> replay = ReplaySubject.create();
+        final ReplaySubject<Long> replay = createReplaySubject();
         Thread source = new Thread(new Runnable() {
 
             @Override
@@ -159,7 +163,7 @@ public class ReplaySubjectConcurrencyTest {
 
     @Test
     public void testReplaySubjectConcurrentSubscriptions() throws InterruptedException {
-        final ReplaySubject<Long> replay = ReplaySubject.create();
+        final ReplaySubject<Long> replay = createReplaySubject();
         Thread source = new Thread(new Runnable() {
 
             @Override
@@ -246,7 +250,7 @@ public class ReplaySubjectConcurrencyTest {
     @Test(timeout = 10000)
     public void testSubscribeCompletionRaceCondition() {
         for (int i = 0; i < 50; i++) {
-            final ReplaySubject<String> subject = ReplaySubject.create();
+            final ReplaySubject<String> subject = createReplaySubject();
             final AtomicReference<String> value1 = new AtomicReference<String>();
 
             subject.subscribe(new Action1<String>() {

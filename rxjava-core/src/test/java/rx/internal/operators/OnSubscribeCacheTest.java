@@ -19,7 +19,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -32,7 +34,6 @@ import rx.Subscriber;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.functions.Func2;
-import rx.internal.operators.OnSubscribeCache;
 import rx.observers.TestObserver;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
@@ -150,5 +151,67 @@ public class OnSubscribeCacheTest {
     @Test
     public void testWithReplaySubjectAndRepeat() {
         testWithCustomSubjectAndRepeat(ReplaySubject.<Integer> create(), 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3);
+    }
+
+    void testWithReplaySubjectWithValues(Subject<Integer, Integer> subject, List<Integer> generated, Integer... expected) {
+        Observable<Integer> source0 = Observable.from(generated)
+                .subscribeOn(Schedulers.io())
+                .flatMap(new Func1<Integer, Observable<Integer>>() {
+                    @Override
+                    public Observable<Integer> call(final Integer i) {
+                        return Observable.timer(i * 20, TimeUnit.MILLISECONDS).map(new Func1<Long, Integer>() {
+                            @Override
+                            public Integer call(Long t1) {
+                                return i;
+                            }
+                        });
+                    }
+                });
+
+        Observable<Integer> source1 = Observable.create(new OnSubscribeCache<Integer>(source0, subject));
+
+        final CountDownLatch cdl = new CountDownLatch(1);
+        TestObserver<Integer> test = new TestObserver<Integer>(new Observer<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                cdl.countDown();
+            }
+
+            @Override
+            public void onCompleted() {
+                cdl.countDown();
+            }
+        });
+        source1.subscribe(test);
+
+        try {
+            cdl.await(20, TimeUnit.SECONDS);
+        } catch (InterruptedException ex) {
+            fail("Interrupted");
+        }
+
+        test.assertReceivedOnNext(Arrays.asList(expected));
+        test.assertTerminalEvent();
+        assertTrue(test.getOnErrorEvents().isEmpty());
+    }
+
+    @Test(timeout = 10000)
+    public void testWithReplaySubjectSingleInitialCapacity() {
+        Subject<Integer, Integer> subject = ReplaySubject.<Integer>create(1);
+
+        List<Integer> testValues = new ArrayList<Integer>(Arrays.asList(1));
+        testWithReplaySubjectWithValues(subject, testValues, 1);
+    }
+
+    @Test(timeout = 10000)
+    public void testWithReplaySubjectSingleInitialCapacityMultiValues() {
+        Subject<Integer, Integer> subject = ReplaySubject.<Integer>create(1);
+
+        List<Integer> testValues = new ArrayList<Integer>(Arrays.asList(1, 2, 3, 5, 8, 13));
+        testWithReplaySubjectWithValues(subject, testValues, 1, 2, 3, 5, 8, 13);
     }
 }

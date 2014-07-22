@@ -3379,6 +3379,40 @@ public class Observable<T> {
     }
 
     /**
+     * Caches the emissions from the source Observable and replays them in order to any subsequent Subscribers.
+     * This method has similar behavior to {@link #replay} except that this auto-subscribes to the source
+     * Observable rather than returning a {@link ConnectableObservable} for which you must call
+     * {@code connect} to activate the subscription.
+     * <p>
+     * <img width="640" height="410" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/cache.png">
+     * <p>
+     * This is useful when you want an Observable to cache responses and you can't control the
+     * subscribe/unsubscribe behavior of all the {@link Subscriber}s.
+     * <p>
+     * When you call {@code cache}, it does not yet subscribe to the source Observable and so does not yet
+     * begin cacheing items. This only happens when the first Subscriber calls the resulting Observable's
+     * {@code subscribe} method.
+     * <p>
+     *
+     * <!-- IS THE FOLLOWING NOTE STILL VALID??? -->
+     *
+     * <em>Note:</em> You sacrifice the ability to unsubscribe from the origin when you use the {@code cache}
+     * Observer so be careful not to use this Observer on Observables that emit an infinite or very large number
+     * of items that will use up memory.
+     * <p>
+     * {@code cache} does not operate by default on a particular {@link Scheduler}.
+     *
+     * @warn description may be out-of-date
+     * @param capacity hint how many values will be emitted/cached
+     * @return an Observable that, when first subscribed to, caches all of its items and notifications for the
+     *         benefit of subsequent subscribers
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#wiki-cache">RxJava Wiki: cache()</a>
+     */
+    public final Observable<T> cache(int capacity) {
+        return create(new OnSubscribeCache<T>(this, capacity));
+    }
+
+    /**
      * Returns an Observable that emits the items emitted by the source Observable, converted to the specified
      * type.
      * <p>

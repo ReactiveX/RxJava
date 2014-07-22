@@ -18,6 +18,7 @@ package rx.subjects;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
+import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 
 import rx.Observer;
 import rx.Scheduler;
@@ -87,7 +88,13 @@ public final class ReplaySubject<T> extends Subject<T, T> {
      * @return the created subject
      */
     public static <T> ReplaySubject<T> create(int capacity) {
-        final UnboundedReplayState<T> state = new UnboundedReplayState<T>(capacity);
+        final ReplayState<T, Integer> state;
+        if (capacity <= 0 || capacity > 1) {
+            state = new UnboundedReplayState<T>(capacity);
+        } else {
+            state = new SingleItemReplayState<T>();
+        }
+
         SubjectSubscriptionManager<T> ssm = new SubjectSubscriptionManager<T>();
         ssm.onStart = new Action1<SubjectObserver<T>>() {
             @Override
@@ -374,7 +381,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         public void accept(Observer<? super T> o, int idx) {
             nl.accept(o, list.get(idx));
         }
-        
+
         @Override
         public void complete() {
             if (!terminated) {
@@ -528,6 +535,139 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         @Override
         public boolean terminated() {
             return terminated;
+        }
+    }
+
+    static final class SingleItemReplayState<T> implements ReplayState<T, Integer> {
+        private final NotificationLite<T> nl = NotificationLite.instance();
+        /** The buffer. */
+        private volatile ArrayList<Object> list;
+        @SuppressWarnings(value = "rawtypes")
+        static final AtomicReferenceFieldUpdater<SingleItemReplayState, ArrayList> LIST_UPDATER =
+                AtomicReferenceFieldUpdater.newUpdater(SingleItemReplayState.class, ArrayList.class, "list");
+        /** The size of the buffer. */
+        private volatile int index;
+        @SuppressWarnings("rawtypes")
+        static final AtomicIntegerFieldUpdater<SingleItemReplayState> INDEX_UPDATER
+                = AtomicIntegerFieldUpdater.newUpdater(SingleItemReplayState.class, "index");
+
+        private volatile Object item;
+        @SuppressWarnings(value = "rawtypes")
+        static final AtomicReferenceFieldUpdater<SingleItemReplayState, Object> ITEM_UPDATER =
+                AtomicReferenceFieldUpdater.newUpdater(SingleItemReplayState.class, Object.class, "item");
+
+        /** The termination flag. */
+        private volatile int terminalObjectIndex = -1;
+        private volatile Object terminalObject;
+        @SuppressWarnings(value = "rawtypes")
+        static final AtomicReferenceFieldUpdater<SingleItemReplayState, Object> TERMINAL_OBJECT_UPDATER =
+                AtomicReferenceFieldUpdater.newUpdater(SingleItemReplayState.class, Object.class, "terminalObject");
+
+        @Override
+        public void next(T n) {
+            if (terminalObjectIndex >= 0) {
+                return;
+            }
+
+            if (index == 0 && ITEM_UPDATER.compareAndSet(this, null, nl.next(n))) {
+                INDEX_UPDATER.getAndIncrement(this);
+                return;
+            } else if (list == null) {
+                setupList();
+            }
+
+            list.add(index - 1, nl.next(n));
+            INDEX_UPDATER.getAndIncrement(this);
+        }
+
+        public void accept(Observer<? super T> o, int idx) {
+            if (idx < index) {
+                if (idx == 0 && item != null) {
+                    nl.accept(o, item);
+                    return;
+                }
+
+                if (terminalObjectIndex == idx && terminalObject != null) {
+                    nl.accept(o, terminalObject);
+                } else {
+                    nl.accept(o, list.get(idx - 1));
+                }
+            } else {
+                throw new IndexOutOfBoundsException();
+            }
+
+        }
+
+        @Override
+        public void complete() {
+            if (terminalObjectIndex >= 0) {
+                return;
+            }
+
+            terminalObjectIndex = index;
+            if (terminalObject == null && TERMINAL_OBJECT_UPDATER.compareAndSet(this, null, nl.completed())) {
+                INDEX_UPDATER.getAndIncrement(this);
+                return;
+            } else if (list == null) {
+                setupList();
+            }
+
+            list.add(index - 1, nl.completed());
+            INDEX_UPDATER.getAndIncrement(this);
+        }
+
+        @Override
+        public void error(Throwable e) {
+            if (terminalObjectIndex >= 0) {
+                return;
+            }
+
+            terminalObjectIndex = index;
+            if (terminalObject == null && TERMINAL_OBJECT_UPDATER.compareAndSet(this, null, nl.error(e))) {
+                INDEX_UPDATER.getAndIncrement(this);
+                return;
+            } else if (list == null) {
+                setupList();
+            }
+
+            list.add(index - 1, nl.error(e));
+            INDEX_UPDATER.getAndIncrement(this);
+        }
+
+        @Override
+        public boolean terminated() {
+            return terminalObjectIndex != -1;
+        }
+
+        @Override
+        public void replayObserver(SubjectObserver<? super T> observer) {
+            Integer lastEmittedLink = observer.index();
+            if (lastEmittedLink != null) {
+                int l = replayObserverFromIndex(lastEmittedLink, observer);
+                observer.index(l);
+            } else {
+                throw new IllegalStateException("failed to find lastEmittedLink for: " + observer);
+            }
+        }
+
+        @Override
+        public Integer replayObserverFromIndex(Integer idx, SubjectObserver<? super T> observer) {
+            int i = idx;
+            while (i < index) {
+                accept(observer, i);
+                i++;
+            }
+
+            return i;
+        }
+
+        @Override
+        public Integer replayObserverFromIndexTest(Integer idx, SubjectObserver<? super T> observer, long now) {
+            return replayObserverFromIndex(idx, observer);
+        }
+
+        private void setupList() {
+            LIST_UPDATER.compareAndSet(this, null, new ArrayList<T>(16));
         }
     }
     
