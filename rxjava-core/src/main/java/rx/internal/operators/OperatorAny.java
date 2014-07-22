@@ -39,6 +39,12 @@ public final class OperatorAny<T> implements Operator<Boolean, T> {
         return new Subscriber<T>(child) {
             boolean hasElements;
             boolean done;
+
+            @Override
+            public void onStart() {
+                request(Long.MAX_VALUE);
+            }
+
             @Override
             public void onNext(T t) {
                 hasElements = true;
@@ -68,7 +74,7 @@ public final class OperatorAny<T> implements Operator<Boolean, T> {
                     child.onCompleted();
                 }
             }
-            
+
         };
     }
 }
