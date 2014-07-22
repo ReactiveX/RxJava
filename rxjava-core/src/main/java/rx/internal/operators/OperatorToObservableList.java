@@ -45,6 +45,11 @@ public final class OperatorToObservableList<T> implements Operator<List<T>, T> {
             final List<T> list = new LinkedList<T>();
 
             @Override
+            public void onStart() {
+                request(Long.MAX_VALUE);
+            }
+
+            @Override
             public void onCompleted() {
                 try {
                     o.onNext(new ArrayList<T>(list));

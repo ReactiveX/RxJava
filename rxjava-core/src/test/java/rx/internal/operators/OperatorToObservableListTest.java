@@ -23,6 +23,7 @@ import static org.mockito.Mockito.verify;
 import java.util.Arrays;
 import java.util.List;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -93,5 +94,12 @@ public class OperatorToObservableListTest {
         verify(observer, times(1)).onNext(Arrays.asList("one", null, "three"));
         verify(observer, Mockito.never()).onError(any(Throwable.class));
         verify(observer, times(1)).onCompleted();
+    }
+
+    @Test
+    public void testListWithBlockingFirst() {
+        Observable<String> o = Observable.from(Arrays.asList("one", "two", "three"));
+        List<String> actual = o.toList().toBlocking().first();
+        Assert.assertEquals(Arrays.asList("one", "two", "three"), actual);
     }
 }
