@@ -15,6 +15,7 @@
  */
 package rx.internal.operators;
 
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -26,6 +27,8 @@ import rx.Observable;
 import rx.Observer;
 import rx.functions.Func1;
 import rx.functions.Functions;
+
+import java.util.Arrays;
 
 public class OperatorAnyTest {
 
@@ -196,5 +199,17 @@ public class OperatorAnyTest {
         verify(observer, never()).onNext(true);
         verify(observer, never()).onError(org.mockito.Matchers.any(Throwable.class));
         verify(observer, times(1)).onCompleted();
+    }
+
+    @Test
+    public void testWithFollowingFirst() {
+        Observable<Integer> o = Observable.from(Arrays.asList(1, 3, 5, 6));
+        Observable<Boolean> anyEven = o.exists(new Func1<Integer, Boolean>() {
+            @Override
+            public Boolean call(Integer i) {
+                return i % 2 == 0;
+            }
+        });
+        assertTrue(anyEven.toBlocking().first());
     }
 }
