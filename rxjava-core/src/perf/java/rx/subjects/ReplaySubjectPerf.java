@@ -19,8 +19,8 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
 import org.openjdk.jmh.annotations.Param;
@@ -42,8 +42,16 @@ public class ReplaySubjectPerf {
     }
 
     @Benchmark
-    public void subscribeBeforeEvents(final Input input, final Blackhole bh) throws Exception {
-        ReplaySubject<Object> subject = ReplaySubject.create();
+    public void subscribeBeforeEventsUnbounded(final Input input, final Blackhole bh) throws Exception {
+        subscribeBeforeEvents(ReplaySubject.create(), input, bh);
+    }
+
+    @Benchmark
+    public void subscribeBeforeEventsCount1(final Input input, final Blackhole bh) throws Exception {
+        subscribeBeforeEvents(ReplaySubject.create(1), input, bh);
+    }
+
+    private void subscribeBeforeEvents(ReplaySubject<Object> subject, final Input input, final Blackhole bh) throws Exception {
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicLong sum = new AtomicLong();
 
@@ -71,8 +79,16 @@ public class ReplaySubjectPerf {
     }
 
     @Benchmark
-    public void subscribeAfterEvents(final Input input, final Blackhole bh) throws Exception {
-        ReplaySubject<Object> subject = ReplaySubject.create();
+    public void subscribeAfterEventsUnbounded(final Input input, final Blackhole bh) throws Exception {
+        subscribeAfterEvents(ReplaySubject.create(), input, bh);
+    }
+
+    @Benchmark
+    public void subscribeAfterEventsCount1(final Input input, final Blackhole bh) throws Exception {
+        subscribeAfterEvents(ReplaySubject.create(1), input, bh);
+    }
+
+    private void subscribeAfterEvents(ReplaySubject<Object> subject, final Input input, final Blackhole bh) throws Exception {
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicLong sum = new AtomicLong();
 
