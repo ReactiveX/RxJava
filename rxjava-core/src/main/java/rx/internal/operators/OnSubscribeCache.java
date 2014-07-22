@@ -52,6 +52,10 @@ public final class OnSubscribeCache<T> implements OnSubscribe<T> {
         this(source, ReplaySubject.<T> create());
     }
 
+    public OnSubscribeCache(Observable<? extends T> source, int capacity) {
+        this(source, ReplaySubject.<T> create(capacity));
+    }
+
     /* accessible to tests */OnSubscribeCache(Observable<? extends T> source, Subject<? super T, ? extends T> cache) {
         this.source = source;
         this.cache = cache;
