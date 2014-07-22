@@ -53,6 +53,11 @@ public final class OperatorToObservableSortedList<T> implements Operator<List<T>
             final List<T> list = new ArrayList<T>();
 
             @Override
+            public void onStart() {
+                request(Long.MAX_VALUE);
+            }
+
+            @Override
             public void onCompleted() {
                 try {
 

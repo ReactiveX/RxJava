@@ -15,6 +15,7 @@
  */
 package rx.internal.operators;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -64,5 +65,11 @@ public class OperatorToObservableSortedListTest {
         verify(observer, times(1)).onNext(Arrays.asList(5, 4, 3, 2, 1));
         verify(observer, Mockito.never()).onError(any(Throwable.class));
         verify(observer, times(1)).onCompleted();
+    }
+
+    @Test
+    public void testWithFollowingFirst() {
+        Observable<Integer> o = Observable.from(1, 3, 2, 5, 4);
+        assertEquals(Arrays.asList(1, 2, 3, 4, 5), o.toSortedList().toBlocking().first());
     }
 }
