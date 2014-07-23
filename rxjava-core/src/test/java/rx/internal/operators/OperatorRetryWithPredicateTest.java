@@ -1,18 +1,18 @@
- /**
-  * Copyright 2014 Netflix, Inc.
-  *
-  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
-  * use this file except in compliance with the License. You may obtain a copy of
-  * the License at
-  *
-  * http://www.apache.org/licenses/LICENSE-2.0
-  *
-  * Unless required by applicable law or agreed to in writing, software
-  * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
-  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
-  * License for the specific language governing permissions and limitations under
-  * the License.
-  */
+/**
+ * Copyright 2014 Netflix, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
 package rx.internal.operators;
 
 import java.io.IOException;
@@ -51,26 +51,29 @@ public class OperatorRetryWithPredicateTest {
             return t2 instanceof IOException;
         }
     };
+
     @Test
     public void testWithNothingToRetry() {
         Observable<Integer> source = Observable.range(0, 3);
-        
+
         @SuppressWarnings("unchecked")
         Observer<Integer> o = mock(Observer.class);
         InOrder inOrder = inOrder(o);
-        
+
         source.retry(retryTwice).subscribe(o);
-        
+
         inOrder.verify(o).onNext(0);
         inOrder.verify(o).onNext(1);
         inOrder.verify(o).onNext(2);
         inOrder.verify(o).onCompleted();
         verify(o, never()).onError(any(Throwable.class));
     }
+
     @Test
     public void testRetryTwice() {
         Observable<Integer> source = Observable.create(new OnSubscribe<Integer>() {
             int count;
+
             @Override
             public void call(Subscriber<? super Integer> t1) {
                 count++;
@@ -85,11 +88,11 @@ public class OperatorRetryWithPredicateTest {
                 t1.onCompleted();
             }
         });
-        
+
         @SuppressWarnings("unchecked")
         Observer<Integer> o = mock(Observer.class);
         InOrder inOrder = inOrder(o);
-        
+
         source.retry(retryTwice).subscribe(o);
 
         inOrder.verify(o).onNext(0);
@@ -100,8 +103,9 @@ public class OperatorRetryWithPredicateTest {
         inOrder.verify(o).onNext(3);
         inOrder.verify(o).onCompleted();
         verify(o, never()).onError(any(Throwable.class));
-        
+
     }
+
     @Test
     public void testRetryTwiceAndGiveUp() {
         Observable<Integer> source = Observable.create(new OnSubscribe<Integer>() {
@@ -112,11 +116,11 @@ public class OperatorRetryWithPredicateTest {
                 t1.onError(new TestException());
             }
         });
-        
+
         @SuppressWarnings("unchecked")
         Observer<Integer> o = mock(Observer.class);
         InOrder inOrder = inOrder(o);
-        
+
         source.retry(retryTwice).subscribe(o);
 
         inOrder.verify(o).onNext(0);
@@ -127,12 +131,14 @@ public class OperatorRetryWithPredicateTest {
         inOrder.verify(o).onNext(1);
         inOrder.verify(o).onError(any(TestException.class));
         verify(o, never()).onCompleted();
-        
+
     }
+
     @Test
     public void testRetryOnSpecificException() {
         Observable<Integer> source = Observable.create(new OnSubscribe<Integer>() {
             int count;
+
             @Override
             public void call(Subscriber<? super Integer> t1) {
                 count++;
@@ -147,11 +153,11 @@ public class OperatorRetryWithPredicateTest {
                 t1.onCompleted();
             }
         });
-        
+
         @SuppressWarnings("unchecked")
         Observer<Integer> o = mock(Observer.class);
         InOrder inOrder = inOrder(o);
-        
+
         source.retry(retryOnTestException).subscribe(o);
 
         inOrder.verify(o).onNext(0);
@@ -163,12 +169,14 @@ public class OperatorRetryWithPredicateTest {
         inOrder.verify(o).onCompleted();
         verify(o, never()).onError(any(Throwable.class));
     }
+
     @Test
     public void testRetryOnSpecificExceptionAndNotOther() {
         final IOException ioe = new IOException();
         final TestException te = new TestException();
         Observable<Integer> source = Observable.create(new OnSubscribe<Integer>() {
             int count;
+
             @Override
             public void call(Subscriber<? super Integer> t1) {
                 count++;
@@ -183,11 +191,11 @@ public class OperatorRetryWithPredicateTest {
                 t1.onError(te);
             }
         });
-        
+
         @SuppressWarnings("unchecked")
         Observer<Integer> o = mock(Observer.class);
         InOrder inOrder = inOrder(o);
-        
+
         source.retry(retryOnTestException).subscribe(o);
 
         inOrder.verify(o).onNext(0);
@@ -200,7 +208,7 @@ public class OperatorRetryWithPredicateTest {
         verify(o, never()).onError(ioe);
         verify(o, never()).onCompleted();
     }
-    
+
     @Test
     public void testUnsubscribeFromRetry() {
         PublishSubject<Integer> subject = PublishSubject.create();
@@ -216,7 +224,7 @@ public class OperatorRetryWithPredicateTest {
         subject.onNext(2);
         assertEquals(1, count.get());
     }
-    
+
     @Test(timeout = 1000)
     public void testUnsubscribeAfterError() {
 
@@ -225,9 +233,7 @@ public class OperatorRetryWithPredicateTest {
 
         // Observable that always fails after 100ms
         OperatorRetryTest.SlowObservable so = new OperatorRetryTest.SlowObservable(100, 0);
-        Observable<Long> o = Observable
-                .create(so)
-                .retry(retry5);
+        Observable<Long> o = Observable.create(so).retry(retry5);
 
         OperatorRetryTest.AsyncObserver<Long> async = new OperatorRetryTest.AsyncObserver<Long>(observer);
 
@@ -252,10 +258,7 @@ public class OperatorRetryWithPredicateTest {
 
         // Observable that sends every 100ms (timeout fails instead)
         OperatorRetryTest.SlowObservable so = new OperatorRetryTest.SlowObservable(100, 10);
-        Observable<Long> o = Observable
-                .create(so)
-                .timeout(80, TimeUnit.MILLISECONDS)
-                .retry(retry5);
+        Observable<Long> o = Observable.create(so).timeout(80, TimeUnit.MILLISECONDS).retry(retry5);
 
         OperatorRetryTest.AsyncObserver<Long> async = new OperatorRetryTest.AsyncObserver<Long>(observer);
 
