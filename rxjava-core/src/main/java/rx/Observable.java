@@ -6268,6 +6268,34 @@ public class Observable<T> {
      * <img width="640" height="430" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/retryWhen.f.png" alt="">
      * <p>
      * {@code retryWhen} operates by default on the {@code trampoline} {@link Scheduler}.
+     * 
+     * Example:
+     * 
+     * This retries 3 times, each time incrementing the number of seconds it waits.
+     * 
+     * <pre> {@code
+     *  Observable.create((Subscriber<? super String> s) -> {
+     *      System.out.println("subscribing");
+     *      s.onError(new RuntimeException("always fails"));
+     *  }).retryWhen(attempts -> {
+     *      return attempts.zip(Observable.range(1, 3), (n, i) -> i).flatMap(i -> {
+     *          System.out.println("delay retry by " + i + " second(s)");
+     *          return Observable.timer(i, TimeUnit.SECONDS);
+     *      });
+     *  }).toBlocking().forEach(System.out::println);
+     * } </pre>
+     * 
+     * Output is:
+     *
+     * <pre> {@code
+     * subscribing
+     * delay retry by 1 second(s)
+     * subscribing
+     * delay retry by 2 second(s)
+     * subscribing
+     * delay retry by 3 second(s)
+     * subscribing
+     * } </pre>
      *
      * @param notificationHandler
      *            recieves an Observable of notifications with which a user can complete or error, aborting the retry. 
