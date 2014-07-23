@@ -54,6 +54,11 @@ public final class OperatorWindowWithStartEndObservable<T, U, V> implements Oper
         Subscriber<U> open = new Subscriber<U>(child) {
 
             @Override
+            public void onStart() {
+                request(Long.MAX_VALUE);
+            }
+            
+            @Override
             public void onNext(U t) {
                 sub.beginWindow(t);
             }
@@ -100,6 +105,12 @@ public final class OperatorWindowWithStartEndObservable<T, U, V> implements Oper
             this.csub = new CompositeSubscription();
             child.add(csub);
         }
+        
+        @Override
+        public void onStart() {
+            request(Long.MAX_VALUE);
+        }
+        
         @Override
         public void onNext(T t) {
             List<SerializedSubject<T>> list;

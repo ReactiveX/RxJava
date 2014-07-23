@@ -45,6 +45,13 @@ public final class OperatorDebounceWithSelector<T, U> implements Operator<T, T> 
         return new Subscriber<T>(child) {
             final DebounceState<T> state = new DebounceState<T>();
             final Subscriber<?> self = this;
+            
+            @Override
+            public void onStart() {
+                // debounce wants to receive everything as a firehose without backpressure
+                request(Long.MAX_VALUE);
+            }
+            
             @Override
             public void onNext(T t) {
                 Observable<U> debouncer;

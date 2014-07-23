@@ -45,6 +45,8 @@ public final class OperatorDistinctUntilChanged<T, U> implements Operator<T, T> 
                 if (hasPrevious) {
                     if (!(currentKey == key || (key != null && key.equals(currentKey)))) {
                         child.onNext(t);
+                    } else {
+                        request(1);
                     }
                 } else {
                     hasPrevious = true;

@@ -70,6 +70,12 @@ public final class OperatorSampleWithTime<T> implements Operator<T, T> {
         public SamplerSubscriber(Subscriber<? super T> subscriber) {
             this.subscriber = subscriber;
         }
+        
+        @Override
+        public void onStart() {
+            request(Long.MAX_VALUE);
+        }
+        
         @Override
         public void onNext(T t) {
             value = t;

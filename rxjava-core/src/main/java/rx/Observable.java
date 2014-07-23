@@ -2550,6 +2550,12 @@ public class Observable<T> {
      * <img width="640" height="200" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timer.p.png" alt="">
      * <p>
      * {@code timer} operates by default on the {@code computation} {@link Scheduler}.
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure as it uses time. If the downstream needs a slower rate it should slow 
+     * the timer or use something like `onBackpressureDrop`.
+     * 
      * 
      * @param initialDelay
      *            the initial delay time to wait before emitting the first value of 0L
@@ -2571,6 +2577,11 @@ public class Observable<T> {
      * after each {@code period} of time thereafter, on a specified {@link Scheduler}.
      * <p>
      * <img width="640" height="200" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timer.ps.png" alt="">
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure as it uses time. If the downstream needs a slower rate it should slow 
+     * the timer or use something like `onBackpressureDrop`.
      * 
      * @param initialDelay
      *            the initial delay time to wait before emitting the first value of 0L
@@ -2595,6 +2606,11 @@ public class Observable<T> {
      * <img width="640" height="200" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timer.png" alt="">
      * <p>
      * {@code timer} operates by default on the {@code computation} {@link Scheduler}.
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure as it uses time. If the downstream needs a slower rate it should slow 
+     * the timer or use something like `onBackpressureDrop`.
      * 
      * @param delay
      *            the initial delay before emitting a single {@code 0L}
@@ -2613,6 +2629,11 @@ public class Observable<T> {
      * completes.
      * <p>
      * <img width="640" height="200" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timer.s.png" alt="">
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure as it uses time. If the downstream needs a slower rate it should slow 
+     * the timer or use something like `onBackpressureDrop`.
      * 
      * @param delay
      *            the initial delay before emitting a single 0L
@@ -3095,6 +3116,11 @@ public class Observable<T> {
      * <img width="640" height="395" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/buffer1.png" alt="">
      * <p>
      * This version of {@code buffer} does not operate by default on a particular {@link Scheduler}.
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure as it is instead controlled by the given Observables and buffers data.
+     * It requests `Long.MAX_VALUE` upstream and does not obey downstream requests.
      * 
      * @param bufferClosingSelector
      *            a {@link Func0} that produces an Observable that governs the boundary between buffers.
@@ -3165,6 +3191,10 @@ public class Observable<T> {
      * <img width="640" height="320" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/buffer7.png" alt="">
      * <p>
      * This version of {@code buffer} operates by default on the {@code computation} {@link Scheduler}.
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure as it uses time. It requests `Long.MAX_VALUE` upstream and does not obey downstream requests.
      * 
      * @param timespan
      *            the period of time each buffer collects items before it is emitted
@@ -3189,6 +3219,10 @@ public class Observable<T> {
      * Observable emits the current buffer and propagates the notification from the source Observable.
      * <p>
      * <img width="640" height="320" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/buffer7.s.png" alt="">
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure as it uses time. It requests `Long.MAX_VALUE` upstream and does not obey downstream requests.
      * 
      * @param timespan
      *            the period of time each buffer collects items before it is emitted
@@ -3216,6 +3250,10 @@ public class Observable<T> {
      * <img width="640" height="320" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/buffer5.png" alt="">
      * <p>
      * This version of {@code buffer} operates by default on the {@code computation} {@link Scheduler}.
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure as it uses time. It requests `Long.MAX_VALUE` upstream and does not obey downstream requests.
      * 
      * @param timespan
      *            the period of time each buffer collects items before it is emitted and replaced with a new
@@ -3241,6 +3279,10 @@ public class Observable<T> {
      * <img width="640" height="320" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/buffer6.png" alt="">
      * <p>
      * This version of {@code buffer} operates by default on the {@code computation} {@link Scheduler}.
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure as it uses time. It requests `Long.MAX_VALUE` upstream and does not obey downstream requests.
      * 
      * @param timespan
      *            the period of time each buffer collects items before it is emitted and replaced with a new
@@ -3268,6 +3310,10 @@ public class Observable<T> {
      * from the source Observable.
      * <p>
      * <img width="640" height="320" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/buffer6.s.png" alt="">
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure as it uses time. It requests `Long.MAX_VALUE` upstream and does not obey downstream requests.
      * 
      * @param timespan
      *            the period of time each buffer collects items before it is emitted and replaced with a new
@@ -3296,6 +3342,10 @@ public class Observable<T> {
      * from the source Observable.
      * <p>
      * <img width="640" height="320" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/buffer5.s.png" alt="">
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure as it uses time. It requests `Long.MAX_VALUE` upstream and does not obey downstream requests.
      * 
      * @param timespan
      *            the period of time each buffer collects items before it is emitted and replaced with a new
@@ -3321,6 +3371,11 @@ public class Observable<T> {
      * <img width="640" height="470" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/buffer2.png" alt="">
      * <p>
      * This version of {@code buffer} does not operate by default on a particular {@link Scheduler}.
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure as it is instead controlled by the given Observables and buffers data.
+     * It requests `Long.MAX_VALUE` upstream and does not obey downstream requests.
      * 
      * @param bufferOpenings
      *            the Observable that, when it emits an item, causes a new buffer to be created
@@ -3346,6 +3401,12 @@ public class Observable<T> {
      * latest buffer and complete.
      * <p>
      * This version of {@code buffer} does not operate by default on a particular {@link Scheduler}.
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure as it is instead controlled by the `Observable boundary` and buffers data.
+     * It requests `Long.MAX_VALUE` upstream and does not obey downstream requests.
+     * 
      * 
      * @param <B>
      *            the boundary value type (ignored)
@@ -3371,6 +3432,10 @@ public class Observable<T> {
      * latest buffer and complete.
      * <p>
      * This version of {@code buffer} does not operate by default on a particular {@link Scheduler}.
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure as it is instead controlled by the `Observable boundary` and buffers data.
+     * It requests `Long.MAX_VALUE` upstream and does not obey downstream requests.
      * 
      * @param <B>
      *            the boundary value type (ignored)
@@ -3408,6 +3473,10 @@ public class Observable<T> {
      * of items that will use up memory.
      * <p>
      * {@code cache} does not operate by default on a particular {@link Scheduler}.
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support upstream backpressure as it is purposefully requesting and caching everything emitted.
      * 
      * @return an Observable that, when first subscribed to, caches all of its items and notifications for the
      *         benefit of subsequent subscribers
@@ -3437,6 +3506,10 @@ public class Observable<T> {
      * of items that will use up memory.
      * <p>
      * {@code cache} does not operate by default on a particular {@link Scheduler}.
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support upstream backpressure as it is purposefully requesting and caching everything emitted.
      * 
      * @param capacity hint for number of items to cache (for optimizing underlying data structure)
      * @return an Observable that, when first subscribed to, caches all of its items and notifications for the
@@ -3477,6 +3550,10 @@ public class Observable<T> {
      * This is a simplified version of {@code reduce} that does not need to return the state on each pass.
      * <p>
      * {@code collect} does not operate by default on a particular {@link Scheduler}.
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure because by intent it will receive all values and reduce them to a single `onNext`.
      * 
      * @param state
      *           the mutable data structure that will collect the items
@@ -3569,6 +3646,10 @@ public class Observable<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/count.png" alt="">
      * <p>
      * {@code count} does not operate by default on a particular {@link Scheduler}.
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure because by intent it will receive all values and reduce them to a single `onNext`.
      * 
      * @return an Observable that emits a single item: the number of elements emitted by the source Observable
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#count-and-longcount">RxJava wiki: count</a>
@@ -3591,6 +3672,10 @@ public class Observable<T> {
      * <img width="640" height="425" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/debounce.f.png" alt="">
      * <p>
      * This version of {@code debounce} does not operate by default on a particular {@link Scheduler}.
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure as it uses the `debounceSelector` to mark boundaries.
      * 
      * @param <U>
      *            the debounce value type (ignored)
@@ -3624,6 +3709,10 @@ public class Observable<T> {
      * </ul>
      * <p>
      * This version of {@code debounce} operates by default on the {@code computation} {@link Scheduler}.
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure as it uses time to control data flow.
      * 
      * @param timeout
      *            the time each item has to be "the most recent" of those emitted by the source Observable to
@@ -3657,6 +3746,10 @@ public class Observable<T> {
      * <li><a href="http://unscriptable.com/2009/03/20/debouncing-javascript-methods/">Debouncing: javascript methods</a></li>
      * <li><a href="http://www.illyriad.co.uk/blog/index.php/2011/09/javascript-dont-spam-your-server-debounce-and-throttle/">Javascript - don't spam your server: debounce and throttle</a></li>
      * </ul>
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure as it uses time to control data flow.
      * 
      * @param timeout
      *            the time each item has to be "the most recent" of those emitted by the source Observable to
@@ -4401,6 +4494,12 @@ public class Observable<T> {
      * discard their buffers by applying an operator like {@link #take}{@code (0)} to them.
      * <p>
      * {@code groupBy} does not operate by default on a particular {@link Scheduler}.
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure as splitting a stream effectively turns it into a "hot observable" and
+     * blocking any one group would block the entire parent stream. If backpressure is needed on individual groups then 
+     * operators such as `onBackpressureDrop` or `onBackpressureBuffer` should be used.
      * 
      * @param keySelector
      *            a function that extracts the key for each item
@@ -4428,6 +4527,12 @@ public class Observable<T> {
      * discard their buffers by applying an operator like {@link #take}{@code (0)} to them.
      * <p>
      * {@code groupByUntil} does not operate by default on a particular {@link Scheduler}.
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure as splitting a stream effectively turns it into a "hot observable" and
+     * blocking any one group would block the entire parent stream. If backpressure is needed on individual groups then 
+     * operators such as `onBackpressureDrop` or `onBackpressureBuffer` should be used.
      * 
      * @param keySelector
      *            a function to extract the key for each item
@@ -4455,6 +4560,12 @@ public class Observable<T> {
      * discard their buffers by applying an operator like {@link #take}{@code (0)} to them.
      * <p>
      * {@code groupByUntil} does not operate by default on a particular {@link Scheduler}.
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure as splitting a stream effectively turns it into a "hot observable" and
+     * blocking any one group would block the entire parent stream. If backpressure is needed on individual groups then 
+     * operators such as `onBackpressureDrop` or `onBackpressureBuffer` should be used.
      * 
      * @param keySelector
      *            a function to extract the key for each item
@@ -4675,6 +4786,10 @@ public class Observable<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/longCount.png" alt="">
      * <p>
      * {@code longCount} does not operate by default on a particular {@link Scheduler}.
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure because by intent it will receive all values and reduce them to a single `onNext`.
      * 
      * @return an Observable that emits a single item: the number of items emitted by the source Observable as a
      *         64-bit Long item
@@ -4881,6 +4996,12 @@ public class Observable<T> {
      * {@link #publish} and {@link #publishLast}.
      * <p>
      * {@code multicast} does not operate by default on a particular {@link Scheduler}.
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure because multicasting means the stream is "hot" with multiple subscribers.
+     * <p>
+     * Each child will need to manage backpressure independently using operators such as `onBackpressureDrop` and `onBackpressureBuffer`.
      * 
      * @warn javadocs incomplete; description needs improvement
      * @param subjectFactory
@@ -4908,6 +5029,12 @@ public class Observable<T> {
      * is called.
      * <p>
      * {@code multicast} does not operate by default on a particular {@link Scheduler}.
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure because multicasting means the stream is "hot" with multiple subscribers.
+     * <p>
+     * Each child will need to manage backpressure independently using operators such as `onBackpressureDrop` and `onBackpressureBuffer`.
      * 
      * @param subject
      *            the {@link Subject} for the {@link ConnectableObservable} to push source items into
@@ -4974,7 +5101,10 @@ public class Observable<T> {
     }
 
     /**
-     * @warn javadoc missing
+     * Use this operator when the upstream does not natively support backpressure and you wish to drop `onNext` when unable to handle further events.
+     * <p>
+     * If the downstream request count hits 0 then `onNext` will be dropped until `request(long n)` is invoked again to increase the request count.
+     * 
      * @return
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Backpressure">RxJava wiki: Backpressure</a>
      * @since 0.20
@@ -5091,7 +5221,9 @@ public class Observable<T> {
      * @return the original Observable, with appropriately modified behavior
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Error-Handling-Operators#onerrorflatmap">RxJava wiki: onErrorFlatMap</a>
      * @since 0.17
+     * @deprecated See https://github.com/Netflix/RxJava/issues/1465
      */
+    @Deprecated
     public final Observable<T> onErrorFlatMap(final Func1<OnErrorThrowable, ? extends Observable<? extends T>> resumeFunction) {
         return lift(new OperatorOnErrorFlatMap<T>(resumeFunction));
     }
@@ -5178,6 +5310,12 @@ public class Observable<T> {
      * <img width="640" height="510" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/publishConnect.png" alt="">
      * <p>
      * {@code publish} does not operate by default on a particular {@link Scheduler}.
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure because multicasting means the stream is "hot" with multiple subscribers.
+     * <p>
+     * Each child will need to manage backpressure independently using operators such as `onBackpressureDrop` and `onBackpressureBuffer`.
      * 
      * @return a {@link ConnectableObservable} that upon connection causes the source Observable to emit items
      *         to its {@link Observer}s
@@ -5195,6 +5333,12 @@ public class Observable<T> {
      * <img width="640" height="510" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/publishConnect.f.png" alt="">
      * <p>
      * {@code publish} does not operate by default on a particular {@link Scheduler}.
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure because multicasting means the stream is "hot" with multiple subscribers.
+     * <p>
+     * Each child will need to manage backpressure independently using operators such as `onBackpressureDrop` and `onBackpressureBuffer`.
      * 
      * @param <R>
      *            the type of items emitted by the resulting Observable
@@ -5223,6 +5367,12 @@ public class Observable<T> {
      * <img width="640" height="510" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/publishConnect.if.png" alt="">
      * <p>
      * {@code publish} does not operate by default on a particular {@link Scheduler}.
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure because multicasting means the stream is "hot" with multiple subscribers.
+     * <p>
+     * Each child will need to manage backpressure independently using operators such as `onBackpressureDrop` and `onBackpressureBuffer`.
      * 
      * @param <R>
      *            the type of items emitted by the resulting Observable
@@ -5254,6 +5404,12 @@ public class Observable<T> {
      * <img width="640" height="510" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/publishConnect.i.png" alt="">
      * <p>
      * {@code publish} does not operate by default on a particular {@link Scheduler}.
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure because multicasting means the stream is "hot" with multiple subscribers.
+     * <p>
+     * Each child will need to manage backpressure independently using operators such as `onBackpressureDrop` and `onBackpressureBuffer`.
      * 
      * @param initialValue
      *            the initial value to be emitted by the resulting Observable
@@ -5274,6 +5430,10 @@ public class Observable<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/publishLast.png" alt="">
      * <p>
      * {@code publishLast} does not operate by default on a particular {@link Scheduler}.
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure because by intent it is skipping all values except the last.
      * 
      * @return a {@link ConnectableObservable} that emits only the last item emitted by the source Observable
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Connectable-Observable-Operators#observablepublishlast">RxJava wiki: publishLast</a>
@@ -5290,6 +5450,10 @@ public class Observable<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/publishLast.f.png" alt="">
      * <p>
      * {@code publishLast} does not operate by default on a particular {@link Scheduler}.
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure because by intent it is skipping all values except the last.
      * 
      * @param <R>
      *            the type of items emitted by the resulting Observable
@@ -5323,6 +5487,10 @@ public class Observable<T> {
      * that does a similar operation on lists.
      * <p>
      * {@code reduce} does not operate by default on a particular {@link Scheduler}.
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure because by intent it will receive all values and reduce them to a single `onNext`.
      * 
      * @param accumulator
      *            an accumulator function to be invoked on each item emitted by the source Observable, whose
@@ -5358,6 +5526,10 @@ public class Observable<T> {
      * that does a similar operation on lists.
      * <p>
      * {@code reduce} does not operate by default on a particular {@link Scheduler}.
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure because by intent it will receive all values and reduce them to a single `onNext`.
      * 
      * @param initialValue
      *            the initial (seed) accumulator value
@@ -5461,6 +5633,12 @@ public class Observable<T> {
      * <img width="640" height="515" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.png" alt="">
      * <p>
      * This version of {@code replay} does not operate by default on a particular {@link Scheduler}.
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure because multicasting means the stream is "hot" with multiple subscribers.
+     * <p>
+     * Each child will need to manage backpressure independently using operators such as `onBackpressureDrop` and `onBackpressureBuffer`.
      * 
      * @return a {@link ConnectableObservable} that upon connection causes the source Observable to emit its
      *         items to its {@link Observer}s
@@ -5478,6 +5656,12 @@ public class Observable<T> {
      * <img width="640" height="450" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.f.png" alt="">
      * <p>
      * This version of {@code replay} does not operate by default on a particular {@link Scheduler}.
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure because multicasting means the stream is "hot" with multiple subscribers.
+     * <p>
+     * Each child will need to manage backpressure independently using operators such as `onBackpressureDrop` and `onBackpressureBuffer`.
      * 
      * @param <R>
      *            the type of items emitted by the resulting Observable
@@ -5506,6 +5690,12 @@ public class Observable<T> {
      * <img width="640" height="440" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.fn.png" alt="">
      * <p>
      * This version of {@code replay} does not operate by default on a particular {@link Scheduler}.
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure because multicasting means the stream is "hot" with multiple subscribers.
+     * <p>
+     * Each child will need to manage backpressure independently using operators such as `onBackpressureDrop` and `onBackpressureBuffer`.
      * 
      * @param <R>
      *            the type of items emitted by the resulting Observable
@@ -5537,6 +5727,12 @@ public class Observable<T> {
      * <img width="640" height="445" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.fnt.png" alt="">
      * <p>
      * This version of {@code replay} operates by default on the {@code computation} {@link Scheduler}.
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure because multicasting means the stream is "hot" with multiple subscribers.
+     * <p>
+     * Each child will need to manage backpressure independently using operators such as `onBackpressureDrop` and `onBackpressureBuffer`.
      * 
      * @param <R>
      *            the type of items emitted by the resulting Observable
@@ -5566,6 +5762,12 @@ public class Observable<T> {
      * replaying no more than {@code bufferSize} items that were emitted within a specified time window.
      * <p>
      * <img width="640" height="445" height="440" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.fnts.png" alt="">
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure because multicasting means the stream is "hot" with multiple subscribers.
+     * <p>
+     * Each child will need to manage backpressure independently using operators such as `onBackpressureDrop` and `onBackpressureBuffer`.
      * 
      * @param <R>
      *            the type of items emitted by the resulting Observable
@@ -5607,6 +5809,12 @@ public class Observable<T> {
      * replaying a maximum of {@code bufferSize} items.
      * <p>
      * <img width="640" height="440" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.fns.png" alt="">
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure because multicasting means the stream is "hot" with multiple subscribers.
+     * <p>
+     * Each child will need to manage backpressure independently using operators such as `onBackpressureDrop` and `onBackpressureBuffer`.
      * 
      * @param <R>
      *            the type of items emitted by the resulting Observable
@@ -5640,6 +5848,12 @@ public class Observable<T> {
      * <img width="640" height="435" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.ft.png" alt="">
      * <p>
      * This version of {@code replay} does operates by default on the {@code computation} {@link Scheduler}.
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure because multicasting means the stream is "hot" with multiple subscribers.
+     * <p>
+     * Each child will need to manage backpressure independently using operators such as `onBackpressureDrop` and `onBackpressureBuffer`.
      * 
      * @param <R>
      *            the type of items emitted by the resulting Observable
@@ -5666,6 +5880,12 @@ public class Observable<T> {
      * replaying all items that were emitted within a specified time window.
      * <p>
      * <img width="640" height="440" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.fts.png" alt="">
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure because multicasting means the stream is "hot" with multiple subscribers.
+     * <p>
+     * Each child will need to manage backpressure independently using operators such as `onBackpressureDrop` and `onBackpressureBuffer`.
      * 
      * @param <R>
      *            the type of items emitted by the resulting Observable
@@ -5698,6 +5918,12 @@ public class Observable<T> {
      * emitted by a {@link ConnectableObservable} that shares a single subscription to the source Observable.
      * <p>
      * <img width="640" height="445" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.fs.png" alt="">
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure because multicasting means the stream is "hot" with multiple subscribers.
+     * <p>
+     * Each child will need to manage backpressure independently using operators such as `onBackpressureDrop` and `onBackpressureBuffer`.
      * 
      * @param <R>
      *            the type of items emitted by the resulting Observable
@@ -5730,6 +5956,12 @@ public class Observable<T> {
      * <img width="640" height="515" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.n.png" alt="">
      * <p>
      * This version of {@code replay} does not operate by default on a particular {@link Scheduler}.
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure because multicasting means the stream is "hot" with multiple subscribers.
+     * <p>
+     * Each child will need to manage backpressure independently using operators such as `onBackpressureDrop` and `onBackpressureBuffer`.
      * 
      * @param bufferSize
      *            the buffer size that limits the number of items that can be replayed
@@ -5751,6 +5983,12 @@ public class Observable<T> {
      * <img width="640" height="515" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.nt.png" alt="">
      * <p>
      * This version of {@code replay} operates by default on the {@code computation} {@link Scheduler}.
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure because multicasting means the stream is "hot" with multiple subscribers.
+     * <p>
+     * Each child will need to manage backpressure independently using operators such as `onBackpressureDrop` and `onBackpressureBuffer`.
      * 
      * @param bufferSize
      *            the buffer size that limits the number of items that can be replayed
@@ -5775,6 +6013,12 @@ public class Observable<T> {
      * when it is subscribed to, but only when its {@code connect} method is called.
      * <p>
      * <img width="640" height="515" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.nts.png" alt="">
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure because multicasting means the stream is "hot" with multiple subscribers.
+     * <p>
+     * Each child will need to manage backpressure independently using operators such as `onBackpressureDrop` and `onBackpressureBuffer`.
      * 
      * @param bufferSize
      *            the buffer size that limits the number of items that can be replayed
@@ -5806,6 +6050,12 @@ public class Observable<T> {
      * when its {@code connect} method is called. 
      * <p>
      * <img width="640" height="515" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.ns.png" alt="">
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure because multicasting means the stream is "hot" with multiple subscribers.
+     * <p>
+     * Each child will need to manage backpressure independently using operators such as `onBackpressureDrop` and `onBackpressureBuffer`.
      * 
      * @param bufferSize
      *            the buffer size that limits the number of items that can be replayed
@@ -5831,6 +6081,12 @@ public class Observable<T> {
      * <img width="640" height="515" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.t.png" alt="">
      * <p>
      * This version of {@code replay} operates by default on the {@code computation} {@link Scheduler}.
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure because multicasting means the stream is "hot" with multiple subscribers.
+     * <p>
+     * Each child will need to manage backpressure independently using operators such as `onBackpressureDrop` and `onBackpressureBuffer`.
      * 
      * @param time
      *            the duration of the window in which the replayed items must have been emitted
@@ -5852,6 +6108,12 @@ public class Observable<T> {
      * but only when its {@code connect} method is called. 
      * <p>
      * <img width="640" height="515" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.ts.png" alt="">
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure because multicasting means the stream is "hot" with multiple subscribers.
+     * <p>
+     * Each child will need to manage backpressure independently using operators such as `onBackpressureDrop` and `onBackpressureBuffer`.
      * 
      * @param time
      *            the duration of the window in which the replayed items must have been emitted
@@ -5875,6 +6137,12 @@ public class Observable<T> {
      * begin emitting items when it is subscribed to, but only when its {@code connect} method is called.
      * <p>
      * <img width="640" height="515" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.s.png" alt="">
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure because multicasting means the stream is "hot" with multiple subscribers.
+     * <p>
+     * Each child will need to manage backpressure independently using operators such as `onBackpressureDrop` and `onBackpressureBuffer`.
      * 
      * @param scheduler
      *            the Scheduler on which the Observers will observe the emitted items
@@ -5964,6 +6232,10 @@ public class Observable<T> {
      * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/sample.png" alt="">
      * <p>
      * {@code sample} operates by default on the {@code computation} {@link Scheduler}.
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure as it uses time to control data flow.
      * 
      * @param period
      *            the sampling rate
@@ -5984,6 +6256,10 @@ public class Observable<T> {
      * within periodic time intervals, where the intervals are defined on a particular Scheduler.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/sample.s.png" alt="">
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure as it uses time to control data flow.
      * 
      * @param period
      *            the sampling rate
@@ -6009,6 +6285,10 @@ public class Observable<T> {
      * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/sample.o.png" alt="">
      * <p>
      * This version of {@code sample} does not operate by default on a particular {@link Scheduler}.
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure as it uses the emissions of the `sampler` Observable to control data flow.
      * 
      * @param sampler
      *            the Observable to use for sampling the source Observable
@@ -6109,6 +6389,12 @@ public class Observable<T> {
      * <img width="640" height="510" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/publishRefCount.png" alt="">
      * <p>
      * {@code share} does not operate by default on a particular {@link Scheduler}.
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure because multicasting means the stream is "hot" with multiple subscribers.
+     * <p>
+     * Each child will need to manage backpressure independently using operators such as `onBackpressureDrop` and `onBackpressureBuffer`.
      * 
      * @return an {@code Observable} that upon connection causes the source {@code Observable} to emit items
      *         to its {@link Observer}s
@@ -7464,6 +7750,10 @@ public class Observable<T> {
      * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/throttleFirst.png" alt="">
      * <p>
      * {@code throttleFirst} operates by default on the {@code computation} {@link Scheduler}.
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure as it uses time to control data flow.
      * 
      * @param windowDuration
      *            time to wait before emitting another item after emitting the last item
@@ -7484,6 +7774,10 @@ public class Observable<T> {
      * {@link #throttleLast} ticks at scheduled intervals.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/throttleFirst.s.png" alt="">
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure as it uses time to control data flow.
      * 
      * @param skipDuration
      *            time to wait before emitting another item after emitting the last item
@@ -7509,6 +7803,10 @@ public class Observable<T> {
      * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/throttleLast.png" alt="">
      * <p>
      * {@code throttleLast} operates by default on the {@code computation} {@link Scheduler}.
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure as it uses time to control data flow.
      * 
      * @param intervalDuration
      *            duration of windows within which the last item emitted by the source Observable will be
@@ -7532,6 +7830,10 @@ public class Observable<T> {
      * {@link #throttleFirst} does not tick, it just tracks passage of time.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/throttleLast.s.png" alt="">
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure as it uses time to control data flow.
      * 
      * @param intervalDuration
      *            duration of windows within which the last item emitted by the source Observable will be
@@ -7568,6 +7870,10 @@ public class Observable<T> {
      * </ul>
      * <p>
      * {@code throttleWithTimeout} operates by default on the {@code computation} {@link Scheduler}.
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure as it uses time to control data flow.
      * 
      * @param timeout
      *            the length of the window of time that must pass after the emission of an item from the source
@@ -7601,6 +7907,10 @@ public class Observable<T> {
      * <li><a href="http://unscriptable.com/2009/03/20/debouncing-javascript-methods/">Debouncing: javascript methods</a></li>
      * <li><a href="http://www.illyriad.co.uk/blog/index.php/2011/09/javascript-dont-spam-your-server-debounce-and-throttle/">Javascript - don't spam your server: debounce and throttle</a></li>
      * </ul>
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure as it uses time to control data flow.
      * 
      * @param timeout
      *            the length of the window of time that must pass after the emission of an item from the source
@@ -7941,6 +8251,10 @@ public class Observable<T> {
      * you do not have the option to unsubscribe.
      * <p>
      * {@code toList} does not operate by default on a particular {@link Scheduler}.
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure as by intent it is requesting and buffering everything.
      * 
      * @return an Observable that emits a single item: a List containing all of the items emitted by the source
      *         Observable
@@ -7960,6 +8274,10 @@ public class Observable<T> {
      * If more than one source item maps to the same key, the HashMap will contain the latest of those items.
      * <p>
      * {@code toMap} does not operate by default on a particular {@link Scheduler}.
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure as by intent it is requesting and buffering everything.
      * 
      * @param keySelector
      *            the function that extracts the key from a source item to be used in the HashMap
@@ -7982,6 +8300,10 @@ public class Observable<T> {
      * corresponds to the latest of those items.
      * <p>
      * {@code toMap} does not operate by default on a particular {@link Scheduler}.
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure as by intent it is requesting and buffering everything.
      * 
      * @param keySelector
      *            the function that extracts the key from a source item to be used in the HashMap
@@ -8003,6 +8325,10 @@ public class Observable<T> {
      * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toMap.png" alt="">
      * <p>
      * {@code toMap} does not operate by default on a particular {@link Scheduler}.
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure as by intent it is requesting and buffering everything.
      * 
      * @param keySelector
      *            the function that extracts the key from a source item to be used in the Map
@@ -8025,6 +8351,10 @@ public class Observable<T> {
      * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toMultiMap.png" alt="">
      * <p>
      * {@code toMultiMap} does not operate by default on a particular {@link Scheduler}.
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure as by intent it is requesting and buffering everything.
      * 
      * @param keySelector
      *            the function that extracts the key from the source items to be used as key in the HashMap
@@ -8045,6 +8375,10 @@ public class Observable<T> {
      * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toMultiMap.png" alt="">
      * <p>
      * {@code toMultiMap} does not operate by default on a particular {@link Scheduler}.
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure as by intent it is requesting and buffering everything.
      * 
      * @param keySelector
      *            the function that extracts a key from the source items to be used as key in the HashMap
@@ -8067,6 +8401,10 @@ public class Observable<T> {
      * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toMultiMap.png" alt="">
      * <p>
      * {@code toMultiMap} does not operate by default on a particular {@link Scheduler}.
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure as by intent it is requesting and buffering everything.
      * 
      * @param keySelector
      *            the function that extracts a key from the source items to be used as the key in the Map
@@ -8090,6 +8428,10 @@ public class Observable<T> {
      * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toMultiMap.png" alt="">
      * <p>
      * {@code toMultiMap} does not operate by default on a particular {@link Scheduler}.
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure as by intent it is requesting and buffering everything.
      * 
      * @param keySelector
      *            the function that extracts a key from the source items to be used as the key in the Map
@@ -8115,6 +8457,10 @@ public class Observable<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toSortedList.png" alt="">
      * <p>
      * {@code toSortedList} does not operate by default on a particular {@link Scheduler}.
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure as by intent it is requesting and buffering everything.
      * 
      * @throws ClassCastException
      *             if any item emitted by the Observable does not implement {@link Comparable} with respect to
@@ -8134,6 +8480,10 @@ public class Observable<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toSortedList.f.png" alt="">
      * <p>
      * {@code toSortedList} does not operate by default on a particular {@link Scheduler}.
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure as by intent it is requesting and buffering everything.
      * 
      * @param sortFunction
      *            a function that compares two items emitted by the source Observable and returns an Integer
@@ -8168,6 +8518,10 @@ public class Observable<T> {
      * <img width="640" height="485" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/window1.png" alt="">
      * <p>
      * This version of {@code window} does not operate by default on a particular {@link Scheduler}.
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure as it uses the `closingSelector` to control data flow.
      * 
      * @param closingSelector
      *            a {@link Func0} that returns an {@code Observable} that governs the boundary between windows.
@@ -8191,6 +8545,10 @@ public class Observable<T> {
      * <img width="640" height="400" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/window3.png" alt="">
      * <p>
      * This version of {@code window} does not operate by default on a particular {@link Scheduler}.
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure as it uses `count` to control data flow.
      * 
      * @param count
      *            the maximum size of each window before it should be emitted
@@ -8212,6 +8570,10 @@ public class Observable<T> {
      * <img width="640" height="365" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/window4.png" alt="">
      * <p>
      * This version of {@code window} does not operate by default on a particular {@link Scheduler}.
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure as it uses `count` to control data flow.
      * 
      * @param count
      *            the maximum size of each window before it should be emitted
@@ -8237,6 +8599,10 @@ public class Observable<T> {
      * <img width="640" height="335" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/window7.png" alt="">
      * <p>
      * This version of {@code window} operates by default on the {@code computation} {@link Scheduler}.
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure as it uses time to control data flow.
      * 
      * @param timespan
      *            the period of time each window collects items before it should be emitted
@@ -8260,6 +8626,10 @@ public class Observable<T> {
      * current window and propagates the notification from the source Observable.
      * <p>
      * <img width="640" height="335" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/window7.s.png" alt="">
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure as it uses time to control data flow.
      * 
      * @param timespan
      *            the period of time each window collects items before it should be emitted
@@ -8286,6 +8656,10 @@ public class Observable<T> {
      * <img width="640" height="375" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/window5.png" alt="">
      * <p>
      * This version of {@code window} operates by default on the {@code computation} {@link Scheduler}.
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure as it uses time to control data flow.
      * 
      * @param timespan
      *            the period of time each window collects items before it should be emitted and replaced with a
@@ -8311,6 +8685,10 @@ public class Observable<T> {
      * <img width="640" height="370" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/window6.png" alt="">
      * <p>
      * This version of {@code window} operates by default on the {@code computation} {@link Scheduler}.
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure as it uses time to control data flow.
      * 
      * @param timespan
      *            the period of time each window collects items before it should be emitted and replaced with a
@@ -8337,6 +8715,10 @@ public class Observable<T> {
      * current window and propagates the notification from the source Observable.
      * <p>
      * <img width="640" height="370" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/window6.s.png" alt="">
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure as it uses time to control data flow.
      * 
      * @param timespan
      *            the period of time each window collects items before it should be emitted and replaced with a
@@ -8364,6 +8746,10 @@ public class Observable<T> {
      * Observable emits the current window and propagates the notification from the source Observable.
      * <p>
      * <img width="640" height="375" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/window5.s.png" alt="">
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure as it uses time to control data flow.
      * 
      * @param timespan
      *            the period of time each window collects items before it should be emitted and replaced with a
@@ -8389,6 +8775,10 @@ public class Observable<T> {
      * <p>
      * <img width="640" height="550" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/window2.png" alt="">
      * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure as it uses Observables to control data flow.
+     * <p>
      * This version of {@code window} does not operate by default on a particular {@link Scheduler}.
      * 
      * @param windowOpenings
@@ -8413,6 +8803,10 @@ public class Observable<T> {
      * <img width="640" height="475" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/window8.png" alt="">
      * <p>
      * This version of {@code window} does not operate by default on a particular {@link Scheduler}.
+     * <p>
+     * <b>Backpressure Support</b>
+     * <p>
+     * This operator does not support backpressure as it uses a `boundary` Observable to control data flow.
      * 
      * @param <U>
      *            the window element type (ignored)

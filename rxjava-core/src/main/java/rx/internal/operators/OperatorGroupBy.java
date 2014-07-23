@@ -75,6 +75,16 @@ public final class OperatorGroupBy<K, T> implements Operator<GroupedObservable<K
                 = AtomicIntegerFieldUpdater.newUpdater(GroupBySubscriber.class, "terminated");
         
         @Override
+        public void onStart() {
+            /*
+             * This operator does not support backpressure as splitting a stream effectively turns it into a "hot observable" and
+             * blocking any one group would block the entire parent stream. If backpressure is needed on individual groups then
+             * operators such as `onBackpressureDrop` or `onBackpressureBuffer` should be used.
+             */
+            request(Long.MAX_VALUE);
+        }
+        
+        @Override
         public void onCompleted() {
             if (TERMINATED_UPDATER.compareAndSet(this, 0, 1)) {
                 // if we receive onCompleted from our parent we onComplete children

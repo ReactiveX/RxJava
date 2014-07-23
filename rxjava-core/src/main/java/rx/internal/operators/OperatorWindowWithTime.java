@@ -124,6 +124,12 @@ public final class OperatorWindowWithTime<T> implements Operator<Observable<T>, 
             this.guard = new Object();
             this.state = State.empty();
         }
+        
+        @Override
+        public void onStart() {
+            request(Long.MAX_VALUE);
+        }
+        
         @Override
         public void onNext(T t) {
             List<Object> localQueue;
@@ -351,6 +357,11 @@ public final class OperatorWindowWithTime<T> implements Operator<Observable<T>, 
             this.chunks = new LinkedList<CountedSerializedSubject<T>>();
         }
 
+        @Override
+        public void onStart() {
+            request(Long.MAX_VALUE);
+        }
+        
         @Override
         public void onNext(T t) {
             List<CountedSerializedSubject<T>> list;
