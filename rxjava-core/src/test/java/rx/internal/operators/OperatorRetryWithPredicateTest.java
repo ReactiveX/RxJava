@@ -217,7 +217,7 @@ public class OperatorRetryWithPredicateTest {
         assertEquals(1, count.get());
     }
     
-    @Test(timeout = 1000)
+    @Test(timeout = 10000)
     public void testUnsubscribeAfterError() {
 
         @SuppressWarnings("unchecked")
@@ -244,7 +244,7 @@ public class OperatorRetryWithPredicateTest {
         assertEquals("Only 1 active subscription", 1, so.maxActive.get());
     }
 
-    @Test(timeout = 1000)
+    @Test(timeout = 10000)
     public void testTimeoutWithRetry() {
 
         @SuppressWarnings("unchecked")
