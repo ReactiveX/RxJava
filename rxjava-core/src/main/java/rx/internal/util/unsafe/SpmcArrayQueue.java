@@ -16,8 +16,6 @@
  */
 package rx.internal.util.unsafe;
 
-import java.util.Queue;
-
 abstract class SpmcArrayQueueL1Pad<E> extends ConcurrentCircularArrayQueue<E> {
     long p10, p11, p12, p13, p14, p15, p16;
     long p30, p31, p32, p33, p34, p35, p36, p37;
@@ -27,32 +25,32 @@ abstract class SpmcArrayQueueL1Pad<E> extends ConcurrentCircularArrayQueue<E> {
     }
 }
 
-abstract class SpmcArrayQueueTailField<E> extends SpmcArrayQueueL1Pad<E> {
-    protected final static long TAIL_OFFSET;
+abstract class SpmcArrayQueueProducerField<E> extends SpmcArrayQueueL1Pad<E> {
+    protected final static long P_INDEX_OFFSET;
     static {
         try {
-            TAIL_OFFSET = UnsafeAccess.UNSAFE.objectFieldOffset(SpmcArrayQueueTailField.class
-                    .getDeclaredField("tail"));
+            P_INDEX_OFFSET =
+                    UnsafeAccess.UNSAFE.objectFieldOffset(SpmcArrayQueueProducerField.class.getDeclaredField("producerIndex"));
         } catch (NoSuchFieldException e) {
             throw new RuntimeException(e);
         }
     }
-    private volatile long tail;
+    private volatile long producerIndex;
 
-    protected final long lvTail() {
-        return tail;
+    protected final long lvProducerIndex() {
+        return producerIndex;
     }
 
     protected final void soTail(long v) {
-        UnsafeAccess.UNSAFE.putOrderedLong(this, TAIL_OFFSET, v);
+        UnsafeAccess.UNSAFE.putOrderedLong(this, P_INDEX_OFFSET, v);
     }
 
-    public SpmcArrayQueueTailField(int capacity) {
+    public SpmcArrayQueueProducerField(int capacity) {
         super(capacity);
     }
 }
 
-abstract class SpmcArrayQueueL2Pad<E> extends SpmcArrayQueueTailField<E> {
+abstract class SpmcArrayQueueL2Pad<E> extends SpmcArrayQueueProducerField<E> {
     long p20, p21, p22, p23, p24, p25, p26;
     long p30, p31, p32, p33, p34, p35, p36, p37;
 
@@ -61,32 +59,32 @@ abstract class SpmcArrayQueueL2Pad<E> extends SpmcArrayQueueTailField<E> {
     }
 }
 
-abstract class SpmcArrayQueueHeadField<E> extends SpmcArrayQueueL2Pad<E> {
-    protected final static long HEAD_OFFSET;
+abstract class SpmcArrayQueueConsumerField<E> extends SpmcArrayQueueL2Pad<E> {
+    protected final static long C_INDEX_OFFSET;
     static {
         try {
-            HEAD_OFFSET = UnsafeAccess.UNSAFE.objectFieldOffset(SpmcArrayQueueHeadField.class
-                    .getDeclaredField("head"));
+            C_INDEX_OFFSET =
+                    UnsafeAccess.UNSAFE.objectFieldOffset(SpmcArrayQueueConsumerField.class.getDeclaredField("consumerIndex"));
         } catch (NoSuchFieldException e) {
             throw new RuntimeException(e);
         }
     }
-    private volatile long head;
+    private volatile long consumerIndex;
 
-    public SpmcArrayQueueHeadField(int capacity) {
+    public SpmcArrayQueueConsumerField(int capacity) {
         super(capacity);
     }
 
-    protected final long lvHead() {
-        return head;
+    protected final long lvConsumerIndex() {
+        return consumerIndex;
     }
 
     protected final boolean casHead(long expect, long newValue) {
-        return UnsafeAccess.UNSAFE.compareAndSwapLong(this, HEAD_OFFSET, expect, newValue);
+        return UnsafeAccess.UNSAFE.compareAndSwapLong(this, C_INDEX_OFFSET, expect, newValue);
     }
 }
 
-abstract class SpmcArrayQueueMidPad<E> extends SpmcArrayQueueHeadField<E> {
+abstract class SpmcArrayQueueMidPad<E> extends SpmcArrayQueueConsumerField<E> {
     long p20, p21, p22, p23, p24, p25, p26;
     long p30, p31, p32, p33, p34, p35, p36, p37;
 
@@ -95,23 +93,25 @@ abstract class SpmcArrayQueueMidPad<E> extends SpmcArrayQueueHeadField<E> {
     }
 }
 
-abstract class SpmcArrayQueueTailCacheField<E> extends SpmcArrayQueueMidPad<E> {
-    private volatile long tailCache;
+abstract class SpmcArrayQueueProducerIndexCacheField<E> extends SpmcArrayQueueMidPad<E> {
+    // This is separated from the consumerIndex which will be highly contended in the hope that this value spends most
+    // of it's time in a cache line that is Shared(and rarely invalidated)
+    private volatile long producerIndexCache;
 
-    public SpmcArrayQueueTailCacheField(int capacity) {
+    public SpmcArrayQueueProducerIndexCacheField(int capacity) {
         super(capacity);
     }
 
-    protected final long lvTailCache() {
-        return tailCache;
+    protected final long lvProducerIndexCache() {
+        return producerIndexCache;
     }
 
-    protected final void svTailCache(long v) {
-        tailCache = v;
+    protected final void svProducerIndexCache(long v) {
+        producerIndexCache = v;
     }
 }
 
-abstract class SpmcArrayQueueL3Pad<E> extends SpmcArrayQueueTailCacheField<E> {
+abstract class SpmcArrayQueueL3Pad<E> extends SpmcArrayQueueProducerIndexCacheField<E> {
     long p40, p41, p42, p43, p44, p45, p46;
     long p30, p31, p32, p33, p34, p35, p36, p37;
 
@@ -120,7 +120,7 @@ abstract class SpmcArrayQueueL3Pad<E> extends SpmcArrayQueueTailCacheField<E> {
     }
 }
 
-public final class SpmcArrayQueue<E> extends SpmcArrayQueueL3Pad<E> implements Queue<E> {
+public final class SpmcArrayQueue<E> extends SpmcArrayQueueL3Pad<E> {
 
     public SpmcArrayQueue(final int capacity) {
         super(capacity);
@@ -132,36 +132,44 @@ public final class SpmcArrayQueue<E> extends SpmcArrayQueueL3Pad<E> implements Q
             throw new NullPointerException("Null is not a valid element");
         }
         final E[] lb = buffer;
-        final long currTail = lvTail();
-        final long offset = calcOffset(currTail);
+        final long currProducerIndex = lvProducerIndex();
+        final long offset = calcElementOffset(currProducerIndex);
         if (null != lvElement(lb, offset)) {
             return false;
         }
         spElement(lb, offset, e);
         // single producer, so store ordered is valid. It is also required to correctly publish the element
         // and for the consumers to pick up the tail value.
-        soTail(currTail + 1);
+        soTail(currProducerIndex + 1);
         return true;
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * Note that we are not doing the the whole poll/tryPoll thing here like we do in MPMC/MPSC, that is because the
+     * problem we try to solve there is caused by having multiple producers making progress concurrently which can
+     * create 'bubbles' of claimed but not fully visible elements in the queue. For a single producer the problem
+     * doesn't exist.
+     */
     @Override
     public E poll() {
-        long currentHead;
-        final long currTailCache = lvTailCache();
+        long currentConsumerIndex;
+        final long currProducerIndexCache = lvProducerIndexCache();
         do {
-            currentHead = lvHead();
-            if (currentHead >= currTailCache) {
-                long currTail = lvTail();
-                if (currentHead >= currTail) {
+            currentConsumerIndex = lvConsumerIndex();
+            if (currentConsumerIndex >= currProducerIndexCache) {
+                long currProducerIndex = lvProducerIndex();
+                if (currentConsumerIndex >= currProducerIndex) {
                     return null;
                 } else {
-                    svTailCache(currTail);
+                    svProducerIndexCache(currProducerIndex);
                 }
             }
-        } while (!casHead(currentHead, currentHead + 1));
+        } while (!casHead(currentConsumerIndex, currentConsumerIndex + 1));
         // consumers are gated on latest visible tail, and so can't see a null value in the queue or overtake
         // and wrap to hit same location.
-        final long offset = calcOffset(currentHead);
+        final long offset = calcElementOffset(currentConsumerIndex);
         final E[] lb = buffer;
         // load plain, element happens before it's index becomes visible
         final E e = lpElement(lb, offset);
@@ -169,13 +177,36 @@ public final class SpmcArrayQueue<E> extends SpmcArrayQueueL3Pad<E> implements Q
         soElement(lb, offset, null);
         return e;
     }
-    
+
     @Override
     public E peek() {
-        return lvElement(calcOffset(lvHead()));
+        return lvElement(calcElementOffset(lvConsumerIndex()));
     }
+
     @Override
     public int size() {
-        return (int) (lvTail() - lvHead());
+        /*
+         * It is possible for a thread to be interrupted or reschedule between the read of the producer and consumer
+         * indices, therefore protection is required to ensure size is within valid range. In the event of concurrent
+         * polls/offers to this method the size is OVER estimated as we read consumer index BEFORE the producer index.
+         */
+        long after = lvConsumerIndex();
+        while (true) {
+            final long before = after;
+            final long currentProducerIndex = lvProducerIndex();
+            after = lvConsumerIndex();
+            if (before == after) {
+                return (int) (currentProducerIndex - after);
+            }
+        }
+    }
+    
+    @Override
+    public boolean isEmpty() {
+        // Order matters! 
+        // Loading consumer before producer allows for producer increments after consumer index is read.
+        // This ensures the correctness of this method at least for the consumer thread. Other threads POV is not really
+        // something we can fix here.
+        return (lvConsumerIndex() == lvProducerIndex());
     }
 }

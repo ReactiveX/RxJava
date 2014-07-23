@@ -18,7 +18,15 @@ package rx.internal.util.unsafe;
 
 import java.util.Queue;
 
-abstract class SpscArrayQueueL1Pad<E> extends ConcurrentCircularArrayQueue<E> {
+abstract class SpscArrayQueueColdField<E> extends ConcurrentCircularArrayQueue<E> {
+    private static final Integer MAX_LOOK_AHEAD_STEP = Integer.getInteger("jctoolts.spsc.max.lookahead.step", 4096);
+    protected final int lookAheadStep;
+    public SpscArrayQueueColdField(int capacity) {
+        super(capacity);
+        lookAheadStep = Math.min(capacity/4, MAX_LOOK_AHEAD_STEP);
+    }
+}
+abstract class SpscArrayQueueL1Pad<E> extends SpscArrayQueueColdField<E> {
     long p10, p11, p12, p13, p14, p15, p16;
     long p30, p31, p32, p33, p34, p35, p36, p37;
 
@@ -27,16 +35,28 @@ abstract class SpscArrayQueueL1Pad<E> extends ConcurrentCircularArrayQueue<E> {
     }
 }
 
-abstract class SpscArrayQueueTailField<E> extends SpscArrayQueueL1Pad<E> {
-    protected long tail;
-    protected long batchTail;
+abstract class SpscArrayQueueProducerFields<E> extends SpscArrayQueueL1Pad<E> {
+    private final static long P_INDEX_OFFSET;
+    static {
+        try {
+            P_INDEX_OFFSET =
+                UnsafeAccess.UNSAFE.objectFieldOffset(SpscArrayQueueProducerFields.class.getDeclaredField("producerIndex"));
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    protected long producerIndex;
+    protected long producerLookAhead;
 
-    public SpscArrayQueueTailField(int capacity) {
+    public SpscArrayQueueProducerFields(int capacity) {
         super(capacity);
+    }
+    protected final long lvProducerIndex() {
+        return UnsafeAccess.UNSAFE.getLongVolatile(this, P_INDEX_OFFSET);
     }
 }
 
-abstract class SpscArrayQueueL2Pad<E> extends SpscArrayQueueTailField<E> {
+abstract class SpscArrayQueueL2Pad<E> extends SpscArrayQueueProducerFields<E> {
     long p20, p21, p22, p23, p24, p25, p26;
     long p30, p31, p32, p33, p34, p35, p36, p37;
 
@@ -45,15 +65,26 @@ abstract class SpscArrayQueueL2Pad<E> extends SpscArrayQueueTailField<E> {
     }
 }
 
-abstract class SpscArrayQueueHeadField<E> extends SpscArrayQueueL2Pad<E> {
-    protected long head;
-
-    public SpscArrayQueueHeadField(int capacity) {
+abstract class SpscArrayQueueConsumerField<E> extends SpscArrayQueueL2Pad<E> {
+    protected long consumerIndex;
+    private final static long C_INDEX_OFFSET;
+    static {
+        try {
+            C_INDEX_OFFSET =
+                UnsafeAccess.UNSAFE.objectFieldOffset(SpscArrayQueueConsumerField.class.getDeclaredField("consumerIndex"));
+        } catch (NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public SpscArrayQueueConsumerField(int capacity) {
         super(capacity);
+    }
+    protected final long lvConsumerIndex() {
+        return UnsafeAccess.UNSAFE.getLongVolatile(this, C_INDEX_OFFSET);
     }
 }
 
-abstract class SpscArrayQueueL3Pad<E> extends SpscArrayQueueHeadField<E> {
+abstract class SpscArrayQueueL3Pad<E> extends SpscArrayQueueConsumerField<E> {
     long p40, p41, p42, p43, p44, p45, p46;
     long p30, p31, p32, p33, p34, p35, p36, p37;
 
@@ -62,71 +93,94 @@ abstract class SpscArrayQueueL3Pad<E> extends SpscArrayQueueHeadField<E> {
     }
 }
 
-public final class SpscArrayQueue<E> extends SpscArrayQueueL3Pad<E> implements Queue<E> {
-    private final static long TAIL_OFFSET;
-    private final static long HEAD_OFFSET;
-    static {
-        try {
-            TAIL_OFFSET = UnsafeAccess.UNSAFE.objectFieldOffset(SpscArrayQueueTailField.class
-                    .getDeclaredField("tail"));
-            HEAD_OFFSET = UnsafeAccess.UNSAFE.objectFieldOffset(SpscArrayQueueHeadField.class
-                    .getDeclaredField("head"));
-        } catch (NoSuchFieldException e) {
-            throw new RuntimeException(e);
-        }
-    }
+/**
+ * A Single-Producer-Single-Consumer queue backed by a pre-allocated buffer.</br> This implementation is a mashup of the
+ * <a href="http://sourceforge.net/projects/mc-fastflow/">Fast Flow</a> algorithm with an optimization of the offer
+ * method taken from the <a href="http://staff.ustc.edu.cn/~bhua/publications/IJPP_draft.pdf">BQueue</a> algorithm (a
+ * variation on Fast Flow).<br>
+ * For convenience the relevant papers are available in the resources folder:</br>
+ * <i>2010 - Pisa - SPSC Queues on Shared Cache Multi-Core Systems.pdf</br>
+ * 2012 - Junchang- BQueue- Efﬁcient and Practical Queuing.pdf </br></i>
+ * This implementation is wait free.
+ * 
+ * @author nitsanw
+ * 
+ * @param <E>
+ */
+public final class SpscArrayQueue<E> extends SpscArrayQueueL3Pad<E> {
 
     public SpscArrayQueue(final int capacity) {
         super(capacity);
     }
 
-    private long getHeadV() {
-        return UnsafeAccess.UNSAFE.getLongVolatile(this, HEAD_OFFSET);
-    }
-
-    private long getTailV() {
-        return UnsafeAccess.UNSAFE.getLongVolatile(this, TAIL_OFFSET);
-    }
-
+    /**
+     * {@inheritDoc}
+     * <p>
+     * This implementation is correct for single producer thread use only.
+     */
     @Override
     public boolean offer(final E e) {
         if (null == e) {
             throw new NullPointerException("Null is not a valid element");
         }
-
-        E[] lb = buffer;
-        if (tail >= batchTail) {
-            if (null != lvElement(lb, calcOffset(tail))) {
+        // local load of field to avoid repeated loads after volatile reads
+        final E[] lElementBuffer = buffer;
+        if (producerIndex >= producerLookAhead) {
+            if (null != lvElement(lElementBuffer, calcElementOffset(producerIndex + lookAheadStep))) {// LoadLoad
                 return false;
             }
+            producerLookAhead = producerIndex + lookAheadStep;
         }
-        soElement(lb, calcOffset(tail), e);
-        tail++;
-
+        long offset = calcElementOffset(producerIndex);
+        producerIndex++; // do increment here so the ordered store give both a barrier 
+        soElement(lElementBuffer, offset, e);// StoreStore
         return true;
     }
-
+    
+    /**
+     * {@inheritDoc}
+     * <p>
+     * This implementation is correct for single consumer thread use only.
+     */
     @Override
     public E poll() {
-        final long offset = calcOffset(head);
-        final E[] lb = buffer;
-        final E e = lvElement(lb, offset);
+        final long offset = calcElementOffset(consumerIndex);
+        // local load of field to avoid repeated loads after volatile reads
+        final E[] lElementBuffer = buffer;
+        final E e = lvElement(lElementBuffer, offset);// LoadLoad
         if (null == e) {
             return null;
         }
-        soElement(lb, offset, null);
-        head++;
+        consumerIndex++; // do increment here so the ordered store give both a barrier
+        soElement(lElementBuffer, offset, null);// StoreStore
         return e;
     }
 
+    /**
+     * {@inheritDoc}
+     * <p>
+     * This implementation is correct for single consumer thread use only.
+     */
     @Override
     public E peek() {
-        return lvElement(calcOffset(head));
+        return lvElement(calcElementOffset(consumerIndex));
     }
 
     @Override
     public int size() {
-        // TODO: this is ugly :( the head/tail cannot be counted on to be written out, so must take max
-        return (int) (Math.max(getTailV(), tail) - Math.max(getHeadV(), head));
+        /*
+         * It is possible for a thread to be interrupted or reschedule between the read of the producer and consumer
+         * indices, therefore protection is required to ensure size is within valid range. In the event of concurrent
+         * polls/offers to this method the size is OVER estimated as we read consumer index BEFORE the producer index.
+         */
+        long after = lvConsumerIndex();
+        while (true) {
+            final long before = after;
+            final long currentProducerIndex = lvProducerIndex();
+            after = lvConsumerIndex();
+            if (before == after) {
+                return (int) (currentProducerIndex - after);
+            }
+        }
     }
 }
