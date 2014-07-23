@@ -6278,7 +6278,7 @@ public class Observable<T> {
      *      System.out.println("subscribing");
      *      s.onError(new RuntimeException("always fails"));
      *  }).retryWhen(attempts -> {
-     *      return attempts.zip(Observable.range(1, 3), (n, i) -> i).flatMap(i -> {
+     *      return attempts.zipWith(Observable.range(1, 3), (n, i) -> i).flatMap(i -> {
      *          System.out.println("delay retry by " + i + " second(s)");
      *          return Observable.timer(i, TimeUnit.SECONDS);
      *      });
@@ -8971,8 +8971,36 @@ public class Observable<T> {
      *         and emits the results of {@code zipFunction} applied to these pairs
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#zip">RxJava wiki: zip</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.zip.aspx">MSDN: Observable.Zip</a>
+     * @deprecated Use zipWith instead. Changed to match naming convention of mergeWith, concatWith, etc
      */
+    @Deprecated
     public final <T2, R> Observable<R> zip(Observable<? extends T2> other, Func2<? super T, ? super T2, ? extends R> zipFunction) {
+        return zip(this, other, zipFunction);
+    }
+    
+    /**
+     * Returns an Observable that emits items that are the result of applying a specified function to pairs of
+     * values, one each from the source Observable and another specified Observable.
+     * <p>
+     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/zip.png" alt="">
+     * <p>
+     * {@code zip} does not operate by default on a particular {@link Scheduler}.
+     * 
+     * @param <T2>
+     *            the type of items emitted by the {@code other} Observable
+     * @param <R>
+     *            the type of items emitted by the resulting Observable
+     * @param other
+     *            the other Observable
+     * @param zipFunction
+     *            a function that combines the pairs of items from the two Observables to generate the items to
+     *            be emitted by the resulting Observable
+     * @return an Observable that pairs up values from the source Observable and the {@code other} Observable
+     *         and emits the results of {@code zipFunction} applied to these pairs
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#zip">RxJava wiki: zip</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.zip.aspx">MSDN: Observable.Zip</a>
+     */
+    public final <T2, R> Observable<R> zipWith(Observable<? extends T2> other, Func2<? super T, ? super T2, ? extends R> zipFunction) {
         return zip(this, other, zipFunction);
     }
 
