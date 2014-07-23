@@ -344,7 +344,7 @@ public class BackpressureTests {
         assertEquals(20, batches.get());
     }
 
-    @Test(timeout = 2000)
+    @Test
     public void testUserSubscriberUsingRequestAsync() throws InterruptedException {
         AtomicInteger c = new AtomicInteger();
         final AtomicInteger totalReceived = new AtomicInteger();
@@ -372,14 +372,20 @@ public class BackpressureTests {
             public void onNext(Integer t) {
                 int total = totalReceived.incrementAndGet();
                 received.incrementAndGet();
+                boolean done = false;
                 if (total >= 2000) {
+                    done = true;
                     unsubscribe();
-                    latch.countDown();
                 }
                 if (received.get() == 100) {
                     batches.incrementAndGet();
-                    request(100);
                     received.set(0);
+                    if (!done) {
+                        request(100);
+                    }
+                }
+                if (done) {
+                    latch.countDown();
                 }
             }
 
@@ -470,8 +476,8 @@ public class BackpressureTests {
                         long _c = requested.getAndAdd(n);
                         if (_c == 0) {
                             while (!s.isUnsubscribed()) {
-                                s.onNext(i++);
                                 counter.incrementAndGet();
+                                s.onNext(i++);
                                 if (requested.decrementAndGet() == 0) {
                                     // we're done emitting the number requested so return
                                     return;
