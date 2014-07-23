@@ -178,7 +178,7 @@ public final class ChannelObservable {
         return new AsyncObservable<T>(o).run(timeout, unit);
     }
 
-    private static class AsyncObservable<T> extends FiberAsync<T, Void, ExecutionException> implements Observer<T> {
+    private static class AsyncObservable<T> extends FiberAsync<T, ExecutionException> implements Observer<T> {
         private final Observable<T> o;
 
         public AsyncObservable(Observable<T> o) {
@@ -186,9 +186,8 @@ public final class ChannelObservable {
         }
 
         @Override
-        protected Void requestAsync() {
+        protected void requestAsync() {
             o.subscribe(this);
-            return null;
         }
 
         @Override
