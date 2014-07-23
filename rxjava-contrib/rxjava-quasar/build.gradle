@@ -15,8 +15,8 @@ repositories {
 
 dependencies {
     compile project(':rxjava-core')
-    compile 'co.paralleluniverse:quasar-core:0.5.0'
-    quasar  'co.paralleluniverse:quasar-core:0.5.0'
+    compile 'co.paralleluniverse:quasar-core:0.6.0'
+    quasar  'co.paralleluniverse:quasar-core:0.6.0'
     testCompile project(":rxjava-core").sourceSets.test.output 
     testCompile 'junit:junit-dep:4.10'
     testCompile 'org.mockito:mockito-core:1.8.5'
