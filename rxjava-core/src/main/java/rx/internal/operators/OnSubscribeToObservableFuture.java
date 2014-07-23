@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,8 +23,10 @@ import rx.Observable.OnSubscribe;
 import rx.Scheduler;
 import rx.Scheduler.Worker;
 import rx.Subscriber;
+import rx.Subscription;
 import rx.functions.Action0;
 import rx.schedulers.Schedulers;
+import rx.subscriptions.MultipleAssignmentSubscription;
 import rx.subscriptions.Subscriptions;
 
 /**
@@ -55,8 +57,8 @@ public class OnSubscribeToObservableFuture {
         ToObservableFuture(Future<? extends T> that, Scheduler scheduler) {
             this.that = that;
             this.scheduler = scheduler;
-            this.time = 0;
-            this.unit = null;
+            time = 0;
+            unit = null;
         }
 
         ToObservableFuture(Future<? extends T> that, long time, TimeUnit unit, Scheduler scheduler) {
@@ -72,14 +74,16 @@ public class OnSubscribeToObservableFuture {
                 handleDone(subscriber);
                 return;
             }
+            final FuturePollingTask pollingTask = new FuturePollingTask(subscriber);
             subscriber.add(Subscriptions.create(new Action0() {
                 @Override
                 public void call() {
                     // If the Future is already completed, "cancel" does nothing.
                     that.cancel(true);
+                    pollingTask.cancel();
                 }
             }));
-            new FuturePollingTask(subscriber).call();
+            pollingTask.call();
         }
 
         private void handleDone(Subscriber<? super T> subscriber) {
@@ -105,8 +109,11 @@ public class OnSubscribeToObservableFuture {
 
             private final long expireAfter = (time == 0) ? -1 : startTime + unit.toMillis(time);
 
+            private final MultipleAssignmentSubscription taskSubscription = new MultipleAssignmentSubscription();
+
             FuturePollingTask(Subscriber<? super T> subscriber) {
                 this.subscriber = subscriber;
+                subscriber.add(taskSubscription);
             }
 
             @Override
@@ -115,16 +122,25 @@ public class OnSubscribeToObservableFuture {
                     handleDone(subscriber);
                     return;
                 }
-                long currentTime = Schedulers.computation().now();
+                long currentTime = scheduler.now();
                 if (expireAfter > 0 && currentTime > expireAfter) {
                     handleTimeout(subscriber);
                     return;
                 }
                 // This seemingly complex computation approximates the process of doubling the waiting time, and
-                // capping it at MAX_DELAY_MICRO_SEC level. Minor disadvantage is a low accuracy with delays below ms.
-                // The major benefit - FuturePollingTask is immutable.
+                // capping it at MAX_DELAY_MICRO_SEC level. Its accuracy may vary depending on a scheduler and
+                // waiting time in a task queue. The major benefit - FuturePollingTask is immutable.
                 long delayBy = Math.min(Math.max(INITIAL_DELAY_MICRO_SEC, (currentTime - startTime) * 1000), MAX_DELAY_MICRO_SEC);
-                worker.schedule(this, delayBy, TimeUnit.MICROSECONDS);
+
+                // It is possible that subscriber unsubscribed after {code}that.isDone(){code} above was called,
+                // and cancelled future and unsubscribed the worker. In such case this call will return empty
+                // subscription, and a task will not be scheduled.
+                Subscription newSubscription = worker.schedule(this, delayBy, TimeUnit.MICROSECONDS);
+                taskSubscription.set(newSubscription);
+            }
+
+            public void cancel() {
+                worker.unsubscribe();
             }
         }
     }
