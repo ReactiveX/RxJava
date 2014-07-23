@@ -2,9 +2,10 @@ This package contains code that relies on sun.misc.Unsafe. Before using it you M
 
 Much of the code in this package comes from or is inspired by the JCTools project: https://github.com/JCTools/JCTools
 
-It is manually embedded here rather than added as a binary dependency since rxjava-core is aiming to have 0 dependencies and keep the binary size as small as possible.
+Once JCTools publishes artifacts (https://github.com/JCTools/JCTools/issues/17) RxJava may add JCTools as a "shadow" dependency. 
+RxJava has a "zero dependency" policy for the core library, so if we do add it as a dependency, it won't be an externally visible dependency that results in a separate jar.
 
-The license for this code is https://github.com/JCTools/JCTools/blob/master/LICENSE
+The license for the JCTools code is https://github.com/JCTools/JCTools/blob/master/LICENSE
 
 As of June 10 2014 when this code was copied the LICENSE read as:
 
