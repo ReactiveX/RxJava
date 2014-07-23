@@ -55,6 +55,8 @@ public final class OperatorElementAt<T> implements Operator<T, T> {
                 if (currentIndex == index) {
                     subscriber.onNext(value);
                     subscriber.onCompleted();
+                } else {
+                    request(1);
                 }
                 currentIndex++;
             }

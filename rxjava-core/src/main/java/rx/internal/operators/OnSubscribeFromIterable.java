@@ -62,7 +62,12 @@ public final class OnSubscribeFromIterable<T> implements OnSubscribe<T> {
 
         @Override
         public void request(long n) {
+            if (REQUESTED_UPDATER.get(this) == Long.MAX_VALUE) {
+                // already started with fast-path
+                return;
+            }
             if (n == Long.MAX_VALUE) {
+                REQUESTED_UPDATER.set(this, n);
                 // fast-path without backpressure
                 while (it.hasNext()) {
                     if (o.isUnsubscribed()) {

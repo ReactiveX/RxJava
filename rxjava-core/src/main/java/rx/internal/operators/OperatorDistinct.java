@@ -44,6 +44,8 @@ public final class OperatorDistinct<T, U> implements Operator<T, T> {
                 U key = keySelector.call(t);
                 if (keyMemory.add(key)) {
                     child.onNext(t);
+                } else {
+                    request(1);
                 }
             }
 

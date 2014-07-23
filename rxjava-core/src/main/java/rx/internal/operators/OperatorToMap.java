@@ -80,6 +80,11 @@ public final class OperatorToMap<T, K, V> implements Operator<Map<K, V>, T> {
             private Map<K, V> map = mapFactory.call();
 
             @Override
+            public void onStart() {
+                request(Long.MAX_VALUE);
+            }
+            
+            @Override
             public void onNext(T v) {
                 K key = keySelector.call(v);
                 V value = valueSelector.call(v);

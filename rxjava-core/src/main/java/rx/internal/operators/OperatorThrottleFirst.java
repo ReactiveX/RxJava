@@ -40,12 +40,17 @@ public final class OperatorThrottleFirst<T> implements Operator<T, T> {
             private long lastOnNext = 0;
 
             @Override
+            public void onStart() {
+                request(Long.MAX_VALUE);
+            }
+            
+            @Override
             public void onNext(T v) {
                 long now = scheduler.now();
                 if (lastOnNext == 0 || now - lastOnNext >= timeInMilliseconds) {
                     lastOnNext = now;
                     subscriber.onNext(v);
-                }
+                } 
             }
 
             @Override

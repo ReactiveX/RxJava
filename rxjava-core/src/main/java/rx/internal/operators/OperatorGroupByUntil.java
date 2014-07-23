@@ -70,6 +70,16 @@ public class OperatorGroupByUntil<T, K, R, D> implements Operator<GroupedObserva
             /** Guarded by guard. */
             Map<K, GroupSubject<K, R>> groups = new HashMap<K, GroupSubject<K, R>>();
             
+            @Override
+            public void onStart() {
+                /*
+                 * This operator does not support backpressure as splitting a stream effectively turns it into a "hot observable" and
+                 * blocking any one group would block the entire parent stream. If backpressure is needed on individual groups then
+                 * operators such as `onBackpressureDrop` or `onBackpressureBuffer` should be used.
+                 */
+                request(Long.MAX_VALUE);
+            }
+            
             final Subscriber<T> self = this;
             @Override
             public void onNext(T t) {

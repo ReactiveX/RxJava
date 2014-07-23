@@ -92,6 +92,12 @@ public final class OperatorWindowWithObservable<T, U> implements Operator<Observ
             this.child = new SerializedSubscriber<Observable<T>>(child);
             this.guard = new Object();
         }
+        
+        @Override
+        public void onStart() {
+            request(Long.MAX_VALUE);
+        }
+        
         @Override
         public void onNext(T t) {
             List<Object> localQueue;
@@ -285,6 +291,12 @@ public final class OperatorWindowWithObservable<T, U> implements Operator<Observ
             super(child);
             this.sub = sub;
         }
+        
+        @Override
+        public void onStart() {
+            request(Long.MAX_VALUE);
+        }
+        
         @Override
         public void onNext(U t) {
             sub.replaceWindow();

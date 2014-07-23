@@ -72,6 +72,13 @@ public final class OperatorTakeLastTimed<T> implements Operator<T, T> {
                 }
             }
 
+            // no backpressure up as it wants to receive and discard all but the last
+            @Override
+            public void onStart() {
+                // we do this to break the chain of the child subscriber being passed through
+                request(Long.MAX_VALUE);
+            }
+            
             @Override
             public void onNext(T args) {
                 long t = scheduler.now();
@@ -89,6 +96,7 @@ public final class OperatorTakeLastTimed<T> implements Operator<T, T> {
             public void onCompleted() {
                 runEvictionPolicy(scheduler.now());
                 try {
+                    // TODO this can be made to support backpressure
                     for (Timestamped<T> v : buffer) {
                         subscriber.onNext(v.getValue());
 

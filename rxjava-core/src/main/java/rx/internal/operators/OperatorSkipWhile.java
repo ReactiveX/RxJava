@@ -43,6 +43,8 @@ public final class OperatorSkipWhile<T> implements Operator<T, T> {
                     if (!predicate.call(t, index++)) {
                         skipping = false;
                         child.onNext(t);
+                    } else {
+                        request(1);
                     }
                 }
             }

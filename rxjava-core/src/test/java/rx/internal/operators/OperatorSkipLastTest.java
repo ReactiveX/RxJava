@@ -15,6 +15,7 @@
  */
 package rx.internal.operators;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -29,12 +30,15 @@ import org.mockito.InOrder;
 
 import rx.Observable;
 import rx.Observer;
+import rx.internal.util.RxRingBuffer;
+import rx.observers.TestSubscriber;
+import rx.schedulers.Schedulers;
 
 public class OperatorSkipLastTest {
 
     @Test
     public void testSkipLastEmpty() {
-        Observable<String> observable = Observable.<String>empty().skipLast(2);
+        Observable<String> observable = Observable.<String> empty().skipLast(2);
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
@@ -97,6 +101,17 @@ public class OperatorSkipLastTest {
         verify(observer, never()).onNext("two");
         verify(observer, never()).onError(any(Throwable.class));
         verify(observer, times(1)).onCompleted();
+    }
+
+    @Test
+    public void testSkipLastWithBackpressure() {
+        Observable<Integer> o = Observable.range(0, RxRingBuffer.SIZE * 2).skipLast(RxRingBuffer.SIZE + 10);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        o.observeOn(Schedulers.computation()).subscribe(ts);
+        ts.awaitTerminalEvent();
+        ts.assertNoErrors();
+        assertEquals((RxRingBuffer.SIZE) - 10, ts.getOnNextEvents().size());
+
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
