@@ -5636,6 +5636,7 @@ public class Observable<T> {
      * @return the source Observable modified with repeat logic
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#wiki-repeat">RxJava Wiki: repeatWhen()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229428.aspx">MSDN: Observable.Repeat</a>
+     * @since 0.20
      */
     public final Observable<T> repeatWhen(Func1<? super Observable<? extends Notification<?>>, ? extends Observable<? extends Notification<?>>> notificationHandler, Scheduler scheduler) {
         return OnSubscribeRedo.repeat(this, notificationHandler, scheduler);
@@ -5648,12 +5649,15 @@ public class Observable<T> {
      * or {@code onError} on the child subscription. Otherwise, this observable will resubscribe to the source observable.
      * <p>
      * <img width="640" height="430" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/repeatWhen.f.png" alt="">
+     * <p>
+     * {@code repeatWhen} operates by default on the {@code trampoline} {@link Scheduler}.
      * 
      * @param notificationHandler
      *            recieves an Observable of notifications with which a user can complete or error, aborting the repeat. 
      * @return the source Observable modified with repeat logic
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#wiki-repeat">RxJava Wiki: repeatWhen()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229428.aspx">MSDN: Observable.Repeat</a>
+     * @since 0.20
      */
     public final Observable<T> repeatWhen(Func1<? super Observable<? extends Notification<?>>, ? extends Observable<? extends Notification<?>>> notificationHandler) {
         return OnSubscribeRedo.repeat(this, notificationHandler);
@@ -6301,6 +6305,7 @@ public class Observable<T> {
      *            recieves an Observable of notifications with which a user can complete or error, aborting the retry. 
      * @return the source Observable modified with retry logic
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Error-Handling-Operators#wiki-retry">RxJava Wiki: retryWhen()</a>
+     * @since 0.20
      */
     public final Observable<T> retryWhen(Func1<? super Observable<? extends Notification<?>>, ? extends Observable<?>> notificationHandler) {
         return OnSubscribeRedo.<T> retry(this, notificationHandler);
@@ -6319,6 +6324,7 @@ public class Observable<T> {
      *            recieves an Observable of notifications with which a user can complete or error, aborting the retry. 
      * @return the source Observable modified with retry logic
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Error-Handling-Operators#wiki-retry">RxJava Wiki: retryWhen()</a>
+     * @since 0.20
      */
     public final Observable<T> retryWhen(Func1<? super Observable<? extends Notification<?>>, ? extends Observable<? extends Notification<?>>> notificationHandler, Scheduler scheduler) {
         return OnSubscribeRedo.<T> retry(this, notificationHandler, scheduler);
@@ -8971,7 +8977,7 @@ public class Observable<T> {
      *         and emits the results of {@code zipFunction} applied to these pairs
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#zip">RxJava wiki: zip</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.zip.aspx">MSDN: Observable.Zip</a>
-     * @deprecated Use zipWith instead. Changed to match naming convention of mergeWith, concatWith, etc
+     * @deprecated use {@code zipWith} instead. Changed to match naming convention of {@code mergeWith}, {@code concatWith}, etc.
      */
     @Deprecated
     public final <T2, R> Observable<R> zip(Observable<? extends T2> other, Func2<? super T, ? super T2, ? extends R> zipFunction) {
@@ -8999,6 +9005,7 @@ public class Observable<T> {
      *         and emits the results of {@code zipFunction} applied to these pairs
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#zip">RxJava wiki: zip</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.zip.aspx">MSDN: Observable.Zip</a>
+     * @since 0.20
      */
     public final <T2, R> Observable<R> zipWith(Observable<? extends T2> other, Func2<? super T, ? super T2, ? extends R> zipFunction) {
         return zip(this, other, zipFunction);
