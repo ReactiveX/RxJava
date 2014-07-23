@@ -64,6 +64,12 @@ public final class OperatorWindowWithSize<T> implements Operator<Observable<T>, 
         }
 
         @Override
+        public void onStart() {
+            // no backpressure as we are controlling data flow by window size
+            request(Long.MAX_VALUE);
+        }
+        
+        @Override
         public void onNext(T t) {
             if (count++ % size == 0) {
                 if (consumer != null) {
@@ -106,6 +112,12 @@ public final class OperatorWindowWithSize<T> implements Operator<Observable<T>, 
             this.chunks = new LinkedList<CountedSubject<T>>();
         }
 
+        @Override
+        public void onStart() {
+            // no backpressure as we are controlling data flow by window size
+            request(Long.MAX_VALUE);
+        }
+        
         @Override
         public void onNext(T t) {
             if (count++ % skip == 0) {

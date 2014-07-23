@@ -15,6 +15,7 @@
  */
 package rx.internal.operators;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
@@ -649,5 +650,14 @@ public class OperatorConcatTest {
         inOrder.verify(o).onNext(list);
         inOrder.verify(o).onCompleted();
         verify(o, never()).onError(any(Throwable.class));
+    }
+    
+    @Test
+    public void testConcatOuterBackpressure() {
+        assertEquals(1,
+                (int) Observable.<Integer> empty()
+                        .concatWith(Observable.just(1))
+                        .take(1)
+                        .toBlocking().single());
     }
 }

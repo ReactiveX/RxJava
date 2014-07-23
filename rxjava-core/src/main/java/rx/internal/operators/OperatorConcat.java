@@ -63,7 +63,14 @@ public final class OperatorConcat<T> implements Operator<T, Observable<? extends
                 }
             }));
         }
-        
+
+        @Override
+        public void onStart() {
+            // no need for more than 1 at a time since we concat 1 at a time, so we'll request 2 to start ...
+            // 1 to be subscribed to, 1 in the queue, then we'll keep requesting 1 at a time after that
+            request(2);
+        }
+
         @Override
         public void onNext(Observable<? extends T> t) {
             queue.add(nl.next(t));
@@ -85,22 +92,25 @@ public final class OperatorConcat<T> implements Operator<T, Observable<? extends
                 subscribeNext();
             }
         }
+
         void completeInner() {
+            request(1);
             if (WIP_UPDATER.decrementAndGet(this) > 0) {
                 subscribeNext();
             }
         }
+
         void subscribeNext() {
             Object o = queue.poll();
             if (nl.isCompleted(o)) {
                 s.onCompleted();
-            } else 
-            if (o != null) {
+            } else if (o != null) {
                 Observable<? extends T> obs = nl.getValue(o);
                 Subscriber<T> sourceSub = new Subscriber<T>() {
 
                     @Override
                     public void onNext(T t) {
+                        // TODO need to support backpressure here https://github.com/Netflix/RxJava/issues/1480
                         s.onNext(t);
                     }
 
