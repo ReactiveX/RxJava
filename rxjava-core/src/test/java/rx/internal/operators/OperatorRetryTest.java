@@ -100,6 +100,7 @@ public class OperatorRetryTest {
             }
         }).subscribe(ts);
         ts.awaitTerminalEvent();
+        ts.assertNoErrors();
 
         InOrder inOrder = inOrder(consumer);
         inOrder.verify(consumer, never()).onError(any(Throwable.class));
