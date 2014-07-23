@@ -77,13 +77,16 @@ public class Observable<T> {
      * <p>
      * See <a href="http://go.microsoft.com/fwlink/?LinkID=205219">Rx Design Guidelines (PDF)</a> for detailed
      * information.
-     * <p>
-     * {@code create} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code create} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param <T>
      *            the type of the items that this Observable emits
      * @param f
-     *            a function that accepts an {@code Subscriber<T>}, and invokes its {@code onNext}, {@code onError}, and {@code onCompleted} methods as appropriate
+     *            a function that accepts an {@code Subscriber<T>}, and invokes its {@code onNext},
+     *            {@code onError}, and {@code onCompleted} methods as appropriate
      * @return an Observable that, when a {@link Subscriber} subscribes to it, will execute the specified
      *         function
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#create">RxJava wiki: create</a>
@@ -144,8 +147,10 @@ public class Observable<T> {
      * <p> {@code
      * observable.map(...).filter(...).take(5).lift(new OperatorA()).lift(new OperatorB(...)).subscribe()
      * }
-     * <p>
-     * {@code lift} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code lift} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param lift the Operator that implements the Observable-operating function to be applied to the source
      *             Observable
@@ -184,8 +189,10 @@ public class Observable<T> {
      * Mirrors the one Observable in an Iterable of several Observables that first emits an item.
      * <p>
      * <img width="640" height="385" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/amb.png" alt="">
-     * <p>
-     * {@code amb} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code amb} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param sources
      *            an Iterable of Observable sources competing to react first
@@ -202,8 +209,10 @@ public class Observable<T> {
      * Given two Observables, mirrors the one that first emits an item.
      * <p>
      * <img width="640" height="385" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/amb.png" alt="">
-     * <p>
-     * {@code amb} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code amb} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param o1
      *            an Observable competing to react first
@@ -222,8 +231,10 @@ public class Observable<T> {
      * Given three Observables, mirrors the one that first emits an item.
      * <p>
      * <img width="640" height="385" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/amb.png" alt="">
-     * <p>
-     * {@code amb} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code amb} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param o1
      *            an Observable competing to react first
@@ -244,8 +255,10 @@ public class Observable<T> {
      * Given four Observables, mirrors the one that first emits an item.
      * <p>
      * <img width="640" height="385" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/amb.png" alt="">
-     * <p>
-     * {@code amb} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code amb} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param o1
      *            an Observable competing to react first
@@ -268,9 +281,11 @@ public class Observable<T> {
      * Given five Observables, mirrors the one that first emits an item.
      * <p>
      * <img width="640" height="385" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/amb.png" alt="">
-     * <p>
-     * {@code amb} does not operate by default on a particular {@link Scheduler}.
-     * 
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code amb} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
      * @param o1
      *            an Observable competing to react first
      * @param o2
@@ -294,8 +309,10 @@ public class Observable<T> {
      * Given six Observables, mirrors the one that first emits an item.
      * <p>
      * <img width="640" height="385" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/amb.png" alt="">
-     * <p>
-     * {@code amb} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code amb} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param o1
      *            an Observable competing to react first
@@ -322,9 +339,11 @@ public class Observable<T> {
      * Given seven Observables, mirrors the one that first emits an item.
      * <p>
      * <img width="640" height="385" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/amb.png" alt="">
-     * <p>
-     * {@code amb} does not operate by default on a particular {@link Scheduler}.
-     * 
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code amb} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
      * @param o1
      *            an Observable competing to react first
      * @param o2
@@ -352,9 +371,11 @@ public class Observable<T> {
      * Given eight Observables, mirrors the one that first emits an item.
      * <p>
      * <img width="640" height="385" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/amb.png" alt="">
-     * <p>
-     * {@code amb} does not operate by default on a particular {@link Scheduler}.
-     * 
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code amb} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
      * @param o1
      *            an Observable competing to react first
      * @param o2
@@ -384,8 +405,10 @@ public class Observable<T> {
      * Given nine Observables, mirrors the one that first emits an item.
      * <p>
      * <img width="640" height="385" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/amb.png" alt="">
-     * <p>
-     * {@code amb} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code amb} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param o1
      *            an Observable competing to react first
@@ -420,9 +443,11 @@ public class Observable<T> {
      * aggregation is defined by a specified function.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/combineLatest.png" alt="">
-     * <p>
-     * {@code combineLatest} does not operate by default on a particular {@link Scheduler}.
-     * 
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code combineLatest} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
      * @param o1
      *            the first source Observable
      * @param o2
@@ -445,8 +470,10 @@ public class Observable<T> {
      * aggregation is defined by a specified function.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/combineLatest.png" alt="">
-     * <p>
-     * {@code combineLatest} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code combineLatest} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param o1
      *            the first source Observable
@@ -472,8 +499,10 @@ public class Observable<T> {
      * aggregation is defined by a specified function.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/combineLatest.png" alt="">
-     * <p>
-     * {@code combineLatest} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code combineLatest} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param o1
      *            the first source Observable
@@ -502,8 +531,10 @@ public class Observable<T> {
      * aggregation is defined by a specified function.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/combineLatest.png" alt="">
-     * <p>
-     * {@code combineLatest} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code combineLatest} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param o1
      *            the first source Observable
@@ -534,8 +565,10 @@ public class Observable<T> {
      * aggregation is defined by a specified function.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/combineLatest.png" alt="">
-     * <p>
-     * {@code combineLatest} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code combineLatest} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param o1
      *            the first source Observable
@@ -568,8 +601,10 @@ public class Observable<T> {
      * aggregation is defined by a specified function.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/combineLatest.png" alt="">
-     * <p>
-     * {@code combineLatest} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code combineLatest} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param o1
      *            the first source Observable
@@ -604,8 +639,10 @@ public class Observable<T> {
      * aggregation is defined by a specified function.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/combineLatest.png" alt="">
-     * <p>
-     * {@code combineLatest} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code combineLatest} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param o1
      *            the first source Observable
@@ -642,8 +679,10 @@ public class Observable<T> {
      * aggregation is defined by a specified function.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/combineLatest.png" alt="">
-     * <p>
-     * {@code combineLatest} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code combineLatest} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param o1
      *            the first source Observable
@@ -680,8 +719,10 @@ public class Observable<T> {
      * Combines a list of source Observables by emitting an item that aggregates the latest values of each of
      * the source Observables each time an item is received from any of the source Observables, where this
      * aggregation is defined by a specified function.
-     * <p>
-     * {@code combineLatest} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code combineLatest} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      *
      * @param <T>
      *            the common base type of source values
@@ -705,9 +746,11 @@ public class Observable<T> {
      * Observable, one after the other, without interleaving them.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/concat.png" alt="">
-     * <p>
-     * {@code concat} does not operate by default on a particular {@link Scheduler}.
-     * 
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
      * @param observables
      *            an Observable that emits Observables
      * @return an Observable that emits items all of the items emitted by the Observables emitted by
@@ -724,9 +767,11 @@ public class Observable<T> {
      * interleaving them.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/concat.png" alt="">
-     * <p>
-     * {@code concat} does not operate by default on a particular {@link Scheduler}.
-     * 
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
      * @param t1
      *            an Observable to be concatenated
      * @param t2
@@ -745,9 +790,11 @@ public class Observable<T> {
      * interleaving them.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/concat.png" alt="">
-     * <p>
-     * {@code concat} does not operate by default on a particular {@link Scheduler}.
-     * 
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
      * @param t1
      *            an Observable to be concatenated
      * @param t2
@@ -768,8 +815,10 @@ public class Observable<T> {
      * interleaving them.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/concat.png" alt="">
-     * <p>
-     * {@code concat} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param t1
      *            an Observable to be concatenated
@@ -793,9 +842,11 @@ public class Observable<T> {
      * interleaving them.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/concat.png" alt="">
-     * <p>
-     * {@code concat} does not operate by default on a particular {@link Scheduler}.
-     * 
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
      * @param t1
      *            an Observable to be concatenated
      * @param t2
@@ -820,9 +871,11 @@ public class Observable<T> {
      * interleaving them.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/concat.png" alt="">
-     * <p>
-     * {@code concat} does not operate by default on a particular {@link Scheduler}.
-     * 
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
      * @param t1
      *            an Observable to be concatenated
      * @param t2
@@ -849,9 +902,11 @@ public class Observable<T> {
      * interleaving them.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/concat.png" alt="">
-     * <p>
-     * {@code concat} does not operate by default on a particular {@link Scheduler}.
-     * 
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
      * @param t1
      *            an Observable to be concatenated
      * @param t2
@@ -880,8 +935,10 @@ public class Observable<T> {
      * interleaving them.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/concat.png" alt="">
-     * <p>
-     * {@code concat} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param t1
      *            an Observable to be concatenated
@@ -913,8 +970,10 @@ public class Observable<T> {
      * interleaving them.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/concat.png" alt="">
-     * <p>
-     * {@code concat} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param t1
      *            an Observable to be concatenated
@@ -953,8 +1012,10 @@ public class Observable<T> {
      * The defer Observer allows you to defer or delay emitting items from an Observable until such time as an
      * Observer subscribes to the Observable. This allows an {@link Observer} to easily obtain updates or a
      * refreshed version of the sequence.
-     * <p>
-     * {@code defer} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code defer} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param observableFactory
      *            the Observable factory function to invoke for each {@link Observer} that subscribes to the
@@ -975,9 +1036,11 @@ public class Observable<T> {
      * {@link Observer#onCompleted onCompleted} method.
      * <p>
      * <img width="640" height="190" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/empty.png" alt="">
-     * <p>
-     * {@code empty} does not operate by default on a particular {@link Scheduler}.
-     * 
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code empty} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
      * @param <T>
      *            the type of the items (ostensibly) emitted by the Observable
      * @return an Observable that emits no items to the {@link Observer} but immediately invokes the
@@ -994,6 +1057,10 @@ public class Observable<T> {
      * {@link Observer#onCompleted onCompleted} method on the specified Scheduler.
      * <p>
      * <img width="640" height="190" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/empty.s.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     * </dl>
      * 
      * @param scheduler
      *            the Scheduler to use to call the {@link Observer#onCompleted onCompleted} method
@@ -1014,8 +1081,10 @@ public class Observable<T> {
      * Observer subscribes to it.
      * <p>
      * <img width="640" height="190" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/error.png" alt="">
-     * <p>
-     * {@code error} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code error} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param exception
      *            the particular Throwable to pass to {@link Observer#onError onError}
@@ -1035,6 +1104,10 @@ public class Observable<T> {
      * specified Scheduler.
      * <p>
      * <img width="640" height="190" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/error.s.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     * </dl>
      * 
      * @param exception
      *            the particular Throwable to pass to {@link Observer#onError onError}
@@ -1061,8 +1134,10 @@ public class Observable<T> {
      * method.
      * <p>
      * <em>Important note:</em> This Observable is blocking; you cannot unsubscribe from it.
-     * <p>
-     * {@code from} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code from} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param future
      *            the source {@link Future}
@@ -1086,8 +1161,10 @@ public class Observable<T> {
      * method.
      * <p>
      * <em>Important note:</em> This Observable is blocking; you cannot unsubscribe from it.
-     * <p>
-     * {@code from} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code from} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param future
      *            the source {@link Future}
@@ -1113,8 +1190,10 @@ public class Observable<T> {
      * You can convert any object that supports the {@link Future} interface into an Observable that emits the
      * return value of the {@link Future#get} method of that object, by passing the object into the {@code from}
      * method.
-     * <p>
-     * {@code from} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     * </dl>
      * 
      * @param future
      *            the source {@link Future}
@@ -1135,8 +1214,10 @@ public class Observable<T> {
      * Converts an {@link Iterable} sequence into an Observable that emits the items in the sequence.
      * <p>
      * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png" alt="">
-     * <p>
-     * {@code from} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code from} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param iterable
      *            the source {@link Iterable} sequence
@@ -1156,6 +1237,10 @@ public class Observable<T> {
      * emitting each item from the sequence.
      * <p>
      * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.s.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     * </dl>
      * 
      * @param iterable
      *            the source {@link Iterable} sequence
@@ -1177,8 +1262,10 @@ public class Observable<T> {
      * Converts an item into an Observable that emits that item.
      * <p>
      * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png" alt="">
-     * <p>
-     * {@code from} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code from} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param t1
      *            the item
@@ -1195,8 +1282,10 @@ public class Observable<T> {
      * Converts two items into an Observable that emits those items.
      * <p>
      * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png" alt="">
-     * <p>
-     * {@code from} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code from} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param t1
      *            first item
@@ -1217,8 +1306,10 @@ public class Observable<T> {
      * Converts three items into an Observable that emits those items.
      * <p>
      * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png" alt="">
-     * <p>
-     * {@code from} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code from} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param t1
      *            first item
@@ -1241,8 +1332,10 @@ public class Observable<T> {
      * Converts four items into an Observable that emits those items.
      * <p>
      * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png" alt="">
-     * <p>
-     * {@code from} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code from} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param t1
      *            first item
@@ -1267,9 +1360,11 @@ public class Observable<T> {
      * Converts five items into an Observable that emits those items.
      * <p>
      * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png" alt="">
-     * <p>
-     * {@code from} does not operate by default on a particular {@link Scheduler}.
-     * 
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code from} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
      * @param t1
      *            first item
      * @param t2
@@ -1295,8 +1390,10 @@ public class Observable<T> {
      * Converts six items into an Observable that emits those items.
      * <p>
      * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png" alt="">
-     * <p>
-     * {@code from} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code from} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param t1
      *            first item
@@ -1325,8 +1422,10 @@ public class Observable<T> {
      * Converts seven items into an Observable that emits those items.
      * <p>
      * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png" alt="">
-     * <p>
-     * {@code from} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code from} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param t1
      *            first item
@@ -1357,8 +1456,10 @@ public class Observable<T> {
      * Converts eight items into an Observable that emits those items.
      * <p>
      * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png" alt="">
-     * <p>
-     * {@code from} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code from} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param t1
      *            first item
@@ -1391,8 +1492,10 @@ public class Observable<T> {
      * Converts nine items into an Observable that emits those items.
      * <p>
      * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png" alt="">
-     * <p>
-     * {@code from} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code from} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param t1
      *            first item
@@ -1427,8 +1530,10 @@ public class Observable<T> {
      * Converts ten items into an Observable that emits those items.
      * <p>
      * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png" alt="">
-     * <p>
-     * {@code from} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code from} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param t1
      *            first item
@@ -1465,8 +1570,10 @@ public class Observable<T> {
      * Converts an Array into an Observable that emits the items in the Array.
      * <p>
      * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png" alt="">
-     * <p>
-     * {@code from} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code from} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param t1
      *            the source Array
@@ -1484,6 +1591,10 @@ public class Observable<T> {
      * Converts an Array into an Observable that emits the items in the Array on a specified Scheduler.
      * <p>
      * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     * </dl>
      * 
      * @param items
      *            the source Array
@@ -1503,8 +1614,10 @@ public class Observable<T> {
      * Returns an Observable that emits a sequential number every specified interval of time.
      * <p>
      * <img width="640" height="195" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/interval.png" alt="">
-     * <p>
-     * {@code interval} operates by default on the {@code computation} {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code interval} operates by default on the {@code computation} {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param interval
      *            interval size in time units (see below)
@@ -1523,6 +1636,10 @@ public class Observable<T> {
      * specified Scheduler.
      * <p>
      * <img width="640" height="200" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/interval.s.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     * </dl>
      * 
      * @param interval
      *            interval size in time units (see below)
@@ -1550,8 +1667,10 @@ public class Observable<T> {
      * an {@link Iterable} object into an Observable that emits each of the items in the Iterable, one at a
      * time, while the {@code just} method converts an Iterable into an Observable that emits the entire
      * Iterable as a single item.
-     * <p>
-     * {@code just} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code just} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param value
      *            the item to emit
@@ -1568,6 +1687,10 @@ public class Observable<T> {
      * Returns an Observable that emits a single item and then completes, on a specified Scheduler.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/just.s.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     * </dl>
      * 
      * @param value
      *            the item to emit
@@ -1590,8 +1713,10 @@ public class Observable<T> {
      * <p>
      * You can combine the items emitted by multiple Observables so that they appear as a single Observable, by
      * using the {@code merge} method.
-     * <p>
-     * {@code merge} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param sequences
      *            the Iterable of Observables
@@ -1612,8 +1737,10 @@ public class Observable<T> {
      * <p>
      * You can combine the items emitted by multiple Observables so that they appear as a single Observable, by
      * using the {@code merge} method.
-     * <p>
-     * {@code merge} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param sequences
      *            the Iterable of Observables
@@ -1639,6 +1766,10 @@ public class Observable<T> {
      * <p>
      * You can combine the items emitted by multiple Observables so that they appear as a single Observable, by
      * using the {@code merge} method.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     * </dl>
      * 
      * @param sequences
      *            the Iterable of Observables
@@ -1665,6 +1796,10 @@ public class Observable<T> {
      * <p>
      * You can combine the items emitted by multiple Observables so that they appear as a single Observable, by
      * using the {@code merge} method.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     * </dl>
      * 
      * @param sequences
      *            the Iterable of Observables
@@ -1687,9 +1822,11 @@ public class Observable<T> {
      * <p>
      * You can combine the items emitted by multiple Observables so that they appear as a single Observable, by
      * using the {@code merge} method.
-     * <p>
-     * {@code merge} does not operate by default on a particular {@link Scheduler}.
-     * 
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
      * @param source
      *            an Observable that emits Observables
      * @return an Observable that emits items that are the result of flattening the Observables emitted by the
@@ -1710,8 +1847,10 @@ public class Observable<T> {
      * <p>
      * You can combine the items emitted by multiple Observables so that they appear as a single Observable, by
      * using the {@code merge} method.
-     * <p>
-     * {@code merge} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param source
      *            an Observable that emits Observables
@@ -1735,8 +1874,10 @@ public class Observable<T> {
      * <p>
      * You can combine items emitted by multiple Observables so that they appear as a single Observable, by
      * using the {@code merge} method.
-     * <p>
-     * {@code merge} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param t1
      *            an Observable to be merged
@@ -1758,8 +1899,10 @@ public class Observable<T> {
      * <p>
      * You can combine items emitted by multiple Observables so that they appear as a single Observable, by
      * using the {@code merge} method.
-     * <p>
-     * {@code merge} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param t1
      *            an Observable to be merged
@@ -1783,8 +1926,10 @@ public class Observable<T> {
      * <p>
      * You can combine items emitted by multiple Observables so that they appear as a single Observable, by
      * using the {@code merge} method.
-     * <p>
-     * {@code merge} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param t1
      *            an Observable to be merged
@@ -1810,8 +1955,10 @@ public class Observable<T> {
      * <p>
      * You can combine items emitted by multiple Observables so that they appear as a single Observable, by
      * using the {@code merge} method.
-     * <p>
-     * {@code merge} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param t1
      *            an Observable to be merged
@@ -1839,8 +1986,10 @@ public class Observable<T> {
      * <p>
      * You can combine items emitted by multiple Observables so that they appear as a single Observable, by
      * using the {@code merge} method.
-     * <p>
-     * {@code merge} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param t1
      *            an Observable to be merged
@@ -1870,8 +2019,10 @@ public class Observable<T> {
      * <p>
      * You can combine items emitted by multiple Observables so that they appear as a single Observable, by
      * using the {@code merge} method.
-     * <p>
-     * {@code merge} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param t1
      *            an Observable to be merged
@@ -1903,8 +2054,10 @@ public class Observable<T> {
      * <p>
      * You can combine items emitted by multiple Observables so that they appear as a single Observable, by
      * using the {@code merge} method.
-     * <p>
-     * {@code merge} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param t1
      *            an Observable to be merged
@@ -1938,8 +2091,10 @@ public class Observable<T> {
      * <p>
      * You can combine items emitted by multiple Observables so that they appear as a single Observable, by
      * using the {@code merge} method.
-     * <p>
-     * {@code merge} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param t1
      *            an Observable to be merged
@@ -1975,8 +2130,10 @@ public class Observable<T> {
      * <p>
      * You can combine items emitted by multiple Observables so that they appear as a single Observable, by
      * using the {@code merge} method.
-     * <p>
-     * {@code merge} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param sequences
      *            the Array of Observables
@@ -1996,6 +2153,10 @@ public class Observable<T> {
      * <p>
      * You can combine items emitted by multiple Observables so that they appear as a single Observable, by
      * using the {@code merge} method.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     * </dl>
      * 
      * @param sequences
      *            the Array of Observables
@@ -2022,8 +2183,10 @@ public class Observable<T> {
      * <p>
      * Even if multiple merged Observables send {@code onError} notifications, {@code mergeDelayError} will only
      * invoke the {@code onError} method of its Observers once.
-     * <p>
-     * {@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param source
      *            an Observable that emits Observables
@@ -2049,8 +2212,10 @@ public class Observable<T> {
      * <p>
      * Even if both merged Observables send {@code onError} notifications, {@code mergeDelayError} will only
      * invoke the {@code onError} method of its Observers once.
-     * <p>
-     * {@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param t1
      *            an Observable to be merged
@@ -2078,8 +2243,10 @@ public class Observable<T> {
      * <p>
      * Even if multiple merged Observables send {@code onError} notifications, {@code mergeDelayError} will only
      * invoke the {@code onError} method of its Observers once.
-     * <p>
-     * {@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param t1
      *            an Observable to be merged
@@ -2109,8 +2276,10 @@ public class Observable<T> {
      * <p>
      * Even if multiple merged Observables send {@code onError} notifications, {@code mergeDelayError} will only
      * invoke the {@code onError} method of its Observers once.
-     * <p>
-     * {@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param t1
      *            an Observable to be merged
@@ -2142,8 +2311,10 @@ public class Observable<T> {
      * <p>
      * Even if multiple merged Observables send {@code onError} notifications, {@code mergeDelayError} will only
      * invoke the {@code onError} method of its Observers once.
-     * <p>
-     * {@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param t1
      *            an Observable to be merged
@@ -2177,8 +2348,10 @@ public class Observable<T> {
      * <p>
      * Even if multiple merged Observables send {@code onError} notifications, {@code mergeDelayError} will only
      * invoke the {@code onError} method of its Observers once.
-     * <p>
-     * {@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param t1
      *            an Observable to be merged
@@ -2215,8 +2388,10 @@ public class Observable<T> {
      * <p>
      * Even if multiple merged Observables send {@code onError} notifications, {@code mergeDelayError} will only
      * invoke the {@code onError} method of its Observers once.
-     * <p>
-     * {@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param t1
      *            an Observable to be merged
@@ -2254,8 +2429,10 @@ public class Observable<T> {
      * <p>
      * Even if multiple merged Observables send {@code onError} notifications, {@code mergeDelayError} will only
      * invoke the {@code onError} method of its Observers once.
-     * <p>
-     * {@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param t1
      *            an Observable to be merged
@@ -2296,8 +2473,10 @@ public class Observable<T> {
      * <p>
      * Even if multiple merged Observables send {@code onError} notifications, {@code mergeDelayError} will only
      * invoke the {@code onError} method of its Observers once.
-     * <p>
-     * {@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param t1
      *            an Observable to be merged
@@ -2330,8 +2509,10 @@ public class Observable<T> {
      * source Observable as its single emission.
      * <p>
      * <img width="640" height="350" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/nest.png" alt="">
-     * <p>
-     * {@code nest} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code nest} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @return an Observable that emits a single item: the source Observable
      * @since 0.17
@@ -2346,8 +2527,10 @@ public class Observable<T> {
      * <img width="640" height="185" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/never.png" alt="">
      * <p>
      * This Observable is useful primarily for testing purposes.
-     * <p>
-     * {@code never} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code never} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param <T>
      *            the type of items (not) emitted by the Observable
@@ -2371,8 +2554,10 @@ public class Observable<T> {
      * <p>
      * This is a mechanism for efficiently processing <i>n</i> number of Observables on a smaller <i>m</i>
      * number of resources (typically CPU cores).
-     * <p>
-     * {@code parallelMerge} by default operates on the {@code immediate} {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code parallelMerge} by default operates on the {@code immediate} {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param parallelObservables
      *            the number of Observables to merge into
@@ -2396,6 +2581,10 @@ public class Observable<T> {
      * <p>
      * This is a mechanism for efficiently processing <i>n</i> number of Observables on a smaller <i>m</i>
      * number of resources (typically CPU cores).
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     * </dl>
      * 
      * @param parallelObservables
      *            the number of Observables to merge into
@@ -2412,8 +2601,10 @@ public class Observable<T> {
      * Returns an Observable that emits a sequence of Integers within a specified range.
      * <p>
      * <img width="640" height="195" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/range.png" alt="">
-     * <p>
-     * {@code range} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code range} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param start
      *            the value of the first Integer in the sequence
@@ -2447,6 +2638,10 @@ public class Observable<T> {
      * Scheduler.
      * <p>
      * <img width="640" height="195" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/range.s.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     * </dl>
      * 
      * @param start
      *            the value of the first Integer in the sequence
@@ -2467,8 +2662,10 @@ public class Observable<T> {
      * same by comparing the items emitted by each Observable pairwise.
      * <p>
      * <img width="640" height="385" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/sequenceEqual.png" alt="">
-     * <p>
-     * {@code sequenceEqual} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code sequenceEqual} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param first
      *            the first Observable to compare
@@ -2498,8 +2695,10 @@ public class Observable<T> {
      * equality function.
      * <p>
      * <img width="640" height="385" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/sequenceEqual.png" alt="">
-     * <p>
-     * {@code sequenceEqual} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code sequenceEqual} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param first
      *            the first Observable to compare
@@ -2528,8 +2727,10 @@ public class Observable<T> {
      * these emitted Observables, the Observable returned by {@code switchOnNext} begins emitting the items
      * emitted by that Observable. When a new Observable is emitted, {@code switchOnNext} stops emitting items
      * from the earlier-emitted Observable and begins emitting items from the new one.
-     * <p>
-     * {@code switchOnNext} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code switchOnNext} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param <T> the item type
      * @param sequenceOfSequences
@@ -2548,14 +2749,13 @@ public class Observable<T> {
      * after each {@code period} of time thereafter.
      * <p>
      * <img width="640" height="200" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timer.p.png" alt="">
-     * <p>
-     * {@code timer} operates by default on the {@code computation} {@link Scheduler}.
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure as it uses time. If the downstream needs a slower rate it should slow 
-     * the timer or use something like `onBackpressureDrop`.
-     * 
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure as it uses time. If the downstream needs a slower rate
+     *      it should slow the timer or use something like {@link #onBackpressureDrop}.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code timer} operates by default on the {@code computation} {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param initialDelay
      *            the initial delay time to wait before emitting the first value of 0L
@@ -2577,11 +2777,13 @@ public class Observable<T> {
      * after each {@code period} of time thereafter, on a specified {@link Scheduler}.
      * <p>
      * <img width="640" height="200" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timer.ps.png" alt="">
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure as it uses time. If the downstream needs a slower rate it should slow 
-     * the timer or use something like `onBackpressureDrop`.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure as it uses time. If the downstream needs a slower rate
+     *      it should slow the timer or use something like {@link #onBackpressureDrop}.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     * </dl>
      * 
      * @param initialDelay
      *            the initial delay time to wait before emitting the first value of 0L
@@ -2604,13 +2806,13 @@ public class Observable<T> {
      * Returns an Observable that emits one item after a specified delay, and then completes.
      * <p>
      * <img width="640" height="200" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timer.png" alt="">
-     * <p>
-     * {@code timer} operates by default on the {@code computation} {@link Scheduler}.
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure as it uses time. If the downstream needs a slower rate it should slow 
-     * the timer or use something like `onBackpressureDrop`.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure as it uses time. If the downstream needs a slower rate
+     *      it should slow the timer or use something like {@link #onBackpressureDrop}.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code timer} operates by default on the {@code computation} {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param delay
      *            the initial delay before emitting a single {@code 0L}
@@ -2629,11 +2831,13 @@ public class Observable<T> {
      * completes.
      * <p>
      * <img width="640" height="200" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timer.s.png" alt="">
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure as it uses time. If the downstream needs a slower rate it should slow 
-     * the timer or use something like `onBackpressureDrop`.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure as it uses time. If the downstream needs a slower rate
+     *      it should slow the timer or use something like {@link #onBackpressureDrop}.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     * </dl>
      * 
      * @param delay
      *            the initial delay before emitting a single 0L
@@ -2654,8 +2858,10 @@ public class Observable<T> {
      * Constructs an Observable that creates a dependent resource object.
      * <p>
      * <img width="640" height="400" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/using.png" alt="">
-     * <p>
-     * {@code using} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code using} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param resourceFactory
      *            the factory function to create a resource object that depends on the Observable
@@ -2682,8 +2888,10 @@ public class Observable<T> {
      * the number of {@code onNext} invokations of the source Observable that emits the fewest items.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/zip.png" alt="">
-     * <p>
-     * {@code zip} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param ws
      *            an Iterable of source Observables
@@ -2715,8 +2923,10 @@ public class Observable<T> {
      * the number of {@code onNext} invokations of the source Observable that emits the fewest items.
      * <p>
      * <img width="640" height="370" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/zip.o.png" alt="">
-     * <p>
-     * {@code zip} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param ws
      *            an Observable of source Observables
@@ -2752,8 +2962,10 @@ public class Observable<T> {
      * The resulting {@code Observable<R>} returned from {@code zip} will invoke {@link Observer#onNext onNext}
      * as many times as the number of {@code onNext} invocations of the source Observable that emits the fewest
      * items.
-     * <p>
-     * {@code zip} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param o1
      *            the first source Observable
@@ -2785,8 +2997,10 @@ public class Observable<T> {
      * The resulting {@code Observable<R>} returned from {@code zip} will invoke {@link Observer#onNext onNext}
      * as many times as the number of {@code onNext} invocations of the source Observable that emits the fewest
      * items.
-     * <p>
-     * {@code zip} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param o1
      *            the first source Observable
@@ -2820,8 +3034,10 @@ public class Observable<T> {
      * The resulting {@code Observable<R>} returned from {@code zip} will invoke {@link Observer#onNext onNext}
      * as many times as the number of {@code onNext} invocations of the source Observable that emits the fewest
      * items.
-     * <p>
-     * {@code zip} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param o1
      *            the first source Observable
@@ -2857,8 +3073,10 @@ public class Observable<T> {
      * The resulting {@code Observable<R>} returned from {@code zip} will invoke {@link Observer#onNext onNext}
      * as many times as the number of {@code onNext} invocations of the source Observable that emits the fewest
      * items.
-     * <p>
-     * {@code zip} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param o1
      *            the first source Observable
@@ -2895,8 +3113,10 @@ public class Observable<T> {
      * The resulting {@code Observable<R>} returned from {@code zip} will invoke {@link Observer#onNext onNext}
      * as many times as the number of {@code onNext} invocations of the source Observable that emits the fewest
      * items.
-     * <p>
-     * {@code zip} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param o1
      *            the first source Observable
@@ -2936,8 +3156,10 @@ public class Observable<T> {
      * The resulting {@code Observable<R>} returned from {@code zip} will invoke {@link Observer#onNext onNext}
      * as many times as the number of {@code onNext} invocations of the source Observable that emits the fewest
      * items.
-     * <p>
-     * {@code zip} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param o1
      *            the first source Observable
@@ -2979,8 +3201,10 @@ public class Observable<T> {
      * The resulting {@code Observable<R>} returned from {@code zip} will invoke {@link Observer#onNext onNext}
      * as many times as the number of {@code onNext} invocations of the source Observable that emits the fewest
      * items.
-     * <p>
-     * {@code zip} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param o1
      *            the first source Observable
@@ -3024,8 +3248,10 @@ public class Observable<T> {
      * The resulting {@code Observable<R>} returned from {@code zip} will invoke {@link Observer#onNext onNext}
      * as many times as the number of {@code onNext} invocations of the source Observable that emits the fewest
      * items.
-     * <p>
-     * {@code zip} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param o1
      *            the first source Observable
@@ -3062,8 +3288,10 @@ public class Observable<T> {
      * Observable satisfy a condition.
      * <p>
      * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/all.png" alt="">
-     * <p>
-     * {@code all} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code all} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param predicate
      *            a function that evaluates an item and returns a Boolean
@@ -3080,8 +3308,10 @@ public class Observable<T> {
      * Mirrors the first Observable (current or provided) that emits an item.
      * <p>
      * <img width="640" height="385" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/amb.png" alt="">
-     * <p>
-     * {@code amb} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code amb} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param t1
      *            an Observable competing to react first
@@ -3099,8 +3329,10 @@ public class Observable<T> {
      * Disguises a object of an Observable subclass as a simple Observable object. Useful for instance when you
      * have an implementation of a subclass of Observable but you want to hide the properties and methods of
      * this subclass from whomever you are passing the Observable to.
-     * <p>
-     * {@code asObservable} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code asObservable} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @return an Observable that hides the identity of this Observable
      */
@@ -3114,13 +3346,13 @@ public class Observable<T> {
      * new buffer whenever the Observable produced by the specified {@code bufferClosingSelector} emits an item.
      * <p>
      * <img width="640" height="395" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/buffer1.png" alt="">
-     * <p>
-     * This version of {@code buffer} does not operate by default on a particular {@link Scheduler}.
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure as it is instead controlled by the given Observables and buffers data.
-     * It requests `Long.MAX_VALUE` upstream and does not obey downstream requests.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure as it is instead controlled by the given Observables and
+     *      buffers data. It requests {@code Long.MAX_VALUE} upstream and does not obey downstream requests.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This version of {@code buffer} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param bufferClosingSelector
      *            a {@link Func0} that produces an Observable that governs the boundary between buffers.
@@ -3142,8 +3374,10 @@ public class Observable<T> {
      * propagates the notification from the source Observable.
      * <p>
      * <img width="640" height="320" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/buffer3.png" alt="">
-     * <p>
-     * This version of {@code buffer} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This version of {@code buffer} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param count
      *            the maximum number of items in each buffer before it should be emitted
@@ -3163,8 +3397,10 @@ public class Observable<T> {
      * propagates the notification from the source Observable.
      * <p>
      * <img width="640" height="320" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/buffer4.png" alt="">
-     * <p>
-     * This version of {@code buffer} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This version of {@code buffer} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param count
      *            the maximum size of each buffer before it should be emitted
@@ -3189,12 +3425,13 @@ public class Observable<T> {
      * propagates the notification from the source Observable.
      * <p>
      * <img width="640" height="320" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/buffer7.png" alt="">
-     * <p>
-     * This version of {@code buffer} operates by default on the {@code computation} {@link Scheduler}.
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure as it uses time. It requests `Long.MAX_VALUE` upstream and does not obey downstream requests.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure as it uses time. It requests {@code Long.MAX_VALUE}
+     *      upstream and does not obey downstream requests.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This version of {@code buffer} operates by default on the {@code computation} {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param timespan
      *            the period of time each buffer collects items before it is emitted
@@ -3219,10 +3456,13 @@ public class Observable<T> {
      * Observable emits the current buffer and propagates the notification from the source Observable.
      * <p>
      * <img width="640" height="320" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/buffer7.s.png" alt="">
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure as it uses time. It requests `Long.MAX_VALUE` upstream and does not obey downstream requests.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure as it uses time. It requests {@code Long.MAX_VALUE}
+     *      upstream and does not obey downstream requests.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     * </dl>
      * 
      * @param timespan
      *            the period of time each buffer collects items before it is emitted
@@ -3248,12 +3488,13 @@ public class Observable<T> {
      * Observable emits the current buffer and propagates the notification from the source Observable.
      * <p>
      * <img width="640" height="320" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/buffer5.png" alt="">
-     * <p>
-     * This version of {@code buffer} operates by default on the {@code computation} {@link Scheduler}.
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure as it uses time. It requests `Long.MAX_VALUE` upstream and does not obey downstream requests.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure as it uses time. It requests {@code Long.MAX_VALUE}
+     *      upstream and does not obey downstream requests.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This version of {@code buffer} operates by default on the {@code computation} {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param timespan
      *            the period of time each buffer collects items before it is emitted and replaced with a new
@@ -3277,12 +3518,13 @@ public class Observable<T> {
      * current buffer and propagates the notification from the source Observable.
      * <p>
      * <img width="640" height="320" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/buffer6.png" alt="">
-     * <p>
-     * This version of {@code buffer} operates by default on the {@code computation} {@link Scheduler}.
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure as it uses time. It requests `Long.MAX_VALUE` upstream and does not obey downstream requests.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure as it uses time. It requests {@code Long.MAX_VALUE}
+     *      upstream and does not obey downstream requests.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This version of {@code buffer} operates by default on the {@code computation} {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param timespan
      *            the period of time each buffer collects items before it is emitted and replaced with a new
@@ -3310,10 +3552,13 @@ public class Observable<T> {
      * from the source Observable.
      * <p>
      * <img width="640" height="320" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/buffer6.s.png" alt="">
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure as it uses time. It requests `Long.MAX_VALUE` upstream and does not obey downstream requests.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure as it uses time. It requests {@code Long.MAX_VALUE}
+     *      upstream and does not obey downstream requests.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     * </dl>
      * 
      * @param timespan
      *            the period of time each buffer collects items before it is emitted and replaced with a new
@@ -3342,10 +3587,13 @@ public class Observable<T> {
      * from the source Observable.
      * <p>
      * <img width="640" height="320" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/buffer5.s.png" alt="">
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure as it uses time. It requests `Long.MAX_VALUE` upstream and does not obey downstream requests.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure as it uses time. It requests {@code Long.MAX_VALUE}
+     *      upstream and does not obey downstream requests.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     * </dl>
      * 
      * @param timespan
      *            the period of time each buffer collects items before it is emitted and replaced with a new
@@ -3369,13 +3617,13 @@ public class Observable<T> {
      * item, and closes when the Observable returned from {@code bufferClosingSelector} emits an item.
      * <p>
      * <img width="640" height="470" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/buffer2.png" alt="">
-     * <p>
-     * This version of {@code buffer} does not operate by default on a particular {@link Scheduler}.
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure as it is instead controlled by the given Observables and buffers data.
-     * It requests `Long.MAX_VALUE` upstream and does not obey downstream requests.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure as it is instead controlled by the given Observables and
+     *      buffers data. It requests {@code Long.MAX_VALUE} upstream and does not obey downstream requests.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This version of {@code buffer} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param bufferOpenings
      *            the Observable that, when it emits an item, causes a new buffer to be created
@@ -3399,14 +3647,14 @@ public class Observable<T> {
      * <p>
      * Completion of either the source or the boundary Observable causes the returned Observable to emit the
      * latest buffer and complete.
-     * <p>
-     * This version of {@code buffer} does not operate by default on a particular {@link Scheduler}.
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure as it is instead controlled by the `Observable boundary` and buffers data.
-     * It requests `Long.MAX_VALUE` upstream and does not obey downstream requests.
-     * 
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure as it is instead controlled by the {@code Observable}
+     *      {@code boundary} and buffers data. It requests {@code Long.MAX_VALUE} upstream and does not obey
+     *      downstream requests.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This version of {@code buffer} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param <B>
      *            the boundary value type (ignored)
@@ -3430,12 +3678,14 @@ public class Observable<T> {
      * <p>
      * Completion of either the source or the boundary Observable causes the returned Observable to emit the
      * latest buffer and complete.
-     * <p>
-     * This version of {@code buffer} does not operate by default on a particular {@link Scheduler}.
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure as it is instead controlled by the `Observable boundary` and buffers data.
-     * It requests `Long.MAX_VALUE` upstream and does not obey downstream requests.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure as it is instead controlled by the {@code Observable}
+     *      {@code boundary} and buffers data. It requests {@code Long.MAX_VALUE} upstream and does not obey
+     *      downstream requests.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This version of {@code buffer} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param <B>
      *            the boundary value type (ignored)
@@ -3471,12 +3721,13 @@ public class Observable<T> {
      * <em>Note:</em> You sacrifice the ability to unsubscribe from the origin when you use the {@code cache}
      * Observer so be careful not to use this Observer on Observables that emit an infinite or very large number
      * of items that will use up memory.
-     * <p>
-     * {@code cache} does not operate by default on a particular {@link Scheduler}.
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support upstream backpressure as it is purposefully requesting and caching everything emitted.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support upstream backpressure as it is purposefully requesting and caching
+     *      everything emitted.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code cache} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @return an Observable that, when first subscribed to, caches all of its items and notifications for the
      *         benefit of subsequent subscribers
@@ -3504,12 +3755,13 @@ public class Observable<T> {
      * <em>Note:</em> You sacrifice the ability to unsubscribe from the origin when you use the {@code cache}
      * Observer so be careful not to use this Observer on Observables that emit an infinite or very large number
      * of items that will use up memory.
-     * <p>
-     * {@code cache} does not operate by default on a particular {@link Scheduler}.
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support upstream backpressure as it is purposefully requesting and caching everything emitted.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support upstream backpressure as it is purposefully requesting and caching
+     *      everything emitted.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code cache} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param capacity hint for number of items to cache (for optimizing underlying data structure)
      * @return an Observable that, when first subscribed to, caches all of its items and notifications for the
@@ -3526,8 +3778,10 @@ public class Observable<T> {
      * type.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/cast.png" alt="">
-     * <p>
-     * {@code cast} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code cast} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param klass
      *            the target class type that {@code cast} will cast the items emitted by the source Observable
@@ -3548,12 +3802,13 @@ public class Observable<T> {
      * <img width="640" height="330" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/collect.png" alt="">
      * <p>
      * This is a simplified version of {@code reduce} that does not need to return the state on each pass.
-     * <p>
-     * {@code collect} does not operate by default on a particular {@link Scheduler}.
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure because by intent it will receive all values and reduce them to a single `onNext`.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure because by intent it will receive all values and reduce
+     *      them to a single {@code onNext}.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code collect} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param state
      *           the mutable data structure that will collect the items
@@ -3583,8 +3838,10 @@ public class Observable<T> {
      * that result from concatinating those resulting Observables.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/concatMap.png" alt="">
-     * <p>
-     * {@code concatMap} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code concatMap} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param func
      *            a function that, when applied to an item emitted by the source Observable, returns an
@@ -3602,8 +3859,10 @@ public class Observable<T> {
      * the other, without interleaving them.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/concat.png" alt="">
-     * <p>
-     * {@code concat} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param t1
      *            an Observable to be concatenated after the current
@@ -3622,8 +3881,10 @@ public class Observable<T> {
      * specified item.
      * <p>
      * <img width="640" height="320" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/contains.png" alt="">
-     * <p>
-     * {@code contains} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code contains} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param element
      *            the item to search for in the emissions from the source Observable
@@ -3644,12 +3905,13 @@ public class Observable<T> {
      * Returns an Observable that emits the count of the total number of items emitted by the source Observable.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/count.png" alt="">
-     * <p>
-     * {@code count} does not operate by default on a particular {@link Scheduler}.
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure because by intent it will receive all values and reduce them to a single `onNext`.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure because by intent it will receive all values and reduce
+     *      them to a single {@code onNext}.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code count} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @return an Observable that emits a single item: the number of elements emitted by the source Observable
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Mathematical-and-Aggregate-Operators#count-and-longcount">RxJava wiki: count</a>
@@ -3670,12 +3932,13 @@ public class Observable<T> {
      * source Observable that are followed by another item within a computed debounce duration.
      * <p>
      * <img width="640" height="425" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/debounce.f.png" alt="">
-     * <p>
-     * This version of {@code debounce} does not operate by default on a particular {@link Scheduler}.
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure as it uses the `debounceSelector` to mark boundaries.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure as it uses the {@code debounceSelector} to mark
+     *      boundaries.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This version of {@code debounce} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param <U>
      *            the debounce value type (ignored)
@@ -3707,12 +3970,12 @@ public class Observable<T> {
      * <li><a href="http://unscriptable.com/2009/03/20/debouncing-javascript-methods/">Debouncing: javascript methods</a></li>
      * <li><a href="http://www.illyriad.co.uk/blog/index.php/2011/09/javascript-dont-spam-your-server-debounce-and-throttle/">Javascript - don't spam your server: debounce and throttle</a></li>
      * </ul>
-     * <p>
-     * This version of {@code debounce} operates by default on the {@code computation} {@link Scheduler}.
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure as it uses time to control data flow.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure as it uses time to control data flow.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This version of {@code debounce} operates by default on the {@code computation} {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param timeout
      *            the time each item has to be "the most recent" of those emitted by the source Observable to
@@ -3746,10 +4009,12 @@ public class Observable<T> {
      * <li><a href="http://unscriptable.com/2009/03/20/debouncing-javascript-methods/">Debouncing: javascript methods</a></li>
      * <li><a href="http://www.illyriad.co.uk/blog/index.php/2011/09/javascript-dont-spam-your-server-debounce-and-throttle/">Javascript - don't spam your server: debounce and throttle</a></li>
      * </ul>
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure as it uses time to control data flow.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure as it uses time to control data flow.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     * </dl>
      * 
      * @param timeout
      *            the time each item has to be "the most recent" of those emitted by the source Observable to
@@ -3774,8 +4039,10 @@ public class Observable<T> {
      * if the source Observable is empty.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/defaultIfEmpty.png" alt="">
-     * <p>
-     * {@code defaultIfEmpty} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code defaultIfEmpty} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param defaultValue
      *            the item to emit if the source Observable emits no items
@@ -3796,8 +4063,10 @@ public class Observable<T> {
      * <p>
      * <em>Note:</em> the resulting Observable will immediately propagate any {@code onError} notification
      * from the source Observable.
-     * <p>
-     * This version of {@code delay} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This version of {@code delay} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param <U>
      *            the subscription delay value type (ignored)
@@ -3829,8 +4098,10 @@ public class Observable<T> {
      * <p>
      * <em>Note:</em> the resulting Observable will immediately propagate any {@code onError} notification
      * from the source Observable.
-     * <p>
-     * This version of {@code delay} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This version of {@code delay} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param <U>
      *            the item delay value type (ignored)
@@ -3852,8 +4123,10 @@ public class Observable<T> {
      * specified delay. Error notifications from the source Observable are not delayed.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/delay.png" alt="">
-     * <p>
-     * This version of {@code delay} operates by default on the {@code compuation} {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This version of {@code delay} operates by default on the {@code compuation} {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param delay
      *            the delay to shift the source by
@@ -3872,6 +4145,10 @@ public class Observable<T> {
      * specified delay. Error notifications from the source Observable are not delayed.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/delay.s.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     * </dl>
      * 
      * @param delay
      *            the delay to shift the source by
@@ -3891,8 +4168,10 @@ public class Observable<T> {
      * Returns an Observable that delays the subscription to the source Observable by a given amount of time.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/delaySubscription.png" alt="">
-     * <p>
-     * This version of {@code delay} operates by default on the {@code compuation} {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This version of {@code delay} operates by default on the {@code compuation} {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param delay
      *            the time to delay the subscription
@@ -3910,6 +4189,10 @@ public class Observable<T> {
      * both waiting and subscribing on a given Scheduler.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/delaySubscription.s.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     * </dl>
      * 
      * @param delay
      *            the time to delay the subscription
@@ -3931,8 +4214,10 @@ public class Observable<T> {
      * represent.
      * <p>
      * <img width="640" height="335" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/dematerialize.png" alt="">
-     * <p>
-     * {@code dematerialize} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code dematerialize} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @return an Observable that emits the items and notifications embedded in the {@link Notification} objects
      *         emitted by the source Observable
@@ -3950,8 +4235,10 @@ public class Observable<T> {
      * Returns an Observable that emits all items emitted by the source Observable that are distinct.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/distinct.png" alt="">
-     * <p>
-     * {@code distinct} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code distinct} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @return an Observable that emits only those items emitted by the source Observable that are distinct from
      *         each other
@@ -3967,8 +4254,10 @@ public class Observable<T> {
      * to a key selector function.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/distinct.key.png" alt="">
-     * <p>
-     * {@code distinct} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code distinct} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param keySelector
      *            a function that projects an emitted item to a key value that is used to decide whether an item
@@ -3986,8 +4275,10 @@ public class Observable<T> {
      * immediate predecessors.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/distinctUntilChanged.png" alt="">
-     * <p>
-     * {@code distinctUntilChanged} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code distinctUntilChanged} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @return an Observable that emits those items from the source Observable that are distinct from their
      *         immediate predecessors
@@ -4003,8 +4294,10 @@ public class Observable<T> {
      * immediate predecessors, according to a key selector function.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/distinctUntilChanged.key.png" alt="">
-     * <p>
-     * {@code distinctUntilChanged} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code distinctUntilChanged} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param keySelector
      *            a function that projects an emitted item to a key value that is used to decide whether an item
@@ -4022,8 +4315,10 @@ public class Observable<T> {
      * Modifies the source Observable so that it invokes an action when it calls {@code onCompleted}.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/doOnCompleted.png" alt="">
-     * <p>
-     * {@code doOnCompleted} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code doOnCompleted} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param onCompleted
      *            the action to invoke when the source Observable calls {@code onCompleted}
@@ -4055,8 +4350,10 @@ public class Observable<T> {
      * Modifies the source Observable so that it invokes an action for each item it emits.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/doOnEach.png" alt="">
-     * <p>
-     * {@code doOnEach} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code doOnEach} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param onNotification
      *            the action to invoke for each item emitted by the source Observable
@@ -4090,8 +4387,10 @@ public class Observable<T> {
      * Modifies the source Observable so that it notifies an Observer for each item it emits.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/doOnEach.png" alt="">
-     * <p>
-     * {@code doOnEach} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code doOnEach} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param observer
      *            the action to invoke for each item emitted by the source Observable
@@ -4107,8 +4406,10 @@ public class Observable<T> {
      * Modifies the source Observable so that it invokes an action if it calls {@code onError}.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/doOnError.png" alt="">
-     * <p>
-     * {@code doOnError} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code doOnError} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param onError
      *            the action to invoke if the source Observable calls {@code onError}
@@ -4140,8 +4441,10 @@ public class Observable<T> {
      * Modifies the source Observable so that it invokes an action when it calls {@code onNext}.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/doOnNext.png" alt="">
-     * <p>
-     * {@code doOnNext} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code doOnNext} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param onNext
      *            the action to invoke when the source Observable calls {@code onNext}
@@ -4177,8 +4480,10 @@ public class Observable<T> {
      * <p>
      * This differs from {@code finallyDo} in that this happens <em>before</em> the {@code onCompleted} or
      * {@code onError} notification.
-     * <p>
-     * {@code doOnTerminate} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code doOnTerminate} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param onTerminate
      *            the action to invoke when the source Observable calls {@code onCompleted} or {@code onError}
@@ -4214,8 +4519,10 @@ public class Observable<T> {
      * source Observbable.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/elementAt.png" alt="">
-     * <p>
-     * {@code elementAt} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code elementAt} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param index
      *            the zero-based index of the item to retrieve
@@ -4236,8 +4543,10 @@ public class Observable<T> {
      * source Observable, or a default item if that index is out of range.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/elementAtOrDefault.png" alt="">
-     * <p>
-     * {@code elementAtOrDefault} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code elementAtOrDefault} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param index
      *            the zero-based index of the item to retrieve
@@ -4262,8 +4571,10 @@ public class Observable<T> {
      * <p>
      * In Rx.Net this is the {@code any} Observer but we renamed it in RxJava to better match Java naming
      * idioms.
-     * <p>
-     * {@code exists} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code exists} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param predicate
      *            the condition to test items emitted by the source Observable
@@ -4280,8 +4591,10 @@ public class Observable<T> {
      * Filters items emitted by an Observable by only emitting those that satisfy a specified predicate.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/filter.png" alt="">
-     * <p>
-     * {@code filter} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code filter} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param predicate
      *            a function that evaluates each item emitted by the source Observable, returning {@code true}
@@ -4299,8 +4612,10 @@ public class Observable<T> {
      * {@link Observer#onCompleted onCompleted} or {@link Observer#onError onError}.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/finallyDo.png" alt="">
-     * <p>
-     * {@code finallyDo} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code finallyDo} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param action
      *            an {@link Action0} to be invoked when the source Observable finishes
@@ -4319,8 +4634,10 @@ public class Observable<T> {
      * of an {@code NoSuchElementException} if the source Observable is empty.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/first.png" alt="">
-     * <p>
-     * {@code first} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code first} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @return an Observable that emits only the very first item emitted by the source Observable, or raises an
      *         {@code NoSuchElementException} if the source Observable is empty
@@ -4336,8 +4653,10 @@ public class Observable<T> {
      * a specified condition, or notifies of an {@code NoSuchElementException} if no such items are emitted.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/firstN.png" alt="">
-     * <p>
-     * {@code first} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code first} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param predicate
      *            the condition that an item emitted by the source Observable has to satisfy
@@ -4355,8 +4674,10 @@ public class Observable<T> {
      * item if the source Observable completes without emitting anything.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/firstOrDefault.png" alt="">
-     * <p>
-     * {@code firstOrDefault} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code firstOrDefault} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param defaultValue
      *            the default item to emit if the source Observable doesn't emit anything
@@ -4374,8 +4695,10 @@ public class Observable<T> {
      * a specified condition, or a default item if the source Observable emits no such items.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/firstOrDefaultN.png" alt="">
-     * <p>
-     * {@code firstOrDefault} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code firstOrDefault} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param predicate
      *            the condition any item emitted by the source Observable has to satisfy
@@ -4397,8 +4720,10 @@ public class Observable<T> {
      * Observables and emitting the results of this merger.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/flatMap.png" alt="">
-     * <p>
-     * {@code flatMap} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param func
      *            a function that, when applied to an item emitted by the source Observable, returns an
@@ -4417,8 +4742,10 @@ public class Observable<T> {
      * Subscribes to the {@link Observable} and receives notifications for each element.
      * <p>
      * Alias to {@link #subscribe(Action1)}
-     * <p>
-     * {@code forEach} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code forEach} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param onNext
      *            {@link Action1} to execute for each item.
@@ -4438,8 +4765,10 @@ public class Observable<T> {
      * Subscribes to the {@link Observable} and receives notifications for each element and error events.
      * <p>
      * Alias to {@link #subscribe(Action1, Action1)}
-     * <p>
-     * {@code forEach} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code forEach} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param onNext
      *            {@link Action1} to execute for each item.
@@ -4461,8 +4790,10 @@ public class Observable<T> {
      * Subscribes to the {@link Observable} and receives notifications for each element and the terminal events.
      * <p>
      * Alias to {@link #subscribe(Action1, Action1, Action0)}
-     * <p>
-     * {@code forEach} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code forEach} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param onNext
      *            {@link Action1} to execute for each item.
@@ -4492,14 +4823,15 @@ public class Observable<T> {
      * is subscribed to. For this reason, in order to avoid memory leaks, you should not simply ignore those
      * {@code GroupedObservable}s that do not concern you. Instead, you can signal to them that they may
      * discard their buffers by applying an operator like {@link #take}{@code (0)} to them.
-     * <p>
-     * {@code groupBy} does not operate by default on a particular {@link Scheduler}.
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure as splitting a stream effectively turns it into a "hot observable" and
-     * blocking any one group would block the entire parent stream. If backpressure is needed on individual groups then 
-     * operators such as `onBackpressureDrop` or `onBackpressureBuffer` should be used.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure as splitting a stream effectively turns it into a "hot
+     *      observable" and blocking any one group would block the entire parent stream. If you need
+     *      backpressure on individual groups then you should use operators such as {@link #onBackpressureDrop}
+     *      or {@link #onBackpressureBuffer}.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code groupBy} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param keySelector
      *            a function that extracts the key for each item
@@ -4525,14 +4857,15 @@ public class Observable<T> {
      * is subscribed to. For this reason, in order to avoid memory leaks, you should not simply ignore those
      * {@code GroupedObservable}s that do not concern you. Instead, you can signal to them that they may
      * discard their buffers by applying an operator like {@link #take}{@code (0)} to them.
-     * <p>
-     * {@code groupByUntil} does not operate by default on a particular {@link Scheduler}.
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure as splitting a stream effectively turns it into a "hot observable" and
-     * blocking any one group would block the entire parent stream. If backpressure is needed on individual groups then 
-     * operators such as `onBackpressureDrop` or `onBackpressureBuffer` should be used.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure as splitting a stream effectively turns it into a "hot
+     *      observable" and blocking any one group would block the entire parent stream. If you need
+     *      backpressure on individual groups then you should use operators such as {@link #onBackpressureDrop}
+     *      or {@link #onBackpressureBuffer}.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code groupByUntil} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param keySelector
      *            a function to extract the key for each item
@@ -4558,14 +4891,15 @@ public class Observable<T> {
      * is subscribed to. For this reason, in order to avoid memory leaks, you should not simply ignore those
      * {@code GroupedObservable}s that do not concern you. Instead, you can signal to them that they may
      * discard their buffers by applying an operator like {@link #take}{@code (0)} to them.
-     * <p>
-     * {@code groupByUntil} does not operate by default on a particular {@link Scheduler}.
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure as splitting a stream effectively turns it into a "hot observable" and
-     * blocking any one group would block the entire parent stream. If backpressure is needed on individual groups then 
-     * operators such as `onBackpressureDrop` or `onBackpressureBuffer` should be used.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure as splitting a stream effectively turns it into a "hot
+     *      observable" and blocking any one group would block the entire parent stream. If you need
+     *      backpressure on individual groups then you should use operators such as {@link #onBackpressureDrop}
+     *      or {@link #onBackpressureBuffer}.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code groupByUntil} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param keySelector
      *            a function to extract the key for each item
@@ -4588,8 +4922,10 @@ public class Observable<T> {
      * Returns an Observable that correlates two Observables when they overlap in time and groups the results.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/groupJoin.png" alt="">
-     * <p>
-     * {@code groupJoin} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code groupJoin} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param right
      *            the other Observable to correlate items from the source Observable with
@@ -4617,8 +4953,10 @@ public class Observable<T> {
      * Ignores all items emitted by the source Observable and only calls {@code onCompleted} or {@code onError}.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/ignoreElements.png" alt="">
-     * <p>
-     * {@code ignoreElements} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code ignoreElements} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @return an empty Observable that only calls {@code onCompleted} or {@code onError}, based on which one is
      *         called by the source Observable
@@ -4636,8 +4974,10 @@ public class Observable<T> {
      * naming idioms.
      * <p>
      * <img width="640" height="320" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/isEmpty.png" alt="">
-     * <p>
-     * {@code isEmpty} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code isEmpty} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @return an Observable that emits a Boolean
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Conditional-and-Boolean-Operators#exists-and-isempty">RxJava wiki: isEmpty</a>
@@ -4651,8 +4991,10 @@ public class Observable<T> {
      * Correlates the items emitted by two Observables based on overlapping durations.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/join_.png" alt="">
-     * <p>
-     * {@code join} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code join} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param right
      *            the second Observable to join items from
@@ -4681,8 +5023,10 @@ public class Observable<T> {
      * a {@code NoSuchElementException} if the source Observable is empty.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/last.png" alt="">
-     * <p>
-     * {@code last} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code last} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @return an Observable that emits the last item from the source Observable or notifies observers of an
      *         error
@@ -4698,8 +5042,10 @@ public class Observable<T> {
      * given condition, or notifies of a {@code NoSuchElementException} if no such items are emitted.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/last.p.png" alt="">
-     * <p>
-     * {@code last} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code last} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param predicate
      *            the condition any source emitted item has to satisfy
@@ -4719,8 +5065,10 @@ public class Observable<T> {
      * if the source Observable completes without emitting any items.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/lastOrDefault.png" alt="">
-     * <p>
-     * {@code lastOrDefault} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code lastOrDefault} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param defaultValue
      *            the default item to emit if the source Observable is empty
@@ -4738,8 +5086,10 @@ public class Observable<T> {
      * specified condition, or a default item if no such item is emitted by the source Observable.
      * <p>
      * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/lastOrDefault.p.png" alt="">
-     * <p>
-     * {@code lastOrDefault} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code lastOrDefault} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param defaultValue
      *            the default item to emit if the source Observable doesn't emit anything that satisfies the
@@ -4765,8 +5115,10 @@ public class Observable<T> {
      * This method returns an Observable that will invoke a subscribing {@link Observer}'s
      * {@link Observer#onNext onNext} function a maximum of {@code num} times before invoking
      * {@link Observer#onCompleted onCompleted}.
-     * <p>
-     * {@code limit} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code limit} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param num
      *            the maximum number of items to emit
@@ -4784,12 +5136,13 @@ public class Observable<T> {
      * this count as a 64-bit Long.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/longCount.png" alt="">
-     * <p>
-     * {@code longCount} does not operate by default on a particular {@link Scheduler}.
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure because by intent it will receive all values and reduce them to a single `onNext`.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure because by intent it will receive all values and reduce
+     *      them to a single {@code onNext}.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code longCount} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @return an Observable that emits a single item: the number of items emitted by the source Observable as a
      *         64-bit Long item
@@ -4811,8 +5164,10 @@ public class Observable<T> {
      * emits the results of these function applications.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/map.png" alt="">
-     * <p>
-     * {@code map} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code map} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param func
      *            a function to apply to each item emitted by the Observable
@@ -4830,8 +5185,10 @@ public class Observable<T> {
      * Observable into emissions marked with their original types within {@link Notification} objects.
      * <p>
      * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/materialize.png" alt="">
-     * <p>
-     * {@code materialize} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code materialize} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @return an Observable that emits items that are the result of materializing the items and notifications
      *         of the source Observable
@@ -4848,8 +5205,10 @@ public class Observable<T> {
      * Observables and emitting the results of this merger.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeMap.png" alt="">
-     * <p>
-     * {@code mergeMap} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code mergeMap} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param func
      *            a function that, when applied to an item emitted by the source Observable, returns an
@@ -4869,8 +5228,10 @@ public class Observable<T> {
      * Observable and then flattens the Observables returned from these functions and emits the resulting items.
      * <p>
      * <img width="640" height="410" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeMap.nce.png" alt="">
-     * <p>
-     * {@code mergeMap} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code mergeMap} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param <R>
      *            the result type
@@ -4898,8 +5259,10 @@ public class Observable<T> {
      * source Observable and a specified collection Observable.
      * <p>
      * <img width="640" height="390" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeMap.r.png" alt="">
-     * <p>
-     * {@code mergeMap} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code mergeMap} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param <U>
      *            the type of items emitted by the collection Observable
@@ -4924,8 +5287,10 @@ public class Observable<T> {
      * Iterable corresponding to that item that is generated by a selector.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeMapIterable.png" alt="">
-     * <p>
-     * {@code mergeMapIterable} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code mergeMapIterable} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param <R>
      *            the type of item emitted by the resulting Observable
@@ -4945,8 +5310,10 @@ public class Observable<T> {
      * Observable and an Iterable corresponding to that item that is generated by a selector.
      * <p>
      * <img width="640" height="390" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeMapIterable.r.png" alt="">
-     * <p>
-     * {@code mergeMapIterable} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code mergeMapIterable} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param <U>
      *            the collection element type
@@ -4973,9 +5340,11 @@ public class Observable<T> {
      * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.png" alt="">
      * <p>
      * You can combine items emitted by multiple Observables so that they appear as a single Observable, by
-     * using the {@code merge} method.
-     * <p>
-     * {@code merge} does not operate by default on a particular {@link Scheduler}.
+     * using the {@code mergeWith} method.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code mergeWith} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param t1
      *            an Observable to be merged
@@ -4994,23 +5363,23 @@ public class Observable<T> {
      * <p>
      * This is largely a helper function used by RxJava for other forms of multicasting, such as
      * {@link #publish} and {@link #publishLast}.
-     * <p>
-     * {@code multicast} does not operate by default on a particular {@link Scheduler}.
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure because multicasting means the stream is "hot" with multiple subscribers.
-     * <p>
-     * Each child will need to manage backpressure independently using operators such as `onBackpressureDrop` and `onBackpressureBuffer`.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure because multicasting means the stream is "hot" with
+     *      multiple subscribers. Each child will need to manage backpressure independently using operators such
+     *      as {@link #onBackpressureDrop} and {@link #onBackpressureBuffer}.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code multicast} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
-     * @warn javadocs incomplete; description needs improvement
+     * @warn javadocs incomplete: description needs improvement
      * @param subjectFactory
      *            the {@link Subject} factory
-     * @warn javadocs incomplete; "subjectFactory" parameter described poorly
+     * @warn javadocs incomplete: "subjectFactory" parameter described poorly
      * @param selector
      *            the selector function, which can use the multicasted source Observable subject to the policies
      *            enforced by the created {@code Subject}
-     * @warn javadocs incomplete; "selector" parameter described poorly
+     * @warn javadocs incomplete: "selector" parameter described poorly
      * @return an Observable that emits the items produced by multicasting the source Observable within a
      *         selector function
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Connectable-Observable-Operators#observablepublish-and-observablemulticast">RxJava: Observable.publish() and Observable.multicast</a>
@@ -5027,14 +5396,14 @@ public class Observable<T> {
      * into the specified subject. A Connectable Observable resembles an ordinary Observable, except that it
      * does not begin emitting items when it is subscribed to, but only when its {@code connect} method
      * is called.
-     * <p>
-     * {@code multicast} does not operate by default on a particular {@link Scheduler}.
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure because multicasting means the stream is "hot" with multiple subscribers.
-     * <p>
-     * Each child will need to manage backpressure independently using operators such as `onBackpressureDrop` and `onBackpressureBuffer`.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure because multicasting means the stream is "hot" with
+     *      multiple subscribers. Each child will need to manage backpressure independently using operators such
+     *      as {@link #onBackpressureDrop} and {@link #onBackpressureBuffer}.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code multicast} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param subject
      *            the {@link Subject} for the {@link ConnectableObservable} to push source items into
@@ -5054,6 +5423,10 @@ public class Observable<T> {
      * asynchronously with an unbounded buffer.
      * <p>
      * <img width="640" height="308" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/observeOn.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     * </dl>
      * 
      * @param scheduler
      *            the {@link Scheduler} to notify {@link Observer}s on
@@ -5071,8 +5444,10 @@ public class Observable<T> {
      * Filters the items emitted by an Observable, only emitting those of the specified type.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/ofClass.png" alt="">
-     * <p>
-     * {@code ofType} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code ofType} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param klass
      *            the class type to filter the items emitted by the source Observable
@@ -5091,6 +5466,10 @@ public class Observable<T> {
     /**
      * Instructs an Observable that is emitting items faster than its observer can consume them to buffer these
      * items indefinitely until they can be emitted.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code onBackpressureBuffer} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      *
      * @return the source Observable modified to buffer items to the extent system resources allow
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Backpressure">RxJava wiki: Backpressure</a>
@@ -5101,11 +5480,17 @@ public class Observable<T> {
     }
 
     /**
-     * Use this operator when the upstream does not natively support backpressure and you wish to drop `onNext` when unable to handle further events.
+     * Use this operator when the upstream does not natively support backpressure and you wish to drop
+     * {@code onNext} when unable to handle further events.
      * <p>
-     * If the downstream request count hits 0 then `onNext` will be dropped until `request(long n)` is invoked again to increase the request count.
+     * If the downstream request count hits 0 then {@code onNext} will be dropped until {@code request(long n)}
+     * is invoked again to increase the request count.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code onBackpressureDrop} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
-     * @return
+     * @return the source Observable modified to drop {@code onNext} notifications on overflow
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Backpressure">RxJava wiki: Backpressure</a>
      * @since 0.20
      */
@@ -5131,8 +5516,10 @@ public class Observable<T> {
      * <p>
      * You can use this to prevent errors from propagating or to supply fallback data should errors be
      * encountered.
-     * <p>
-     * {@code onErrorResumeNext} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code onErrorResumeNext} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param resumeFunction
      *            a function that returns an Observable that will take over if the source Observable encounters
@@ -5163,8 +5550,10 @@ public class Observable<T> {
      * <p>
      * You can use this to prevent errors from propagating or to supply fallback data should errors be
      * encountered.
-     * <p>
-     * {@code onErrorResumeNext} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code onErrorResumeNext} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param resumeSequence
      *            a function that returns an Observable that will take over if the source Observable encounters
@@ -5192,8 +5581,10 @@ public class Observable<T> {
      * <p>
      * You can use this to prevent errors from propagating or to supply fallback data should errors be
      * encountered.
-     * <p>
-     * {@code onErrorReturn} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code onErrorReturn} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param resumeFunction
      *            a function that returns an item that the new Observable will emit if the source Observable
@@ -5211,15 +5602,17 @@ public class Observable<T> {
      * sequence to continue even if it issues multiple {@code onError} notifications.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/onErrorFlatMap.png" alt="">
-     * <p>
-     * {@code onErrorFlatMap} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code onErrorFlatMap} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      *
      * @param resumeFunction
      *            a function that accepts an {@link OnErrorThrowable} representing the Throwable issued by the
      *            source Observable, and returns an Observable that emits items that will be emitted in place
      *            of the error
      * @return the original Observable, with appropriately modified behavior
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Error-Handling-Operators#onerrorflatmap">RxJava wiki: onErrorFlatMap</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Phantom-Operators#onerrorflatmap">RxJava wiki: onErrorFlatMap</a>
      * @since 0.17
      * @deprecated See https://github.com/Netflix/RxJava/issues/1465
      */
@@ -5249,8 +5642,10 @@ public class Observable<T> {
      * <p>
      * You can use this to prevent exceptions from propagating or to supply fallback data should exceptions be
      * encountered.
-     * <p>
-     * {@code onErrorResumeNext} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code onErrorResumeNext} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param resumeSequence
      *            a function that returns an Observable that will take over if the source Observable encounters
@@ -5267,8 +5662,10 @@ public class Observable<T> {
      * {@link Scheduler}, and returns the resulting Observable.
      * <p>
      * <img width="640" height="475" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/parallel.png" alt="">
-     * <p>
-     * {@code parallel} operates by default on the {@code computation} {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code parallel} operates by default on the {@code computation} {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param f
      *            a {@link Func1} that applies Observable Operators to {@code Observable<T>} in parallel and
@@ -5287,6 +5684,10 @@ public class Observable<T> {
      * the resulting Observable.
      * <p>
      * <img width="640" height="475" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/parallel.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     * </dl>
      * 
      * @param f
      *            a {@link Func1} that applies Observable Operators to {@code Observable<T>} in parallel and
@@ -5308,14 +5709,14 @@ public class Observable<T> {
      * {@link Observer}s that have subscribed to it.
      * <p>
      * <img width="640" height="510" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/publishConnect.png" alt="">
-     * <p>
-     * {@code publish} does not operate by default on a particular {@link Scheduler}.
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure because multicasting means the stream is "hot" with multiple subscribers.
-     * <p>
-     * Each child will need to manage backpressure independently using operators such as `onBackpressureDrop` and `onBackpressureBuffer`.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure because multicasting means the stream is "hot" with
+     *      multiple subscribers. Each child will need to manage backpressure independently using operators such
+     *      as {@link #onBackpressureDrop} and {@link #onBackpressureBuffer}.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code publish} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @return a {@link ConnectableObservable} that upon connection causes the source Observable to emit items
      *         to its {@link Observer}s
@@ -5331,14 +5732,14 @@ public class Observable<T> {
      * {@link ConnectableObservable} that shares a single subscription to the underlying sequence.
      * <p>
      * <img width="640" height="510" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/publishConnect.f.png" alt="">
-     * <p>
-     * {@code publish} does not operate by default on a particular {@link Scheduler}.
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure because multicasting means the stream is "hot" with multiple subscribers.
-     * <p>
-     * Each child will need to manage backpressure independently using operators such as `onBackpressureDrop` and `onBackpressureBuffer`.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure because multicasting means the stream is "hot" with
+     *      multiple subscribers. Each child will need to manage backpressure independently using operators such
+     *      as {@link #onBackpressureDrop} and {@link #onBackpressureBuffer}.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code publish} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param <R>
      *            the type of items emitted by the resulting Observable
@@ -5365,14 +5766,14 @@ public class Observable<T> {
      * source Observable.
      * <p>
      * <img width="640" height="510" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/publishConnect.if.png" alt="">
-     * <p>
-     * {@code publish} does not operate by default on a particular {@link Scheduler}.
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure because multicasting means the stream is "hot" with multiple subscribers.
-     * <p>
-     * Each child will need to manage backpressure independently using operators such as `onBackpressureDrop` and `onBackpressureBuffer`.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure because multicasting means the stream is "hot" with
+     *      multiple subscribers. Each child will need to manage backpressure independently using operators such
+     *      as {@link #onBackpressureDrop} and {@link #onBackpressureBuffer}.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code publish} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param <R>
      *            the type of items emitted by the resulting Observable
@@ -5402,14 +5803,14 @@ public class Observable<T> {
      * begin emitting items when it is subscribed to, but only when its {@code connect} method is called.
      * <p>
      * <img width="640" height="510" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/publishConnect.i.png" alt="">
-     * <p>
-     * {@code publish} does not operate by default on a particular {@link Scheduler}.
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure because multicasting means the stream is "hot" with multiple subscribers.
-     * <p>
-     * Each child will need to manage backpressure independently using operators such as `onBackpressureDrop` and `onBackpressureBuffer`.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure because multicasting means the stream is "hot" with
+     *      multiple subscribers. Each child will need to manage backpressure independently using operators such
+     *      as {@link #onBackpressureDrop} and {@link #onBackpressureBuffer}.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code publish} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param initialValue
      *            the initial value to be emitted by the resulting Observable
@@ -5428,12 +5829,13 @@ public class Observable<T> {
      * when it is subscribed to, but only when its {@code connect} method is called. 
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/publishLast.png" alt="">
-     * <p>
-     * {@code publishLast} does not operate by default on a particular {@link Scheduler}.
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure because by intent it is skipping all values except the last.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure because by intent it is skipping all values except the
+     *      last.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code publishLast} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @return a {@link ConnectableObservable} that emits only the last item emitted by the source Observable
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Connectable-Observable-Operators#observablepublishlast">RxJava wiki: publishLast</a>
@@ -5448,12 +5850,13 @@ public class Observable<T> {
      * emitted by a {@link ConnectableObservable} that shares a single subscription to the source Observable.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/publishLast.f.png" alt="">
-     * <p>
-     * {@code publishLast} does not operate by default on a particular {@link Scheduler}.
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure because by intent it is skipping all values except the last.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure because by intent it is skipping all values except the
+     *      last.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code publishLast} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param <R>
      *            the type of items emitted by the resulting Observable
@@ -5485,12 +5888,13 @@ public class Observable<T> {
      * This technique, which is called "reduce" here, is sometimes called "aggregate," "fold," "accumulate,"
      * "compress," or "inject" in other programming contexts. Groovy, for instance, has an {@code inject} method
      * that does a similar operation on lists.
-     * <p>
-     * {@code reduce} does not operate by default on a particular {@link Scheduler}.
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure because by intent it will receive all values and reduce them to a single `onNext`.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure because by intent it will receive all values and reduce
+     *      them to a single {@code onNext}.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code reduce} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param accumulator
      *            an accumulator function to be invoked on each item emitted by the source Observable, whose
@@ -5524,12 +5928,13 @@ public class Observable<T> {
      * This technique, which is called "reduce" here, is sometimec called "aggregate," "fold," "accumulate,"
      * "compress," or "inject" in other programming contexts. Groovy, for instance, has an {@code inject} method
      * that does a similar operation on lists.
-     * <p>
-     * {@code reduce} does not operate by default on a particular {@link Scheduler}.
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure because by intent it will receive all values and reduce them to a single `onNext`.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure because by intent it will receive all values and reduce
+     *      them to a single {@code onNext}.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code reduce} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param initialValue
      *            the initial (seed) accumulator value
@@ -5550,8 +5955,10 @@ public class Observable<T> {
      * Returns an Observable that repeats the sequence of items emitted by the source Observable indefinitely.
      * <p>
      * <img width="640" height="309" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/repeat.o.png" alt="">
-     * <p>
-     * {@code repeat} operates by default on the {@code trampoline} {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code repeat} operates by default on the {@code trampoline} {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @return an Observable that emits the items emitted by the source Observable repeatedly and in sequence
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#repeat">RxJava wiki: repeat</a>
@@ -5566,6 +5973,10 @@ public class Observable<T> {
      * on a particular Scheduler.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/repeat.os.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     * </dl>
      * 
      * @param scheduler
      *            the Scheduler to emit the items on
@@ -5582,8 +5993,10 @@ public class Observable<T> {
      * {@code count} times.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/repeat.on.png" alt="">
-     * <p>
-     * {@code repeat} operates by default on the {@code trampoline} {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code repeat} operates by default on the {@code trampoline} {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param count
      *            the number of times the source Observable items are repeated, a count of 0 will yield an empty
@@ -5605,6 +6018,10 @@ public class Observable<T> {
      * {@code count} times, on a particular Scheduler.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/repeat.ons.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     * </dl>
      * 
      * @param count
      *            the number of times the source Observable items are repeated, a count of 0 will yield an empty
@@ -5613,7 +6030,7 @@ public class Observable<T> {
      *            the {@link Scheduler} to emit the items on
      * @return an Observable that repeats the sequence of items emitted by the source Observable at most
      *         {@code count} times on a particular Scheduler
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#wiki-repeat">RxJava Wiki: repeat()</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#repeat">RxJava Wiki: repeat()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229428.aspx">MSDN: Observable.Repeat</a>
      * @since 0.17
      */
@@ -5622,19 +6039,25 @@ public class Observable<T> {
     }
 
     /**
-     * Returns an Observable that emits the same values as the source observable with the exception of an {@code onCompleted}.
-     * An onCompleted will emit a {@link Notification} to the observable provided as an argument to the notificationHandler 
-     * func. If the observable returned {@code onCompletes} or {@code onErrors} then repeat will call {@code onCompleted} 
-     * or {@code onError} on the child subscription. Otherwise, this observable will resubscribe to the source observable, on a particular Scheduler.
+     * Returns an Observable that emits the same values as the source Observable with the exception of an
+     * {@code onCompleted}. An {@code onCompleted} notification from the source will result in the emission of
+     * a {@link Notification} to the Observable provided as an argument to the {@code notificationHandler}
+     * function. If the Observable returned {@code onCompletes} or {@code onErrors} then {@code repeatWhen} will
+     * call {@code onCompleted} or {@code onError} on the child subscription. Otherwise, this Observable will
+     * resubscribe to the source Observable, on a particular Scheduler.
      * <p>
      * <img width="640" height="430" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/repeatWhen.f.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     * </dl>
      * 
      * @param notificationHandler
      *            recieves an Observable of notifications with which a user can complete or error, aborting the repeat. 
      * @param scheduler
      *            the {@link Scheduler} to emit the items on
      * @return the source Observable modified with repeat logic
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#wiki-repeat">RxJava Wiki: repeatWhen()</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#repeatwhen">RxJava Wiki: repeatWhen()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229428.aspx">MSDN: Observable.Repeat</a>
      * @since 0.20
      */
@@ -5643,19 +6066,23 @@ public class Observable<T> {
     }
 
     /**
-     * Returns an Observable that emits the same values as the source observable with the exception of an {@code onCompleted}.
-     * An onCompleted will emit a {@link Notification} to the observable provided as an argument to the notificationHandler 
-     * func. If the observable returned {@code onCompletes} or {@code onErrors} then repeat will call {@code onCompleted} 
-     * or {@code onError} on the child subscription. Otherwise, this observable will resubscribe to the source observable.
+     * Returns an Observable that emits the same values as the source Observable with the exception of an
+     * {@code onCompleted}. An {@code onCompleted} notification from the source will result in the emission of
+     * a {@link Notification} to the Observable provided as an argument to the {@code notificationHandler}
+     * function. If the Observable returned {@code onCompletes} or {@code onErrors} then {@code repeatWhen} will
+     * call {@code onCompleted} or {@code onError} on the child subscription. Otherwise, this Observable will
+     * resubscribe to the source observable.
      * <p>
      * <img width="640" height="430" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/repeatWhen.f.png" alt="">
-     * <p>
-     * {@code repeatWhen} operates by default on the {@code trampoline} {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code repeatWhen} operates by default on the {@code trampoline} {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param notificationHandler
      *            recieves an Observable of notifications with which a user can complete or error, aborting the repeat. 
      * @return the source Observable modified with repeat logic
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#wiki-repeat">RxJava Wiki: repeatWhen()</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#repeatwhen">RxJava Wiki: repeatWhen()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229428.aspx">MSDN: Observable.Repeat</a>
      * @since 0.20
      */
@@ -5670,14 +6097,14 @@ public class Observable<T> {
      * subscribed to, but only when its {@code connect} method is called.
      * <p>
      * <img width="640" height="515" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.png" alt="">
-     * <p>
-     * This version of {@code replay} does not operate by default on a particular {@link Scheduler}.
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure because multicasting means the stream is "hot" with multiple subscribers.
-     * <p>
-     * Each child will need to manage backpressure independently using operators such as `onBackpressureDrop` and `onBackpressureBuffer`.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure because multicasting means the stream is "hot" with
+     *      multiple subscribers. Each child will need to manage backpressure independently using operators such
+     *      as {@link #onBackpressureDrop} and {@link #onBackpressureBuffer}.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This version of {@code replay} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @return a {@link ConnectableObservable} that upon connection causes the source Observable to emit its
      *         items to its {@link Observer}s
@@ -5693,14 +6120,14 @@ public class Observable<T> {
      * emitted by a {@link ConnectableObservable} that shares a single subscription to the source Observable.
      * <p>
      * <img width="640" height="450" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.f.png" alt="">
-     * <p>
-     * This version of {@code replay} does not operate by default on a particular {@link Scheduler}.
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure because multicasting means the stream is "hot" with multiple subscribers.
-     * <p>
-     * Each child will need to manage backpressure independently using operators such as `onBackpressureDrop` and `onBackpressureBuffer`.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure because multicasting means the stream is "hot" with
+     *      multiple subscribers. Each child will need to manage backpressure independently using operators such
+     *      as {@link #onBackpressureDrop} and {@link #onBackpressureBuffer}.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This version of {@code replay} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param <R>
      *            the type of items emitted by the resulting Observable
@@ -5727,14 +6154,14 @@ public class Observable<T> {
      * replaying {@code bufferSize} notifications.
      * <p>
      * <img width="640" height="440" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.fn.png" alt="">
-     * <p>
-     * This version of {@code replay} does not operate by default on a particular {@link Scheduler}.
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure because multicasting means the stream is "hot" with multiple subscribers.
-     * <p>
-     * Each child will need to manage backpressure independently using operators such as `onBackpressureDrop` and `onBackpressureBuffer`.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure because multicasting means the stream is "hot" with
+     *      multiple subscribers. Each child will need to manage backpressure independently using operators such
+     *      as {@link #onBackpressureDrop} and {@link #onBackpressureBuffer}.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This version of {@code replay} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param <R>
      *            the type of items emitted by the resulting Observable
@@ -5764,14 +6191,14 @@ public class Observable<T> {
      * replaying no more than {@code bufferSize} items that were emitted within a specified time window.
      * <p>
      * <img width="640" height="445" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.fnt.png" alt="">
-     * <p>
-     * This version of {@code replay} operates by default on the {@code computation} {@link Scheduler}.
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure because multicasting means the stream is "hot" with multiple subscribers.
-     * <p>
-     * Each child will need to manage backpressure independently using operators such as `onBackpressureDrop` and `onBackpressureBuffer`.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure because multicasting means the stream is "hot" with
+     *      multiple subscribers. Each child will need to manage backpressure independently using operators such
+     *      as {@link #onBackpressureDrop} and {@link #onBackpressureBuffer}.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This version of {@code replay} operates by default on the {@code computation} {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param <R>
      *            the type of items emitted by the resulting Observable
@@ -5801,12 +6228,14 @@ public class Observable<T> {
      * replaying no more than {@code bufferSize} items that were emitted within a specified time window.
      * <p>
      * <img width="640" height="445" height="440" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.fnts.png" alt="">
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure because multicasting means the stream is "hot" with multiple subscribers.
-     * <p>
-     * Each child will need to manage backpressure independently using operators such as `onBackpressureDrop` and `onBackpressureBuffer`.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure because multicasting means the stream is "hot" with
+     *      multiple subscribers. Each child will need to manage backpressure independently using operators such
+     *      as {@link #onBackpressureDrop} and {@link #onBackpressureBuffer}.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     * </dl>
      * 
      * @param <R>
      *            the type of items emitted by the resulting Observable
@@ -5848,12 +6277,14 @@ public class Observable<T> {
      * replaying a maximum of {@code bufferSize} items.
      * <p>
      * <img width="640" height="440" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.fns.png" alt="">
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure because multicasting means the stream is "hot" with multiple subscribers.
-     * <p>
-     * Each child will need to manage backpressure independently using operators such as `onBackpressureDrop` and `onBackpressureBuffer`.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure because multicasting means the stream is "hot" with
+     *      multiple subscribers. Each child will need to manage backpressure independently using operators such
+     *      as {@link #onBackpressureDrop} and {@link #onBackpressureBuffer}.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     * </dl>
      * 
      * @param <R>
      *            the type of items emitted by the resulting Observable
@@ -5885,14 +6316,14 @@ public class Observable<T> {
      * replaying all items that were emitted within a specified time window.
      * <p>
      * <img width="640" height="435" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.ft.png" alt="">
-     * <p>
-     * This version of {@code replay} does operates by default on the {@code computation} {@link Scheduler}.
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure because multicasting means the stream is "hot" with multiple subscribers.
-     * <p>
-     * Each child will need to manage backpressure independently using operators such as `onBackpressureDrop` and `onBackpressureBuffer`.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure because multicasting means the stream is "hot" with
+     *      multiple subscribers. Each child will need to manage backpressure independently using operators such
+     *      as {@link #onBackpressureDrop} and {@link #onBackpressureBuffer}.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This version of {@code replay} operates by default on the {@code computation} {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param <R>
      *            the type of items emitted by the resulting Observable
@@ -5919,12 +6350,14 @@ public class Observable<T> {
      * replaying all items that were emitted within a specified time window.
      * <p>
      * <img width="640" height="440" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.fts.png" alt="">
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure because multicasting means the stream is "hot" with multiple subscribers.
-     * <p>
-     * Each child will need to manage backpressure independently using operators such as `onBackpressureDrop` and `onBackpressureBuffer`.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure because multicasting means the stream is "hot" with
+     *      multiple subscribers. Each child will need to manage backpressure independently using operators such
+     *      as {@link #onBackpressureDrop} and {@link #onBackpressureBuffer}.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     * </dl>
      * 
      * @param <R>
      *            the type of items emitted by the resulting Observable
@@ -5957,12 +6390,14 @@ public class Observable<T> {
      * emitted by a {@link ConnectableObservable} that shares a single subscription to the source Observable.
      * <p>
      * <img width="640" height="445" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.fs.png" alt="">
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure because multicasting means the stream is "hot" with multiple subscribers.
-     * <p>
-     * Each child will need to manage backpressure independently using operators such as `onBackpressureDrop` and `onBackpressureBuffer`.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure because multicasting means the stream is "hot" with
+     *      multiple subscribers. Each child will need to manage backpressure independently using operators such
+     *      as {@link #onBackpressureDrop} and {@link #onBackpressureBuffer}.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     * </dl>
      * 
      * @param <R>
      *            the type of items emitted by the resulting Observable
@@ -5993,14 +6428,14 @@ public class Observable<T> {
      * when its {@code connect} method is called.
      * <p>
      * <img width="640" height="515" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.n.png" alt="">
-     * <p>
-     * This version of {@code replay} does not operate by default on a particular {@link Scheduler}.
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure because multicasting means the stream is "hot" with multiple subscribers.
-     * <p>
-     * Each child will need to manage backpressure independently using operators such as `onBackpressureDrop` and `onBackpressureBuffer`.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure because multicasting means the stream is "hot" with
+     *      multiple subscribers. Each child will need to manage backpressure independently using operators such
+     *      as {@link #onBackpressureDrop} and {@link #onBackpressureBuffer}.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This version of {@code replay} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param bufferSize
      *            the buffer size that limits the number of items that can be replayed
@@ -6020,14 +6455,14 @@ public class Observable<T> {
      * subscribed to, but only when its {@code connect} method is called. 
      * <p>
      * <img width="640" height="515" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.nt.png" alt="">
-     * <p>
-     * This version of {@code replay} operates by default on the {@code computation} {@link Scheduler}.
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure because multicasting means the stream is "hot" with multiple subscribers.
-     * <p>
-     * Each child will need to manage backpressure independently using operators such as `onBackpressureDrop` and `onBackpressureBuffer`.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure because multicasting means the stream is "hot" with
+     *      multiple subscribers. Each child will need to manage backpressure independently using operators such
+     *      as {@link #onBackpressureDrop} and {@link #onBackpressureBuffer}.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This version of {@code replay} operates by default on the {@code computation} {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param bufferSize
      *            the buffer size that limits the number of items that can be replayed
@@ -6052,12 +6487,14 @@ public class Observable<T> {
      * when it is subscribed to, but only when its {@code connect} method is called.
      * <p>
      * <img width="640" height="515" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.nts.png" alt="">
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure because multicasting means the stream is "hot" with multiple subscribers.
-     * <p>
-     * Each child will need to manage backpressure independently using operators such as `onBackpressureDrop` and `onBackpressureBuffer`.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure because multicasting means the stream is "hot" with
+     *      multiple subscribers. Each child will need to manage backpressure independently using operators such
+     *      as {@link #onBackpressureDrop} and {@link #onBackpressureBuffer}.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     * </dl>
      * 
      * @param bufferSize
      *            the buffer size that limits the number of items that can be replayed
@@ -6089,12 +6526,14 @@ public class Observable<T> {
      * when its {@code connect} method is called. 
      * <p>
      * <img width="640" height="515" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.ns.png" alt="">
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure because multicasting means the stream is "hot" with multiple subscribers.
-     * <p>
-     * Each child will need to manage backpressure independently using operators such as `onBackpressureDrop` and `onBackpressureBuffer`.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure because multicasting means the stream is "hot" with
+     *      multiple subscribers. Each child will need to manage backpressure independently using operators such
+     *      as {@link #onBackpressureDrop} and {@link #onBackpressureBuffer}.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     * </dl>
      * 
      * @param bufferSize
      *            the buffer size that limits the number of items that can be replayed
@@ -6118,14 +6557,14 @@ public class Observable<T> {
      * but only when its {@code connect} method is called. 
      * <p>
      * <img width="640" height="515" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.t.png" alt="">
-     * <p>
-     * This version of {@code replay} operates by default on the {@code computation} {@link Scheduler}.
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure because multicasting means the stream is "hot" with multiple subscribers.
-     * <p>
-     * Each child will need to manage backpressure independently using operators such as `onBackpressureDrop` and `onBackpressureBuffer`.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure because multicasting means the stream is "hot" with
+     *      multiple subscribers. Each child will need to manage backpressure independently using operators such
+     *      as {@link #onBackpressureDrop} and {@link #onBackpressureBuffer}.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This version of {@code replay} operates by default on the {@code computation} {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param time
      *            the duration of the window in which the replayed items must have been emitted
@@ -6147,12 +6586,14 @@ public class Observable<T> {
      * but only when its {@code connect} method is called. 
      * <p>
      * <img width="640" height="515" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.ts.png" alt="">
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure because multicasting means the stream is "hot" with multiple subscribers.
-     * <p>
-     * Each child will need to manage backpressure independently using operators such as `onBackpressureDrop` and `onBackpressureBuffer`.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure because multicasting means the stream is "hot" with
+     *      multiple subscribers. Each child will need to manage backpressure independently using operators such
+     *      as {@link #onBackpressureDrop} and {@link #onBackpressureBuffer}.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     * </dl>
      * 
      * @param time
      *            the duration of the window in which the replayed items must have been emitted
@@ -6176,12 +6617,14 @@ public class Observable<T> {
      * begin emitting items when it is subscribed to, but only when its {@code connect} method is called.
      * <p>
      * <img width="640" height="515" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/replay.s.png" alt="">
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure because multicasting means the stream is "hot" with multiple subscribers.
-     * <p>
-     * Each child will need to manage backpressure independently using operators such as `onBackpressureDrop` and `onBackpressureBuffer`.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure because multicasting means the stream is "hot" with
+     *      multiple subscribers. Each child will need to manage backpressure independently using operators such
+     *      as {@link #onBackpressureDrop} and {@link #onBackpressureBuffer}.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     * </dl>
      * 
      * @param scheduler
      *            the Scheduler on which the Observers will observe the emitted items
@@ -6208,8 +6651,10 @@ public class Observable<T> {
      * those emitted during failed subscriptions. For example, if an Observable fails at first but emits
      * {@code [1, 2]} then succeeds the second time and emits {@code [1, 2, 3, 4, 5]} then the complete sequence
      * of emissions and notifications would be {@code [1, 2, 1, 2, 3, 4, 5, onCompleted]}.
-     * <p>
-     * {@code retry} operates by default on the {@code trampoline} {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code retry} operates by default on the {@code trampoline} {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @return the source Observable modified with retry logic
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Error-Handling-Operators#retry">RxJava wiki: retry</a>
@@ -6226,15 +6671,19 @@ public class Observable<T> {
      * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/retry.png" alt="">
      * <p>
      * If the source Observable calls {@link Observer#onError}, this method will resubscribe to the source
-     * Observable for a maximum of {@code retryCount} resubscriptions rather than propagating the
+     * Observable for a maximum of {@code count} resubscriptions rather than propagating the
      * {@code onError} call.
      * <p>
      * Any and all items emitted by the source Observable will be emitted by the resulting Observable, even
      * those emitted during failed subscriptions. For example, if an Observable fails at first but emits
      * {@code [1, 2]} then succeeds the second time and emits {@code [1, 2, 3, 4, 5]} then the complete sequence
      * of emissions and notifications would be {@code [1, 2, 1, 2, 3, 4, 5, onCompleted]}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code retry} operates by default on the {@code trampoline} {@link Scheduler}.</dd>
+     * </dl>
      * 
-     * @param retryCount
+     * @param count
      *            number of retry attempts before failing
      * @return the source Observable modified with retry logic
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Error-Handling-Operators#retry">RxJava wiki: retry</a>
@@ -6249,8 +6698,10 @@ public class Observable<T> {
      * and the predicate returns true for that specific exception and retry count.
      * <p>
      * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/retry.png" alt="">
-     * <p>
-     * {@code retry} operates by default on the {@code trampoline} {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code retry} operates by default on the {@code trampoline} {@link Scheduler}.</dd>
+     * </dl>
      *
      * @param predicate
      *            the predicate that determines if a resubscription may happen in case of a specific exception
@@ -6264,14 +6715,14 @@ public class Observable<T> {
     }
 
     /**
-     * Returns an Observable that emits the same values as the source observable with the exception of an {@code onError}.
-     * An onError will emit a {@link Notification} to the observable provided as an argument to the notificationHandler 
-     * func. If the observable returned {@code onCompletes} or {@code onErrors} then retry will call {@code onCompleted} 
-     * or {@code onError} on the child subscription. Otherwise, this observable will resubscribe to the source observable.    
+     * Returns an Observable that emits the same values as the source observable with the exception of an
+     * {@code onError}. An {@code onError} notification from the source will result in the emission of a
+     * {@link Notification} to the Observable provided as an argument to the {@code notificationHandler}
+     * function. If the Observable returned {@code onCompletes} or {@code onErrors} then {@code retry} will call
+     * {@code onCompleted} or {@code onError} on the child subscription. Otherwise, this Observable will
+     * resubscribe to the source Observable.    
      * <p>
      * <img width="640" height="430" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/retryWhen.f.png" alt="">
-     * <p>
-     * {@code retryWhen} operates by default on the {@code trampoline} {@link Scheduler}.
      * 
      * Example:
      * 
@@ -6300,11 +6751,16 @@ public class Observable<T> {
      * delay retry by 3 second(s)
      * subscribing
      * } </pre>
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code retryWhen} operates by default on the {@code trampoline} {@link Scheduler}.</dd>
+     * </dl>
      *
      * @param notificationHandler
-     *            recieves an Observable of notifications with which a user can complete or error, aborting the retry. 
+     *            recieves an Observable of notifications with which a user can complete or error, aborting the
+     *            retry
      * @return the source Observable modified with retry logic
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Error-Handling-Operators#wiki-retry">RxJava Wiki: retryWhen()</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Error-Handling-Operators#retrywhen">RxJava Wiki: retryWhen()</a>
      * @since 0.20
      */
     public final Observable<T> retryWhen(Func1<? super Observable<? extends Notification<?>>, ? extends Observable<?>> notificationHandler) {
@@ -6319,11 +6775,18 @@ public class Observable<T> {
      * <p>
      * <img width="640" height="430" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/retryWhen.f.png" alt="">
      * <p>
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     * </dl>
      *
      * @param notificationHandler
-     *            recieves an Observable of notifications with which a user can complete or error, aborting the retry. 
+     *            recieves an Observable of notifications with which a user can complete or error, aborting the
+     *            retry
+     * @param scheduler
+     *            the {@link Scheduler} on which to subscribe to the source Observable
      * @return the source Observable modified with retry logic
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Error-Handling-Operators#wiki-retry">RxJava Wiki: retryWhen()</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Error-Handling-Operators#retrywhen">RxJava Wiki: retryWhen()</a>
      * @since 0.20
      */
     public final Observable<T> retryWhen(Func1<? super Observable<? extends Notification<?>>, ? extends Observable<? extends Notification<?>>> notificationHandler, Scheduler scheduler) {
@@ -6335,12 +6798,12 @@ public class Observable<T> {
      * within periodic time intervals.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/sample.png" alt="">
-     * <p>
-     * {@code sample} operates by default on the {@code computation} {@link Scheduler}.
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure as it uses time to control data flow.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure as it uses time to control data flow.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code sample} operates by default on the {@code computation} {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param period
      *            the sampling rate
@@ -6361,10 +6824,12 @@ public class Observable<T> {
      * within periodic time intervals, where the intervals are defined on a particular Scheduler.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/sample.s.png" alt="">
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure as it uses time to control data flow.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure as it uses time to control data flow.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     * </dl>
      * 
      * @param period
      *            the sampling rate
@@ -6388,12 +6853,13 @@ public class Observable<T> {
      * emission from the {@code sampler} Observable.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/sample.o.png" alt="">
-     * <p>
-     * This version of {@code sample} does not operate by default on a particular {@link Scheduler}.
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure as it uses the emissions of the `sampler` Observable to control data flow.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure as it uses the emissions of the {@code sampler}
+     *      Observable to control data flow.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This version of {@code sample} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param sampler
      *            the Observable to use for sampling the source Observable
@@ -6415,8 +6881,10 @@ public class Observable<T> {
      * <img width="640" height="320" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/scan.png" alt="">
      * <p>
      * This sort of function is sometimes called an accumulator.
-     * <p>
-     * {@code scan} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code scan} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param accumulator
      *            an accumulator function to be invoked on each item emitted by the source Observable, whose
@@ -6442,8 +6910,10 @@ public class Observable<T> {
      * <p>
      * Note that the Observable that results from this method will emit {@code initialValue} as its first
      * emitted item.
-     * <p>
-     * {@code scan} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code scan} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param initialValue
      *            the initial (seed) accumulator item
@@ -6471,8 +6941,10 @@ public class Observable<T> {
      * well-behaved and sequential by applying the {@code serialize} method to it.
      * <p>
      * <img width="640" height="400" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/synchronize.png" alt="">
-     * <p>
-     * {@code serialize} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code serialize} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      *
      * @return an {@link Observable} that is guaranteed to be well-behaved and to make only serialized calls to
      *         its observers
@@ -6492,14 +6964,14 @@ public class Observable<T> {
      * This is an alias for {@link #publish()}.{@link ConnectableObservable#refCount()}.
      * <p>
      * <img width="640" height="510" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/publishRefCount.png" alt="">
-     * <p>
-     * {@code share} does not operate by default on a particular {@link Scheduler}.
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure because multicasting means the stream is "hot" with multiple subscribers.
-     * <p>
-     * Each child will need to manage backpressure independently using operators such as `onBackpressureDrop` and `onBackpressureBuffer`.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure because multicasting means the stream is "hot" with
+     *      multiple subscribers. Each child will need to manage backpressure independently using operators such
+     *      as {@link #onBackpressureDrop} and {@link #onBackpressureBuffer}.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code share} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @return an {@code Observable} that upon connection causes the source {@code Observable} to emit items
      *         to its {@link Observer}s
@@ -6516,8 +6988,10 @@ public class Observable<T> {
      * {@code IllegalArgumentException} or {@code NoSuchElementException} respectively.
      * <p>
      * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/single.png" alt="">
-     * <p>
-     * {@code single} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code single} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @return an Observable that emits the single item emitted by the source Observable
      * @throws IllegalArgumentException
@@ -6538,8 +7012,10 @@ public class Observable<T> {
      * {@code NoSuchElementException} respectively.
      * <p>
      * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/single.p.png" alt="">
-     * <p>
-     * {@code single} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code single} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param predicate
      *            a predicate function to evaluate items emitted by the source Observable
@@ -6562,8 +7038,10 @@ public class Observable<T> {
      * Observable emits more than one item, throw an {@code IllegalArgumentException}.
      * <p>
      * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/singleOrDefault.png" alt="">
-     * <p>
-     * {@code singleOrDefault} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code singleOrDefault} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param defaultValue
      *            a default value to emit if the source Observable emits no item
@@ -6585,8 +7063,10 @@ public class Observable<T> {
      * {@code IllegalArgumentException}.
      * <p>
      * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/singleOrDefault.p.png" alt="">
-     * <p>
-     * {@code singleOrDefault} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code singleOrDefault} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param defaultValue
      *            a default item to emit if the source Observable emits no matching items
@@ -6608,8 +7088,10 @@ public class Observable<T> {
      * the remainder.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/skip.png" alt="">
-     * <p>
-     * This version of {@code skip} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This version of {@code skip} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param num
      *            the number of items to skip
@@ -6627,8 +7109,10 @@ public class Observable<T> {
      * elapses.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/skip.t.png" alt="">
-     * <p>
-     * This version of {@code skip} operates by default on the {@code computation} {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This version of {@code skip} operates by default on the {@code computation} {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param time
      *            the length of the time window to skip
@@ -6648,6 +7132,10 @@ public class Observable<T> {
      * on a specified {@link Scheduler} elapses.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/skip.ts.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     * </dl>
      * 
      * @param time
      *            the length of the time window to skip
@@ -6673,8 +7161,10 @@ public class Observable<T> {
      * This Observer accumulates a queue long enough to store the first {@code count} items. As more items are
      * received, items are taken from the front of the queue and emitted by the returned Observable. This causes
      * such items to be delayed.
-     * <p>
-     * This version of {@code skipLast} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This version of {@code skipLast} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param count
      *            number of items to drop from the end of the source sequence
@@ -6696,8 +7186,10 @@ public class Observable<T> {
      * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/skipLast.t.png" alt="">
      * <p>
      * Note: this action will cache the latest items arriving in the specified time window.
-     * <p>
-     * This version of {@code skipLast} operates by default on the {@code computation} {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This version of {@code skipLast} operates by default on the {@code computation} {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param time
      *            the length of the time window
@@ -6719,6 +7211,10 @@ public class Observable<T> {
      * <img width="640" height="340" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/skipLast.ts.png" alt="">
      * <p>
      * Note: this action will cache the latest items arriving in the specified time window.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     * </dl>
      *
      * @param time
      *            the length of the time window
@@ -6740,8 +7236,10 @@ public class Observable<T> {
      * an item.
      * <p>
      * <img width="640" height="375" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/skipUntil.png" alt="">
-     * <p>
-     * {@code skipUntil} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code skipUntil} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param other
      *            the second Observable that has to emit an item before the source Observable's elements begin
@@ -6760,8 +7258,10 @@ public class Observable<T> {
      * condition holds true, but emits all further source items as soon as the condition becomes false.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/skipWhile.png" alt="">
-     * <p>
-     * {@code skipWhile} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code skipWhile} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param predicate
      *            a function to test each item emitted from the source Observable
@@ -6779,8 +7279,10 @@ public class Observable<T> {
      * condition holds true, but emits all further source items as soon as the condition becomes false.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/skipWhileWithIndex.png" alt="">
-     * <p>
-     * {@code skipWhileWithIndex} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code skipWhileWithIndex} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param predicate
      *            a function to test each item emitted from the source Observable. It takes the emitted item as
@@ -6799,8 +7301,10 @@ public class Observable<T> {
      * items emitted by the source Observable.
      * <p>
      * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.o.png" alt="">
-     * <p>
-     * {@code startWith} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code startWith} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param values
      *            an Observable that contains the items you want the modified Observable to emit first
@@ -6818,8 +7322,10 @@ public class Observable<T> {
      * emitted by the source Observable.
      * <p>
      * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.png" alt="">
-     * <p>
-     * {@code startWith} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code startWith} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param values
      *            an Iterable that contains the items you want the modified Observable to emit first
@@ -6837,6 +7343,10 @@ public class Observable<T> {
      * {@link Scheduler}, before it begins to emit items emitted by the source Observable.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.s.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     * </dl>
      * 
      * @param values
      *            an Iterable that contains the items you want the modified Observable to emit first
@@ -6856,8 +7366,10 @@ public class Observable<T> {
      * Observable.
      * <p>
      * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.png" alt="">
-     * <p>
-     * {@code startWith} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code startWith} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param t1
      *            the item to emit
@@ -6875,8 +7387,10 @@ public class Observable<T> {
      * Observable.
      * <p>
      * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.png" alt="">
-     * <p>
-     * {@code startWith} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code startWith} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param t1
      *            the first item to emit
@@ -6896,8 +7410,10 @@ public class Observable<T> {
      * Observable.
      * <p>
      * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.png" alt="">
-     * <p>
-     * {@code startWith} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code startWith} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param t1
      *            the first item to emit
@@ -6919,8 +7435,10 @@ public class Observable<T> {
      * Observable.
      * <p>
      * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.png" alt="">
-     * <p>
-     * {@code startWith} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code startWith} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param t1
      *            the first item to emit
@@ -6944,8 +7462,10 @@ public class Observable<T> {
      * Observable.
      * <p>
      * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.png" alt="">
-     * <p>
-     * {@code startWith} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code startWith} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param t1
      *            the first item to emit
@@ -6971,8 +7491,10 @@ public class Observable<T> {
      * Observable.
      * <p>
      * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.png" alt="">
-     * <p>
-     * {@code startWith} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code startWith} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param t1
      *            the first item to emit
@@ -7000,8 +7522,10 @@ public class Observable<T> {
      * Observable.
      * <p>
      * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.png" alt="">
-     * <p>
-     * {@code startWith} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code startWith} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param t1
      *            the first item to emit
@@ -7031,8 +7555,10 @@ public class Observable<T> {
      * Observable.
      * <p>
      * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.png" alt="">
-     * <p>
-     * {@code startWith} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code startWith} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param t1
      *            the first item to emit
@@ -7064,8 +7590,10 @@ public class Observable<T> {
      * Observable.
      * <p>
      * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.png" alt="">
-     * <p>
-     * {@code startWith} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code startWith} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param t1
      *            the first item to emit
@@ -7099,6 +7627,10 @@ public class Observable<T> {
      * begins to emit items emitted by the source Observable.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/startWith.s.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     * </dl>
      * 
      * @param values
      *            the items you want the modified Observable to emit first
@@ -7115,8 +7647,10 @@ public class Observable<T> {
 
     /**
      * Subscribes to an Observable but ignore its emissions and notifications.
-     * <p>
-     * {@code subscribe} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code subscribe} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @return a {@link Subscription} reference with which the {@link Observer} can stop receiving items before
      *         the Observable has finished sending them
@@ -7146,8 +7680,10 @@ public class Observable<T> {
 
     /**
      * Subscribes to an Observable and provides a callback to handle the items it emits.
-     * <p>
-     * {@code subscribe} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code subscribe} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param onNext
      *             the {@code Action1<T>} you have designed to accept emissions from the Observable
@@ -7187,8 +7723,10 @@ public class Observable<T> {
     /**
      * Subscribes to an Observable and provides callbacks to handle the items it emits and any error
      * notification it issues.
-     * <p>
-     * {@code subscribe} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code subscribe} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param onNext
      *             the {@code Action1<T>} you have designed to accept emissions from the Observable
@@ -7233,8 +7771,10 @@ public class Observable<T> {
     /**
      * Subscribes to an Observable and provides callbacks to handle the items it emits and any error or
      * completion notification it issues.
-     * <p>
-     * {@code subscribe} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code subscribe} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param onNext
      *             the {@code Action1<T>} you have designed to accept emissions from the Observable
@@ -7286,8 +7826,10 @@ public class Observable<T> {
     /**
      * Subscribes to an Observable and provides an Observer that implements functions to handle the items the
      * Observable emits and any error or completion notification it issues.
-     * <p>
-     * {@code subscribe} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code subscribe} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      *
      * @param observer
      *             the Observer that will handle emissions and notifications from the Observable
@@ -7322,8 +7864,10 @@ public class Observable<T> {
      * <p>
      * Use this only for implementing an {@link Operator} that requires nested subscriptions. For other
      * purposes, use {@link #subscribe(Subscriber)} which ensures the Rx contract and other functionality.
-     * <p>
-     * {@code unsafeSubscribe} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code unsafeSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param subscriber
      *              the Subscriber that will handle emissions and notifications from the Observable
@@ -7378,8 +7922,10 @@ public class Observable<T> {
      * <p>
      * For more information see the
      * <a href="https://github.com/Netflix/RxJava/wiki/Observable">RxJava wiki</a>.
-     * <p>
-     * {@code subscribe} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code subscribe} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param subscriber
      *            the {@link Subscriber} that will handle emissions and notifications from the Observable
@@ -7451,6 +7997,10 @@ public class Observable<T> {
      * Asynchronously subscribes Observers to this Observable on the specified {@link Scheduler}.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/subscribeOn.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     * </dl>
      * 
      * @param scheduler
      *            the {@link Scheduler} to perform subscription actions on
@@ -7470,8 +8020,10 @@ public class Observable<T> {
      * of these Observables.
      * <p>
      * <img width="640" height="350" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/switchMap.png" alt="">
-     * <p>
-     * {@code switchMap} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code switchMap} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param func
      *            a function that, when applied to an item emitted by the source Observable, returns an
@@ -7491,8 +8043,10 @@ public class Observable<T> {
      * This method returns an Observable that will invoke a subscribing {@link Observer}'s
      * {@link Observer#onNext onNext} function a maximum of {@code num} times before invoking
      * {@link Observer#onCompleted onCompleted}.
-     * <p>
-     * This version of {@code take} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This version of {@code take} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param num
      *            the maximum number of items to emit
@@ -7510,8 +8064,10 @@ public class Observable<T> {
      * out.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/take.t.png" alt="">
-     * <p>
-     * This version of {@code take} operates by default on the {@code computation} {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This version of {@code take} operates by default on the {@code computation} {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param time
      *            the length of the time window
@@ -7529,6 +8085,10 @@ public class Observable<T> {
      * specified Scheduler) runs out.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/take.ts.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     * </dl>
      * 
      * @param time
      *            the length of the time window
@@ -7549,8 +8109,10 @@ public class Observable<T> {
      * a specified condition.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/takeFirstN.png" alt="">
-     * <p>
-     * {@code takeFirst} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code takeFirst} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param predicate
      *            the condition any item emitted by the source Observable has to satisfy
@@ -7568,8 +8130,10 @@ public class Observable<T> {
      * Returns an Observable that emits only the last {@code count} items emitted by the source Observable.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/takeLast.n.png" alt="">
-     * <p>
-     * This version of {@code takeLast} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This version of {@code takeLast} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param count
      *            the number of items to emit from the end of the sequence of items emitted by the source
@@ -7589,8 +8153,10 @@ public class Observable<T> {
      * emitted in a specified window of time before the Observable completed.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/takeLast.tn.png" alt="">
-     * <p>
-     * This version of {@code takeLast} operates by default on the {@code computation} {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This version of {@code takeLast} operates by default on the {@code computation} {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param count
      *            the maximum number of items to emit
@@ -7613,6 +8179,10 @@ public class Observable<T> {
      * provided by a given Scheduler.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/takeLast.tns.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     * </dl>
      * 
      * @param count
      *            the maximum number of items to emit
@@ -7639,8 +8209,10 @@ public class Observable<T> {
      * window of time before the Observable completed.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/takeLast.t.png" alt="">
-     * <p>
-     * This version of {@code takeLast} operates by default on the {@code computation} {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This version of {@code takeLast} operates by default on the {@code computation} {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param time
      *            the length of the time window
@@ -7661,6 +8233,10 @@ public class Observable<T> {
      * Scheduler.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/takeLast.ts.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     * </dl>
      * 
      * @param time
      *            the length of the time window
@@ -7683,6 +8259,10 @@ public class Observable<T> {
      * source Observable.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/takeLastBuffer.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This version of {@code takeLastBuffer} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param count
      *            the number of items to emit in the list
@@ -7699,8 +8279,10 @@ public class Observable<T> {
      * Observable that were emitted during a specified window of time before the source Observable completed.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/takeLastBuffer.tn.png" alt="">
-     * <p>
-     * This version of {@code takeLastBuffer} operates by default on the {@code computation} {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This version of {@code takeLastBuffer} operates by default on the {@code computation} {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param count
      *            the maximum number of items to emit
@@ -7723,6 +8305,10 @@ public class Observable<T> {
      * source Observable completed.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/takeLastBuffer.tns.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     * </dl>
      * 
      * @param count
      *            the maximum number of items to emit
@@ -7746,8 +8332,10 @@ public class Observable<T> {
      * were emitted during a specified window of time before the source Observable completed.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/takeLastBuffer.t.png" alt="">
-     * <p>
-     * This version of {@code takeLastBuffer} operates by default on the {@code computation} {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This version of {@code takeLastBuffer} operates by default on the {@code computation} {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param time
      *            the length of the time window
@@ -7767,6 +8355,10 @@ public class Observable<T> {
      * information is provided by the given Scheduler.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/takeLastBuffer.ts.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     * </dl>
      * 
      * @param time
      *            the length of the time window
@@ -7788,8 +8380,10 @@ public class Observable<T> {
      * emits an item.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/takeUntil.png" alt="">
-     * <p>
-     * {@code takeUntil} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code takeUntil} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param other
      *            the Observable whose first emitted item will cause {@code takeUntil} to stop emitting items
@@ -7809,8 +8403,10 @@ public class Observable<T> {
      * specified condition, and then completes as soon as this condition is not satisfied.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/takeWhile.png" alt="">
-     * <p>
-     * {@code takeWhile} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code takeWhile} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param predicate
      *            a function that evaluates an item emitted by the source Observable and returns a Boolean
@@ -7829,8 +8425,10 @@ public class Observable<T> {
      * sequence of emitted items.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/takeWhileWithIndex.png" alt="">
-     * <p>
-     * {@code takeWhile} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code takeWhile} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param predicate
      *            a function to test each item emitted by the source Observable for a condition; the second
@@ -7853,12 +8451,12 @@ public class Observable<T> {
      * {@link #throttleLast} ticks at scheduled intervals.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/throttleFirst.png" alt="">
-     * <p>
-     * {@code throttleFirst} operates by default on the {@code computation} {@link Scheduler}.
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure as it uses time to control data flow.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure as it uses time to control data flow.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code throttleFirst} operates by default on the {@code computation} {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param windowDuration
      *            time to wait before emitting another item after emitting the last item
@@ -7879,10 +8477,12 @@ public class Observable<T> {
      * {@link #throttleLast} ticks at scheduled intervals.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/throttleFirst.s.png" alt="">
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure as it uses time to control data flow.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure as it uses time to control data flow.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     * </dl>
      * 
      * @param skipDuration
      *            time to wait before emitting another item after emitting the last item
@@ -7906,12 +8506,12 @@ public class Observable<T> {
      * {@link #throttleFirst} does not tick, it just tracks passage of time.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/throttleLast.png" alt="">
-     * <p>
-     * {@code throttleLast} operates by default on the {@code computation} {@link Scheduler}.
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure as it uses time to control data flow.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure as it uses time to control data flow.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code throttleLast} operates by default on the {@code computation} {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param intervalDuration
      *            duration of windows within which the last item emitted by the source Observable will be
@@ -7935,10 +8535,12 @@ public class Observable<T> {
      * {@link #throttleFirst} does not tick, it just tracks passage of time.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/throttleLast.s.png" alt="">
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure as it uses time to control data flow.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure as it uses time to control data flow.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     * </dl>
      * 
      * @param intervalDuration
      *            duration of windows within which the last item emitted by the source Observable will be
@@ -7973,12 +8575,12 @@ public class Observable<T> {
      * <li><a href="http://unscriptable.com/2009/03/20/debouncing-javascript-methods/">Debouncing: javascript methods</a></li>
      * <li><a href="http://www.illyriad.co.uk/blog/index.php/2011/09/javascript-dont-spam-your-server-debounce-and-throttle/">Javascript - don't spam your server: debounce and throttle</a></li>
      * </ul>
-     * <p>
-     * {@code throttleWithTimeout} operates by default on the {@code computation} {@link Scheduler}.
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure as it uses time to control data flow.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure as it uses time to control data flow.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code throttleWithTimeout} operates by default on the {@code computation} {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param timeout
      *            the length of the window of time that must pass after the emission of an item from the source
@@ -8012,10 +8614,12 @@ public class Observable<T> {
      * <li><a href="http://unscriptable.com/2009/03/20/debouncing-javascript-methods/">Debouncing: javascript methods</a></li>
      * <li><a href="http://www.illyriad.co.uk/blog/index.php/2011/09/javascript-dont-spam-your-server-debounce-and-throttle/">Javascript - don't spam your server: debounce and throttle</a></li>
      * </ul>
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure as it uses time to control data flow.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure as it uses time to control data flow.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     * </dl>
      * 
      * @param timeout
      *            the length of the window of time that must pass after the emission of an item from the source
@@ -8040,8 +8644,10 @@ public class Observable<T> {
      * source Observable.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timeInterval.png" alt="">
-     * <p>
-     * {@code timeInterval} operates by default on the {@code immediate} {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code timeInterval} operates by default on the {@code immediate} {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @return an Observable that emits time interval information items
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#timeinterval">RxJava wiki: timeInterval</a>
@@ -8056,6 +8662,10 @@ public class Observable<T> {
      * source Observable, where this interval is computed on a specified Scheduler.
      * <p>
      * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timeInterval.s.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     * </dl>
      * 
      * @param scheduler
      *            the {@link Scheduler} used to compute time intervals
@@ -8073,8 +8683,10 @@ public class Observable<T> {
      * doesn't arrive within time windows defined by other Observables.
      * <p>
      * <img width="640" height="400" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timeout5.png" alt="">
-     * <p>
-     * This version of {@code timeout} operates by default on the {@code immediate} {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This version of {@code timeout} operates by default on the {@code immediate} {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param <U>
      *            the first timeout value type (ignored)
@@ -8103,8 +8715,10 @@ public class Observable<T> {
      * defined by other Observables.
      * <p>
      * <img width="640" height="400" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timeout6.png" alt="">
-     * <p>
-     * This version of {@code timeout} operates by default on the {@code immediate} {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This version of {@code timeout} operates by default on the {@code immediate} {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param <U>
      *            the first timeout value type (ignored)
@@ -8143,8 +8757,10 @@ public class Observable<T> {
      * <img width="640" height="400" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timeout3.png" alt="">
      * <p>
      * Note: The arrival of the first source item is never timed out.
-     * <p>
-     * This version of {@code timeout} operates by default on the {@code immediate} {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This version of {@code timeout} operates by default on the {@code immediate} {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param <V>
      *            the timeout value type (ignored)
@@ -8170,8 +8786,10 @@ public class Observable<T> {
      * <img width="640" height="400" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timeout4.png" alt="">
      * <p>
      * Note: The arrival of the first source item is never timed out.
-     * <p>
-     * This version of {@code timeout} operates by default on the {@code immediate} {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This version of {@code timeout} operates by default on the {@code immediate} {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param <V>
      *            the timeout value type (ignored)
@@ -8196,8 +8814,10 @@ public class Observable<T> {
      * the resulting Observable terminates and notifies observers of a {@code TimeoutException}.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timeout.1.png" alt="">
-     * <p>
-     * This version of {@code timeout} operates by default on the {@code computation} {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This version of {@code timeout} operates by default on the {@code computation} {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param timeout
      *            maximum duration between emitted items before a timeout occurs
@@ -8218,8 +8838,10 @@ public class Observable<T> {
      * the resulting Observable begins instead to mirror a fallback Observable.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timeout.2.png" alt="">
-     * <p>
-     * This version of {@code timeout} operates by default on the {@code computation} {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This version of {@code timeout} operates by default on the {@code computation} {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param timeout
      *            maximum duration between items before a timeout occurs
@@ -8241,6 +8863,10 @@ public class Observable<T> {
      * starting from its predecessor, the resulting Observable begins instead to mirror a fallback Observable.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timeout.2s.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     * </dl>
      * 
      * @param timeout
      *            maximum duration between items before a timeout occurs
@@ -8266,6 +8892,10 @@ public class Observable<T> {
      * notifies observers of a {@code TimeoutException}.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timeout.1s.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     * </dl>
      * 
      * @param timeout
      *            maximum duration between items before a timeout occurs
@@ -8287,8 +8917,10 @@ public class Observable<T> {
      * {@link Timestamped} object.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timestamp.png" alt="">
-     * <p>
-     * {@code timestamp} operates by default on the {@code immediate} {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code timestamp} operates by default on the {@code immediate} {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @return an Observable that emits timestamped items from the source Observable
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#timestamp">RxJava wiki: timestamp</a>
@@ -8303,6 +8935,10 @@ public class Observable<T> {
      * {@link Timestamped} object whose timestamps are provided by a specified Scheduler.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timestamp.s.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     * </dl>
      * 
      * @param scheduler
      *            the {@link Scheduler} to use as a time source
@@ -8320,7 +8956,7 @@ public class Observable<T> {
      * 
      * @return a {@code BlockingObservable} version of this Observable
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Blocking-Observable-Operators">RxJava wiki: Blocking Observable Operators</a>
-     * @deprecated Use {@link #toBlocking()} instead.
+     * @deprecated use {@link #toBlocking()} instead
      */
     @Deprecated
     public final BlockingObservable<T> toBlockingObservable() {
@@ -8329,8 +8965,10 @@ public class Observable<T> {
 
     /**
      * Converts an Observable into a {@link BlockingObservable} (an Observable with blocking operators).
-     * <p>
-     * {@code toBlocking} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code toBlocking} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      *
      * @return a {@code BlockingObservable} version of this Observable
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Blocking-Observable-Operators">RxJava wiki: Blocking Observable Operators</a>
@@ -8354,12 +8992,12 @@ public class Observable<T> {
      * <p>
      * Be careful not to use this operator on Observables that emit infinite or very large numbers of items, as
      * you do not have the option to unsubscribe.
-     * <p>
-     * {@code toList} does not operate by default on a particular {@link Scheduler}.
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure as by intent it is requesting and buffering everything.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure as by intent it is requesting and buffering everything.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code toList} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @return an Observable that emits a single item: a List containing all of the items emitted by the source
      *         Observable
@@ -8377,12 +9015,12 @@ public class Observable<T> {
      * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toMap.png" alt="">
      * <p>
      * If more than one source item maps to the same key, the HashMap will contain the latest of those items.
-     * <p>
-     * {@code toMap} does not operate by default on a particular {@link Scheduler}.
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure as by intent it is requesting and buffering everything.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure as by intent it is requesting and buffering everything.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code toMap} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param keySelector
      *            the function that extracts the key from a source item to be used in the HashMap
@@ -8403,12 +9041,12 @@ public class Observable<T> {
      * <p>
      * If more than one source item maps to the same key, the HashMap will contain a single entry that
      * corresponds to the latest of those items.
-     * <p>
-     * {@code toMap} does not operate by default on a particular {@link Scheduler}.
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure as by intent it is requesting and buffering everything.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure as by intent it is requesting and buffering everything.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code toMap} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param keySelector
      *            the function that extracts the key from a source item to be used in the HashMap
@@ -8428,12 +9066,12 @@ public class Observable<T> {
      * contains keys and values extracted from the items emitted by the source Observable.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toMap.png" alt="">
-     * <p>
-     * {@code toMap} does not operate by default on a particular {@link Scheduler}.
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure as by intent it is requesting and buffering everything.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure as by intent it is requesting and buffering everything.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code toMap} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param keySelector
      *            the function that extracts the key from a source item to be used in the Map
@@ -8454,12 +9092,12 @@ public class Observable<T> {
      * source Observable keyed by a specified {@code keySelector} function.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toMultiMap.png" alt="">
-     * <p>
-     * {@code toMultiMap} does not operate by default on a particular {@link Scheduler}.
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure as by intent it is requesting and buffering everything.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure as by intent it is requesting and buffering everything.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code toMultiMap} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param keySelector
      *            the function that extracts the key from the source items to be used as key in the HashMap
@@ -8478,12 +9116,12 @@ public class Observable<T> {
      * specified {@code keySelector} function.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toMultiMap.png" alt="">
-     * <p>
-     * {@code toMultiMap} does not operate by default on a particular {@link Scheduler}.
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure as by intent it is requesting and buffering everything.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure as by intent it is requesting and buffering everything.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code toMultiMap} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param keySelector
      *            the function that extracts a key from the source items to be used as key in the HashMap
@@ -8504,12 +9142,12 @@ public class Observable<T> {
      * emitted by the source Observable and keyed by the {@code keySelector} function.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toMultiMap.png" alt="">
-     * <p>
-     * {@code toMultiMap} does not operate by default on a particular {@link Scheduler}.
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure as by intent it is requesting and buffering everything.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure as by intent it is requesting and buffering everything.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code toMultiMap} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param keySelector
      *            the function that extracts a key from the source items to be used as the key in the Map
@@ -8531,12 +9169,12 @@ public class Observable<T> {
      * items emitted by the source Observable, and keyed by the {@code keySelector} function.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toMultiMap.png" alt="">
-     * <p>
-     * {@code toMultiMap} does not operate by default on a particular {@link Scheduler}.
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure as by intent it is requesting and buffering everything.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure as by intent it is requesting and buffering everything.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code toMultiMap} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param keySelector
      *            the function that extracts a key from the source items to be used as the key in the Map
@@ -8560,12 +9198,12 @@ public class Observable<T> {
      * other items in the sequence.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toSortedList.png" alt="">
-     * <p>
-     * {@code toSortedList} does not operate by default on a particular {@link Scheduler}.
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure as by intent it is requesting and buffering everything.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure as by intent it is requesting and buffering everything.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code toSortedList} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @throws ClassCastException
      *             if any item emitted by the Observable does not implement {@link Comparable} with respect to
@@ -8583,12 +9221,12 @@ public class Observable<T> {
      * sorted order based on a specified comparison function.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toSortedList.f.png" alt="">
-     * <p>
-     * {@code toSortedList} does not operate by default on a particular {@link Scheduler}.
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure as by intent it is requesting and buffering everything.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure as by intent it is requesting and buffering everything.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code toSortedList} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param sortFunction
      *            a function that compares two items emitted by the source Observable and returns an Integer
@@ -8604,6 +9242,10 @@ public class Observable<T> {
     /**
      * Modifies the source Observable so that subscribers will unsubscribe from it on a specified
      * {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     * </dl>
      * 
      * @param scheduler
      *            the {@link Scheduler} to perform unsubscription actions on
@@ -8621,12 +9263,13 @@ public class Observable<T> {
      * whenever the Observable produced by the specified {@code closingSelector} emits an item.
      * <p>
      * <img width="640" height="485" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/window1.png" alt="">
-     * <p>
-     * This version of {@code window} does not operate by default on a particular {@link Scheduler}.
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure as it uses the `closingSelector` to control data flow.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure as it uses the {@code closingSelector} to control data
+     *      flow.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This version of {@code window} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param closingSelector
      *            a {@link Func0} that returns an {@code Observable} that governs the boundary between windows.
@@ -8648,12 +9291,12 @@ public class Observable<T> {
      * propagates the notification from the source Observable.
      * <p>
      * <img width="640" height="400" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/window3.png" alt="">
-     * <p>
-     * This version of {@code window} does not operate by default on a particular {@link Scheduler}.
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure as it uses `count` to control data flow.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure as it uses {@code count} to control data flow.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This version of {@code window} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param count
      *            the maximum size of each window before it should be emitted
@@ -8673,12 +9316,12 @@ public class Observable<T> {
      * and propagates the notification from the source Observable.
      * <p>
      * <img width="640" height="365" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/window4.png" alt="">
-     * <p>
-     * This version of {@code window} does not operate by default on a particular {@link Scheduler}.
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure as it uses `count` to control data flow.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure as it uses {@code count} to control data flow.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This version of {@code window} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param count
      *            the maximum size of each window before it should be emitted
@@ -8702,12 +9345,12 @@ public class Observable<T> {
      * current window and propagates the notification from the source Observable.
      * <p>
      * <img width="640" height="335" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/window7.png" alt="">
-     * <p>
-     * This version of {@code window} operates by default on the {@code computation} {@link Scheduler}.
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure as it uses time to control data flow.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure as it uses time to control data flow.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This version of {@code window} operates by default on the {@code computation} {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param timespan
      *            the period of time each window collects items before it should be emitted
@@ -8731,10 +9374,12 @@ public class Observable<T> {
      * current window and propagates the notification from the source Observable.
      * <p>
      * <img width="640" height="335" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/window7.s.png" alt="">
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure as it uses time to control data flow.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure as it uses time to control data flow.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     * </dl>
      * 
      * @param timespan
      *            the period of time each window collects items before it should be emitted
@@ -8759,12 +9404,12 @@ public class Observable<T> {
      * Observable emits the current window and propagates the notification from the source Observable.
      * <p>
      * <img width="640" height="375" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/window5.png" alt="">
-     * <p>
-     * This version of {@code window} operates by default on the {@code computation} {@link Scheduler}.
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure as it uses time to control data flow.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure as it uses time to control data flow.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This version of {@code window} operates by default on the {@code computation} {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param timespan
      *            the period of time each window collects items before it should be emitted and replaced with a
@@ -8788,12 +9433,12 @@ public class Observable<T> {
      * emits the current window and propagates the notification from the source Observable.
      * <p>
      * <img width="640" height="370" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/window6.png" alt="">
-     * <p>
-     * This version of {@code window} operates by default on the {@code computation} {@link Scheduler}.
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure as it uses time to control data flow.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure as it uses time to control data flow.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This version of {@code window} operates by default on the {@code computation} {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param timespan
      *            the period of time each window collects items before it should be emitted and replaced with a
@@ -8820,10 +9465,12 @@ public class Observable<T> {
      * current window and propagates the notification from the source Observable.
      * <p>
      * <img width="640" height="370" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/window6.s.png" alt="">
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure as it uses time to control data flow.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure as it uses time to control data flow.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     * </dl>
      * 
      * @param timespan
      *            the period of time each window collects items before it should be emitted and replaced with a
@@ -8851,10 +9498,12 @@ public class Observable<T> {
      * Observable emits the current window and propagates the notification from the source Observable.
      * <p>
      * <img width="640" height="375" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/window5.s.png" alt="">
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure as it uses time to control data flow.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure as it uses time to control data flow.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     * </dl>
      * 
      * @param timespan
      *            the period of time each window collects items before it should be emitted and replaced with a
@@ -8879,12 +9528,12 @@ public class Observable<T> {
      * {@code closingSelector} emits an item.
      * <p>
      * <img width="640" height="550" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/window2.png" alt="">
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure as it uses Observables to control data flow.
-     * <p>
-     * This version of {@code window} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure as it uses Observables to control data flow.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This version of {@code window} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param windowOpenings
      *            an Observable that, when it emits an item, causes another window to be created
@@ -8906,12 +9555,13 @@ public class Observable<T> {
      * Observable.
      * <p>
      * <img width="640" height="475" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/window8.png" alt="">
-     * <p>
-     * This version of {@code window} does not operate by default on a particular {@link Scheduler}.
-     * <p>
-     * <b>Backpressure Support</b>
-     * <p>
-     * This operator does not support backpressure as it uses a `boundary` Observable to control data flow.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure as it uses a {@code boundary} Observable to control data
+     *      flow.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This version of {@code window} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param <U>
      *            the window element type (ignored)
@@ -8935,8 +9585,10 @@ public class Observable<T> {
      * <p>
      * Note that the {@code other} Iterable is evaluated as items are observed from the source Observable; it is
      * not pre-consumed. This allows you to zip infinite streams on either side.
-     * <p>
-     * {@code zip} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param <T2>
      *            the type of items in the {@code other} Iterable
@@ -8961,8 +9613,10 @@ public class Observable<T> {
      * values, one each from the source Observable and another specified Observable.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/zip.png" alt="">
-     * <p>
-     * {@code zip} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param <T2>
      *            the type of items emitted by the {@code other} Observable
@@ -8989,8 +9643,10 @@ public class Observable<T> {
      * values, one each from the source Observable and another specified Observable.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/zip.png" alt="">
-     * <p>
-     * {@code zip} does not operate by default on a particular {@link Scheduler}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code zipWith} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param <T2>
      *            the type of items emitted by the {@code other} Observable
