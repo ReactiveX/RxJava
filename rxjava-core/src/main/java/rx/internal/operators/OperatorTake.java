@@ -31,9 +31,9 @@ import rx.Subscriber;
  */
 public final class OperatorTake<T> implements Operator<T, T> {
 
-    final int limit;
+    final long limit;
 
-    public OperatorTake(int limit) {
+    public OperatorTake(long limit) {
         this.limit = limit;
     }
 

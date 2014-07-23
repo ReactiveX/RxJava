@@ -5558,7 +5558,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229428.aspx">MSDN: Observable.Repeat</a>
      */
     public final Observable<T> repeat() {
-        return nest().lift(new OperatorRepeat<T>());
+        return OnSubscribeRedo.<T>repeat(this);
     }
 
     /**
@@ -5574,7 +5574,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229428.aspx">MSDN: Observable.Repeat</a>
      */
     public final Observable<T> repeat(Scheduler scheduler) {
-        return nest().lift(new OperatorRepeat<T>(scheduler));
+        return OnSubscribeRedo.<T>repeat(this, scheduler);
     }
 
     /**
@@ -5596,11 +5596,8 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229428.aspx">MSDN: Observable.Repeat</a>
      * @since 0.17
      */
-    public final Observable<T> repeat(long count) {
-        if (count < 0) {
-            throw new IllegalArgumentException("count >= 0 expected");
-        }
-        return nest().lift(new OperatorRepeat<T>(count));
+    public final Observable<T> repeat(final long count) {
+        return OnSubscribeRedo.<T>repeat(this, count);
     }
 
     /**
@@ -5616,12 +5613,50 @@ public class Observable<T> {
      *            the {@link Scheduler} to emit the items on
      * @return an Observable that repeats the sequence of items emitted by the source Observable at most
      *         {@code count} times on a particular Scheduler
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#repeat">RxJava wiki: repeat</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#wiki-repeat">RxJava Wiki: repeat()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229428.aspx">MSDN: Observable.Repeat</a>
      * @since 0.17
      */
-    public final Observable<T> repeat(long count, Scheduler scheduler) {
-        return nest().lift(new OperatorRepeat<T>(count, scheduler));
+    public final Observable<T> repeat(final long count, Scheduler scheduler) {
+        return OnSubscribeRedo.<T>repeat(this, count, scheduler);
+    }
+
+    /**
+     * Returns an Observable that emits the same values as the source observable with the exception of an {@code onCompleted}.
+     * An onCompleted will emit a {@link Notification} to the observable provided as an argument to the notificationHandler 
+     * func. If the observable returned {@code onCompletes} or {@code onErrors} then repeat will call {@code onCompleted} 
+     * or {@code onError} on the child subscription. Otherwise, this observable will resubscribe to the source observable, on a particular Scheduler.
+     * <p>
+     * <img width="640" height="430" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/repeatWhen.f.png" alt="">
+     * 
+     * @param notificationHandler
+     *            recieves an Observable of notifications with which a user can complete or error, aborting the repeat. 
+     * @param scheduler
+     *            the {@link Scheduler} to emit the items on
+     * @return the source Observable modified with repeat logic
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#wiki-repeat">RxJava Wiki: repeatWhen()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229428.aspx">MSDN: Observable.Repeat</a>
+     */
+    public final Observable<T> repeatWhen(Func1<? super Observable<? extends Notification<?>>, ? extends Observable<? extends Notification<?>>> notificationHandler, Scheduler scheduler) {
+        return OnSubscribeRedo.repeat(this, notificationHandler, scheduler);
+    }
+
+    /**
+     * Returns an Observable that emits the same values as the source observable with the exception of an {@code onCompleted}.
+     * An onCompleted will emit a {@link Notification} to the observable provided as an argument to the notificationHandler 
+     * func. If the observable returned {@code onCompletes} or {@code onErrors} then repeat will call {@code onCompleted} 
+     * or {@code onError} on the child subscription. Otherwise, this observable will resubscribe to the source observable.
+     * <p>
+     * <img width="640" height="430" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/repeatWhen.f.png" alt="">
+     * 
+     * @param notificationHandler
+     *            recieves an Observable of notifications with which a user can complete or error, aborting the repeat. 
+     * @return the source Observable modified with repeat logic
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#wiki-repeat">RxJava Wiki: repeatWhen()</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229428.aspx">MSDN: Observable.Repeat</a>
+     */
+    public final Observable<T> repeatWhen(Func1<? super Observable<? extends Notification<?>>, ? extends Observable<? extends Notification<?>>> notificationHandler) {
+        return OnSubscribeRedo.repeat(this, notificationHandler);
     }
 
     /**
@@ -6177,7 +6212,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.retry.aspx">MSDN: Observable.Retry</a>
      */
     public final Observable<T> retry() {
-        return nest().lift(new OperatorRetry<T>());
+        return OnSubscribeRedo.<T>retry(this);
     }
 
     /**
@@ -6201,8 +6236,8 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Error-Handling-Operators#retry">RxJava wiki: retry</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.retry.aspx">MSDN: Observable.Retry</a>
      */
-    public final Observable<T> retry(int retryCount) {
-        return nest().lift(new OperatorRetry<T>(retryCount));
+    public final Observable<T> retry(final long count) {
+        return OnSubscribeRedo.<T>retry(this, count);
     }
 
     /**
@@ -6218,13 +6253,49 @@ public class Observable<T> {
      *            and retry count
      * @return the source Observable modified with retry logic
      * @see #retry()
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Error-Handling-Operators#retry">RxJava wiki: retry</a>
-     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.retry.aspx">MSDN: Observable.Retry</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Error-Handling-Operators#retry">RxJava Wiki: retry()</a>
      */
     public final Observable<T> retry(Func2<Integer, Throwable, Boolean> predicate) {
         return nest().lift(new OperatorRetryWithPredicate<T>(predicate));
     }
-    
+
+    /**
+     * Returns an Observable that emits the same values as the source observable with the exception of an {@code onError}.
+     * An onError will emit a {@link Notification} to the observable provided as an argument to the notificationHandler 
+     * func. If the observable returned {@code onCompletes} or {@code onErrors} then retry will call {@code onCompleted} 
+     * or {@code onError} on the child subscription. Otherwise, this observable will resubscribe to the source observable.    
+     * <p>
+     * <img width="640" height="430" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/retryWhen.f.png" alt="">
+     * <p>
+     * {@code retryWhen} operates by default on the {@code trampoline} {@link Scheduler}.
+     *
+     * @param notificationHandler
+     *            recieves an Observable of notifications with which a user can complete or error, aborting the retry. 
+     * @return the source Observable modified with retry logic
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Error-Handling-Operators#wiki-retry">RxJava Wiki: retryWhen()</a>
+     */
+    public final Observable<T> retryWhen(Func1<? super Observable<? extends Notification<?>>, ? extends Observable<?>> notificationHandler) {
+        return OnSubscribeRedo.<T> retry(this, notificationHandler);
+    }
+
+    /**
+     * Returns an Observable that emits the same values as the source observable with the exception of an {@code onError}.
+     * An onError will emit a {@link Notification} to the observable provided as an argument to the notificationHandler 
+     * func. If the observable returned {@code onCompletes} or {@code onErrors} then retry will call {@code onCompleted} 
+     * or {@code onError} on the child subscription. Otherwise, this observable will resubscribe to the source observable, on a particular Scheduler.    
+     * <p>
+     * <img width="640" height="430" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/retryWhen.f.png" alt="">
+     * <p>
+     *
+     * @param notificationHandler
+     *            recieves an Observable of notifications with which a user can complete or error, aborting the retry. 
+     * @return the source Observable modified with retry logic
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Error-Handling-Operators#wiki-retry">RxJava Wiki: retryWhen()</a>
+     */
+    public final Observable<T> retryWhen(Func1<? super Observable<? extends Notification<?>>, ? extends Observable<? extends Notification<?>>> notificationHandler, Scheduler scheduler) {
+        return OnSubscribeRedo.<T> retry(this, notificationHandler, scheduler);
+    }
+
     /**
      * Returns an Observable that emits the most recently emitted item (if any) emitted by the source Observable
      * within periodic time intervals.

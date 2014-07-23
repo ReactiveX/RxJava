@@ -35,23 +35,219 @@ import org.mockito.Mockito;
 
 import rx.Observable;
 import rx.Observable.OnSubscribe;
+import rx.Notification;
 import rx.Observer;
+import rx.Scheduler.Worker;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Action0;
 import rx.functions.Action1;
-import rx.internal.operators.OperatorRetry;
+import rx.functions.Func1;
+import rx.functions.Func2;
 import rx.observers.TestSubscriber;
+import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.Subscriptions;
 
 public class OperatorRetryTest {
 
     @Test
-    public void testOriginFails() {
+    public void iterativeBackoff() {
+        Observer<String> consumer = mock(Observer.class);
+        Observable<String> producer = Observable.create(new OnSubscribe<String>() {
+
+            private AtomicInteger count = new AtomicInteger(4);
+            long last = System.currentTimeMillis();
+
+            @Override
+            public void call(Subscriber<? super String> t1) {
+                System.out.println(count.get() + " @ " + String.valueOf(last - System.currentTimeMillis()));
+                last = System.currentTimeMillis();
+                if (count.getAndDecrement() == 0) {
+                    t1.onNext("hello");
+                    t1.onCompleted();
+                }
+                else 
+                    t1.onError(new RuntimeException());
+            }
+            
+        });
+        TestSubscriber<String> ts = new TestSubscriber<String>(consumer);
+        producer.retryWhen(new Func1<Observable<? extends Notification<?>>, Observable<?>>() {
+
+            @Override
+            public Observable<?> call(Observable<? extends Notification<?>> attempts) {
+                // Worker w = Schedulers.computation().createWorker();
+                return attempts
+                    .map(new Func1<Notification<?>, Tuple>() {
+                        @Override
+                        public Tuple call(Notification<?> n) {
+                            return new Tuple(new Long(1), n);
+                        }})
+                    .scan(new Func2<Tuple, Tuple, Tuple>(){
+                        @Override
+                        public Tuple call(Tuple t, Tuple n) {
+                            return new Tuple(t.count + n.count, n.n);
+                        }})
+                    .flatMap(new Func1<Tuple, Observable<Long>>() {
+                        @Override
+                        public Observable<Long> call(Tuple t) {
+                            System.out.println("Retry # "+t.count);
+                            return t.count > 20 ? 
+                                Observable.<Long>error(t.n.getThrowable()) :
+                                Observable.timer(t.count *1L, TimeUnit.MILLISECONDS);
+                    }});
+            }
+        }).subscribe(ts);
+        ts.awaitTerminalEvent();
+
+        InOrder inOrder = inOrder(consumer);
+        inOrder.verify(consumer, never()).onError(any(Throwable.class));
+        inOrder.verify(consumer, times(1)).onNext("hello");
+        inOrder.verify(consumer, times(1)).onCompleted();
+        inOrder.verifyNoMoreInteractions();
+
+    }
+
+    public static class Tuple {
+        Long count;
+        Notification<?> n;
+
+        Tuple(Long c, Notification<?> n) {
+            count = c;
+            this.n = n;
+        }
+    }
+
+    @Test
+    public void testRetryIndefinitely() {
+        @SuppressWarnings("unchecked")
+        Observer<String> observer = mock(Observer.class);
+        int NUM_RETRIES = 20;
+        Observable<String> origin = Observable.create(new FuncWithErrors(NUM_RETRIES));
+        origin.retry().unsafeSubscribe(new TestSubscriber<String>(observer));
+
+        InOrder inOrder = inOrder(observer);
+        // should show 3 attempts
+        inOrder.verify(observer, times(NUM_RETRIES + 1)).onNext("beginningEveryTime");
+        // should have no errors
+        inOrder.verify(observer, never()).onError(any(Throwable.class));
+        // should have a single success
+        inOrder.verify(observer, times(1)).onNext("onSuccessOnly");
+        // should have a single successful onCompleted
+        inOrder.verify(observer, times(1)).onCompleted();
+        inOrder.verifyNoMoreInteractions();
+    }
+
+    @Test
+    public void testSchedulingNotificationHandler() {
+        @SuppressWarnings("unchecked")
+        Observer<String> observer = mock(Observer.class);
+        int NUM_RETRIES = 2;
+        Observable<String> origin = Observable.create(new FuncWithErrors(NUM_RETRIES));
+        TestSubscriber<String> subscriber = new TestSubscriber<String>(observer);
+        origin.retryWhen(new Func1<Observable<? extends Notification<?>>, Observable<? extends Notification<?>>>() {
+            @Override
+            public Observable<? extends Notification<?>> call(Observable<? extends Notification<?>> t1) {
+                return t1.observeOn(Schedulers.computation()).map(new Func1<Notification<?>, Notification<?>>() {
+                    @Override
+                    public Notification<?> call(Notification<?> t1) {
+                        return Notification.createOnNext(null);
+                    }
+                }).startWith(Notification.createOnNext(null));
+            }
+        }).subscribe(subscriber);
+
+        subscriber.awaitTerminalEvent();
+        InOrder inOrder = inOrder(observer);
+        // should show 3 attempts
+        inOrder.verify(observer, times(1 + NUM_RETRIES)).onNext("beginningEveryTime");
+        // should have no errors
+        inOrder.verify(observer, never()).onError(any(Throwable.class));
+        // should have a single success
+        inOrder.verify(observer, times(1)).onNext("onSuccessOnly");
+        // should have a single successful onCompleted
+        inOrder.verify(observer, times(1)).onCompleted();
+        inOrder.verifyNoMoreInteractions();
+    }
+
+    @Test
+    public void testOnNextFromNotificationHandler() {
+        @SuppressWarnings("unchecked")
+        Observer<String> observer = mock(Observer.class);
+        int NUM_RETRIES = 2;
+        Observable<String> origin = Observable.create(new FuncWithErrors(NUM_RETRIES));
+        origin.retryWhen(new Func1<Observable<? extends Notification<?>>, Observable<? extends Notification<?>>>() {
+            @Override
+            public Observable<? extends Notification<?>> call(Observable<? extends Notification<?>> t1) {
+                return t1.map(new Func1<Notification<?>, Notification<?>>() {
+
+                    @Override
+                    public Notification<?> call(Notification<?> t1) {
+                        return Notification.createOnNext(null);
+                    }
+                }).startWith(Notification.createOnNext(null));
+            }
+        }).subscribe(observer);
+
+        InOrder inOrder = inOrder(observer);
+        // should show 3 attempts
+        inOrder.verify(observer, times(NUM_RETRIES + 1)).onNext("beginningEveryTime");
+        // should have no errors
+        inOrder.verify(observer, never()).onError(any(Throwable.class));
+        // should have a single success
+        inOrder.verify(observer, times(1)).onNext("onSuccessOnly");
+        // should have a single successful onCompleted
+        inOrder.verify(observer, times(1)).onCompleted();
+        inOrder.verifyNoMoreInteractions();
+    }
+
+    @Test
+    public void testOnCompletedFromNotificationHandler() {
+        @SuppressWarnings("unchecked")
+        Observer<String> observer = mock(Observer.class);
+        Observable<String> origin = Observable.create(new FuncWithErrors(1));
+        TestSubscriber<String> subscriber = new TestSubscriber<String>(observer);
+        origin.retryWhen(new Func1<Observable<? extends Notification<?>>, Observable<? extends Notification<?>>>() {
+            @Override
+            public Observable<? extends Notification<?>> call(Observable<? extends Notification<?>> t1) {
+                return Observable.empty();
+            }
+        }).subscribe(subscriber);
+
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer, never()).onNext("beginningEveryTime");
+        inOrder.verify(observer, never()).onNext("onSuccessOnly");
+        inOrder.verify(observer, times(1)).onCompleted();
+        inOrder.verify(observer, never()).onError(any(Exception.class));
+        inOrder.verifyNoMoreInteractions();
+    }
+
+    @Test
+    public void testOnErrorFromNotificationHandler() {
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
         Observable<String> origin = Observable.create(new FuncWithErrors(2));
+        origin.retryWhen(new Func1<Observable<? extends Notification<?>>, Observable<? extends Notification<?>>>() {
+            @Override
+            public Observable<? extends Notification<?>> call(Observable<? extends Notification<?>> t1) {
+                return Observable.error(new RuntimeException());
+            }
+        }).subscribe(observer);
+
+        InOrder inOrder = inOrder(observer);
+        inOrder.verify(observer, never()).onNext("beginningEveryTime");
+        inOrder.verify(observer, never()).onNext("onSuccessOnly");
+        inOrder.verify(observer, never()).onCompleted();
+        inOrder.verify(observer, times(1)).onError(any(IllegalStateException.class));
+        inOrder.verifyNoMoreInteractions();
+    }
+
+    @Test
+    public void testOriginFails() {
+        @SuppressWarnings("unchecked")
+        Observer<String> observer = mock(Observer.class);
+        Observable<String> origin = Observable.create(new FuncWithErrors(1));
         origin.subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
@@ -68,7 +264,7 @@ public class OperatorRetryTest {
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
         Observable<String> origin = Observable.create(new FuncWithErrors(NUM_FAILURES));
-        origin.nest().lift(new OperatorRetry<String>(NUM_RETRIES)).subscribe(observer);
+        origin.retry(NUM_RETRIES).subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
         // should show 2 attempts (first time fail, second time (1st retry) fail)
@@ -83,12 +279,11 @@ public class OperatorRetryTest {
 
     @Test
     public void testRetrySuccess() {
-        int NUM_RETRIES = 3;
-        int NUM_FAILURES = 2;
+        int NUM_FAILURES = 1;
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
         Observable<String> origin = Observable.create(new FuncWithErrors(NUM_FAILURES));
-        origin.nest().lift(new OperatorRetry<String>(NUM_RETRIES)).subscribe(observer);
+        origin.retry(3).subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
         // should show 3 attempts
@@ -108,7 +303,7 @@ public class OperatorRetryTest {
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
         Observable<String> origin = Observable.create(new FuncWithErrors(NUM_FAILURES));
-        origin.nest().lift(new OperatorRetry<String>()).subscribe(observer);
+        origin.retry().subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
         // should show 3 attempts
@@ -121,7 +316,7 @@ public class OperatorRetryTest {
         inOrder.verify(observer, times(1)).onCompleted();
         inOrder.verifyNoMoreInteractions();
     }
-    
+
     /**
      * Checks in a simple and synchronous way that retry resubscribes
      * after error. This test fails against 0.16.1-0.17.4, hangs on 0.17.5 and
@@ -138,7 +333,7 @@ public class OperatorRetryTest {
         // always throw an exception with this action
         Action1<Integer> throwException = mock(Action1.class);
         doThrow(new RuntimeException()).when(throwException).call(Mockito.anyInt());
-        
+
         // create a retrying observable based on a PublishSubject
         PublishSubject<Integer> subject = PublishSubject.create();
         subject
@@ -165,7 +360,6 @@ public class OperatorRetryTest {
         inOrder.verifyNoMoreInteractions();
     }
 
-
     public static class FuncWithErrors implements Observable.OnSubscribe<String> {
 
         private final int numFailures;
@@ -178,7 +372,7 @@ public class OperatorRetryTest {
         @Override
         public void call(Subscriber<? super String> o) {
             o.onNext("beginningEveryTime");
-            if (count.incrementAndGet() <= numFailures) {
+            if (count.getAndIncrement() < numFailures) {
                 o.onError(new RuntimeException("forced failure: " + count.get()));
             } else {
                 o.onNext("onSuccessOnly");
@@ -245,7 +439,8 @@ public class OperatorRetryTest {
         OnSubscribe<String> onSubscribe = new OnSubscribe<String>() {
             @Override
             public void call(Subscriber<? super String> s) {
-                // if isUnsubscribed is true that means we have a bug such as https://github.com/Netflix/RxJava/issues/1024
+                // if isUnsubscribed is true that means we have a bug such as
+                // https://github.com/Netflix/RxJava/issues/1024
                 if (!s.isUnsubscribed()) {
                     subsCount.incrementAndGet();
                     s.onError(new RuntimeException("failed"));
@@ -253,12 +448,50 @@ public class OperatorRetryTest {
                     // this simulates various error/completion scenarios that could occur
                     // or just a source that proactively triggers cleanup
                     s.unsubscribe();
+                } else {
+                    s.onError(new RuntimeException());
                 }
             }
         };
 
         Observable.create(onSubscribe).retry(3).subscribe(ts);
         assertEquals(4, subsCount.get()); // 1 + 3 retries
+    }
+
+    @Test
+    public void testSourceObservableRetry1() throws InterruptedException {
+        final AtomicInteger subsCount = new AtomicInteger(0);
+
+        final TestSubscriber<String> ts = new TestSubscriber<String>();
+
+        OnSubscribe<String> onSubscribe = new OnSubscribe<String>() {
+            @Override
+            public void call(Subscriber<? super String> s) {
+                subsCount.incrementAndGet();
+                s.onError(new RuntimeException("failed"));
+            }
+        };
+
+        Observable.create(onSubscribe).retry(1).subscribe(ts);
+        assertEquals(2, subsCount.get());
+    }
+
+    @Test
+    public void testSourceObservableRetry0() throws InterruptedException {
+        final AtomicInteger subsCount = new AtomicInteger(0);
+
+        final TestSubscriber<String> ts = new TestSubscriber<String>();
+
+        OnSubscribe<String> onSubscribe = new OnSubscribe<String>() {
+            @Override
+            public void call(Subscriber<? super String> s) {
+                subsCount.incrementAndGet();
+                s.onError(new RuntimeException("failed"));
+            }
+        };
+
+        Observable.create(onSubscribe).retry(0).subscribe(ts);
+        assertEquals(1, subsCount.get());
     }
 
     static final class SlowObservable implements Observable.OnSubscribe<Long> {
@@ -289,13 +522,11 @@ public class OperatorRetryTest {
                             Thread.sleep(emitDelay);
                             if (nextBeforeFailure.getAndDecrement() > 0) {
                                 subscriber.onNext(nr++);
-                            }
-                            else {
+                            } else {
                                 subscriber.onError(new RuntimeException("expected-failed"));
                             }
                         }
-                    }
-                    catch (InterruptedException t) {
+                    } catch (InterruptedException t) {
                     }
                 }
             };
@@ -359,9 +590,7 @@ public class OperatorRetryTest {
 
         // Observable that always fails after 100ms
         SlowObservable so = new SlowObservable(100, 0);
-        Observable<Long> o = Observable
-                .create(so)
-                .retry(5);
+        Observable<Long> o = Observable.create(so).retry(5);
 
         AsyncObserver<Long> async = new AsyncObserver<Long>(observer);
 
@@ -386,10 +615,7 @@ public class OperatorRetryTest {
 
         // Observable that sends every 100ms (timeout fails instead)
         SlowObservable so = new SlowObservable(100, 10);
-        Observable<Long> o = Observable
-                .create(so)
-                .timeout(80, TimeUnit.MILLISECONDS)
-                .retry(5);
+        Observable<Long> o = Observable.create(so).timeout(80, TimeUnit.MILLISECONDS).retry(5);
 
         AsyncObserver<Long> async = new AsyncObserver<Long>(observer);
 
@@ -404,5 +630,5 @@ public class OperatorRetryTest {
 
         assertEquals("Start 6 threads, retry 5 then fail on 6", 6, so.efforts.get());
     }
-    
+
 }
