@@ -351,7 +351,7 @@ public class OperatorRetryTest {
         }
     }
 
-    @Test(timeout = 1000)
+    @Test(timeout = 10000)
     public void testUnsubscribeAfterError() {
 
         @SuppressWarnings("unchecked")
@@ -378,7 +378,7 @@ public class OperatorRetryTest {
         assertEquals("Only 1 active subscription", 1, so.maxActive.get());
     }
 
-    @Test(timeout = 1000)
+    @Test(timeout = 10000)
     public void testTimeoutWithRetry() {
 
         @SuppressWarnings("unchecked")
