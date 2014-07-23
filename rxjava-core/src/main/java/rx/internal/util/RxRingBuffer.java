@@ -21,8 +21,6 @@ import rx.Observer;
 import rx.Subscription;
 import rx.exceptions.MissingBackpressureException;
 import rx.internal.operators.NotificationLite;
-import rx.internal.util.unsafe.SpmcArrayQueue;
-import rx.internal.util.unsafe.SpscArrayQueue;
 import rx.internal.util.unsafe.UnsafeAccess;
 
 /**
@@ -33,7 +31,13 @@ public class RxRingBuffer implements Subscription {
 
     public static RxRingBuffer getSpscInstance() {
         if (UnsafeAccess.isUnsafeAvailable()) {
-            return new RxRingBuffer(SPSC_POOL, SIZE);
+            // using SynchronizedQueue until issues are solved with SpscArrayQueue offer rejection
+            //      RxRingBufferSpmcTest.testConcurrency occasionally fails with a 
+            //      BackpressureException when using SpscArrayQueue 
+            //            return new RxRingBuffer(SPSC_POOL, SIZE); // this is the one we were trying to use
+            //            return new RxRingBuffer(new SpscArrayQueue<Object>(SIZE), SIZE);
+            // the performance of this is sufficient (actually faster in some cases)
+            return new RxRingBuffer(new SynchronizedQueue<Object>(SIZE), SIZE);
         } else {
             return new RxRingBuffer();
         }
@@ -41,7 +45,14 @@ public class RxRingBuffer implements Subscription {
 
     public static RxRingBuffer getSpmcInstance() {
         if (UnsafeAccess.isUnsafeAvailable()) {
-            return new RxRingBuffer(SPMC_POOL, SIZE);
+            // using SynchronizedQueue until issues are solved with SpmcArrayQueue offer rejection
+            //      RxRingBufferSpmcTest.testConcurrency occasionally fails with a 
+            //      BackpressureException when using SpmcArrayQueue/MpmcArrayQueue
+            //            return new RxRingBuffer(SPMC_POOL, SIZE); // this is the one we were trying to use
+            //            return new RxRingBuffer(new SpmcArrayQueue<Object>(SIZE), SIZE);
+            //            return new RxRingBuffer(new MpmcArrayQueue<Object>(SIZE), SIZE);
+            // the performance of this is sufficient (actually faster in some cases)
+            return new RxRingBuffer(new SynchronizedQueue<Object>(SIZE), SIZE);
         } else {
             return new RxRingBuffer();
         }
@@ -75,7 +86,7 @@ public class RxRingBuffer implements Subscription {
      * r.i.RxRingBufferPerf.ringBufferAddRemove1       thrpt         5 23951121.098  1982380.330    ops/s
      * r.i.RxRingBufferPerf.ringBufferAddRemove1000    thrpt         5     1142.351       33.592    ops/s
      * 
-     * With SynchronizedQueue (synchronized LinkedList)
+     * With SynchronizedQueue (synchronized LinkedList ... no object pooling)
      * 
      * r.i.RxRingBufferPerf.createUseAndDestroy1       thrpt         5 33231667.136   685757.510    ops/s
      * r.i.RxRingBufferPerf.createUseAndDestroy1000    thrpt         5    74623.614     5493.766    ops/s
@@ -119,11 +130,11 @@ public class RxRingBuffer implements Subscription {
      * With SpmcArrayQueue
      *  - requires access to Unsafe
      *  
-     * Benchmark                                        Mode   Samples        Score  Score error    Units
-     * r.i.RxRingBufferPerf.createUseAndDestroy1       thrpt         5  1835494.523    63874.461    ops/s
-     * r.i.RxRingBufferPerf.createUseAndDestroy1000    thrpt         5    45545.599     1882.146    ops/s
-     * r.i.RxRingBufferPerf.ringBufferAddRemove1       thrpt         5 38126258.816   474874.236    ops/s
-     * r.i.RxRingBufferPerf.ringBufferAddRemove1000    thrpt         5    42507.743      240.530    ops/s
+     * Benchmark                                            Mode   Samples        Score  Score error    Units
+     * r.i.RxRingBufferPerf.spmcCreateUseAndDestroy1       thrpt         5 27630345.474   769219.142    ops/s
+     * r.i.RxRingBufferPerf.spmcCreateUseAndDestroy1000    thrpt         5    80052.046     4059.541    ops/s
+     * r.i.RxRingBufferPerf.spmcRingBufferAddRemove1       thrpt         5 44449524.222   563068.793    ops/s
+     * r.i.RxRingBufferPerf.spmcRingBufferAddRemove1000    thrpt         5    65231.253     1805.732    ops/s
      * 
      * With SpmcArrayQueue and ObjectPool (object pool improves createUseAndDestroy1 by 10x)
      * 
@@ -135,17 +146,7 @@ public class RxRingBuffer implements Subscription {
      * 
      * --------------
      * 
-     * When UnsafeAccess.isUnsafeAvailable() == true we can use the Spmc/SpscArrayQueue implementations and get these numbers:
-     * 
-     * Benchmark                                            Mode   Samples        Score  Score error    Units
-     * r.i.RxRingBufferPerf.spmcCreateUseAndDestroy1       thrpt         5 17813072.116   672207.872    ops/s
-     * r.i.RxRingBufferPerf.spmcCreateUseAndDestroy1000    thrpt         5    46794.691     1146.195    ops/s
-     * r.i.RxRingBufferPerf.spmcRingBufferAddRemove1       thrpt         5 32117630.315   749011.552    ops/s
-     * r.i.RxRingBufferPerf.spmcRingBufferAddRemove1000    thrpt         5    47257.476     1081.623    ops/s
-     * r.i.RxRingBufferPerf.spscCreateUseAndDestroy1       thrpt         5 24729994.601   353101.940    ops/s
-     * r.i.RxRingBufferPerf.spscCreateUseAndDestroy1000    thrpt         5    73101.460     2406.377    ops/s
-     * r.i.RxRingBufferPerf.spscRingBufferAddRemove1       thrpt         5 83548821.062   752738.756    ops/s
-     * r.i.RxRingBufferPerf.spscRingBufferAddRemove1000    thrpt         5    70549.816     1377.227    ops/s
+     * When UnsafeAccess.isUnsafeAvailable() == true we can use the Spmc/SpscArrayQueue implementations.
      * 
      * } </pre>
      */
@@ -169,30 +170,13 @@ public class RxRingBuffer implements Subscription {
 
     public static final int SIZE = 1024;
 
-    private static ObjectPool<Queue<Object>> SPSC_POOL = new ObjectPool<Queue<Object>>() {
-
-        @Override
-        protected SpscArrayQueue<Object> createObject() {
-            return new SpscArrayQueue<Object>(SIZE);
-        }
-
-    };
-
-    private static ObjectPool<Queue<Object>> SPMC_POOL = new ObjectPool<Queue<Object>>() {
-
-        @Override
-        protected SpmcArrayQueue<Object> createObject() {
-            return new SpmcArrayQueue<Object>(SIZE);
-        }
-
-    };
-
     private RxRingBuffer(Queue<Object> queue, int size) {
         this.queue = queue;
         this.pool = null;
         this.size = size;
     }
 
+    @SuppressWarnings("unused")
     private RxRingBuffer(ObjectPool<Queue<Object>> pool, int size) {
         this.pool = pool;
         this.queue = pool.borrowObject();
@@ -213,7 +197,7 @@ public class RxRingBuffer implements Subscription {
         release();
     }
 
-    /* for unit tests */RxRingBuffer() {
+    /* package accessible for unit tests */RxRingBuffer() {
         this(new SynchronizedQueue<Object>(SIZE), SIZE);
     }
 
@@ -260,7 +244,7 @@ public class RxRingBuffer implements Subscription {
         }
         return queue.size();
     }
-    
+
     public boolean isEmpty() {
         if (queue == null) {
             return true;
@@ -294,7 +278,7 @@ public class RxRingBuffer implements Subscription {
         }
         return o;
     }
-    
+
     public Object peek() {
         if (queue == null) {
             // we are unsubscribed and have released the undelrying queue
