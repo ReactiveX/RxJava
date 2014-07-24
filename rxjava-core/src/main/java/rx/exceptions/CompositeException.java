@@ -45,7 +45,7 @@ public final class CompositeException extends RuntimeException {
             _exceptions.add(e);
         }
         this.exceptions = Collections.unmodifiableList(_exceptions);
-        this.message = count + " exceptions occurred. See them in causal chain below.";
+        this.message = messagePrefix + " " + count + " exceptions occurred. See them in causal chain below.";
         this.cause = _cause;
     }
 
