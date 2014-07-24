@@ -19,8 +19,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import rx.Observable;
 import rx.Observable.Operator;
+import rx.Producer;
 import rx.Subscriber;
 
 /**
@@ -51,6 +54,12 @@ public final class OperatorBufferWithSize<T> implements Operator<List<T>, T> {
      *            into a buffer at all!
      */
     public OperatorBufferWithSize(int count, int skip) {
+        if (count <= 0) {
+            throw new IllegalArgumentException("count must be greater than 0");
+        }
+        if (skip <= 0) {
+            throw new IllegalArgumentException("skip must be greater than 0");
+        }
         this.count = count;
         this.skip = skip;
     }
@@ -60,6 +69,21 @@ public final class OperatorBufferWithSize<T> implements Operator<List<T>, T> {
         if (count == skip) {
             return new Subscriber<T>(child) {
                 List<T> buffer;
+
+                @Override
+                public void setProducer(final Producer producer) {
+                    child.setProducer(new Producer() {
+                        @Override
+                        public void request(long n) {
+                            if (n == Long.MAX_VALUE) {
+                                producer.request(Long.MAX_VALUE);
+                            } else {
+                                producer.request(n * count);
+                            }
+                        }
+                    });
+                }
+
                 @Override
                 public void onNext(T t) {
                     if (buffer == null) {
@@ -98,6 +122,39 @@ public final class OperatorBufferWithSize<T> implements Operator<List<T>, T> {
         return new Subscriber<T>(child) {
             final List<List<T>> chunks = new LinkedList<List<T>>();
             int index;
+
+            @Override
+            public void setProducer(final Producer producer) {
+                child.setProducer(new Producer() {
+
+                    private final AtomicBoolean firstRequest = new AtomicBoolean(false);
+
+                    @Override
+                    public void request(long n) {
+                        if (n == Long.MAX_VALUE) {
+                            producer.request(Long.MAX_VALUE);
+                        } else {
+                            if (firstRequest.compareAndSet(false, true)) {
+                                // count = 5, skip = 2, n = 3
+                                // * * * * *
+                                //     * * * * *
+                                //         * * * * *
+                                // request = 5 + 2 * ( 3 - 1)
+                                producer.request(count + skip * (n - 1));
+                            } else {
+                                // count = 5, skip = 2, n = 3
+                                // (* * *) * *
+                                // (    *) * * * *
+                                //           * * * * *
+                                // request = skip * n
+                                // "()" means the items already emitted before this request
+                                producer.request(skip * n);
+                            }
+                        }
+                    }
+                });
+            }
+
             @Override
             public void onNext(T t) {
                 if (index++ % skip == 0) {

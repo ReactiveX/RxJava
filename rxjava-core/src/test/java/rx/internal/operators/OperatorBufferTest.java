@@ -15,6 +15,7 @@
  */
 package rx.internal.operators;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.inOrder;
@@ -28,6 +29,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -36,6 +38,7 @@ import org.mockito.Mockito;
 
 import rx.Observable;
 import rx.Observer;
+import rx.Producer;
 import rx.Scheduler;
 import rx.Subscriber;
 import rx.Subscription;
@@ -44,6 +47,7 @@ import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Func0;
 import rx.functions.Func1;
+import rx.observers.TestSubscriber;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
 
@@ -790,5 +794,101 @@ public class OperatorBufferTest {
         verify(o, never()).onNext(any());
         verify(o, never()).onCompleted();
         verify(o).onError(any(TestException.class));
+    }
+
+    @Test
+    public void testProducerRequestThroughBufferWithSize1() {
+        TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>();
+        ts.requestMore(3);
+        final AtomicLong requested = new AtomicLong();
+        Observable.create(new Observable.OnSubscribe<Integer>() {
+
+            @Override
+            public void call(Subscriber<? super Integer> s) {
+                s.setProducer(new Producer() {
+
+                    @Override
+                    public void request(long n) {
+                        requested.set(n);
+                    }
+
+                });
+            }
+
+        }).buffer(5, 5).subscribe(ts);
+        assertEquals(15, requested.get());
+
+        ts.requestMore(4);
+        assertEquals(20, requested.get());
+    }
+
+    @Test
+    public void testProducerRequestThroughBufferWithSize2() {
+        TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>();
+        final AtomicLong requested = new AtomicLong();
+        Observable.create(new Observable.OnSubscribe<Integer>() {
+
+            @Override
+            public void call(Subscriber<? super Integer> s) {
+                s.setProducer(new Producer() {
+
+                    @Override
+                    public void request(long n) {
+                        requested.set(n);
+                    }
+
+                });
+            }
+
+        }).buffer(5, 5).subscribe(ts);
+        assertEquals(Long.MAX_VALUE, requested.get());
+    }
+
+    @Test
+    public void testProducerRequestThroughBufferWithSize3() {
+        TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>();
+        ts.requestMore(3);
+        final AtomicLong requested = new AtomicLong();
+        Observable.create(new Observable.OnSubscribe<Integer>() {
+
+            @Override
+            public void call(Subscriber<? super Integer> s) {
+                s.setProducer(new Producer() {
+
+                    @Override
+                    public void request(long n) {
+                        requested.set(n);
+                    }
+
+                });
+            }
+
+        }).buffer(5, 2).subscribe(ts);
+        assertEquals(9, requested.get());
+        ts.requestMore(3);
+        assertEquals(6, requested.get());
+    }
+
+
+    @Test
+    public void testProducerRequestThroughBufferWithSize4() {
+        TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>();
+        final AtomicLong requested = new AtomicLong();
+        Observable.create(new Observable.OnSubscribe<Integer>() {
+
+            @Override
+            public void call(Subscriber<? super Integer> s) {
+                s.setProducer(new Producer() {
+
+                    @Override
+                    public void request(long n) {
+                        requested.set(n);
+                    }
+
+                });
+            }
+
+        }).buffer(5, 2).subscribe(ts);
+        assertEquals(Long.MAX_VALUE, requested.get());
     }
 }
