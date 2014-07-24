@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,34 +15,25 @@
  */
 package rx.plugins;
 
-import rx.Scheduler;
-
 /**
- * Default implementation of {@link RxJavaDefaultSchedulers} that does nothing.
- * 
+ * Default implementation of {@link RxJavaScheduledRunnableWrapper}.  Just passes through the {@link Runnable}.
+ *
  * @ExcludeFromJavadoc
  */
-public class RxJavaDefaultSchedulersDefault extends RxJavaDefaultSchedulers {
+/*package-private*/ class RxJavaDefaultScheduledRunnableWrapper extends RxJavaScheduledRunnableWrapper {
 
-    private static RxJavaDefaultSchedulersDefault INSTANCE = new RxJavaDefaultSchedulersDefault();
+    private static RxJavaDefaultScheduledRunnableWrapper INSTANCE = new RxJavaDefaultScheduledRunnableWrapper();
 
-    public static RxJavaDefaultSchedulers getInstance() {
+    private RxJavaDefaultScheduledRunnableWrapper() {
+
+    }
+
+    public static RxJavaDefaultScheduledRunnableWrapper getInstance() {
         return INSTANCE;
     }
 
     @Override
-    public Scheduler getComputationScheduler() {
-        return null;
+    public Runnable getRunnable(final Runnable runnable) {
+        return runnable;
     }
-
-    @Override
-    public Scheduler getIOScheduler() {
-        return null;
-    }
-
-    @Override
-    public Scheduler getNewThreadScheduler() {
-        return null;
-    }
-
 }
