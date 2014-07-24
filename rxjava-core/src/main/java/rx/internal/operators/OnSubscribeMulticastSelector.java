@@ -24,6 +24,7 @@ import rx.functions.Func0;
 import rx.functions.Func1;
 import rx.observables.ConnectableObservable;
 import rx.observers.SafeSubscriber;
+import rx.subjects.ReplaySubject;
 import rx.subjects.Subject;
 
 /**
@@ -54,9 +55,7 @@ public final class OnSubscribeMulticastSelector<TInput, TIntermediate, TResult> 
         Observable<TResult> observable;
         ConnectableObservable<TIntermediate> connectable;
         try {
-            Subject<? super TInput, ? extends TIntermediate> subject = subjectFactory.call();
-            
-            connectable = new OperatorMulticast<TInput, TIntermediate>(source, subject);
+            connectable = new OperatorMulticast<TInput, TIntermediate>(source, subjectFactory);
             
             observable = resultSelector.call(connectable);
         } catch (Throwable t) {
