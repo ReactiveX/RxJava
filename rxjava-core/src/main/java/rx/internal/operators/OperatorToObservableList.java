@@ -19,6 +19,7 @@ import rx.Observable.Operator;
 import rx.Subscriber;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -42,6 +43,7 @@ public final class OperatorToObservableList<T> implements Operator<List<T>, T> {
     public Subscriber<? super T> call(final Subscriber<? super List<T>> o) {
         return new Subscriber<T>(o) {
 
+            private boolean completed = false;
             final List<T> list = new LinkedList<T>();
 
             @Override
@@ -52,7 +54,8 @@ public final class OperatorToObservableList<T> implements Operator<List<T>, T> {
             @Override
             public void onCompleted() {
                 try {
-                    o.onNext(new ArrayList<T>(list));
+                    completed = true;
+                    o.onNext(Collections.unmodifiableList(list));
                     o.onCompleted();
                 } catch (Throwable e) {
                     onError(e);
@@ -66,7 +69,9 @@ public final class OperatorToObservableList<T> implements Operator<List<T>, T> {
 
             @Override
             public void onNext(T value) {
-                list.add(value);
+                if (!completed) {
+                    list.add(value);
+                }
             }
 
         };
