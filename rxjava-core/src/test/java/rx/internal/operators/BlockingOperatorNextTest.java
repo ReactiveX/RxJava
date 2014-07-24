@@ -37,6 +37,7 @@ import rx.exceptions.TestException;
 import rx.internal.operators.BlockingOperatorNext;
 import rx.observables.BlockingObservable;
 import rx.schedulers.Schedulers;
+import rx.subjects.BehaviorSubject;
 import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
 
@@ -295,26 +296,27 @@ public class BlockingOperatorNextTest {
 
     @Test /* (timeout = 8000) */
     public void testSingleSourceManyIterators() throws InterruptedException {
-        PublishSubject<Long> ps = PublishSubject.create();
-        BlockingObservable<Long> source = ps.take(10).toBlocking();
+        Observable<Long> o = Observable.interval(10, TimeUnit.MILLISECONDS);
+        PublishSubject<Void> terminal = PublishSubject.create();
+        BlockingObservable<Long> source = o.takeUntil(terminal).toBlocking();
 
         Iterable<Long> iter = source.next();
 
         for (int j = 0; j < 3; j++) {
             BlockingOperatorNext.NextIterator<Long> it = (BlockingOperatorNext.NextIterator<Long>)iter.iterator();
 
-            for (long i = 0; i < 9; i++) {
-                // hasNext has to set the waiting to true, otherwise, all onNext will be skipped
-                it.setWaiting(1);
-                ps.onNext(i);
+            for (long i = 0; i < 10; i++) {
                 Assert.assertEquals(true, it.hasNext());
-                Assert.assertEquals(j + "th iteration", Long.valueOf(i), it.next());
+                Assert.assertEquals(j + "th iteration next", Long.valueOf(i), it.next());
             }
-            it.setWaiting(1);
-            ps.onNext(9L);
-
-            Assert.assertEquals(j + "th iteration", false, it.hasNext());
+            terminal.onNext(null);
         }
-
+    }
+    
+    @Test
+    public void testSynchronousNext() {
+        assertEquals(1, BehaviorSubject.create(1).take(1).toBlocking().single().intValue());
+        assertEquals(2, BehaviorSubject.create(2).toBlocking().toIterable().iterator().next().intValue());
+        assertEquals(3, BehaviorSubject.create(3).toBlocking().next().iterator().next().intValue());
     }
 }

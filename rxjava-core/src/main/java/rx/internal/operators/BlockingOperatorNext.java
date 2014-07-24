@@ -19,6 +19,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 import rx.Notification;
@@ -46,11 +47,7 @@ public final class BlockingOperatorNext {
             @Override
             public Iterator<T> iterator() {
                 NextObserver<T> nextObserver = new NextObserver<T>();
-                final NextIterator<T> nextIterator = new NextIterator<T>(nextObserver);
-
-                items.materialize().subscribe(nextObserver);
-
-                return nextIterator;
+                return new NextIterator<T>(items, nextObserver);
             }
         };
 
@@ -59,28 +56,19 @@ public final class BlockingOperatorNext {
     // test needs to access the observer.waiting flag non-blockingly.
     /* private */static final class NextIterator<T> implements Iterator<T> {
 
-        private final NextObserver<? extends T> observer;
+        private final NextObserver<T> observer;
+        private final Observable<? extends T> items;
         private T next;
         private boolean hasNext = true;
         private boolean isNextConsumed = true;
         private Throwable error = null;
+        private boolean started = false;
 
-        private NextIterator(NextObserver<? extends T> observer) {
+        private NextIterator(Observable<? extends T> items, NextObserver<T> observer) {
+            this.items = items;
             this.observer = observer;
         }
 
-        
-        // in tests, set the waiting flag without blocking for the next value to 
-        // allow lockstepping instead of multi-threading
-        /**
-         * In tests, set the waiting flag without blocking for the next value to 
-         * allow lockstepping instead of multi-threading
-         * @param value use 1 to enter into the waiting state
-         */
-        void setWaiting(int value) {
-            observer.setWaiting(value);
-        }
-        
         @Override
         public boolean hasNext() {
             if (error != null) {
@@ -102,6 +90,13 @@ public final class BlockingOperatorNext {
 
         private boolean moveToNext() {
             try {
+                if (!started) {
+                    started = true;
+                    // if not started, start now
+                    observer.setWaiting(1);
+                    items.materialize().subscribe(observer);
+                }
+                
                 Notification<? extends T> nextNotification = observer.takeNext();
                 if (nextNotification.isOnNext()) {
                     isNextConsumed = false;
