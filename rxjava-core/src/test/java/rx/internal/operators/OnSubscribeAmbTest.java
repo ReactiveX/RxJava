@@ -15,6 +15,7 @@
  */
 package rx.internal.operators;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -22,6 +23,7 @@ import static rx.internal.operators.OnSubscribeAmb.amb;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -30,9 +32,11 @@ import org.mockito.InOrder;
 import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Observer;
+import rx.Producer;
 import rx.Scheduler;
 import rx.Subscriber;
 import rx.functions.Action0;
+import rx.observers.TestSubscriber;
 import rx.schedulers.TestScheduler;
 import rx.subscriptions.CompositeSubscription;
 
@@ -157,4 +161,44 @@ public class OnSubscribeAmbTest {
         inOrder.verifyNoMoreInteractions();
     }
 
+    @Test
+    public void testProducerRequestThroughAmb() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        ts.requestMore(3);
+        final AtomicLong requested1 = new AtomicLong();
+        final AtomicLong requested2 = new AtomicLong();
+        Observable<Integer> o1 = Observable.create(new OnSubscribe<Integer>() {
+
+            @Override
+            public void call(Subscriber<? super Integer> s) {
+                s.setProducer(new Producer() {
+
+                    @Override
+                    public void request(long n) {
+                        requested1.set(n);
+                    }
+
+                });
+            }
+
+        });
+        Observable<Integer> o2 = Observable.create(new OnSubscribe<Integer>() {
+
+            @Override
+            public void call(Subscriber<? super Integer> s) {
+                s.setProducer(new Producer() {
+
+                    @Override
+                    public void request(long n) {
+                        requested2.set(n);
+                    }
+
+                });
+            }
+
+        });
+        Observable.amb(o1, o2).subscribe(ts);
+        assertEquals(3, requested1.get());
+        assertEquals(3, requested2.get());
+    }
 }

@@ -21,6 +21,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import rx.Observable;
 import rx.Observable.OnSubscribe;
+import rx.Producer;
 import rx.Subscriber;
 
 /**
@@ -274,6 +275,10 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
             this.index = index;
         }
 
+        public void requestMore(long n) {
+            request(n);
+        }
+
         @Override
         public void onNext(T args) {
             if (!isSelected()) {
@@ -318,7 +323,8 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
 
     @Override
     public void call(Subscriber<? super T> subscriber) {
-        AtomicInteger choice = new AtomicInteger(AmbSubscriber.NONE);
+        final AtomicInteger choice = new AtomicInteger(AmbSubscriber.NONE);
+        final List<AmbSubscriber<T>> ambSubscribers = new ArrayList<AmbSubscriber<T>>();
         int index = 0;
         for (Observable<? extends T> source : sources) {
             if (subscriber.isUnsubscribed()) {
@@ -329,10 +335,34 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
                 break;
             }
             AmbSubscriber<T> ambSubscriber = new AmbSubscriber<T>(subscriber, index, choice);
+            ambSubscribers.add(ambSubscriber);
             subscriber.add(ambSubscriber);
             source.unsafeSubscribe(ambSubscriber);
             index++;
         }
+        // setProducer at the end so that `ambSubscribers` can be finalized before `subscriber` calls `request`
+        subscriber.setProducer(new Producer() {
+
+            private volatile AmbSubscriber<T> selectedAmbSubscriber;
+
+            @Override
+            public void request(long n) {
+                if (choice.get() == AmbSubscriber.NONE) {
+                    for (AmbSubscriber<T> ambSubscriber : ambSubscribers) {
+                        // Once one Observable emits a message, `unsubscribe` of other Observables will be called
+                        // and further messages will be dropped. Therefore, requesting all sources won't cause
+                        // the backpressure issue.
+                        ambSubscriber.requestMore(n);
+                    }
+                }
+                else {
+                    if (selectedAmbSubscriber == null) {
+                        selectedAmbSubscriber = ambSubscribers.get(choice.get());
+                    }
+                    selectedAmbSubscriber.requestMore(n);
+                }
+            }
+        });
     }
 
 }
