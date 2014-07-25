@@ -1,5 +1,29 @@
 # RxJava Releases #
 
+### Version 0.20.0-RC3 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.20.0-RC3%22)) ###
+
+Version 0.20.0-RC3 preview release fixes several bugs related to backpressure and adds `retryWhen`, `repeatWhen` for more advanced recursion use cases like retry with exponential backoff.
+
+This version passed the Netflix API production canary process. Please test this against your code to help us find any issues before we release 0.20.0.
+
+* [Pull 1493] (https://github.com/Netflix/RxJava/pull/1493 retryWhen/repeatWhen
+* [Pull 1494] (https://github.com/Netflix/RxJava/pull/1494 zipWith
+* [Pull 1501] (https://github.com/Netflix/RxJava/pull/1501 blocking synchronous next
+* [Pull 1498] (https://github.com/Netflix/RxJava/pull/1498 non-deterministic testUserSubscriberUsingRequestAsync
+* [Pull 1497] (https://github.com/Netflix/RxJava/pull/1497 spsc ring buffer concurrency test
+* [Pull 1496] (https://github.com/Netflix/RxJava/pull/1496 Change RxRingBuffer Queue Usage
+* [Pull 1491] (https://github.com/Netflix/RxJava/pull/1491 Concat Outer Backpressure
+* [Pull 1490] (https://github.com/Netflix/RxJava/pull/1490 non-deterministic timeouts on slow machines
+* [Pull 1489] (https://github.com/Netflix/RxJava/pull/1489 Backpressure Fixes and Docs
+* [Pull 1474] (https://github.com/Netflix/RxJava/pull/1474 Ignore backpressure for OperatorToObservableSortedList
+* [Pull 1473] (https://github.com/Netflix/RxJava/pull/1473 OperatorAny needs to handle backpressure
+* [Pull 1472] (https://github.com/Netflix/RxJava/pull/1472 Add test of backpressure to OperatorAll
+* [Pull 1469] (https://github.com/Netflix/RxJava/pull/1469 ToList operator needs to ignore backpressure
+* [Pull 1393] (https://github.com/Netflix/RxJava/pull/1393 Add cache(int capacity) to Observable
+* [Pull 1431] (https://github.com/Netflix/RxJava/pull/1431 CompositeException fix for Android
+* [Pull 1436] (https://github.com/Netflix/RxJava/pull/1436 Correct warnings
+
+
 ### Version 0.20.0-RC2 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.20.0-RC2%22)) ###
 
 Version 0.20.0-RC2 preview release adds support for backpressure to the `zip` operators, fixes bugs and removes the `Subscribe.onSetProducer` method.
