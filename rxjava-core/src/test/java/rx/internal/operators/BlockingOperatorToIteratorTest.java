@@ -67,4 +67,18 @@ public class BlockingOperatorToIteratorTest {
         assertEquals(true, it.hasNext());
         it.next();
     }
+
+    @Test(expected = TestException.class)
+    public void testExceptionThrownFromOnSubscribe() {
+        Iterable<String> strings = Observable.create(new Observable.OnSubscribe<String>() {
+            @Override
+            public void call(Subscriber<? super String> subscriber) {
+                throw new TestException("intentional");
+            }
+        }).toBlocking().toIterable();
+        for (String string : strings) {
+            // never reaches here
+            System.out.println(string);
+        }
+    }
 }
