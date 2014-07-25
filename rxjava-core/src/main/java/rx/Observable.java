@@ -6053,7 +6053,7 @@ public class Observable<T> {
      * </dl>
      * 
      * @param notificationHandler
-     *            recieves an Observable of notifications with which a user can complete or error, aborting the repeat. 
+     *            receives an Observable of notifications with which a user can complete or error, aborting the repeat.
      * @param scheduler
      *            the {@link Scheduler} to emit the items on
      * @return the source Observable modified with repeat logic
@@ -6080,7 +6080,7 @@ public class Observable<T> {
      * </dl>
      * 
      * @param notificationHandler
-     *            recieves an Observable of notifications with which a user can complete or error, aborting the repeat. 
+     *            receives an Observable of notifications with which a user can complete or error, aborting the repeat.
      * @return the source Observable modified with repeat logic
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#repeatwhen">RxJava Wiki: repeatWhen()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229428.aspx">MSDN: Observable.Repeat</a>
@@ -6757,7 +6757,7 @@ public class Observable<T> {
      * </dl>
      *
      * @param notificationHandler
-     *            recieves an Observable of notifications with which a user can complete or error, aborting the
+     *            receives an Observable of notifications with which a user can complete or error, aborting the
      *            retry
      * @return the source Observable modified with retry logic
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Error-Handling-Operators#retrywhen">RxJava Wiki: retryWhen()</a>
@@ -6781,7 +6781,7 @@ public class Observable<T> {
      * </dl>
      *
      * @param notificationHandler
-     *            recieves an Observable of notifications with which a user can complete or error, aborting the
+     *            receives an Observable of notifications with which a user can complete or error, aborting the
      *            retry
      * @param scheduler
      *            the {@link Scheduler} on which to subscribe to the source Observable
