@@ -29,11 +29,6 @@ import rx.functions.Action3;
 
 /**
  * Concrete wrapper that accepts a {@link RubyProc} and produces any needed Rx {@link Action}.
- *
- * @param <T1>
- * @param <T2>
- * @param <T3>
- * @param <T4>
  */
 public class JRubyActionWrapper<T1, T2, T3, T4> implements Action, Action0, Action1<T1>, Action2<T1, T2>, Action3<T1, T2, T3> {
 
