@@ -55,7 +55,7 @@ public class BlockingOperatorToIterator {
 
             @Override
             public void onError(Throwable e) {
-                // ignore
+                notifications.offer(Notification.<T>createOnError(e));
             }
 
             @Override
