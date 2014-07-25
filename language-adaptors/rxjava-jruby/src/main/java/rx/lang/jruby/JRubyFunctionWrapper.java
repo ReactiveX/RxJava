@@ -36,17 +36,6 @@ import rx.functions.Function;
 
 /**
  * Concrete wrapper that accepts a {@link RubyProc} and produces any needed Rx {@link Function}.
- *
- * @param <T1>
- * @param <T2>
- * @param <T3>
- * @param <T4>
- * @param <T5>
- * @param <T6>
- * @param <T7>
- * @param <T8>
- * @param <T9>
- * @param <R>
  */
 public class JRubyFunctionWrapper<T1, T2, T3, T4, T5, T6, T7, T8, T9, R> implements
         Func0<R>,
