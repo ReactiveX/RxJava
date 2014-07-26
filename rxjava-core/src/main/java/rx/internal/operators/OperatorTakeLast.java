@@ -108,11 +108,21 @@ public final class OperatorTakeLast<T> implements Operator<T, T> {
 
         @Override
         public void request(long n) {
-            long _c = 0;
+            long _c;
             if (n == Long.MAX_VALUE) {
-                requested = Long.MAX_VALUE;
+                _c = REQUESTED_UPDATER.getAndSet(this, Long.MAX_VALUE);
             } else {
-                _c = REQUESTED_UPDATER.getAndAdd(this, n);
+                for (;;) {
+                    _c = requested;
+                    if (_c == Long.MAX_VALUE) {
+                        // If `requested` is Long.MAX_VALUE, `c+n` will be overflow.
+                        // Therefore, always check before setting to `c+n`
+                        return;
+                    }
+                    if (REQUESTED_UPDATER.compareAndSet(this, _c, _c + n)) {
+                        break;
+                    }
+                }
             }
             if (!emittingStarted) {
                 // we haven't started yet, so record what was requested and return
@@ -122,16 +132,20 @@ public final class OperatorTakeLast<T> implements Operator<T, T> {
         }
 
         void emit(long previousRequested) {
-            if (requested < 0) {
+            if (requested == Long.MAX_VALUE) {
                 // fast-path without backpressure
-                try {
-                    for (Object value : deque) {
-                        notification.accept(subscriber, value);
+                if (previousRequested == 0) {
+                    try {
+                        for (Object value : deque) {
+                            notification.accept(subscriber, value);
+                        }
+                    } catch (Throwable e) {
+                        subscriber.onError(e);
+                    } finally {
+                        deque.clear();
                     }
-                } catch (Throwable e) {
-                    subscriber.onError(e);
-                } finally {
-                    deque.clear();
+                } else {
+                    // backpressure path will handle Long.MAX_VALUE and emit the rest events.
                 }
             } else {
                 // backpressure is requested
@@ -160,7 +174,6 @@ public final class OperatorTakeLast<T> implements Operator<T, T> {
                             // we're done emitting the number requested so return
                             return;
                         }
-
                     }
                 }
             }
