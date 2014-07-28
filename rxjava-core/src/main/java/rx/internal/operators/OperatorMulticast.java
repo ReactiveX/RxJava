@@ -15,11 +15,16 @@
  */
 package rx.internal.operators;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
+
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Action0;
 import rx.functions.Action1;
+import rx.functions.Func0;
 import rx.observables.ConnectableObservable;
 import rx.subjects.Subject;
 import rx.subscriptions.Subscriptions;
@@ -27,46 +32,65 @@ import rx.subscriptions.Subscriptions;
 /**
  * Shares a single subscription to a source through a Subject.
  * 
- * @param <T> the source value type
- * @param <R> the result value type
+ * @param <T>
+ *            the source value type
+ * @param <R>
+ *            the result value type
  */
 public final class OperatorMulticast<T, R> extends ConnectableObservable<R> {
     final Observable<? extends T> source;
-    final Subject<? super T, ? extends R> subject;
-    final Object guard = new Object();
-    /** Guarded by guard. */
-    Subscription subscription;
+    final Object guard;
+    final Func0<? extends Subject<? super T, ? extends R>> subjectFactory;
+    private final AtomicReference<Subject<? super T, ? extends R>> connectedSubject;
+    private final List<Subscriber<? super R>> waitingForConnect;
 
-    public OperatorMulticast(Observable<? extends T> source, final Subject<? super T, ? extends R> subject) {
+    /** Guarded by guard. */
+    Subscriber<T> subscription;
+
+    public OperatorMulticast(Observable<? extends T> source, final Func0<? extends Subject<? super T, ? extends R>> subjectFactory) {
+        this(new Object(), new AtomicReference<Subject<? super T, ? extends R>>(), new ArrayList<Subscriber<? super R>>(), source, subjectFactory);
+    }
+
+    private OperatorMulticast(final Object guard, final AtomicReference<Subject<? super T, ? extends R>> connectedSubject, final List<Subscriber<? super R>> waitingForConnect, Observable<? extends T> source, final Func0<? extends Subject<? super T, ? extends R>> subjectFactory) {
         super(new OnSubscribe<R>() {
-                @Override
-                public void call(Subscriber<? super R> subscriber) {
-                    subject.unsafeSubscribe(subscriber);
+            @Override
+            public void call(Subscriber<? super R> subscriber) {
+                synchronized (guard) {
+                    if (connectedSubject.get() == null) {
+                        // not connected yet, so register
+                        waitingForConnect.add(subscriber);
+                    } else {
+                        // we are already connected so subscribe directly
+                        connectedSubject.get().unsafeSubscribe(subscriber);
+                    }
                 }
-            });
+            }
+        });
+        this.guard = guard;
+        this.connectedSubject = connectedSubject;
+        this.waitingForConnect = waitingForConnect;
         this.source = source;
-        this.subject = subject;
+        this.subjectFactory = subjectFactory;
     }
 
     @Override
     public void connect(Action1<? super Subscription> connection) {
-        connection.call(Subscriptions.create(new Action0() {
-            @Override
-            public void call() {
-                Subscription s;
-                synchronized (guard) {
-                    s = subscription;
-                    subscription = null;
-                }
-                if (s != null) {
-                    s.unsubscribe();
-                }
-            }
-        }));
-        Subscriber<T> s = null;
+        // each time we connect we create a new Subject and Subscription
+
+        boolean shouldSubscribe = false;
+
+        // subscription is the state of whether we are connected or not
         synchronized (guard) {
-            if (subscription == null) {
-                s = new Subscriber<T>() {
+            if (subscription != null) {
+                // already connected, return as there is nothing to do
+                return;
+            } else {
+                shouldSubscribe = true;
+                // we aren't connected, so let's create a new Subject and connect
+                final Subject<? super T, ? extends R> subject = subjectFactory.call();
+                // create new Subscriber that will pass-thru to the subject we just created
+                // we do this since it is also a Subscription whereas the Subject is not
+                subscription = new Subscriber<T>() {
                     @Override
                     public void onCompleted() {
                         subject.onCompleted();
@@ -82,11 +106,38 @@ public final class OperatorMulticast<T, R> extends ConnectableObservable<R> {
                         subject.onNext(args);
                     }
                 };
-                subscription = s;
+                
+                // register any subscribers that are waiting with this new subject
+                for(Subscriber<? super R> s : waitingForConnect) {
+                    subject.unsafeSubscribe(s);
+                }
+                // clear the waiting list as any new ones that come in after leaving this synchronized block will go direct to the Subject
+                waitingForConnect.clear();
+                // record the Subject so OnSubscribe can see it
+                connectedSubject.set(subject);
             }
         }
-        if (s != null) {
-            source.unsafeSubscribe(s);
+
+        // in the lock above we determined we should subscribe, do it now outside the lock
+        if (shouldSubscribe) {
+            // register a subscription that will shut this down
+            connection.call(Subscriptions.create(new Action0() {
+                @Override
+                public void call() {
+                    Subscription s;
+                    synchronized (guard) {
+                        s = subscription;
+                        subscription = null;
+                        connectedSubject.set(null);
+                    }
+                    if (s != null) {
+                        s.unsubscribe();
+                    }
+                }
+            }));
+
+            // now that everything is hooked up let's subscribe
+            source.unsafeSubscribe(subscription);
         }
     }
 }

@@ -16,9 +16,14 @@
 package rx;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -27,11 +32,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.MockitoAnnotations;
-import rx.Observable.OnSubscribe;
 
+import rx.Observable.OnSubscribe;
 import rx.functions.Action0;
 import rx.functions.Action1;
+import rx.functions.Func2;
 import rx.observers.Subscribers;
+import rx.observers.TestSubscriber;
 import rx.schedulers.TestScheduler;
 import rx.subjects.ReplaySubject;
 import rx.subscriptions.Subscriptions;
@@ -201,5 +208,33 @@ public class RefCountTests {
         inOrder.verify(o).onNext(2);
         inOrder.verify(o).onCompleted();
         verify(o, never()).onError(any(Throwable.class));
+    }
+    
+    @Test
+    public void testConnectDisconnectConnectAndSubjectState() {
+        Observable<Integer> o1 = Observable.just(10);
+        Observable<Integer> o2 = Observable.just(20);
+        Observable<Integer> combined = Observable.combineLatest(o1, o2, new Func2<Integer, Integer, Integer>() {
+
+            @Override
+            public Integer call(Integer t1, Integer t2) {
+                return t1 + t2;
+            }
+            
+        }).publish().refCount();
+        
+        TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>();
+
+        combined.subscribe(ts1);
+        combined.subscribe(ts2);
+        
+        ts1.assertTerminalEvent();
+        ts1.assertNoErrors();
+        ts1.assertReceivedOnNext(Arrays.asList(30));
+        
+        ts2.assertTerminalEvent();
+        ts2.assertNoErrors();
+        ts2.assertReceivedOnNext(Arrays.asList(30));
     }
 }

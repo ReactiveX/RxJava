@@ -5414,8 +5414,43 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Connectable-Observable-Operators#observablepublish-and-observablemulticast">RxJava wiki: Observable.publish and Observable.multicast</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229708.aspx">MSDN: Observable.Multicast</a>
      */
-    public final <R> ConnectableObservable<R> multicast(Subject<? super T, ? extends R> subject) {
-        return new OperatorMulticast<T, R>(this, subject);
+    public final <R> ConnectableObservable<R> multicast(final Subject<? super T, ? extends R> subject) {
+        return new OperatorMulticast<T, R>(this, new Func0<Subject<? super T, ? extends R>>() {
+
+            @Override
+            public Subject<? super T, ? extends R> call() {
+                // same one every time, no factory behavior
+                return subject;
+            }
+            
+        });
+    }
+    
+    /**
+     * Returns a {@link ConnectableObservable} that upon connection causes the source Observable to push results
+     * into the specified subject. A Connectable Observable resembles an ordinary Observable, except that it
+     * does not begin emitting items when it is subscribed to, but only when its {@code connect} method
+     * is called.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure because multicasting means the stream is "hot" with
+     *      multiple subscribers. Each child will need to manage backpressure independently using operators such
+     *      as {@link #onBackpressureDrop} and {@link #onBackpressureBuffer}.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code multicast} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @param subjectFactory
+     *            Func that creates a new {@link Subject} for the {@link ConnectableObservable} to push source items into
+     * @param <R>
+     *            the type of items emitted by the resulting {@code ConnectableObservable}
+     * @return a {@link ConnectableObservable} that upon connection causes the source Observable to push results
+     *         into the specified {@link Subject}
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Connectable-Observable-Operators#observablepublish-and-observablemulticast">RxJava wiki: Observable.publish and Observable.multicast</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229708.aspx">MSDN: Observable.Multicast</a>
+     */
+    public final <R> ConnectableObservable<R> multicast(Func0<? extends Subject<? super T, ? extends R>> subjectFactory) {
+        return new OperatorMulticast<T, R>(this, subjectFactory);
     }
 
     /**
@@ -5724,7 +5759,14 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.publish.aspx">MSDN: Observable.Publish</a>
      */
     public final ConnectableObservable<T> publish() {
-        return new OperatorMulticast<T, T>(this, PublishSubject.<T> create());
+        return new OperatorMulticast<T, T>(this, new Func0<Subject<? super T, ? extends T>>() {
+
+            @Override
+            public Subject<? super T, ? extends T> call() {
+                return PublishSubject.<T> create();
+            }
+            
+        });
     }
 
     /**
@@ -5819,8 +5861,15 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Connectable-Observable-Operators#observablepublish-and-observablemulticast">RxJava wiki: publish</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.publish.aspx">MSDN: Observable.Publish</a>
      */
-    public final ConnectableObservable<T> publish(T initialValue) {
-        return new OperatorMulticast<T, T>(this, BehaviorSubject.<T> create(initialValue));
+    public final ConnectableObservable<T> publish(final T initialValue) {
+        return new OperatorMulticast<T, T>(this, new Func0<Subject<? super T, ? extends T>>() {
+
+            @Override
+            public Subject<? super T, ? extends T> call() {
+                return BehaviorSubject.<T> create(initialValue);
+            }
+            
+        });
     }
 
     /**
@@ -5842,7 +5891,14 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.publishlast.aspx">MSDN: Observable.PublishLast</a>
      */
     public final ConnectableObservable<T> publishLast() {
-        return new OperatorMulticast<T, T>(this, AsyncSubject.<T> create());
+        return new OperatorMulticast<T, T>(this, new Func0<Subject<? super T, ? extends T>>() {
+
+            @Override
+            public Subject<? super T, ? extends T> call() {
+                return AsyncSubject.<T> create();
+            }
+            
+        });
     }
 
     /**
@@ -6112,7 +6168,14 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.replay.aspx">MSDN: Observable.Replay</a>
      */
     public final ConnectableObservable<T> replay() {
-        return new OperatorMulticast<T, T>(this, ReplaySubject.<T> create());
+        return new OperatorMulticast<T, T>(this, new Func0<Subject<? super T, ? extends T>>() {
+
+            @Override
+            public Subject<? super T, ? extends T> call() {
+                return ReplaySubject.<T> create();
+            }
+            
+        });
     }
 
     /**
@@ -6444,8 +6507,15 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Connectable-Observable-Operators#observablereplay">RxJava wiki: replay</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211976.aspx">MSDN: Observable.Replay</a>
      */
-    public final ConnectableObservable<T> replay(int bufferSize) {
-        return new OperatorMulticast<T, T>(this, ReplaySubject.<T>createWithSize(bufferSize));
+    public final ConnectableObservable<T> replay(final int bufferSize) {
+        return new OperatorMulticast<T, T>(this, new Func0<Subject<? super T, ? extends T>>() {
+
+            @Override
+            public Subject<? super T, ? extends T> call() {
+                return ReplaySubject.<T>createWithSize(bufferSize);
+            }
+            
+        });
     }
 
     /**
@@ -6512,11 +6582,18 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Connectable-Observable-Operators#observablereplay">RxJava wiki: replay</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211759.aspx">MSDN: Observable.Replay</a>
      */
-    public final ConnectableObservable<T> replay(int bufferSize, long time, TimeUnit unit, Scheduler scheduler) {
+    public final ConnectableObservable<T> replay(final int bufferSize, final long time, final TimeUnit unit, final Scheduler scheduler) {
         if (bufferSize < 0) {
             throw new IllegalArgumentException("bufferSize < 0");
         }
-        return new OperatorMulticast<T, T>(this, ReplaySubject.<T>createWithTimeAndSize(time, unit, bufferSize, scheduler));
+        return new OperatorMulticast<T, T>(this, new Func0<Subject<? super T, ? extends T>>() {
+
+            @Override
+            public Subject<? super T, ? extends T> call() {
+                return ReplaySubject.<T>createWithTimeAndSize(time, unit, bufferSize, scheduler);
+            }
+            
+        });
     }
 
     /**
@@ -6544,10 +6621,15 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Connectable-Observable-Operators#observablereplay">RxJava wiki: replay</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229814.aspx">MSDN: Observable.Replay</a>
      */
-    public final ConnectableObservable<T> replay(int bufferSize, Scheduler scheduler) {
-        return new OperatorMulticast<T, T>(this,
-                OperatorReplay.createScheduledSubject(
-                        ReplaySubject.<T>createWithSize(bufferSize), scheduler));
+    public final ConnectableObservable<T> replay(final int bufferSize, final Scheduler scheduler) {
+        return new OperatorMulticast<T, T>(this, new Func0<Subject<? super T, ? extends T>>() {
+
+            @Override
+            public Subject<? super T, ? extends T> call() {
+                return OperatorReplay.createScheduledSubject(ReplaySubject.<T>createWithSize(bufferSize), scheduler);
+            }
+            
+        });
     }
 
     /**
@@ -6606,8 +6688,15 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Connectable-Observable-Operators#observablereplay">RxJava wiki: replay</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211811.aspx">MSDN: Observable.Replay</a>
      */
-    public final ConnectableObservable<T> replay(long time, TimeUnit unit, Scheduler scheduler) {
-        return new OperatorMulticast<T, T>(this, ReplaySubject.<T>createWithTime(time, unit, scheduler));
+    public final ConnectableObservable<T> replay(final long time, final TimeUnit unit, final Scheduler scheduler) {
+        return new OperatorMulticast<T, T>(this, new Func0<Subject<? super T, ? extends T>>() {
+
+            @Override
+            public Subject<? super T, ? extends T> call() {
+                return ReplaySubject.<T>createWithTime(time, unit, scheduler);
+            }
+            
+        });
     }
 
     /**
@@ -6634,8 +6723,15 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Connectable-Observable-Operators#observablereplay">RxJava wiki: replay</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211699.aspx">MSDN: Observable.Replay</a>
      */
-    public final ConnectableObservable<T> replay(Scheduler scheduler) {
-        return new OperatorMulticast<T, T>(this, OperatorReplay.createScheduledSubject(ReplaySubject.<T> create(), scheduler));
+    public final ConnectableObservable<T> replay(final Scheduler scheduler) {
+        return new OperatorMulticast<T, T>(this, new Func0<Subject<? super T, ? extends T>>() {
+
+            @Override
+            public Subject<? super T, ? extends T> call() {
+                return OperatorReplay.createScheduledSubject(ReplaySubject.<T> create(), scheduler);
+            }
+            
+        });
     }
 
     /**
