@@ -135,7 +135,15 @@ public final class SpmcArrayQueue<E> extends SpmcArrayQueueL3Pad<E> {
         final long currProducerIndex = lvProducerIndex();
         final long offset = calcElementOffset(currProducerIndex);
         if (null != lvElement(lb, offset)) {
-            return false;
+            // strict check as per https://github.com/JCTools/JCTools/issues/21#issuecomment-50204120
+            int size = (int) (currProducerIndex - lvConsumerIndex());
+            if (size == capacity) {
+                return false;
+            }
+            else {
+                // spin wait for slot to clear, buggers wait freedom
+                while (null != lvElement(lb, offset));
+            }
         }
         spElement(lb, offset, e);
         // single producer, so store ordered is valid. It is also required to correctly publish the element

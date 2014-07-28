@@ -21,6 +21,8 @@ import rx.Observer;
 import rx.Subscription;
 import rx.exceptions.MissingBackpressureException;
 import rx.internal.operators.NotificationLite;
+import rx.internal.util.unsafe.SpmcArrayQueue;
+import rx.internal.util.unsafe.SpscArrayQueue;
 import rx.internal.util.unsafe.UnsafeAccess;
 
 /**
@@ -31,13 +33,8 @@ public class RxRingBuffer implements Subscription {
 
     public static RxRingBuffer getSpscInstance() {
         if (UnsafeAccess.isUnsafeAvailable()) {
-            // using SynchronizedQueue until issues are solved with SpscArrayQueue offer rejection
-            //      RxRingBufferSpmcTest.testConcurrency occasionally fails with a 
-            //      BackpressureException when using SpscArrayQueue 
-            //            return new RxRingBuffer(SPSC_POOL, SIZE); // this is the one we were trying to use
-            //            return new RxRingBuffer(new SpscArrayQueue<Object>(SIZE), SIZE);
-            // the performance of this is sufficient (actually faster in some cases)
-            return new RxRingBuffer(new SynchronizedQueue<Object>(SIZE), SIZE);
+            // TODO the SpscArrayQueue isn't ready yet so using SpmcArrayQueue for now
+            return new RxRingBuffer(SPMC_POOL, SIZE);
         } else {
             return new RxRingBuffer();
         }
@@ -45,14 +42,7 @@ public class RxRingBuffer implements Subscription {
 
     public static RxRingBuffer getSpmcInstance() {
         if (UnsafeAccess.isUnsafeAvailable()) {
-            // using SynchronizedQueue until issues are solved with SpmcArrayQueue offer rejection
-            //      RxRingBufferSpmcTest.testConcurrency occasionally fails with a 
-            //      BackpressureException when using SpmcArrayQueue/MpmcArrayQueue
-            //            return new RxRingBuffer(SPMC_POOL, SIZE); // this is the one we were trying to use
-            //            return new RxRingBuffer(new SpmcArrayQueue<Object>(SIZE), SIZE);
-            //            return new RxRingBuffer(new MpmcArrayQueue<Object>(SIZE), SIZE);
-            // the performance of this is sufficient (actually faster in some cases)
-            return new RxRingBuffer(new SynchronizedQueue<Object>(SIZE), SIZE);
+            return new RxRingBuffer(SPMC_POOL, SIZE);
         } else {
             return new RxRingBuffer();
         }
@@ -170,6 +160,24 @@ public class RxRingBuffer implements Subscription {
 
     public static final int SIZE = 1024;
 
+    private static ObjectPool<Queue<Object>> SPSC_POOL = new ObjectPool<Queue<Object>>() {
+
+        @Override
+        protected SpscArrayQueue<Object> createObject() {
+            return new SpscArrayQueue<Object>(SIZE);
+        }
+
+    };
+
+    private static ObjectPool<Queue<Object>> SPMC_POOL = new ObjectPool<Queue<Object>>() {
+
+        @Override
+        protected SpmcArrayQueue<Object> createObject() {
+            return new SpmcArrayQueue<Object>(SIZE);
+        }
+
+    };
+    
     private RxRingBuffer(Queue<Object> queue, int size) {
         this.queue = queue;
         this.pool = null;
