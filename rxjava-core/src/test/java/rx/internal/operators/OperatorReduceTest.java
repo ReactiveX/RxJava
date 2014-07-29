@@ -114,4 +114,21 @@ public class OperatorReduceTest {
         verify(observer, times(1)).onError(any(TestException.class));
     }
 
+    @Test
+    public void testBackpressureWithNoInitialValue() throws InterruptedException {
+        Observable<Integer> source = Observable.from(1, 2, 3, 4, 5, 6);
+        Observable<Integer> reduced = source.reduce(sum);
+
+        Integer r = reduced.toBlocking().first();
+        assertEquals(21, r.intValue());
+    }
+
+    @Test
+    public void testBackpressureWithInitialValue() throws InterruptedException {
+        Observable<Integer> source = Observable.from(1, 2, 3, 4, 5, 6);
+        Observable<Integer> reduced = source.reduce(0, sum);
+
+        Integer r = reduced.toBlocking().first();
+        assertEquals(21, r.intValue());
+    }
 }
