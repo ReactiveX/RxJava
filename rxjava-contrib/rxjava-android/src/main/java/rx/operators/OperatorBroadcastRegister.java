@@ -58,10 +58,7 @@ public class OperatorBroadcastRegister implements Observable.OnSubscribe<Intent>
         });
 
         subscriber.add(subscription);
-        Intent stickyIntent = context.registerReceiver(broadcastReceiver, intentFilter, broadcastPermission, schedulerHandler);
-        if (stickyIntent != null) {
-            subscriber.onNext(stickyIntent);
-        }
+        context.registerReceiver(broadcastReceiver, intentFilter, broadcastPermission, schedulerHandler);
 
     }
 }
