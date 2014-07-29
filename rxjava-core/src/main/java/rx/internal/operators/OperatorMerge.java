@@ -210,7 +210,7 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
              * } </pre>
              * 
              */
-            if (mergeProducer.requested < 0) {
+            if (mergeProducer.requested == Long.MAX_VALUE) {
                 handleScalarSynchronousObservableWithoutRequestLimits(t);
             } else {
                 handleScalarSynchronousObservableWithRequestLimits(t);
@@ -489,6 +489,9 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
 
         @Override
         public void request(long n) {
+            if (requested == Long.MAX_VALUE) {
+                return;
+            }
             if (n == Long.MAX_VALUE) {
                 requested = Long.MAX_VALUE;
             } else {
