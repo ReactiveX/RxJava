@@ -108,21 +108,14 @@ public final class OperatorTakeLast<T> implements Operator<T, T> {
 
         @Override
         public void request(long n) {
+            if (requested == Long.MAX_VALUE) {
+                return;
+            }
             long _c;
             if (n == Long.MAX_VALUE) {
                 _c = REQUESTED_UPDATER.getAndSet(this, Long.MAX_VALUE);
             } else {
-                for (;;) {
-                    _c = requested;
-                    if (_c == Long.MAX_VALUE) {
-                        // If `requested` is Long.MAX_VALUE, `c+n` will be overflow.
-                        // Therefore, always check before setting to `c+n`
-                        return;
-                    }
-                    if (REQUESTED_UPDATER.compareAndSet(this, _c, _c + n)) {
-                        break;
-                    }
-                }
+                _c = REQUESTED_UPDATER.getAndAdd(this, n);
             }
             if (!emittingStarted) {
                 // we haven't started yet, so record what was requested and return
@@ -169,10 +162,21 @@ public final class OperatorTakeLast<T> implements Operator<T, T> {
                                 emitted++;
                             }
                         }
-
-                        if (REQUESTED_UPDATER.addAndGet(this, -emitted) == 0) {
-                            // we're done emitting the number requested so return
-                            return;
+                        for (;;) {
+                            long oldRequested = requested;
+                            long newRequested = oldRequested - emitted;
+                            if (oldRequested == Long.MAX_VALUE) {
+                                // became unbounded during the loop
+                                // continue the outer loop to emit the rest events.
+                                break;
+                            }
+                            if (REQUESTED_UPDATER.compareAndSet(this, oldRequested, newRequested)) {
+                                if (newRequested == 0) {
+                                    // we're done emitting the number requested so return
+                                    return;
+                                }
+                                break;
+                            }
                         }
                     }
                 }
