@@ -30,7 +30,9 @@ import org.mockito.InOrder;
 
 import rx.Observable;
 import rx.Observer;
+import rx.Subscriber;
 import rx.functions.Func1;
+import rx.functions.Functions;
 import rx.internal.util.RxRingBuffer;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
@@ -148,4 +150,118 @@ public class OperatorTakeLastTest {
         };
     }
 
+    @Test
+    public void testIssue1522() {
+        // https://github.com/Netflix/RxJava/issues/1522
+        assertEquals(0, Observable
+                .empty()
+                .count()
+                .filter(Functions.alwaysFalse())
+                .toList()
+                .toBlocking().single().size());
+    }
+
+    @Test
+    public void testIgnoreRequest1() {
+        // If `takeLast` does not ignore `request` properly, StackOverflowError will be thrown.
+        Observable.range(0, 100000).takeLast(100000).subscribe(new Subscriber<Integer>() {
+
+            @Override
+            public void onStart() {
+                request(Long.MAX_VALUE);
+            }
+
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+            }
+
+            @Override
+            public void onNext(Integer integer) {
+                request(Long.MAX_VALUE);
+            }
+        });
+    }
+
+    @Test
+    public void testIgnoreRequest2() {
+        // If `takeLast` does not ignore `request` properly, StackOverflowError will be thrown.
+        Observable.range(0, 100000).takeLast(100000).subscribe(new Subscriber<Integer>() {
+
+            @Override
+            public void onStart() {
+                request(1);
+            }
+
+            @Override
+            public void onCompleted() {
+            }
+
+            @Override
+            public void onError(Throwable e) {
+            }
+
+            @Override
+            public void onNext(Integer integer) {
+                request(1);
+            }
+        });
+    }
+
+    @Test(timeout = 30000)
+    public void testIgnoreRequest3() {
+        // If `takeLast` does not ignore `request` properly, it will enter an infinite loop.
+        Observable.range(0, 100000).takeLast(100000).subscribe(new Subscriber<Integer>() {
+
+            @Override
+            public void onStart() {
+                request(1);
+            }
+
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+            }
+
+            @Override
+            public void onNext(Integer integer) {
+                request(Long.MAX_VALUE);
+            }
+        });
+    }
+
+
+    @Test
+    public void testIgnoreRequest4() {
+        // If `takeLast` does not ignore `request` properly, StackOverflowError will be thrown.
+        Observable.range(0, 100000).takeLast(100000).subscribe(new Subscriber<Integer>() {
+
+            @Override
+            public void onStart() {
+                request(Long.MAX_VALUE);
+            }
+
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+            }
+
+            @Override
+            public void onNext(Integer integer) {
+                request(1);
+            }
+        });
+    }
 }

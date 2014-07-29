@@ -108,9 +108,12 @@ public final class OperatorTakeLast<T> implements Operator<T, T> {
 
         @Override
         public void request(long n) {
-            long _c = 0;
+            if (requested == Long.MAX_VALUE) {
+                return;
+            }
+            long _c;
             if (n == Long.MAX_VALUE) {
-                requested = Long.MAX_VALUE;
+                _c = REQUESTED_UPDATER.getAndSet(this, Long.MAX_VALUE);
             } else {
                 _c = REQUESTED_UPDATER.getAndAdd(this, n);
             }
@@ -122,16 +125,20 @@ public final class OperatorTakeLast<T> implements Operator<T, T> {
         }
 
         void emit(long previousRequested) {
-            if (requested < 0) {
+            if (requested == Long.MAX_VALUE) {
                 // fast-path without backpressure
-                try {
-                    for (Object value : deque) {
-                        notification.accept(subscriber, value);
+                if (previousRequested == 0) {
+                    try {
+                        for (Object value : deque) {
+                            notification.accept(subscriber, value);
+                        }
+                    } catch (Throwable e) {
+                        subscriber.onError(e);
+                    } finally {
+                        deque.clear();
                     }
-                } catch (Throwable e) {
-                    subscriber.onError(e);
-                } finally {
-                    deque.clear();
+                } else {
+                    // backpressure path will handle Long.MAX_VALUE and emit the rest events.
                 }
             } else {
                 // backpressure is requested
@@ -155,12 +162,22 @@ public final class OperatorTakeLast<T> implements Operator<T, T> {
                                 emitted++;
                             }
                         }
-
-                        if (REQUESTED_UPDATER.addAndGet(this, -emitted) == 0) {
-                            // we're done emitting the number requested so return
-                            return;
+                        for (;;) {
+                            long oldRequested = requested;
+                            long newRequested = oldRequested - emitted;
+                            if (oldRequested == Long.MAX_VALUE) {
+                                // became unbounded during the loop
+                                // continue the outer loop to emit the rest events.
+                                break;
+                            }
+                            if (REQUESTED_UPDATER.compareAndSet(this, oldRequested, newRequested)) {
+                                if (newRequested == 0) {
+                                    // we're done emitting the number requested so return
+                                    return;
+                                }
+                                break;
+                            }
                         }
-
                     }
                 }
             }

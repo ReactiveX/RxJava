@@ -15,10 +15,9 @@
  */
 package rx.internal.operators;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.isA;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.*;
 
 import java.util.NoSuchElementException;
 
@@ -27,7 +26,9 @@ import org.mockito.InOrder;
 
 import rx.Observable;
 import rx.Observer;
+import rx.Subscriber;
 import rx.functions.Func1;
+import rx.functions.Func2;
 
 public class OperatorSingleTest {
 
@@ -240,5 +241,53 @@ public class OperatorSingleTest {
         inOrder.verify(observer, times(1)).onNext(2);
         inOrder.verify(observer, times(1)).onCompleted();
         inOrder.verifyNoMoreInteractions();
+    }
+
+    @Test
+    public void testSingleWithBackpressure() {
+        Observable<Integer> observable = Observable.from(1, 2).single();
+
+        Subscriber<Integer> subscriber = spy(new Subscriber<Integer>() {
+
+            @Override
+            public void onStart() {
+                request(1);
+            }
+
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(Integer integer) {
+                request(1);
+            }
+        });
+        observable.subscribe(subscriber);
+
+        InOrder inOrder = inOrder(subscriber);
+        inOrder.verify(subscriber, times(1)).onError(isA(IllegalArgumentException.class));
+        inOrder.verifyNoMoreInteractions();
+    }
+
+    @Test(timeout = 30000)
+    public void testIssue1527() throws InterruptedException {
+        //https://github.com/Netflix/RxJava/pull/1527
+        Observable<Integer> source = Observable.from(1, 2, 3, 4, 5, 6);
+        Observable<Integer> reduced = source.reduce(new Func2<Integer, Integer, Integer>() {
+            @Override
+            public Integer call(Integer i1, Integer i2) {
+                return i1 + i2;
+            }
+        });
+
+        Integer r = reduced.toBlocking().first();
+        assertEquals(21, r.intValue());
     }
 }
