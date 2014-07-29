@@ -115,18 +115,24 @@ public class OperatorReduceTest {
         verify(observer, times(1)).onError(any(TestException.class));
     }
 
-    @Test(timeout = 13000)
-    public void testBackpressure() throws InterruptedException {
+    @Test
+    public void testBackpressureWithNoInitialValue() throws InterruptedException {
         Observable<Integer> source = Observable.from(1, 2, 3, 4, 5, 6);
-        Observable<Integer> reduced = source.reduce(new Func2<Integer, Integer, Integer>() {
-            @Override
-            public Integer call(Integer i1, Integer i2) {
-                return i1 + i2;
-            }
-        });
+        Observable<Integer> reduced = source.reduce(sum);
 
         Integer r = reduced.toBlocking().first();
         assertEquals(21, r.intValue());
     }
+
+    @Test
+    public void testBackpressureWithInitialValue() throws InterruptedException {
+        Observable<Integer> source = Observable.from(1, 2, 3, 4, 5, 6);
+        Observable<Integer> reduced = source.reduce(0, sum);
+
+        Integer r = reduced.toBlocking().first();
+        assertEquals(21, r.intValue());
+    }
+
+
 
 }
