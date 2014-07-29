@@ -15,16 +15,22 @@
  */
 package rx.android.observables;
 
-import static rx.android.schedulers.AndroidSchedulers.mainThread;
+import android.app.Activity;
+import android.app.Fragment;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.Build;
+import android.os.Handler;
 
 import rx.Observable;
 import rx.functions.Func1;
-import rx.operators.OperatorObserveFromAndroidComponent;
+import rx.operators.OperatorBroadcastRegister;
 import rx.operators.OperatorConditionalBinding;
+import rx.operators.OperatorLocalBroadcastRegister;
+import rx.operators.OperatorObserveFromAndroidComponent;
 
-import android.app.Activity;
-import android.app.Fragment;
-import android.os.Build;
+import static rx.android.schedulers.AndroidSchedulers.mainThread;
 
 
 public final class AndroidObservable {
@@ -175,5 +181,38 @@ public final class AndroidObservable {
         } else {
             throw new IllegalArgumentException("Target fragment is neither a native nor support library Fragment");
         }
+    }
+
+    /**
+     * Create Observable that wraps BroadcastReceiver and emmit received intents.
+     *
+     * @param filter Selects the Intent broadcasts to be received.
+     */
+    public static Observable<Intent> fromBroadcast(Context context, IntentFilter filter){
+        return Observable.create(new OperatorBroadcastRegister(context, filter, null, null));
+    }
+
+    /**
+     * Create Observable that wraps BroadcastReceiver and emmit received intents.
+     *
+     * @param filter Selects the Intent broadcasts to be received.
+     * @param broadcastPermission String naming a permissions that a
+     *      broadcaster must hold in order to send an Intent to you.  If null,
+     *      no permission is required.
+     * @param schedulerHandler Handler identifying the thread that will receive
+     *      the Intent.  If null, the main thread of the process will be used.
+     */
+    public static Observable<Intent> fromBroadcast(Context context, IntentFilter filter, String broadcastPermission, Handler schedulerHandler){
+        return Observable.create(new OperatorBroadcastRegister(context, filter, broadcastPermission, schedulerHandler));
+    }
+
+    /**
+     * Create Observable that wraps BroadcastReceiver and connects to LocalBroadcastManager
+     * to emmit received intents.
+     *
+     * @param filter Selects the Intent broadcasts to be received.
+     */
+    public static Observable<Intent> fromLocalBroadcast(Context context, IntentFilter filter){
+        return Observable.create(new OperatorLocalBroadcastRegister(context, filter));
     }
 }
