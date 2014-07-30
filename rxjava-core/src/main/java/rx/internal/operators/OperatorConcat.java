@@ -17,8 +17,11 @@ package rx.internal.operators;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
+import java.util.concurrent.atomic.AtomicLongFieldUpdater;
+
 import rx.Observable;
 import rx.Observable.Operator;
+import rx.Producer;
 import rx.Subscriber;
 import rx.functions.Action0;
 import rx.observers.SerializedSubscriber;
@@ -30,7 +33,8 @@ import rx.subscriptions.Subscriptions;
  * <p>
  * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/concat.png" alt="">
  *
- * @param <T> the source and result value type
+ * @param <T>
+ *            the source and result value type
  */
 public final class OperatorConcat<T> implements Operator<T, Observable<? extends T>> {
     @Override
@@ -38,22 +42,46 @@ public final class OperatorConcat<T> implements Operator<T, Observable<? extends
         final SerializedSubscriber<T> s = new SerializedSubscriber<T>(child);
         final SerialSubscription current = new SerialSubscription();
         child.add(current);
-        return new ConcatSubscriber<T>(s, current);
+        ConcatSubscriber<T> cs = new ConcatSubscriber<T>(s, current);
+        ConcatProducer<T> cp = new ConcatProducer<T>(cs);
+        child.setProducer(cp);
+        return cs;
     }
-    
+
+    static final class ConcatProducer<T> implements Producer {
+        final ConcatSubscriber<T> cs;
+
+        ConcatProducer(ConcatSubscriber<T> cs) {
+            this.cs = cs;
+        }
+
+        @Override
+        public void request(long n) {
+            cs.requestFromChild(n);
+        }
+
+    }
+
     static final class ConcatSubscriber<T> extends Subscriber<Observable<? extends T>> {
         final NotificationLite<Observable<? extends T>> nl = NotificationLite.instance();
-        private final Subscriber<T> s;
+        private final Subscriber<T> child;
         private final SerialSubscription current;
         final ConcurrentLinkedQueue<Object> queue;
+
+        volatile ConcatInnerSubscriber<T> currentSubscriber;
+
         volatile int wip;
         @SuppressWarnings("rawtypes")
-        static final AtomicIntegerFieldUpdater<ConcatSubscriber> WIP_UPDATER
-                = AtomicIntegerFieldUpdater.newUpdater(ConcatSubscriber.class, "wip");
-        
+        static final AtomicIntegerFieldUpdater<ConcatSubscriber> WIP_UPDATER = AtomicIntegerFieldUpdater.newUpdater(ConcatSubscriber.class, "wip");
+
+        // accessed by REQUESTED_UPDATER
+        private volatile long requested;
+        @SuppressWarnings("rawtypes")
+        private static final AtomicLongFieldUpdater<ConcatSubscriber> REQUESTED_UPDATER = AtomicLongFieldUpdater.newUpdater(ConcatSubscriber.class, "requested");
+
         public ConcatSubscriber(Subscriber<T> s, SerialSubscription current) {
             super(s);
-            this.s = s;
+            this.child = s;
             this.current = current;
             this.queue = new ConcurrentLinkedQueue<Object>();
             add(Subscriptions.create(new Action0() {
@@ -71,6 +99,28 @@ public final class OperatorConcat<T> implements Operator<T, Observable<? extends
             request(2);
         }
 
+        private void requestFromChild(long n) {
+            // we track 'requested' so we know whether we should subscribe the next or not
+            if (REQUESTED_UPDATER.getAndAdd(this, n) == 0) {
+                if (currentSubscriber == null && wip > 0) {
+                    // this means we may be moving from one subscriber to another after having stopped processing
+                    // so need to kick off the subscribe via this request notification
+                    subscribeNext();
+                    // return here as we don't want to do the requestMore logic below (which would double request)
+                    return;
+                }
+            } 
+                
+            if (currentSubscriber != null) {
+                // otherwise we are just passing it through to the currentSubscriber
+                currentSubscriber.requestMore(n);
+            }
+        }
+
+        private void decrementRequested() {
+            REQUESTED_UPDATER.decrementAndGet(this);
+        }
+
         @Override
         public void onNext(Observable<? extends T> t) {
             queue.add(nl.next(t));
@@ -78,13 +128,13 @@ public final class OperatorConcat<T> implements Operator<T, Observable<? extends
                 subscribeNext();
             }
         }
-        
+
         @Override
         public void onError(Throwable e) {
-            s.onError(e);
+            child.onError(e);
             unsubscribe();
         }
-        
+
         @Override
         public void onCompleted() {
             queue.add(nl.completed());
@@ -95,39 +145,65 @@ public final class OperatorConcat<T> implements Operator<T, Observable<? extends
 
         void completeInner() {
             request(1);
+            currentSubscriber = null;
             if (WIP_UPDATER.decrementAndGet(this) > 0) {
                 subscribeNext();
             }
         }
 
         void subscribeNext() {
-            Object o = queue.poll();
-            if (nl.isCompleted(o)) {
-                s.onCompleted();
-            } else if (o != null) {
-                Observable<? extends T> obs = nl.getValue(o);
-                Subscriber<T> sourceSub = new Subscriber<T>() {
-
-                    @Override
-                    public void onNext(T t) {
-                        // TODO need to support backpressure here https://github.com/Netflix/RxJava/issues/1480
-                        s.onNext(t);
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        ConcatSubscriber.this.onError(e);
-                    }
-
-                    @Override
-                    public void onCompleted() {
-                        completeInner();
-                    }
-
-                };
-                current.set(sourceSub);
-                obs.unsafeSubscribe(sourceSub);
+            if (requested > 0) {
+                Object o = queue.poll();
+                if (nl.isCompleted(o)) {
+                    child.onCompleted();
+                } else if (o != null) {
+                    Observable<? extends T> obs = nl.getValue(o);
+                    currentSubscriber = new ConcatInnerSubscriber<T>(this, child, requested);
+                    current.set(currentSubscriber);
+                    obs.unsafeSubscribe(currentSubscriber);
+                }
+            } else {
+                // requested == 0, so we'll peek to see if we are completed, otherwise wait until another request
+                Object o = queue.peek();
+                if (nl.isCompleted(o)) {
+                    child.onCompleted();
+                }
             }
         }
     }
+
+    static class ConcatInnerSubscriber<T> extends Subscriber<T> {
+
+        private final Subscriber<T> child;
+        private final ConcatSubscriber<T> parent;
+
+        public ConcatInnerSubscriber(ConcatSubscriber<T> parent, Subscriber<T> child, long initialRequest) {
+            this.parent = parent;
+            this.child = child;
+            request(initialRequest);
+        }
+
+        void requestMore(long n) {
+            request(n);
+        }
+
+        @Override
+        public void onNext(T t) {
+            parent.decrementRequested();
+            child.onNext(t);
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            // terminal error through parent so everything gets cleaned up, including this inner
+            parent.onError(e);
+        }
+
+        @Override
+        public void onCompleted() {
+            // terminal completion to parent so it continues to the next
+            parent.completeInner();
+        }
+
+    };
 }
