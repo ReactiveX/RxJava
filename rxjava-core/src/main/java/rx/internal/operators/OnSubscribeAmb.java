@@ -16,12 +16,17 @@
 package rx.internal.operators;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Observable;
 import rx.Observable.OnSubscribe;
+import rx.Producer;
 import rx.Subscriber;
+import rx.functions.Action0;
+import rx.subscriptions.Subscriptions;
 
 /**
  * Given multiple {@link Observable}s, propagates the one that first emits an item.
@@ -262,22 +267,23 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
 
     private static final class AmbSubscriber<T> extends Subscriber<T> {
 
-        private static final int NONE = -1;
-
         private final Subscriber<? super T> subscriber;
-        private final int index;
-        private final AtomicInteger choice;
+        private final Selection<T> selection;
 
-        private AmbSubscriber(Subscriber<? super T> subscriber, int index, AtomicInteger choice) {
+        private AmbSubscriber(long requested, Subscriber<? super T> subscriber, Selection<T> selection) {
             this.subscriber = subscriber;
-            this.choice = choice;
-            this.index = index;
+            this.selection = selection;
+            // initial request
+            request(requested);
+        }
+
+        private final void requestMore(long n) {
+            request(n);
         }
 
         @Override
         public void onNext(T args) {
             if (!isSelected()) {
-                unsubscribe();
                 return;
             }
             subscriber.onNext(args);
@@ -286,7 +292,6 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
         @Override
         public void onCompleted() {
             if (!isSelected()) {
-                unsubscribe();
                 return;
             }
             subscriber.onCompleted();
@@ -295,44 +300,102 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
         @Override
         public void onError(Throwable e) {
             if (!isSelected()) {
-                unsubscribe();
                 return;
             }
             subscriber.onError(e);
         }
 
         private boolean isSelected() {
-            int ch = choice.get();
-            if (ch == NONE) {
-                return choice.compareAndSet(NONE, index);
+            if (selection.choice.get() == this) {
+                // fast-path
+                return true;
+            } else {
+                if (selection.choice.compareAndSet(null, this)) {
+                    selection.unsubscribeOthers(this);
+                    return true;
+                } else {
+                    // we lost so unsubscribe ... and force cleanup again due to possible race conditions
+                    selection.unsubscribeLosers();
+                    return false;
+                }
             }
-            return ch == index;
         }
     }
 
+    private static class Selection<T> {
+        final AtomicReference<AmbSubscriber<T>> choice = new AtomicReference<AmbSubscriber<T>>();
+        final Collection<AmbSubscriber<T>> ambSubscribers = new ConcurrentLinkedQueue<AmbSubscriber<T>>();
+
+        public void unsubscribeLosers() {
+            AmbSubscriber<T> winner = choice.get();
+            if(winner != null) {
+                unsubscribeOthers(winner);
+            }
+        }
+        
+        public void unsubscribeOthers(AmbSubscriber<T> notThis) {
+            for (AmbSubscriber<T> other : ambSubscribers) {
+                if (other != notThis) {
+                    other.unsubscribe();
+                }
+            }
+            ambSubscribers.clear();
+        }
+
+    }
+
     private final Iterable<? extends Observable<? extends T>> sources;
+    private final Selection<T> selection = new Selection<T>();
 
     private OnSubscribeAmb(Iterable<? extends Observable<? extends T>> sources) {
         this.sources = sources;
     }
 
     @Override
-    public void call(Subscriber<? super T> subscriber) {
-        AtomicInteger choice = new AtomicInteger(AmbSubscriber.NONE);
-        int index = 0;
-        for (Observable<? extends T> source : sources) {
-            if (subscriber.isUnsubscribed()) {
-                break;
+    public void call(final Subscriber<? super T> subscriber) {
+        subscriber.add(Subscriptions.create(new Action0() {
+
+            @Override
+            public void call() {
+                if (selection.choice.get() != null) {
+                    // there is a single winner so we unsubscribe it
+                    selection.choice.get().unsubscribe();
+                } 
+                // if we are racing with others still existing, we'll also unsubscribe them
+                if(!selection.ambSubscribers.isEmpty()) {
+                    for (AmbSubscriber<T> other : selection.ambSubscribers) {
+                        other.unsubscribe();
+                    }
+                    selection.ambSubscribers.clear();
+                }
             }
-            if (choice.get() != AmbSubscriber.NONE) {
-                // Already choose someone, the rest Observables can be skipped.
-                break;
+            
+        }));
+        subscriber.setProducer(new Producer() {
+
+            @Override
+            public void request(long n) {
+                if (selection.choice.get() != null) {
+                    // propagate the request to that single Subscriber that won
+                    selection.choice.get().requestMore(n);
+                } else {
+                    for (Observable<? extends T> source : sources) {
+                        if (subscriber.isUnsubscribed()) {
+                            break;
+                        }
+                        AmbSubscriber<T> ambSubscriber = new AmbSubscriber<T>(n, subscriber, selection);
+                        selection.ambSubscribers.add(ambSubscriber);
+                        // possible race condition in previous lines ... a choice may have been made so double check (instead of synchronizing)
+                        if (selection.choice.get() != null) {
+                            // Already chose one, the rest can be skipped and we can clean up
+                            selection.unsubscribeOthers(selection.choice.get());
+                            break;
+                        }
+                        source.unsafeSubscribe(ambSubscriber);
+                    }
+                }
             }
-            AmbSubscriber<T> ambSubscriber = new AmbSubscriber<T>(subscriber, index, choice);
-            subscriber.add(ambSubscriber);
-            source.unsafeSubscribe(ambSubscriber);
-            index++;
-        }
+        });
     }
 
 }
