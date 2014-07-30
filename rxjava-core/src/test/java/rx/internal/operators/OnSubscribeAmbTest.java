@@ -36,7 +36,9 @@ import rx.Producer;
 import rx.Scheduler;
 import rx.Subscriber;
 import rx.functions.Action0;
+import rx.internal.util.RxRingBuffer;
 import rx.observers.TestSubscriber;
+import rx.schedulers.Schedulers;
 import rx.schedulers.TestScheduler;
 import rx.subscriptions.CompositeSubscription;
 
@@ -175,6 +177,7 @@ public class OnSubscribeAmbTest {
 
                     @Override
                     public void request(long n) {
+                        System.out.println("1-requested: " + n);
                         requested1.set(n);
                     }
 
@@ -190,6 +193,7 @@ public class OnSubscribeAmbTest {
 
                     @Override
                     public void request(long n) {
+                        System.out.println("2-requested: " + n);
                         requested2.set(n);
                     }
 
@@ -200,5 +204,19 @@ public class OnSubscribeAmbTest {
         Observable.amb(o1, o2).subscribe(ts);
         assertEquals(3, requested1.get());
         assertEquals(3, requested2.get());
+    }
+
+    @Test
+    public void testBackpressure() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        Observable.range(0, RxRingBuffer.SIZE * 2)
+                .ambWith(Observable.range(0, RxRingBuffer.SIZE * 2))
+                .observeOn(Schedulers.computation()) // observeOn has a backpressured RxRingBuffer
+                .delay(1, TimeUnit.MICROSECONDS) // make it a slightly slow consumer
+                .subscribe(ts);
+
+        ts.awaitTerminalEvent();
+        ts.assertNoErrors();
+        assertEquals(RxRingBuffer.SIZE * 2, ts.getOnNextEvents().size());
     }
 }
