@@ -40,6 +40,9 @@ import rx.Observable.OnSubscribe;
 import rx.Observer;
 import rx.Subscriber;
 import rx.Subscription;
+import rx.internal.util.RxRingBuffer;
+import rx.observers.TestSubscriber;
+import rx.schedulers.Schedulers;
 import rx.schedulers.TestScheduler;
 import rx.subscriptions.BooleanSubscription;
 
@@ -660,4 +663,37 @@ public class OperatorConcatTest {
                         .take(1)
                         .toBlocking().single());
     }
+    
+    @Test
+    public void testInnerBackpressureWithAlignedBoundaries() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        Observable.range(0, RxRingBuffer.SIZE * 2)
+                .concatWith(Observable.range(0, RxRingBuffer.SIZE * 2))
+                .observeOn(Schedulers.computation()) // observeOn has a backpressured RxRingBuffer
+                .subscribe(ts);
+
+        ts.awaitTerminalEvent();
+        ts.assertNoErrors();
+        assertEquals(RxRingBuffer.SIZE * 4, ts.getOnNextEvents().size());
+    }
+
+    /*
+     * Testing without counts aligned with buffer sizes because concat must prevent the subscription
+     * to the next Observable if request == 0 which can happen at the end of a subscription
+     * if the request size == emitted size. It needs to delay subscription until the next request when aligned, 
+     * when not aligned, it just subscribesNext with the outstanding request amount.
+     */
+    @Test
+    public void testInnerBackpressureWithoutAlignedBoundaries() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        Observable.range(0, (RxRingBuffer.SIZE * 2) + 10)
+                .concatWith(Observable.range(0, (RxRingBuffer.SIZE * 2) + 10))
+                .observeOn(Schedulers.computation()) // observeOn has a backpressured RxRingBuffer
+                .subscribe(ts);
+
+        ts.awaitTerminalEvent();
+        ts.assertNoErrors();
+        assertEquals((RxRingBuffer.SIZE * 4) + 20, ts.getOnNextEvents().size());
+    }
+
 }
