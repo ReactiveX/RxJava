@@ -5441,13 +5441,15 @@ public class Observable<T> {
      * </dl>
      * 
      * @param subjectFactory
-     *            Func that creates a new {@link Subject} for the {@link ConnectableObservable} to push source items into
+     *            a function that creates a new {@link Subject} for the {@link ConnectableObservable} to push
+     *            source items into
      * @param <R>
      *            the type of items emitted by the resulting {@code ConnectableObservable}
      * @return a {@link ConnectableObservable} that upon connection causes the source Observable to push results
      *         into the specified {@link Subject}
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Connectable-Observable-Operators#observablepublish-and-observablemulticast">RxJava wiki: Observable.publish and Observable.multicast</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229708.aspx">MSDN: Observable.Multicast</a>
+     * @since 0.20
      */
     public final <R> ConnectableObservable<R> multicast(Func0<? extends Subject<? super T, ? extends R>> subjectFactory) {
         return new OperatorMulticast<T, R>(this, subjectFactory);
