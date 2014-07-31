@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import rx.Observable;
 import rx.Observable.Operator;
@@ -73,9 +72,17 @@ public final class OperatorBufferWithSize<T> implements Operator<List<T>, T> {
                 @Override
                 public void setProducer(final Producer producer) {
                     child.setProducer(new Producer() {
+
+                        private volatile boolean infinite = false;
+
                         @Override
                         public void request(long n) {
-                            if (n == Long.MAX_VALUE) {
+                            if (infinite) {
+                                return;
+                            }
+                            if (n >= Long.MAX_VALUE / count) {
+                                // n == Long.MAX_VALUE or n * count >= Long.MAX_VALUE
+                                infinite = true;
                                 producer.request(Long.MAX_VALUE);
                             } else {
                                 producer.request(n * count);
@@ -127,14 +134,30 @@ public final class OperatorBufferWithSize<T> implements Operator<List<T>, T> {
             public void setProducer(final Producer producer) {
                 child.setProducer(new Producer() {
 
-                    private final AtomicBoolean firstRequest = new AtomicBoolean(false);
+                    private volatile boolean firstRequest = true;
+                    private volatile boolean infinite = false;
+
+                    private void requestInfinite() {
+                        infinite = true;
+                        producer.request(Long.MAX_VALUE);
+                    }
 
                     @Override
                     public void request(long n) {
+                        if (infinite) {
+                            return;
+                        }
                         if (n == Long.MAX_VALUE) {
-                            producer.request(Long.MAX_VALUE);
+                            requestInfinite();
+                            return;
                         } else {
-                            if (firstRequest.compareAndSet(false, true)) {
+                            if (firstRequest) {
+                                firstRequest = false;
+                                if (n - 1 >= (Long.MAX_VALUE - count) / skip) {
+                                    // count + skip * (n - 1) >= Long.MAX_VALUE
+                                    requestInfinite();
+                                    return;
+                                }
                                 // count = 5, skip = 2, n = 3
                                 // * * * * *
                                 //     * * * * *
@@ -142,6 +165,11 @@ public final class OperatorBufferWithSize<T> implements Operator<List<T>, T> {
                                 // request = 5 + 2 * ( 3 - 1)
                                 producer.request(count + skip * (n - 1));
                             } else {
+                                if (n >= Long.MAX_VALUE / skip) {
+                                    // skip * n >= Long.MAX_VALUE
+                                    requestInfinite();
+                                    return;
+                                }
                                 // count = 5, skip = 2, n = 3
                                 // (* * *) * *
                                 // (    *) * * * *

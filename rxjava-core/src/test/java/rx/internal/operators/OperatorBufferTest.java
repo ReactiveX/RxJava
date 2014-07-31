@@ -869,7 +869,6 @@ public class OperatorBufferTest {
         assertEquals(6, requested.get());
     }
 
-
     @Test
     public void testProducerRequestThroughBufferWithSize4() {
         TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>();
@@ -889,6 +888,97 @@ public class OperatorBufferTest {
             }
 
         }).buffer(5, 2).subscribe(ts);
+        assertEquals(Long.MAX_VALUE, requested.get());
+    }
+
+
+    @Test
+    public void testProducerRequestOverflowThroughBufferWithSize1() {
+        TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>();
+        ts.requestMore(Long.MAX_VALUE / 2);
+        final AtomicLong requested = new AtomicLong();
+        Observable.create(new Observable.OnSubscribe<Integer>() {
+
+            @Override
+            public void call(Subscriber<? super Integer> s) {
+                s.setProducer(new Producer() {
+
+                    @Override
+                    public void request(long n) {
+                        requested.set(n);
+                    }
+
+                });
+            }
+
+        }).buffer(3, 3).subscribe(ts);
+        assertEquals(Long.MAX_VALUE, requested.get());
+    }
+
+    @Test
+    public void testProducerRequestOverflowThroughBufferWithSize2() {
+        TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>();
+        ts.requestMore(Long.MAX_VALUE / 2);
+        final AtomicLong requested = new AtomicLong();
+        Observable.create(new Observable.OnSubscribe<Integer>() {
+
+            @Override
+            public void call(Subscriber<? super Integer> s) {
+                s.setProducer(new Producer() {
+
+                    @Override
+                    public void request(long n) {
+                        requested.set(n);
+                    }
+
+                });
+            }
+
+        }).buffer(3, 2).subscribe(ts);
+        assertEquals(Long.MAX_VALUE, requested.get());
+    }
+
+    @Test
+    public void testProducerRequestOverflowThroughBufferWithSize3() {
+        final AtomicLong requested = new AtomicLong();
+        Observable.create(new Observable.OnSubscribe<Integer>() {
+
+            @Override
+            public void call(final Subscriber<? super Integer> s) {
+                s.setProducer(new Producer() {
+
+                    @Override
+                    public void request(long n) {
+                        requested.set(n);
+                        s.onNext(1);
+                        s.onNext(2);
+                        s.onNext(3);
+                    }
+
+                });
+            }
+
+        }).buffer(3, 2).subscribe(new Subscriber<List<Integer>>() {
+
+            @Override
+            public void onStart() {
+                request(Long.MAX_VALUE / 2 - 4);
+            }
+
+            @Override
+            public void onCompleted() {
+            }
+
+            @Override
+            public void onError(Throwable e) {
+            }
+
+            @Override
+            public void onNext(List<Integer> t) {
+                request(Long.MAX_VALUE / 2);
+            }
+
+        });
         assertEquals(Long.MAX_VALUE, requested.get());
     }
 }
