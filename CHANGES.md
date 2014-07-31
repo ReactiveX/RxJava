@@ -1,5 +1,28 @@
 # RxJava Releases #
 
+### Version 0.20.0-RC4 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.20.0-RC4%22)) ###
+
+Version 0.20.0-RC4 continues bug fixes and completing work related to "reactive pull" backpressure. This release updates `amb` and `concat` to connect the backpressure `request`.
+
+Internal uses of `RxRingBuffer` migrated to using `SpmcArrayQueue` which significantly reduces object allocations. See [#1526](https://github.com/Netflix/RxJava/pull/1526) for details.
+
+The `multicast` operators were updated to use a `Subject` factory so that `Observable` sequences can be reused. See [#1515](https://github.com/Netflix/RxJava/pull/1515) for details.
+
+
+* [Pull 1534] (https://github.com/Netflix/RxJava/pull/1534) Concat Backpressure
+* [Pull 1533] (https://github.com/Netflix/RxJava/pull/1533) Amb + Backpressure
+* [Pull 1527] (https://github.com/Netflix/RxJava/pull/1527) Failing unit test for reduce, showing it does not implement backpressure correctly
+* [Pull 1528] (https://github.com/Netflix/RxJava/pull/1528) Add operators to create Observables from BroadcastReceiver (rebased)
+* [Pull 1523] (https://github.com/Netflix/RxJava/pull/1523) Fix issue #1522: takeLast
+* [Pull 1530] (https://github.com/Netflix/RxJava/pull/1530) Fix the unbounded check for merge
+* [Pull 1526] (https://github.com/Netflix/RxJava/pull/1526) Restore use of SpmcArrayQueue in RxRingBuffer
+* [Pull 1468] (https://github.com/Netflix/RxJava/pull/1468) RxScala: Update CompletenessTest.scala
+* [Pull 1515] (https://github.com/Netflix/RxJava/pull/1515) Support Subject Factory with Multicast
+* [Pull 1518] (https://github.com/Netflix/RxJava/pull/1518) Fix typos in javadoc comments
+* [Pull 1521] (https://github.com/Netflix/RxJava/pull/1521) Fix toIterator Exception Handling
+* [Pull 1520] (https://github.com/Netflix/RxJava/pull/1520) Fix non-deterministic RxRingBuffer test 
+
+
 ### Version 0.20.0-RC3 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.20.0-RC3%22)) ###
 
 Version 0.20.0-RC3 preview release fixes several bugs related to backpressure and adds `retryWhen`, `repeatWhen` for more advanced recursion use cases like retry with exponential backoff.
