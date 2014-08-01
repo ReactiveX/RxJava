@@ -19,8 +19,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+
 import rx.Observable;
 import rx.Observable.Operator;
+import rx.Producer;
 import rx.Subscriber;
 
 /**
@@ -93,6 +95,11 @@ public final class OperatorBufferWithSize<T> implements Operator<List<T>, T> {
                     }
                     child.onCompleted();
                 }
+
+                @Override
+                public void setProducer(final Producer producer) {
+                    child.setProducer(createProducer(producer,count,skip));
+                }
             };
         }
         return new Subscriber<T>(child) {
@@ -136,6 +143,23 @@ public final class OperatorBufferWithSize<T> implements Operator<List<T>, T> {
                     chunks.clear();
                 }
             }
+            
+            @Override
+            public void setProducer(final Producer producer) {
+                child.setProducer(createProducer(producer,count,skip));
+            }
+        };
+
+    }
+    
+    private static Producer createProducer(final Producer producer, final int count, final int skip) {
+        return new Producer() {
+
+            @Override
+            public void request(long n) {
+                producer.request((n-1) * skip + count);
+            }
         };
     }
+
 }
