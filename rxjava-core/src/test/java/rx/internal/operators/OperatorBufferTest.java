@@ -16,6 +16,7 @@
 package rx.internal.operators;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -791,4 +792,54 @@ public class OperatorBufferTest {
         verify(o, never()).onCompleted();
         verify(o).onError(any(TestException.class));
     }
+    
+    @Test
+    public void testBackpressureWithCountEqualsSkip() throws InterruptedException {
+        final CountDownLatch latch = new CountDownLatch(1);
+        Observable.from(1, 2).buffer(2).subscribe(createCountDownBackpressureSubscriber(latch));
+        assertTrue(latch.await(100, TimeUnit.MILLISECONDS));
+    }
+    
+    @Test
+    public void testBackpressureWithCountGreaterThanSkip() throws InterruptedException {
+        final CountDownLatch latch = new CountDownLatch(2);
+        Observable.from(1, 2, 3).buffer(2, 1).subscribe(createCountDownBackpressureSubscriber(latch));
+        assertTrue(latch.await(100, TimeUnit.MILLISECONDS));
+    }
+    
+    @Test
+    public void testBackpressureWithCountGreaterThanSkipValuesGreaterThanOne() throws InterruptedException {
+        final CountDownLatch latch = new CountDownLatch(2);
+        Observable.from(1, 2, 3, 4, 5, 6, 7).buffer(5, 2).subscribe(createCountDownBackpressureSubscriber(latch));
+        assertTrue(latch.await(100, TimeUnit.MILLISECONDS));
+    }
+
+    private static Subscriber<List<Integer>> createCountDownBackpressureSubscriber(final CountDownLatch latch) {
+        return new Subscriber<List<Integer>>() {
+
+            @Override
+            public void onStart() {
+                request(1);
+            }
+
+            @Override
+            public void onCompleted() {
+                //do nothing
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                //do nothing
+            }
+
+            @Override
+            public void onNext(List<Integer> t) {
+                latch.countDown();
+                request(1);
+            }};
+    }
+    
+    
+    
+    
 }
