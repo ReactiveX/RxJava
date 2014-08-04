@@ -23,27 +23,27 @@ import rx.android.subscriptions.AndroidSubscriptions;
 import rx.functions.Action0;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.widget.EditText;
+import android.widget.TextView;
 
-public class OperatorEditTextInput implements Observable.OnSubscribe<String> {
-    private final EditText input;
+public class OperatorTextViewInput<T extends TextView> implements Observable.OnSubscribe<T> {
+    private final T input;
     private final boolean emitInitialValue;
 
-    public OperatorEditTextInput(final EditText input, final boolean emitInitialValue) {
+    public OperatorTextViewInput(final T input, final boolean emitInitialValue) {
         this.input = input;
         this.emitInitialValue = emitInitialValue;
     }
 
     @Override
-    public void call(final Subscriber<? super String> observer) {
+    public void call(final Subscriber<? super T> observer) {
         Assertions.assertUiThread();
         final TextWatcher watcher = new SimpleTextWatcher() {
             @Override
             public void afterTextChanged(final Editable editable) {
-                observer.onNext(editable.toString());
+                observer.onNext(input);
             }
         };
-        
+
         final Subscription subscription = AndroidSubscriptions.unsubscribeInUiThread(new Action0() {
             @Override
             public void call() {
@@ -52,7 +52,7 @@ public class OperatorEditTextInput implements Observable.OnSubscribe<String> {
         });
 
         if (emitInitialValue) {
-            observer.onNext(input.getEditableText().toString());
+            observer.onNext(input);
         }
 
         input.addTextChangedListener(watcher);
