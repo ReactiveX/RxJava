@@ -3947,6 +3947,7 @@ public class Observable<T> {
      * @return an Observable that omits items emitted by the source Observable that are followed by another item
      *         within a computed debounce duration
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#throttlewithtimeout-or-debounce">RxJava wiki: debounce</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Backpressure">RxJava wiki: Backpressure</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.throttle.aspx">MSDN: Observable.Throttle</a>
      */
     public final <U> Observable<T> debounce(Func1<? super T, ? extends Observable<U>> debounceSelector) {
@@ -3985,6 +3986,7 @@ public class Observable<T> {
      * @return an Observable that filters out items from the source Observable that are too quickly followed by
      *         newer items
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#throttlewithtimeout-or-debounce">RxJava wiki: debounce</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Backpressure">RxJava wiki: Backpressure</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.throttle.aspx">MSDN: Observable.Throttle</a>
      * @see #throttleWithTimeout(long, TimeUnit)
      */
@@ -4027,6 +4029,7 @@ public class Observable<T> {
      * @return an Observable that filters out items from the source Observable that are too quickly followed by
      *         newer items
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#throttlewithtimeout-or-debounce">RxJava wiki: debounce</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Backpressure">RxJava wiki: Backpressure</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.throttle.aspx">MSDN: Observable.Throttle</a>
      * @see #throttleWithTimeout(long, TimeUnit, Scheduler)
      */
@@ -5503,6 +5506,8 @@ public class Observable<T> {
     /**
      * Instructs an Observable that is emitting items faster than its observer can consume them to buffer these
      * items indefinitely until they can be emitted.
+     * <p>
+     * <img width="640" height="300" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/bp.obp.buffer.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code onBackpressureBuffer} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -5519,6 +5524,8 @@ public class Observable<T> {
     /**
      * Use this operator when the upstream does not natively support backpressure and you wish to drop
      * {@code onNext} when unable to handle further events.
+     * <p>
+     * <img width="640" height="245" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/bp.obp.drop.png" alt="">
      * <p>
      * If the downstream request count hits 0 then {@code onNext} will be dropped until {@code request(long n)}
      * is invoked again to increase the request count.
@@ -6910,6 +6917,7 @@ public class Observable<T> {
      * @return an Observable that emits the results of sampling the items emitted by the source Observable at
      *         the specified time interval
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#sample-or-throttlelast">RxJava wiki: sample</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Backpressure">RxJava wiki: Backpressure</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sample.aspx">MSDN: Observable.Sample</a>
      * @see #throttleLast(long, TimeUnit)
      */
@@ -6938,6 +6946,7 @@ public class Observable<T> {
      * @return an Observable that emits the results of sampling the items emitted by the source Observable at
      *         the specified time interval
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#sample-or-throttlelast">RxJava wiki: sample</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Backpressure">RxJava wiki: Backpressure</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sample.aspx">MSDN: Observable.Sample</a>
      * @see #throttleLast(long, TimeUnit, Scheduler)
      */
@@ -6964,6 +6973,7 @@ public class Observable<T> {
      * @return an Observable that emits the results of sampling the items emitted by this Observable whenever
      *         the {@code sampler} Observable emits an item or completes
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#sample-or-throttlelast">RxJava wiki: sample</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Backpressure">RxJava wiki: Backpressure</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sample.aspx">MSDN: Observable.Sample</a>
      */
     public final <U> Observable<T> sample(Observable<U> sampler) {
@@ -8562,6 +8572,7 @@ public class Observable<T> {
      *            the unit of time of {@code windowDuration}
      * @return an Observable that performs the throttle operation
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#throttlefirst">RxJava wiki: throttleFirst</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Backpressure">RxJava wiki: Backpressure</a>
      */
     public final Observable<T> throttleFirst(long windowDuration, TimeUnit unit) {
         return lift(new OperatorThrottleFirst<T>(windowDuration, unit, Schedulers.computation()));
@@ -8591,6 +8602,7 @@ public class Observable<T> {
      *            event
      * @return an Observable that performs the throttle operation
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#throttlefirst">RxJava wiki: throttleFirst</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Backpressure">RxJava wiki: Backpressure</a>
      */
     public final Observable<T> throttleFirst(long skipDuration, TimeUnit unit, Scheduler scheduler) {
         return lift(new OperatorThrottleFirst<T>(skipDuration, unit, scheduler));
@@ -8618,6 +8630,7 @@ public class Observable<T> {
      *            the unit of time of {@code intervalDuration}
      * @return an Observable that performs the throttle operation
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#sample-or-throttlelast">RxJava wiki: throttleLast</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Backpressure">RxJava wiki: Backpressure</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sample.aspx">MSDN: Observable.Sample</a>
      * @see #sample(long, TimeUnit)
      */
@@ -8650,6 +8663,7 @@ public class Observable<T> {
      *            event
      * @return an Observable that performs the throttle operation
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#sample-or-throttlelast">RxJava wiki: throttleLast</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Backpressure">RxJava wiki: Backpressure</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sample.aspx">MSDN: Observable.Sample</a>
      * @see #sample(long, TimeUnit, Scheduler)
      */
@@ -8688,6 +8702,7 @@ public class Observable<T> {
      *            the {@link TimeUnit} of {@code timeout}
      * @return an Observable that filters out items that are too quickly followed by newer items
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#throttlewithtimeout-or-debounce">RxJava wiki: throttleWithTimeout</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Backpressure">RxJava wiki: Backpressure</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.throttle.aspx">MSDN: Observable.Throttle</a>
      * @see #debounce(long, TimeUnit)
      */
@@ -8730,6 +8745,7 @@ public class Observable<T> {
      *            item
      * @return an Observable that filters out items that are too quickly followed by newer items
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#throttlewithtimeout-or-debounce">RxJava wiki: throttleWithTimeout</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Backpressure">RxJava wiki: Backpressure</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.throttle.aspx">MSDN: Observable.Throttle</a>
      * @see #debounce(long, TimeUnit, Scheduler)
      */
