@@ -34,6 +34,10 @@ import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
 
 public class BlockingOperatorMostRecentTest {
+    @Test
+    public void testMostRecentNull() {
+        assertEquals(null, Observable.<Void>never().toBlocking().mostRecent(null).iterator().next());
+    }
 
     @Test
     public void testMostRecent() {
