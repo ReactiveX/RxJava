@@ -60,9 +60,25 @@ public class OperatorTextViewInputTest {
 
     @Test
     @SuppressWarnings("unchecked")
+    public void testOverloadedMethodDefaultsWithoutInitialValue() {
+        final TextView input = createTextView("initial");
+        final Observable<TextView> observable = ViewObservable.text(input);
+        runWithoutInitialValueTest(input, observable);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
     public void testWithoutInitialValue() {
         final TextView input = createTextView("initial");
-        final Observable<TextView> observable = ViewObservable.input(input, false);
+        final Observable<TextView> observable = ViewObservable.text(input, false);
+        runWithoutInitialValueTest(input, observable);
+    }
+
+    /**
+     * Helper method to run {@link #testOverloadedMethodDefaultsWithoutInitialValue} and
+     * {@link #testWithoutInitialValue} which test the same functionality.
+     */
+    private void runWithoutInitialValueTest(final TextView input, final Observable<TextView> observable) {
         final Observer<TextView> observer = mock(Observer.class);
         final Subscription subscription = observable.subscribe(new TestObserver<TextView>(observer));
 
@@ -91,7 +107,7 @@ public class OperatorTextViewInputTest {
     @SuppressWarnings("unchecked")
     public void testWithInitialValue() {
         final TextView input = createTextView("initial");
-        final Observable<TextView> observable = ViewObservable.input(input, true);
+        final Observable<TextView> observable = ViewObservable.text(input, true);
         final Observer<TextView> observer = mock(Observer.class);
         final Subscription subscription = observable.subscribe(new TestObserver<TextView>(observer));
 
@@ -120,7 +136,7 @@ public class OperatorTextViewInputTest {
     @SuppressWarnings("unchecked")
     public void testMultipleSubscriptions() {
         final TextView input = createTextView("initial");
-        final Observable<TextView> observable = ViewObservable.input(input, false);
+        final Observable<TextView> observable = ViewObservable.text(input, false);
 
         final Observer<TextView> observer1 = mock(Observer.class);
         final Observer<TextView> observer2 = mock(Observer.class);
@@ -160,7 +176,7 @@ public class OperatorTextViewInputTest {
     @SuppressWarnings("unchecked")
     public void testTextViewSubclass() {
         final EditText input = createEditText("initial");
-        final Observable<EditText> observable = ViewObservable.input(input, false);
+        final Observable<EditText> observable = ViewObservable.text(input, false);
         final Observer<EditText> observer = mock(Observer.class);
         observable.subscribe(new TestObserver<EditText>(observer));
 
@@ -176,7 +192,7 @@ public class OperatorTextViewInputTest {
     @SuppressWarnings("unchecked")
     public void testLegacyStringObservableCompatibility() {
         final EditText input = createEditText("initial");
-        final Observable<String> observable = ViewObservable.input(input, false)
+        final Observable<String> observable = ViewObservable.text(input, false)
             .map(new Func1<EditText, String>() {
 
                     @Override
