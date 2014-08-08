@@ -1027,7 +1027,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#defer">RxJava wiki: defer</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229160.aspx">MSDN: Observable.Defer</a>
      */
-    public final static <T> Observable<T> defer(Func0<? extends Observable<? extends T>> observableFactory) {
+    public final static <T> Observable<T> defer(Func0<Observable<T>> observableFactory) {
         return create(new OnSubscribeDefer<T>(observableFactory));
     }
 
