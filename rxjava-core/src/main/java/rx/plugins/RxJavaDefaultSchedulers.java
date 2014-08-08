@@ -23,6 +23,7 @@ import rx.Scheduler;
  * See {@link RxJavaPlugins} or the RxJava GitHub Wiki for information on configuring plugins:
  * <a href="https://github.com/Netflix/RxJava/wiki/Plugins">https://github.com/Netflix/RxJava/wiki/Plugins</a>.
  */
+@Deprecated
 public abstract class RxJavaDefaultSchedulers {
 
     /**

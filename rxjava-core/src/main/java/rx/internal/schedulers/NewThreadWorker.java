@@ -18,6 +18,8 @@ package rx.internal.schedulers;
 import rx.Scheduler;
 import rx.Subscription;
 import rx.functions.Action0;
+import rx.plugins.RxJavaPlugins;
+import rx.plugins.RxJavaSchedulersHook;
 import rx.subscriptions.Subscriptions;
 
 import java.util.concurrent.*;
@@ -27,11 +29,13 @@ import java.util.concurrent.*;
  */
 public class NewThreadWorker extends Scheduler.Worker implements Subscription {
     private final ScheduledExecutorService executor;
+    private final RxJavaSchedulersHook schedulersHook;
     volatile boolean isUnsubscribed;
 
     /* package */
     public NewThreadWorker(ThreadFactory threadFactory) {
         executor = Executors.newScheduledThreadPool(1, threadFactory);
+        schedulersHook = RxJavaPlugins.getInstance().getSchedulersHook();
     }
 
     @Override
@@ -55,7 +59,8 @@ public class NewThreadWorker extends Scheduler.Worker implements Subscription {
      * @return
      */
     public ScheduledAction scheduleActual(final Action0 action, long delayTime, TimeUnit unit) {
-        ScheduledAction run = new ScheduledAction(action);
+        Action0 decoratedAction = schedulersHook.onSchedule(action);
+        ScheduledAction run = new ScheduledAction(decoratedAction);
         Future<?> f;
         if (delayTime <= 0) {
             f = executor.submit(run);
