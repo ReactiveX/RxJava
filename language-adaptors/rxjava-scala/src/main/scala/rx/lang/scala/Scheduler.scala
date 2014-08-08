@@ -93,6 +93,22 @@ trait Worker extends Subscription {
   }
 
   /**
+   * Schedules an Action for recursively repeated execution.
+   *
+   * @param action the Action to schedule recursively
+   * @return a subscription to be able to unsubscribe the action
+   */
+  def scheduleRec(action: => Unit): Subscription = {
+    def work: Unit = {
+      action
+      if (!this.isUnsubscribed) {
+        this.schedule(work)
+      }
+    }
+    this.schedule(work)
+  }
+
+  /**
    * Schedules a cancelable action to be executed periodically. This default implementation schedules
    * recursively and waits for actions to complete (instead of potentially executing long-running actions
    * concurrently). Each scheduler that can do periodic scheduling in a better way should override this.
