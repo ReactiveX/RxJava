@@ -35,6 +35,7 @@ public class RxJavaPlugins {
     private final AtomicReference<RxJavaErrorHandler> errorHandler = new AtomicReference<RxJavaErrorHandler>();
     private final AtomicReference<RxJavaObservableExecutionHook> observableExecutionHook = new AtomicReference<RxJavaObservableExecutionHook>();
     private final AtomicReference<RxJavaDefaultSchedulers> schedulerOverrides = new AtomicReference<RxJavaDefaultSchedulers>();
+    private final AtomicReference<RxJavaScheduledRunnableWrapper> scheduledRunnableWrapperOverride = new AtomicReference<RxJavaScheduledRunnableWrapper>();
 
     /**
      * Retrieves the single {@code RxJavaPlugins} instance.
@@ -205,6 +206,28 @@ public class RxJavaPlugins {
     public void registerDefaultSchedulers(RxJavaDefaultSchedulers impl) {
         if (!schedulerOverrides.compareAndSet(null, impl)) {
             throw new IllegalStateException("Another strategy was already registered: " + schedulerOverrides.get());
+        }
+    }
+
+    public RxJavaScheduledRunnableWrapper getScheduledRunnableWrapper() {
+        if (scheduledRunnableWrapperOverride.get() == null) {
+            //check for an implementation from System.getProperty first
+            Object impl = getPluginImplementationViaProperty(RxJavaScheduledRunnableWrapper.class);
+            if (impl == null) {
+                //nothing set via properties so initialize with default
+                scheduledRunnableWrapperOverride.compareAndSet(null, RxJavaDefaultScheduledRunnableWrapper.getInstance());
+                //we don't return from here but call get() again in case of thread-race so the winner will always get returned
+            } else {
+                //we received an implementation from the system property so use it
+                scheduledRunnableWrapperOverride.compareAndSet(null, (RxJavaScheduledRunnableWrapper) impl);
+            }
+        }
+        return scheduledRunnableWrapperOverride.get();
+    }
+
+    public void registerDefaultScheduledAction(RxJavaScheduledRunnableWrapper impl) {
+        if (!scheduledRunnableWrapperOverride.compareAndSet(null, impl)) {
+            throw new IllegalStateException("Another strategy was already registered: " + scheduledRunnableWrapperOverride.get());
         }
     }
 }

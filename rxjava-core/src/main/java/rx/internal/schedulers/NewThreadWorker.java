@@ -18,6 +18,8 @@ package rx.internal.schedulers;
 import rx.Scheduler;
 import rx.Subscription;
 import rx.functions.Action0;
+import rx.plugins.RxJavaPlugins;
+import rx.plugins.RxJavaScheduledRunnableWrapper;
 import rx.subscriptions.Subscriptions;
 
 import java.util.concurrent.*;
@@ -27,11 +29,15 @@ import java.util.concurrent.*;
  */
 public class NewThreadWorker extends Scheduler.Worker implements Subscription {
     private final ScheduledExecutorService executor;
+    private final RxJavaScheduledRunnableWrapper scheduledRunnableWrapper;
     volatile boolean isUnsubscribed;
 
     /* package */
     public NewThreadWorker(ThreadFactory threadFactory) {
         executor = Executors.newScheduledThreadPool(1, threadFactory);
+
+        //plugin-defined strategy for wrapping a Runnable before it gets submitted
+        scheduledRunnableWrapper = RxJavaPlugins.getInstance().getScheduledRunnableWrapper();
     }
 
     @Override
@@ -56,11 +62,12 @@ public class NewThreadWorker extends Scheduler.Worker implements Subscription {
      */
     public ScheduledAction scheduleActual(final Action0 action, long delayTime, TimeUnit unit) {
         ScheduledAction run = new ScheduledAction(action);
+        Runnable toSubmit = scheduledRunnableWrapper.getRunnable(run);
         Future<?> f;
         if (delayTime <= 0) {
-            f = executor.submit(run);
+            f = executor.submit(toSubmit);
         } else {
-            f = executor.schedule(run, delayTime, unit);
+            f = executor.schedule(toSubmit, delayTime, unit);
         }
         run.add(Subscriptions.from(f));
 
