@@ -5182,6 +5182,10 @@ public class Observable<T> {
     public final <R> Observable<R> map(Func1<? super T, ? extends R> func) {
         return lift(new OperatorMap<T, R>(func));
     }
+    
+    private final <R> Observable<R> mapNotification(Func1<? super T, ? extends R> onNext, Func1<? super Throwable, ? extends R> onError, Func0<? extends R> onCompleted) {
+        return lift(new OperatorMapNotification<T, R>(onNext, onError, onCompleted));
+    }
 
     /**
      * Returns an Observable that represents all of the emissions <em>and</em> notifications from the source
@@ -5254,7 +5258,7 @@ public class Observable<T> {
             Func1<? super T, ? extends Observable<? extends R>> onNext,
             Func1<? super Throwable, ? extends Observable<? extends R>> onError,
             Func0<? extends Observable<? extends R>> onCompleted) {
-        return lift(new OperatorMergeMapTransform<T, R>(onNext, onError, onCompleted));
+        return merge(mapNotification(onNext, onError, onCompleted));
     }
 
     /**
