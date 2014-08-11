@@ -3138,7 +3138,7 @@ trait Observable[+T]
    *            Number of retry attempts before failing.
    * @return Observable with retry logic.
    */
-  def retry(retryCount: Int): Observable[T] = {
+  def retry(retryCount: Long): Observable[T] = {
     toScalaObservable[T](asJavaObservable.retry(retryCount))
   }
 
@@ -4507,7 +4507,7 @@ object Observable {
    *         factory function
    */
   def defer[T](observable: => Observable[T]): Observable[T] = {
-    toScalaObservable[T](rx.Observable.defer[T](() => observable.asJavaObservable))
+    toScalaObservable[T](rx.Observable.defer[T](() => observable.asJavaObservable.asInstanceOf[rx.Observable[T]]))
   }
 
   /**

@@ -113,20 +113,16 @@ class CompletenessTest extends JUnitSuite {
       "lastOrDefault(T, Func1[_ >: T, Boolean])" -> "[use `filter(predicate).lastOrElse(default)`]",
       "lift(Operator[_ <: R, _ >: T])" -> "lift(Subscriber[R] => Subscriber[T])",
       "limit(Int)" -> "take(Int)",
-      "mergeMap(Func1[_ >: T, _ <: Observable[_ <: R]])" -> "flatMap(T => Observable[R])",
-      "mergeMap(Func1[_ >: T, _ <: Observable[_ <: R]], Func1[_ >: Throwable, _ <: Observable[_ <: R]], Func0[_ <: Observable[_ <: R]])" -> "flatMap(T => Observable[R], Throwable => Observable[R], () => Observable[R])",
-      "mergeMap(Func1[_ >: T, _ <: Observable[_ <: U]], Func2[_ >: T, _ >: U, _ <: R])" -> "flatMapWith(T => Observable[U])((T, U) => R)",
-      "mergeMapIterable(Func1[_ >: T, _ <: Iterable[_ <: R]])" -> "flatMapIterable(T => Iterable[R])",
-      "mergeMapIterable(Func1[_ >: T, _ <: Iterable[_ <: U]], Func2[_ >: T, _ >: U, _ <: R])" -> "flatMapIterableWith(T => Iterable[U])((T, U) => R)",
+      "flatMap(Func1[_ >: T, _ <: Observable[_ <: U]], Func2[_ >: T, _ >: U, _ <: R])" -> "flatMapWith(T => Observable[U])((T, U) => R)",
+      "flatMapIterable(Func1[_ >: T, _ <: Iterable[_ <: U]], Func2[_ >: T, _ >: U, _ <: R])" -> "flatMapIterableWith(T => Iterable[U])((T, U) => R)",
       "mergeWith(Observable[_ <: T])" -> "merge(Observable[U])",
       "multicast(Subject[_ >: T, _ <: R])" -> "multicast(Subject[R])",
       "multicast(Func0[_ <: Subject[_ >: T, _ <: TIntermediate]], Func1[_ >: Observable[TIntermediate], _ <: Observable[TResult]])" -> "multicast(() => Subject[R])(Observable[R] => Observable[U])",
-      "ofType(Class[R])" -> "[use `filter(_.isInstanceOf[Class])",
+      "ofType(Class[R])" -> "[use `filter(_.isInstanceOf[Class])`]",
       "onErrorResumeNext(Func1[Throwable, _ <: Observable[_ <: T]])" -> "onErrorResumeNext(Throwable => Observable[U])",
       "onErrorResumeNext(Observable[_ <: T])" -> "onErrorResumeNext(Observable[U])",
       "onErrorReturn(Func1[Throwable, _ <: T])" -> "onErrorReturn(Throwable => U)",
       "onExceptionResumeNext(Observable[_ <: T])" -> "onExceptionResumeNext(Observable[U])",
-      "onErrorFlatMap(Func1[OnErrorThrowable, _ <: Observable[_ <: T]])" -> "onErrorFlatMap((Throwable, Option[Any]) => Observable[U])",
       "parallel(Func1[Observable[T], Observable[R]])" -> "parallel(Observable[T] => Observable[R])",
       "parallel(Func1[Observable[T], Observable[R]], Scheduler)" -> "parallel(Observable[T] => Observable[R], Scheduler)",
       "publish(Func1[_ >: Observable[T], _ <: Observable[R]])" -> "publish(Observable[T] => Observable[R])",
@@ -134,6 +130,8 @@ class CompletenessTest extends JUnitSuite {
       "publishLast(Func1[_ >: Observable[T], _ <: Observable[R]])" -> "publishLast(Observable[T] => Observable[R])",
       "reduce(Func2[T, T, T])" -> "reduce((U, U) => U)",
       "reduce(R, Func2[R, _ >: T, R])" -> "foldLeft(R)((R, T) => R)",
+      "repeatWhen(Func1[_ >: Observable[_ <: Notification[_]], _ <: Observable[_ <: Notification[_]]])" -> "repeatWhen(Observable[Notification[Any]] => Observable[Notification[Any]])",
+      "repeatWhen(Func1[_ >: Observable[_ <: Notification[_]], _ <: Observable[_ <: Notification[_]]], Scheduler)" -> "repeatWhen(Observable[Notification[Any]] => Observable[Notification[Any]], Scheduler)",
       "replay(Func1[_ >: Observable[T], _ <: Observable[R]])" -> "replay(Observable[T] => Observable[R])",
       "replay(Func1[_ >: Observable[T], _ <: Observable[R]], Int)" -> "replay(Observable[T] => Observable[R], Int)",
       "replay(Func1[_ >: Observable[T], _ <: Observable[R]], Int, Long, TimeUnit)" -> "replay(Observable[T] => Observable[R], Int, Duration)",
@@ -143,6 +141,8 @@ class CompletenessTest extends JUnitSuite {
       "replay(Func1[_ >: Observable[T], _ <: Observable[R]], Long, TimeUnit, Scheduler)" -> "replay(Observable[T] => Observable[R], Duration, Scheduler)",
       "replay(Func1[_ >: Observable[T], _ <: Observable[R]], Scheduler)" -> "replay(Observable[T] => Observable[R], Scheduler)",
       "retry(Func2[Integer, Throwable, Boolean])" -> "retry((Int, Throwable) => Boolean)",
+      "retryWhen(Func1[_ >: Observable[_ <: Notification[_]], _ <: Observable[_ <: Notification[_]]], Scheduler)" -> "retryWhen(Observable[Notification[Any]] => Observable[Notification[Any]], Scheduler)",
+      "retryWhen(Func1[_ >: Observable[_ <: Notification[_]], _ <: Observable[_]])" -> "retryWhen(Observable[Notification[Any]] => Observable[Any])",
       "sample(Observable[U])" -> "sample(Observable[Any])",
       "scan(Func2[T, T, T])" -> unnecessary,
       "scan(R, Func2[R, _ >: T, R])" -> "scan(R)((R, T) => R)",
@@ -204,12 +204,11 @@ class CompletenessTest extends JUnitSuite {
 
       // manually added entries for Java static methods
       "amb(Iterable[_ <: Observable[_ <: T]])" -> "amb(Observable[T]*)",
-      "create(OnSubscribeFunc[T])" -> "create(Observer[T] => Subscription)",
       "create(OnSubscribe[T])" -> "apply(Subscriber[T] => Unit)",
       "combineLatest(Observable[_ <: T1], Observable[_ <: T2], Func2[_ >: T1, _ >: T2, _ <: R])" -> "combineLatest(Observable[U])",
       "combineLatest(List[_ <: Observable[_ <: T]], FuncN[_ <: R])" -> "combineLatest(Seq[Observable[T]])(Seq[T] => R)",
       "concat(Observable[_ <: Observable[_ <: T]])" -> "concat(<:<[Observable[T], Observable[Observable[U]]])",
-      "defer(Func0[_ <: Observable[_ <: T]])" -> "defer(=> Observable[T])",
+      "defer(Func0[Observable[T]])" -> "defer(=> Observable[T])",
       "from(<repeated...>[T])" -> "items(T*)",
       "from(Array[T], Scheduler)" -> "from(Iterable[T], Scheduler)",
       "from(Iterable[_ <: T])" -> "from(Iterable[T])",
@@ -225,7 +224,7 @@ class CompletenessTest extends JUnitSuite {
       "merge(Array[Observable[_ <: T]], Scheduler)" -> "[use `Observable.from(array, scheduler).flatten`]",
       "merge(Iterable[_ <: Observable[_ <: T]])" -> "[use `Observable.from(iter).flatten`]",
       "merge(Iterable[_ <: Observable[_ <: T]], Int)" -> "[use `Observable.from(iter).flatten(n)`]",
-      "merge(Iterable[_ <: Observable[_ <: T]], Int, Scheduler)" -> "[use `Observable.from(iter, scheduler).flatten(n)]",
+      "merge(Iterable[_ <: Observable[_ <: T]], Int, Scheduler)" -> "[use `Observable.from(iter, scheduler).flatten(n)`]",
       "merge(Iterable[_ <: Observable[_ <: T]], Scheduler)" -> "[use `Observable.from(iter, scheduler).flatten`]",
       "mergeDelayError(Observable[_ <: T], Observable[_ <: T])" -> "mergeDelayError(Observable[U])",
       "mergeDelayError(Observable[_ <: Observable[_ <: T]])" -> "flattenDelayError(<:<[Observable[T], Observable[Observable[U]]])",
@@ -234,12 +233,12 @@ class CompletenessTest extends JUnitSuite {
       "sequenceEqual(Observable[_ <: T], Observable[_ <: T])" -> "sequenceEqual(Observable[U])",
       "sequenceEqual(Observable[_ <: T], Observable[_ <: T], Func2[_ >: T, _ >: T, Boolean])" -> "sequenceEqualWith(Observable[U])((U, U) => Boolean)",
       "range(Int, Int)" -> "[use `(start until (start + count)).toObservable` instead of `range(start, count)`]",
-      "range(Int, Int, Scheduler)" -> "[use `(start until (start + count)).toObservable.subscribeOn(scheduler)` instead of `range(start, count, scheduler)`]`]",
+      "range(Int, Int, Scheduler)" -> "[use `(start until (start + count)).toObservable.subscribeOn(scheduler)` instead of `range(start, count, scheduler)`]",
       "switchOnNext(Observable[_ <: Observable[_ <: T]])" -> "switch(<:<[Observable[T], Observable[Observable[U]]])",
       "zip(Observable[_ <: T1], Observable[_ <: T2], Func2[_ >: T1, _ >: T2, _ <: R])" -> "[use instance method `zip` and `map`]",
       "zip(Observable[_ <: Observable[_]], FuncN[_ <: R])" -> "[use `zip` in companion object and `map`]",
       "zip(Iterable[_ <: Observable[_]], FuncN[_ <: R])" -> "[use `zip` in companion object and `map`]",
-      "zip(Observable[_ <: T2], Func2[_ >: T, _ >: T2, _ <: R])" -> "zipWith(Observable[U])((T, U) => R)",
+      "zipWith(Observable[_ <: T2], Func2[_ >: T, _ >: T2, _ <: R])" -> "zipWith(Observable[U])((T, U) => R)",
       "zip(Iterable[_ <: T2], Func2[_ >: T, _ >: T2, _ <: R])" -> "zipWith(Iterable[U])((T, U) => R)"
   ) ++ List.iterate("T, T", 8)(s => s + ", T").map(
       // all 9 overloads of startWith:
@@ -290,7 +289,11 @@ class CompletenessTest extends JUnitSuite {
   def getPublicInstanceMethods(tp: Type): Iterable[String] = {
     // declarations: => only those declared in Observable
     // members => also those of superclasses
-    methodMembersToMethodStrings(tp.declarations.filter(m => m.isMethod && m.isPublic))
+    methodMembersToMethodStrings(tp.declarations.filter {
+      m =>
+        m.isMethod && m.isPublic &&
+          m.annotations.forall(_.toString != "java.lang.Deprecated") // don't check deprecated classes
+    })
     // TODO how can we filter out instance methods which were put into companion because
     // of extends AnyVal in a way which does not depend on implementation-chosen name '$extension'?
     .filter(! _.contains("$extension"))
