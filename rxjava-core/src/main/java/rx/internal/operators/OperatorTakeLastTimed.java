@@ -18,7 +18,6 @@ package rx.internal.operators;
 import rx.Observable.Operator;
 import rx.Scheduler;
 import rx.Subscriber;
-import rx.schedulers.Timestamped;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -52,19 +51,24 @@ public final class OperatorTakeLastTimed<T> implements Operator<T, T> {
 
     @Override
     public Subscriber<? super T> call(final Subscriber<? super T> subscriber) {
+        final Deque<Object> buffer = new ArrayDeque<Object>();
+        final Deque<Long> timestampBuffer = new ArrayDeque<Long>();
+        final NotificationLite<T> notification = NotificationLite.instance();
+        final TakeLastQueueProducer<T> producer = new TakeLastQueueProducer<T>(notification, buffer, subscriber);
+        subscriber.setProducer(producer);
         return new Subscriber<T>(subscriber) {
-
-            private final Deque<Timestamped<T>> buffer = new ArrayDeque<Timestamped<T>>();
 
             protected void runEvictionPolicy(long now) {
                 // trim size
                 while (count >= 0 && buffer.size() > count) {
+                    timestampBuffer.pollFirst();
                     buffer.pollFirst();
                 }
                 // remove old entries
                 while (!buffer.isEmpty()) {
-                    Timestamped<T> v = buffer.peekFirst();
-                    if (v.getTimestampMillis() < now - ageMillis) {
+                    long v = timestampBuffer.peekFirst();
+                    if (v < now - ageMillis) {
+                        timestampBuffer.pollFirst();
                         buffer.pollFirst();
                     } else {
                         break;
@@ -82,12 +86,14 @@ public final class OperatorTakeLastTimed<T> implements Operator<T, T> {
             @Override
             public void onNext(T args) {
                 long t = scheduler.now();
-                buffer.add(new Timestamped<T>(t, args));
+                timestampBuffer.add(t);
+                buffer.add(notification.next(args));
                 runEvictionPolicy(t);
             }
 
             @Override
             public void onError(Throwable e) {
+                timestampBuffer.clear();
                 buffer.clear();
                 subscriber.onError(e);
             }
@@ -95,20 +101,10 @@ public final class OperatorTakeLastTimed<T> implements Operator<T, T> {
             @Override
             public void onCompleted() {
                 runEvictionPolicy(scheduler.now());
-                try {
-                    // TODO this can be made to support backpressure
-                    for (Timestamped<T> v : buffer) {
-                        subscriber.onNext(v.getValue());
-
-                    }
-                } catch (Throwable e) {
-                    onError(e);
-                    return;
-                }
-                buffer.clear();
-                subscriber.onCompleted();
+                timestampBuffer.clear();
+                buffer.offer(notification.completed());
+                producer.startEmitting();
             }
         };
     }
-
 }
