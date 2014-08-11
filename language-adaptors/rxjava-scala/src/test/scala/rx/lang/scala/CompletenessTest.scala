@@ -462,6 +462,7 @@ title: Comparison of Scala Observable and Java Observable
 ---
 
 Note:
+
 *    This table contains both static methods and instance methods.
 *    If a signature is too long, move your mouse over it to get the full signature.
 
