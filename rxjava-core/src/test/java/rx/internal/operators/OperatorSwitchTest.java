@@ -23,18 +23,17 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InOrder;
 
-import rx.Observable;
-import rx.Observer;
-import rx.Scheduler;
-import rx.Subscriber;
+import rx.*;
 import rx.exceptions.TestException;
 import rx.functions.Action0;
+import rx.observers.TestSubscriber;
 import rx.schedulers.TestScheduler;
 
 public class OperatorSwitchTest {
@@ -403,5 +402,115 @@ public class OperatorSwitchTest {
         inOrder.verify(observer, times(1)).onNext("2-three");
         inOrder.verify(observer, times(1)).onCompleted();
         inOrder.verifyNoMoreInteractions();
+    }
+
+    @Test
+    public void testBackpressure() {
+        final Observable<String> o1 = Observable.create(new Observable.OnSubscribe<String>() {
+            @Override
+            public void call(final Subscriber<? super String> observer) {
+                observer.setProducer(new Producer() {
+
+                    private int emitted = 0;
+
+                    @Override
+                    public void request(long n) {
+                        for(int i = 0; i < n && emitted < 10 && !observer.isUnsubscribed(); i++) {
+                            scheduler.advanceTimeBy(5, TimeUnit.MILLISECONDS);
+                            emitted++;
+                            observer.onNext("a" + emitted);
+                        }
+                        if(emitted == 10) {
+                            observer.onCompleted();
+                        }
+                    }
+                });
+            }
+        });
+        final Observable<String> o2 = Observable.create(new Observable.OnSubscribe<String>() {
+            @Override
+            public void call(final Subscriber<? super String> observer) {
+                observer.setProducer(new Producer() {
+
+                    private int emitted = 0;
+
+                    @Override
+                    public void request(long n) {
+                        for(int i = 0; i < n && emitted < 10 && !observer.isUnsubscribed(); i++) {
+                            scheduler.advanceTimeBy(5, TimeUnit.MILLISECONDS);
+                            emitted++;
+                            observer.onNext("b" + emitted);
+                        }
+                        if(emitted == 10) {
+                            observer.onCompleted();
+                        }
+                    }
+                });
+            }
+        });
+        final Observable<String> o3 = Observable.create(new Observable.OnSubscribe<String>() {
+            @Override
+            public void call(final Subscriber<? super String> observer) {
+                observer.setProducer(new Producer() {
+
+                    private int emitted = 0;
+
+                    @Override
+                    public void request(long n) {
+                        for(int i = 0; i < n && emitted < 10 && !observer.isUnsubscribed(); i++) {
+                            emitted++;
+                            observer.onNext("c" + emitted);
+                        }
+                        if(emitted == 10) {
+                            observer.onCompleted();
+                        }
+                    }
+                });
+            }
+        });
+        Observable<Observable<String>> o = Observable.create(new Observable.OnSubscribe<Observable<String>>() {
+            @Override
+            public void call(Subscriber<? super Observable<String>> observer) {
+                publishNext(observer, 10, o1);
+                publishNext(observer, 20, o2);
+                publishNext(observer, 30, o3);
+                publishCompleted(observer, 30);
+            }
+        });
+        final TestSubscriber testSubscriber = new TestSubscriber();
+        Observable.switchOnNext(o).subscribe(new Subscriber<String>() {
+
+            private int requested = 0;
+
+            @Override
+            public void onStart() {
+                requested = 3;
+                request(3);
+            }
+
+            @Override
+            public void onCompleted() {
+                testSubscriber.onCompleted();
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                testSubscriber.onError(e);
+            }
+
+            @Override
+            public void onNext(String s) {
+                testSubscriber.onNext(s);
+                requested--;
+                if(requested == 0) {
+                    requested = 3;
+                    request(3);
+                }
+            }
+        });
+        scheduler.advanceTimeBy(10, TimeUnit.MILLISECONDS);
+        testSubscriber.assertReceivedOnNext(Arrays.asList("a1", "b1", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8", "c9", "c10"));
+        testSubscriber.assertNoErrors();
+        testSubscriber.assertTerminalEvent();
     }
 }
