@@ -40,7 +40,7 @@ public fun<T> Function1<Observer<in T>, Subscription>.asObservableFunc(): Observ
     })!!
 }
 
-public fun<T> Function0<Observable<out T>>.defer(): Observable<T> {
+public fun<T> Function0<Observable<T>>.defer(): Observable<T> {
     return Observable.defer(this)!!
 }
 
