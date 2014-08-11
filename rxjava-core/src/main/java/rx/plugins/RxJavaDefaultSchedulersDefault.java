@@ -22,6 +22,7 @@ import rx.Scheduler;
  * 
  * @ExcludeFromJavadoc
  */
+@Deprecated
 public class RxJavaDefaultSchedulersDefault extends RxJavaDefaultSchedulers {
 
     private static RxJavaDefaultSchedulersDefault INSTANCE = new RxJavaDefaultSchedulersDefault();
