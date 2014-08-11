@@ -19,8 +19,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+
 import rx.Observable;
 import rx.Observable.Operator;
+import rx.Producer;
 import rx.Subscriber;
 
 /**
@@ -51,6 +53,12 @@ public final class OperatorBufferWithSize<T> implements Operator<List<T>, T> {
      *            into a buffer at all!
      */
     public OperatorBufferWithSize(int count, int skip) {
+        if (count <= 0) {
+            throw new IllegalArgumentException("count must be greater than 0");
+        }
+        if (skip <= 0) {
+            throw new IllegalArgumentException("skip must be greater than 0");
+        }
         this.count = count;
         this.skip = skip;
     }
@@ -60,6 +68,29 @@ public final class OperatorBufferWithSize<T> implements Operator<List<T>, T> {
         if (count == skip) {
             return new Subscriber<T>(child) {
                 List<T> buffer;
+
+                @Override
+                public void setProducer(final Producer producer) {
+                    child.setProducer(new Producer() {
+
+                        private volatile boolean infinite = false;
+
+                        @Override
+                        public void request(long n) {
+                            if (infinite) {
+                                return;
+                            }
+                            if (n >= Long.MAX_VALUE / count) {
+                                // n == Long.MAX_VALUE or n * count >= Long.MAX_VALUE
+                                infinite = true;
+                                producer.request(Long.MAX_VALUE);
+                            } else {
+                                producer.request(n * count);
+                            }
+                        }
+                    });
+                }
+
                 @Override
                 public void onNext(T t) {
                     if (buffer == null) {
@@ -98,6 +129,60 @@ public final class OperatorBufferWithSize<T> implements Operator<List<T>, T> {
         return new Subscriber<T>(child) {
             final List<List<T>> chunks = new LinkedList<List<T>>();
             int index;
+
+            @Override
+            public void setProducer(final Producer producer) {
+                child.setProducer(new Producer() {
+
+                    private volatile boolean firstRequest = true;
+                    private volatile boolean infinite = false;
+
+                    private void requestInfinite() {
+                        infinite = true;
+                        producer.request(Long.MAX_VALUE);
+                    }
+
+                    @Override
+                    public void request(long n) {
+                        if (infinite) {
+                            return;
+                        }
+                        if (n == Long.MAX_VALUE) {
+                            requestInfinite();
+                            return;
+                        } else {
+                            if (firstRequest) {
+                                firstRequest = false;
+                                if (n - 1 >= (Long.MAX_VALUE - count) / skip) {
+                                    // count + skip * (n - 1) >= Long.MAX_VALUE
+                                    requestInfinite();
+                                    return;
+                                }
+                                // count = 5, skip = 2, n = 3
+                                // * * * * *
+                                //     * * * * *
+                                //         * * * * *
+                                // request = 5 + 2 * ( 3 - 1)
+                                producer.request(count + skip * (n - 1));
+                            } else {
+                                if (n >= Long.MAX_VALUE / skip) {
+                                    // skip * n >= Long.MAX_VALUE
+                                    requestInfinite();
+                                    return;
+                                }
+                                // count = 5, skip = 2, n = 3
+                                // (* * *) * *
+                                // (    *) * * * *
+                                //           * * * * *
+                                // request = skip * n
+                                // "()" means the items already emitted before this request
+                                producer.request(skip * n);
+                            }
+                        }
+                    }
+                });
+            }
+
             @Override
             public void onNext(T t) {
                 if (index++ % skip == 0) {
