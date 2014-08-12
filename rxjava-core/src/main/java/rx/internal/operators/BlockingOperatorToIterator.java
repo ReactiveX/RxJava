@@ -89,18 +89,7 @@ public class BlockingOperatorToIterator {
             }
 
             private Notification<? extends T> take() {
-                try {
-                    // TODO remove this timeout and logging before final release of 0.20
-                    Notification<? extends T> n = notifications.poll(10000, TimeUnit.MILLISECONDS);
-                    if(n == null) {
-                        System.err.println("Timed out waiting for value. File a bug at github.com/Netflix/RxJava");
-                        throw new RuntimeException("Timed out waiting for value. File a bug at github.com/Netflix/RxJava");
-                    } else {
-                        return n;
-                    }
-                } catch (InterruptedException e) {
-                    throw Exceptions.propagate(e);
-                }
+                return notifications.poll();
             }
 
             @Override
