@@ -184,20 +184,25 @@ public class Observable<T> {
     /**
      * Compose Observables together with a function.
      * 
-     * This works on the Observables themselves whereas `lift` works on the internal Subscriber/Observers.
+     * This works on the Observables themselves whereas {@link #lift} works on the internal
+     * Subscriber/Observers.
      * 
-     * Lift should be used when creating an operator that acts on the underlying data. 
-     * Compose should be used when acting on the observable itself, such as composing multiple operators.
+     * Use {@code lift} if you are creating an operator that acts on the underlying data. Use {@code compose} if
+     * you are acting on the observable itself, for instance by composing multiple operators.
      * 
+     * @warn param transformer not described
      * @param transformer
      * @return
+     * @since 0.20
      */
     public <R> Observable<R> compose(Transformer<T, R> transformer) {
         return transformer.call(this);
     }
     
     /**
-     * Transformer function for `compose`
+     * Transformer function used by {@link #compose}.
+     * @warn more complete description needed
+     * @since 0.20
      */
     public static interface Transformer<T, R> extends Func1<Observable<T>, Observable<R>> {
         // cover for generics insanity
@@ -4989,6 +4994,7 @@ public class Observable<T> {
      *         key value
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#groupby-and-groupbyuntil">RxJava wiki: groupBy</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.groupby.aspx">MSDN: Observable.GroupBy</a>
+     * @since 0.20
      */
     public final <K, R> Observable<GroupedObservable<K, R>> groupBy(final Func1<? super T, ? extends K> keySelector, final Func1<? super T, ? extends R> elementSelector) {
         return lift(new OperatorGroupBy<T, K, R>(keySelector, elementSelector));
