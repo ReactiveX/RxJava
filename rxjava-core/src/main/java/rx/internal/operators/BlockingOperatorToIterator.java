@@ -89,7 +89,11 @@ public class BlockingOperatorToIterator {
             }
 
             private Notification<? extends T> take() {
-                return notifications.poll();
+                try {
+                    return notifications.take();
+                } catch (InterruptedException e) {
+                    throw Exceptions.propagate(e);
+                }
             }
 
             @Override
