@@ -19,6 +19,7 @@ import java.util.ArrayList;
 
 import org.junit.Test;
 
+import rx.Observable.Transformer;
 import rx.functions.Func2;
 
 /**
@@ -57,6 +58,34 @@ public class CovarianceTest {
         o2.toSortedList(SORT_FUNCTION);
     }
 
+    
+    @Test
+    public void testCovarianceOfCompose() {
+        Observable<HorrorMovie> movie = Observable.<HorrorMovie> from(new HorrorMovie());
+        movie.compose(new Transformer<Movie, Movie>() {
+
+            @Override
+            public Observable<Movie> call(Observable<Movie> t1) {
+                return Observable.from(new Movie());
+            }
+            
+        });
+    }
+    
+    @Test
+    public void testCovarianceOfCompose2() {
+        Observable<Movie> movie = Observable.<Movie> from(new HorrorMovie());
+        movie.compose(new Transformer<Movie, Movie>() {
+
+            @Override
+            public Observable<Movie> call(Observable<Movie> t1) {
+                return Observable.from(new HorrorMovie());
+            }
+            
+        });
+    }
+    
+    
     /*
      * Most tests are moved into their applicable classes such as [Operator]Tests.java
      */
