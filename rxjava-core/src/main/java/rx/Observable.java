@@ -4953,6 +4953,44 @@ public class Observable<T> {
      * 
      * @param keySelector
      *            a function that extracts the key for each item
+     * @param elementSelector
+     *            a function that extracts the return element for each item
+     * @param <K>
+     *            the key type
+     * @param <R>
+     *            the element type
+     * @return an {@code Observable} that emits {@link GroupedObservable}s, each of which corresponds to a
+     *         unique key value and each of which emits those items from the source Observable that share that
+     *         key value
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#groupby-and-groupbyuntil">RxJava wiki: groupBy</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.groupby.aspx">MSDN: Observable.GroupBy</a>
+     */
+    public final <K, R> Observable<GroupedObservable<K, R>> groupBy(final Func1<? super T, ? extends K> keySelector, final Func1<? super T, ? extends R> elementSelector) {
+        return lift(new OperatorGroupBy<T, K, R>(keySelector, elementSelector));
+    }
+    
+    /**
+     * Groups the items emitted by an {@code Observable} according to a specified criterion, and emits these
+     * grouped items as {@link GroupedObservable}s, one {@code GroupedObservable} per group.
+     * <p>
+     * <img width="640" height="360" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/groupBy.png" alt="">
+     * <p>
+     * <em>Note:</em> A {@link GroupedObservable} will cache the items it is to emit until such time as it
+     * is subscribed to. For this reason, in order to avoid memory leaks, you should not simply ignore those
+     * {@code GroupedObservable}s that do not concern you. Instead, you can signal to them that they may
+     * discard their buffers by applying an operator like {@link #take}{@code (0)} to them.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure as splitting a stream effectively turns it into a "hot
+     *      observable" and blocking any one group would block the entire parent stream. If you need
+     *      backpressure on individual groups then you should use operators such as {@link #onBackpressureDrop}
+     *      or {@link #onBackpressureBuffer}.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code groupBy} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @param keySelector
+     *            a function that extracts the key for each item
      * @param <K>
      *            the key type
      * @return an {@code Observable} that emits {@link GroupedObservable}s, each of which corresponds to a
@@ -4962,7 +5000,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.groupby.aspx">MSDN: Observable.GroupBy</a>
      */
     public final <K> Observable<GroupedObservable<K, T>> groupBy(final Func1<? super T, ? extends K> keySelector) {
-        return lift(new OperatorGroupBy<K, T>(keySelector));
+        return lift(new OperatorGroupBy<T, K, T>(keySelector));
     }
 
     /**
