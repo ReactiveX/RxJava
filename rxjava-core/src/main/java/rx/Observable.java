@@ -179,9 +179,34 @@ public class Observable<T> {
             }
         });
     }
+    
+    
+    /**
+     * Compose Observables together with a function.
+     * 
+     * This works on the Observables themselves whereas `lift` works on the internal Subscriber/Observers.
+     * 
+     * Lift should be used when creating an operator that acts on the underlying data. 
+     * Compose should be used when acting on the observable itself, such as composing multiple operators.
+     * 
+     * @param transformer
+     * @return
+     */
+    public <R> Observable<R> compose(Transformer<T, R> transformer) {
+        return transformer.call(this);
+    }
+    
+    /**
+     * Transformer function for `compose`
+     */
+    public static interface Transformer<T, R> extends Func1<Observable<T>, Observable<R>> {
+        // cover for generics insanity
+    }
+    
+    
 
     /* *********************************************************************************************************
-     * Observers Below Here
+     * Operators Below Here
      * *********************************************************************************************************
      */
 
