@@ -147,6 +147,10 @@ public class Observable<T> {
      * <p> {@code
      * observable.map(...).filter(...).take(5).lift(new OperatorA()).lift(new OperatorB(...)).subscribe()
      * }
+     * <p>
+     * If the operator you are creating is designed to act on the individual items emitted by a source
+     * Observable, use {@code lift}. If your operator is designed to transform the source Observable as a whole
+     * (for instance, by applying a particular set of existing RxJava operators to it) use {@link #compose}.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code lift} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -182,17 +186,22 @@ public class Observable<T> {
     
     
     /**
-     * Compose Observables together with a function.
+     * Transform an Observable by applying a particular Transformer function to it.
+     * <p>
+     * This method operates on the Observable itself whereas {@link #lift} operates on the Observable's
+     * Subscribers or Observers.
+     * <p>
+     * If the operator you are creating is designed to act on the individual items emitted by a source
+     * Observable, use {@link #lift}. If your operator is designed to transform the source Observable as a whole
+     * (for instance, by applying a particular set of existing RxJava operators to it) use {@code compose}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code compose} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
-     * This works on the Observables themselves whereas {@link #lift} works on the internal
-     * Subscriber/Observers.
-     * 
-     * Use {@code lift} if you are creating an operator that acts on the underlying data. Use {@code compose} if
-     * you are acting on the observable itself, for instance by composing multiple operators.
-     * 
-     * @warn param transformer not described
-     * @param transformer
-     * @return
+     * @param transformer implements the function that transforms the source Observable
+     * @return the source Observable, transformed by the transformer function
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Implementing-Your-Own-Operators">RxJava wiki: Implementing Your Own Operators</a>
      * @since 0.20
      */
     public <R> Observable<R> compose(Transformer<T, R> transformer) {
