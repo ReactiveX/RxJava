@@ -21,7 +21,6 @@ import static org.junit.Assert.assertTrue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import rx.Observable;
@@ -57,7 +56,7 @@ public class OperatorParallelTest {
                                     // TODO why is this exception not being thrown?
                                     throw new RuntimeException(e);
                                 }
-                                //                                                                System.out.println("V: " + t  + " Thread: " + Thread.currentThread());
+                                //                                                                                                System.out.println("V: " + t  + " Thread: " + Thread.currentThread());
                                 innerCount.incrementAndGet();
                                 return new Integer[] { t, t * 99 };
                             }
@@ -112,8 +111,6 @@ public class OperatorParallelTest {
         assertEquals(NUM, count.get());
     }
 
-    // parallel does not support backpressure right now
-    @Ignore
     @Test
     public void testBackpressureViaOuterObserveOn() {
         final AtomicInteger emitted = new AtomicInteger();
@@ -148,12 +145,10 @@ public class OperatorParallelTest {
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
         System.out.println("testBackpressureViaObserveOn emitted => " + emitted.get());
-        assertTrue(emitted.get() < 2000 + RxRingBuffer.SIZE); // should have no more than the buffer size beyond the 2000 in take
-        assertEquals(2000, ts.getOnNextEvents().size());
+        assertTrue(emitted.get() < 20000 + (RxRingBuffer.SIZE * Schedulers.computation().parallelism())); // should have no more than the buffer size beyond the 20000 in take
+        assertEquals(20000, ts.getOnNextEvents().size());
     }
 
-    // parallel does not support backpressure right now
-    @Ignore
     @Test
     public void testBackpressureOnInnerObserveOn() {
         final AtomicInteger emitted = new AtomicInteger();
@@ -188,8 +183,8 @@ public class OperatorParallelTest {
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
         System.out.println("testBackpressureViaObserveOn emitted => " + emitted.get());
-        assertTrue(emitted.get() < 20000 + RxRingBuffer.SIZE); // should have no more than the buffer size beyond the 2000 in take
-        assertEquals(2000, ts.getOnNextEvents().size());
+        assertTrue(emitted.get() < 20000 + (RxRingBuffer.SIZE * Schedulers.computation().parallelism())); // should have no more than the buffer size beyond the 20000 in take
+        assertEquals(20000, ts.getOnNextEvents().size());
     }
 
     @Test(timeout = 10000)
@@ -226,7 +221,8 @@ public class OperatorParallelTest {
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
         System.out.println("emitted: " + emitted.get());
-        assertEquals(2000, emitted.get()); // no async, so should be perfect
+        // we allow buffering inside each parallel Observable
+        assertEquals(RxRingBuffer.SIZE * Schedulers.computation().parallelism(), emitted.get()); // no async, so should be perfect
         assertEquals(2000, ts.getOnNextEvents().size());
     }
 }
