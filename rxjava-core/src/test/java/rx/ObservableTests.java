@@ -1108,9 +1108,9 @@ public class ObservableTests {
         Observable.from(1, 2, 3).compose(new Transformer<Integer, String>() {
 
             @Override
-            public Observable<String> call(Observable<Integer> t1) {
+            public Observable<? extends String> call(Observable<? extends Integer> t1) {
                 return t1.map(new Func1<Integer, String>() {
-
+                    
                     @Override
                     public String call(Integer t1) {
                         return String.valueOf(t1);

@@ -192,14 +192,14 @@ public class Observable<T> {
      * @param transformer
      * @return
      */
-    public <R> Observable<R> compose(Transformer<T, R> transformer) {
+    public <R> Observable<? extends R> compose(Transformer<? super T, ? extends R> transformer) {
         return transformer.call(this);
     }
     
     /**
      * Transformer function for `compose`
      */
-    public static interface Transformer<T, R> extends Func1<Observable<T>, Observable<R>> {
+    public static interface Transformer<T, R> extends Func1<Observable<? extends T>, Observable<? extends R>> {
         // cover for generics insanity
     }
     
