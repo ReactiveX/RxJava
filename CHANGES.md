@@ -1,5 +1,30 @@
 # RxJava Releases #
 
+### Version 0.20.0-RC5 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.20.0-RC5%22)) ###
+
+Version 0.20.0-RC5 updates `parallel`, `buffer(size)`, `switchOnNext`, `repeat`, and `retry` to support "reactive pull" backpressure. It adds a `groupBy` overload with an element selector, a new `compose` method as an alternative to `lift` for custom operators, fixes bugs and other general improvements.
+
+There are still oustanding items being tracked for 0.20 that need to be completed for the final release.
+
+* [Pull 1573] (https://github.com/Netflix/RxJava/pull/1573) Backpressure: parallel 
+* [Pull 1572] (https://github.com/Netflix/RxJava/pull/1572) Remove Timeout in Blocking Iterator
+* [Pull 1570] (https://github.com/Netflix/RxJava/pull/1570) RxClojure: Fix for mapcat
+* [Pull 1568] (https://github.com/Netflix/RxJava/pull/1568) Compose/Transformer
+* [Pull 1567] (https://github.com/Netflix/RxJava/pull/1567) groupBy with element selector
+* [Pull 1565] (https://github.com/Netflix/RxJava/pull/1565) Fixing Kotlin Defer
+* [Pull 1507] (https://github.com/Netflix/RxJava/pull/1507) BufferWithSize with Backpressure Support
+* [Pull 1557] (https://github.com/Netflix/RxJava/pull/1557) SwitchOnNext with backpressure support
+* [Pull 1562] (https://github.com/Netflix/RxJava/pull/1562) TakeLastTimed with backpressure support
+* [Pull 1564] (https://github.com/Netflix/RxJava/pull/1564) RxScala: Fix errors in Completeness.scala and also improve it
+* [Pull 1548] (https://github.com/Netflix/RxJava/pull/1548) Adding backpressure to OnSubscribeRedo
+* [Pull 1559] (https://github.com/Netflix/RxJava/pull/1559) More consistent hooks for scheduler plugins
+* [Pull 1561] (https://github.com/Netflix/RxJava/pull/1561) Remove Variance on Defer
+* [Pull 1537] (https://github.com/Netflix/RxJava/pull/1537) recursive scheduling in RxScala
+* [Pull 1560] (https://github.com/Netflix/RxJava/pull/1560) flatMap overloads
+* [Pull 1558] (https://github.com/Netflix/RxJava/pull/1558) mergeMap generics
+* [Pull 1552] (https://github.com/Netflix/RxJava/pull/1552) Fixing a bug and a potential for other concurrency issues
+* [Pull 1555] (https://github.com/Netflix/RxJava/pull/1555) RxScala: Add retryWhen/repeatWhen methods
+
 ### Version 0.20.0-RC4 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.20.0-RC4%22)) ###
 
 Version 0.20.0-RC4 continues bug fixes and completing work related to "reactive pull" backpressure. This release updates `amb` and `concat` to connect the backpressure `request`.
