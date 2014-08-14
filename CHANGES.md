@@ -1,5 +1,21 @@
 # RxJava Releases #
 
+
+### Version 0.20.0-RC6 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.20.0-RC6%22)) ###
+
+Further fixes and enhancements bringing us close to completing 0.20.0 and almost ready for 1.0.
+
+A more major change in this release is the deprecation of `Observable.from(T)`. The full discussion can be seen in [#1563](https://github.com/Netflix/RxJava/issues/1563).
+
+* [Pull 1575] (https://github.com/Netflix/RxJava/pull/1575) combineLatest with backpressure
+* [Pull 1569] (https://github.com/Netflix/RxJava/pull/1569) Compose/Transform Covariance
+* [Pull 1577] (https://github.com/Netflix/RxJava/pull/1577) Fix the compose covariance
+* [Pull 1581] (https://github.com/Netflix/RxJava/pull/1581) zip(Iterable) -> zipWith(Iterable)
+* [Pull 1582] (https://github.com/Netflix/RxJava/pull/1582) Deprecate GroupedObservable.from
+* [Pull 1583] (https://github.com/Netflix/RxJava/pull/1583) Redo/Repeat Backpressure
+* [Pull 1576] (https://github.com/Netflix/RxJava/pull/1576) from(T) -> just(T)
+* [Pull 1545] (https://github.com/Netflix/RxJava/pull/1545) Make Android ViewObservable.input observe TextView instead of String
+
 ### Version 0.20.0-RC5 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.20.0-RC5%22)) ###
 
 Version 0.20.0-RC5 updates `parallel`, `buffer(size)`, `switchOnNext`, `repeat`, and `retry` to support "reactive pull" backpressure. It adds a `groupBy` overload with an element selector, a new `compose` method as an alternative to `lift` for custom operators, fixes bugs and other general improvements.
