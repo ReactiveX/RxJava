@@ -9924,8 +9924,41 @@ public class Observable<T> {
      *         sequence and emits the results of {@code zipFunction} applied to these pairs
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#zip">RxJava wiki: zip</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.zip.aspx">MSDN: Observable.Zip</a>
+     * @deprecated use zipWith
      */
+    @Deprecated
     public final <T2, R> Observable<R> zip(Iterable<? extends T2> other, Func2<? super T, ? super T2, ? extends R> zipFunction) {
+        return lift(new OperatorZipIterable<T, T2, R>(other, zipFunction));
+    }
+    
+    /**
+     * Returns an Observable that emits items that are the result of applying a specified function to pairs of
+     * values, one each from the source Observable and a specified Iterable sequence.
+     * <p>
+     * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/zip.i.png" alt="">
+     * <p>
+     * Note that the {@code other} Iterable is evaluated as items are observed from the source Observable; it is
+     * not pre-consumed. This allows you to zip infinite streams on either side.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @param <T2>
+     *            the type of items in the {@code other} Iterable
+     * @param <R>
+     *            the type of items emitted by the resulting Observable
+     * @param other
+     *            the Iterable sequence
+     * @param zipFunction
+     *            a function that combines the pairs of items from the Observable and the Iterable to generate
+     *            the items to be emitted by the resulting Observable
+     * @return an Observable that pairs up values from the source Observable and the {@code other} Iterable
+     *         sequence and emits the results of {@code zipFunction} applied to these pairs
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#zip">RxJava wiki: zip</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.zip.aspx">MSDN: Observable.Zip</a>
+     */
+    public final <T2, R> Observable<R> zipWith(Iterable<? extends T2> other, Func2<? super T, ? super T2, ? extends R> zipFunction) {
         return lift(new OperatorZipIterable<T, T2, R>(other, zipFunction));
     }
 
