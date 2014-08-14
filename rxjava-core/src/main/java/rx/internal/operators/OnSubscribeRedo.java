@@ -35,7 +35,6 @@ import static rx.Observable.create;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.atomic.AtomicLongFieldUpdater;
 import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Notification;
@@ -50,7 +49,7 @@ import rx.functions.Func1;
 import rx.functions.Func2;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
-import rx.subscriptions.CompositeSubscription;
+import rx.subscriptions.SerialSubscription;
 
 public final class OnSubscribeRedo<T> implements OnSubscribe<T> {
 
@@ -82,8 +81,10 @@ public final class OnSubscribeRedo<T> implements OnSubscribe<T> {
                 @Override
                 public Notification<Long> call(Notification<Long> n, Notification<?> term) {
                     final long value = n.getValue();
-                    if (value < count) return Notification.createOnNext(value + 1);
-                    else return (Notification<Long>) term;
+                    if (value < count)
+                        return Notification.createOnNext(value + 1);
+                    else
+                        return (Notification<Long>) term;
                 }
             }).dematerialize();
         }
@@ -103,8 +104,10 @@ public final class OnSubscribeRedo<T> implements OnSubscribe<T> {
                 @Override
                 public Notification<Integer> call(Notification<Integer> n, Notification<?> term) {
                     final int value = n.getValue();
-                    if (predicate.call(value, term.getThrowable()).booleanValue()) return Notification.createOnNext(value + 1);
-                    else return (Notification<Integer>) term;
+                    if (predicate.call(value, term.getThrowable()).booleanValue())
+                        return Notification.createOnNext(value + 1);
+                    else
+                        return (Notification<Integer>) term;
                 }
             });
         }
@@ -115,8 +118,10 @@ public final class OnSubscribeRedo<T> implements OnSubscribe<T> {
     }
 
     public static <T> Observable<T> retry(Observable<T> source, final long count) {
-        if (count < 0) throw new IllegalArgumentException("count >= 0 expected");
-        if (count == 0) return source;
+        if (count < 0)
+            throw new IllegalArgumentException("count >= 0 expected");
+        if (count == 0)
+            return source;
         return retry(source, new RedoFinite(count));
     }
 
@@ -141,7 +146,8 @@ public final class OnSubscribeRedo<T> implements OnSubscribe<T> {
     }
 
     public static <T> Observable<T> repeat(Observable<T> source, final long count, Scheduler scheduler) {
-        if (count < 0) throw new IllegalArgumentException("count >= 0 expected");
+        if (count < 0)
+            throw new IllegalArgumentException("count >= 0 expected");
         return repeat(source, new RedoFinite(count - 1), scheduler);
     }
 
@@ -162,11 +168,6 @@ public final class OnSubscribeRedo<T> implements OnSubscribe<T> {
     private boolean stopOnComplete;
     private boolean stopOnError;
     private final Scheduler scheduler;
-    private final AtomicBoolean isLocked = new AtomicBoolean(true);
-    private final AtomicBoolean isStarted = new AtomicBoolean(false);
-    // incremented when requests are made, decremented when requests are fulfilled
-    private final AtomicLong consumerCapacity = new AtomicLong(0l);
-    private final AtomicReference<Producer> currentProducer = new AtomicReference<Producer>();
 
     private OnSubscribeRedo(Observable<T> source, Func1<? super Observable<? extends Notification<?>>, ? extends Observable<?>> f, boolean stopOnComplete, boolean stopOnError,
             Scheduler scheduler) {
@@ -179,17 +180,18 @@ public final class OnSubscribeRedo<T> implements OnSubscribe<T> {
 
     @Override
     public void call(final Subscriber<? super T> child) {
-        isStarted.set(false);
-        isLocked.set(true);
-        consumerCapacity.set(0l);
-        currentProducer.set(null);
+        final AtomicBoolean isLocked = new AtomicBoolean(true);
+        final AtomicBoolean isStarted = new AtomicBoolean(false);
+        // incremented when requests are made, decremented when requests are fulfilled
+        final AtomicLong consumerCapacity = new AtomicLong(0l);
+        final AtomicReference<Producer> currentProducer = new AtomicReference<Producer>();
 
-        final Scheduler.Worker inner = scheduler.createWorker();
-        child.add(inner);
+        final Scheduler.Worker worker = scheduler.createWorker();
+        child.add(worker);
 
-        final CompositeSubscription sourceSubscriptions = new CompositeSubscription();
+        final SerialSubscription sourceSubscriptions = new SerialSubscription();
         child.add(sourceSubscriptions);
-        
+
         final PublishSubject<Notification<?>> terminals = PublishSubject.create();
 
         final Action0 subscribeToSource = new Action0() {
@@ -222,7 +224,7 @@ public final class OnSubscribeRedo<T> implements OnSubscribe<T> {
                 };
                 // new subscription each time so if it unsubscribes itself it does not prevent retries
                 // by unsubscribing the child subscription
-                sourceSubscriptions.add(terminalDelegatingSubscriber);
+                sourceSubscriptions.set(terminalDelegatingSubscriber);
                 source.unsafeSubscribe(terminalDelegatingSubscriber);
             }
         };
@@ -247,8 +249,10 @@ public final class OnSubscribeRedo<T> implements OnSubscribe<T> {
 
                             @Override
                             public void onNext(Notification<?> t) {
-                                if (t.isOnCompleted() && stopOnComplete) child.onCompleted();
-                                else if (t.isOnError() && stopOnError) child.onError(t.getThrowable());
+                                if (t.isOnCompleted() && stopOnComplete)
+                                    child.onCompleted();
+                                else if (t.isOnError() && stopOnError)
+                                    child.onError(t.getThrowable());
                                 else {
                                     isLocked.set(false);
                                     filteredTerminals.onNext(t);
@@ -264,7 +268,7 @@ public final class OnSubscribeRedo<T> implements OnSubscribe<T> {
                 }));
 
         // subscribe to the restarts observable to know when to schedule the next redo.
-        child.add(inner.schedule(new Action0() {
+        worker.schedule(new Action0() {
             @Override
             public void call() {
                 restarts.unsafeSubscribe(new Subscriber<Object>(child) {
@@ -281,7 +285,9 @@ public final class OnSubscribeRedo<T> implements OnSubscribe<T> {
                     @Override
                     public void onNext(Object t) {
                         if (!isLocked.get() && !child.isUnsubscribed()) {
-                            child.add(inner.schedule(subscribeToSource));
+                            if (consumerCapacity.get() > 0) {
+                                worker.schedule(subscribeToSource);
+                            }
                         }
                     }
 
@@ -291,7 +297,7 @@ public final class OnSubscribeRedo<T> implements OnSubscribe<T> {
                     }
                 });
             }
-        }));
+        });
 
         child.setProducer(new Producer() {
 
@@ -299,10 +305,16 @@ public final class OnSubscribeRedo<T> implements OnSubscribe<T> {
             public void request(long n) {
                 if (isStarted.compareAndSet(false, true)) {
                     consumerCapacity.set(n);
-                    if (!child.isUnsubscribed()) child.add(inner.schedule(subscribeToSource));
-                } else if (currentProducer.get() != null) {
-                    consumerCapacity.getAndAdd(n);
-                    currentProducer.get().request(n);
+                    worker.schedule(subscribeToSource);
+                } else {
+                    if (consumerCapacity.getAndAdd(n) == 0) {
+                        // restart
+                        worker.schedule(subscribeToSource);
+                    } else {
+                        if (currentProducer.get() != null) {
+                            currentProducer.get().request(n);
+                        }
+                    }
                 }
             }
         });

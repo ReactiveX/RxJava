@@ -43,6 +43,7 @@ import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.functions.Func2;
+import rx.internal.util.RxRingBuffer;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
@@ -629,6 +630,28 @@ public class OperatorRetryTest {
         inOrder.verify(observer, never()).onCompleted();
 
         assertEquals("Start 6 threads, retry 5 then fail on 6", 6, so.efforts.get());
+    }
+    
+    @Test
+    public void testRetryWithBackpressure() {
+        @SuppressWarnings("unchecked")
+        Observer<String> observer = mock(Observer.class);
+        int NUM_RETRIES = RxRingBuffer.SIZE * 2;
+        Observable<String> origin = Observable.create(new FuncWithErrors(NUM_RETRIES));
+        TestSubscriber<String> ts = new TestSubscriber<String>(observer);
+        origin.retry().observeOn(Schedulers.computation()).unsafeSubscribe(ts);
+        ts.awaitTerminalEvent();
+        
+        InOrder inOrder = inOrder(observer);
+        // should show 3 attempts
+        inOrder.verify(observer, times(NUM_RETRIES + 1)).onNext("beginningEveryTime");
+        // should have no errors
+        inOrder.verify(observer, never()).onError(any(Throwable.class));
+        // should have a single success
+        inOrder.verify(observer, times(1)).onNext("onSuccessOnly");
+        // should have a single successful onCompleted
+        inOrder.verify(observer, times(1)).onCompleted();
+        inOrder.verifyNoMoreInteractions();
     }
 
 }
