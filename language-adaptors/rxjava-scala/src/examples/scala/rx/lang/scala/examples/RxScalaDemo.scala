@@ -50,7 +50,7 @@ import rx.lang.scala.schedulers._
 class RxScalaDemo extends JUnitSuite {
 
   @Test def subscribeExample() {
-    val o = Observable.items(1, 2, 3)
+    val o = Observable.just(1, 2, 3)
 
     // Generally, we have two methods, `subscribe` and `foreach`, to listen to the messages from an Observable.
     // `foreach` is just an alias to `subscribe`.
@@ -609,8 +609,8 @@ class RxScalaDemo extends JUnitSuite {
   }
 
   @Test def zipWithExample() {
-    val xs = Observable.items(1, 3, 5, 7)
-    val ys = Observable.items(2, 4, 6, 8)
+    val xs = Observable.just(1, 3, 5, 7)
+    val ys = Observable.just(2, 4, 6, 8)
     xs.zipWith(ys)(_ * _).subscribe(println(_))
   }
 
@@ -912,7 +912,7 @@ class RxScalaDemo extends JUnitSuite {
 
   @Test def delayExample3(): Unit = {
     val o = List(100, 500, 200).toObservable.delay(
-      (i: Int) => Observable.items(i).delay(i millis)
+      (i: Int) => Observable.just(i).delay(i millis)
     )
     o.toBlocking.foreach(println(_))
   }
@@ -920,7 +920,7 @@ class RxScalaDemo extends JUnitSuite {
   @Test def delayExample4(): Unit = {
     val o = List(100, 500, 200).toObservable.delay(
       () => Observable.interval(500 millis).take(1),
-      (i: Int) => Observable.items(i).delay(i millis)
+      (i: Int) => Observable.just(i).delay(i millis)
     )
     o.toBlocking.foreach(println(_))
   }
@@ -1332,14 +1332,14 @@ class RxScalaDemo extends JUnitSuite {
   }
 
   @Test def flatMapExample() {
-    val o = Observable.items(10, 100)
+    val o = Observable.just(10, 100)
     o.flatMap(n => Observable.interval(200 millis).map(_ * n))
       .take(20)
       .toBlocking.foreach(println)
   }
 
   @Test def flatMapExample2() {
-    val o = Observable.items(10, 100)
+    val o = Observable.just(10, 100)
     val o1 = for (n <- o;
                   i <- Observable.interval(200 millis)) yield i * n
     o1.take(20).toBlocking.foreach(println)
@@ -1361,7 +1361,7 @@ class RxScalaDemo extends JUnitSuite {
   }
 
   @Test def flatMapExample4() {
-    val o = Observable.items(10, 100)
+    val o = Observable.just(10, 100)
     o.flatMap(
       (n: Int) => Observable.interval(200 millis).map(_ * n),
       e => Observable.interval(200 millis).map(_ * -1),
@@ -1371,23 +1371,23 @@ class RxScalaDemo extends JUnitSuite {
   }
 
   @Test def flatMapExample5() {
-    val o = Observable.items(1, 10, 100, 1000)
+    val o = Observable.just(1, 10, 100, 1000)
     o.flatMapWith(_ => Observable.interval(200 millis).take(5))(_ * _).toBlocking.foreach(println)
   }
 
   @Test def flatMapIterableExample() {
-    val o = Observable.items(10, 100)
+    val o = Observable.just(10, 100)
     o.flatMapIterable(n => (1 to 20).map(_ * n))
       .toBlocking.foreach(println)
   }
 
   @Test def flatMapIterableExample2() {
-    val o = Observable.items(1, 10, 100, 1000)
+    val o = Observable.just(1, 10, 100, 1000)
     o.flatMapIterableWith(_=> (1 to 5))(_ * _).toBlocking.foreach(println)
   }
 
   @Test def concatMapExample() {
-    val o = Observable.items(10, 100)
+    val o = Observable.just(10, 100)
     o.concatMap(n => Observable.interval(200 millis).map(_ * n).take(10))
       .take(20)
       .toBlocking.foreach(println)
@@ -1402,7 +1402,7 @@ class RxScalaDemo extends JUnitSuite {
         subscriber.onNext(3)
         subscriber.onNext(4)
     }
-    o.onErrorResumeNext(_ => Observable.items(10, 11, 12)).subscribe(println(_))
+    o.onErrorResumeNext(_ => Observable.just(10, 11, 12)).subscribe(println(_))
   }
 
   @Test def onErrorFlatMapExample() {
@@ -1414,13 +1414,13 @@ class RxScalaDemo extends JUnitSuite {
         subscriber.onNext(3)
         subscriber.onNext(4)
     }
-    o.onErrorFlatMap((_, _) => Observable.items(10, 11, 12)).subscribe(println(_))
+    o.onErrorFlatMap((_, _) => Observable.just(10, 11, 12)).subscribe(println(_))
   }
 
   @Test def onErrorFlatMapExample2() {
-    val o = Observable.items(4, 2, 0).map(16 / _).onErrorFlatMap {
+    val o = Observable.just(4, 2, 0).map(16 / _).onErrorFlatMap {
       (e, op) => op match {
-        case Some(v) if v == 0 => Observable.items(Int.MinValue)
+        case Some(v) if v == 0 => Observable.just(Int.MinValue)
         case _ => Observable.empty
       }
     }

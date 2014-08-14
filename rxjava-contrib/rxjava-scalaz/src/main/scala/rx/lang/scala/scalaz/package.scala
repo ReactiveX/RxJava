@@ -34,7 +34,7 @@ package object scalaz {
     with IsEmpty[Observable] with Traverse[Observable] {
 
     // Monad
-    override def point[A](a: => A) = Observable.items(a)
+    override def point[A](a: => A) = Observable.just(a)
     override def bind[A, B](oa: Observable[A])(f: (A) => Observable[B]) = oa.flatMap(f)
 
     // MonadPlus
@@ -60,7 +60,7 @@ package object scalaz {
   // However, due to https://github.com/scalaz/scalaz/issues/338,
   // This instance doesn't have 'implicit' modifier.
   val observableZipApplicative: Applicative[({ type λ[α] = Observable[α] @@ TZip })#λ] = new Applicative[({ type λ[α] = Observable[α] @@ TZip })#λ] {
-    def point[A](a: => A) = TZip(Observable.items(a).repeat)
+    def point[A](a: => A) = TZip(Observable.just(a).repeat)
     def ap[A, B](oa: => Observable[A] @@ TZip)(of: => Observable[A => B] @@ TZip) = TZip(of.zip(oa) map {fa => fa._1(fa._2)})
   }
 

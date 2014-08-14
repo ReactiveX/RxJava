@@ -60,7 +60,7 @@ class ObservableTests extends JUnitSuite {
 }
 
   @Test def TestScan() {
-     val xs = Observable.items(0,1,2,3)
+     val xs = Observable.just(0,1,2,3)
      val ys = xs.scan(0)(_+_)
      assertEquals(List(0,0,1,3,6), ys.toBlocking.toList)
      val zs = xs.scan((x: Int, y:Int) => x*y)
@@ -86,7 +86,7 @@ class ObservableTests extends JUnitSuite {
   @Test def testFirstOrElse() {
     def mustNotBeCalled: String = sys.error("this method should not be called")
     def mustBeCalled: String = "this is the default value"
-    assertEquals("hello", Observable.items("hello").firstOrElse(mustNotBeCalled).toBlocking.single)
+    assertEquals("hello", Observable.just("hello").firstOrElse(mustNotBeCalled).toBlocking.single)
     assertEquals("this is the default value", Observable.empty.firstOrElse(mustBeCalled).toBlocking.single)
   }
 
@@ -126,8 +126,8 @@ class ObservableTests extends JUnitSuite {
   }
 
   @Test def testJoin() {
-     val xs = Observable.items(1,2,3)
-     val ys = Observable.items("a")
+     val xs = Observable.just(1,2,3)
+     val ys = Observable.just("a")
      val zs = xs.join(ys)(_ => Observable.never, _ => Observable.never, (x, y) => y + x)
      assertEquals(List("a1", "a2", "a3"),zs.toBlocking.toList)
   }
@@ -179,7 +179,7 @@ class ObservableTests extends JUnitSuite {
 
   @Test
   def testSingleOrElse() {
-    val o = Observable.items(1).singleOrElse(2)
+    val o = Observable.just(1).singleOrElse(2)
     assertEquals(1, o.toBlocking.single)
   }
 
@@ -191,7 +191,7 @@ class ObservableTests extends JUnitSuite {
 
   @Test(expected = classOf[IllegalArgumentException])
   def testSingleOrElseWithTooManyItems() {
-    Observable.items(1, 2).singleOrElse(1).toBlocking.single
+    Observable.just(1, 2).singleOrElse(1).toBlocking.single
   }
 
   @Test
@@ -209,7 +209,7 @@ class ObservableTests extends JUnitSuite {
   @Test
   def testSingleOrElseWithCallByName2() {
     var called = false
-    val o = Observable.items(1).singleOrElse {
+    val o = Observable.just(1).singleOrElse {
       called = true
       2
     }
@@ -220,7 +220,7 @@ class ObservableTests extends JUnitSuite {
 
   @Test
   def testOrElse() {
-    val o = Observable.items(1, 2, 3).orElse(4)
+    val o = Observable.just(1, 2, 3).orElse(4)
     assertEquals(List(1, 2, 3), o.toBlocking.toList)
   }
 
@@ -232,14 +232,14 @@ class ObservableTests extends JUnitSuite {
 
   @Test
   def testToMultimap() {
-    val o = Observable.items("a", "b", "cc", "dd").toMultimap(_.length)
+    val o = Observable.just("a", "b", "cc", "dd").toMultimap(_.length)
     val expected = Map(1 -> List("a", "b"), 2 -> List("cc", "dd"))
     assertEquals(expected, o.toBlocking.single)
   }
 
   @Test
   def testToMultimapWithValueSelector() {
-    val o = Observable.items("a", "b", "cc", "dd").toMultimap(_.length, s => s + s)
+    val o = Observable.just("a", "b", "cc", "dd").toMultimap(_.length, s => s + s)
     val expected = Map(1 -> List("aa", "bb"), 2 -> List("cccc", "dddd"))
     assertEquals(expected, o.toBlocking.single)
   }
@@ -247,7 +247,7 @@ class ObservableTests extends JUnitSuite {
   @Test
   def testToMultimapWithMapFactory() {
     val m = mutable.Map[Int, mutable.Buffer[String]]()
-    val o = Observable.items("a", "b", "cc", "dd").toMultimap(_.length, s => s, () => m)
+    val o = Observable.just("a", "b", "cc", "dd").toMultimap(_.length, s => s, () => m)
     val expected = Map(1 -> List("a", "b"), 2 -> List("cc", "dd"))
     val r = o.toBlocking.single
     // r should be the same instance created by the `mapFactory`
@@ -259,7 +259,7 @@ class ObservableTests extends JUnitSuite {
   def testToMultimapWithBufferFactory() {
     val m = mutable.Map[Int, mutable.Buffer[String]]()
     val ls = List(mutable.Buffer[String](), mutable.Buffer[String]())
-    val o = Observable.items("a", "b", "cc", "dd").toMultimap(_.length, s => s, () => m, (i: Int) => ls(i - 1))
+    val o = Observable.just("a", "b", "cc", "dd").toMultimap(_.length, s => s, () => m, (i: Int) => ls(i - 1))
     val expected = Map(1 -> List("a", "b"), 2 -> List("cc", "dd"))
     val r = o.toBlocking.single
     // r should be the same instance created by the `mapFactory`
@@ -289,79 +289,79 @@ class ObservableTests extends JUnitSuite {
 
   @Test
   def testToTraversable() {
-    val o = Observable.items(1, 2, 3).toTraversable
+    val o = Observable.just(1, 2, 3).toTraversable
     assertEquals(Seq(1, 2, 3), o.toBlocking.single)
   }
 
   @Test
   def testToList() {
-    val o = Observable.items(1, 2, 3).toList
+    val o = Observable.just(1, 2, 3).toList
     assertEquals(Seq(1, 2, 3), o.toBlocking.single)
   }
 
   @Test
   def testToIterable() {
-    val o = Observable.items(1, 2, 3).toIterable
+    val o = Observable.just(1, 2, 3).toIterable
     assertEquals(Seq(1, 2, 3), o.toBlocking.single)
   }
 
   @Test
   def testToIterator() {
-    val o = Observable.items(1, 2, 3).toIterator
+    val o = Observable.just(1, 2, 3).toIterator
     assertEquals(Seq(1, 2, 3), o.toBlocking.single.toSeq)
   }
 
   @Test
   def testToStream() {
-    val o = Observable.items(1, 2, 3).toStream
+    val o = Observable.just(1, 2, 3).toStream
     assertEquals(Seq(1, 2, 3), o.toBlocking.single)
   }
 
   @Test
   def testToIndexedSeq() {
-    val o = Observable.items(1, 2, 3).toIndexedSeq
+    val o = Observable.just(1, 2, 3).toIndexedSeq
     assertEquals(Seq(1, 2, 3), o.toBlocking.single)
   }
 
   @Test
   def testToBuffer() {
-    val o = Observable.items(1, 2, 3).toBuffer
+    val o = Observable.just(1, 2, 3).toBuffer
     assertEquals(Seq(1, 2, 3), o.toBlocking.single)
   }
 
   @Test
   def testToSet() {
-    val o = Observable.items(1, 2, 2).toSet
+    val o = Observable.just(1, 2, 2).toSet
     assertEquals(Set(1, 2), o.toBlocking.single)
   }
 
   @Test
   def testToVector() {
-    val o = Observable.items(1, 2, 3).toVector
+    val o = Observable.just(1, 2, 3).toVector
     assertEquals(Seq(1, 2, 3), o.toBlocking.single)
   }
 
   @Test
   def testToArray() {
-    val o = Observable.items(1, 2, 3).toArray
+    val o = Observable.just(1, 2, 3).toArray
     assertArrayEquals(Array(1, 2, 3), o.toBlocking.single)
   }
 
   @Test
   def testFilterNot() {
-    val o = Observable.items(1, 2, 3).filterNot(_ > 2)
+    val o = Observable.just(1, 2, 3).filterNot(_ > 2)
     assertEquals(List(1, 2), o.toBlocking.toList)
   }
 
   @Test
   def testCount() {
-    assertEquals(1, Observable.items(1, 2, 3).count(_ > 2).toBlocking.single)
-    assertEquals(2, Observable.items(1, 2, 3).count(_ <= 2).toBlocking.single)
+    assertEquals(1, Observable.just(1, 2, 3).count(_ > 2).toBlocking.single)
+    assertEquals(2, Observable.just(1, 2, 3).count(_ <= 2).toBlocking.single)
   }
 
   @Test
   def testNonEmpty() {
     assertEquals(false, Observable.empty.nonEmpty.toBlocking.single)
-    assertEquals(true, Observable.items(1, 2, 3).nonEmpty.toBlocking.single)
+    assertEquals(true, Observable.just(1, 2, 3).nonEmpty.toBlocking.single)
   }
 }
