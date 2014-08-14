@@ -93,7 +93,7 @@ public class OperatorParallelTest {
 
                             @Override
                             public Observable<String> call(Integer t) {
-                                return Observable.from(String.valueOf(t)).delay(100, TimeUnit.MILLISECONDS);
+                                return Observable.just(String.valueOf(t)).delay(100, TimeUnit.MILLISECONDS);
                             }
 
                         });

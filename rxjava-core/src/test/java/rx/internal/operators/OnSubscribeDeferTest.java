@@ -38,8 +38,8 @@ public class OnSubscribeDeferTest {
 
         Func0<Observable<String>> factory = mock(Func0.class);
 
-        Observable<String> firstObservable = Observable.from("one", "two");
-        Observable<String> secondObservable = Observable.from("three", "four");
+        Observable<String> firstObservable = Observable.just("one", "two");
+        Observable<String> secondObservable = Observable.just("three", "four");
         when(factory.call()).thenReturn(firstObservable, secondObservable);
 
         Observable<String> deferred = Observable.defer(factory);

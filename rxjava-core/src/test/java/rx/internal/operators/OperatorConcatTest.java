@@ -600,7 +600,7 @@ public class OperatorConcatTest {
                     if (s.isUnsubscribed()) {
                         return;
                     }
-                    s.onNext(Observable.from(i));
+                    s.onNext(Observable.just(i));
                 }
                 s.onCompleted();
             }
@@ -632,7 +632,7 @@ public class OperatorConcatTest {
                     if (s.isUnsubscribed()) {
                         return;
                     }
-                    s.onNext(Observable.from(i));
+                    s.onNext(Observable.just(i));
                 }
                 s.onCompleted();
             }

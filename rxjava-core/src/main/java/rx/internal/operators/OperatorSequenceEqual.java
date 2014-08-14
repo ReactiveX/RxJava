@@ -16,7 +16,7 @@
 package rx.internal.operators;
 
 import static rx.Observable.concat;
-import static rx.Observable.from;
+import static rx.Observable.just;
 import static rx.Observable.zip;
 import rx.Observable;
 import rx.functions.Func1;
@@ -43,7 +43,7 @@ public final class OperatorSequenceEqual {
                         return t1;
                     }
 
-                }), from(LOCAL_ONCOMPLETED));
+                }), just(LOCAL_ONCOMPLETED));
     }
 
     /**

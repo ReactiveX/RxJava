@@ -34,7 +34,7 @@ public class OperatorAnyTest {
 
     @Test
     public void testAnyWithTwoItems() {
-        Observable<Integer> w = Observable.from(1, 2);
+        Observable<Integer> w = Observable.just(1, 2);
         Observable<Boolean> observable = w.exists(Functions.alwaysTrue());
 
         @SuppressWarnings("unchecked")
@@ -48,7 +48,7 @@ public class OperatorAnyTest {
 
     @Test
     public void testIsEmptyWithTwoItems() {
-        Observable<Integer> w = Observable.from(1, 2);
+        Observable<Integer> w = Observable.just(1, 2);
         Observable<Boolean> observable = w.isEmpty();
 
         @SuppressWarnings("unchecked")
@@ -62,7 +62,7 @@ public class OperatorAnyTest {
 
     @Test
     public void testAnyWithOneItem() {
-        Observable<Integer> w = Observable.from(1);
+        Observable<Integer> w = Observable.just(1);
         Observable<Boolean> observable = w.exists(Functions.alwaysTrue());
 
         @SuppressWarnings("unchecked")
@@ -76,7 +76,7 @@ public class OperatorAnyTest {
 
     @Test
     public void testIsEmptyWithOneItem() {
-        Observable<Integer> w = Observable.from(1);
+        Observable<Integer> w = Observable.just(1);
         Observable<Boolean> observable = w.isEmpty();
 
         @SuppressWarnings("unchecked")
@@ -118,7 +118,7 @@ public class OperatorAnyTest {
 
     @Test
     public void testAnyWithPredicate1() {
-        Observable<Integer> w = Observable.from(1, 2, 3);
+        Observable<Integer> w = Observable.just(1, 2, 3);
         Observable<Boolean> observable = w.exists(
                 new Func1<Integer, Boolean>() {
 
@@ -139,7 +139,7 @@ public class OperatorAnyTest {
 
     @Test
     public void testExists1() {
-        Observable<Integer> w = Observable.from(1, 2, 3);
+        Observable<Integer> w = Observable.just(1, 2, 3);
         Observable<Boolean> observable = w.exists(
                 new Func1<Integer, Boolean>() {
 
@@ -160,7 +160,7 @@ public class OperatorAnyTest {
 
     @Test
     public void testAnyWithPredicate2() {
-        Observable<Integer> w = Observable.from(1, 2, 3);
+        Observable<Integer> w = Observable.just(1, 2, 3);
         Observable<Boolean> observable = w.exists(
                 new Func1<Integer, Boolean>() {
 

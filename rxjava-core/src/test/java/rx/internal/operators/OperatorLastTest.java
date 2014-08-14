@@ -34,7 +34,7 @@ public class OperatorLastTest {
 
     @Test
     public void testLastWithElements() {
-        Observable<Integer> last = Observable.from(1, 2, 3).last();
+        Observable<Integer> last = Observable.just(1, 2, 3).last();
         assertEquals(3, last.toBlocking().single().intValue());
     }
 
@@ -46,19 +46,19 @@ public class OperatorLastTest {
 
     @Test
     public void testLastMultiSubscribe() {
-        Observable<Integer> last = Observable.from(1, 2, 3).last();
+        Observable<Integer> last = Observable.just(1, 2, 3).last();
         assertEquals(3, last.toBlocking().single().intValue());
         assertEquals(3, last.toBlocking().single().intValue());
     }
 
     @Test
     public void testLastViaObservable() {
-        Observable.from(1, 2, 3).last();
+        Observable.just(1, 2, 3).last();
     }
 
     @Test
     public void testLast() {
-        Observable<Integer> observable = Observable.from(1, 2, 3).last();
+        Observable<Integer> observable = Observable.just(1, 2, 3).last();
 
         @SuppressWarnings("unchecked")
         Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
@@ -72,7 +72,7 @@ public class OperatorLastTest {
 
     @Test
     public void testLastWithOneElement() {
-        Observable<Integer> observable = Observable.from(1).last();
+        Observable<Integer> observable = Observable.just(1).last();
 
         @SuppressWarnings("unchecked")
         Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
@@ -100,7 +100,7 @@ public class OperatorLastTest {
 
     @Test
     public void testLastWithPredicate() {
-        Observable<Integer> observable = Observable.from(1, 2, 3, 4, 5, 6)
+        Observable<Integer> observable = Observable.just(1, 2, 3, 4, 5, 6)
                 .last(new Func1<Integer, Boolean>() {
 
                     @Override
@@ -121,7 +121,7 @@ public class OperatorLastTest {
 
     @Test
     public void testLastWithPredicateAndOneElement() {
-        Observable<Integer> observable = Observable.from(1, 2).last(
+        Observable<Integer> observable = Observable.just(1, 2).last(
                 new Func1<Integer, Boolean>() {
 
                     @Override
@@ -142,7 +142,7 @@ public class OperatorLastTest {
 
     @Test
     public void testLastWithPredicateAndEmpty() {
-        Observable<Integer> observable = Observable.from(1).last(
+        Observable<Integer> observable = Observable.just(1).last(
                 new Func1<Integer, Boolean>() {
 
                     @Override
@@ -162,7 +162,7 @@ public class OperatorLastTest {
 
     @Test
     public void testLastOrDefault() {
-        Observable<Integer> observable = Observable.from(1, 2, 3)
+        Observable<Integer> observable = Observable.just(1, 2, 3)
                 .lastOrDefault(4);
 
         @SuppressWarnings("unchecked")
@@ -177,7 +177,7 @@ public class OperatorLastTest {
 
     @Test
     public void testLastOrDefaultWithOneElement() {
-        Observable<Integer> observable = Observable.from(1).lastOrDefault(2);
+        Observable<Integer> observable = Observable.just(1).lastOrDefault(2);
 
         @SuppressWarnings("unchecked")
         Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
@@ -206,7 +206,7 @@ public class OperatorLastTest {
 
     @Test
     public void testLastOrDefaultWithPredicate() {
-        Observable<Integer> observable = Observable.from(1, 2, 3, 4, 5, 6)
+        Observable<Integer> observable = Observable.just(1, 2, 3, 4, 5, 6)
                 .lastOrDefault(8, new Func1<Integer, Boolean>() {
 
                     @Override
@@ -227,7 +227,7 @@ public class OperatorLastTest {
 
     @Test
     public void testLastOrDefaultWithPredicateAndOneElement() {
-        Observable<Integer> observable = Observable.from(1, 2).lastOrDefault(4,
+        Observable<Integer> observable = Observable.just(1, 2).lastOrDefault(4,
                 new Func1<Integer, Boolean>() {
 
                     @Override
@@ -248,7 +248,7 @@ public class OperatorLastTest {
 
     @Test
     public void testLastOrDefaultWithPredicateAndEmpty() {
-        Observable<Integer> observable = Observable.from(1).lastOrDefault(2,
+        Observable<Integer> observable = Observable.just(1).lastOrDefault(2,
                 new Func1<Integer, Boolean>() {
 
                     @Override

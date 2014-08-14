@@ -23,7 +23,7 @@ public class AssertObservableTest {
 
     @Test
     public void testPassNotNull() {
-        AssertObservable.assertObservableEqualsBlocking("foo", Observable.from(1, 2), Observable.from(1, 2));
+        AssertObservable.assertObservableEqualsBlocking("foo", Observable.just(1, 2), Observable.just(1, 2));
     }
 
     @Test
@@ -33,11 +33,11 @@ public class AssertObservableTest {
 
     @Test(expected = AssertionError.class)
     public void testFailNotNull() {
-        AssertObservable.assertObservableEqualsBlocking("foo", Observable.from(1, 2), Observable.from(1));
+        AssertObservable.assertObservableEqualsBlocking("foo", Observable.just(1, 2), Observable.just(1));
     }
 
     @Test(expected = AssertionError.class)
     public void testFailNull() {
-        AssertObservable.assertObservableEqualsBlocking("foo", Observable.from(1, 2), null);
+        AssertObservable.assertObservableEqualsBlocking("foo", Observable.just(1, 2), null);
     }
 }

@@ -35,7 +35,7 @@ public class OperatorDematerializeTest {
     @Test
     @SuppressWarnings("unchecked")
     public void testDematerialize1() {
-        Observable<Notification<Integer>> notifications = Observable.from(1, 2).materialize();
+        Observable<Notification<Integer>> notifications = Observable.just(1, 2).materialize();
         Observable<Integer> dematerialize = notifications.dematerialize();
 
         Observer<Integer> observer = mock(Observer.class);

@@ -48,7 +48,7 @@ public class OperatorDoOnEachTest {
 
     @Test
     public void testDoOnEach() {
-        Observable<String> base = Observable.from("a", "b", "c");
+        Observable<String> base = Observable.just("a", "b", "c");
         Observable<String> doOnEach = base.doOnEach(sideEffectObserver);
 
         doOnEach.subscribe(subscribedObserver);
@@ -70,7 +70,7 @@ public class OperatorDoOnEachTest {
 
     @Test
     public void testDoOnEachWithError() {
-        Observable<String> base = Observable.from("one", "fail", "two", "three", "fail");
+        Observable<String> base = Observable.just("one", "fail", "two", "three", "fail");
         Observable<String> errs = base.map(new Func1<String, String>() {
             @Override
             public String call(String s) {
@@ -99,7 +99,7 @@ public class OperatorDoOnEachTest {
 
     @Test
     public void testDoOnEachWithErrorInCallback() {
-        Observable<String> base = Observable.from("one", "two", "fail", "three");
+        Observable<String> base = Observable.just("one", "two", "fail", "three");
         Observable<String> doOnEach = base.doOnNext(new Action1<String>() {
             @Override
             public void call(String s) {
@@ -125,7 +125,7 @@ public class OperatorDoOnEachTest {
         final AtomicInteger count = new AtomicInteger();
         for (final int n : nums) {
             Observable
-                    .from(Boolean.TRUE, Boolean.FALSE)
+                    .just(Boolean.TRUE, Boolean.FALSE)
                     .takeWhile(new Func1<Boolean, Boolean>() {
                         @Override
                         public Boolean call(Boolean value) {
@@ -151,7 +151,7 @@ public class OperatorDoOnEachTest {
         final AtomicInteger count = new AtomicInteger();
         for (final int n : nums) {
             Observable
-                    .from(Boolean.TRUE, Boolean.FALSE, Boolean.FALSE)
+                    .just(Boolean.TRUE, Boolean.FALSE, Boolean.FALSE)
                     .takeWhile(new Func1<Boolean, Boolean>() {
                         @Override
                         public Boolean call(Boolean value) {

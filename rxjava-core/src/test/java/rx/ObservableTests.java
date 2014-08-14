@@ -96,7 +96,7 @@ public class ObservableTests {
 
     @Test
     public void fromArityArgs3() {
-        Observable<String> items = Observable.from("one", "two", "three");
+        Observable<String> items = Observable.just("one", "two", "three");
 
         assertEquals(new Integer(3), items.count().toBlocking().single());
         assertEquals("two", items.skip(1).take(1).toBlocking().single());
@@ -105,7 +105,7 @@ public class ObservableTests {
 
     @Test
     public void fromArityArgs1() {
-        Observable<String> items = Observable.from("one");
+        Observable<String> items = Observable.just("one");
 
         assertEquals(new Integer(1), items.count().toBlocking().single());
         assertEquals("one", items.takeLast(1).toBlocking().single());
@@ -138,7 +138,7 @@ public class ObservableTests {
 
     @Test
     public void testCountAFewItems() {
-        Observable<String> observable = Observable.from("a", "b", "c", "d");
+        Observable<String> observable = Observable.just("a", "b", "c", "d");
         observable.count().subscribe(w);
         // we should be called only once
         verify(w, times(1)).onNext(anyInt());
@@ -173,7 +173,7 @@ public class ObservableTests {
     }
 
     public void testTakeFirstWithPredicateOfSome() {
-        Observable<Integer> observable = Observable.from(1, 3, 5, 4, 6, 3);
+        Observable<Integer> observable = Observable.just(1, 3, 5, 4, 6, 3);
         observable.takeFirst(IS_EVEN).subscribe(w);
         verify(w, times(1)).onNext(anyInt());
         verify(w).onNext(4);
@@ -183,7 +183,7 @@ public class ObservableTests {
 
     @Test
     public void testTakeFirstWithPredicateOfNoneMatchingThePredicate() {
-        Observable<Integer> observable = Observable.from(1, 3, 5, 7, 9, 7, 5, 3, 1);
+        Observable<Integer> observable = Observable.just(1, 3, 5, 7, 9, 7, 5, 3, 1);
         observable.takeFirst(IS_EVEN).subscribe(w);
         verify(w, never()).onNext(anyInt());
         verify(w, times(1)).onCompleted();
@@ -192,7 +192,7 @@ public class ObservableTests {
 
     @Test
     public void testTakeFirstOfSome() {
-        Observable<Integer> observable = Observable.from(1, 2, 3);
+        Observable<Integer> observable = Observable.just(1, 2, 3);
         observable.take(1).subscribe(w);
         verify(w, times(1)).onNext(anyInt());
         verify(w).onNext(1);
@@ -220,7 +220,7 @@ public class ObservableTests {
 
     @Test
     public void testFirstWithPredicateOfNoneMatchingThePredicate() {
-        Observable<Integer> observable = Observable.from(1, 3, 5, 7, 9, 7, 5, 3, 1);
+        Observable<Integer> observable = Observable.just(1, 3, 5, 7, 9, 7, 5, 3, 1);
         observable.first(IS_EVEN).subscribe(w);
         verify(w, never()).onNext(anyInt());
         verify(w, never()).onCompleted();
@@ -229,7 +229,7 @@ public class ObservableTests {
 
     @Test
     public void testReduce() {
-        Observable<Integer> observable = Observable.from(1, 2, 3, 4);
+        Observable<Integer> observable = Observable.just(1, 2, 3, 4);
         observable.reduce(new Func2<Integer, Integer, Integer>() {
 
             @Override
@@ -289,7 +289,7 @@ public class ObservableTests {
 
     @Test
     public void testReduceWithInitialValue() {
-        Observable<Integer> observable = Observable.from(1, 2, 3, 4);
+        Observable<Integer> observable = Observable.just(1, 2, 3, 4);
         observable.reduce(50, new Func2<Integer, Integer, Integer>() {
 
             @Override
@@ -820,7 +820,7 @@ public class ObservableTests {
     public void testTakeWithErrorInObserver() {
         final AtomicInteger count = new AtomicInteger();
         final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
-        Observable.from("1", "2", "three", "4").take(3).subscribe(new Subscriber<String>() {
+        Observable.just("1", "2", "three", "4").take(3).subscribe(new Subscriber<String>() {
 
             @Override
             public void onCompleted() {
@@ -852,7 +852,7 @@ public class ObservableTests {
 
     @Test
     public void testOfType() {
-        Observable<String> observable = Observable.from(1, "abc", false, 2L).ofType(String.class);
+        Observable<String> observable = Observable.just(1, "abc", false, 2L).ofType(String.class);
 
         @SuppressWarnings("unchecked")
         Observer<Object> observer = mock(Observer.class);
@@ -874,7 +874,7 @@ public class ObservableTests {
         l2.add(2);
 
         @SuppressWarnings("rawtypes")
-        Observable<List> observable = Observable.<Object> from(l1, l2, "123").ofType(List.class);
+        Observable<List> observable = Observable.<Object> just(l1, l2, "123").ofType(List.class);
 
         @SuppressWarnings("unchecked")
         Observer<Object> observer = mock(Observer.class);
@@ -889,7 +889,7 @@ public class ObservableTests {
 
     @Test
     public void testContains() {
-        Observable<Boolean> observable = Observable.from("a", "b", null).contains("b");
+        Observable<Boolean> observable = Observable.just("a", "b", null).contains("b");
 
         @SuppressWarnings("unchecked")
         Observer<Object> observer = mock(Observer.class);
@@ -903,7 +903,7 @@ public class ObservableTests {
 
     @Test
     public void testContainsWithInexistence() {
-        Observable<Boolean> observable = Observable.from("a", "b", null).contains("c");
+        Observable<Boolean> observable = Observable.just("a", "b", null).contains("c");
 
         @SuppressWarnings("unchecked")
         Observer<Object> observer = mock(Observer.class);
@@ -917,7 +917,7 @@ public class ObservableTests {
 
     @Test
     public void testContainsWithNull() {
-        Observable<Boolean> observable = Observable.from("a", "b", null).contains(null);
+        Observable<Boolean> observable = Observable.just("a", "b", null).contains(null);
 
         @SuppressWarnings("unchecked")
         Observer<Object> observer = mock(Observer.class);
@@ -945,7 +945,7 @@ public class ObservableTests {
 
     @Test
     public void testIgnoreElements() {
-        Observable<Integer> observable = Observable.from(1, 2, 3).ignoreElements();
+        Observable<Integer> observable = Observable.just(1, 2, 3).ignoreElements();
 
         @SuppressWarnings("unchecked")
         Observer<Integer> observer = mock(Observer.class);
@@ -956,27 +956,27 @@ public class ObservableTests {
     }
 
     @Test
-    public void testFromWithScheduler() {
-        TestScheduler scheduler = new TestScheduler();
-        Observable<Integer> observable = Observable.from(Arrays.asList(1, 2), scheduler);
-
-        @SuppressWarnings("unchecked")
-        Observer<Integer> observer = mock(Observer.class);
-        observable.subscribe(observer);
-
-        scheduler.advanceTimeBy(1, TimeUnit.MILLISECONDS);
-
-        InOrder inOrder = inOrder(observer);
-        inOrder.verify(observer, times(1)).onNext(1);
-        inOrder.verify(observer, times(1)).onNext(2);
-        inOrder.verify(observer, times(1)).onCompleted();
-        inOrder.verifyNoMoreInteractions();
-    }
+            public void testJustWithScheduler() {
+                TestScheduler scheduler = new TestScheduler();
+                Observable<Integer> observable = Observable.from(Arrays.asList(1, 2), scheduler);
+        
+                @SuppressWarnings("unchecked")
+                Observer<Integer> observer = mock(Observer.class);
+                observable.subscribe(observer);
+        
+                scheduler.advanceTimeBy(1, TimeUnit.MILLISECONDS);
+        
+                InOrder inOrder = inOrder(observer);
+                inOrder.verify(observer, times(1)).onNext(1);
+                inOrder.verify(observer, times(1)).onNext(2);
+                inOrder.verify(observer, times(1)).onCompleted();
+                inOrder.verifyNoMoreInteractions();
+            }
 
     @Test
     public void testStartWithWithScheduler() {
         TestScheduler scheduler = new TestScheduler();
-        Observable<Integer> observable = Observable.from(3, 4).startWith(Arrays.asList(1, 2), scheduler);
+        Observable<Integer> observable = Observable.just(3, 4).startWith(Arrays.asList(1, 2), scheduler);
 
         @SuppressWarnings("unchecked")
         Observer<Integer> observer = mock(Observer.class);
@@ -1015,7 +1015,7 @@ public class ObservableTests {
 
     @Test
     public void testCollectToList() {
-        List<Integer> list = Observable.from(1, 2, 3).collect(new ArrayList<Integer>(), new Action2<List<Integer>, Integer>() {
+        List<Integer> list = Observable.just(1, 2, 3).collect(new ArrayList<Integer>(), new Action2<List<Integer>, Integer>() {
 
             @Override
             public void call(List<Integer> list, Integer v) {
@@ -1031,7 +1031,7 @@ public class ObservableTests {
 
     @Test
     public void testCollectToString() {
-        String value = Observable.from(1, 2, 3).collect(new StringBuilder(), new Action2<StringBuilder, Integer>() {
+        String value = Observable.just(1, 2, 3).collect(new StringBuilder(), new Action2<StringBuilder, Integer>() {
 
             @Override
             public void call(StringBuilder sb, Integer v) {
@@ -1068,7 +1068,7 @@ public class ObservableTests {
 
     @Test(expected = OnErrorNotImplementedException.class)
     public void testSubscribeWithoutOnError() {
-        Observable<String> o = Observable.from("a", "b").flatMap(new Func1<String, Observable<String>>() {
+        Observable<String> o = Observable.just("a", "b").flatMap(new Func1<String, Observable<String>>() {
             @Override
             public Observable<String> call(String s) {
                 return Observable.error(new Exception("test"));
@@ -1083,7 +1083,7 @@ public class ObservableTests {
         final AtomicInteger count = new AtomicInteger();
         for(final int n: nums) {
             Observable
-                    .from(Boolean.TRUE, Boolean.FALSE)
+                    .just(Boolean.TRUE, Boolean.FALSE)
                     .takeWhile(new Func1<Boolean, Boolean>() {
                         @Override
                         public Boolean call(Boolean value) {
@@ -1105,7 +1105,7 @@ public class ObservableTests {
     @Test
     public void testCompose() {
         TestSubscriber<String> ts = new TestSubscriber<String>();
-        Observable.from(1, 2, 3).compose(new Transformer<Integer, String>() {
+        Observable.just(1, 2, 3).compose(new Transformer<Integer, String>() {
 
             @Override
             public Observable<String> call(Observable<Integer> t1) {

@@ -33,41 +33,41 @@ public class OperatorSequenceEqualTest {
     @Test
     public void test1() {
         Observable<Boolean> observable = Observable.sequenceEqual(
-                Observable.from("one", "two", "three"),
-                Observable.from("one", "two", "three"));
+                Observable.just("one", "two", "three"),
+                Observable.just("one", "two", "three"));
         verifyResult(observable, true);
     }
 
     @Test
     public void test2() {
         Observable<Boolean> observable = Observable.sequenceEqual(
-                Observable.from("one", "two", "three"),
-                Observable.from("one", "two", "three", "four"));
+                Observable.just("one", "two", "three"),
+                Observable.just("one", "two", "three", "four"));
         verifyResult(observable, false);
     }
 
     @Test
     public void test3() {
         Observable<Boolean> observable = Observable.sequenceEqual(
-                Observable.from("one", "two", "three", "four"),
-                Observable.from("one", "two", "three"));
+                Observable.just("one", "two", "three", "four"),
+                Observable.just("one", "two", "three"));
         verifyResult(observable, false);
     }
 
     @Test
     public void testWithError1() {
         Observable<Boolean> observable = Observable.sequenceEqual(
-                Observable.concat(Observable.from("one"),
+                Observable.concat(Observable.just("one"),
                         Observable.<String> error(new TestException())),
-                Observable.from("one", "two", "three"));
+                Observable.just("one", "two", "three"));
         verifyError(observable);
     }
 
     @Test
     public void testWithError2() {
         Observable<Boolean> observable = Observable.sequenceEqual(
-                Observable.from("one", "two", "three"),
-                Observable.concat(Observable.from("one"),
+                Observable.just("one", "two", "three"),
+                Observable.concat(Observable.just("one"),
                         Observable.<String> error(new TestException())));
         verifyError(observable);
     }
@@ -75,9 +75,9 @@ public class OperatorSequenceEqualTest {
     @Test
     public void testWithError3() {
         Observable<Boolean> observable = Observable.sequenceEqual(
-                Observable.concat(Observable.from("one"),
+                Observable.concat(Observable.just("one"),
                         Observable.<String> error(new TestException())),
-                Observable.concat(Observable.from("one"),
+                Observable.concat(Observable.just("one"),
                         Observable.<String> error(new TestException())));
         verifyError(observable);
     }
@@ -86,14 +86,14 @@ public class OperatorSequenceEqualTest {
     public void testWithEmpty1() {
         Observable<Boolean> observable = Observable.sequenceEqual(
                 Observable.<String> empty(),
-                Observable.from("one", "two", "three"));
+                Observable.just("one", "two", "three"));
         verifyResult(observable, false);
     }
 
     @Test
     public void testWithEmpty2() {
         Observable<Boolean> observable = Observable.sequenceEqual(
-                Observable.from("one", "two", "three"),
+                Observable.just("one", "two", "three"),
                 Observable.<String> empty());
         verifyResult(observable, false);
     }
@@ -108,21 +108,21 @@ public class OperatorSequenceEqualTest {
     @Test
     public void testWithNull1() {
         Observable<Boolean> observable = Observable.sequenceEqual(
-                Observable.from((String) null), Observable.from("one"));
+                Observable.just((String) null), Observable.just("one"));
         verifyResult(observable, false);
     }
 
     @Test
     public void testWithNull2() {
         Observable<Boolean> observable = Observable.sequenceEqual(
-                Observable.from((String) null), Observable.from((String) null));
+                Observable.just((String) null), Observable.just((String) null));
         verifyResult(observable, true);
     }
 
     @Test
     public void testWithEqualityError() {
         Observable<Boolean> observable = Observable.sequenceEqual(
-                Observable.from("one"), Observable.from("one"),
+                Observable.just("one"), Observable.just("one"),
                 new Func2<String, String, Boolean>() {
                     @Override
                     public Boolean call(String t1, String t2) {

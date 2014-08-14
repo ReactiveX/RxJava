@@ -201,7 +201,7 @@ public class OnSubscribeDelayTest {
 
     @Test
     public void testDelaySubscription() {
-        Observable<Integer> result = Observable.from(1, 2, 3).delaySubscription(100, TimeUnit.MILLISECONDS, scheduler);
+        Observable<Integer> result = Observable.just(1, 2, 3).delaySubscription(100, TimeUnit.MILLISECONDS, scheduler);
 
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
@@ -224,7 +224,7 @@ public class OnSubscribeDelayTest {
 
     @Test
     public void testDelaySubscriptionCancelBeforeTime() {
-        Observable<Integer> result = Observable.from(1, 2, 3).delaySubscription(100, TimeUnit.MILLISECONDS, scheduler);
+        Observable<Integer> result = Observable.just(1, 2, 3).delaySubscription(100, TimeUnit.MILLISECONDS, scheduler);
 
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);

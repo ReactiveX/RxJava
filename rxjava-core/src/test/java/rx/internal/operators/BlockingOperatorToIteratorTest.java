@@ -31,7 +31,7 @@ public class BlockingOperatorToIteratorTest {
 
     @Test
     public void testToIterator() {
-        Observable<String> obs = Observable.from("one", "two", "three");
+        Observable<String> obs = Observable.just("one", "two", "three");
 
         Iterator<String> it = toIterator(obs);
 

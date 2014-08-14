@@ -59,7 +59,7 @@ public class OperatorToMapTest {
 
     @Test
     public void testToMap() {
-        Observable<String> source = Observable.from("a", "bb", "ccc", "dddd");
+        Observable<String> source = Observable.just("a", "bb", "ccc", "dddd");
 
         Observable<Map<Integer, String>> mapped = source.toMap(lengthFunc);
 
@@ -78,7 +78,7 @@ public class OperatorToMapTest {
 
     @Test
     public void testToMapWithValueSelector() {
-        Observable<String> source = Observable.from("a", "bb", "ccc", "dddd");
+        Observable<String> source = Observable.just("a", "bb", "ccc", "dddd");
 
         Observable<Map<Integer, String>> mapped = source.toMap(lengthFunc, duplicate);
 
@@ -97,7 +97,7 @@ public class OperatorToMapTest {
 
     @Test
     public void testToMapWithError() {
-        Observable<String> source = Observable.from("a", "bb", "ccc", "dddd");
+        Observable<String> source = Observable.just("a", "bb", "ccc", "dddd");
 
         Func1<String, Integer> lengthFuncErr = new Func1<String, Integer>() {
             @Override
@@ -126,7 +126,7 @@ public class OperatorToMapTest {
 
     @Test
     public void testToMapWithErrorInValueSelector() {
-        Observable<String> source = Observable.from("a", "bb", "ccc", "dddd");
+        Observable<String> source = Observable.just("a", "bb", "ccc", "dddd");
 
         Func1<String, String> duplicateErr = new Func1<String, String>() {
             @Override
@@ -156,7 +156,7 @@ public class OperatorToMapTest {
 
     @Test
     public void testToMapWithFactory() {
-        Observable<String> source = Observable.from("a", "bb", "ccc", "dddd");
+        Observable<String> source = Observable.just("a", "bb", "ccc", "dddd");
 
         Func0<Map<Integer, String>> mapFactory = new Func0<Map<Integer, String>>() {
             @Override
@@ -195,7 +195,7 @@ public class OperatorToMapTest {
 
     @Test
     public void testToMapWithErrorThrowingFactory() {
-        Observable<String> source = Observable.from("a", "bb", "ccc", "dddd");
+        Observable<String> source = Observable.just("a", "bb", "ccc", "dddd");
 
         Func0<Map<Integer, String>> mapFactory = new Func0<Map<Integer, String>>() {
             @Override

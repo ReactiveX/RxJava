@@ -400,7 +400,7 @@ public class OperatorTimeoutWithSelectorTest {
             @Override
             public void run() {
                 PublishSubject<Integer> source = PublishSubject.create();
-                source.timeout(timeoutFunc, Observable.from(3)).subscribe(ts);
+                source.timeout(timeoutFunc, Observable.just(3)).subscribe(ts);
                 source.onNext(1); // start timeout
                 try {
                     if(!enteredTimeoutOne.await(30, TimeUnit.SECONDS)) {

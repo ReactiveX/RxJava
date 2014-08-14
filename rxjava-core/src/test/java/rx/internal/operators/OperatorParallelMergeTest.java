@@ -39,7 +39,7 @@ public class OperatorParallelMergeTest {
         PublishSubject<String> p3 = PublishSubject.<String> create();
         PublishSubject<String> p4 = PublishSubject.<String> create();
 
-        Observable<Observable<String>> fourStreams = Observable.<Observable<String>> from(p1, p2, p3, p4);
+        Observable<Observable<String>> fourStreams = Observable.<Observable<String>> just(p1, p2, p3, p4);
 
         Observable<Observable<String>> twoStreams = Observable.parallelMerge(fourStreams, 2);
         Observable<Observable<String>> threeStreams = Observable.parallelMerge(fourStreams, 3);

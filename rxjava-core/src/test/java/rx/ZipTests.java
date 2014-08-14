@@ -86,8 +86,8 @@ public class ZipTests {
      */
     @Test
     public void testCovarianceOfZip() {
-        Observable<HorrorMovie> horrors = Observable.from(new HorrorMovie());
-        Observable<CoolRating> ratings = Observable.from(new CoolRating());
+        Observable<HorrorMovie> horrors = Observable.just(new HorrorMovie());
+        Observable<CoolRating> ratings = Observable.just(new CoolRating());
 
         Observable.<Movie, CoolRating, Result> zip(horrors, ratings, combine).toBlocking().forEach(action);
         Observable.<Movie, CoolRating, Result> zip(horrors, ratings, combine).toBlocking().forEach(action);

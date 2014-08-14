@@ -33,7 +33,7 @@ public class ObservableDoOnTest {
     @Test
     public void testDoOnEach() {
         final AtomicReference<String> r = new AtomicReference<String>();
-        String output = Observable.from("one").doOnNext(new Action1<String>() {
+        String output = Observable.just("one").doOnNext(new Action1<String>() {
 
             @Override
             public void call(String v) {
@@ -69,7 +69,7 @@ public class ObservableDoOnTest {
     @Test
     public void testDoOnCompleted() {
         final AtomicBoolean r = new AtomicBoolean();
-        String output = Observable.from("one").doOnCompleted(new Action0() {
+        String output = Observable.just("one").doOnCompleted(new Action0() {
 
             @Override
             public void call() {

@@ -62,7 +62,7 @@ public class OperatorGroupByTest {
     
     @Test
     public void testGroupBy() {
-        Observable<String> source = Observable.from("one", "two", "three", "four", "five", "six");
+        Observable<String> source = Observable.just("one", "two", "three", "four", "five", "six");
         Observable<GroupedObservable<Integer, String>> grouped = source.lift(new OperatorGroupBy<String, Integer, String>(length));
 
         Map<Integer, Collection<String>> map = toMap(grouped);
@@ -75,7 +75,7 @@ public class OperatorGroupByTest {
     
     @Test
     public void testGroupByWithElementSelector() {
-        Observable<String> source = Observable.from("one", "two", "three", "four", "five", "six");
+        Observable<String> source = Observable.just("one", "two", "three", "four", "five", "six");
         Observable<GroupedObservable<Integer, Integer>> grouped = source.lift(new OperatorGroupBy<String, Integer, Integer>(length, length));
 
         Map<Integer, Collection<Integer>> map = toMap(grouped);
@@ -88,7 +88,7 @@ public class OperatorGroupByTest {
     
     @Test
     public void testGroupByWithElementSelector2() {
-        Observable<String> source = Observable.from("one", "two", "three", "four", "five", "six");
+        Observable<String> source = Observable.just("one", "two", "three", "four", "five", "six");
         Observable<GroupedObservable<Integer, Integer>> grouped = source.groupBy(length, length);
 
         Map<Integer, Collection<Integer>> map = toMap(grouped);
@@ -111,7 +111,7 @@ public class OperatorGroupByTest {
 
     @Test
     public void testError() {
-        Observable<String> sourceStrings = Observable.from("one", "two", "three", "four", "five", "six");
+        Observable<String> sourceStrings = Observable.just("one", "two", "three", "four", "five", "six");
         Observable<String> errorSource = Observable.error(new RuntimeException("forced failure"));
         Observable<String> source = Observable.concat(sourceStrings, errorSource);
 

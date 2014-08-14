@@ -38,14 +38,14 @@ public class BlockingOperatorToFutureTest {
 
     @Test
     public void testToFuture() throws InterruptedException, ExecutionException {
-        Observable<String> obs = Observable.from("one");
+        Observable<String> obs = Observable.just("one");
         Future<String> f = toFuture(obs);
         assertEquals("one", f.get());
     }
 
     @Test
     public void testToFutureList() throws InterruptedException, ExecutionException {
-        Observable<String> obs = Observable.from("one", "two", "three");
+        Observable<String> obs = Observable.just("one", "two", "three");
         Future<List<String>> f = toFuture(obs.toList());
         assertEquals("one", f.get().get(0));
         assertEquals("two", f.get().get(1));
@@ -54,7 +54,7 @@ public class BlockingOperatorToFutureTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testExceptionWithMoreThanOneElement() throws Throwable {
-        Observable<String> obs = Observable.from("one", "two");
+        Observable<String> obs = Observable.just("one", "two");
         Future<String> f = toFuture(obs);
         try {
             // we expect an exception since there are more than 1 element
@@ -127,7 +127,7 @@ public class BlockingOperatorToFutureTest {
 
     @Test
     public void testGetWithASingleNullItem() throws Exception {
-        Observable<String> obs = Observable.from((String)null);
+        Observable<String> obs = Observable.just((String)null);
         Future<String> f = obs.toBlocking().toFuture();
         assertEquals(null, f.get());
     }

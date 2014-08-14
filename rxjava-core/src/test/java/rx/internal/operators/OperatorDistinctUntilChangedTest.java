@@ -78,7 +78,7 @@ public class OperatorDistinctUntilChangedTest {
 
     @Test
     public void testDistinctUntilChangedOfNormalSource() {
-        Observable<String> src = Observable.from("a", "b", "c", "c", "c", "b", "b", "a", "e");
+        Observable<String> src = Observable.just("a", "b", "c", "c", "c", "b", "b", "a", "e");
         src.distinctUntilChanged().subscribe(w);
 
         InOrder inOrder = inOrder(w);
@@ -95,7 +95,7 @@ public class OperatorDistinctUntilChangedTest {
 
     @Test
     public void testDistinctUntilChangedOfNormalSourceWithKeySelector() {
-        Observable<String> src = Observable.from("a", "b", "c", "C", "c", "B", "b", "a", "e");
+        Observable<String> src = Observable.just("a", "b", "c", "C", "c", "B", "b", "a", "e");
         src.distinctUntilChanged(TO_UPPER_WITH_EXCEPTION).subscribe(w);
 
         InOrder inOrder = inOrder(w);
@@ -112,7 +112,7 @@ public class OperatorDistinctUntilChangedTest {
 
     @Test
     public void testDistinctUntilChangedOfSourceWithNulls() {
-        Observable<String> src = Observable.from(null, "a", "a", null, null, "b", null, null);
+        Observable<String> src = Observable.just(null, "a", "a", null, null, "b", null, null);
         src.distinctUntilChanged().subscribe(w);
 
         InOrder inOrder = inOrder(w);
@@ -128,7 +128,7 @@ public class OperatorDistinctUntilChangedTest {
 
     @Test
     public void testDistinctUntilChangedOfSourceWithExceptionsFromKeySelector() {
-        Observable<String> src = Observable.from("a", "b", null, "c");
+        Observable<String> src = Observable.just("a", "b", null, "c");
         src.distinctUntilChanged(TO_UPPER_WITH_EXCEPTION).subscribe(w);
 
         InOrder inOrder = inOrder(w);

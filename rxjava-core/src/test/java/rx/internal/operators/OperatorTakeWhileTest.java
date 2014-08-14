@@ -38,7 +38,7 @@ public class OperatorTakeWhileTest {
 
     @Test
     public void testTakeWhile1() {
-        Observable<Integer> w = Observable.from(1, 2, 3);
+        Observable<Integer> w = Observable.just(1, 2, 3);
         Observable<Integer> take = w.takeWhile(new Func1<Integer, Boolean>() {
             @Override
             public Boolean call(Integer input) {
@@ -88,7 +88,7 @@ public class OperatorTakeWhileTest {
 
     @Test
     public void testTakeWhile2() {
-        Observable<String> w = Observable.from("one", "two", "three");
+        Observable<String> w = Observable.just("one", "two", "three");
         Observable<String> take = w.takeWhileWithIndex(new Func2<String, Integer, Boolean>() {
             @Override
             public Boolean call(String input, Integer index) {

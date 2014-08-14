@@ -32,7 +32,7 @@ public class OperatorSkipTest {
     @Test
     public void testSkipNegativeElements() {
 
-        Observable<String> skip = Observable.from("one", "two", "three").lift(new OperatorSkip<String>(-99));
+        Observable<String> skip = Observable.just("one", "two", "three").lift(new OperatorSkip<String>(-99));
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
@@ -47,7 +47,7 @@ public class OperatorSkipTest {
     @Test
     public void testSkipZeroElements() {
 
-        Observable<String> skip = Observable.from("one", "two", "three").lift(new OperatorSkip<String>(0));
+        Observable<String> skip = Observable.just("one", "two", "three").lift(new OperatorSkip<String>(0));
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
@@ -62,7 +62,7 @@ public class OperatorSkipTest {
     @Test
     public void testSkipOneElement() {
 
-        Observable<String> skip = Observable.from("one", "two", "three").lift(new OperatorSkip<String>(1));
+        Observable<String> skip = Observable.just("one", "two", "three").lift(new OperatorSkip<String>(1));
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
@@ -77,7 +77,7 @@ public class OperatorSkipTest {
     @Test
     public void testSkipTwoElements() {
 
-        Observable<String> skip = Observable.from("one", "two", "three").lift(new OperatorSkip<String>(2));
+        Observable<String> skip = Observable.just("one", "two", "three").lift(new OperatorSkip<String>(2));
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
@@ -106,7 +106,7 @@ public class OperatorSkipTest {
     @Test
     public void testSkipMultipleObservers() {
 
-        Observable<String> skip = Observable.from("one", "two", "three").lift(new OperatorSkip<String>(2));
+        Observable<String> skip = Observable.just("one", "two", "three").lift(new OperatorSkip<String>(2));
 
         @SuppressWarnings("unchecked")
         Observer<String> observer1 = mock(Observer.class);
@@ -130,7 +130,7 @@ public class OperatorSkipTest {
 
         Exception e = new Exception();
 
-        Observable<String> ok = Observable.from("one");
+        Observable<String> ok = Observable.just("one");
         Observable<String> error = Observable.error(e);
 
         Observable<String> skip = Observable.concat(ok, error).lift(new OperatorSkip<String>(100));

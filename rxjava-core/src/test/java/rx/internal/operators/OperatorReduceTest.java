@@ -53,7 +53,7 @@ public class OperatorReduceTest {
     @Test
     public void testAggregateAsIntSum() {
 
-        Observable<Integer> result = Observable.from(1, 2, 3, 4, 5).reduce(0, sum).map(Functions.<Integer> identity());
+        Observable<Integer> result = Observable.just(1, 2, 3, 4, 5).reduce(0, sum).map(Functions.<Integer> identity());
 
         result.subscribe(observer);
 
@@ -64,7 +64,7 @@ public class OperatorReduceTest {
 
     @Test
     public void testAggregateAsIntSumSourceThrows() {
-        Observable<Integer> result = Observable.concat(Observable.from(1, 2, 3, 4, 5),
+        Observable<Integer> result = Observable.concat(Observable.just(1, 2, 3, 4, 5),
                 Observable.<Integer> error(new TestException()))
                 .reduce(0, sum).map(Functions.<Integer> identity());
 
@@ -84,7 +84,7 @@ public class OperatorReduceTest {
             }
         };
 
-        Observable<Integer> result = Observable.from(1, 2, 3, 4, 5)
+        Observable<Integer> result = Observable.just(1, 2, 3, 4, 5)
                 .reduce(0, sumErr).map(Functions.<Integer> identity());
 
         result.subscribe(observer);
@@ -105,7 +105,7 @@ public class OperatorReduceTest {
             }
         };
 
-        Observable<Integer> result = Observable.from(1, 2, 3, 4, 5)
+        Observable<Integer> result = Observable.just(1, 2, 3, 4, 5)
                 .reduce(0, sum).map(error);
 
         result.subscribe(observer);
@@ -117,7 +117,7 @@ public class OperatorReduceTest {
 
     @Test
     public void testBackpressureWithNoInitialValue() throws InterruptedException {
-        Observable<Integer> source = Observable.from(1, 2, 3, 4, 5, 6);
+        Observable<Integer> source = Observable.just(1, 2, 3, 4, 5, 6);
         Observable<Integer> reduced = source.reduce(sum);
 
         Integer r = reduced.toBlocking().first();
@@ -126,7 +126,7 @@ public class OperatorReduceTest {
 
     @Test
     public void testBackpressureWithInitialValue() throws InterruptedException {
-        Observable<Integer> source = Observable.from(1, 2, 3, 4, 5, 6);
+        Observable<Integer> source = Observable.just(1, 2, 3, 4, 5, 6);
         Observable<Integer> reduced = source.reduce(0, sum);
 
         Integer r = reduced.toBlocking().first();

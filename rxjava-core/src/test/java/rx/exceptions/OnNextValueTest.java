@@ -80,7 +80,7 @@ public final class OnNextValueTest {
     public void addOnNextValueExceptionAdded() throws Exception {
         Observer<BadToString> observer = new BadToStringObserver();
 
-        Observable.from(new BadToString(false))
+        Observable.just(new BadToString(false))
                 .map(new Func1<BadToString, BadToString>() {
                     @Override
                     public BadToString call(BadToString badToString) {
@@ -94,7 +94,7 @@ public final class OnNextValueTest {
     public void addOnNextValueExceptionNotAddedWithBadString() throws Exception {
         Observer<BadToString> observer = new BadToStringObserver();
 
-        Observable.from(new BadToString(true))
+        Observable.just(new BadToString(true))
                 .map(new Func1<BadToString, BadToString>() {
                     @Override
                     public BadToString call(BadToString badToString) {

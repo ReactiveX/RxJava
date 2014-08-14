@@ -38,7 +38,7 @@ public class OperatorOnErrorResumeNextViaObservableTest {
         // Trigger failure on second element
         TestObservable f = new TestObservable(s, "one", "fail", "two", "three");
         Observable<String> w = Observable.create(f);
-        Observable<String> resume = Observable.from("twoResume", "threeResume");
+        Observable<String> resume = Observable.just("twoResume", "threeResume");
         Observable<String> observable = w.onErrorResumeNext(resume);
 
         @SuppressWarnings("unchecked")
@@ -64,7 +64,7 @@ public class OperatorOnErrorResumeNextViaObservableTest {
     public void testMapResumeAsyncNext() {
         Subscription sr = mock(Subscription.class);
         // Trigger multiple failures
-        Observable<String> w = Observable.from("one", "fail", "two", "three", "fail");
+        Observable<String> w = Observable.just("one", "fail", "two", "three", "fail");
         // Resume Observable is async
         TestObservable f = new TestObservable(sr, "twoResume", "threeResume");
         Observable<String> resume = Observable.create(f);

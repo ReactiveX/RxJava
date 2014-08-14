@@ -135,7 +135,7 @@ public class OperatorTimeoutTests {
 
     @Test
     public void shouldSwitchToOtherIfOnNextNotWithinTimeout() {
-        Observable<String> other = Observable.from("a", "b", "c");
+        Observable<String> other = Observable.just("a", "b", "c");
         Observable<String> source = underlyingSubject.timeout(TIMEOUT, TIME_UNIT, other, testScheduler);
 
         @SuppressWarnings("unchecked")
@@ -158,7 +158,7 @@ public class OperatorTimeoutTests {
 
     @Test
     public void shouldSwitchToOtherIfOnErrorNotWithinTimeout() {
-        Observable<String> other = Observable.from("a", "b", "c");
+        Observable<String> other = Observable.just("a", "b", "c");
         Observable<String> source = underlyingSubject.timeout(TIMEOUT, TIME_UNIT, other, testScheduler);
 
         @SuppressWarnings("unchecked")
@@ -181,7 +181,7 @@ public class OperatorTimeoutTests {
 
     @Test
     public void shouldSwitchToOtherIfOnCompletedNotWithinTimeout() {
-        Observable<String> other = Observable.from("a", "b", "c");
+        Observable<String> other = Observable.just("a", "b", "c");
         Observable<String> source = underlyingSubject.timeout(TIMEOUT, TIME_UNIT, other, testScheduler);
 
         @SuppressWarnings("unchecked")

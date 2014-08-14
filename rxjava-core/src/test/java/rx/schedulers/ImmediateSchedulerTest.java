@@ -57,8 +57,8 @@ public class ImmediateSchedulerTest extends AbstractSchedulerTests {
 
         final String currentThreadName = Thread.currentThread().getName();
 
-        Observable<Integer> o1 = Observable.<Integer> from(1, 2, 3, 4, 5);
-        Observable<Integer> o2 = Observable.<Integer> from(6, 7, 8, 9, 10);
+        Observable<Integer> o1 = Observable.<Integer> just(1, 2, 3, 4, 5);
+        Observable<Integer> o2 = Observable.<Integer> just(6, 7, 8, 9, 10);
         Observable<String> o = Observable.<Integer> merge(o1, o2).map(new Func1<Integer, String>() {
 
             @Override
@@ -82,8 +82,8 @@ public class ImmediateSchedulerTest extends AbstractSchedulerTests {
 
         final String currentThreadName = Thread.currentThread().getName();
 
-        Observable<Integer> o1 = Observable.<Integer> from(1, 2, 3, 4, 5);
-        Observable<Integer> o2 = Observable.<Integer> from(6, 7, 8, 9, 10);
+        Observable<Integer> o1 = Observable.<Integer> just(1, 2, 3, 4, 5);
+        Observable<Integer> o2 = Observable.<Integer> just(6, 7, 8, 9, 10);
         Observable<String> o = Observable.<Integer> merge(o1, o2).subscribeOn(Schedulers.immediate()).map(new Func1<Integer, String>() {
 
             @Override

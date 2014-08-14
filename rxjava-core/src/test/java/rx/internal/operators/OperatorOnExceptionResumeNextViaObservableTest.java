@@ -38,7 +38,7 @@ public class OperatorOnExceptionResumeNextViaObservableTest {
         // Trigger failure on second element
         TestObservable f = new TestObservable("one", "EXCEPTION", "two", "three");
         Observable<String> w = Observable.create(f);
-        Observable<String> resume = Observable.from("twoResume", "threeResume");
+        Observable<String> resume = Observable.just("twoResume", "threeResume");
         Observable<String> observable = w.onExceptionResumeNext(resume);
 
         @SuppressWarnings("unchecked")
@@ -66,7 +66,7 @@ public class OperatorOnExceptionResumeNextViaObservableTest {
         // Trigger failure on second element
         TestObservable f = new TestObservable("one", "RUNTIMEEXCEPTION", "two", "three");
         Observable<String> w = Observable.create(f);
-        Observable<String> resume = Observable.from("twoResume", "threeResume");
+        Observable<String> resume = Observable.just("twoResume", "threeResume");
         Observable<String> observable = w.onExceptionResumeNext(resume);
 
         @SuppressWarnings("unchecked")
@@ -94,7 +94,7 @@ public class OperatorOnExceptionResumeNextViaObservableTest {
         // Trigger failure on second element
         TestObservable f = new TestObservable("one", "THROWABLE", "two", "three");
         Observable<String> w = Observable.create(f);
-        Observable<String> resume = Observable.from("twoResume", "threeResume");
+        Observable<String> resume = Observable.just("twoResume", "threeResume");
         Observable<String> observable = w.onExceptionResumeNext(resume);
 
         @SuppressWarnings("unchecked")
@@ -122,7 +122,7 @@ public class OperatorOnExceptionResumeNextViaObservableTest {
         // Trigger failure on second element
         TestObservable f = new TestObservable("one", "ERROR", "two", "three");
         Observable<String> w = Observable.create(f);
-        Observable<String> resume = Observable.from("twoResume", "threeResume");
+        Observable<String> resume = Observable.just("twoResume", "threeResume");
         Observable<String> observable = w.onExceptionResumeNext(resume);
 
         @SuppressWarnings("unchecked")
@@ -148,7 +148,7 @@ public class OperatorOnExceptionResumeNextViaObservableTest {
     @Test
     public void testMapResumeAsyncNext() {
         // Trigger multiple failures
-        Observable<String> w = Observable.from("one", "fail", "two", "three", "fail");
+        Observable<String> w = Observable.just("one", "fail", "two", "three", "fail");
         // Resume Observable is async
         TestObservable f = new TestObservable("twoResume", "threeResume");
         Observable<String> resume = Observable.create(f);

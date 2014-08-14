@@ -55,14 +55,14 @@ public class OperatorRepeatTest {
 
     @Test(timeout = 2000)
     public void testRepeatTake() {
-        Observable<Integer> xs = Observable.from(1, 2);
+        Observable<Integer> xs = Observable.just(1, 2);
         Object[] ys = xs.repeat(Schedulers.newThread()).take(4).toList().toBlocking().last().toArray();
         assertArrayEquals(new Object[] { 1, 2, 1, 2 }, ys);
     }
 
     @Test(timeout = 20000)
     public void testNoStackOverFlow() {
-        Observable.from(1).repeat(Schedulers.newThread()).take(100000).toBlocking().last();
+        Observable.just(1).repeat(Schedulers.newThread()).take(100000).toBlocking().last();
     }
 
     @Test
@@ -103,7 +103,7 @@ public class OperatorRepeatTest {
         @SuppressWarnings("unchecked")
                 Observer<Object> o = mock(Observer.class);
         
-        Observable.from(1).repeat().take(10).subscribe(o);
+        Observable.just(1).repeat().take(10).subscribe(o);
         
         verify(o, times(10)).onNext(1);
         verify(o).onCompleted();
@@ -115,7 +115,7 @@ public class OperatorRepeatTest {
         @SuppressWarnings("unchecked")
                 Observer<Object> o = mock(Observer.class);
         
-        Observable.from(1).repeat(10).subscribe(o);
+        Observable.just(1).repeat(10).subscribe(o);
         
         verify(o, times(10)).onNext(1);
         verify(o).onCompleted();
@@ -140,7 +140,7 @@ public class OperatorRepeatTest {
         @SuppressWarnings("unchecked")
                 Observer<Object> o = mock(Observer.class);
         
-        Observable.from(1).repeat(0).subscribe(o);
+        Observable.just(1).repeat(0).subscribe(o);
         
         verify(o).onCompleted();
         verify(o, never()).onNext(any());
@@ -152,7 +152,7 @@ public class OperatorRepeatTest {
         @SuppressWarnings("unchecked")
                 Observer<Object> o = mock(Observer.class);
         
-        Observable.from(1).repeat(1).subscribe(o);
+        Observable.just(1).repeat(1).subscribe(o);
         
         verify(o).onCompleted();
         verify(o, times(1)).onNext(any());
