@@ -1339,7 +1339,7 @@ public class Observable<T> {
      *            the type of these items
      * @return an Observable that emits each item
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from">RxJava wiki: from</a>
-     * @deprecated Use items instead
+     * @deprecated use {@link #just} instead
      */
     @Deprecated
     // suppress unchecked because we are using varargs inside the method
@@ -1367,7 +1367,7 @@ public class Observable<T> {
      *            the type of these items
      * @return an Observable that emits each item
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from">RxJava wiki: from</a>
-     * @deprecated Use items instead
+     * @deprecated use {@link #just} instead
      */
     @Deprecated
     // suppress unchecked because we are using varargs inside the method
@@ -1397,7 +1397,7 @@ public class Observable<T> {
      *            the type of these items
      * @return an Observable that emits each item
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from">RxJava wiki: from</a>
-     * @deprecated Use items instead
+     * @deprecated use {@link #just} instead
      */
     @Deprecated
     // suppress unchecked because we are using varargs inside the method
@@ -1429,7 +1429,7 @@ public class Observable<T> {
      *            the type of these items
      * @return an Observable that emits each item
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from">RxJava wiki: from</a>
-     * @deprecated Use items instead
+     * @deprecated use {@link #just} instead
      */
     @Deprecated
     // suppress unchecked because we are using varargs inside the method
@@ -1463,7 +1463,7 @@ public class Observable<T> {
      *            the type of these items
      * @return an Observable that emits each item
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from">RxJava wiki: from</a>
-     * @deprecated Use items instead
+     * @deprecated use {@link #just} instead
      */
     @Deprecated
     // suppress unchecked because we are using varargs inside the method
@@ -1499,7 +1499,7 @@ public class Observable<T> {
      *            the type of these items
      * @return an Observable that emits each item
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from">RxJava wiki: from</a>
-     * @deprecated Use items instead
+     * @deprecated use {@link #just} instead
      */
     @Deprecated
     // suppress unchecked because we are using varargs inside the method
@@ -1537,7 +1537,7 @@ public class Observable<T> {
      *            the type of these items
      * @return an Observable that emits each item
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from">RxJava wiki: from</a>
-     * @deprecated Use items instead
+     * @deprecated use {@link #just} instead
      */
     @Deprecated
     // suppress unchecked because we are using varargs inside the method
@@ -1577,7 +1577,7 @@ public class Observable<T> {
      *            the type of these items
      * @return an Observable that emits each item
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from">RxJava wiki: from</a>
-     * @deprecated Use items instead
+     * @deprecated use {@link #just} instead
      */
     @Deprecated
     // suppress unchecked because we are using varargs inside the method
@@ -1619,7 +1619,7 @@ public class Observable<T> {
      *            the type of these items
      * @return an Observable that emits each item
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from">RxJava wiki: from</a>
-     * @deprecated Use items instead
+     * @deprecated use {@link #just} instead
      */
     @Deprecated
     // suppress unchecked because we are using varargs inside the method
@@ -1637,7 +1637,7 @@ public class Observable<T> {
      *  <dd>{@code from} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param t1
+     * @param array
      *            the source Array
      * @param <T>
      *            the type of items in the Array and the type of items to be emitted by the resulting Observable
@@ -1750,10 +1750,10 @@ public class Observable<T> {
     /**
      * Converts two items into an Observable that emits those items.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png" alt="">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/just.m.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code from} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code just} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
      * @param t1
@@ -1763,7 +1763,7 @@ public class Observable<T> {
      * @param <T>
      *            the type of these items
      * @return an Observable that emits each item
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from">RxJava wiki: from</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#just">RxJava wiki: just</a>
      */
     // suppress unchecked because we are using varargs inside the method
     @SuppressWarnings("unchecked")
@@ -1774,10 +1774,10 @@ public class Observable<T> {
     /**
      * Converts three items into an Observable that emits those items.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png" alt="">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/just.m.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code from} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code just} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
      * @param t1
@@ -1789,7 +1789,7 @@ public class Observable<T> {
      * @param <T>
      *            the type of these items
      * @return an Observable that emits each item
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from">RxJava wiki: from</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#just">RxJava wiki: just</a>
      */
     // suppress unchecked because we are using varargs inside the method
     @SuppressWarnings("unchecked")
@@ -1800,10 +1800,10 @@ public class Observable<T> {
     /**
      * Converts four items into an Observable that emits those items.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png" alt="">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/just.m.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code from} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code just} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
      * @param t1
@@ -1817,7 +1817,7 @@ public class Observable<T> {
      * @param <T>
      *            the type of these items
      * @return an Observable that emits each item
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from">RxJava wiki: from</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#just">RxJava wiki: just</a>
      */
     // suppress unchecked because we are using varargs inside the method
     @SuppressWarnings("unchecked")
@@ -1828,10 +1828,10 @@ public class Observable<T> {
     /**
      * Converts five items into an Observable that emits those items.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png" alt="">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/just.m.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code from} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code just} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
      * @param t1
@@ -1847,7 +1847,7 @@ public class Observable<T> {
      * @param <T>
      *            the type of these items
      * @return an Observable that emits each item
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from">RxJava wiki: from</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#just">RxJava wiki: just</a>
      */
     // suppress unchecked because we are using varargs inside the method
     @SuppressWarnings("unchecked")
@@ -1858,10 +1858,10 @@ public class Observable<T> {
     /**
      * Converts six items into an Observable that emits those items.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png" alt="">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/just.m.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code from} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code just} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
      * @param t1
@@ -1879,7 +1879,7 @@ public class Observable<T> {
      * @param <T>
      *            the type of these items
      * @return an Observable that emits each item
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from">RxJava wiki: from</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#just">RxJava wiki: just</a>
      */
     // suppress unchecked because we are using varargs inside the method
     @SuppressWarnings("unchecked")
@@ -1890,10 +1890,10 @@ public class Observable<T> {
     /**
      * Converts seven items into an Observable that emits those items.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png" alt="">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/just.m.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code from} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code just} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
      * @param t1
@@ -1913,7 +1913,7 @@ public class Observable<T> {
      * @param <T>
      *            the type of these items
      * @return an Observable that emits each item
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from">RxJava wiki: from</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#just">RxJava wiki: just</a>
      */
     // suppress unchecked because we are using varargs inside the method
     @SuppressWarnings("unchecked")
@@ -1924,10 +1924,10 @@ public class Observable<T> {
     /**
      * Converts eight items into an Observable that emits those items.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png" alt="">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/just.m.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code from} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code just} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
      * @param t1
@@ -1949,7 +1949,7 @@ public class Observable<T> {
      * @param <T>
      *            the type of these items
      * @return an Observable that emits each item
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from">RxJava wiki: from</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#just">RxJava wiki: just</a>
      */
     // suppress unchecked because we are using varargs inside the method
     @SuppressWarnings("unchecked")
@@ -1960,10 +1960,10 @@ public class Observable<T> {
     /**
      * Converts nine items into an Observable that emits those items.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png" alt="">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/just.m.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code from} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code just} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
      * @param t1
@@ -1987,7 +1987,7 @@ public class Observable<T> {
      * @param <T>
      *            the type of these items
      * @return an Observable that emits each item
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from">RxJava wiki: from</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#just">RxJava wiki: just</a>
      */
     // suppress unchecked because we are using varargs inside the method
     @SuppressWarnings("unchecked")
@@ -1998,10 +1998,10 @@ public class Observable<T> {
     /**
      * Converts ten items into an Observable that emits those items.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png" alt="">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/just.m.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code from} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code just} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
      * @param t1
@@ -2027,7 +2027,7 @@ public class Observable<T> {
      * @param <T>
      *            the type of these items
      * @return an Observable that emits each item
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from">RxJava wiki: from</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#just">RxJava wiki: just</a>
      */
     // suppress unchecked because we are using varargs inside the method
     @SuppressWarnings("unchecked")
