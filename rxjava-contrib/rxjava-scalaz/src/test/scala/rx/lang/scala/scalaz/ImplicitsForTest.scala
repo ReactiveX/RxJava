@@ -40,6 +40,6 @@ object ImplicitsForTest {
   }
 
   implicit def observableArbitrary[A](implicit a: Arbitrary[A], array: Arbitrary[Array[A]]): Arbitrary[Observable[A]]
-  = Arbitrary(for (arr <- array.arbitrary) yield Observable.items(arr:_*))
+  = Arbitrary(for (arr <- array.arbitrary) yield Observable.just(arr:_*))
 
 }

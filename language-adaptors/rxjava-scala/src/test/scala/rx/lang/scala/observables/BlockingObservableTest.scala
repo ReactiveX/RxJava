@@ -27,7 +27,7 @@ class BlockingObservableTest extends JUnitSuite {
 
   @Test
   def testSingleOption() {
-    val o = Observable.items(1)
+    val o = Observable.just(1)
     assertEquals(Some(1), o.toBlocking.singleOption)
   }
 
@@ -39,12 +39,12 @@ class BlockingObservableTest extends JUnitSuite {
 
   @Test(expected = classOf[IllegalArgumentException])
   def testSingleOptionWithMultipleItems() {
-    Observable.items(1, 2).toBlocking.singleOption
+    Observable.just(1, 2).toBlocking.singleOption
   }
 
   @Test
   def testSingleOrElse() {
-    val o = Observable.items(1)
+    val o = Observable.just(1)
     assertEquals(1, o.toBlocking.singleOrElse(2))
   }
 
@@ -56,12 +56,12 @@ class BlockingObservableTest extends JUnitSuite {
 
   @Test(expected = classOf[IllegalArgumentException])
   def testSingleOrElseWithMultipleItems() {
-    Observable.items(1, 2).toBlocking.singleOrElse(2)
+    Observable.just(1, 2).toBlocking.singleOrElse(2)
   }
 
   @Test
   def testHeadOption() {
-    val o = Observable.items(1)
+    val o = Observable.just(1)
     assertEquals(Some(1), o.toBlocking.headOption)
   }
 
@@ -73,13 +73,13 @@ class BlockingObservableTest extends JUnitSuite {
 
   @Test
   def testHeadOptionWithMultipleItems() {
-    val o = Observable.items(1, 2)
+    val o = Observable.just(1, 2)
     assertEquals(Some(1), o.toBlocking.headOption)
   }
 
   @Test
   def testHeadOrElse() {
-    val o = Observable.items(1)
+    val o = Observable.just(1)
     assertEquals(1, o.toBlocking.headOrElse(2))
   }
 
@@ -91,13 +91,13 @@ class BlockingObservableTest extends JUnitSuite {
 
   @Test
   def testHeadOrElseWithMultipleItems() {
-    val o = Observable.items(1, 2)
+    val o = Observable.just(1, 2)
     assertEquals(1, o.toBlocking.headOrElse(2))
   }
 
   @Test
   def testLastOption() {
-    val o = Observable.items(1)
+    val o = Observable.just(1)
     assertEquals(Some(1), o.toBlocking.lastOption)
   }
 
@@ -109,13 +109,13 @@ class BlockingObservableTest extends JUnitSuite {
 
   @Test
   def testLastOptionWithMultipleItems() {
-    val o = Observable.items(1, 2)
+    val o = Observable.just(1, 2)
     assertEquals(Some(2), o.toBlocking.lastOption)
   }
 
   @Test
   def testLastOrElse() {
-    val o = Observable.items(1)
+    val o = Observable.just(1)
     assertEquals(1, o.toBlocking.lastOrElse(2))
   }
 
@@ -127,13 +127,13 @@ class BlockingObservableTest extends JUnitSuite {
 
   @Test
   def testLastOrElseWithMultipleItems() {
-    val o = Observable.items(1, 2)
+    val o = Observable.just(1, 2)
     assertEquals(2, o.toBlocking.lastOrElse(3))
   }
 
   @Test
   def testToFuture() {
-    val o = Observable.items(1)
+    val o = Observable.just(1)
     val r = Await.result(o.toBlocking.toFuture, 10 seconds)
     assertEquals(1, r)
   }
@@ -146,7 +146,7 @@ class BlockingObservableTest extends JUnitSuite {
 
   @Test(expected = classOf[IllegalArgumentException])
   def testToFutureWithMultipleItems() {
-    val o = Observable.items(1, 2)
+    val o = Observable.just(1, 2)
     Await.result(o.toBlocking.toFuture, 10 seconds)
   }
 }

@@ -28,7 +28,7 @@ class ConstructorTest extends JUnitSuite {
     val ys = Observable.from(List(1,2,3)).toBlocking.toList
     assertEquals(List(1,2,3), xs)
 
-    val zs = Observable.items(1,2,3).toBlocking.toList
+    val zs = Observable.just(1,2,3).toBlocking.toList
     assertEquals(List(1,2,3), xs)
 
   }

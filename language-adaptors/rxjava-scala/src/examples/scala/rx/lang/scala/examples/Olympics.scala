@@ -22,9 +22,9 @@ import scala.language.postfixOps
 object Olympics {
   case class Medal(val year: Int, val games: String, val discipline: String, val medal: String, val athlete: String, val country: String)
 
-  def mountainBikeMedals: Observable[Medal] = Observable.items(
+  def mountainBikeMedals: Observable[Medal] = Observable.just(
     duration(100 millis), // a short delay because medals are only awarded some time after the Games began
-    Observable.items(
+    Observable.just(
       Medal(1996, "Atlanta 1996", "cross-country men", "Gold", "Bart BRENTJENS", "Netherlands"),
       Medal(1996, "Atlanta 1996", "cross-country women", "Gold", "Paola PEZZO", "Italy"),
       Medal(1996, "Atlanta 1996", "cross-country men", "Silver", "Thomas FRISCHKNECHT", "Switzerland"),
@@ -33,7 +33,7 @@ object Olympics {
       Medal(1996, "Atlanta 1996", "cross-country women", "Bronze", "Susan DEMATTEI", "United States of America")
     ),
     fourYearsEmpty,
-    Observable.items(
+    Observable.just(
       Medal(2000, "Sydney 2000", "cross-country women", "Gold", "Paola PEZZO", "Italy"),
       Medal(2000, "Sydney 2000", "cross-country women", "Silver", "Barbara BLATTER", "Switzerland"),
       Medal(2000, "Sydney 2000", "cross-country women", "Bronze", "Marga FULLANA", "Spain"),
@@ -42,7 +42,7 @@ object Olympics {
       Medal(2000, "Sydney 2000", "cross-country men", "Bronze", "Christoph SAUSER", "Switzerland")
     ),
     fourYearsEmpty,
-    Observable.items(
+    Observable.just(
       Medal(2004, "Athens 2004", "cross-country men", "Gold", "Julien ABSALON", "France"),
       Medal(2004, "Athens 2004", "cross-country men", "Silver", "Jose Antonio HERMIDA RAMOS", "Spain"),
       Medal(2004, "Athens 2004", "cross-country men", "Bronze", "Bart BRENTJENS", "Netherlands"),
@@ -51,7 +51,7 @@ object Olympics {
       Medal(2004, "Athens 2004", "cross-country women", "Bronze", "Sabine SPITZ", "Germany")
     ),
     fourYearsEmpty,
-    Observable.items(
+    Observable.just(
       Medal(2008, "Beijing 2008", "cross-country women", "Gold", "Sabine SPITZ", "Germany"),
       Medal(2008, "Beijing 2008", "cross-country women", "Silver", "Maja WLOSZCZOWSKA", "Poland"),
       Medal(2008, "Beijing 2008", "cross-country women", "Bronze", "Irina KALENTYEVA", "Russian Federation"),
@@ -60,7 +60,7 @@ object Olympics {
       Medal(2008, "Beijing 2008", "cross-country men", "Bronze", "Nino SCHURTER", "Switzerland")
     ),
     fourYearsEmpty,
-    Observable.items(
+    Observable.just(
       Medal(2012, "London 2012", "cross-country men", "Gold", "Jaroslav KULHAVY", "Czech Republic"),
       Medal(2012, "London 2012", "cross-country men", "Silver", "Nino SCHURTER", "Switzerland"),
       Medal(2012, "London 2012", "cross-country men", "Bronze", "Marco Aurelio FONTANA", "Italy"),
@@ -87,7 +87,7 @@ object Olympics {
   def fourYearsEmpty: Observable[Medal] = duration(4*oneYear)
 
   def yearTicks: Observable[Int] = 
-    (Observable.from(1996 to 2014) zip (Observable.items(-1) ++ Observable.interval(oneYear))).map(_._1)
+    (Observable.from(1996 to 2014) zip (Observable.just(-1) ++ Observable.interval(oneYear))).map(_._1)
   
   /*
   def fourYearsEmptyOld: Observable[Medal] = {

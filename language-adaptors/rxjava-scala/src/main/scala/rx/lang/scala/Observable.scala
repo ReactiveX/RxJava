@@ -254,7 +254,7 @@ trait Observable[+T]
    * @return  an Observable that first emits the items emitted by `this`, and then `elem`.
    */
   def :+[U >: T](elem: U): Observable[U] = {
-    this ++ Observable.items(elem)
+    this ++ Observable.just(elem)
   }
 
   /**
@@ -4432,7 +4432,28 @@ object Observable {
    *            resulting Observable
    * @return an Observable that emits each item in the source Array
    */
+  @deprecated("Use `just` instead", "0.20")
   def items[T](items: T*): Observable[T] = {
+    toScalaObservable[T](rx.Observable.from(items.toIterable.asJava))
+  }
+
+  /**
+   * Converts a sequence of values into an Observable.
+   *
+   * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/from.png">
+   *
+   * Implementation note: the entire array will be immediately emitted each time an [[rx.lang.scala.Observer]] subscribes.
+   * Since this occurs before the [[rx.lang.scala.Subscription]] is returned,
+   * it in not possible to unsubscribe from the sequence before it completes.
+   *
+   * @param items
+   *            the source Array
+   * @tparam T
+   *            the type of items in the Array, and the type of items to be emitted by the
+   *            resulting Observable
+   * @return an Observable that emits each item in the source Array
+   */
+  def just[T](items: T*): Observable[T] = {
     toScalaObservable[T](rx.Observable.from(items.toIterable.asJava))
   }
 
