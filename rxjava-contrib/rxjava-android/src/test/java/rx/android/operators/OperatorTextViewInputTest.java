@@ -63,7 +63,28 @@ public class OperatorTextViewInputTest {
     public void testOverloadedMethodDefaultsWithoutInitialValue() {
         final TextView input = createTextView("initial");
         final Observable<TextView> observable = ViewObservable.text(input);
-        runWithoutInitialValueTest(input, observable);
+        final Observer<TextView> observer = mock(Observer.class);
+        final Subscription subscription = observable.subscribe(new TestObserver<TextView>(observer));
+
+        final InOrder inOrder = inOrder(observer);
+
+        inOrder.verify(observer, never()).onNext(any(TextView.class));
+
+        input.setText("1");
+        inOrder.verify(observer, times(1)).onNext(input);
+
+        input.setText("2");
+        inOrder.verify(observer, times(1)).onNext(input);
+
+        input.setText("3");
+        inOrder.verify(observer, times(1)).onNext(input);
+
+        subscription.unsubscribe();
+        input.setText("4");
+        inOrder.verify(observer, never()).onNext(any(TextView.class));
+
+        inOrder.verify(observer, never()).onError(any(Throwable.class));
+        inOrder.verify(observer, never()).onCompleted();
     }
 
     @Test
@@ -71,14 +92,6 @@ public class OperatorTextViewInputTest {
     public void testWithoutInitialValue() {
         final TextView input = createTextView("initial");
         final Observable<TextView> observable = ViewObservable.text(input, false);
-        runWithoutInitialValueTest(input, observable);
-    }
-
-    /**
-     * Helper method to run {@link #testOverloadedMethodDefaultsWithoutInitialValue} and
-     * {@link #testWithoutInitialValue} which test the same functionality.
-     */
-    private void runWithoutInitialValueTest(final TextView input, final Observable<TextView> observable) {
         final Observer<TextView> observer = mock(Observer.class);
         final Subscription subscription = observable.subscribe(new TestObserver<TextView>(observer));
 
