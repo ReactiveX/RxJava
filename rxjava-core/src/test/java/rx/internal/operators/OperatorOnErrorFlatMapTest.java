@@ -31,7 +31,7 @@ public class OperatorOnErrorFlatMapTest {
     @Test
     public void ignoreErrorsAndContinueEmitting() {
         TestSubscriber<String> ts = new TestSubscriber<String>();
-        Observable.from(1, 2, 3, 4, 5, 6).map(new Func1<Integer, String>() {
+        Observable.just(1, 2, 3, 4, 5, 6).map(new Func1<Integer, String>() {
 
             @Override
             public String call(Integer v) {
@@ -60,7 +60,7 @@ public class OperatorOnErrorFlatMapTest {
     @Test
     public void spliceAndContinueEmitting() {
         TestSubscriber<String> ts = new TestSubscriber<String>();
-        Observable.from(1, 2, 3, 4, 5, 6).map(new Func1<Integer, String>() {
+        Observable.just(1, 2, 3, 4, 5, 6).map(new Func1<Integer, String>() {
 
             @Override
             public String call(Integer v) {
@@ -74,7 +74,7 @@ public class OperatorOnErrorFlatMapTest {
 
             @Override
             public Observable<String> call(OnErrorThrowable t) {
-                return Observable.from("Error=" + t.getValue());
+                return Observable.just("Error=" + t.getValue());
             }
 
         }).subscribe(ts);
@@ -89,7 +89,7 @@ public class OperatorOnErrorFlatMapTest {
     @Test
     public void testOnErrorFlatMapAfterFlatMap() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        Observable.from(1, 2, 3).flatMap(new Func1<Integer, Observable<Integer>>() {
+        Observable.just(1, 2, 3).flatMap(new Func1<Integer, Observable<Integer>>() {
 
             @Override
             public Observable<Integer> call(Integer i) {

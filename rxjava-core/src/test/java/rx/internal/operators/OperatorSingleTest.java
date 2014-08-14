@@ -34,7 +34,7 @@ public class OperatorSingleTest {
 
     @Test
     public void testSingle() {
-        Observable<Integer> observable = Observable.from(1).single();
+        Observable<Integer> observable = Observable.just(1).single();
 
         @SuppressWarnings("unchecked")
         Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
@@ -48,7 +48,7 @@ public class OperatorSingleTest {
 
     @Test
     public void testSingleWithTooManyElements() {
-        Observable<Integer> observable = Observable.from(1, 2).single();
+        Observable<Integer> observable = Observable.just(1, 2).single();
 
         @SuppressWarnings("unchecked")
         Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
@@ -76,7 +76,7 @@ public class OperatorSingleTest {
 
     @Test
     public void testSingleWithPredicate() {
-        Observable<Integer> observable = Observable.from(1, 2).single(
+        Observable<Integer> observable = Observable.just(1, 2).single(
                 new Func1<Integer, Boolean>() {
 
                     @Override
@@ -97,7 +97,7 @@ public class OperatorSingleTest {
 
     @Test
     public void testSingleWithPredicateAndTooManyElements() {
-        Observable<Integer> observable = Observable.from(1, 2, 3, 4).single(
+        Observable<Integer> observable = Observable.just(1, 2, 3, 4).single(
                 new Func1<Integer, Boolean>() {
 
                     @Override
@@ -118,7 +118,7 @@ public class OperatorSingleTest {
 
     @Test
     public void testSingleWithPredicateAndEmpty() {
-        Observable<Integer> observable = Observable.from(1).single(
+        Observable<Integer> observable = Observable.just(1).single(
                 new Func1<Integer, Boolean>() {
 
                     @Override
@@ -138,7 +138,7 @@ public class OperatorSingleTest {
 
     @Test
     public void testSingleOrDefault() {
-        Observable<Integer> observable = Observable.from(1).singleOrDefault(2);
+        Observable<Integer> observable = Observable.just(1).singleOrDefault(2);
 
         @SuppressWarnings("unchecked")
         Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
@@ -152,7 +152,7 @@ public class OperatorSingleTest {
 
     @Test
     public void testSingleOrDefaultWithTooManyElements() {
-        Observable<Integer> observable = Observable.from(1, 2).singleOrDefault(
+        Observable<Integer> observable = Observable.just(1, 2).singleOrDefault(
                 3);
 
         @SuppressWarnings("unchecked")
@@ -182,7 +182,7 @@ public class OperatorSingleTest {
 
     @Test
     public void testSingleOrDefaultWithPredicate() {
-        Observable<Integer> observable = Observable.from(1, 2).singleOrDefault(
+        Observable<Integer> observable = Observable.just(1, 2).singleOrDefault(
                 4, new Func1<Integer, Boolean>() {
 
                     @Override
@@ -203,7 +203,7 @@ public class OperatorSingleTest {
 
     @Test
     public void testSingleOrDefaultWithPredicateAndTooManyElements() {
-        Observable<Integer> observable = Observable.from(1, 2, 3, 4)
+        Observable<Integer> observable = Observable.just(1, 2, 3, 4)
                 .singleOrDefault(6, new Func1<Integer, Boolean>() {
 
                     @Override
@@ -224,7 +224,7 @@ public class OperatorSingleTest {
 
     @Test
     public void testSingleOrDefaultWithPredicateAndEmpty() {
-        Observable<Integer> observable = Observable.from(1).singleOrDefault(2,
+        Observable<Integer> observable = Observable.just(1).singleOrDefault(2,
                 new Func1<Integer, Boolean>() {
 
                     @Override
@@ -245,7 +245,7 @@ public class OperatorSingleTest {
 
     @Test
     public void testSingleWithBackpressure() {
-        Observable<Integer> observable = Observable.from(1, 2).single();
+        Observable<Integer> observable = Observable.just(1, 2).single();
 
         Subscriber<Integer> subscriber = spy(new Subscriber<Integer>() {
 
@@ -279,7 +279,7 @@ public class OperatorSingleTest {
     @Test(timeout = 30000)
     public void testIssue1527() throws InterruptedException {
         //https://github.com/Netflix/RxJava/pull/1527
-        Observable<Integer> source = Observable.from(1, 2, 3, 4, 5, 6);
+        Observable<Integer> source = Observable.just(1, 2, 3, 4, 5, 6);
         Observable<Integer> reduced = source.reduce(new Func2<Integer, Integer, Integer>() {
             @Override
             public Integer call(Integer i1, Integer i2) {

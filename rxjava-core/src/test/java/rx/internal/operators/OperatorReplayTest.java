@@ -422,7 +422,7 @@ public class OperatorReplayTest {
     @Test
     public void testSynchronousDisconnect() {
         final AtomicInteger effectCounter = new AtomicInteger();
-        Observable<Integer> source = Observable.from(1, 2, 3, 4)
+        Observable<Integer> source = Observable.just(1, 2, 3, 4)
         .doOnNext(new Action1<Integer>() {
             @Override
             public void call(Integer v) {

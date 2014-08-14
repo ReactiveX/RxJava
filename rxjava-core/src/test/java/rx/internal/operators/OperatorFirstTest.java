@@ -66,7 +66,7 @@ public class OperatorFirstTest {
 
     @Test
     public void testFirstOrElseOfSome() {
-        Observable<String> src = Observable.from("a", "b", "c");
+        Observable<String> src = Observable.just("a", "b", "c");
         src.firstOrDefault("default").subscribe(w);
 
         verify(w, times(1)).onNext(anyString());
@@ -77,7 +77,7 @@ public class OperatorFirstTest {
 
     @Test
     public void testFirstOrElseWithPredicateOfNoneMatchingThePredicate() {
-        Observable<String> src = Observable.from("a", "b", "c");
+        Observable<String> src = Observable.just("a", "b", "c");
         src.firstOrDefault("default", IS_D).subscribe(w);
 
         verify(w, times(1)).onNext(anyString());
@@ -88,7 +88,7 @@ public class OperatorFirstTest {
 
     @Test
     public void testFirstOrElseWithPredicateOfSome() {
-        Observable<String> src = Observable.from("a", "b", "c", "d", "e", "f");
+        Observable<String> src = Observable.just("a", "b", "c", "d", "e", "f");
         src.firstOrDefault("default", IS_D).subscribe(w);
 
         verify(w, times(1)).onNext(anyString());
@@ -99,7 +99,7 @@ public class OperatorFirstTest {
 
     @Test
     public void testFirst() {
-        Observable<Integer> observable = Observable.from(1, 2, 3).first();
+        Observable<Integer> observable = Observable.just(1, 2, 3).first();
 
         @SuppressWarnings("unchecked")
         Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
@@ -113,7 +113,7 @@ public class OperatorFirstTest {
 
     @Test
     public void testFirstWithOneElement() {
-        Observable<Integer> observable = Observable.from(1).first();
+        Observable<Integer> observable = Observable.just(1).first();
 
         @SuppressWarnings("unchecked")
         Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
@@ -141,7 +141,7 @@ public class OperatorFirstTest {
 
     @Test
     public void testFirstWithPredicate() {
-        Observable<Integer> observable = Observable.from(1, 2, 3, 4, 5, 6)
+        Observable<Integer> observable = Observable.just(1, 2, 3, 4, 5, 6)
                 .first(new Func1<Integer, Boolean>() {
 
                     @Override
@@ -162,7 +162,7 @@ public class OperatorFirstTest {
 
     @Test
     public void testFirstWithPredicateAndOneElement() {
-        Observable<Integer> observable = Observable.from(1, 2).first(
+        Observable<Integer> observable = Observable.just(1, 2).first(
                 new Func1<Integer, Boolean>() {
 
                     @Override
@@ -183,7 +183,7 @@ public class OperatorFirstTest {
 
     @Test
     public void testFirstWithPredicateAndEmpty() {
-        Observable<Integer> observable = Observable.from(1).first(
+        Observable<Integer> observable = Observable.just(1).first(
                 new Func1<Integer, Boolean>() {
 
                     @Override
@@ -203,7 +203,7 @@ public class OperatorFirstTest {
 
     @Test
     public void testFirstOrDefault() {
-        Observable<Integer> observable = Observable.from(1, 2, 3)
+        Observable<Integer> observable = Observable.just(1, 2, 3)
                 .firstOrDefault(4);
 
         @SuppressWarnings("unchecked")
@@ -218,7 +218,7 @@ public class OperatorFirstTest {
 
     @Test
     public void testFirstOrDefaultWithOneElement() {
-        Observable<Integer> observable = Observable.from(1).firstOrDefault(2);
+        Observable<Integer> observable = Observable.just(1).firstOrDefault(2);
 
         @SuppressWarnings("unchecked")
         Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
@@ -247,7 +247,7 @@ public class OperatorFirstTest {
 
     @Test
     public void testFirstOrDefaultWithPredicate() {
-        Observable<Integer> observable = Observable.from(1, 2, 3, 4, 5, 6)
+        Observable<Integer> observable = Observable.just(1, 2, 3, 4, 5, 6)
                 .firstOrDefault(8, new Func1<Integer, Boolean>() {
 
                     @Override
@@ -268,7 +268,7 @@ public class OperatorFirstTest {
 
     @Test
     public void testFirstOrDefaultWithPredicateAndOneElement() {
-        Observable<Integer> observable = Observable.from(1, 2).firstOrDefault(
+        Observable<Integer> observable = Observable.just(1, 2).firstOrDefault(
                 4, new Func1<Integer, Boolean>() {
 
                     @Override
@@ -289,7 +289,7 @@ public class OperatorFirstTest {
 
     @Test
     public void testFirstOrDefaultWithPredicateAndEmpty() {
-        Observable<Integer> observable = Observable.from(1).firstOrDefault(2,
+        Observable<Integer> observable = Observable.just(1).firstOrDefault(2,
                 new Func1<Integer, Boolean>() {
 
                     @Override

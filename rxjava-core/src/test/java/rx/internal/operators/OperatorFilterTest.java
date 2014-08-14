@@ -36,7 +36,7 @@ public class OperatorFilterTest {
 
     @Test
     public void testFilter() {
-        Observable<String> w = Observable.from("one", "two", "three");
+        Observable<String> w = Observable.just("one", "two", "three");
         Observable<String> observable = w.filter(new Func1<String, Boolean>() {
 
             @Override
@@ -60,7 +60,7 @@ public class OperatorFilterTest {
      */
     @Test(timeout = 500)
     public void testWithBackpressure() throws InterruptedException {
-        Observable<String> w = Observable.from("one", "two", "three");
+        Observable<String> w = Observable.just("one", "two", "three");
         Observable<String> o = w.filter(new Func1<String, Boolean>() {
 
             @Override

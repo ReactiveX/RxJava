@@ -37,7 +37,7 @@ public class OperatorTakeLastTimedTest {
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void testTakeLastTimedWithNegativeCount() {
-        Observable.from("one").takeLast(-1, 1, TimeUnit.SECONDS);
+        Observable.just("one").takeLast(-1, 1, TimeUnit.SECONDS);
     }
 
     @Test

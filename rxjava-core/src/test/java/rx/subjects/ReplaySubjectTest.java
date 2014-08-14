@@ -381,7 +381,7 @@ public class ReplaySubjectTest {
 
                     @Override
                     public Observable<String> call(String t1) {
-                        return Observable.from(t1 + ", " + t1);
+                        return Observable.just(t1 + ", " + t1);
                     }
                 })
                 .subscribe(new Observer<String>() {

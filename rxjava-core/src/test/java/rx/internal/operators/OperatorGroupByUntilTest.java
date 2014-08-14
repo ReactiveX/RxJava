@@ -151,7 +151,7 @@ public class OperatorGroupByUntilTest {
 
     @Test
     public void behaveAsGroupBy() {
-        Observable<Integer> source = Observable.from(0, 1, 2, 3, 4, 5, 6);
+        Observable<Integer> source = Observable.just(0, 1, 2, 3, 4, 5, 6);
 
         Func1<GroupedObservable<Integer, Integer>, Observable<Object>> duration = just(Observable.never());
 
@@ -183,7 +183,7 @@ public class OperatorGroupByUntilTest {
 
     @Test
     public void keySelectorThrows() {
-        Observable<Integer> source = Observable.from(0, 1, 2, 3, 4, 5, 6);
+        Observable<Integer> source = Observable.just(0, 1, 2, 3, 4, 5, 6);
 
         Func1<GroupedObservable<Integer, Integer>, Observable<Object>> duration = just(Observable.never());
 
@@ -201,7 +201,7 @@ public class OperatorGroupByUntilTest {
 
     @Test
     public void valueSelectorThrows() {
-        Observable<Integer> source = Observable.from(0, 1, 2, 3, 4, 5, 6);
+        Observable<Integer> source = Observable.just(0, 1, 2, 3, 4, 5, 6);
 
         Func1<GroupedObservable<Integer, Integer>, Observable<Object>> duration = just(Observable.never());
 
@@ -219,7 +219,7 @@ public class OperatorGroupByUntilTest {
 
     @Test
     public void durationSelectorThrows() {
-        Observable<Integer> source = Observable.from(0, 1, 2, 3, 4, 5, 6);
+        Observable<Integer> source = Observable.just(0, 1, 2, 3, 4, 5, 6);
 
         Func1<GroupedObservable<Integer, Integer>, Observable<Object>> duration = fail2((Observable<Object>) null);
 
@@ -237,7 +237,7 @@ public class OperatorGroupByUntilTest {
 
     @Test
     public void durationThrows() {
-        Observable<Integer> source = Observable.from(0, 1, 2, 3, 4, 5, 6);
+        Observable<Integer> source = Observable.just(0, 1, 2, 3, 4, 5, 6);
 
         Func1<GroupedObservable<Integer, Integer>, Integer> getkey = new Func1<GroupedObservable<Integer, Integer>, Integer>() {
 
@@ -269,7 +269,7 @@ public class OperatorGroupByUntilTest {
 
     @Test
     public void innerEscapeCompleted() {
-        Observable<Integer> source = Observable.from(0);
+        Observable<Integer> source = Observable.just(0);
 
         final AtomicReference<GroupedObservable<Integer, Integer>> inner = new AtomicReference<GroupedObservable<Integer, Integer>>();
 
@@ -293,7 +293,7 @@ public class OperatorGroupByUntilTest {
 
     @Test
     public void innerEscapeCompletedTwice() {
-        Observable<Integer> source = Observable.from(0);
+        Observable<Integer> source = Observable.just(0);
 
         final AtomicReference<GroupedObservable<Integer, Integer>> inner = new AtomicReference<GroupedObservable<Integer, Integer>>();
 
@@ -322,7 +322,7 @@ public class OperatorGroupByUntilTest {
 
     @Test
     public void innerEscapeError() {
-        Observable<Integer> source = Observable.concat(Observable.from(0), Observable.<Integer> error(
+        Observable<Integer> source = Observable.concat(Observable.just(0), Observable.<Integer> error(
                 new TestException("Forced failure")));
 
         final AtomicReference<GroupedObservable<Integer, Integer>> inner = new AtomicReference<GroupedObservable<Integer, Integer>>();
@@ -356,7 +356,7 @@ public class OperatorGroupByUntilTest {
     
     @Test
     public void innerEscapeErrorTwice() {
-        Observable<Integer> source = Observable.concat(Observable.from(0), Observable.<Integer> error(
+        Observable<Integer> source = Observable.concat(Observable.just(0), Observable.<Integer> error(
                 new TestException("Forced failure")));
 
         final AtomicReference<GroupedObservable<Integer, Integer>> inner = new AtomicReference<GroupedObservable<Integer, Integer>>();

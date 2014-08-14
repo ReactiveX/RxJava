@@ -66,7 +66,7 @@ public class OperatorToMultimapTest {
 
     @Test
     public void testToMultimap() {
-        Observable<String> source = Observable.from("a", "b", "cc", "dd");
+        Observable<String> source = Observable.just("a", "b", "cc", "dd");
 
         Observable<Map<Integer, Collection<String>>> mapped = source.toMultimap(lengthFunc);
 
@@ -83,7 +83,7 @@ public class OperatorToMultimapTest {
 
     @Test
     public void testToMultimapWithValueSelector() {
-        Observable<String> source = Observable.from("a", "b", "cc", "dd");
+        Observable<String> source = Observable.just("a", "b", "cc", "dd");
 
         Observable<Map<Integer, Collection<String>>> mapped = source.toMultimap(lengthFunc, duplicate);
 
@@ -100,7 +100,7 @@ public class OperatorToMultimapTest {
 
     @Test
     public void testToMultimapWithMapFactory() {
-        Observable<String> source = Observable.from("a", "b", "cc", "dd", "eee", "fff");
+        Observable<String> source = Observable.just("a", "b", "cc", "dd", "eee", "fff");
 
         Func0<Map<Integer, Collection<String>>> mapFactory = new Func0<Map<Integer, Collection<String>>>() {
             @Override
@@ -134,7 +134,7 @@ public class OperatorToMultimapTest {
 
     @Test
     public void testToMultimapWithCollectionFactory() {
-        Observable<String> source = Observable.from("cc", "dd", "eee", "eee");
+        Observable<String> source = Observable.just("cc", "dd", "eee", "eee");
 
         Func1<Integer, Collection<String>> collectionFactory = new Func1<Integer, Collection<String>>() {
 
@@ -165,7 +165,7 @@ public class OperatorToMultimapTest {
 
     @Test
     public void testToMultimapWithError() {
-        Observable<String> source = Observable.from("a", "b", "cc", "dd");
+        Observable<String> source = Observable.just("a", "b", "cc", "dd");
 
         Func1<String, Integer> lengthFuncErr = new Func1<String, Integer>() {
             @Override
@@ -192,7 +192,7 @@ public class OperatorToMultimapTest {
 
     @Test
     public void testToMultimapWithErrorInValueSelector() {
-        Observable<String> source = Observable.from("a", "b", "cc", "dd");
+        Observable<String> source = Observable.just("a", "b", "cc", "dd");
 
         Func1<String, String> duplicateErr = new Func1<String, String>() {
             @Override
@@ -219,7 +219,7 @@ public class OperatorToMultimapTest {
 
     @Test
     public void testToMultimapWithMapThrowingFactory() {
-        Observable<String> source = Observable.from("a", "b", "cc", "dd", "eee", "fff");
+        Observable<String> source = Observable.just("a", "b", "cc", "dd", "eee", "fff");
 
         Func0<Map<Integer, Collection<String>>> mapFactory = new Func0<Map<Integer, Collection<String>>>() {
             @Override
@@ -243,7 +243,7 @@ public class OperatorToMultimapTest {
 
     @Test
     public void testToMultimapWithThrowingCollectionFactory() {
-        Observable<String> source = Observable.from("cc", "cc", "eee", "eee");
+        Observable<String> source = Observable.just("cc", "cc", "eee", "eee");
 
         Func1<Integer, Collection<String>> collectionFactory = new Func1<Integer, Collection<String>>() {
 

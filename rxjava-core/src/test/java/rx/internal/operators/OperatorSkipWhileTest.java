@@ -54,7 +54,7 @@ public class OperatorSkipWhileTest {
 
     @Test
     public void testSkipWithIndex() {
-        Observable<Integer> src = Observable.from(1, 2, 3, 4, 5);
+        Observable<Integer> src = Observable.just(1, 2, 3, 4, 5);
         src.skipWhileWithIndex(INDEX_LESS_THAN_THREE).subscribe(w);
 
         InOrder inOrder = inOrder(w);
@@ -75,7 +75,7 @@ public class OperatorSkipWhileTest {
 
     @Test
     public void testSkipEverything() {
-        Observable<Integer> src = Observable.from(1, 2, 3, 4, 3, 2, 1);
+        Observable<Integer> src = Observable.just(1, 2, 3, 4, 3, 2, 1);
         src.skipWhile(LESS_THAN_FIVE).subscribe(w);
         verify(w, never()).onNext(anyInt());
         verify(w, never()).onError(any(Throwable.class));
@@ -84,7 +84,7 @@ public class OperatorSkipWhileTest {
 
     @Test
     public void testSkipNothing() {
-        Observable<Integer> src = Observable.from(5, 3, 1);
+        Observable<Integer> src = Observable.just(5, 3, 1);
         src.skipWhile(LESS_THAN_FIVE).subscribe(w);
 
         InOrder inOrder = inOrder(w);
@@ -97,7 +97,7 @@ public class OperatorSkipWhileTest {
 
     @Test
     public void testSkipSome() {
-        Observable<Integer> src = Observable.from(1, 2, 3, 4, 5, 3, 1, 5);
+        Observable<Integer> src = Observable.just(1, 2, 3, 4, 5, 3, 1, 5);
         src.skipWhile(LESS_THAN_FIVE).subscribe(w);
 
         InOrder inOrder = inOrder(w);
@@ -111,7 +111,7 @@ public class OperatorSkipWhileTest {
 
     @Test
     public void testSkipError() {
-        Observable<Integer> src = Observable.from(1, 2, 42, 5, 3, 1);
+        Observable<Integer> src = Observable.just(1, 2, 42, 5, 3, 1);
         src.skipWhile(LESS_THAN_FIVE).subscribe(w);
 
         InOrder inOrder = inOrder(w);

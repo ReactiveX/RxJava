@@ -315,7 +315,7 @@ public class OperatorBufferTest {
     public void testLongTimeAction() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
         LongTimeAction action = new LongTimeAction(latch);
-        Observable.from(1).buffer(10, TimeUnit.MILLISECONDS, 10)
+        Observable.just(1).buffer(10, TimeUnit.MILLISECONDS, 10)
                 .subscribe(action);
         latch.await();
         assertFalse(action.fail);
@@ -526,7 +526,7 @@ public class OperatorBufferTest {
     }
     @Test(timeout = 2000)
     public void bufferWithSizeTake1() {
-        Observable<Integer> source = Observable.from(1).repeat();
+        Observable<Integer> source = Observable.just(1).repeat();
         
         Observable<List<Integer>> result = source.buffer(2).take(1);
         
@@ -542,7 +542,7 @@ public class OperatorBufferTest {
     
     @Test(timeout = 2000)
     public void bufferWithSizeSkipTake1() {
-        Observable<Integer> source = Observable.from(1).repeat();
+        Observable<Integer> source = Observable.just(1).repeat();
         
         Observable<List<Integer>> result = source.buffer(2, 3).take(1);
         

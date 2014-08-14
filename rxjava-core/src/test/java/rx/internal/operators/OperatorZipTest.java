@@ -95,7 +95,7 @@ public class OperatorZipTest {
         Observer<String> observer = mock(Observer.class);
 
         @SuppressWarnings("rawtypes")
-        Collection ws = java.util.Collections.singleton(Observable.from("one", "two"));
+        Collection ws = java.util.Collections.singleton(Observable.just("one", "two"));
         Observable<String> w = Observable.zip(ws, zipr);
         w.subscribe(observer);
 
@@ -446,7 +446,7 @@ public class OperatorZipTest {
         /* define a Observer to receive aggregated events */
         Observer<String> observer = mock(Observer.class);
 
-        Observable<String> w = Observable.zip(Observable.from("one", "two"), Observable.from(2, 3, 4), zipr);
+        Observable<String> w = Observable.zip(Observable.just("one", "two"), Observable.just(2, 3, 4), zipr);
         w.subscribe(observer);
 
         verify(observer, never()).onError(any(Throwable.class));
@@ -465,7 +465,7 @@ public class OperatorZipTest {
         /* define a Observer to receive aggregated events */
         Observer<String> observer = mock(Observer.class);
 
-        Observable<String> w = Observable.zip(Observable.from("one", "two"), Observable.from(2), Observable.from(new int[] { 4, 5, 6 }), zipr);
+        Observable<String> w = Observable.zip(Observable.just("one", "two"), Observable.just(2), Observable.just(new int[] { 4, 5, 6 }), zipr);
         w.subscribe(observer);
 
         verify(observer, never()).onError(any(Throwable.class));
@@ -481,7 +481,7 @@ public class OperatorZipTest {
         @SuppressWarnings("unchecked")
         Observer<Integer> observer = mock(Observer.class);
 
-        Observable<Integer> w = Observable.zip(Observable.from(10, 20, 30), Observable.from(0, 1, 2), zipr);
+        Observable<Integer> w = Observable.zip(Observable.just(10, 20, 30), Observable.just(0, 1, 2), zipr);
         w.subscribe(observer);
 
         verify(observer, times(1)).onError(any(Throwable.class));
@@ -770,8 +770,8 @@ public class OperatorZipTest {
         @SuppressWarnings("unchecked")
         final Observer<Integer> observer = mock(Observer.class);
 
-        Observable.zip(Observable.from(1),
-                Observable.from(1), new Func2<Integer, Integer, Integer>() {
+        Observable.zip(Observable.just(1),
+                Observable.just(1), new Func2<Integer, Integer, Integer>() {
                     @Override
                     public Integer call(Integer a, Integer b) {
                         return a + b;
@@ -899,8 +899,8 @@ public class OperatorZipTest {
 
     @Test
     public void testEmitNull() {
-        Observable<Integer> oi = Observable.from(1, null, 3);
-        Observable<String> os = Observable.from("a", "b", null);
+        Observable<Integer> oi = Observable.just(1, null, 3);
+        Observable<String> os = Observable.just("a", "b", null);
         Observable<String> o = Observable.zip(oi, os, new Func2<Integer, String, String>() {
 
             @Override
@@ -928,8 +928,8 @@ public class OperatorZipTest {
 
     @Test
     public void testEmitMaterializedNotifications() {
-        Observable<Notification<Integer>> oi = Observable.from(1, 2, 3).materialize();
-        Observable<Notification<String>> os = Observable.from("a", "b", "c").materialize();
+        Observable<Notification<Integer>> oi = Observable.just(1, 2, 3).materialize();
+        Observable<Notification<String>> os = Observable.just("a", "b", "c").materialize();
         Observable<String> o = Observable.zip(oi, os, new Func2<Notification<Integer>, Notification<String>, String>() {
 
             @Override

@@ -223,7 +223,7 @@ public class OperatorSubscribeOnTest {
     @Test
     public void testSetProducerSynchronousRequest() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        Observable.from(1, 2, 3).lift(new Operator<Integer, Integer>() {
+        Observable.just(1, 2, 3).lift(new Operator<Integer, Integer>() {
 
             @Override
             public Subscriber<? super Integer> call(final Subscriber<? super Integer> child) {

@@ -29,7 +29,7 @@ public class OperatorCastTest {
 
     @Test
     public void testCast() {
-        Observable<?> source = Observable.from(1, 2);
+        Observable<?> source = Observable.just(1, 2);
         Observable<Integer> observable = source.cast(Integer.class);
 
         @SuppressWarnings("unchecked")
@@ -44,7 +44,7 @@ public class OperatorCastTest {
 
     @Test
     public void testCastWithWrongType() {
-        Observable<?> source = Observable.from(1, 2);
+        Observable<?> source = Observable.just(1, 2);
         Observable<Boolean> observable = source.cast(Boolean.class);
 
         @SuppressWarnings("unchecked")

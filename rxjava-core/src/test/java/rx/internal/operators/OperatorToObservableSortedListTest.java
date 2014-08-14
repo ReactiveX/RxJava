@@ -36,7 +36,7 @@ public class OperatorToObservableSortedListTest {
 
     @Test
     public void testSortedList() {
-        Observable<Integer> w = Observable.from(1, 3, 2, 5, 4);
+        Observable<Integer> w = Observable.just(1, 3, 2, 5, 4);
         Observable<List<Integer>> observable = w.lift(new OperatorToObservableSortedList<Integer>());
 
         @SuppressWarnings("unchecked")
@@ -49,7 +49,7 @@ public class OperatorToObservableSortedListTest {
 
     @Test
     public void testSortedListWithCustomFunction() {
-        Observable<Integer> w = Observable.from(1, 3, 2, 5, 4);
+        Observable<Integer> w = Observable.just(1, 3, 2, 5, 4);
         Observable<List<Integer>> observable = w.lift(new OperatorToObservableSortedList<Integer>(new Func2<Integer, Integer, Integer>() {
 
             @Override
@@ -69,7 +69,7 @@ public class OperatorToObservableSortedListTest {
 
     @Test
     public void testWithFollowingFirst() {
-        Observable<Integer> o = Observable.from(1, 3, 2, 5, 4);
+        Observable<Integer> o = Observable.just(1, 3, 2, 5, 4);
         assertEquals(Arrays.asList(1, 2, 3, 4, 5), o.toSortedList().toBlocking().first());
     }
 }

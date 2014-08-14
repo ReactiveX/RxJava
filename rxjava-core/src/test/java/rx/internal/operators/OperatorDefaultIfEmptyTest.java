@@ -31,7 +31,7 @@ public class OperatorDefaultIfEmptyTest {
 
     @Test
     public void testDefaultIfEmpty() {
-        Observable<Integer> source = Observable.from(1, 2, 3);
+        Observable<Integer> source = Observable.just(1, 2, 3);
         Observable<Integer> observable = source.defaultIfEmpty(10);
 
         @SuppressWarnings("unchecked")

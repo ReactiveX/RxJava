@@ -77,7 +77,7 @@ public class OperatorSkipLastTest {
 
     @Test
     public void testSkipLastWithZeroCount() {
-        Observable<String> w = Observable.from("one", "two");
+        Observable<String> w = Observable.just("one", "two");
         Observable<String> observable = w.skipLast(0);
 
         @SuppressWarnings("unchecked")
@@ -116,7 +116,7 @@ public class OperatorSkipLastTest {
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void testSkipLastWithNegativeCount() {
-        Observable.from("one").skipLast(-1);
+        Observable.just("one").skipLast(-1);
     }
 
 }

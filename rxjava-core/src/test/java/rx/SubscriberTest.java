@@ -320,7 +320,7 @@ public class SubscriberTest {
     @Test
     public void testOnStartCalledOnceViaSubscribe() {
         final AtomicInteger c = new AtomicInteger();
-        Observable.from(1, 2, 3, 4).take(2).subscribe(new Subscriber<Integer>() {
+        Observable.just(1, 2, 3, 4).take(2).subscribe(new Subscriber<Integer>() {
 
             @Override
             public void onStart() {
@@ -352,7 +352,7 @@ public class SubscriberTest {
     @Test
     public void testOnStartCalledOnceViaUnsafeSubscribe() {
         final AtomicInteger c = new AtomicInteger();
-        Observable.from(1, 2, 3, 4).take(2).unsafeSubscribe(new Subscriber<Integer>() {
+        Observable.just(1, 2, 3, 4).take(2).unsafeSubscribe(new Subscriber<Integer>() {
 
             @Override
             public void onStart() {
@@ -384,7 +384,7 @@ public class SubscriberTest {
     @Test
     public void testOnStartCalledOnceViaLift() {
         final AtomicInteger c = new AtomicInteger();
-        Observable.from(1, 2, 3, 4).lift(new Operator<Integer, Integer>() {
+        Observable.just(1, 2, 3, 4).lift(new Operator<Integer, Integer>() {
 
             @Override
             public Subscriber<? super Integer> call(final Subscriber<? super Integer> child) {

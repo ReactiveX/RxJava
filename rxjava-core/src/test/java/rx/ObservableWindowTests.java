@@ -32,7 +32,7 @@ public class ObservableWindowTests {
     public void testWindow() {
         final ArrayList<List<Integer>> lists = new ArrayList<List<Integer>>();
 
-        Observable.concat(Observable.from(1, 2, 3, 4, 5, 6).window(3).map(new Func1<Observable<Integer>, Observable<List<Integer>>>() {
+        Observable.concat(Observable.just(1, 2, 3, 4, 5, 6).window(3).map(new Func1<Observable<Integer>, Observable<List<Integer>>>() {
             @Override
             public Observable<List<Integer>> call(Observable<Integer> xs) {
                 return xs.toList();

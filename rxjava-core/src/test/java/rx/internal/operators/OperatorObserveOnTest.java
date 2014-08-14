@@ -62,7 +62,7 @@ public class OperatorObserveOnTest {
     @SuppressWarnings("unchecked")
     public void testObserveOn() {
         Observer<Integer> observer = mock(Observer.class);
-        Observable.from(1, 2, 3).observeOn(Schedulers.immediate()).subscribe(observer);
+        Observable.just(1, 2, 3).observeOn(Schedulers.immediate()).subscribe(observer);
 
         verify(observer, times(1)).onNext(1);
         verify(observer, times(1)).onNext(2);
@@ -73,7 +73,7 @@ public class OperatorObserveOnTest {
     @Test
     @SuppressWarnings("unchecked")
     public void testOrdering() throws InterruptedException {
-        Observable<String> obs = Observable.from("one", null, "two", "three", "four");
+        Observable<String> obs = Observable.just("one", null, "two", "three", "four");
 
         Observer<String> observer = mock(Observer.class);
 
@@ -103,7 +103,7 @@ public class OperatorObserveOnTest {
     @SuppressWarnings("unchecked")
     public void testThreadName() throws InterruptedException {
         System.out.println("Main Thread: " + Thread.currentThread().getName());
-        Observable<String> obs = Observable.from("one", null, "two", "three", "four");
+        Observable<String> obs = Observable.just("one", null, "two", "three", "four");
 
         Observer<String> observer = mock(Observer.class);
         final String parentThreadName = Thread.currentThread().getName();
@@ -155,7 +155,7 @@ public class OperatorObserveOnTest {
     public void observeOnTheSameSchedulerTwice() {
         Scheduler scheduler = Schedulers.immediate();
 
-        Observable<Integer> o = Observable.from(1, 2, 3);
+        Observable<Integer> o = Observable.just(1, 2, 3);
         Observable<Integer> o2 = o.observeOn(scheduler);
 
         @SuppressWarnings("unchecked")
@@ -189,7 +189,7 @@ public class OperatorObserveOnTest {
         TestScheduler scheduler1 = new TestScheduler();
         TestScheduler scheduler2 = new TestScheduler();
 
-        Observable<Integer> o = Observable.from(1, 2, 3);
+        Observable<Integer> o = Observable.just(1, 2, 3);
         Observable<Integer> o1 = o.observeOn(scheduler1);
         Observable<Integer> o2 = o.observeOn(scheduler2);
 
@@ -395,7 +395,7 @@ public class OperatorObserveOnTest {
     public void testAfterUnsubscribeCalledThenObserverOnNextNeverCalled() {
         final TestScheduler testScheduler = new TestScheduler();
         final Observer<Integer> observer = mock(Observer.class);
-        final Subscription subscription = Observable.from(1, 2, 3)
+        final Subscription subscription = Observable.just(1, 2, 3)
                 .observeOn(testScheduler)
                 .subscribe(observer);
         subscription.unsubscribe();

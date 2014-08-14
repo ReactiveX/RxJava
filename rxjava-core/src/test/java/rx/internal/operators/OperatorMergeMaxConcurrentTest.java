@@ -48,9 +48,9 @@ public class OperatorMergeMaxConcurrentTest {
     public void testWhenMaxConcurrentIsOne() {
         for (int i = 0; i < 100; i++) {
             List<Observable<String>> os = new ArrayList<Observable<String>>();
-            os.add(Observable.from("one", "two", "three", "four", "five").subscribeOn(Schedulers.newThread()));
-            os.add(Observable.from("one", "two", "three", "four", "five").subscribeOn(Schedulers.newThread()));
-            os.add(Observable.from("one", "two", "three", "four", "five").subscribeOn(Schedulers.newThread()));
+            os.add(Observable.just("one", "two", "three", "four", "five").subscribeOn(Schedulers.newThread()));
+            os.add(Observable.just("one", "two", "three", "four", "five").subscribeOn(Schedulers.newThread()));
+            os.add(Observable.just("one", "two", "three", "four", "five").subscribeOn(Schedulers.newThread()));
 
             List<String> expected = Arrays.asList("one", "two", "three", "four", "five", "one", "two", "three", "four", "five", "one", "two", "three", "four", "five");
             Iterator<String> iter = Observable.merge(os, 1).toBlocking().toIterable().iterator();

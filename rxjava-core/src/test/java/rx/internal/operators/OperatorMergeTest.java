@@ -146,7 +146,7 @@ public class OperatorMergeTest {
                     public void run() {
 
                         while (!unsubscribed.get()) {
-                            observer.onNext(Observable.from(1L, 2L));
+                            observer.onNext(Observable.just(1L, 2L));
                         }
                         System.out.println("Done looping after unsubscribe: " + unsubscribed.get());
                         observer.onCompleted();
@@ -751,7 +751,7 @@ public class OperatorMergeTest {
 
             @Override
             public Observable<Integer> call(Integer t1) {
-                return Observable.from(1, 2, 3);
+                return Observable.just(1, 2, 3);
             }
 
         });
@@ -792,7 +792,7 @@ public class OperatorMergeTest {
     public void mergeWithNullValues() {
         System.out.println("mergeWithNullValues");
         TestSubscriber<String> ts = new TestSubscriber<String>();
-        Observable.merge(Observable.from(null, "one"), Observable.from("two", null)).subscribe(ts);
+        Observable.merge(Observable.just(null, "one"), Observable.just("two", null)).subscribe(ts);
         ts.assertTerminalEvent();
         ts.assertNoErrors();
         ts.assertReceivedOnNext(Arrays.asList(null, "one", "two", null));
@@ -812,7 +812,7 @@ public class OperatorMergeTest {
             }
 
         });
-        Observable.merge(Observable.from(null, "one"), bad).subscribe(ts);
+        Observable.merge(Observable.just(null, "one"), bad).subscribe(ts);
         ts.assertNoErrors();
         ts.assertReceivedOnNext(Arrays.asList(null, "one", "two"));
     }
@@ -820,7 +820,7 @@ public class OperatorMergeTest {
     @Test
     public void mergingNullObservable() {
         TestSubscriber<String> ts = new TestSubscriber<String>();
-        Observable.merge(Observable.from("one"), null).subscribe(ts);
+        Observable.merge(Observable.just("one"), null).subscribe(ts);
         ts.assertNoErrors();
         ts.assertReceivedOnNext(Arrays.asList("one"));
     }

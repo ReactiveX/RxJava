@@ -54,7 +54,7 @@ public class OperatorTakeLastTest {
 
     @Test
     public void testTakeLast1() {
-        Observable<String> w = Observable.from("one", "two", "three");
+        Observable<String> w = Observable.just("one", "two", "three");
         Observable<String> take = w.takeLast(2);
 
         @SuppressWarnings("unchecked")
@@ -70,7 +70,7 @@ public class OperatorTakeLastTest {
 
     @Test
     public void testTakeLast2() {
-        Observable<String> w = Observable.from("one");
+        Observable<String> w = Observable.just("one");
         Observable<String> take = w.takeLast(10);
 
         @SuppressWarnings("unchecked")
@@ -83,7 +83,7 @@ public class OperatorTakeLastTest {
 
     @Test
     public void testTakeLastWithZeroCount() {
-        Observable<String> w = Observable.from("one");
+        Observable<String> w = Observable.just("one");
         Observable<String> take = w.takeLast(0);
 
         @SuppressWarnings("unchecked")
@@ -96,7 +96,7 @@ public class OperatorTakeLastTest {
 
     @Test
     public void testTakeLastWithNull() {
-        Observable<String> w = Observable.from("one", null, "three");
+        Observable<String> w = Observable.just("one", null, "three");
         Observable<String> take = w.takeLast(2);
 
         @SuppressWarnings("unchecked")
@@ -111,7 +111,7 @@ public class OperatorTakeLastTest {
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void testTakeLastWithNegativeCount() {
-        Observable.from("one").takeLast(-1);
+        Observable.just("one").takeLast(-1);
     }
 
     @Test

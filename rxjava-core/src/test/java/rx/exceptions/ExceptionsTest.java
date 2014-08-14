@@ -29,7 +29,7 @@ public class ExceptionsTest {
 
     @Test(expected = OnErrorNotImplementedException.class)
     public void testOnErrorNotImplementedIsThrown() {
-        Observable.from(1, 2, 3).subscribe(new Action1<Integer>() {
+        Observable.just(1, 2, 3).subscribe(new Action1<Integer>() {
 
             @Override
             public void call(Integer t1) {
@@ -117,7 +117,7 @@ public class ExceptionsTest {
 
     @Test(expected = ThreadDeath.class)
     public void testThreadDeathIsThrown() {
-        Observable.from(1).subscribe(new Observer<Integer>() {
+        Observable.just(1).subscribe(new Observer<Integer>() {
 
             @Override
             public void onCompleted() {

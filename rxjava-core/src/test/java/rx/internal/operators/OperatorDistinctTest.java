@@ -78,7 +78,7 @@ public class OperatorDistinctTest {
 
     @Test
     public void testDistinctOfNormalSource() {
-        Observable<String> src = Observable.from("a", "b", "c", "c", "c", "b", "b", "a", "e");
+        Observable<String> src = Observable.just("a", "b", "c", "c", "c", "b", "b", "a", "e");
         src.distinct().subscribe(w);
 
         InOrder inOrder = inOrder(w);
@@ -93,7 +93,7 @@ public class OperatorDistinctTest {
 
     @Test
     public void testDistinctOfNormalSourceWithKeySelector() {
-        Observable<String> src = Observable.from("a", "B", "c", "C", "c", "B", "b", "a", "E");
+        Observable<String> src = Observable.just("a", "B", "c", "C", "c", "B", "b", "a", "E");
         src.distinct(TO_UPPER_WITH_EXCEPTION).subscribe(w);
 
         InOrder inOrder = inOrder(w);
@@ -108,7 +108,7 @@ public class OperatorDistinctTest {
 
     @Test
     public void testDistinctOfSourceWithNulls() {
-        Observable<String> src = Observable.from(null, "a", "a", null, null, "b", null);
+        Observable<String> src = Observable.just(null, "a", "a", null, null, "b", null);
         src.distinct().subscribe(w);
 
         InOrder inOrder = inOrder(w);
@@ -122,7 +122,7 @@ public class OperatorDistinctTest {
 
     @Test
     public void testDistinctOfSourceWithExceptionsFromKeySelector() {
-        Observable<String> src = Observable.from("a", "b", null, "c");
+        Observable<String> src = Observable.just("a", "b", null, "c");
         src.distinct(TO_UPPER_WITH_EXCEPTION).subscribe(w);
 
         InOrder inOrder = inOrder(w);

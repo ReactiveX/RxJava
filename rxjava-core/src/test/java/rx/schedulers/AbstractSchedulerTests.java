@@ -385,7 +385,7 @@ public abstract class AbstractSchedulerTests {
     public final void testObserveOn() throws InterruptedException {
         final Scheduler scheduler = getScheduler();
 
-        Observable<String> o = Observable.from("one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten");
+        Observable<String> o = Observable.just("one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten");
 
         ConcurrentObserverValidator<String> observer = new ConcurrentObserverValidator<String>();
 
@@ -405,7 +405,7 @@ public abstract class AbstractSchedulerTests {
     public final void testSubscribeOnNestedConcurrency() throws InterruptedException {
         final Scheduler scheduler = getScheduler();
 
-        Observable<String> o = Observable.from("one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten")
+        Observable<String> o = Observable.just("one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten")
                 .mergeMap(new Func1<String, Observable<String>>() {
 
                     @Override

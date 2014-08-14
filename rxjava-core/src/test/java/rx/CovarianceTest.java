@@ -34,7 +34,7 @@ public class CovarianceTest {
      */
     @Test
     public void testCovarianceOfFrom() {
-        Observable.<Movie> from(new HorrorMovie());
+        Observable.<Movie> just(new HorrorMovie());
         Observable.<Movie> from(new ArrayList<HorrorMovie>());
         // Observable.<HorrorMovie>from(new Movie()); // may not compile
     }
@@ -50,11 +50,11 @@ public class CovarianceTest {
         };
 
         // this one would work without the covariance generics
-        Observable<Media> o = Observable.from(new Movie(), new TVSeason(), new Album());
+        Observable<Media> o = Observable.just(new Movie(), new TVSeason(), new Album());
         o.toSortedList(SORT_FUNCTION);
 
         // this one would NOT work without the covariance generics
-        Observable<Movie> o2 = Observable.from(new Movie(), new ActionMovie(), new HorrorMovie());
+        Observable<Movie> o2 = Observable.just(new Movie(), new ActionMovie(), new HorrorMovie());
         o2.toSortedList(SORT_FUNCTION);
     }
 

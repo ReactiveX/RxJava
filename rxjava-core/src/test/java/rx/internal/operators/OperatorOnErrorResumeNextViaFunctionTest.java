@@ -55,7 +55,7 @@ public class OperatorOnErrorResumeNextViaFunctionTest {
             @Override
             public Observable<String> call(Throwable t1) {
                 receivedException.set(t1);
-                return Observable.from("twoResume", "threeResume");
+                return Observable.just("twoResume", "threeResume");
             }
 
         };
@@ -85,7 +85,7 @@ public class OperatorOnErrorResumeNextViaFunctionTest {
             @Override
             public Observable<String> call(Throwable t1) {
                 receivedException.set(t1);
-                return Observable.from("twoResume", "threeResume");
+                return Observable.just("twoResume", "threeResume");
             }
 
         };
@@ -153,7 +153,7 @@ public class OperatorOnErrorResumeNextViaFunctionTest {
     @Test
     public void testOnErrorResumeReceivesErrorFromPreviousNonProtectedOperator() {
         TestSubscriber<String> ts = new TestSubscriber<String>();
-        Observable.from(1).lift(new Operator<String, Integer>() {
+        Observable.just(1).lift(new Operator<String, Integer>() {
 
             @Override
             public Subscriber<? super Integer> call(Subscriber<? super String> t1) {
@@ -165,7 +165,7 @@ public class OperatorOnErrorResumeNextViaFunctionTest {
             @Override
             public Observable<String> call(Throwable t1) {
                 if (t1.getMessage().equals("failed")) {
-                    return Observable.from("success");
+                    return Observable.just("success");
                 } else {
                     return Observable.error(t1);
                 }
@@ -185,7 +185,7 @@ public class OperatorOnErrorResumeNextViaFunctionTest {
     @Test
     public void testOnErrorResumeReceivesErrorFromPreviousNonProtectedOperatorOnNext() {
         TestSubscriber<String> ts = new TestSubscriber<String>();
-        Observable.from(1).lift(new Operator<String, Integer>() {
+        Observable.just(1).lift(new Operator<String, Integer>() {
 
             @Override
             public Subscriber<? super Integer> call(Subscriber<? super String> t1) {
@@ -214,7 +214,7 @@ public class OperatorOnErrorResumeNextViaFunctionTest {
             @Override
             public Observable<String> call(Throwable t1) {
                 if (t1.getMessage().equals("failed")) {
-                    return Observable.from("success");
+                    return Observable.just("success");
                 } else {
                     return Observable.error(t1);
                 }

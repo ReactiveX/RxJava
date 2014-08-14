@@ -37,8 +37,8 @@ public class CachedThreadSchedulerTest extends AbstractSchedulerConcurrencyTests
     @Test
     public final void testIOScheduler() {
 
-        Observable<Integer> o1 = Observable.from(1, 2, 3, 4, 5);
-        Observable<Integer> o2 = Observable.from(6, 7, 8, 9, 10);
+        Observable<Integer> o1 = Observable.just(1, 2, 3, 4, 5);
+        Observable<Integer> o2 = Observable.just(6, 7, 8, 9, 10);
         Observable<String> o = Observable.merge(o1, o2).map(new Func1<Integer, String>() {
 
             @Override

@@ -62,7 +62,7 @@ public class OperatorMapTest {
     public void testMap() {
         Map<String, String> m1 = getMap("One");
         Map<String, String> m2 = getMap("Two");
-        Observable<Map<String, String>> observable = Observable.from(m1, m2);
+        Observable<Map<String, String>> observable = Observable.just(m1, m2);
 
         Observable<String> m = observable.lift(new OperatorMap<Map<String, String>, String>(new Func1<Map<String, String>, String>() {
 
@@ -83,7 +83,7 @@ public class OperatorMapTest {
     @Test
     public void testMapMany() {
         /* simulate a top-level async call which returns IDs */
-        Observable<Integer> ids = Observable.from(1, 2);
+        Observable<Integer> ids = Observable.just(1, 2);
 
         /* now simulate the behavior to take those IDs and perform nested async calls based on them */
         Observable<String> m = ids.flatMap(new Func1<Integer, Observable<String>>() {
@@ -95,11 +95,11 @@ public class OperatorMapTest {
                 if (id == 1) {
                     Map<String, String> m1 = getMap("One");
                     Map<String, String> m2 = getMap("Two");
-                    subObservable = Observable.from(m1, m2);
+                    subObservable = Observable.just(m1, m2);
                 } else {
                     Map<String, String> m3 = getMap("Three");
                     Map<String, String> m4 = getMap("Four");
-                    subObservable = Observable.from(m3, m4);
+                    subObservable = Observable.just(m3, m4);
                 }
 
                 /* simulate kicking off the async call and performing a select on it to transform the data */
@@ -126,13 +126,13 @@ public class OperatorMapTest {
     public void testMapMany2() {
         Map<String, String> m1 = getMap("One");
         Map<String, String> m2 = getMap("Two");
-        Observable<Map<String, String>> observable1 = Observable.from(m1, m2);
+        Observable<Map<String, String>> observable1 = Observable.just(m1, m2);
 
         Map<String, String> m3 = getMap("Three");
         Map<String, String> m4 = getMap("Four");
-        Observable<Map<String, String>> observable2 = Observable.from(m3, m4);
+        Observable<Map<String, String>> observable2 = Observable.just(m3, m4);
 
-        Observable<Observable<Map<String, String>>> observable = Observable.from(observable1, observable2);
+        Observable<Observable<Map<String, String>>> observable = Observable.just(observable1, observable2);
 
         Observable<String> m = observable.flatMap(new Func1<Observable<Map<String, String>>, Observable<String>>() {
 
@@ -161,7 +161,7 @@ public class OperatorMapTest {
 
     @Test
     public void testMapWithError() {
-        Observable<String> w = Observable.from("one", "fail", "two", "three", "fail");
+        Observable<String> w = Observable.just("one", "fail", "two", "three", "fail");
         Observable<String> m = w.lift(new OperatorMap<String, String>(new Func1<String, String>() {
             @Override
             public String call(String s) {
@@ -189,7 +189,7 @@ public class OperatorMapTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testMapWithIssue417() {
-        Observable.from(1).observeOn(Schedulers.computation())
+        Observable.just(1).observeOn(Schedulers.computation())
                 .map(new Func1<Integer, Integer>() {
                     public Integer call(Integer arg0) {
                         throw new IllegalArgumentException("any error");
@@ -202,7 +202,7 @@ public class OperatorMapTest {
         // The error will throw in one of threads in the thread pool.
         // If map does not handle it, the error will disappear.
         // so map needs to handle the error by itself.
-        Observable<String> m = Observable.from("one")
+        Observable<String> m = Observable.just("one")
                 .observeOn(Schedulers.computation())
                 .map(new Func1<String, String>() {
                     public String call(String arg0) {
@@ -278,7 +278,7 @@ public class OperatorMapTest {
 
             @Override
             public Observable<Object> call(Object object) {
-                return Observable.from(object);
+                return Observable.just(object);
             }
         };
 

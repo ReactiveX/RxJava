@@ -821,7 +821,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.concat.aspx">MSDN: Observable.Concat</a>
      */
     public final static <T> Observable<T> concat(Observable<? extends T> t1, Observable<? extends T> t2) {
-        return concat(from(t1, t2));
+        return concat(just(t1, t2));
     }
 
     /**
@@ -846,7 +846,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.concat.aspx">MSDN: Observable.Concat</a>
      */
     public final static <T> Observable<T> concat(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3) {
-        return concat(from(t1, t2, t3));
+        return concat(just(t1, t2, t3));
     }
 
     /**
@@ -873,7 +873,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.concat.aspx">MSDN: Observable.Concat</a>
      */
     public final static <T> Observable<T> concat(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4) {
-        return concat(from(t1, t2, t3, t4));
+        return concat(just(t1, t2, t3, t4));
     }
 
     /**
@@ -902,7 +902,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.concat.aspx">MSDN: Observable.Concat</a>
      */
     public final static <T> Observable<T> concat(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5) {
-        return concat(from(t1, t2, t3, t4, t5));
+        return concat(just(t1, t2, t3, t4, t5));
     }
 
     /**
@@ -933,7 +933,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.concat.aspx">MSDN: Observable.Concat</a>
      */
     public final static <T> Observable<T> concat(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6) {
-        return concat(from(t1, t2, t3, t4, t5, t6));
+        return concat(just(t1, t2, t3, t4, t5, t6));
     }
 
     /**
@@ -966,7 +966,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.concat.aspx">MSDN: Observable.Concat</a>
      */
     public final static <T> Observable<T> concat(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6, Observable<? extends T> t7) {
-        return concat(from(t1, t2, t3, t4, t5, t6, t7));
+        return concat(just(t1, t2, t3, t4, t5, t6, t7));
     }
 
     /**
@@ -1001,7 +1001,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.concat.aspx">MSDN: Observable.Concat</a>
      */
     public final static <T> Observable<T> concat(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6, Observable<? extends T> t7, Observable<? extends T> t8) {
-        return concat(from(t1, t2, t3, t4, t5, t6, t7, t8));
+        return concat(just(t1, t2, t3, t4, t5, t6, t7, t8));
     }
 
     /**
@@ -1038,7 +1038,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.concat.aspx">MSDN: Observable.Concat</a>
      */
     public final static <T> Observable<T> concat(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6, Observable<? extends T> t7, Observable<? extends T> t8, Observable<? extends T> t9) {
-        return concat(from(t1, t2, t3, t4, t5, t6, t7, t8, t9));
+        return concat(just(t1, t2, t3, t4, t5, t6, t7, t8, t9));
     }
 
     /**
@@ -1246,6 +1246,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from">RxJava wiki: from</a>
      */
     public final static <T> Observable<T> from(Future<? extends T> future, Scheduler scheduler) {
+        // TODO in a future revision the Scheduler will become important because we'll start polling instead of blocking on the Future
         return create(OnSubscribeToObservableFuture.toObservableFuture(future)).subscribeOn(scheduler);
     }
 
@@ -1292,7 +1293,9 @@ public class Observable<T> {
      *         Scheduler
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from">RxJava wiki: from</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh212140.aspx">MSDN: Observable.ToObservable</a>
+     * @deprecated Use subscribeOn to Schedule the work
      */
+    @Deprecated
     public final static <T> Observable<T> from(Iterable<? extends T> iterable, Scheduler scheduler) {
         return from(iterable).subscribeOn(scheduler);
     }
@@ -1312,7 +1315,9 @@ public class Observable<T> {
      *            the type of the item
      * @return an Observable that emits the item
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from">RxJava wiki: from</a>
+     * @deprecated Use just or item instead
      */
+    @Deprecated
     public final static <T> Observable<T> from(T t1) {
         return just(t1);
     }
@@ -1334,7 +1339,9 @@ public class Observable<T> {
      *            the type of these items
      * @return an Observable that emits each item
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from">RxJava wiki: from</a>
+     * @deprecated Use items instead
      */
+    @Deprecated
     // suppress unchecked because we are using varargs inside the method
     @SuppressWarnings("unchecked")
     public final static <T> Observable<T> from(T t1, T t2) {
@@ -1360,7 +1367,9 @@ public class Observable<T> {
      *            the type of these items
      * @return an Observable that emits each item
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from">RxJava wiki: from</a>
+     * @deprecated Use items instead
      */
+    @Deprecated
     // suppress unchecked because we are using varargs inside the method
     @SuppressWarnings("unchecked")
     public final static <T> Observable<T> from(T t1, T t2, T t3) {
@@ -1388,7 +1397,9 @@ public class Observable<T> {
      *            the type of these items
      * @return an Observable that emits each item
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from">RxJava wiki: from</a>
+     * @deprecated Use items instead
      */
+    @Deprecated
     // suppress unchecked because we are using varargs inside the method
     @SuppressWarnings("unchecked")
     public final static <T> Observable<T> from(T t1, T t2, T t3, T t4) {
@@ -1418,7 +1429,9 @@ public class Observable<T> {
      *            the type of these items
      * @return an Observable that emits each item
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from">RxJava wiki: from</a>
+     * @deprecated Use items instead
      */
+    @Deprecated
     // suppress unchecked because we are using varargs inside the method
     @SuppressWarnings("unchecked")
     public final static <T> Observable<T> from(T t1, T t2, T t3, T t4, T t5) {
@@ -1450,7 +1463,9 @@ public class Observable<T> {
      *            the type of these items
      * @return an Observable that emits each item
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from">RxJava wiki: from</a>
+     * @deprecated Use items instead
      */
+    @Deprecated
     // suppress unchecked because we are using varargs inside the method
     @SuppressWarnings("unchecked")
     public final static <T> Observable<T> from(T t1, T t2, T t3, T t4, T t5, T t6) {
@@ -1484,7 +1499,9 @@ public class Observable<T> {
      *            the type of these items
      * @return an Observable that emits each item
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from">RxJava wiki: from</a>
+     * @deprecated Use items instead
      */
+    @Deprecated
     // suppress unchecked because we are using varargs inside the method
     @SuppressWarnings("unchecked")
     public final static <T> Observable<T> from(T t1, T t2, T t3, T t4, T t5, T t6, T t7) {
@@ -1520,7 +1537,9 @@ public class Observable<T> {
      *            the type of these items
      * @return an Observable that emits each item
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from">RxJava wiki: from</a>
+     * @deprecated Use items instead
      */
+    @Deprecated
     // suppress unchecked because we are using varargs inside the method
     @SuppressWarnings("unchecked")
     public final static <T> Observable<T> from(T t1, T t2, T t3, T t4, T t5, T t6, T t7, T t8) {
@@ -1558,7 +1577,9 @@ public class Observable<T> {
      *            the type of these items
      * @return an Observable that emits each item
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from">RxJava wiki: from</a>
+     * @deprecated Use items instead
      */
+    @Deprecated
     // suppress unchecked because we are using varargs inside the method
     @SuppressWarnings("unchecked")
     public final static <T> Observable<T> from(T t1, T t2, T t3, T t4, T t5, T t6, T t7, T t8, T t9) {
@@ -1598,7 +1619,9 @@ public class Observable<T> {
      *            the type of these items
      * @return an Observable that emits each item
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from">RxJava wiki: from</a>
+     * @deprecated Use items instead
      */
+    @Deprecated
     // suppress unchecked because we are using varargs inside the method
     @SuppressWarnings("unchecked")
     public final static <T> Observable<T> from(T t1, T t2, T t3, T t4, T t5, T t6, T t7, T t8, T t9, T t10) {
@@ -1622,8 +1645,8 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from">RxJava wiki: from</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh212140.aspx">MSDN: Observable.ToObservable</a>
      */
-    public final static <T> Observable<T> from(T... t1) {
-        return from(Arrays.asList(t1));
+    public final static <T> Observable<T> from(T[] array) {
+        return from(Arrays.asList(array));
     }
 
     /**
@@ -1644,7 +1667,9 @@ public class Observable<T> {
      * @return an Observable that emits each item in the source Array
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from">RxJava wiki: from</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh212140.aspx">MSDN: Observable.ToObservable</a>
+     * @deprecated Use subscribeOn to Schedule the work
      */
+    @Deprecated
     public final static <T> Observable<T> from(T[] items, Scheduler scheduler) {
         return from(Arrays.asList(items), scheduler);
     }
@@ -1721,30 +1746,295 @@ public class Observable<T> {
     public final static <T> Observable<T> just(final T value) {
         return ScalarSynchronousObservable.create(value);
     }
-
+    
     /**
-     * Returns an Observable that emits a single item and then completes, on a specified Scheduler.
+     * Converts two items into an Observable that emits those items.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/just.s.png" alt="">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     *  <dd>{@code from} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param value
-     *            the item to emit
+     * @param t1
+     *            first item
+     * @param t2
+     *            second item
      * @param <T>
-     *            the type of that item
-     * @param scheduler
-     *            the Scheduler to emit the single item on
-     * @return an Observable that emits {@code value} as a single item and then completes, on a specified
-     *         Scheduler
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#just">RxJava wiki: just</a>
+     *            the type of these items
+     * @return an Observable that emits each item
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from">RxJava wiki: from</a>
      */
-    public final static <T> Observable<T> just(T value, Scheduler scheduler) {
-        return just(value).subscribeOn(scheduler);
+    // suppress unchecked because we are using varargs inside the method
+    @SuppressWarnings("unchecked")
+    public final static <T> Observable<T> just(T t1, T t2) {
+        return from(Arrays.asList(t1, t2));
     }
 
+    /**
+     * Converts three items into an Observable that emits those items.
+     * <p>
+     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code from} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @param t1
+     *            first item
+     * @param t2
+     *            second item
+     * @param t3
+     *            third item
+     * @param <T>
+     *            the type of these items
+     * @return an Observable that emits each item
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from">RxJava wiki: from</a>
+     */
+    // suppress unchecked because we are using varargs inside the method
+    @SuppressWarnings("unchecked")
+    public final static <T> Observable<T> just(T t1, T t2, T t3) {
+        return from(Arrays.asList(t1, t2, t3));
+    }
+
+    /**
+     * Converts four items into an Observable that emits those items.
+     * <p>
+     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code from} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @param t1
+     *            first item
+     * @param t2
+     *            second item
+     * @param t3
+     *            third item
+     * @param t4
+     *            fourth item
+     * @param <T>
+     *            the type of these items
+     * @return an Observable that emits each item
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from">RxJava wiki: from</a>
+     */
+    // suppress unchecked because we are using varargs inside the method
+    @SuppressWarnings("unchecked")
+    public final static <T> Observable<T> just(T t1, T t2, T t3, T t4) {
+        return from(Arrays.asList(t1, t2, t3, t4));
+    }
+
+    /**
+     * Converts five items into an Observable that emits those items.
+     * <p>
+     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code from} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param t1
+     *            first item
+     * @param t2
+     *            second item
+     * @param t3
+     *            third item
+     * @param t4
+     *            fourth item
+     * @param t5
+     *            fifth item
+     * @param <T>
+     *            the type of these items
+     * @return an Observable that emits each item
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from">RxJava wiki: from</a>
+     */
+    // suppress unchecked because we are using varargs inside the method
+    @SuppressWarnings("unchecked")
+    public final static <T> Observable<T> just(T t1, T t2, T t3, T t4, T t5) {
+        return from(Arrays.asList(t1, t2, t3, t4, t5));
+    }
+
+    /**
+     * Converts six items into an Observable that emits those items.
+     * <p>
+     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code from} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @param t1
+     *            first item
+     * @param t2
+     *            second item
+     * @param t3
+     *            third item
+     * @param t4
+     *            fourth item
+     * @param t5
+     *            fifth item
+     * @param t6
+     *            sixth item
+     * @param <T>
+     *            the type of these items
+     * @return an Observable that emits each item
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from">RxJava wiki: from</a>
+     */
+    // suppress unchecked because we are using varargs inside the method
+    @SuppressWarnings("unchecked")
+    public final static <T> Observable<T> just(T t1, T t2, T t3, T t4, T t5, T t6) {
+        return from(Arrays.asList(t1, t2, t3, t4, t5, t6));
+    }
+
+    /**
+     * Converts seven items into an Observable that emits those items.
+     * <p>
+     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code from} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @param t1
+     *            first item
+     * @param t2
+     *            second item
+     * @param t3
+     *            third item
+     * @param t4
+     *            fourth item
+     * @param t5
+     *            fifth item
+     * @param t6
+     *            sixth item
+     * @param t7
+     *            seventh item
+     * @param <T>
+     *            the type of these items
+     * @return an Observable that emits each item
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from">RxJava wiki: from</a>
+     */
+    // suppress unchecked because we are using varargs inside the method
+    @SuppressWarnings("unchecked")
+    public final static <T> Observable<T> just(T t1, T t2, T t3, T t4, T t5, T t6, T t7) {
+        return from(Arrays.asList(t1, t2, t3, t4, t5, t6, t7));
+    }
+
+    /**
+     * Converts eight items into an Observable that emits those items.
+     * <p>
+     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code from} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @param t1
+     *            first item
+     * @param t2
+     *            second item
+     * @param t3
+     *            third item
+     * @param t4
+     *            fourth item
+     * @param t5
+     *            fifth item
+     * @param t6
+     *            sixth item
+     * @param t7
+     *            seventh item
+     * @param t8
+     *            eighth item
+     * @param <T>
+     *            the type of these items
+     * @return an Observable that emits each item
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from">RxJava wiki: from</a>
+     */
+    // suppress unchecked because we are using varargs inside the method
+    @SuppressWarnings("unchecked")
+    public final static <T> Observable<T> just(T t1, T t2, T t3, T t4, T t5, T t6, T t7, T t8) {
+        return from(Arrays.asList(t1, t2, t3, t4, t5, t6, t7, t8));
+    }
+
+    /**
+     * Converts nine items into an Observable that emits those items.
+     * <p>
+     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code from} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @param t1
+     *            first item
+     * @param t2
+     *            second item
+     * @param t3
+     *            third item
+     * @param t4
+     *            fourth item
+     * @param t5
+     *            fifth item
+     * @param t6
+     *            sixth item
+     * @param t7
+     *            seventh item
+     * @param t8
+     *            eighth item
+     * @param t9
+     *            ninth item
+     * @param <T>
+     *            the type of these items
+     * @return an Observable that emits each item
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from">RxJava wiki: from</a>
+     */
+    // suppress unchecked because we are using varargs inside the method
+    @SuppressWarnings("unchecked")
+    public final static <T> Observable<T> just(T t1, T t2, T t3, T t4, T t5, T t6, T t7, T t8, T t9) {
+        return from(Arrays.asList(t1, t2, t3, t4, t5, t6, t7, t8, t9));
+    }
+
+    /**
+     * Converts ten items into an Observable that emits those items.
+     * <p>
+     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code from} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @param t1
+     *            first item
+     * @param t2
+     *            second item
+     * @param t3
+     *            third item
+     * @param t4
+     *            fourth item
+     * @param t5
+     *            fifth item
+     * @param t6
+     *            sixth item
+     * @param t7
+     *            seventh item
+     * @param t8
+     *            eighth item
+     * @param t9
+     *            ninth item
+     * @param t10
+     *            tenth item
+     * @param <T>
+     *            the type of these items
+     * @return an Observable that emits each item
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#from">RxJava wiki: from</a>
+     */
+    // suppress unchecked because we are using varargs inside the method
+    @SuppressWarnings("unchecked")
+    public final static <T> Observable<T> just(T t1, T t2, T t3, T t4, T t5, T t6, T t7, T t8, T t9, T t10) {
+        return from(Arrays.asList(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10));
+    }
+    
     /**
      * Flattens an Iterable of Observables into one Observable, without any transformation.
      * <p>
@@ -2265,7 +2555,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge</a>
      */
     public final static <T> Observable<T> mergeDelayError(Observable<? extends T> t1, Observable<? extends T> t2) {
-        return mergeDelayError(from(t1, t2));
+        return mergeDelayError(just(t1, t2));
     }
 
     /**
@@ -2298,7 +2588,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge</a>
      */
     public final static <T> Observable<T> mergeDelayError(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3) {
-        return mergeDelayError(from(t1, t2, t3));
+        return mergeDelayError(just(t1, t2, t3));
     }
 
     /**
@@ -2333,7 +2623,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge</a>
      */
     public final static <T> Observable<T> mergeDelayError(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4) {
-        return mergeDelayError(from(t1, t2, t3, t4));
+        return mergeDelayError(just(t1, t2, t3, t4));
     }
 
     /**
@@ -2370,7 +2660,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge</a>
      */
     public final static <T> Observable<T> mergeDelayError(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5) {
-        return mergeDelayError(from(t1, t2, t3, t4, t5));
+        return mergeDelayError(just(t1, t2, t3, t4, t5));
     }
 
     /**
@@ -2409,7 +2699,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge</a>
      */
     public final static <T> Observable<T> mergeDelayError(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6) {
-        return mergeDelayError(from(t1, t2, t3, t4, t5, t6));
+        return mergeDelayError(just(t1, t2, t3, t4, t5, t6));
     }
 
     /**
@@ -2451,7 +2741,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge</a>
      */
     public final static <T> Observable<T> mergeDelayError(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6, Observable<? extends T> t7) {
-        return mergeDelayError(from(t1, t2, t3, t4, t5, t6, t7));
+        return mergeDelayError(just(t1, t2, t3, t4, t5, t6, t7));
     }
 
     /**
@@ -2495,7 +2785,7 @@ public class Observable<T> {
      */
     // suppress because the types are checked by the method signature before using a vararg
     public final static <T> Observable<T> mergeDelayError(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6, Observable<? extends T> t7, Observable<? extends T> t8) {
-        return mergeDelayError(from(t1, t2, t3, t4, t5, t6, t7, t8));
+        return mergeDelayError(just(t1, t2, t3, t4, t5, t6, t7, t8));
     }
 
     /**
@@ -2540,7 +2830,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge</a>
      */
     public final static <T> Observable<T> mergeDelayError(Observable<? extends T> t1, Observable<? extends T> t2, Observable<? extends T> t3, Observable<? extends T> t4, Observable<? extends T> t5, Observable<? extends T> t6, Observable<? extends T> t7, Observable<? extends T> t8, Observable<? extends T> t9) {
-        return mergeDelayError(from(t1, t2, t3, t4, t5, t6, t7, t8, t9));
+        return mergeDelayError(just(t1, t2, t3, t4, t5, t6, t7, t8, t9));
     }
 
     /**
@@ -7694,7 +7984,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.startwith.aspx">MSDN: Observable.StartWith</a>
      */
     public final Observable<T> startWith(T t1) {
-        return concat(Observable.<T> from(t1), this);
+        return concat(just(t1), this);
     }
 
     /**
@@ -7717,7 +8007,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.startwith.aspx">MSDN: Observable.StartWith</a>
      */
     public final Observable<T> startWith(T t1, T t2) {
-        return concat(Observable.<T> from(t1, t2), this);
+        return concat(just(t1, t2), this);
     }
 
     /**
@@ -7742,7 +8032,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.startwith.aspx">MSDN: Observable.StartWith</a>
      */
     public final Observable<T> startWith(T t1, T t2, T t3) {
-        return concat(Observable.<T> from(t1, t2, t3), this);
+        return concat(just(t1, t2, t3), this);
     }
 
     /**
@@ -7769,7 +8059,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.startwith.aspx">MSDN: Observable.StartWith</a>
      */
     public final Observable<T> startWith(T t1, T t2, T t3, T t4) {
-        return concat(Observable.<T> from(t1, t2, t3, t4), this);
+        return concat(just(t1, t2, t3, t4), this);
     }
 
     /**
@@ -7798,7 +8088,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.startwith.aspx">MSDN: Observable.StartWith</a>
      */
     public final Observable<T> startWith(T t1, T t2, T t3, T t4, T t5) {
-        return concat(Observable.<T> from(t1, t2, t3, t4, t5), this);
+        return concat(just(t1, t2, t3, t4, t5), this);
     }
 
     /**
@@ -7829,7 +8119,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.startwith.aspx">MSDN: Observable.StartWith</a>
      */
     public final Observable<T> startWith(T t1, T t2, T t3, T t4, T t5, T t6) {
-        return concat(Observable.<T> from(t1, t2, t3, t4, t5, t6), this);
+        return concat(just(t1, t2, t3, t4, t5, t6), this);
     }
 
     /**
@@ -7862,7 +8152,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.startwith.aspx">MSDN: Observable.StartWith</a>
      */
     public final Observable<T> startWith(T t1, T t2, T t3, T t4, T t5, T t6, T t7) {
-        return concat(Observable.<T> from(t1, t2, t3, t4, t5, t6, t7), this);
+        return concat(just(t1, t2, t3, t4, t5, t6, t7), this);
     }
 
     /**
@@ -7897,7 +8187,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.startwith.aspx">MSDN: Observable.StartWith</a>
      */
     public final Observable<T> startWith(T t1, T t2, T t3, T t4, T t5, T t6, T t7, T t8) {
-        return concat(Observable.<T> from(t1, t2, t3, t4, t5, t6, t7, t8), this);
+        return concat(just(t1, t2, t3, t4, t5, t6, t7, t8), this);
     }
 
     /**
@@ -7934,7 +8224,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.startwith.aspx">MSDN: Observable.StartWith</a>
      */
     public final Observable<T> startWith(T t1, T t2, T t3, T t4, T t5, T t6, T t7, T t8, T t9) {
-        return concat(Observable.<T> from(t1, t2, t3, t4, t5, t6, t7, t8, t9), this);
+        return concat(just(t1, t2, t3, t4, t5, t6, t7, t8, t9), this);
     }
 
     /**

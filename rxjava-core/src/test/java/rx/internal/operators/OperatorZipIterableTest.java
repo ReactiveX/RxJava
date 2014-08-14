@@ -369,7 +369,7 @@ public class OperatorZipIterableTest {
     }
 
     @Test public void testTake2() {
-        Observable<Integer> o = Observable.from(1, 2, 3, 4, 5);
+        Observable<Integer> o = Observable.just(1, 2, 3, 4, 5);
         Iterable<String> it = Arrays.asList("a", "b", "c", "d", "e");
         
         SquareStr squareStr = new SquareStr();

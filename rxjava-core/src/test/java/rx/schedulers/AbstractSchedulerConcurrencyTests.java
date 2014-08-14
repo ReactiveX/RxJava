@@ -346,7 +346,7 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
 
         final AtomicInteger count = new AtomicInteger();
 
-        Observable<Integer> o1 = Observable.<Integer> from(1, 2, 3, 4, 5);
+        Observable<Integer> o1 = Observable.<Integer> just(1, 2, 3, 4, 5);
 
         o1.subscribe(new Action1<Integer>() {
 

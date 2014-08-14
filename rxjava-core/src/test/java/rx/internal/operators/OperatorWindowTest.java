@@ -74,7 +74,7 @@ public class OperatorWindowTest {
 
     @Test
     public void testNonOverlappingWindows() {
-        Observable<String> subject = Observable.from("one", "two", "three", "four", "five");
+        Observable<String> subject = Observable.just("one", "two", "three", "four", "five");
         Observable<Observable<String>> windowed = subject.window(3);
 
         List<List<String>> windows = toLists(windowed);
@@ -86,7 +86,7 @@ public class OperatorWindowTest {
 
     @Test
     public void testSkipAndCountGaplessWindows() {
-        Observable<String> subject = Observable.from("one", "two", "three", "four", "five");
+        Observable<String> subject = Observable.just("one", "two", "three", "four", "five");
         Observable<Observable<String>> windowed = subject.window(3, 3);
 
         List<List<String>> windows = toLists(windowed);
@@ -114,7 +114,7 @@ public class OperatorWindowTest {
 
     @Test
     public void testSkipAndCountWindowsWithGaps() {
-        Observable<String> subject = Observable.from("one", "two", "three", "four", "five");
+        Observable<String> subject = Observable.just("one", "two", "three", "four", "five");
         Observable<Observable<String>> windowed = subject.window(2, 3);
 
         List<List<String>> windows = toLists(windowed);

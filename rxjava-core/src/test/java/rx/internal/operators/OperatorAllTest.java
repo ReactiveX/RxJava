@@ -33,7 +33,7 @@ public class OperatorAllTest {
     @Test
     @SuppressWarnings("unchecked")
     public void testAll() {
-        Observable<String> obs = Observable.from("one", "two", "six");
+        Observable<String> obs = Observable.just("one", "two", "six");
 
         Observer<Boolean> observer = mock(Observer.class);
         obs.all(new Func1<String, Boolean>() {
@@ -51,7 +51,7 @@ public class OperatorAllTest {
     @Test
     @SuppressWarnings("unchecked")
     public void testNotAll() {
-        Observable<String> obs = Observable.from("one", "two", "three", "six");
+        Observable<String> obs = Observable.just("one", "two", "three", "six");
 
         Observer<Boolean> observer = mock(Observer.class);
         obs.all(new Func1<String, Boolean>() {

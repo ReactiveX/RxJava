@@ -201,7 +201,7 @@ public class OnSubscribeCombineLatestTest {
         /* define a Observer to receive aggregated events */
         Observer<String> observer = mock(Observer.class);
 
-        Observable<String> w = Observable.combineLatest(Observable.from("one", "two"), Observable.from(2, 3, 4), combineLatestFunction);
+        Observable<String> w = Observable.combineLatest(Observable.just("one", "two"), Observable.just(2, 3, 4), combineLatestFunction);
         w.subscribe(observer);
 
         verify(observer, never()).onError(any(Throwable.class));
@@ -220,7 +220,7 @@ public class OnSubscribeCombineLatestTest {
         /* define a Observer to receive aggregated events */
         Observer<String> observer = mock(Observer.class);
 
-        Observable<String> w = Observable.combineLatest(Observable.from("one", "two"), Observable.from(2), Observable.from(new int[] { 4, 5, 6 }), combineLatestFunction);
+        Observable<String> w = Observable.combineLatest(Observable.just("one", "two"), Observable.just(2), Observable.just(new int[] { 4, 5, 6 }), combineLatestFunction);
         w.subscribe(observer);
 
         verify(observer, never()).onError(any(Throwable.class));
@@ -237,7 +237,7 @@ public class OnSubscribeCombineLatestTest {
         /* define a Observer to receive aggregated events */
         Observer<String> observer = mock(Observer.class);
 
-        Observable<String> w = Observable.combineLatest(Observable.from("one"), Observable.from(2), Observable.from(new int[] { 4, 5, 6 }, new int[] { 7, 8 }), combineLatestFunction);
+        Observable<String> w = Observable.combineLatest(Observable.just("one"), Observable.just(2), Observable.just(new int[] { 4, 5, 6 }, new int[] { 7, 8 }), combineLatestFunction);
         w.subscribe(observer);
 
         verify(observer, never()).onError(any(Throwable.class));
@@ -511,7 +511,7 @@ public class OnSubscribeCombineLatestTest {
             List<Observable<Integer>> sources = new ArrayList<Observable<Integer>>();
             List<Object> values = new ArrayList<Object>();
             for (int j = 0; j < i; j++) {
-                sources.add(Observable.just(j, Schedulers.io()));
+                sources.add(Observable.just(j).subscribeOn(Schedulers.io()));
                 values.add(j);
             }
 

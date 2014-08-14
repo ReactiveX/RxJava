@@ -31,8 +31,8 @@ public class ConcatTests {
 
     @Test
     public void testConcatSimple() {
-        Observable<String> o1 = Observable.from("one", "two");
-        Observable<String> o2 = Observable.from("three", "four");
+        Observable<String> o1 = Observable.just("one", "two");
+        Observable<String> o2 = Observable.just("three", "four");
 
         List<String> values = Observable.concat(o1, o2).toList().toBlocking().single();
 
@@ -44,11 +44,11 @@ public class ConcatTests {
 
     @Test
     public void testConcatWithObservableOfObservable() {
-        Observable<String> o1 = Observable.from("one", "two");
-        Observable<String> o2 = Observable.from("three", "four");
-        Observable<String> o3 = Observable.from("five", "six");
+        Observable<String> o1 = Observable.just("one", "two");
+        Observable<String> o2 = Observable.just("three", "four");
+        Observable<String> o3 = Observable.just("five", "six");
 
-        Observable<Observable<String>> os = Observable.from(o1, o2, o3);
+        Observable<Observable<String>> os = Observable.just(o1, o2, o3);
 
         List<String> values = Observable.concat(os).toList().toBlocking().single();
 
@@ -62,9 +62,9 @@ public class ConcatTests {
 
     @Test
     public void testConcatWithIterableOfObservable() {
-        Observable<String> o1 = Observable.from("one", "two");
-        Observable<String> o2 = Observable.from("three", "four");
-        Observable<String> o3 = Observable.from("five", "six");
+        Observable<String> o1 = Observable.just("one", "two");
+        Observable<String> o2 = Observable.just("three", "four");
+        Observable<String> o3 = Observable.just("five", "six");
 
         @SuppressWarnings("unchecked")
         Iterable<Observable<String>> is = Arrays.asList(o1, o2, o3);
@@ -86,10 +86,10 @@ public class ConcatTests {
     	Media media = new Media();
     	HorrorMovie horrorMovie2 = new HorrorMovie();
     	
-        Observable<Media> o1 = Observable.<Media> from(horrorMovie1, movie);
-        Observable<Media> o2 = Observable.from(media, horrorMovie2);
+        Observable<Media> o1 = Observable.<Media> just(horrorMovie1, movie);
+        Observable<Media> o2 = Observable.just(media, horrorMovie2);
 
-        Observable<Observable<Media>> os = Observable.from(o1, o2);
+        Observable<Observable<Media>> os = Observable.just(o1, o2);
 
         List<Media> values = Observable.concat(os).toList().toBlocking().single();
         
@@ -108,10 +108,10 @@ public class ConcatTests {
     	Media media2 = new Media();
     	HorrorMovie horrorMovie2 = new HorrorMovie();
     	
-        Observable<Media> o1 = Observable.from(horrorMovie1, movie, media1);
-        Observable<Media> o2 = Observable.from(media2, horrorMovie2);
+        Observable<Media> o1 = Observable.just(horrorMovie1, movie, media1);
+        Observable<Media> o2 = Observable.just(media2, horrorMovie2);
 
-        Observable<Observable<Media>> os = Observable.from(o1, o2);
+        Observable<Observable<Media>> os = Observable.just(o1, o2);
 
         List<Media> values = Observable.concat(os).toList().toBlocking().single();
 
@@ -130,8 +130,8 @@ public class ConcatTests {
     	Media media = new Media();
     	HorrorMovie horrorMovie2 = new HorrorMovie();
     	
-        Observable<Movie> o1 = Observable.from(horrorMovie1, movie);
-        Observable<Media> o2 = Observable.from(media, horrorMovie2);
+        Observable<Movie> o1 = Observable.just(horrorMovie1, movie);
+        Observable<Media> o2 = Observable.just(media, horrorMovie2);
 
         List<Media> values = Observable.concat(o1, o2).toList().toBlocking().single();
 
@@ -160,7 +160,7 @@ public class ConcatTests {
             }
         });
 
-        Observable<Media> o2 = Observable.from(media, horrorMovie2);
+        Observable<Media> o2 = Observable.just(media, horrorMovie2);
 
         List<Media> values = Observable.concat(o1, o2).toList().toBlocking().single();
 

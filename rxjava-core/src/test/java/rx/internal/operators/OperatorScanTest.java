@@ -43,7 +43,7 @@ public class OperatorScanTest {
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
 
-        Observable<Integer> observable = Observable.from(1, 2, 3);
+        Observable<Integer> observable = Observable.just(1, 2, 3);
 
         Observable<String> m = observable.scan("", new Func2<String, Integer, String>() {
 
@@ -70,7 +70,7 @@ public class OperatorScanTest {
         @SuppressWarnings("unchecked")
         Observer<Integer> observer = mock(Observer.class);
 
-        Observable<Integer> observable = Observable.from(1, 2, 3);
+        Observable<Integer> observable = Observable.just(1, 2, 3);
 
         Observable<Integer> m = observable.scan(new Func2<Integer, Integer, Integer>() {
 
@@ -97,7 +97,7 @@ public class OperatorScanTest {
         @SuppressWarnings("unchecked")
         Observer<Integer> observer = mock(Observer.class);
 
-        Observable<Integer> observable = Observable.from(1);
+        Observable<Integer> observable = Observable.just(1);
 
         Observable<Integer> m = observable.scan(new Func2<Integer, Integer, Integer>() {
 

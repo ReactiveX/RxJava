@@ -96,7 +96,7 @@ public class OnSubscribeCacheTest {
     }
 
     private void testWithCustomSubjectAndRepeat(Subject<Integer, Integer> subject, Integer... expected) {
-        Observable<Integer> source0 = Observable.from(1, 2, 3)
+        Observable<Integer> source0 = Observable.just(1, 2, 3)
                 .subscribeOn(Schedulers.io())
                 .flatMap(new Func1<Integer, Observable<Integer>>() {
                     @Override

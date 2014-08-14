@@ -52,7 +52,7 @@ public class BlockingObservableTest {
 
     @Test
     public void testLast() {
-        BlockingObservable<String> obs = BlockingObservable.from(Observable.from("one", "two", "three"));
+        BlockingObservable<String> obs = BlockingObservable.from(Observable.just("one", "two", "three"));
 
         assertEquals("three", obs.last());
     }
@@ -65,7 +65,7 @@ public class BlockingObservableTest {
 
     @Test
     public void testLastOrDefault() {
-        BlockingObservable<Integer> observable = BlockingObservable.from(Observable.from(1, 0, -1));
+        BlockingObservable<Integer> observable = BlockingObservable.from(Observable.just(1, 0, -1));
         int last = observable.lastOrDefault(-100, new Func1<Integer, Boolean>() {
             @Override
             public Boolean call(Integer args) {
@@ -77,7 +77,7 @@ public class BlockingObservableTest {
 
     @Test
     public void testLastOrDefault1() {
-        BlockingObservable<String> observable = BlockingObservable.from(Observable.from("one", "two", "three"));
+        BlockingObservable<String> observable = BlockingObservable.from(Observable.just("one", "two", "three"));
         assertEquals("three", observable.lastOrDefault("default"));
     }
 
@@ -89,7 +89,7 @@ public class BlockingObservableTest {
 
     @Test
     public void testLastOrDefaultWithPredicate() {
-        BlockingObservable<Integer> observable = BlockingObservable.from(Observable.from(1, 0, -1));
+        BlockingObservable<Integer> observable = BlockingObservable.from(Observable.just(1, 0, -1));
         int last = observable.lastOrDefault(0, new Func1<Integer, Boolean>() {
             @Override
             public Boolean call(Integer args) {
@@ -102,7 +102,7 @@ public class BlockingObservableTest {
 
     @Test
     public void testLastOrDefaultWrongPredicate() {
-        BlockingObservable<Integer> observable = BlockingObservable.from(Observable.from(-1, -2, -3));
+        BlockingObservable<Integer> observable = BlockingObservable.from(Observable.just(-1, -2, -3));
         int last = observable.lastOrDefault(0, new Func1<Integer, Boolean>() {
             @Override
             public Boolean call(Integer args) {
@@ -114,7 +114,7 @@ public class BlockingObservableTest {
 
     @Test
     public void testLastWithPredicate() {
-        BlockingObservable<String> obs = BlockingObservable.from(Observable.from("one", "two", "three"));
+        BlockingObservable<String> obs = BlockingObservable.from(Observable.just("one", "two", "three"));
 
         assertEquals("two", obs.last(new Func1<String, Boolean>() {
             @Override
@@ -125,7 +125,7 @@ public class BlockingObservableTest {
     }
 
     public void testSingle() {
-        BlockingObservable<String> observable = BlockingObservable.from(Observable.from("one"));
+        BlockingObservable<String> observable = BlockingObservable.from(Observable.just("one"));
         assertEquals("one", observable.single());
     }
 
@@ -137,7 +137,7 @@ public class BlockingObservableTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testSingleDefaultPredicateMatchesMoreThanOne() {
-        BlockingObservable.from(Observable.from("one", "two")).singleOrDefault("default", new Func1<String, Boolean>() {
+        BlockingObservable.from(Observable.just("one", "two")).singleOrDefault("default", new Func1<String, Boolean>() {
             @Override
             public Boolean call(String args) {
                 return args.length() == 3;
@@ -147,7 +147,7 @@ public class BlockingObservableTest {
 
     @Test
     public void testSingleDefaultPredicateMatchesNothing() {
-        BlockingObservable<String> observable = BlockingObservable.from(Observable.from("one", "two"));
+        BlockingObservable<String> observable = BlockingObservable.from(Observable.just("one", "two"));
         String result = observable.singleOrDefault("default", new Func1<String, Boolean>() {
             @Override
             public Boolean call(String args) {
@@ -159,13 +159,13 @@ public class BlockingObservableTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testSingleDefaultWithMoreThanOne() {
-        BlockingObservable<String> observable = BlockingObservable.from(Observable.from("one", "two", "three"));
+        BlockingObservable<String> observable = BlockingObservable.from(Observable.just("one", "two", "three"));
         observable.singleOrDefault("default");
     }
 
     @Test
     public void testSingleWithPredicateDefault() {
-        BlockingObservable<String> observable = BlockingObservable.from(Observable.from("one", "two", "four"));
+        BlockingObservable<String> observable = BlockingObservable.from(Observable.just("one", "two", "four"));
         assertEquals("four", observable.single(new Func1<String, Boolean>() {
             @Override
             public Boolean call(String s) {
@@ -176,13 +176,13 @@ public class BlockingObservableTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testSingleWrong() {
-        BlockingObservable<Integer> observable = BlockingObservable.from(Observable.from(1, 2));
+        BlockingObservable<Integer> observable = BlockingObservable.from(Observable.just(1, 2));
         observable.single();
     }
 
     @Test(expected = NoSuchElementException.class)
     public void testSingleWrongPredicate() {
-        BlockingObservable<Integer> observable = BlockingObservable.from(Observable.from(-1));
+        BlockingObservable<Integer> observable = BlockingObservable.from(Observable.just(-1));
         observable.single(new Func1<Integer, Boolean>() {
             @Override
             public Boolean call(Integer args) {
@@ -193,7 +193,7 @@ public class BlockingObservableTest {
 
     @Test
     public void testToIterable() {
-        BlockingObservable<String> obs = BlockingObservable.from(Observable.from("one", "two", "three"));
+        BlockingObservable<String> obs = BlockingObservable.from(Observable.just("one", "two", "three"));
 
         Iterator<String> it = obs.toIterable().iterator();
 
@@ -212,7 +212,7 @@ public class BlockingObservableTest {
 
     @Test(expected = NoSuchElementException.class)
     public void testToIterableNextOnly() {
-        BlockingObservable<Integer> obs = BlockingObservable.from(Observable.from(1, 2, 3));
+        BlockingObservable<Integer> obs = BlockingObservable.from(Observable.just(1, 2, 3));
 
         Iterator<Integer> it = obs.toIterable().iterator();
 
@@ -225,7 +225,7 @@ public class BlockingObservableTest {
 
     @Test(expected = NoSuchElementException.class)
     public void testToIterableNextOnlyTwice() {
-        BlockingObservable<Integer> obs = BlockingObservable.from(Observable.from(1, 2, 3));
+        BlockingObservable<Integer> obs = BlockingObservable.from(Observable.just(1, 2, 3));
 
         Iterator<Integer> it = obs.toIterable().iterator();
 
@@ -246,7 +246,7 @@ public class BlockingObservableTest {
 
     @Test
     public void testToIterableManyTimes() {
-        BlockingObservable<Integer> obs = BlockingObservable.from(Observable.from(1, 2, 3));
+        BlockingObservable<Integer> obs = BlockingObservable.from(Observable.just(1, 2, 3));
 
         Iterable<Integer> iter = obs.toIterable();
 
@@ -317,7 +317,7 @@ public class BlockingObservableTest {
 
     @Test
     public void testFirst() {
-        BlockingObservable<String> observable = BlockingObservable.from(Observable.from("one", "two", "three"));
+        BlockingObservable<String> observable = BlockingObservable.from(Observable.just("one", "two", "three"));
         assertEquals("one", observable.first());
     }
 
@@ -328,7 +328,7 @@ public class BlockingObservableTest {
 
     @Test
     public void testFirstWithPredicate() {
-        BlockingObservable<String> observable = BlockingObservable.from(Observable.from("one", "two", "three"));
+        BlockingObservable<String> observable = BlockingObservable.from(Observable.just("one", "two", "three"));
         String first = observable.first(new Func1<String, Boolean>() {
             @Override
             public Boolean call(String args) {
@@ -340,7 +340,7 @@ public class BlockingObservableTest {
 
     @Test(expected = NoSuchElementException.class)
     public void testFirstWithPredicateAndEmpty() {
-        BlockingObservable<String> observable = BlockingObservable.from(Observable.from("one", "two", "three"));
+        BlockingObservable<String> observable = BlockingObservable.from(Observable.just("one", "two", "three"));
         observable.first(new Func1<String, Boolean>() {
             @Override
             public Boolean call(String args) {
@@ -351,7 +351,7 @@ public class BlockingObservableTest {
 
     @Test
     public void testFirstOrDefault() {
-        BlockingObservable<String> observable = BlockingObservable.from(Observable.from("one", "two", "three"));
+        BlockingObservable<String> observable = BlockingObservable.from(Observable.just("one", "two", "three"));
         assertEquals("one", observable.firstOrDefault("default"));
     }
 
@@ -363,7 +363,7 @@ public class BlockingObservableTest {
 
     @Test
     public void testFirstOrDefaultWithPredicate() {
-        BlockingObservable<String> observable = BlockingObservable.from(Observable.from("one", "two", "three"));
+        BlockingObservable<String> observable = BlockingObservable.from(Observable.just("one", "two", "three"));
         String first = observable.firstOrDefault("default", new Func1<String, Boolean>() {
             @Override
             public Boolean call(String args) {
@@ -375,7 +375,7 @@ public class BlockingObservableTest {
 
     @Test
     public void testFirstOrDefaultWithPredicateAndEmpty() {
-        BlockingObservable<String> observable = BlockingObservable.from(Observable.from("one", "two", "three"));
+        BlockingObservable<String> observable = BlockingObservable.from(Observable.just("one", "two", "three"));
         String first = observable.firstOrDefault("default", new Func1<String, Boolean>() {
             @Override
             public Boolean call(String args) {

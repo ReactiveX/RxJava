@@ -27,7 +27,7 @@ public class ReduceTests {
 
     @Test
     public void reduceInts() {
-        Observable<Integer> o = Observable.from(1, 2, 3);
+        Observable<Integer> o = Observable.just(1, 2, 3);
         int value = o.reduce(new Func2<Integer, Integer, Integer>() {
 
             @Override
@@ -42,7 +42,7 @@ public class ReduceTests {
     @SuppressWarnings("unused")
     @Test
     public void reduceWithObjects() {
-        Observable<Movie> horrorMovies = Observable.<Movie> from(new HorrorMovie());
+        Observable<Movie> horrorMovies = Observable.<Movie> just(new HorrorMovie());
 
         Func2<Movie, Movie, Movie> chooseSecondMovie =
                 new Func2<Movie, Movie, Movie>() {
@@ -64,7 +64,7 @@ public class ReduceTests {
     @SuppressWarnings("unused")
     @Test
     public void reduceWithCovariantObjects() {
-        Observable<Movie> horrorMovies = Observable.<Movie> from(new HorrorMovie());
+        Observable<Movie> horrorMovies = Observable.<Movie> just(new HorrorMovie());
 
         Func2<Movie, Movie, Movie> chooseSecondMovie =
                 new Func2<Movie, Movie, Movie>() {
@@ -84,7 +84,7 @@ public class ReduceTests {
     @Test
     public void reduceCovariance() {
         // must type it to <Movie>
-        Observable<Movie> horrorMovies = Observable.<Movie> from(new HorrorMovie());
+        Observable<Movie> horrorMovies = Observable.<Movie> just(new HorrorMovie());
         libraryFunctionActingOnMovieObservables(horrorMovies);
     }
 
