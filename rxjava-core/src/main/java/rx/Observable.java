@@ -204,7 +204,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Implementing-Your-Own-Operators">RxJava wiki: Implementing Your Own Operators</a>
      * @since 0.20
      */
-    public <R> Observable<R> compose(Transformer<T, R> transformer) {
+    public <R> Observable<? extends R> compose(Transformer<? super T, ? extends R> transformer) {
         return transformer.call(this);
     }
     
@@ -213,7 +213,7 @@ public class Observable<T> {
      * @warn more complete description needed
      * @since 0.20
      */
-    public static interface Transformer<T, R> extends Func1<Observable<T>, Observable<R>> {
+    public static interface Transformer<T, R> extends Func1<Observable<? extends T>, Observable<? extends R>> {
         // cover for generics insanity
     }
     
