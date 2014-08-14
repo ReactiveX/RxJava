@@ -410,7 +410,7 @@ trait Observable[+T]
    */
   def zipWith[U, R](that: Iterable[U])(selector: (T, U) => R): Observable[R] = {
     val thisJava = asJavaObservable.asInstanceOf[rx.Observable[T]]
-    toScalaObservable[R](thisJava.zip(that.asJava, selector))
+    toScalaObservable[R](thisJava.zipWith(that.asJava, selector))
   }
 
   /**
@@ -933,7 +933,7 @@ trait Observable[+T]
     val jOnCompleted = new Func0[rx.Observable[_ <: R]] {
       override def call(): rx.Observable[_ <: R] = onCompleted().asJavaObservable
     }
-    toScalaObservable[R](asJavaObservable.mergeMap[R](jOnNext, jOnError, jOnCompleted))
+    toScalaObservable[R](asJavaObservable.flatMap[R](jOnNext, jOnError, jOnCompleted))
   }
 
   /**
@@ -954,7 +954,7 @@ trait Observable[+T]
     val jCollectionSelector = new Func1[T, rx.Observable[_ <: U]] {
       override def call(t: T): rx.Observable[_ <: U] = collectionSelector(t).asJavaObservable
     }
-    toScalaObservable[R](asJavaObservable.mergeMap[U, R](jCollectionSelector, resultSelector))
+    toScalaObservable[R](asJavaObservable.flatMap[U, R](jCollectionSelector, resultSelector))
   }
 
   /**
@@ -973,7 +973,7 @@ trait Observable[+T]
     val jCollectionSelector = new Func1[T, java.lang.Iterable[_ <: R]] {
       override def call(t: T): java.lang.Iterable[_ <: R] = collectionSelector(t).asJava
     }
-    toScalaObservable[R](asJavaObservable.mergeMapIterable[R](jCollectionSelector))
+    toScalaObservable[R](asJavaObservable.flatMapIterable[R](jCollectionSelector))
   }
 
   /**
@@ -994,7 +994,7 @@ trait Observable[+T]
     val jCollectionSelector = new Func1[T, java.lang.Iterable[_ <: U]] {
       override def call(t: T): java.lang.Iterable[_ <: U] = collectionSelector(t).asJava
     }
-    toScalaObservable[R](asJavaObservable.mergeMapIterable[U, R](jCollectionSelector, resultSelector))
+    toScalaObservable[R](asJavaObservable.flatMapIterable[U, R](jCollectionSelector, resultSelector))
   }
 
   /**
@@ -1227,6 +1227,7 @@ trait Observable[+T]
    *                       will be `None`.
    * @return the original Observable, with appropriately modified behavior
    */
+  @Deprecated
   def onErrorFlatMap[U >: T](resumeFunction: (Throwable, Option[Any]) => Observable[U]): Observable[U] = {
     val f = new Func1[rx.exceptions.OnErrorThrowable, rx.Observable[_ <: U]] {
       override def call(t: rx.exceptions.OnErrorThrowable): rx.Observable[_ <: U] = {
@@ -4482,6 +4483,7 @@ object Observable {
    * @return   an Observable that emits each item in the source `Iterable`
    *         sequence
    */
+  @deprecated("Use `from(Iterable).subscribeOn` instead", "0.20")
   def from[T](iterable: Iterable[T], scheduler: Scheduler): Observable[T] = {
     toScalaObservable(rx.Observable.from(iterable.asJava, scheduler.asJavaScheduler))
   }
