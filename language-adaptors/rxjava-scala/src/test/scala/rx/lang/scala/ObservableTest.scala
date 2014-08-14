@@ -71,7 +71,7 @@ class ObservableTests extends JUnitSuite {
   // If this changes (i.e. it suppresses errors and returns default) then Scala's firstOrElse
   // should be changed accordingly.
   @Test def testJavaFirstOrDefault() {
-    assertEquals(1, rx.Observable.from(1, 2).firstOrDefault(10).toBlocking().single)
+    assertEquals(1, rx.Observable.just(1, 2).firstOrDefault(10).toBlocking().single)
     assertEquals(10, rx.Observable.empty().firstOrDefault(10).toBlocking().single)
     val msg = "msg6251"
     var receivedMsg = "none"
