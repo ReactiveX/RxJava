@@ -46,7 +46,9 @@ public class GroupedObservable<K, T> extends Observable<T> {
      * @param o
      *          the {@link Observable} to convert
      * @return a {@code GroupedObservable} representation of {@code o}, with key {@code key}
+     * @deprecated Use Observable.groupBy with element selector instead. 
      */
+    @Deprecated
     public static <K, T> GroupedObservable<K, T> from(K key, final Observable<T> o) {
         return new GroupedObservable<K, T>(key, new OnSubscribe<T>() {
 
