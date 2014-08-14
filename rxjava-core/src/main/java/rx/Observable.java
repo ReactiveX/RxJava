@@ -9924,7 +9924,7 @@ public class Observable<T> {
      *         sequence and emits the results of {@code zipFunction} applied to these pairs
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#zip">RxJava wiki: zip</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.zip.aspx">MSDN: Observable.Zip</a>
-     * @deprecated use zipWith
+     * @deprecated use {@link #zipWith}
      */
     @Deprecated
     public final <T2, R> Observable<R> zip(Iterable<? extends T2> other, Func2<? super T, ? super T2, ? extends R> zipFunction) {
@@ -9941,7 +9941,7 @@ public class Observable<T> {
      * not pre-consumed. This allows you to zip infinite streams on either side.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code zipWith} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
      * @param <T2>
@@ -9957,6 +9957,7 @@ public class Observable<T> {
      *         sequence and emits the results of {@code zipFunction} applied to these pairs
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#zip">RxJava wiki: zip</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.zip.aspx">MSDN: Observable.Zip</a>
+     * @since 0.20
      */
     public final <T2, R> Observable<R> zipWith(Iterable<? extends T2> other, Func2<? super T, ? super T2, ? extends R> zipFunction) {
         return lift(new OperatorZipIterable<T, T2, R>(other, zipFunction));
