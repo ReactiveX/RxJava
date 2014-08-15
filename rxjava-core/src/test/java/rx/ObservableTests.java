@@ -48,6 +48,7 @@ import org.mockito.MockitoAnnotations;
 import rx.Observable.OnSubscribe;
 import rx.Observable.Transformer;
 import rx.exceptions.OnErrorNotImplementedException;
+import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Action2;
 import rx.functions.Func1;
@@ -1123,5 +1124,127 @@ public class ObservableTests {
         ts.assertTerminalEvent();
         ts.assertNoErrors();
         ts.assertReceivedOnNext(Arrays.asList("1", "2", "3"));
+    }
+
+    @Test
+    public void testDoOnUnsubscribe() throws Exception {
+        int subCount = 3;
+        final CountDownLatch upperLatch = new CountDownLatch(subCount);
+        final CountDownLatch lowerLatch = new CountDownLatch(subCount);
+        final CountDownLatch onNextLatch = new CountDownLatch(subCount);
+
+        final AtomicInteger upperCount = new AtomicInteger();
+        final AtomicInteger lowerCount = new AtomicInteger();
+        Observable<Long> longs = Observable
+            // The stream needs to be infinite to ensure the stream does not terminate
+            // before it is unsubscribed
+            .interval(50, TimeUnit.MILLISECONDS)
+            .doOnUnsubscribe(new Action0() {
+                // Test that upper stream will be notified for un-subscription
+                // from a child subscriber
+                @Override
+                public void call() {
+                    upperLatch.countDown();
+                    upperCount.incrementAndGet();
+                }
+            })
+            .doOnNext(new Action1<Long>() {
+                @Override
+                public void call(Long aLong) {
+                    // Ensure there is at least some onNext events before un-subscription happens
+                    onNextLatch.countDown();
+                }
+            })
+            .doOnUnsubscribe(new Action0() {
+                // Test that lower stream will be notified for a direct un-subscription
+                @Override
+                public void call() {
+                    lowerLatch.countDown();
+                    lowerCount.incrementAndGet();
+                }
+            });
+
+        List<Subscription> subscriptions = new ArrayList<Subscription>();
+        List<TestSubscriber> subscribers = new ArrayList<TestSubscriber>();
+
+        for(int i = 0; i < subCount; ++i) {
+            TestSubscriber<Long> subscriber = new TestSubscriber<Long>();
+            subscriptions.add(longs.subscribe(subscriber));
+            subscribers.add(subscriber);
+        }
+
+        onNextLatch.await();
+        for(int i = 0; i < subCount; ++i) {
+            subscriptions.get(i).unsubscribe();
+            // Test that unsubscribe() method is not affected in any way
+            subscribers.get(i).assertUnsubscribed();
+        }
+
+        upperLatch.await();
+        lowerLatch.await();
+        assertEquals(String.format("There should exactly %d un-subscription events for upper stream", subCount), subCount, upperCount.get());
+        assertEquals(String.format("There should exactly %d un-subscription events for lower stream", subCount), subCount, lowerCount.get());
+    }
+
+    @Test
+    public void testDoOnUnSubscribeWorksWithRefCount() throws Exception {
+        int subCount = 3;
+        final CountDownLatch upperLatch = new CountDownLatch(1);
+        final CountDownLatch lowerLatch = new CountDownLatch(1);
+        final CountDownLatch onNextLatch = new CountDownLatch(subCount);
+
+        final AtomicInteger upperCount = new AtomicInteger();
+        final AtomicInteger lowerCount = new AtomicInteger();
+        Observable<Long> longs = Observable
+            // The stream needs to be infinite to ensure the stream does not terminate
+            // before it is unsubscribed
+            .interval(50, TimeUnit.MILLISECONDS)
+            .doOnUnsubscribe(new Action0() {
+                // Test that upper stream will be notified for un-subscription
+                @Override
+                public void call() {
+                    upperLatch.countDown();
+                    upperCount.incrementAndGet();
+                }
+            })
+            .doOnNext(new Action1<Long>() {
+                @Override
+                public void call(Long aLong) {
+                    // Ensure there is at least some onNext events before un-subscription happens
+                    onNextLatch.countDown();
+                }
+            })
+            .doOnUnsubscribe(new Action0() {
+                // Test that lower stream will be notified for un-subscription
+                @Override
+                public void call() {
+                    lowerLatch.countDown();
+                    lowerCount.incrementAndGet();
+                }
+            })
+            .publish()
+            .refCount();
+
+        List<Subscription> subscriptions = new ArrayList<Subscription>();
+        List<TestSubscriber> subscribers = new ArrayList<TestSubscriber>();
+
+        for(int i = 0; i < subCount; ++i) {
+            TestSubscriber<Long> subscriber = new TestSubscriber<Long>();
+            subscriptions.add(longs.subscribe(subscriber));
+            subscribers.add(subscriber);
+        }
+
+        onNextLatch.await();
+        for(int i = 0; i < subCount; ++i) {
+            subscriptions.get(i).unsubscribe();
+            // Test that unsubscribe() method is not affected in any way
+            subscribers.get(i).assertUnsubscribed();
+        }
+
+        upperLatch.await();
+        lowerLatch.await();
+        assertEquals("There should exactly 1 un-subscription events for upper stream", 1, upperCount.get());
+        assertEquals("There should exactly 1 un-subscription events for lower stream", 1, lowerCount.get());
+
     }
 }
