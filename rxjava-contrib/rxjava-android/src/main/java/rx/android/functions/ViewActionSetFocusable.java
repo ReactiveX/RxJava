@@ -21,7 +21,7 @@ import rx.functions.Action1;
 
 public class ViewActionSetFocusable implements Action1<Boolean> {
 
-    private View view;
+    private final View view;
 
     public ViewActionSetFocusable(View view) {
         this.view = view;

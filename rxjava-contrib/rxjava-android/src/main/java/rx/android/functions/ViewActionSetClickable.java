@@ -21,7 +21,7 @@ import rx.functions.Action1;
 
 public class ViewActionSetClickable implements Action1<Boolean> {
 
-    private View view;
+    private final View view;
 
     public ViewActionSetClickable(View view) {
         this.view = view;

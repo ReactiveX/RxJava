@@ -22,7 +22,7 @@ import rx.functions.Action1;
 /**
  * Utility class for the Action interfaces for use with Android {@link View}s.
  */
-public class ViewActions {
+public final class ViewActions {
 
     private ViewActions() {
         throw new IllegalStateException("No instances!");
