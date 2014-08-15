@@ -10363,11 +10363,16 @@ public class Observable<T> {
      * its subscribers. Each un-subscription will result in an invocation of the given action except when the
      * source {@code Observable} is reference counted, in which case the source {@code Observable} will invoke
      * the given action for the very last un-subscription.
+     * <p>
+     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/doOnUnsubscribe.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code doOnUnsubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      *
-     *
-     * @param unsubscribe The action that gets called when this {@code Observable} is unsubscribed.
-     *
-     * @return That modified {@code Observable}
+     * @param unsubscribe the action that gets called when this {@code Observable} is unsubscribed
+     * @return the source {@code Observable} modified so as to call this Action when appropriate
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#doonunsubscribe">RxJava wiki: doOnUnsubscribe</a>
      */
     public final Observable<T> doOnUnsubscribe(final Action0 unsubscribe) {
         return lift(new OperatorDoOnUnsubscribe<T>(unsubscribe));
