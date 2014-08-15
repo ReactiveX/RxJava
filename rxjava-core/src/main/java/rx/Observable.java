@@ -4809,11 +4809,18 @@ public class Observable<T> {
      * its subscribers. Each subscription will result in an invocation of the given action except when the
      * source {@code Observable} is reference counted, in which case the source {@code Observable} will invoke
      * the given action for the first subscription.
+     * <p>
+     * <img width="640" height="390" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/doOnSubscribe.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code doOnSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      *
-     *
-     * @param unsubscribe The action that gets called when this {@code Observable} is subscribed.
-     *
-     * @return That modified {@code Observable}
+     * @param subscribe
+     *            the action that gets called when an observer subscribes to this {@code Observable}
+     * @return the source {@code Observable} modified so as to call this Action when appropriate
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#doonsubscribe">RxJava wiki: doOnSubscribe</a>
+     * @since 0.20
      */
     public final Observable<T> doOnSubscribe(final Action0 subscribe) {
         return lift(new OperatorDoOnSubscribe<T>(subscribe));
@@ -4873,9 +4880,11 @@ public class Observable<T> {
      *  <dd>{@code doOnUnsubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @param unsubscribe the action that gets called when this {@code Observable} is unsubscribed
+     * @param unsubscribe
+     *            the action that gets called when this {@code Observable} is unsubscribed
      * @return the source {@code Observable} modified so as to call this Action when appropriate
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#doonunsubscribe">RxJava wiki: doOnUnsubscribe</a>
+     * @since 0.20
      */
     public final Observable<T> doOnUnsubscribe(final Action0 unsubscribe) {
         return lift(new OperatorDoOnUnsubscribe<T>(unsubscribe));
