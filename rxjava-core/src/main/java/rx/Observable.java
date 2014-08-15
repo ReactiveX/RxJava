@@ -9955,4 +9955,19 @@ public class Observable<T> {
             });
         }
     }
+
+    /**
+     * Modifies the source {@code Observable} so that it invokes the given action when it is unsubscribed from
+     * its subscribers. Each un-subscription will result in an invocation of the given action except when the
+     * source {@code Observable} is reference counted, in which case the source {@code Observable} will invoke
+     * the given action for the very last un-subscription.
+     *
+     *
+     * @param unsubscribe The action that gets called when this {@code Observable} is unsubscribed.
+     *
+     * @return That modified {@code Observable}
+     */
+    public final Observable<T> doOnUnsubscribed(final Action0 unsubscribe) {
+        return lift(new OperatorDoOnUnsubscribe<T>(unsubscribe));
+    }
 }
