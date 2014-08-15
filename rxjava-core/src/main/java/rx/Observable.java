@@ -2906,12 +2906,45 @@ public class Observable<T> {
      *            the factory function to create a resource object that depends on the Observable
      * @param observableFactory
      *            the factory function to create an Observable
+     * @param disposeAction
+     *            the function that will dispose of the resource
      * @return the Observable whose lifetime controls the lifetime of the dependent resource object
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#using">RxJava wiki: using</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229585.aspx">MSDN: Observable.Using</a>
      */
-    public final static <T, Resource extends Subscription> Observable<T> using(Func0<Resource> resourceFactory, Func1<Resource, ? extends Observable<? extends T>> observableFactory) {
-        return create(new OnSubscribeUsing<T, Resource>(resourceFactory, observableFactory));
+    public final static <T, Resource> Observable<T> using(
+            final Func0<Resource> resourceFactory,
+            final Func1<? super Resource, ? extends Observable<? extends T>> observableFactory,
+            final Action1<? super Resource> disposeAction) {
+        return create(new OnSubscribeUsing<T, Resource>(resourceFactory, observableFactory, disposeAction));
+    }
+
+    /**
+     * Constructs an Observable that creates a dependent resource object.
+     * <p>
+     * <img width="640" height="400" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/using.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code using} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @param resourceFactory
+     *            the factory function to create a resource object that depends on the Observable
+     * @param observableFactory
+     *            the factory function to create an Observable
+     * @return the Observable whose lifetime controls the lifetime of the dependent resource object
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#using">RxJava wiki: using</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229585.aspx">MSDN: Observable.Using</a>
+     */
+    public final static <T, Resource extends Subscription> Observable<T> using(Func0<Resource> resourceFactory, Func1<? super Resource, ? extends Observable<? extends T>> observableFactory) {
+        return create(new OnSubscribeUsing<T, Resource>(resourceFactory, observableFactory, new Action1<Resource>() {
+
+            @Override
+            public void call(Resource r) {
+                r.unsubscribe();
+            }
+
+        }));
     }
 
     /**

@@ -32,18 +32,36 @@ import rx.Subscriber;
 import rx.Subscription;
 import rx.exceptions.TestException;
 import rx.functions.Action0;
+import rx.functions.Action1;
 import rx.functions.Func0;
 import rx.functions.Func1;
 import rx.subscriptions.Subscriptions;
 
 public class OnSubscribeUsingTest {
 
-    private static interface Resource extends Subscription {
+    private static interface Resource {
         public String getTextFromWeb();
 
-        @Override
-        public void unsubscribe();
+        public void dispose();
     }
+
+    private static class DisposeAction implements Action1<Resource> {
+
+        @Override
+        public void call(Resource r) {
+            r.dispose();
+        }
+
+    }
+    
+    private final Action1<Subscription> disposeSubscription = new Action1<Subscription>() {
+
+        @Override
+        public void call(Subscription s) {
+            s.unsubscribe();
+        }
+        
+    };
 
     @Test
     public void testUsing() {
@@ -66,7 +84,7 @@ public class OnSubscribeUsingTest {
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = (Observer<String>) mock(Observer.class);
-        Observable<String> observable = Observable.using(resourceFactory, observableFactory);
+        Observable<String> observable = Observable.using(resourceFactory, observableFactory, new DisposeAction());
         observable.subscribe(observer);
 
         InOrder inOrder = inOrder(observer);
@@ -76,7 +94,7 @@ public class OnSubscribeUsingTest {
         inOrder.verifyNoMoreInteractions();
 
         // The resouce should be closed
-        verify(resource, times(1)).unsubscribe();
+        verify(resource, times(1)).dispose();
     }
 
     @Test
@@ -97,14 +115,10 @@ public class OnSubscribeUsingTest {
                         }
                         return "Nothing";
                     }
-
+                    
                     @Override
-                    public void unsubscribe() {
-                    }
-
-                    @Override
-                    public boolean isUnsubscribed() {
-                        return false;
+                    public void dispose() {
+                        // do nothing
                     }
 
                 };
@@ -120,7 +134,7 @@ public class OnSubscribeUsingTest {
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = (Observer<String>) mock(Observer.class);
-        Observable<String> observable = Observable.using(resourceFactory, observableFactory);
+        Observable<String> observable = Observable.using(resourceFactory, observableFactory, new DisposeAction());
         observable.subscribe(observer);
         observable.subscribe(observer);
 
@@ -151,8 +165,8 @@ public class OnSubscribeUsingTest {
                 return Observable.empty();
             }
         };
-
-        Observable.using(resourceFactory, observableFactory).toBlocking().last();
+        
+        Observable.using(resourceFactory, observableFactory, disposeSubscription).toBlocking().last();
     }
 
     @Test
@@ -171,9 +185,9 @@ public class OnSubscribeUsingTest {
                 throw new TestException();
             }
         };
-
+        
         try {
-            Observable.using(resourceFactory, observableFactory).toBlocking().last();
+            Observable.using(resourceFactory, observableFactory, disposeSubscription).toBlocking().last();
             fail("Should throw a TestException when the observableFactory throws it");
         } catch (TestException e) {
             // Make sure that unsubscribe is called so that users can close
@@ -203,9 +217,11 @@ public class OnSubscribeUsingTest {
                 });
             }
         };
+        
+        
 
         try {
-            Observable.using(resourceFactory, observableFactory).toBlocking().last();
+            Observable.using(resourceFactory, observableFactory, disposeSubscription).toBlocking().last();
             fail("Should throw a TestException when the observableFactory throws it");
         } catch (TestException e) {
             // Make sure that unsubscribe is called so that users can close
