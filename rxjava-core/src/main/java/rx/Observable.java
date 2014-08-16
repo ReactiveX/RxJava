@@ -1692,7 +1692,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229027.aspx">MSDN: Observable.Interval</a>
      */
     public final static Observable<Long> interval(long interval, TimeUnit unit) {
-        return create(new OnSubscribeTimerPeriodically(interval, interval, unit, Schedulers.computation()));
+        return interval(interval, unit, Schedulers.computation());
     }
 
     /**
@@ -3716,7 +3716,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.buffer.aspx">MSDN: Observable.Buffer</a>
      */
     public final Observable<List<T>> buffer(int count) {
-        return lift(new OperatorBufferWithSize<T>(count, count));
+        return buffer(count, count);
     }
 
     /**
@@ -3774,7 +3774,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.buffer.aspx">MSDN: Observable.Buffer</a>
      */
     public final Observable<List<T>> buffer(long timespan, long timeshift, TimeUnit unit) {
-        return lift(new OperatorBufferWithTime<T>(timespan, timeshift, unit, Integer.MAX_VALUE, Schedulers.computation()));
+        return buffer(timespan, timeshift, unit,  Schedulers.computation());
     }
 
     /**
@@ -3836,7 +3836,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.buffer.aspx">MSDN: Observable.Buffer</a>
      */
     public final Observable<List<T>> buffer(long timespan, TimeUnit unit) {
-        return lift(new OperatorBufferWithTime<T>(timespan, timespan, unit, Integer.MAX_VALUE, Schedulers.computation()));
+        return buffer(timespan, unit, Integer.MAX_VALUE, Schedulers.computation());
     }
 
     /**
@@ -3937,7 +3937,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.buffer.aspx">MSDN: Observable.Buffer</a>
      */
     public final Observable<List<T>> buffer(long timespan, TimeUnit unit, Scheduler scheduler) {
-        return lift(new OperatorBufferWithTime<T>(timespan, timespan, unit, Integer.MAX_VALUE, scheduler));
+        return buffer(timespan, timespan, unit, scheduler);
     }
 
     /**
@@ -3996,7 +3996,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.buffer.aspx">MSDN: Observable.Buffer</a>
      */
     public final <B> Observable<List<T>> buffer(Observable<B> boundary) {
-        return lift(new OperatorBufferWithSingleObservable<T, B>(boundary, 16));
+        return buffer(boundary, 16);
     }
 
     /**
@@ -4320,7 +4320,7 @@ public class Observable<T> {
      * @see #throttleWithTimeout(long, TimeUnit)
      */
     public final Observable<T> debounce(long timeout, TimeUnit unit) {
-        return lift(new OperatorDebounceWithTime<T>(timeout, unit, Schedulers.computation()));
+        return debounce(timeout, unit, Schedulers.computation());
     }
 
     /**
@@ -4469,7 +4469,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229810.aspx">MSDN: Observable.Delay</a>
      */
     public final Observable<T> delay(long delay, TimeUnit unit) {
-        return create(new OnSubscribeDelay<T>(this, delay, unit, Schedulers.computation()));
+        return delay(delay, unit, Schedulers.computation());
     }
 
     /**
@@ -6261,7 +6261,7 @@ public class Observable<T> {
      * @see <a href="http://www.grahamlea.com/2014/07/rxjava-threading-examples/">RxJava Threading Examples</a>
      */
     public final <R> Observable<R> parallel(Func1<Observable<T>, Observable<R>> f) {
-        return lift(new OperatorParallel<T, R>(f, Schedulers.computation()));
+        return parallel(f, Schedulers.computation());
     }
 
     /**
@@ -7463,7 +7463,7 @@ public class Observable<T> {
      * @see #throttleLast(long, TimeUnit)
      */
     public final Observable<T> sample(long period, TimeUnit unit) {
-        return lift(new OperatorSampleWithTime<T>(period, unit, Schedulers.computation()));
+        return sample(period, unit, Schedulers.computation());
     }
 
     /**
@@ -9116,7 +9116,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Backpressure">RxJava wiki: Backpressure</a>
      */
     public final Observable<T> throttleFirst(long windowDuration, TimeUnit unit) {
-        return lift(new OperatorThrottleFirst<T>(windowDuration, unit, Schedulers.computation()));
+        return throttleFirst(windowDuration, unit, Schedulers.computation());
     }
 
     /**
@@ -9309,7 +9309,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh212107.aspx">MSDN: Observable.TimeInterval</a>
      */
     public final Observable<TimeInterval<T>> timeInterval() {
-        return lift(new OperatorTimeInterval<T>(Schedulers.immediate()));
+        return timeInterval(Schedulers.immediate());
     }
 
     /**
@@ -9961,7 +9961,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.window.aspx">MSDN: Observable.Window</a>
      */
     public final Observable<Observable<T>> window(int count) {
-        return lift(new OperatorWindowWithSize<T>(count, count));
+        return window(count, count);
     }
 
     /**
@@ -10077,7 +10077,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.window.aspx">MSDN: Observable.Window</a>
      */
     public final Observable<Observable<T>> window(long timespan, TimeUnit unit) {
-        return lift(new OperatorWindowWithTime<T>(timespan, timespan, unit, Integer.MAX_VALUE, Schedulers.computation()));
+        return window(timespan, timespan, unit, Schedulers.computation());
     }
 
     /**
@@ -10109,7 +10109,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.window.aspx">MSDN: Observable.Window</a>
      */
     public final Observable<Observable<T>> window(long timespan, TimeUnit unit, int count) {
-        return lift(new OperatorWindowWithTime<T>(timespan, timespan, unit, count, Schedulers.computation()));
+        return window(timespan, unit, count, Schedulers.computation());
     }
 
     /**
@@ -10173,7 +10173,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.window.aspx">MSDN: Observable.Window</a>
      */
     public final Observable<Observable<T>> window(long timespan, TimeUnit unit, Scheduler scheduler) {
-        return lift(new OperatorWindowWithTime<T>(timespan, timespan, unit, Integer.MAX_VALUE, scheduler));
+        return window(timespan, unit, Integer.MAX_VALUE, scheduler);
     }
 
     /**
