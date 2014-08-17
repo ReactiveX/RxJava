@@ -223,13 +223,16 @@ trait Observable[+T]
    * push results into the specified subject.
    *
    * @param subject
-   *            the `rx.lang.scala.subjects.Subject` to push source items into
+   *            the `rx.lang.scala.subjects.Subject` to push source items into. Note: this is a by-name parameter.
    * @return a pair of a start function and an [[rx.lang.scala.Observable]] such that when the start function
    *         is called, the Observable starts to push results into the specified Subject
    */
-  def multicast[R >: T](subject: rx.lang.scala.Subject[R]): ConnectableObservable[R] = {
-    val s: rx.subjects.Subject[_ >: T, _<: R] = subject.asJavaSubject
-    new ConnectableObservable[R](asJavaObservable.multicast(s))
+  def multicast[R >: T](subject: => rx.lang.scala.Subject[R]): ConnectableObservable[R] = {
+    val f = new rx.functions.Func0[rx.subjects.Subject[_ >: R, _ <: R]]() {
+      override def call(): rx.subjects.Subject[_ >: R, _ <: R] = subject.asJavaSubject
+    }
+    val thisJava: rx.Observable[_ <: R] = asJavaObservable
+    new ConnectableObservable[R](thisJava.multicast[R](f))
   }
 
   /**
