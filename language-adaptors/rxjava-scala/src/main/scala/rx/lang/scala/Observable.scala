@@ -3593,6 +3593,28 @@ trait Observable[+T]
   }
 
   /**
+   * Modifies the source `Observable` so that it invokes the given action when it is subscribed from
+   * its subscribers. Each subscription will result in an invocation of the given action except when the
+   * source `Observable` is reference counted, in which case the source `Observable` will invoke
+   * the given action for the first subscription.
+   * <p>
+   * <img width="640" height="390" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/doOnSubscribe.png" alt="">
+   * <dl>
+   *  <dt><b>Scheduler:</b></dt>
+   *  <dd>`onSubscribe` does not operate by default on a particular `Scheduler`.</dd>
+   * </dl>
+   *
+   * @param onSubscribe
+     *            the action that gets called when an observer subscribes to this `Observable`
+   * @return the source `Observable` modified so as to call this Action when appropriate
+   * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#doonsubscribe">RxJava wiki: doOnSubscribe</a>
+   * @since 0.20
+   */
+  def doOnSubscribe(onSubscribe: => Unit): Observable[T] = {
+    toScalaObservable[T](asJavaObservable.doOnSubscribe(() => onSubscribe))
+  }
+
+  /**
    * Modifies an Observable so that it invokes an action when it calls `onCompleted` or `onError`.
    * <p>
    * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/doOnTerminate.png">
@@ -3609,20 +3631,22 @@ trait Observable[+T]
   }
 
   /**
-   * Modifies the source {@code Observable} so that it invokes the given action when it is unsubscribed from
+   * Modifies the source `Observable` so that it invokes the given action when it is unsubscribed from
    * its subscribers. Each un-subscription will result in an invocation of the given action except when the
-   * source {@code Observable} is reference counted, in which case the source {@code Observable} will invoke
+   * source `Observable` is reference counted, in which case the source `Observable` will invoke
    * the given action for the very last un-subscription.
    * <p>
    * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/doOnUnsubscribe.png" alt="">
    * <dl>
-   * <dt><b>Scheduler:</b></dt>
-   * <dd>{@code doOnUnsubscribe} does not operate by default on a particular {@link Scheduler}.</dd>
+   *  <dt><b>Scheduler:</b></dt>
+   *  <dd>`doOnUnsubscribe` does not operate by default on a particular `Scheduler`.</dd>
    * </dl>
    *
-   * @param onUnsubscribe the action that gets called when this { @code Observable} is unsubscribed
-   * @return the source { @code Observable} modified so as to call this Action when appropriate
+   * @param onUnsubscribe
+     *            the action that gets called when this `Observable` is unsubscribed
+   * @return the source `Observable` modified so as to call this Action when appropriate
    * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#doonunsubscribe">RxJava wiki: doOnUnsubscribe</a>
+   * @since 0.20
    */
   def doOnUnsubscribe(onUnsubscribe: => Unit): Observable[T] = {
     toScalaObservable[T](asJavaObservable.doOnUnsubscribe(() => onUnsubscribe))
