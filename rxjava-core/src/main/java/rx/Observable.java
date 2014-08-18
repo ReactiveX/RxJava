@@ -2036,6 +2036,28 @@ public class Observable<T> {
     }
     
     /**
+     * Flattens an Observable that emits Observables into a single Observable that emits the items emitted by
+     * those Observables, without any transformation.
+     * <p>
+     * <img width="640" height="370" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.oo.png" alt="">
+     * <p>
+     * You can combine the items emitted by multiple Observables so that they appear as a single Observable, by
+     * using the {@code merge} method.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @return an Observable that emits items that are the result of flattening the Observables emitted by the
+     *         Observable
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#merge">RxJava wiki: merge</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge</a>
+     */
+    public final Observable<T> merge() {
+        return ((Observable<Observable<T>>) this).lift(new OperatorMerge<T>());
+    }
+
+    /**
      * Flattens an Iterable of Observables into one Observable, without any transformation.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/merge.png" alt="">
