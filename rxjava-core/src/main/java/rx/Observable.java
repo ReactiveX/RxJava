@@ -10018,7 +10018,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.window.aspx">MSDN: Observable.Window</a>
      */
     public final Observable<Observable<T>> window(long timespan, long timeshift, TimeUnit unit) {
-        return lift(new OperatorWindowWithTime<T>(timespan, timeshift, unit, Integer.MAX_VALUE, Schedulers.computation()));
+        return window(timespan, timeshift, unit, Integer.MAX_VALUE, Schedulers.computation());
     }
 
     /**
@@ -10049,7 +10049,41 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.window.aspx">MSDN: Observable.Window</a>
      */
     public final Observable<Observable<T>> window(long timespan, long timeshift, TimeUnit unit, Scheduler scheduler) {
-        return lift(new OperatorWindowWithTime<T>(timespan, timeshift, unit, Integer.MAX_VALUE, scheduler));
+        return window(timespan, timeshift, unit, Integer.MAX_VALUE, scheduler);
+    }
+    
+    /**
+     * Returns an Observable that emits windows of items it collects from the source Observable. The resulting
+     * Observable starts a new window periodically, as determined by the {@code timeshift} argument or a maximum
+     * size as specified by the {@code count} argument (whichever is reached first). It emits
+     * each window after a fixed timespan, specified by the {@code timespan} argument. When the source
+     * Observable completes or Observable completes or encounters an error, the resulting Observable emits the
+     * current window and propagates the notification from the source Observable.
+     * <p>
+     * <img width="640" height="335" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/window7.s.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure as it uses time to control data flow.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     * </dl>
+     * 
+     * @param timespan
+     *            the period of time each window collects items before it should be emitted
+     * @param timeshift
+     *            the period of time after which a new window will be created
+     * @param unit
+     *            the unit of time that applies to the {@code timespan} and {@code timeshift} arguments
+     * @param count
+     *            the maximum size of each window before it should be emitted
+     * @param scheduler
+     *            the {@link Scheduler} to use when determining the end and start of a window
+     * @return an Observable that emits new windows periodically as a fixed timespan elapses
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#window">RxJava wiki: window</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.window.aspx">MSDN: Observable.Window</a>
+     */
+    public final Observable<Observable<T>> window(long timespan, long timeshift, TimeUnit unit, int count, Scheduler scheduler) {
+        return lift(new OperatorWindowWithTime<T>(timespan, timeshift, unit, count, scheduler));
     }
 
     /**
@@ -10143,7 +10177,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.window.aspx">MSDN: Observable.Window</a>
      */
     public final Observable<Observable<T>> window(long timespan, TimeUnit unit, int count, Scheduler scheduler) {
-        return lift(new OperatorWindowWithTime<T>(timespan, timespan, unit, count, scheduler));
+        return window(timespan, timespan, unit, count, scheduler);
     }
 
     /**
