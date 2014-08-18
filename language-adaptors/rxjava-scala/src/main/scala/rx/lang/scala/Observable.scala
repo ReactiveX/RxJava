@@ -3178,10 +3178,10 @@ trait Observable[+T]
 
   /**
    * Returns an Observable that emits the same values as the source observable with the exception of an
-   * {@code onError}. An {@code onError} notification from the source will result in the emission of a
-   * {@link Notification} to the Observable provided as an argument to the {@code notificationHandler}
-   * function. If the Observable returned {@code onCompletes} or {@code onErrors} then {@code retry} will call
-   * {@code onCompleted} or {@code onError} on the child subscription. Otherwise, this Observable will
+   * `onError`. An `onError` notification from the source will result in the emission of a
+   * [[Notification]] to the Observable provided as an argument to the `notificationHandler`
+   * function. If the Observable returned `onCompletes` or `onErrors` then `retry` will call
+   * `onCompleted` or `onError` on the child subscription. Otherwise, this Observable will
    * resubscribe to the source Observable.
    * <p>
    * <img width="640" height="430" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/retryWhen.f.png" alt="">
@@ -3190,7 +3190,7 @@ trait Observable[+T]
    *
    * This retries 3 times, each time incrementing the number of seconds it waits.
    *
-   * <pre> {@code
+   * <pre>
    * Observable[String]({ subscriber =>
    *   println("subscribing")
    *   subscriber.onError(new RuntimeException("always fails"))
@@ -3200,11 +3200,11 @@ trait Observable[+T]
    *     Observable.timer(Duration(i, TimeUnit.SECONDS))
    *   })
    * }).toBlocking.foreach(s => println(s))
-   * } </pre>
+   * </pre>
    *
    * Output is:
    *
-   * <pre> {@code
+   * <pre>
    * subscribing
    * delay retry by 1 second(s)
    * subscribing
@@ -3212,10 +3212,10 @@ trait Observable[+T]
    * subscribing
    * delay retry by 3 second(s)
    * subscribing
-   * } </pre>
+   * </pre>
    * <dl>
    *  <dt><b>Scheduler:</b></dt>
-   *  <dd>{@code retryWhen} operates by default on the {@code trampoline} {@link Scheduler}.</dd>
+   *  <dd>`retryWhen` operates by default on the `trampoline` [[Scheduler]].</dd>
    * </dl>
    *
    * @param notificationHandler receives an Observable of notifications with which a user can complete or error, aborting the
@@ -3235,16 +3235,16 @@ trait Observable[+T]
   }
 
   /**
-   * Returns an Observable that emits the same values as the source observable with the exception of an {@code onError}.
-   * An onError will emit a {@link Notification} to the observable provided as an argument to the notificationHandler
-   * func. If the observable returned {@code onCompletes} or {@code onErrors} then retry will call {@code onCompleted}
-   * or {@code onError} on the child subscription. Otherwise, this observable will resubscribe to the source observable, on a particular Scheduler.
+   * Returns an Observable that emits the same values as the source observable with the exception of an `onError`.
+   * An onError will emit a [[Notification]] to the observable provided as an argument to the notificationHandler
+   * func. If the observable returned `onCompletes` or `onErrors` then retry will call `onCompleted`
+   * or `onError` on the child subscription. Otherwise, this observable will resubscribe to the source observable, on a particular Scheduler.
    * <p>
    * <img width="640" height="430" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/retryWhen.f.png" alt="">
    * <p>
    * <dl>
    *  <dt><b>Scheduler:</b></dt>
-   *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+   *  <dd>you specify which [[Scheduler]] this operator will use</dd>
    * </dl>
    *
    * @param notificationHandler receives an Observable of notifications with which a user can complete or error, aborting the
@@ -3328,16 +3328,16 @@ trait Observable[+T]
 
   /**
    * Returns an Observable that emits the same values as the source Observable with the exception of an
-   * {@code onCompleted}. An {@code onCompleted} notification from the source will result in the emission of
-   * a {@link Notification} to the Observable provided as an argument to the {@code notificationHandler}
-   * function. If the Observable returned {@code onCompletes} or {@code onErrors} then {@code repeatWhen} will
-   * call {@code onCompleted} or {@code onError} on the child subscription. Otherwise, this Observable will
+   * `onCompleted`. An `onCompleted` notification from the source will result in the emission of
+   * a [[Notification]] to the Observable provided as an argument to the `notificationHandler`
+   * function. If the Observable returned `onCompletes` or `onErrors` then `repeatWhen` will
+   * call `onCompleted` or `onError` on the child subscription. Otherwise, this Observable will
    * resubscribe to the source Observable, on a particular Scheduler.
    * <p>
    * <img width="640" height="430" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/repeatWhen.f.png" alt="">
    * <dl>
    *  <dt><b>Scheduler:</b></dt>
-   *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+   *  <dd>you specify which [[Scheduler]] this operator will use</dd>
    * </dl>
    *
    * @param notificationHandler receives an Observable of notifications with which a user can complete or error, aborting the repeat.
@@ -3359,16 +3359,16 @@ trait Observable[+T]
 
   /**
    * Returns an Observable that emits the same values as the source Observable with the exception of an
-   * {@code onCompleted}. An {@code onCompleted} notification from the source will result in the emission of
-   * a {@link Notification} to the Observable provided as an argument to the {@code notificationHandler}
-   * function. If the Observable returned {@code onCompletes} or {@code onErrors} then {@code repeatWhen} will
-   * call {@code onCompleted} or {@code onError} on the child subscription. Otherwise, this Observable will
+   * `onCompleted`. An `onCompleted` notification from the source will result in the emission of
+   * a [[Notification]] to the Observable provided as an argument to the `notificationHandler`
+   * function. If the Observable returned `onCompletes` or `onErrors` then `repeatWhen` will
+   * call `onCompleted` or `onError` on the child subscription. Otherwise, this Observable will
    * resubscribe to the source observable.
    * <p>
    * <img width="640" height="430" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/repeatWhen.f.png" alt="">
    * <dl>
    *  <dt><b>Scheduler:</b></dt>
-   *  <dd>{@code repeatWhen} operates by default on the {@code trampoline} {@link Scheduler}.</dd>
+   *  <dd>`repeatWhen` operates by default on the `trampoline` [[Scheduler]].</dd>
    * </dl>
    *
    * @param notificationHandler receives an Observable of notifications with which a user can complete or error, aborting the repeat.
@@ -3787,7 +3787,7 @@ trait Observable[+T]
 
   /**
    * Return an Observable that emits a single Map containing values corresponding to items emitted by the
-   * source Observable, mapped by the keys returned by a specified {@code keySelector} function.
+   * source Observable, mapped by the keys returned by a specified `keySelector` function.
    * <p>
    * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toMap.png">
    * <p>
@@ -3808,7 +3808,7 @@ trait Observable[+T]
   }
 
   /**
-   * Return an Observable that emits a single Map, returned by a specified {@code mapFactory} function, that
+   * Return an Observable that emits a single Map, returned by a specified `mapFactory` function, that
    * contains keys and values extracted from the items emitted by the source Observable.
    * <p>
    * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/toMap.png">
@@ -3888,18 +3888,27 @@ trait Observable[+T]
   }
 
   /**
-   * Lift a function to the current Observable and return a new Observable that when subscribed to will pass
-   * the values of the current Observable through the function.
+   * Lifts a function to the current Observable and returns a new Observable that when subscribed to will pass
+   * the values of the current Observable through the Operator function.
    * <p>
    * In other words, this allows chaining Observers together on an Observable for acting on the values within
    * the Observable.
    * {{{
-   * observable.map(...).filter(...).take(5).lift(new ObserverA()).lift(new ObserverB(...)).subscribe()
+   * observable.map(...).filter(...).take(5).lift(new OperatorA()).lift(new OperatorB(...)).subscribe()
    * }}}
+   * If the operator you are creating is designed to act on the individual items emitted by a source
+   * Observable, use `lift`. If your operator is designed to transform the source Observable as a whole
+   * (for instance, by applying a particular set of existing RxJava operators to it) use `#compose`.
+   * <dl>
+   * <dt><b>Scheduler:</b></dt>
+   * <dd>`lift` does not operate by default on a particular [[Scheduler]].</dd>
+   * </dl>
    *
-   * @param operator
-   * @return an Observable that emits values that are the result of applying the bind function to the values
-   *         of the current Observable
+   * @param operator the Operator that implements the Observable-operating function to be applied to the source
+   *             Observable
+   * @return an Observable that is the result of applying the lifted Operator to the source Observable
+   * @see <a href="https://github.com/Netflix/RxJava/wiki/Implementing-Your-Own-Operators">RxJava wiki: Implementing Your Own Operators</a>
+   * @since 0.17
    */
   def lift[R](operator: Subscriber[R] => Subscriber[T]): Observable[R] = {
     toScalaObservable(asJavaObservable.lift(toJavaOperator[T, R](operator)))
@@ -4620,8 +4629,8 @@ object Observable {
   }
 
   /**
-   * Return an Observable that emits a 0L after the {@code initialDelay} and ever increasing
-   * numbers after each {@code period} of time thereafter, on a specified Scheduler.
+   * Return an Observable that emits a 0L after the `initialDelay` and ever increasing
+   * numbers after each `period` of time thereafter, on a specified Scheduler.
    * <p>
    * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timer.ps.png">
    *
@@ -4629,16 +4638,16 @@ object Observable {
    * the initial delay time to wait before emitting the first value of 0L
    * @param period
    * the period of time between emissions of the subsequent numbers
-   * @return an Observable that emits a 0L after the { @code initialDelay} and ever increasing
-   *                                                         numbers after each { @code period} of time thereafter, while running on the given { @code scheduler}
+   * @return an Observable that emits a 0L after the `initialDelay` and ever increasing
+   *         numbers after each `period` of time thereafter, while running on the given `scheduler`
    */
   def timer(initialDelay: Duration, period: Duration): Observable[Long] = {
     toScalaObservable[java.lang.Long](rx.Observable.timer(initialDelay.toNanos, period.toNanos, duration.NANOSECONDS)).map(_.longValue())
   }
 
   /**
-   * Return an Observable that emits a 0L after the {@code initialDelay} and ever increasing
-   * numbers after each {@code period} of time thereafter, on a specified Scheduler.
+   * Return an Observable that emits a 0L after the `initialDelay` and ever increasing
+   * numbers after each `period` of time thereafter, on a specified Scheduler.
    * <p>
    * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/timer.ps.png">
    *
@@ -4647,9 +4656,9 @@ object Observable {
    * @param period
    * the period of time between emissions of the subsequent numbers
    * @param scheduler
-     * the scheduler on which the waiting happens and items are emitted
-   * @return an Observable that emits a 0L after the { @code initialDelay} and ever increasing
-   *                                                         numbers after each { @code period} of time thereafter, while running on the given { @code scheduler}
+   * the scheduler on which the waiting happens and items are emitted
+   * @return an Observable that emits a 0L after the `initialDelay` and ever increasing
+   * numbers after each `period` of time thereafter, while running on the given `scheduler`
    */
   def timer(initialDelay: Duration, period: Duration, scheduler: Scheduler): Observable[Long] = {
     toScalaObservable[java.lang.Long](rx.Observable.timer(initialDelay.toNanos, period.toNanos, duration.NANOSECONDS, scheduler)).map(_.longValue())
