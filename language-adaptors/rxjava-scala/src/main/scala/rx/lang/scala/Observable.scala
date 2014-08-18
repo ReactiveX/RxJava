@@ -3254,11 +3254,11 @@ trait Observable[+T]
    * @see <a href="https://github.com/Netflix/RxJava/wiki/Error-Handling-Operators#retrywhen">RxJava Wiki: retryWhen()</a>
    * @since 0.20
    */
-  def retryWhen(notificationHandler: Observable[Notification[Any]] => Observable[Notification[Any]], scheduler: Scheduler): Observable[T] = {
-    val f: Func1[_ >: rx.Observable[_ <: rx.Notification[_ <: Any]], _ <: rx.Observable[_ <: rx.Notification[_ <: Any]]] =
+  def retryWhen(notificationHandler: Observable[Notification[Any]] => Observable[Any], scheduler: Scheduler): Observable[T] = {
+    val f: Func1[_ >: rx.Observable[_ <: rx.Notification[_ <: Any]], _ <: rx.Observable[_ <: Any]] =
       (jOn: rx.Observable[_ <: rx.Notification[_ <: Any]]) => {
         val on = toScalaObservable[rx.Notification[_ <: Any]](jOn).map({ jN => toScalaNotification[Any](jN) })
-        notificationHandler(on).map({ n => n.asJavaNotification }).asJavaObservable
+        notificationHandler(on).asJavaObservable
       }
 
     toScalaObservable[T](asJavaObservable.retryWhen(f, scheduler))
@@ -3347,11 +3347,11 @@ trait Observable[+T]
    * @see <a href="http://msdn.microsoft.com/en-us/library/hh229428.aspx">MSDN: Observable.Repeat</a>
    * @since 0.20
    */
-  def repeatWhen(notificationHandler: Observable[Notification[Any]] => Observable[Notification[Any]], scheduler: Scheduler): Observable[T] = {
-    val f: Func1[_ >: rx.Observable[_ <: rx.Notification[_ <: Any]], _ <: rx.Observable[_ <: rx.Notification[_ <: Any]]] =
+  def repeatWhen(notificationHandler: Observable[Notification[Any]] => Observable[Any], scheduler: Scheduler): Observable[T] = {
+    val f: Func1[_ >: rx.Observable[_ <: rx.Notification[_ <: Any]], _ <: rx.Observable[_ <: Any]] =
       (jOn: rx.Observable[_ <: rx.Notification[_ <: Any]]) => {
         val on = toScalaObservable[rx.Notification[_ <: Any]](jOn).map({ jN => toScalaNotification[Any](jN) })
-        notificationHandler(on).map({ n => n.asJavaNotification }).asJavaObservable
+        notificationHandler(on).asJavaObservable
       }
 
     toScalaObservable[T](asJavaObservable.repeatWhen(f, scheduler))
@@ -3377,11 +3377,11 @@ trait Observable[+T]
    * @see <a href="http://msdn.microsoft.com/en-us/library/hh229428.aspx">MSDN: Observable.Repeat</a>
    * @since 0.20
    */
-  def repeatWhen(notificationHandler: Observable[Notification[Any]] => Observable[Notification[Any]]): Observable[T] = {
-    val f: Func1[_ >: rx.Observable[_ <: rx.Notification[_ <: Any]], _ <: rx.Observable[_ <: rx.Notification[_ <: Any]]] =
+  def repeatWhen(notificationHandler: Observable[Notification[Any]] => Observable[Any]): Observable[T] = {
+    val f: Func1[_ >: rx.Observable[_ <: rx.Notification[_ <: Any]], _ <: rx.Observable[_ <: Any]] =
       (jOn: rx.Observable[_ <: rx.Notification[_ <: Any]]) => {
         val on = toScalaObservable[rx.Notification[_ <: Any]](jOn).map({ jN => toScalaNotification[Any](jN) })
-        notificationHandler(on).map({ n => n.asJavaNotification }).asJavaObservable
+        notificationHandler(on).asJavaObservable
       }
 
     toScalaObservable[T](asJavaObservable.repeatWhen(f))

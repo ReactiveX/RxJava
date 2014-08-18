@@ -1074,7 +1074,7 @@ class RxScalaDemo extends JUnitSuite {
     }).repeatWhen(attempts => {
       attempts.zipWith(Observable.from(1 to 3))((n, i) => i).flatMap(i => {
         println("delay repeat by " + i + " second(s)")
-        Observable.timer(Duration(i, TimeUnit.SECONDS)).materialize
+        Observable.timer(Duration(i, TimeUnit.SECONDS))
       })
     }, NewThreadScheduler()).toBlocking.foreach(s => println(s))
   }
