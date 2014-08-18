@@ -833,6 +833,16 @@ class RxScalaDemo extends JUnitSuite {
     // onCompleted
   }
 
+  @Test def doOnSubscribeExample(): Unit = {
+    val o = List("red", "green", "blue").toObservable.doOnSubscribe { println("subscribed") }
+    o.subscribe(v => println(v), e => e.printStackTrace, () => println("onCompleted"))
+    // subscribed
+    // red
+    // green
+    // blue
+    // onCompleted
+  }
+
   @Test def doOnTerminateExample(): Unit = {
     val o = List("red", "green", "blue").toObservable.doOnTerminate { println("terminate") }
     o.subscribe(v => println(v), e => e.printStackTrace, () => println("onCompleted"))
@@ -841,6 +851,16 @@ class RxScalaDemo extends JUnitSuite {
     // blue
     // terminate
     // onCompleted
+  }
+
+  @Test def doOnUnsubscribeExample(): Unit = {
+    val o = List("red", "green", "blue").toObservable.doOnUnsubscribe { println("unsubscribed") }
+    o.subscribe(v => println(v), e => e.printStackTrace, () => println("onCompleted"))
+    // red
+    // green
+    // blue
+    // onCompleted
+    // unsubscribed
   }
 
   @Test def finallyDoExample(): Unit = {
