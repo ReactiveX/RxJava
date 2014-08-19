@@ -817,10 +817,8 @@ class RxScalaDemo extends JUnitSuite {
   @Test def createExampleWithBackpressure() {
     val o = Observable {
       subscriber: Subscriber[String] => {
-        val worker = IOScheduler().createWorker
         var emitted = 0
         subscriber.setProducer(n => {
-          worker.schedule {
             val intN = if (n >= 10) 10 else n.toInt
             (0 until intN)
               .takeWhile(_ => emitted < 10 && !subscriber.isUnsubscribed)
@@ -832,10 +830,9 @@ class RxScalaDemo extends JUnitSuite {
             if (emitted == 10 && !subscriber.isUnsubscribed) {
               subscriber.onCompleted()
             }
-          }
         })
       }
-    }
+    }.subscribeOn(IOScheduler()) // Use `subscribeOn` to make sure `Producer` will run in the same Scheduler
     o.observeOn(ComputationScheduler()).subscribe(new Subscriber[String] {
       override def onStart() {
         println("Request a new one at the beginning")
