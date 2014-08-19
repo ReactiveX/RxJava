@@ -62,16 +62,16 @@ public class StringObservableTest {
 
     @Test
     public void testMultibyteSpanningTwoBuffers() {
-        Observable<byte[]> src = Observable.from(new byte[] { (byte) 0xc2 }, new byte[] { (byte) 0xa1 });
-        String out = StringObservable.decode(src, "UTF-8").toBlockingObservable().single();
+        Observable<byte[]> src = Observable.just(new byte[] { (byte) 0xc2 }, new byte[] { (byte) 0xa1 });
+        String out = StringObservable.decode(src, "UTF-8").toBlocking().single();
 
         assertEquals("\u00A1", out);
     }
 
     @Test
     public void testMalformedAtTheEndReplace() {
-        Observable<byte[]> src = Observable.from(new byte[] { (byte) 0xc2 });
-        String out = decode(src, "UTF-8").toBlockingObservable().single();
+        Observable<byte[]> src = Observable.just(new byte[] { (byte) 0xc2 });
+        String out = decode(src, "UTF-8").toBlocking().single();
 
         // REPLACEMENT CHARACTER
         assertEquals("\uFFFD", out);
@@ -79,8 +79,8 @@ public class StringObservableTest {
 
     @Test
     public void testMalformedInTheMiddleReplace() {
-        Observable<byte[]> src = Observable.from(new byte[] { (byte) 0xc2, 65 });
-        String out = decode(src, "UTF-8").toBlockingObservable().single();
+        Observable<byte[]> src = Observable.just(new byte[] { (byte) 0xc2, 65 });
+        String out = decode(src, "UTF-8").toBlocking().single();
 
         // REPLACEMENT CHARACTER
         assertEquals("\uFFFDA", out);
@@ -88,25 +88,25 @@ public class StringObservableTest {
 
     @Test(expected = RuntimeException.class)
     public void testMalformedAtTheEndReport() {
-        Observable<byte[]> src = Observable.from(new byte[] { (byte) 0xc2 });
+        Observable<byte[]> src = Observable.just(new byte[] { (byte) 0xc2 });
         CharsetDecoder charsetDecoder = Charset.forName("UTF-8").newDecoder();
-        decode(src, charsetDecoder).toBlockingObservable().single();
+        decode(src, charsetDecoder).toBlocking().single();
     }
 
     @Test(expected = RuntimeException.class)
     public void testMalformedInTheMiddleReport() {
-        Observable<byte[]> src = Observable.from(new byte[] { (byte) 0xc2, 65 });
+        Observable<byte[]> src = Observable.just(new byte[] { (byte) 0xc2, 65 });
         CharsetDecoder charsetDecoder = Charset.forName("UTF-8").newDecoder();
-        decode(src, charsetDecoder).toBlockingObservable().single();
+        decode(src, charsetDecoder).toBlocking().single();
     }
 
     @Test
     public void testPropogateError() {
-        Observable<byte[]> src = Observable.from(new byte[] { 65 });
+        Observable<byte[]> src = Observable.just(new byte[] { 65 });
         Observable<byte[]> err = Observable.error(new IOException());
         CharsetDecoder charsetDecoder = Charset.forName("UTF-8").newDecoder();
         try {
-            decode(Observable.concat(src, err), charsetDecoder).toList().toBlockingObservable().single();
+            decode(Observable.concat(src, err), charsetDecoder).toList().toBlocking().single();
             fail();
         } catch (RuntimeException e) {
             assertEquals(IOException.class, e.getCause().getClass());
@@ -115,11 +115,11 @@ public class StringObservableTest {
 
     @Test
     public void testPropogateErrorInTheMiddleOfMultibyte() {
-        Observable<byte[]> src = Observable.from(new byte[] { (byte) 0xc2 });
+        Observable<byte[]> src = Observable.just(new byte[] { (byte) 0xc2 });
         Observable<byte[]> err = Observable.error(new IOException());
         CharsetDecoder charsetDecoder = Charset.forName("UTF-8").newDecoder();
         try {
-            decode(Observable.concat(src, err), charsetDecoder).toList().toBlockingObservable().single();
+            decode(Observable.concat(src, err), charsetDecoder).toList().toBlocking().single();
             fail();
         } catch (RuntimeException e) {
             assertEquals(MalformedInputException.class, e.getCause().getClass());
@@ -130,7 +130,7 @@ public class StringObservableTest {
     public void testEncode() {
         assertArrayEquals(
                 new byte[] { (byte) 0xc2, (byte) 0xa1 }, encode(Observable.just("\u00A1"), "UTF-8")
-                .toBlockingObservable().single());
+                .toBlocking().single());
     }
 
     @Test
@@ -144,11 +144,11 @@ public class StringObservableTest {
     }
 
     public void testSplit(String str, String regex, int limit, String... parts) {
-        testSplit(str, regex, 0, Observable.from(str), parts);
+        testSplit(str, regex, 0, Observable.just(str), parts);
         for (int i = 0; i < str.length(); i++) {
             String a = str.substring(0, i);
             String b = str.substring(i, str.length());
-            testSplit(a + "|" + b, regex, limit, Observable.from(a, b), parts);
+            testSplit(a + "|" + b, regex, limit, Observable.just(a, b), parts);
         }
     }
 
@@ -176,7 +176,7 @@ public class StringObservableTest {
 
     @Test
     public void testJoinWithEmptyString() {
-        Observable<String> source = Observable.from("", "b", "c");
+        Observable<String> source = Observable.just("", "b", "c");
 
         Observable<String> result = join(source, ", ");
 
@@ -192,7 +192,7 @@ public class StringObservableTest {
 
     @Test
     public void testJoinWithNull() {
-        Observable<String> source = Observable.from("a", null, "c");
+        Observable<String> source = Observable.just("a", null, "c");
 
         Observable<String> result = join(source, ", ");
 
@@ -208,7 +208,7 @@ public class StringObservableTest {
 
     @Test
     public void testJoinSingle() {
-        Observable<String> source = Observable.from("a");
+        Observable<String> source = Observable.just("a");
 
         Observable<String> result = join(source, ", ");
 
@@ -258,7 +258,7 @@ public class StringObservableTest {
     @Test
     public void testFromInputStream() {
         final byte[] inBytes = "test".getBytes();
-        final byte[] outBytes = from(new ByteArrayInputStream(inBytes)).toBlockingObservable().single();
+        final byte[] outBytes = from(new ByteArrayInputStream(inBytes)).toBlocking().single();
         assertNotSame(inBytes, outBytes);
         assertArrayEquals(inBytes, outBytes);
     }
@@ -275,14 +275,14 @@ public class StringObservableTest {
                 return super.read(b, off, len);
             }
         };
-        StringObservable.from(is).first().toBlockingObservable().single();
+        StringObservable.from(is).first().toBlocking().single();
         assertEquals(1, numReads.get());
     }
     
     @Test
     public void testFromReader() {
         final String inStr = "test";
-        final String outStr = from(new StringReader(inStr)).toBlockingObservable().single();
+        final String outStr = from(new StringReader(inStr)).toBlocking().single();
         assertNotSame(inStr, outStr);
         assertEquals(inStr, outStr);
     }
@@ -292,7 +292,7 @@ public class StringObservableTest {
         String newLine = System.getProperty("line.separator");
 
         List<Line> lines = byLine(Observable.from(Arrays.asList("qwer", newLine + "asdf" + newLine, "zx", "cv")))
-                .toList().toBlockingObservable().single();
+                .toList().toBlocking().single();
 
         assertEquals(Arrays.asList(new Line(0, "qwer"), new Line(1, "asdf"), new Line(2, "zxcv")), lines);
     }
