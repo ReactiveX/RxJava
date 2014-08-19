@@ -6002,7 +6002,9 @@ public class Observable<T> {
      *         into the specified {@link Subject}
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Connectable-Observable-Operators#observablepublish-and-observablemulticast">RxJava wiki: Observable.publish and Observable.multicast</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229708.aspx">MSDN: Observable.Multicast</a>
+     * @deprecated Use multicast(Func0<Subject>) instead. This one caused nuanced bugs as it retains state.
      */
+    @Deprecated
     public final <R> ConnectableObservable<R> multicast(final Subject<? super T, ? extends R> subject) {
         return new OperatorMulticast<T, R>(this, new Func0<Subject<? super T, ? extends R>>() {
 

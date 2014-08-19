@@ -24,6 +24,7 @@ import org.junit.Test;
 
 import rx.Observer;
 import rx.Subscription;
+import rx.functions.Func0;
 import rx.observables.ConnectableObservable;
 import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
@@ -34,8 +35,7 @@ public class OnSubscribeMulticastTest {
     public void testMulticast() {
         Subject<String, String> source = PublishSubject.create();
 
-        ConnectableObservable<String> multicasted = source.multicast(
-                PublishSubject.<String> create());
+        ConnectableObservable<String> multicasted = source.multicast(new PublishSubjectFactory());
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
@@ -62,8 +62,7 @@ public class OnSubscribeMulticastTest {
     public void testMulticastConnectTwice() {
         Subject<String, String> source = PublishSubject.create();
 
-        ConnectableObservable<String> multicasted = source.multicast(
-                PublishSubject.<String> create());
+        ConnectableObservable<String> multicasted = source.multicast(new PublishSubjectFactory());
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
@@ -87,8 +86,7 @@ public class OnSubscribeMulticastTest {
     public void testMulticastDisconnect() {
         Subject<String, String> source = PublishSubject.create();
 
-        ConnectableObservable<String> multicasted = source.multicast(
-                PublishSubject.<String> create());
+        ConnectableObservable<String> multicasted = source.multicast(new PublishSubjectFactory());
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
@@ -102,6 +100,9 @@ public class OnSubscribeMulticastTest {
         connection.unsubscribe();
         source.onNext("three");
 
+        // subscribe again
+        multicasted.subscribe(observer);
+        // reconnect
         multicasted.connect();
         source.onNext("four");
         source.onCompleted();
@@ -112,5 +113,14 @@ public class OnSubscribeMulticastTest {
         verify(observer, times(1)).onNext("four");
         verify(observer, times(1)).onCompleted();
 
+    }
+    
+    private static final class PublishSubjectFactory implements Func0<Subject<String, String>> {
+
+        @Override
+        public Subject<String, String> call() {
+            return PublishSubject.<String> create();
+        }
+        
     }
 }
