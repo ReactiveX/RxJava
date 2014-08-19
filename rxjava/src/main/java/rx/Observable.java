@@ -1110,7 +1110,7 @@ public class Observable<T> {
      *         {@code scheduler}
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Creating-Observables#empty-error-and-never">RxJava wiki: empty</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229066.aspx">MSDN: Observable.Empty(IScheduler)</a>
-     * @deprecated Use subscribeOn to Schedule
+     * @deprecated use {@link #subscribeOn} to schedule
      */
     @Deprecated
     public final static <T> Observable<T> empty(Scheduler scheduler) {
@@ -1160,7 +1160,7 @@ public class Observable<T> {
      *         the specified Scheduler
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Creating-Observables#empty-error-and-never">RxJava wiki: error</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211711.aspx">MSDN: Observable.Throw</a>
-     * @deprecated Use subscribeOn to Schedule
+     * @deprecated use {@link #subscribeOn} to schedule
      */
     @Deprecated
     public final static <T> Observable<T> error(Throwable exception, Scheduler scheduler) {
@@ -1297,7 +1297,7 @@ public class Observable<T> {
      *         Scheduler
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Creating-Observables#from">RxJava wiki: from</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh212140.aspx">MSDN: Observable.ToObservable</a>
-     * @deprecated Use subscribeOn to Schedule the work
+     * @deprecated use {@link #subscribeOn} to schedule the work
      */
     @Deprecated
     public final static <T> Observable<T> from(Iterable<? extends T> iterable, Scheduler scheduler) {
@@ -1319,7 +1319,7 @@ public class Observable<T> {
      *            the type of the item
      * @return an Observable that emits the item
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Creating-Observables#from">RxJava wiki: from</a>
-     * @deprecated Use just or item instead
+     * @deprecated use {@link #just} instead
      */
     @Deprecated
     public final static <T> Observable<T> from(T t1) {
@@ -1671,7 +1671,7 @@ public class Observable<T> {
      * @return an Observable that emits each item in the source Array
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Creating-Observables#from">RxJava wiki: from</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh212140.aspx">MSDN: Observable.ToObservable</a>
-     * @deprecated Use subscribeOn to Schedule the work
+     * @deprecated use {@link #subscribeOn} to schedule the work
      */
     @Deprecated
     public final static <T> Observable<T> from(T[] items, Scheduler scheduler) {
@@ -2116,7 +2116,7 @@ public class Observable<T> {
      *             if {@code maxConcurrent} is less than or equal to 0
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Combining-Observables#merge">RxJava wiki: merge</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh244329.aspx">MSDN: Observable.Merge</a>
-     * @deprecated Use subscribeOn to Schedule
+     * @deprecated use {@link #subscribeOn} to schedule
      */
     @Deprecated
     public final static <T> Observable<T> merge(Iterable<? extends Observable<? extends T>> sequences, int maxConcurrent, Scheduler scheduler) {
@@ -2144,7 +2144,7 @@ public class Observable<T> {
      *         Observables in the Iterable
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Combining-Observables#merge">RxJava wiki: merge</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh244336.aspx">MSDN: Observable.Merge</a>
-     * @deprecated Use subscribeOn to Schedule
+     * @deprecated use {@link #subscribeOn} to schedule
      */
     @Deprecated
     public final static <T> Observable<T> merge(Iterable<? extends Observable<? extends T>> sequences, Scheduler scheduler) {
@@ -2502,7 +2502,7 @@ public class Observable<T> {
      * @return an Observable that emits all of the items emitted by the Observables in the Array
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Combining-Observables#merge">RxJava wiki: merge</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229061.aspx">MSDN: Observable.Merge</a>
-     * @deprecated Use subscribeOn to Schedule
+     * @deprecated use {@link #subscribeOn} to schedule
      */
     @Deprecated
     public final static <T> Observable<T> merge(Observable<? extends T>[] sequences, Scheduler scheduler) {
@@ -3235,7 +3235,7 @@ public class Observable<T> {
      * @return the Observable whose lifetime controls the lifetime of the dependent resource object
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Observable-Utility-Operators#using">RxJava wiki: using</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229585.aspx">MSDN: Observable.Using</a>
-     * @deprecated Use replacement `using` method with different overloads.
+     * @deprecated use the other {@code using} method with different overloads
      */
     @Deprecated
     public final static <T, Resource extends Subscription> Observable<T> using(Func0<Resource> resourceFactory, Func1<? super Resource, ? extends Observable<? extends T>> observableFactory) {
@@ -6002,7 +6002,7 @@ public class Observable<T> {
      *         into the specified {@link Subject}
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Connectable-Observable-Operators#observablepublish-and-observablemulticast">RxJava wiki: Observable.publish and Observable.multicast</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229708.aspx">MSDN: Observable.Multicast</a>
-     * @deprecated Use multicast(Func0<Subject>) instead. This one caused nuanced bugs as it retains state.
+     * @deprecated use {@link #multicast(Func0)} instead. This one caused nuanced bugs as it retains state.
      */
     @Deprecated
     public final <R> ConnectableObservable<R> multicast(final Subject<? super T, ? extends R> subject) {
@@ -6246,7 +6246,7 @@ public class Observable<T> {
      * @return the original Observable, with appropriately modified behavior
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Phantom-Operators#onerrorflatmap">RxJava wiki: onErrorFlatMap</a>
      * @since 0.17
-     * @deprecated See https://github.com/ReactiveX/RxJava/issues/1465
+     * @deprecated see https://github.com/ReactiveX/RxJava/issues/1465
      */
     @Deprecated
     public final Observable<T> onErrorFlatMap(final Func1<OnErrorThrowable, ? extends Observable<? extends T>> resumeFunction) {
@@ -8052,7 +8052,7 @@ public class Observable<T> {
      *         emitted by the source Observable
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Combining-Observables#startwith">RxJava wiki: startWith</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229372.aspx">MSDN: Observable.StartWith</a>
-     * @deprecated Use subscribeOn to Schedule
+     * @deprecated use {@link #subscribeOn} to schedule
      */
     @Deprecated
     public final Observable<T> startWith(Iterable<T> values, Scheduler scheduler) {
@@ -8338,7 +8338,7 @@ public class Observable<T> {
      *         emit items emitted by the source Observable.
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Combining-Observables#startwith">RxJava wiki: startWith</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229372.aspx">MSDN: Observable.StartWith</a>
-     * @deprecated Use subscribeOn to Schedule
+     * @deprecated use {@link #subscribeOn} to schedule
      */
     @Deprecated
     public final Observable<T> startWith(T[] values, Scheduler scheduler) {
@@ -10405,7 +10405,8 @@ public class Observable<T> {
      *         and emits the results of {@code zipFunction} applied to these pairs
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Combining-Observables#zip">RxJava wiki: zip</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.zip.aspx">MSDN: Observable.Zip</a>
-     * @deprecated use {@code zipWith} instead. Changed to match naming convention of {@code mergeWith}, {@code concatWith}, etc.
+     * @deprecated use {@link #zipWith} instead. Changed to match naming convention of {@link #mergeWith},
+     *             {@link #concatWith}, etc.
      */
     @Deprecated
     public final <T2, R> Observable<R> zip(Observable<? extends T2> other, Func2<? super T, ? super T2, ? extends R> zipFunction) {
