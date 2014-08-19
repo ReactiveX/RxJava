@@ -2935,7 +2935,9 @@ public class Observable<T> {
      * @return the Observable whose lifetime controls the lifetime of the dependent resource object
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#using">RxJava wiki: using</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229585.aspx">MSDN: Observable.Using</a>
+     * @deprecated Use replacement `using` method with different overloads.
      */
+    @Deprecated
     public final static <T, Resource extends Subscription> Observable<T> using(Func0<Resource> resourceFactory, Func1<? super Resource, ? extends Observable<? extends T>> observableFactory) {
         return create(new OnSubscribeUsing<T, Resource>(resourceFactory, observableFactory, new Action1<Resource>() {
 
