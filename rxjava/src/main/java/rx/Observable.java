@@ -160,7 +160,6 @@ public class Observable<T> {
      *             Observable
      * @return an Observable that is the result of applying the lifted Operator to the source Observable
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Implementing-Your-Own-Operators">RxJava wiki: Implementing Your Own Operators</a>
-     * @since 0.17
      */
     public final <R> Observable<R> lift(final Operator<? extends R, ? super T> lift) {
         return new Observable<R>(new OnSubscribe<R>() {
@@ -202,7 +201,6 @@ public class Observable<T> {
      * @param transformer implements the function that transforms the source Observable
      * @return the source Observable, transformed by the transformer function
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Implementing-Your-Own-Operators">RxJava wiki: Implementing Your Own Operators</a>
-     * @since 0.20
      */
     public <R> Observable<R> compose(Transformer<? super T, R> transformer) {
         return transformer.call(this);
@@ -211,7 +209,6 @@ public class Observable<T> {
     /**
      * Transformer function used by {@link #compose}.
      * @warn more complete description needed
-     * @since 0.20
      */
     public static interface Transformer<T, R> extends Func1<Observable<? extends T>, Observable<R>> {
         // cover for generics insanity
@@ -2854,7 +2851,6 @@ public class Observable<T> {
      * </dl>
      * 
      * @return an Observable that emits a single item: the source Observable
-     * @since 0.17
      */
     public final Observable<Observable<T>> nest() {
         return just(this);
@@ -3693,7 +3689,6 @@ public class Observable<T> {
      *         emitted an item
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Conditional-and-Boolean-Operators#amb">RxJava wiki: amb</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229733.aspx">MSDN: Observable.Amb</a>
-     * @since 0.20
      */
     public final Observable<T> ambWith(Observable<? extends T> t1) {
         return amb(this, t1);
@@ -4141,7 +4136,6 @@ public class Observable<T> {
      * @return an Observable that, when first subscribed to, caches all of its items and notifications for the
      *         benefit of subsequent subscribers
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Observable-Utility-Operators#cache">RxJava wiki: cache</a>
-     * @since 0.20
      */
     public final Observable<T> cache(int capacity) {
         return create(new OnSubscribeCache<T>(this, capacity));
@@ -4244,7 +4238,6 @@ public class Observable<T> {
      *         without interleaving them
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Mathematical-and-Aggregate-Operators#concat">RxJava wiki: concat</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.concat.aspx">MSDN: Observable.Concat</a>
-     * @since 0.20
      */
     public final Observable<T> concatWith(Observable<? extends T> t1) {
         return concat(this, t1);
@@ -4865,7 +4858,6 @@ public class Observable<T> {
      *            the action that gets called when an observer subscribes to this {@code Observable}
      * @return the source {@code Observable} modified so as to call this Action when appropriate
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Observable-Utility-Operators#doonsubscribe">RxJava wiki: doOnSubscribe</a>
-     * @since 0.20
      */
     public final Observable<T> doOnSubscribe(final Action0 subscribe) {
         return lift(new OperatorDoOnSubscribe<T>(subscribe));
@@ -4890,7 +4882,6 @@ public class Observable<T> {
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Observable-Utility-Operators#doonterminate">RxJava wiki: doOnTerminate</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229804.aspx">MSDN: Observable.Do</a>
      * @see #finallyDo(Action0)
-     * @since 0.17
      */
     public final Observable<T> doOnTerminate(final Action0 onTerminate) {
         Observer<T> observer = new Observer<T>() {
@@ -4929,7 +4920,6 @@ public class Observable<T> {
      *            the action that gets called when this {@code Observable} is unsubscribed
      * @return the source {@code Observable} modified so as to call this Action when appropriate
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Observable-Utility-Operators#doonunsubscribe">RxJava wiki: doOnUnsubscribe</a>
-     * @since 0.20
      */
     public final Observable<T> doOnUnsubscribe(final Action0 unsubscribe) {
         return lift(new OperatorDoOnUnsubscribe<T>(unsubscribe));
@@ -5182,7 +5172,6 @@ public class Observable<T> {
      * @return an Observable that emits the results of merging the Observables returned from applying the
      *         specified functions to the emissions and notifications of the source Observable
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Transforming-Observables#flatmap-concatmap-and-flatmapiterable">RxJava wiki: flatMap</a>
-     * @since 0.20
      */
     public final <R> Observable<R> flatMap(
             Func1<? super T, ? extends Observable<? extends R>> onNext,
@@ -5213,7 +5202,6 @@ public class Observable<T> {
      * @return an Observable that emits the results of applying a function to a pair of values emitted by the
      *         source Observable and the collection Observable
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Transforming-Observables#flatmap-concatmap-and-flatmapiterable">RxJava wiki: flatMap</a>
-     * @since 0.20
      */
     public final <U, R> Observable<R> flatMap(final Func1<? super T, ? extends Observable<? extends U>> collectionSelector,
             final Func2<? super T, ? super U, ? extends R> resultSelector) {
@@ -5238,7 +5226,6 @@ public class Observable<T> {
      * @return an Observable that emits the results of merging the items emitted by the source Observable with
      *         the values in the Iterables corresponding to those items, as generated by {@code collectionSelector}
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Transforming-Observables#flatmap-concatmap-and-flatmapiterable">RxJava wiki: flatMapIterable</a>
-     * @since 0.20
      */
     public final <R> Observable<R> flatMapIterable(Func1<? super T, ? extends Iterable<? extends R>> collectionSelector) {
         return merge(map(OperatorMapPair.convertSelector(collectionSelector)));
@@ -5267,7 +5254,6 @@ public class Observable<T> {
      * @return an Observable that emits the items returned by {@code resultSelector} for each item in the source
      *         Observable
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Transforming-Observables#flatmap-concatmap-and-flatmapiterable">RxJava wiki: flatMapIterable</a>
-     * @since 0.20
      */
     public final <U, R> Observable<R> flatMapIterable(Func1<? super T, ? extends Iterable<? extends U>> collectionSelector,
             Func2<? super T, ? super U, ? extends R> resultSelector) {
@@ -5291,7 +5277,6 @@ public class Observable<T> {
      *             if {@code onComplete} is null
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Observable#onnext-oncompleted-and-onerror">RxJava wiki: onNext, onCompleted, and onError</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211815.aspx">MSDN: Observable.ForEach</a>
-     * @since 0.19
      */
     public final void forEach(final Action1<? super T> onNext) {
         subscribe(onNext);
@@ -5316,7 +5301,6 @@ public class Observable<T> {
      *             if {@code onComplete} is null
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Observable#onnext-oncompleted-and-onerror">RxJava wiki: onNext, onCompleted, and onError</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211815.aspx">MSDN: Observable.ForEach</a>
-     * @since 0.19
      */
     public final void forEach(final Action1<? super T> onNext, final Action1<Throwable> onError) {
         subscribe(onNext, onError);
@@ -5343,7 +5327,6 @@ public class Observable<T> {
      *             if {@code onComplete} is null
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Observable#onnext-oncompleted-and-onerror">RxJava wiki: onNext, onCompleted, and onError</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211815.aspx">MSDN: Observable.ForEach</a>
-     * @since 0.19
      */
     public final void forEach(final Action1<? super T> onNext, final Action1<Throwable> onError, final Action0 onComplete) {
         subscribe(onNext, onError, onComplete);
@@ -5382,7 +5365,6 @@ public class Observable<T> {
      *         key value
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Transforming-Observables#groupby-and-groupbyuntil">RxJava wiki: groupBy</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.groupby.aspx">MSDN: Observable.GroupBy</a>
-     * @since 0.20
      */
     public final <K, R> Observable<GroupedObservable<K, R>> groupBy(final Func1<? super T, ? extends K> keySelector, final Func1<? super T, ? extends R> elementSelector) {
         return lift(new OperatorGroupBy<T, K, R>(keySelector, elementSelector));
@@ -5700,7 +5682,6 @@ public class Observable<T> {
      * @return an Observable that emits only the first {@code num} items emitted by the source Observable, or
      *         all of the items from the source Observable if that Observable emits fewer than {@code num} items
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Filtering-Observables#take">RxJava wiki: take</a>
-     * @since 0.19
      */
     public final Observable<T> limit(int num) {
         return take(num);
@@ -5940,7 +5921,6 @@ public class Observable<T> {
      * @return an Observable that emits all of the items emitted by the source Observables
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Combining-Observables#merge">RxJava wiki: merge</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229099.aspx">MSDN: Observable.Merge</a>
-     * @since 0.20
      */
     public final Observable<T> mergeWith(Observable<? extends T> t1) {
         return merge(this, t1);
@@ -6040,7 +6020,6 @@ public class Observable<T> {
      *         into the specified {@link Subject}
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Connectable-Observable-Operators#observablepublish-and-observablemulticast">RxJava wiki: Observable.publish and Observable.multicast</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229708.aspx">MSDN: Observable.Multicast</a>
-     * @since 0.20
      */
     public final <R> ConnectableObservable<R> multicast(Func0<? extends Subject<? super T, ? extends R>> subjectFactory) {
         return new OperatorMulticast<T, R>(this, subjectFactory);
@@ -6103,7 +6082,6 @@ public class Observable<T> {
      *
      * @return the source Observable modified to buffer items to the extent system resources allow
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Backpressure">RxJava wiki: Backpressure</a>
-     * @since 0.20
      */
     public final Observable<T> onBackpressureBuffer() {
         return lift(new OperatorOnBackpressureBuffer<T>());
@@ -6124,7 +6102,6 @@ public class Observable<T> {
      * 
      * @return the source Observable modified to drop {@code onNext} notifications on overflow
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Backpressure">RxJava wiki: Backpressure</a>
-     * @since 0.20
      */
     public final Observable<T> onBackpressureDrop() {
         return lift(new OperatorOnBackpressureDrop<T>());
@@ -6245,7 +6222,6 @@ public class Observable<T> {
      *            of the error
      * @return the original Observable, with appropriately modified behavior
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Phantom-Operators#onerrorflatmap">RxJava wiki: onErrorFlatMap</a>
-     * @since 0.17
      * @deprecated see https://github.com/ReactiveX/RxJava/issues/1465
      */
     @Deprecated
@@ -6660,7 +6636,6 @@ public class Observable<T> {
      *             if {@code count} is less than zero
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Creating-Observables#repeat">RxJava wiki: repeat</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229428.aspx">MSDN: Observable.Repeat</a>
-     * @since 0.17
      */
     public final Observable<T> repeat(final long count) {
         return OnSubscribeRedo.<T>repeat(this, count);
@@ -6685,7 +6660,6 @@ public class Observable<T> {
      *         {@code count} times on a particular Scheduler
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Creating-Observables#repeat">RxJava Wiki: repeat()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229428.aspx">MSDN: Observable.Repeat</a>
-     * @since 0.17
      */
     public final Observable<T> repeat(final long count, Scheduler scheduler) {
         return OnSubscribeRedo.<T>repeat(this, count, scheduler);
@@ -6712,7 +6686,6 @@ public class Observable<T> {
      * @return the source Observable modified with repeat logic
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Creating-Observables#repeatwhen">RxJava Wiki: repeatWhen()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229428.aspx">MSDN: Observable.Repeat</a>
-     * @since 0.20
      */
     public final Observable<T> repeatWhen(Func1<? super Observable<? extends Notification<?>>, ? extends Observable<?>> notificationHandler, Scheduler scheduler) {
         return OnSubscribeRedo.repeat(this, notificationHandler, scheduler);
@@ -6737,7 +6710,6 @@ public class Observable<T> {
      * @return the source Observable modified with repeat logic
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Creating-Observables#repeatwhen">RxJava Wiki: repeatWhen()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229428.aspx">MSDN: Observable.Repeat</a>
-     * @since 0.20
      */
     public final Observable<T> repeatWhen(Func1<? super Observable<? extends Notification<?>>, ? extends Observable<?>> notificationHandler) {
         return OnSubscribeRedo.repeat(this, notificationHandler);
@@ -7454,7 +7426,6 @@ public class Observable<T> {
      *            retry
      * @return the source Observable modified with retry logic
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Error-Handling-Operators#retrywhen">RxJava Wiki: retryWhen()</a>
-     * @since 0.20
      */
     public final Observable<T> retryWhen(Func1<? super Observable<? extends Notification<?>>, ? extends Observable<?>> notificationHandler) {
         return OnSubscribeRedo.<T> retry(this, notificationHandler);
@@ -7480,7 +7451,6 @@ public class Observable<T> {
      *            the {@link Scheduler} on which to subscribe to the source Observable
      * @return the source Observable modified with retry logic
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Error-Handling-Operators#retrywhen">RxJava Wiki: retryWhen()</a>
-     * @since 0.20
      */
     public final Observable<T> retryWhen(Func1<? super Observable<? extends Notification<?>>, ? extends Observable<?>> notificationHandler, Scheduler scheduler) {
         return OnSubscribeRedo.<T> retry(this, notificationHandler, scheduler);
@@ -7646,7 +7616,6 @@ public class Observable<T> {
      *         its observers
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Observable-Utility-Operators#serialize">RxJava wiki: serialize</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.synchronize.aspx">MSDN: Observable.Synchronize</a>
-     * @since 0.17
      */
     public final Observable<T> serialize() {
         return lift(new OperatorSerialize<T>());
@@ -7672,7 +7641,6 @@ public class Observable<T> {
      * @return an {@code Observable} that upon connection causes the source {@code Observable} to emit items
      *         to its {@link Observer}s
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Connectable-Observable-Operators#connectableobservablerefcount">RxJava wiki: refCount</a>
-     * @since 0.19
      */
     public final Observable<T> share() {
         return publish().refCount();
@@ -8573,7 +8541,6 @@ public class Observable<T> {
      *              the Subscriber that will handle emissions and notifications from the Observable
      * @return a {@link Subscription} reference with which the {@link Subscriber} can stop receiving items
      *         before the Observable has completed
-     * @since 0.17
      */
     public final Subscription unsafeSubscribe(Subscriber<? super T> subscriber) {
         try {
@@ -9678,7 +9645,6 @@ public class Observable<T> {
      *
      * @return a {@code BlockingObservable} version of this Observable
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Blocking-Observable-Operators">RxJava wiki: Blocking Observable Operators</a>
-     * @since 0.19
      */
     public final BlockingObservable<T> toBlocking() {
         return BlockingObservable.from(this);
@@ -9957,7 +9923,6 @@ public class Observable<T> {
      *            the {@link Scheduler} to perform unsubscription actions on
      * @return the source Observable modified so that its unsubscriptions happen on the specified
      *         {@link Scheduler}
-     * @since 0.17
      */
     public final Observable<T> unsubscribeOn(Scheduler scheduler) {
         return lift(new OperatorUnsubscribeOn<T>(scheduler));
@@ -10376,7 +10341,6 @@ public class Observable<T> {
      *         sequence and emits the results of {@code zipFunction} applied to these pairs
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Combining-Observables#zip">RxJava wiki: zip</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.zip.aspx">MSDN: Observable.Zip</a>
-     * @since 0.20
      */
     public final <T2, R> Observable<R> zipWith(Iterable<? extends T2> other, Func2<? super T, ? super T2, ? extends R> zipFunction) {
         return lift(new OperatorZipIterable<T, T2, R>(other, zipFunction));
@@ -10436,7 +10400,6 @@ public class Observable<T> {
      *         and emits the results of {@code zipFunction} applied to these pairs
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Combining-Observables#zip">RxJava wiki: zip</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.zip.aspx">MSDN: Observable.Zip</a>
-     * @since 0.20
      */
     public final <T2, R> Observable<R> zipWith(Observable<? extends T2> other, Func2<? super T, ? super T2, ? extends R> zipFunction) {
         return zip(this, other, zipFunction);
