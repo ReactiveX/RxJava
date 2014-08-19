@@ -23,7 +23,7 @@ package rx;
  * {@code Observable} will call an Observer's {@link #onCompleted} method exactly once or the Observer's
  * {@link #onError} method exactly once.
  * 
- * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable">RxJava Wiki: Observable</a>
+ * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Observable">RxJava Wiki: Observable</a>
  * @param <T>
  *          the type of item the Observer expects to observe
  */

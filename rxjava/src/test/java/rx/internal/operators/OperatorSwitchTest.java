@@ -362,7 +362,7 @@ public class OperatorSwitchTest {
 
     @Test
     public void testSwitchIssue737() {
-        // https://github.com/Netflix/RxJava/issues/737
+        // https://github.com/ReactiveX/RxJava/issues/737
         Observable<Observable<String>> source = Observable.create(new Observable.OnSubscribe<Observable<String>>() {
             @Override
             public void call(Subscriber<? super Observable<String>> observer) {

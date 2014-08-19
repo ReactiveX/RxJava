@@ -27,7 +27,7 @@ import rx.plugins.RxJavaPlugins;
  * This differs from {@link Observable#onErrorResumeNext} in that this one does not handle 
  * {@link java.lang.Throwable} or {@link java.lang.Error} but lets those continue through.
  * <p>
- * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/onErrorResumeNext.png" alt="">
+ * <img width="640" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/onErrorResumeNext.png" alt="">
  * <p>
  * By default, when an Observable encounters an error that prevents it from emitting the expected
  * item to its Observer, the Observable invokes its Observer's <code>onError</code> method, and

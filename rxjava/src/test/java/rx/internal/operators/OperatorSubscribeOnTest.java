@@ -43,7 +43,7 @@ public class OperatorSubscribeOnTest {
 
     @Test(timeout = 2000)
     public void testIssue813() throws InterruptedException {
-        // https://github.com/Netflix/RxJava/issues/813
+        // https://github.com/ReactiveX/RxJava/issues/813
         final CountDownLatch scheduled = new CountDownLatch(1);
         final CountDownLatch latch = new CountDownLatch(1);
         final CountDownLatch doneLatch = new CountDownLatch(1);

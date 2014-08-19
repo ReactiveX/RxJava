@@ -31,7 +31,7 @@ import rx.functions.Func1;
  * (Map&lt;K, Collection&lt;V>>) where each
  * key entry has a collection of the source's values.
  *
- * @see <a href='https://github.com/Netflix/RxJava/issues/97'>Issue #97</a>
+ * @see <a href='https://github.com/ReactiveX/RxJava/issues/97'>Issue #97</a>
  */
 public final class OperatorToMultimap<T, K, V> implements Operator<Map<K, Collection<V>>, T> {
     /**

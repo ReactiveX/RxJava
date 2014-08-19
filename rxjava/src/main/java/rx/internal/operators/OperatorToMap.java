@@ -28,7 +28,7 @@ import rx.functions.Func1;
  * Maps the elements of the source observable into a java.util.Map instance and
  * emits that once the source observable completes.
  * 
- * @see <a href='https://github.com/Netflix/RxJava/issues/96'>Issue #96</a>
+ * @see <a href='https://github.com/ReactiveX/RxJava/issues/96'>Issue #96</a>
  */
 public final class OperatorToMap<T, K, V> implements Operator<Map<K, V>, T> {
 

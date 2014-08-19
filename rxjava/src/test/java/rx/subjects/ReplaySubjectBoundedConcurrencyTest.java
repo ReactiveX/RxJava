@@ -303,7 +303,7 @@ public class ReplaySubjectBoundedConcurrencyTest {
     }
     
     /**
-     * https://github.com/Netflix/RxJava/issues/1147
+     * https://github.com/ReactiveX/RxJava/issues/1147
      */
     @Test
     public void testRaceForTerminalState() {

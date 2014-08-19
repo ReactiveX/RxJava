@@ -28,7 +28,7 @@ import rx.observers.SerializedSubscriber;
  * Returns an Observable that emits the results of sampling the items emitted by the source
  * Observable at a specified time interval.
  * <p>
- * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/sample.png" alt="">
+ * <img width="640" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/sample.png" alt="">
  * 
  * @param <T> the value type
  */

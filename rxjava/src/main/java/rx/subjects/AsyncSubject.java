@@ -24,7 +24,7 @@ import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
  * Subject that publishes only the last item observed to each {@link Observer} that has subscribed, when the
  * source {@code Observable} completes.
  * <p>
- * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/S.AsyncSubject.png" alt="">
+ * <img width="640" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/S.AsyncSubject.png" alt="">
  * <p>
  * Example usage:
  * <p>

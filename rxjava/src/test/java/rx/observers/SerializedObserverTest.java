@@ -344,7 +344,7 @@ public class SerializedObserverTest {
     /**
      * Demonstrates thread starvation problem.
      * 
-     * No solution on this for now. Trade-off in this direction as per https://github.com/Netflix/RxJava/issues/998#issuecomment-38959474
+     * No solution on this for now. Trade-off in this direction as per https://github.com/ReactiveX/RxJava/issues/998#issuecomment-38959474
      * Probably need backpressure for this to work
      * 
      * When using SynchronizedObserver we get this output:

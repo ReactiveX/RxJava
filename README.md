@@ -73,7 +73,7 @@ If you need to download the jars instead of using a build system, create a Maven
 	<artifactId>rxjava-download</artifactId>
 	<version>1.0-SNAPSHOT</version>
 	<name>Simple POM to download rxjava</name>
-	<url>http://github.com/Netflix/RxJava</url>
+	<url>http://github.com/ReactiveX/RxJava</url>
 	<dependencies>
 		<dependency>
 			<groupId>io.reactivex.rxjava</groupId>

@@ -48,7 +48,7 @@ import rx.subscriptions.Subscriptions;
 public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedulerTests {
 
     /**
-     * Bug report: https://github.com/Netflix/RxJava/issues/431
+     * Bug report: https://github.com/ReactiveX/RxJava/issues/431
      */
     @Test
     public final void testUnSubscribeForScheduler() throws InterruptedException {

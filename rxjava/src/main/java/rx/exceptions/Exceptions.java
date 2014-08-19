@@ -66,7 +66,7 @@ public class Exceptions {
      *
      * @param t
      *         the {@code Throwable} to test and perhaps throw
-     * @see <a href="https://github.com/Netflix/RxJava/issues/748#issuecomment-32471495">RxJava: StackOverflowError is swallowed (Issue #748)</a>
+     * @see <a href="https://github.com/ReactiveX/RxJava/issues/748#issuecomment-32471495">RxJava: StackOverflowError is swallowed (Issue #748)</a>
      */
     public static void throwIfFatal(Throwable t) {
         if (t instanceof OnErrorNotImplementedException) {
@@ -79,7 +79,7 @@ public class Exceptions {
                 throw (OnErrorFailedException) t;
             }
         }
-        // values here derived from https://github.com/Netflix/RxJava/issues/748#issuecomment-32471495
+        // values here derived from https://github.com/ReactiveX/RxJava/issues/748#issuecomment-32471495
         else if (t instanceof StackOverflowError) {
             throw (StackOverflowError) t;
         } else if (t instanceof VirtualMachineError) {

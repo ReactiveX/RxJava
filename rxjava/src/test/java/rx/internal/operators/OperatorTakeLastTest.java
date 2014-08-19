@@ -152,7 +152,7 @@ public class OperatorTakeLastTest {
 
     @Test
     public void testIssue1522() {
-        // https://github.com/Netflix/RxJava/issues/1522
+        // https://github.com/ReactiveX/RxJava/issues/1522
         assertEquals(0, Observable
                 .empty()
                 .count()

@@ -275,7 +275,7 @@ public class OperatorTimeoutTests {
 
     @Test
     public void shouldUnsubscribeFromUnderlyingSubscriptionOnTimeout() throws InterruptedException {
-        // From https://github.com/Netflix/RxJava/pull/951
+        // From https://github.com/ReactiveX/RxJava/pull/951
         final Subscription s = mock(Subscription.class);
 
         Observable<String> never = Observable.create(new OnSubscribe<String>() {
@@ -302,7 +302,7 @@ public class OperatorTimeoutTests {
 
     @Test
     public void shouldUnsubscribeFromUnderlyingSubscriptionOnImmediatelyComplete() {
-        // From https://github.com/Netflix/RxJava/pull/951
+        // From https://github.com/ReactiveX/RxJava/pull/951
         final Subscription s = mock(Subscription.class);
 
         Observable<String> immediatelyComplete = Observable.create(new OnSubscribe<String>() {
@@ -331,7 +331,7 @@ public class OperatorTimeoutTests {
 
     @Test
     public void shouldUnsubscribeFromUnderlyingSubscriptionOnImmediatelyErrored() throws InterruptedException {
-        // From https://github.com/Netflix/RxJava/pull/951
+        // From https://github.com/ReactiveX/RxJava/pull/951
         final Subscription s = mock(Subscription.class);
 
         Observable<String> immediatelyError = Observable.create(new OnSubscribe<String>() {

@@ -59,7 +59,7 @@ public class ReduceTests {
     /**
      * Reduce consumes and produces T so can't do covariance.
      * 
-     * https://github.com/Netflix/RxJava/issues/360#issuecomment-24203016
+     * https://github.com/ReactiveX/RxJava/issues/360#issuecomment-24203016
      */
     @SuppressWarnings("unused")
     @Test
@@ -79,7 +79,7 @@ public class ReduceTests {
     /**
      * Reduce consumes and produces T so can't do covariance.
      * 
-     * https://github.com/Netflix/RxJava/issues/360#issuecomment-24203016
+     * https://github.com/ReactiveX/RxJava/issues/360#issuecomment-24203016
      */
     @Test
     public void reduceCovariance() {

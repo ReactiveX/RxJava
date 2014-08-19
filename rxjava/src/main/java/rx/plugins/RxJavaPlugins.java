@@ -27,7 +27,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * <li>default implementation</li>
  * </ol>
  *
- * @see <a href="https://github.com/Netflix/RxJava/wiki/Plugins">RxJava Wiki: Plugins</a>
+ * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Plugins">RxJava Wiki: Plugins</a>
  */
 public class RxJavaPlugins {
     private final static RxJavaPlugins INSTANCE = new RxJavaPlugins();

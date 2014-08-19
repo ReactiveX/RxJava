@@ -278,7 +278,7 @@ public class OperatorSingleTest {
 
     @Test(timeout = 30000)
     public void testIssue1527() throws InterruptedException {
-        //https://github.com/Netflix/RxJava/pull/1527
+        //https://github.com/ReactiveX/RxJava/pull/1527
         Observable<Integer> source = Observable.just(1, 2, 3, 4, 5, 6);
         Observable<Integer> reduced = source.reduce(new Func2<Integer, Integer, Integer>() {
             @Override

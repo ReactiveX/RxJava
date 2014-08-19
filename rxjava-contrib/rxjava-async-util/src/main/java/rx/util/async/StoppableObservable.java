@@ -21,7 +21,7 @@ import rx.Subscription;
 /**
  * An Observable that provides a Subscription interface to signal a stop condition to an asynchronous task.
  *
- * @see <a href="https://github.com/Netflix/RxJava/wiki/Async-Operators#wiki-runasync">RxJava Wiki: runAsync()</a>
+ * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Async-Operators#wiki-runasync">RxJava Wiki: runAsync()</a>
  */
 public class StoppableObservable<T> extends Observable<T> implements Subscription {
     private final Subscription token;

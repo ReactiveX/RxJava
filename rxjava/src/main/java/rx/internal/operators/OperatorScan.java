@@ -26,7 +26,7 @@ import rx.functions.Func2;
  * so on until all items have been emitted by the source Observable, emitting the result of each of these
  * iterations.
  * <p>
- * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/scan.png" alt="">
+ * <img width="640" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/scan.png" alt="">
  * <p>
  * This sort of function is sometimes called an accumulator.
  * <p>

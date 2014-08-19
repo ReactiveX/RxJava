@@ -32,7 +32,7 @@ import rx.subscriptions.Subscriptions;
  * Groups the items emitted by an Observable according to a specified criterion, and emits these
  * grouped items as Observables, one Observable per group.
  * <p>
- * <img width="640" height="360" src="https://raw.githubusercontent.com/wiki/Netflix/RxJava/images/rx-operators/groupBy.png" alt="">
+ * <img width="640" height="360" src="https://raw.githubusercontent.com/wiki/ReactiveX/RxJava/images/rx-operators/groupBy.png" alt="">
  *
  * @param <K> the key type
  * @param <T> the source and group value type

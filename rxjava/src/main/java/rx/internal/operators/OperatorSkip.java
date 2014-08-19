@@ -23,7 +23,7 @@ import rx.Subscriber;
  * Returns an Observable that skips the first <code>num</code> items emitted by the source
  * Observable.
  * <p>
- * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/skip.png" alt="">
+ * <img width="640" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/skip.png" alt="">
  * <p>
  * You can ignore the first <code>num</code> items emitted by an Observable and attend only to
  * those items that come after, by modifying the Observable with the {@code skip} operator.

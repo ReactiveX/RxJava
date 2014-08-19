@@ -29,7 +29,7 @@ import rx.functions.Func2;
  * (each item emitted by the {@code Observable} must implement {@link Comparable} with respect to all other
  * items in the sequence, or you must pass in a sort function).
  * <p>
- * <img width="640" height="310" src="https://raw.githubusercontent.com/wiki/Netflix/RxJava/images/rx-operators/toSortedList.png" alt="">
+ * <img width="640" height="310" src="https://raw.githubusercontent.com/wiki/ReactiveX/RxJava/images/rx-operators/toSortedList.png" alt="">
  * 
  * @param <T>
  *          the type of the items emitted by the source and the resulting {@code Observable}s

@@ -120,7 +120,7 @@ public class OperatorDoOnEachTest {
 
     @Test
     public void testIssue1451Case1() {
-        // https://github.com/Netflix/RxJava/issues/1451
+        // https://github.com/ReactiveX/RxJava/issues/1451
         int[] nums = {1, 2, 3};
         final AtomicInteger count = new AtomicInteger();
         for (final int n : nums) {
@@ -146,7 +146,7 @@ public class OperatorDoOnEachTest {
 
     @Test
     public void testIssue1451Case2() {
-        // https://github.com/Netflix/RxJava/issues/1451
+        // https://github.com/ReactiveX/RxJava/issues/1451
         int[] nums = {1, 2, 3};
         final AtomicInteger count = new AtomicInteger();
         for (final int n : nums) {

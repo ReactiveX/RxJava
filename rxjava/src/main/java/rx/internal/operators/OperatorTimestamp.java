@@ -23,7 +23,7 @@ import rx.schedulers.Timestamped;
 /**
  * Wraps each item emitted by a source {@code Observable} in a {@link Timestamped} object.
  * <p>
- * <img width="640" height="310" src="https://raw.githubusercontent.com/wiki/Netflix/RxJava/images/rx-operators/timestamp.png" alt="">
+ * <img width="640" height="310" src="https://raw.githubusercontent.com/wiki/ReactiveX/RxJava/images/rx-operators/timestamp.png" alt="">
  */
 public final class OperatorTimestamp<T> implements Operator<Timestamped<T>, T> {
 

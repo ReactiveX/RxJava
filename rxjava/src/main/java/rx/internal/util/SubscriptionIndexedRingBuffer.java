@@ -58,7 +58,7 @@ public final class SubscriptionIndexedRingBuffer<T extends Subscription> impleme
      * @return int index that can be used to remove a Subscription
      */
     public synchronized int add(final T s) {
-        // TODO figure out how to remove synchronized here. See https://github.com/Netflix/RxJava/issues/1420
+        // TODO figure out how to remove synchronized here. See https://github.com/ReactiveX/RxJava/issues/1420
         if (unsubscribed == 1 || subscriptions == null) {
             s.unsubscribe();
             return -1;
@@ -124,7 +124,7 @@ public final class SubscriptionIndexedRingBuffer<T extends Subscription> impleme
      * @return int of last index seen if forEach exited early
      */
     public synchronized int forEach(Func1<T, Boolean> action, int startIndex) {
-        // TODO figure out how to remove synchronized here. See https://github.com/Netflix/RxJava/issues/1420
+        // TODO figure out how to remove synchronized here. See https://github.com/ReactiveX/RxJava/issues/1420
         if (unsubscribed == 1 || subscriptions == null) {
             return 0;
         }
