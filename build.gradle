@@ -142,6 +142,6 @@ subprojects {
     shadowJar.dependsOn perfJar
 }
 
-project(':rxjava-core') {
+project(':rxjava') {
     sourceSets.test.java.srcDir 'src/test/java'
 }

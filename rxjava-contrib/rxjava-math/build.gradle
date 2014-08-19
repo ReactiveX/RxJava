@@ -4,8 +4,8 @@ sourceCompatibility = JavaVersion.VERSION_1_6
 targetCompatibility = JavaVersion.VERSION_1_6
 
 dependencies {
-    compile project(':rxjava-core')
-    testCompile project(":rxjava-core").sourceSets.test.output 
+    compile project(':rxjava')
+    testCompile project(":rxjava").sourceSets.test.output 
     testCompile 'junit:junit-dep:4.10'
     testCompile 'org.mockito:mockito-core:1.8.5'
 }
