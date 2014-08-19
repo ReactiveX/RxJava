@@ -1110,7 +1110,9 @@ public class Observable<T> {
      *         {@code scheduler}
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#empty-error-and-never">RxJava wiki: empty</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229066.aspx">MSDN: Observable.Empty(IScheduler)</a>
+     * @deprecated Use subscribeOn to Schedule
      */
+    @Deprecated
     public final static <T> Observable<T> empty(Scheduler scheduler) {
         return Observable.<T> empty().subscribeOn(scheduler);
     }
@@ -1158,7 +1160,9 @@ public class Observable<T> {
      *         the specified Scheduler
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#empty-error-and-never">RxJava wiki: error</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211711.aspx">MSDN: Observable.Throw</a>
+     * @deprecated Use subscribeOn to Schedule
      */
+    @Deprecated
     public final static <T> Observable<T> error(Throwable exception, Scheduler scheduler) {
         return Observable.<T> error(exception).subscribeOn(scheduler);
     }
@@ -2112,7 +2116,9 @@ public class Observable<T> {
      *             if {@code maxConcurrent} is less than or equal to 0
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#merge">RxJava wiki: merge</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh244329.aspx">MSDN: Observable.Merge</a>
+     * @deprecated Use subscribeOn to Schedule
      */
+    @Deprecated
     public final static <T> Observable<T> merge(Iterable<? extends Observable<? extends T>> sequences, int maxConcurrent, Scheduler scheduler) {
         return merge(from(sequences, scheduler), maxConcurrent);
     }
@@ -2138,7 +2144,9 @@ public class Observable<T> {
      *         Observables in the Iterable
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#merge">RxJava wiki: merge</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh244336.aspx">MSDN: Observable.Merge</a>
+     * @deprecated Use subscribeOn to Schedule
      */
+    @Deprecated
     public final static <T> Observable<T> merge(Iterable<? extends Observable<? extends T>> sequences, Scheduler scheduler) {
         return merge(from(sequences, scheduler));
     }
@@ -2494,7 +2502,9 @@ public class Observable<T> {
      * @return an Observable that emits all of the items emitted by the Observables in the Array
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#merge">RxJava wiki: merge</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229061.aspx">MSDN: Observable.Merge</a>
+     * @deprecated Use subscribeOn to Schedule
      */
+    @Deprecated
     public final static <T> Observable<T> merge(Observable<? extends T>[] sequences, Scheduler scheduler) {
         return merge(from(sequences, scheduler));
     }
@@ -8040,7 +8050,9 @@ public class Observable<T> {
      *         emitted by the source Observable
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#startwith">RxJava wiki: startWith</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229372.aspx">MSDN: Observable.StartWith</a>
+     * @deprecated Use subscribeOn to Schedule
      */
+    @Deprecated
     public final Observable<T> startWith(Iterable<T> values, Scheduler scheduler) {
         return concat(from(values, scheduler), this);
     }
@@ -8324,7 +8336,9 @@ public class Observable<T> {
      *         emit items emitted by the source Observable.
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#startwith">RxJava wiki: startWith</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229372.aspx">MSDN: Observable.StartWith</a>
+     * @deprecated Use subscribeOn to Schedule
      */
+    @Deprecated
     public final Observable<T> startWith(T[] values, Scheduler scheduler) {
         return startWith(Arrays.asList(values), scheduler);
     }
