@@ -4,10 +4,12 @@ trait Subscriber[-T] extends Observer[T] with Subscription {
 
   self =>
 
-  private [scala] val asJavaSubscriber: rx.Subscriber[_ >: T] = new rx.Subscriber[T] {
-    def onNext(value: T): Unit = self.onNext(value)
-    def onError(error: Throwable): Unit = self.onError(error)
-    def onCompleted(): Unit = self.onCompleted()
+  private [scala] val asJavaSubscriber: rx.Subscriber[_ >: T] = new rx.Subscriber[T] with SubscriberAdapter[T] {
+    override def onStart(): Unit = self.onStart()
+    override def onNext(value: T): Unit = self.onNext(value)
+    override def onError(error: Throwable): Unit = self.onError(error)
+    override def onCompleted(): Unit = self.onCompleted()
+    override def requestMore(n: Long): Unit = request(n)
   }
 
   private [scala] override val asJavaObserver: rx.Observer[_ >: T] = asJavaSubscriber
@@ -37,6 +39,24 @@ trait Subscriber[-T] extends Observer[T] with Subscription {
     asJavaSubscriber.isUnsubscribed()
   }
 
+  def onStart(): Unit = {
+    asJavaSubscriber.onStart()
+  }
+
+  protected final def request(n: Long): Unit = {
+    asJavaSubscriber match {
+      case s: SubscriberAdapter[T] => s.requestMore(n)
+      case _ => throw new rx.exceptions.MissingBackpressureException()
+    }
+  }
+
+  def setProducer(producer: Producer): Unit = {
+    asJavaSubscriber.setProducer(producer.asJavaProducer)
+  }
+
+  def setProducer(producer: Long => Unit): Unit = {
+    asJavaSubscriber.setProducer(Producer(producer).asJavaProducer)
+  }
 }
 
 object Subscriber extends ObserverFactoryMethods[Subscriber] {
@@ -70,4 +90,9 @@ object Subscriber extends ObserverFactoryMethods[Subscriber] {
       override def onCompleted(): Unit = c()
     })
   }
+}
+
+sealed trait SubscriberAdapter[T] extends rx.Subscriber[T] {
+  // Add a method to expose the protected `request` method
+  def requestMore(n: Long): Unit
 }
