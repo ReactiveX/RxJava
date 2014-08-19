@@ -25,7 +25,7 @@ import rx.functions.Func2;
 /**
  * Test super/extends of generics.
  * 
- * See https://github.com/Netflix/RxJava/pull/331
+ * See https://github.com/ReactiveX/RxJava/pull/331
  */
 public class CovarianceTest {
 

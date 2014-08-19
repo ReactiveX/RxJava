@@ -24,7 +24,7 @@ import rx.plugins.RxJavaPlugins;
  * Instruct an Observable to pass control to another Observable rather than invoking
  * <code>onError</code> if it encounters an error.
  * <p>
- * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/onErrorResumeNext.png" alt="">
+ * <img width="640" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/onErrorResumeNext.png" alt="">
  * <p>
  * By default, when an Observable encounters an error that prevents it from emitting the expected item to its
  * Observer, the Observable invokes its Observer's {@code onError} method, and then quits without invoking any

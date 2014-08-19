@@ -26,7 +26,7 @@ import rx.functions.Action0;
 /**
  * Subscribes Observers on the specified {@code Scheduler}.
  * <p>
- * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/subscribeOn.png" alt="">
+ * <img width="640" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/subscribeOn.png" alt="">
  */
 public class OperatorSubscribeOn<T> implements Operator<T, Observable<T>> {
 

@@ -26,7 +26,7 @@ import rx.subscriptions.Subscriptions;
 /**
  * Converts a {@code Future} into an {@code Observable}.
  * <p>
- * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/from.Future.png" alt="">
+ * <img width="640" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/from.Future.png" alt="">
  * <p>
  * You can convert any object that supports the {@code Future} interface into an {@code Observable} that emits
  * the return value of the {@code get} method of that object, by using this operator.

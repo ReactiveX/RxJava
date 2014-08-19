@@ -24,7 +24,7 @@ jar {
     manifest {
         name = 'rxjava-math'
         instruction 'Bundle-Vendor', 'Netflix'
-        instruction 'Bundle-DocURL', 'https://github.com/Netflix/RxJava'
+        instruction 'Bundle-DocURL', 'https://github.com/ReactiveX/RxJava'
         instruction 'Import-Package', '!org.junit,!junit.framework,!org.mockito.*,*'
         instruction 'Fragment-Host', 'com.netflix.rxjava.core'
     }

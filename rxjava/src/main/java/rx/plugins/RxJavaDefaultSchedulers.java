@@ -21,7 +21,7 @@ import rx.Scheduler;
  * Define alternate Scheduler implementations to be returned by the {@code Schedulers} factory methods.
  * <p>
  * See {@link RxJavaPlugins} or the RxJava GitHub Wiki for information on configuring plugins:
- * <a href="https://github.com/Netflix/RxJava/wiki/Plugins">https://github.com/Netflix/RxJava/wiki/Plugins</a>.
+ * <a href="https://github.com/ReactiveX/RxJava/wiki/Plugins">https://github.com/ReactiveX/RxJava/wiki/Plugins</a>.
  */
 @Deprecated
 public abstract class RxJavaDefaultSchedulers {

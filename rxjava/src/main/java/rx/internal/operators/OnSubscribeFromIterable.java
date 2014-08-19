@@ -25,7 +25,7 @@ import rx.Subscriber;
 /**
  * Converts an {@code Iterable} sequence into an {@code Observable}.
  * <p>
- * <img width="640" height="310" src="https://raw.githubusercontent.com/wiki/Netflix/RxJava/images/rx-operators/toObservable.png" alt="" />
+ * <img width="640" height="310" src="https://raw.githubusercontent.com/wiki/ReactiveX/RxJava/images/rx-operators/toObservable.png" alt="" />
  * <p>
  * You can convert any object that supports the Iterable interface into an Observable that emits each item in
  * the object, with the {@code toObservable} operation.

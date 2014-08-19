@@ -60,7 +60,7 @@ public final class OperatorSingle<T> implements Operator<T, T> {
                 } else {
                     this.value = value;
                     isNonEmpty = true;
-                    // Issue: https://github.com/Netflix/RxJava/pull/1527
+                    // Issue: https://github.com/ReactiveX/RxJava/pull/1527
                     // Because we cache a value and don't emit now, we need to request another one.
                     request(1);
                 }

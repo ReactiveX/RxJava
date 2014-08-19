@@ -31,14 +31,14 @@ public final class JoinObservable<T> {
     /**
      * Returns a Pattern that matches when both Observables emit an item.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/and_then_when.png" alt="">
+     * <img width="640" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/and_then_when.png" alt="">
      * 
      * @param right
      *            an Observable to match with the source Observable
      * @return a Pattern object that matches when both Observables emit an item
      * @throws NullPointerException
      *             if {@code right} is null
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#wiki-and-then-and-when">RxJava Wiki: and()</a>
+     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Combining-Observables#wiki-and-then-and-when">RxJava Wiki: and()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229153.aspx">MSDN: Observable.And</a>
      */
     public final <T2> Pattern2<T, T2> and(Observable<T2> right) {
@@ -48,14 +48,14 @@ public final class JoinObservable<T> {
     /**
      * Joins together the results from several patterns via their plans.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/and_then_when.png" alt="">
+     * <img width="640" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/and_then_when.png" alt="">
      * 
      * @param plans
      *            a series of plans created by use of the {@link #then} Observer on patterns
      * @return an Observable that emits the results from matching several patterns
      * @throws NullPointerException
      *             if {@code plans} is null
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#wiki-and-then-and-when">RxJava Wiki: when()</a>
+     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Combining-Observables#wiki-and-then-and-when">RxJava Wiki: when()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229558.aspx">MSDN: Observable.When</a>
      */
     public final static <R> JoinObservable<R> when(Iterable<? extends Plan0<R>> plans) {
@@ -68,14 +68,14 @@ public final class JoinObservable<T> {
     /**
      * Joins together the results from several patterns via their plans.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/and_then_when.png" alt="">
+     * <img width="640" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/and_then_when.png" alt="">
      * 
      * @param plans
      *            a series of plans created by use of the {@link #then} Observer on patterns
      * @return an Observable that emits the results from matching several patterns
      * @throws NullPointerException
      *             if {@code plans} is null
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#wiki-and-then-and-when">RxJava Wiki: when()</a>
+     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Combining-Observables#wiki-and-then-and-when">RxJava Wiki: when()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229889.aspx">MSDN: Observable.When</a>
      */
     public final static <R> JoinObservable<R> when(Plan0<R>... plans) {
@@ -85,12 +85,12 @@ public final class JoinObservable<T> {
     /**
      * Joins the results from a pattern via its plan.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/and_then_when.png" alt="">
+     * <img width="640" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/and_then_when.png" alt="">
      * 
      * @param p1
      *            the plan to join, created by use of the {@link #then} Observer on a pattern
      * @return an Observable that emits the results from matching a pattern
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#wiki-and-then-and-when">RxJava Wiki: when()</a>
+     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Combining-Observables#wiki-and-then-and-when">RxJava Wiki: when()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229889.aspx">MSDN: Observable.When</a>
      */
     @SuppressWarnings("unchecked")
@@ -101,14 +101,14 @@ public final class JoinObservable<T> {
     /**
      * Joins together the results from two patterns via their plans.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/and_then_when.png" alt="">
+     * <img width="640" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/and_then_when.png" alt="">
      * 
      * @param p1
      *            a plan, created by use of the {@link #then} Observer on a pattern
      * @param p2
      *            a plan, created by use of the {@link #then} Observer on a pattern
      * @return an Observable that emits the results from matching two patterns
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#wiki-and-then-and-when">RxJava Wiki: when()</a>
+     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Combining-Observables#wiki-and-then-and-when">RxJava Wiki: when()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229889.aspx">MSDN: Observable.When</a>
      */
     @SuppressWarnings("unchecked")
@@ -119,7 +119,7 @@ public final class JoinObservable<T> {
     /**
      * Joins together the results from three patterns via their plans.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/and_then_when.png" alt="">
+     * <img width="640" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/and_then_when.png" alt="">
      * 
      * @param p1
      *            a plan, created by use of the {@link #then} Observer on a pattern
@@ -128,7 +128,7 @@ public final class JoinObservable<T> {
      * @param p3
      *            a plan, created by use of the {@link #then} Observer on a pattern
      * @return an Observable that emits the results from matching three patterns
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#wiki-and-then-and-when">RxJava Wiki: when()</a>
+     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Combining-Observables#wiki-and-then-and-when">RxJava Wiki: when()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229889.aspx">MSDN: Observable.When</a>
      */
     @SuppressWarnings("unchecked")
@@ -139,7 +139,7 @@ public final class JoinObservable<T> {
     /**
      * Joins together the results from four patterns via their plans.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/and_then_when.png" alt="">
+     * <img width="640" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/and_then_when.png" alt="">
      * 
      * @param p1
      *            a plan, created by use of the {@link #then} Observer on a pattern
@@ -150,7 +150,7 @@ public final class JoinObservable<T> {
      * @param p4
      *            a plan, created by use of the {@link #then} Observer on a pattern
      * @return an Observable that emits the results from matching four patterns
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#wiki-and-then-and-when">RxJava Wiki: when()</a>
+     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Combining-Observables#wiki-and-then-and-when">RxJava Wiki: when()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229889.aspx">MSDN: Observable.When</a>
      */
     @SuppressWarnings("unchecked")
@@ -161,7 +161,7 @@ public final class JoinObservable<T> {
     /**
      * Joins together the results from five patterns via their plans.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/and_then_when.png" alt="">
+     * <img width="640" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/and_then_when.png" alt="">
      * 
      * @param p1
      *            a plan, created by use of the {@link #then} Observer on a pattern
@@ -174,7 +174,7 @@ public final class JoinObservable<T> {
      * @param p5
      *            a plan, created by use of the {@link #then} Observer on a pattern
      * @return an Observable that emits the results from matching five patterns
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#wiki-and-then-and-when">RxJava Wiki: when()</a>
+     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Combining-Observables#wiki-and-then-and-when">RxJava Wiki: when()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229889.aspx">MSDN: Observable.When</a>
      */
     @SuppressWarnings("unchecked")
@@ -185,7 +185,7 @@ public final class JoinObservable<T> {
     /**
      * Joins together the results from six patterns via their plans.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/and_then_when.png" alt="">
+     * <img width="640" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/and_then_when.png" alt="">
      * 
      * @param p1
      *            a plan, created by use of the {@link #then} Observer on a pattern
@@ -200,7 +200,7 @@ public final class JoinObservable<T> {
      * @param p6
      *            a plan, created by use of the {@link #then} Observer on a pattern
      * @return an Observable that emits the results from matching six patterns
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#wiki-and-then-and-when">RxJava Wiki: when()</a>
+     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Combining-Observables#wiki-and-then-and-when">RxJava Wiki: when()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229889.aspx">MSDN: Observable.When</a>
      */
     @SuppressWarnings("unchecked")
@@ -211,7 +211,7 @@ public final class JoinObservable<T> {
     /**
      * Joins together the results from seven patterns via their plans.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/and_then_when.png" alt="">
+     * <img width="640" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/and_then_when.png" alt="">
      * 
      * @param p1
      *            a plan, created by use of the {@link #then} Observer on a pattern
@@ -228,7 +228,7 @@ public final class JoinObservable<T> {
      * @param p7
      *            a plan, created by use of the {@link #then} Observer on a pattern
      * @return an Observable that emits the results from matching seven patterns
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#wiki-and-then-and-when">RxJava Wiki: when()</a>
+     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Combining-Observables#wiki-and-then-and-when">RxJava Wiki: when()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229889.aspx">MSDN: Observable.When</a>
      */
     @SuppressWarnings("unchecked")
@@ -239,7 +239,7 @@ public final class JoinObservable<T> {
     /**
      * Joins together the results from eight patterns via their plans.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/and_then_when.png" alt="">
+     * <img width="640" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/and_then_when.png" alt="">
      * 
      * @param p1
      *            a plan, created by use of the {@link #then} Observer on a pattern
@@ -258,7 +258,7 @@ public final class JoinObservable<T> {
      * @param p8
      *            a plan, created by use of the {@link #then} Observer on a pattern
      * @return an Observable that emits the results from matching eight patterns
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#wiki-and-then-and-when">RxJava Wiki: when()</a>
+     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Combining-Observables#wiki-and-then-and-when">RxJava Wiki: when()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229889.aspx">MSDN: Observable.When</a>
      */
     @SuppressWarnings("unchecked")
@@ -269,7 +269,7 @@ public final class JoinObservable<T> {
     /**
      * Joins together the results from nine patterns via their plans.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/and_then_when.png" alt="">
+     * <img width="640" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/and_then_when.png" alt="">
      * 
      * @param p1
      *            a plan, created by use of the {@link #then} Observer on a pattern
@@ -290,7 +290,7 @@ public final class JoinObservable<T> {
      * @param p9
      *            a plan, created by use of the {@link #then} Observer on a pattern
      * @return an Observable that emits the results from matching nine patterns
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#wiki-and-then-and-when">RxJava Wiki: when()</a>
+     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Combining-Observables#wiki-and-then-and-when">RxJava Wiki: when()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229889.aspx">MSDN: Observable.When</a>
      */
     @SuppressWarnings("unchecked")
@@ -302,14 +302,14 @@ public final class JoinObservable<T> {
      * Matches when the Observable has an available item and projects the item by invoking the selector
      * function.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/and_then_when.png" alt="">
+     * <img width="640" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/and_then_when.png" alt="">
      * 
      * @param selector
      *            selector that will be invoked for items emitted by the source Observable
      * @return a {@link Plan0} that produces the projected results, to be fed (with other Plans) to the {@link #when} Observer
      * @throws NullPointerException
      *             if {@code selector} is null
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#wiki-and-then-and-when">RxJava Wiki: then()</a>
+     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Combining-Observables#wiki-and-then-and-when">RxJava Wiki: then()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211662.aspx">MSDN: Observable.Then</a>
      */
     public final <R> Plan0<R> then(Func1<T, R> selector) {

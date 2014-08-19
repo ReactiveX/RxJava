@@ -116,7 +116,7 @@ public class SafeSubscriber<T> extends Subscriber<T> {
     /**
      * The logic for {@code onError} without the {@code isFinished} check so it can be called from within {@code onCompleted}.
      * 
-     * @see <a href="https://github.com/Netflix/RxJava/issues/630">the report of this bug</a>
+     * @see <a href="https://github.com/ReactiveX/RxJava/issues/630">the report of this bug</a>
      */
     protected void _onError(Throwable e) {
         try {
@@ -131,7 +131,7 @@ public class SafeSubscriber<T> extends Subscriber<T> {
                 /*
                  * onError isn't implemented so throw
                  * 
-                 * https://github.com/Netflix/RxJava/issues/198
+                 * https://github.com/ReactiveX/RxJava/issues/198
                  * 
                  * Rx Design Guidelines 5.2
                  * 
@@ -154,7 +154,7 @@ public class SafeSubscriber<T> extends Subscriber<T> {
                 /*
                  * throw since the Rx contract is broken if onError failed
                  * 
-                 * https://github.com/Netflix/RxJava/issues/198
+                 * https://github.com/ReactiveX/RxJava/issues/198
                  */
                 try {
                     RxJavaPlugins.getInstance().getErrorHandler().handleError(e2);

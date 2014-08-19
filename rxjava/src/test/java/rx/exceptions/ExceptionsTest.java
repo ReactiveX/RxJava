@@ -138,7 +138,7 @@ public class ExceptionsTest {
     }
 
     /**
-     * https://github.com/Netflix/RxJava/issues/969
+     * https://github.com/ReactiveX/RxJava/issues/969
      */
     @Test
     public void testOnErrorExceptionIsThrown() {

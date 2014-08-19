@@ -31,7 +31,7 @@ public final class Statement {
      * Return a particular one of several possible Observables based on a case
      * selector.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/switchCase.png" alt="">
+     * <img width="640" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchCase.png" alt="">
      * 
      * @param <K>
      *            the case key type
@@ -55,7 +55,7 @@ public final class Statement {
      * Return a particular one of several possible Observables based on a case
      * selector and run it on the designated scheduler.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/switchCase.s.png" alt="">
+     * <img width="640" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchCase.s.png" alt="">
      * 
      * @param <K>
      *            the case key type
@@ -82,7 +82,7 @@ public final class Statement {
      * selector, or a default Observable if the case selector does not map to
      * a particular one.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/switchCase.png" alt="">
+     * <img width="640" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/switchCase.png" alt="">
      * 
      * @param <K>
      *            the case key type
@@ -109,7 +109,7 @@ public final class Statement {
      * Observable, and then continues to replay them so long as a condtion is
      * true.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/doWhile.png" alt="">
+     * <img width="640" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/doWhile.png" alt="">
      * 
      * @param postCondition
      *            the post condition to test after the source
@@ -126,7 +126,7 @@ public final class Statement {
      * Return an Observable that replays the emissions from the source
      * Observable so long as a condtion is true.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/whileDo.png" alt="">
+     * <img width="640" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/whileDo.png" alt="">
      * 
      * @param preCondition
      *            the condition to evaluate before subscribing to or
@@ -142,7 +142,7 @@ public final class Statement {
      * Return an Observable that emits the emissions from a specified Observable
      * if a condition evaluates to true, otherwise return an empty Observable.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/ifThen.png" alt="">
+     * <img width="640" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/ifThen.png" alt="">
      * 
      * @param <R>
      *            the result value type
@@ -163,7 +163,7 @@ public final class Statement {
      * if a condition evaluates to true, otherwise return an empty Observable
      * that runs on a specified Scheduler.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/ifThen.s.png" alt="">
+     * <img width="640" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/ifThen.s.png" alt="">
      * 
      * @param <R>
      *            the result value type
@@ -187,7 +187,7 @@ public final class Statement {
      * Observable if a condition evaluates to true, or from another specified
      * Observable otherwise.
      * <p>
-     * <img width="640" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/ifThen.e.png" alt="">
+     * <img width="640" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/ifThen.e.png" alt="">
      * 
      * @param <R>
      *            the result value type

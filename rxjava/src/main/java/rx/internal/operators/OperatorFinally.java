@@ -22,7 +22,7 @@ import rx.functions.Action0;
 /**
  * Registers an action to be called after an Observable invokes {@code onComplete} or {@code onError}.
  * <p>
- * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/finallyDo.png" alt="">
+ * <img width="640" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/finallyDo.png" alt="">
  * <p>
  * See also the <a href="http://msdn.microsoft.com/en-us/library/hh212133.aspx">MSDN Observable.Finally
  * method</a>

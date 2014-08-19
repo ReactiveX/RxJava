@@ -24,7 +24,7 @@ import rx.Subscriber;
 /**
  * Returns an Observable that emits the last <code>count</code> items emitted by the source Observable.
  * <p>
- * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/last.png" alt="">
+ * <img width="640" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/last.png" alt="">
  */
 public final class OperatorTakeLast<T> implements Operator<T, T> {
 

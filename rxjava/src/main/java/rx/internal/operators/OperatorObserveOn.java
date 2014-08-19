@@ -33,7 +33,7 @@ import rx.schedulers.TrampolineScheduler;
 /**
  * Delivers events on the specified {@code Scheduler} asynchronously via an unbounded buffer.
  * 
- * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/observeOn.png" alt="">
+ * <img width="640" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/observeOn.png" alt="">
  * 
  * @param <T>
  *            the transmitted value type

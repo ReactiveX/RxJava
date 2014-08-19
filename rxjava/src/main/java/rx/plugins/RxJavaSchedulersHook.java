@@ -31,7 +31,7 @@ import rx.functions.Action0;
  * Also, when redefining Schedulers, you are free to use/not use the onSchedule decoration hook.
  * <p>
  * See {@link RxJavaPlugins} or the RxJava GitHub Wiki for information on configuring plugins:
- * <a href="https://github.com/Netflix/RxJava/wiki/Plugins">https://github.com/Netflix/RxJava/wiki/Plugins</a>.
+ * <a href="https://github.com/ReactiveX/RxJava/wiki/Plugins">https://github.com/ReactiveX/RxJava/wiki/Plugins</a>.
  */
 public class RxJavaSchedulersHook {
 

@@ -24,7 +24,7 @@ import rx.functions.Func0;
  * Do not create the Observable until an Observer subscribes; create a fresh Observable on each
  * subscription.
  * <p>
- * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/defer.png" alt="">
+ * <img width="640" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/defer.png" alt="">
  * <p>
  * Pass defer an Observable factory function (a function that generates Observables), and defer will
  * return an Observable that will call this function to generate its Observable sequence afresh

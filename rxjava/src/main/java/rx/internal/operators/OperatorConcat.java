@@ -31,7 +31,7 @@ import rx.subscriptions.Subscriptions;
 /**
  * Returns an Observable that emits the items emitted by two or more Observables, one after the other.
  * <p>
- * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/concat.png" alt="">
+ * <img width="640" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/concat.png" alt="">
  *
  * @param <T>
  *            the source and result value type

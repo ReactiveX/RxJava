@@ -27,7 +27,7 @@ import java.util.List;
  * Returns an {@code Observable} that emits a single item, a list composed of all the items emitted by the
  * source {@code Observable}.
  * <p>
- * <img width="640" height="305" src="https://raw.githubusercontent.com/wiki/Netflix/RxJava/images/rx-operators/toList.png" alt="">
+ * <img width="640" height="305" src="https://raw.githubusercontent.com/wiki/ReactiveX/RxJava/images/rx-operators/toList.png" alt="">
  * <p>
  * Normally, an {@code Observable} that returns multiple items will do so by invoking its subscriber's
  * {@link Subscriber#onNext onNext} method for each such item. You can change this behavior, instructing the

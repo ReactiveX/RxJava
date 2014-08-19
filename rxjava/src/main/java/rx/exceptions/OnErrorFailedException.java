@@ -20,7 +20,7 @@ import rx.Subscriber;
 /**
  * Used to re-throw errors thrown from {@link Subscriber#onError(Throwable)}.
  * <p>
- * @see <a href="https://github.com/Netflix/RxJava/issues/969">RxJava issue #969</a>
+ * @see <a href="https://github.com/ReactiveX/RxJava/issues/969">RxJava issue #969</a>
  */
 public class OnErrorFailedException extends RuntimeException {
     private static final long serialVersionUID = -419289748403337611L;

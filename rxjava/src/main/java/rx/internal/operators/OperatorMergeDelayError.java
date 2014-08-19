@@ -20,7 +20,7 @@ package rx.internal.operators;
  * an error via {@code onError}, {@code mergeDelayError} will refrain from propagating that error
  * notification until all of the merged Observables have finished emitting items.
  * <p>
- * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/mergeDelayError.png" alt="">
+ * <img width="640" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/mergeDelayError.png" alt="">
  * <p>
  * Even if multiple merged Observables send {@code onError} notifications, {@code mergeDelayError} will
  * only invoke the {@code onError} method of its Observers once.

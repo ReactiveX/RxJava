@@ -33,7 +33,7 @@ public final class ScalarSynchronousObservable<T> extends Observable<T> {
             public void call(Subscriber<? super T> s) {
                 /*
                  *  We don't check isUnsubscribed as it is a significant performance impact in the fast-path use cases.
-                 *  See PerfBaseline tests and https://github.com/Netflix/RxJava/issues/1383 for more information.
+                 *  See PerfBaseline tests and https://github.com/ReactiveX/RxJava/issues/1383 for more information.
                  *  The assumption here is that when asking for a single item we should emit it and not concern ourselves with 
                  *  being unsubscribed already. If the Subscriber unsubscribes at 0, they shouldn't have subscribed, or it will 
                  *  filter it out (such as take(0)). This prevents us from paying the price on every subscription. 

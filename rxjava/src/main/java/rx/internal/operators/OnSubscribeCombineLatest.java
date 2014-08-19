@@ -35,7 +35,7 @@ import rx.internal.util.RxRingBuffer;
  * the source Observables emits an item, by combining the latest emissions from each source
  * Observable with a specified function.
  * <p>
- * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/combineLatest.png" alt="">
+ * <img width="640" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/combineLatest.png" alt="">
  * 
  * @param <T>
  *            the common basetype of the source values

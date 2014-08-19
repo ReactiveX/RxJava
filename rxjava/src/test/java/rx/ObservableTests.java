@@ -271,7 +271,7 @@ public class ObservableTests {
     /**
      * A reduce on an empty Observable and a seed should just pass the seed through.
      * 
-     * This is confirmed at https://github.com/Netflix/RxJava/issues/423#issuecomment-27642456
+     * This is confirmed at https://github.com/ReactiveX/RxJava/issues/423#issuecomment-27642456
      */
     @Test
     public void testReduceWithEmptyObservableAndSeed() {
@@ -745,7 +745,7 @@ public class ObservableTests {
     }
 
     /**
-     * https://github.com/Netflix/RxJava/issues/198
+     * https://github.com/ReactiveX/RxJava/issues/198
      * 
      * Rx Design Guidelines 5.2
      * 
@@ -771,7 +771,7 @@ public class ObservableTests {
     }
 
     /**
-     * https://github.com/Netflix/RxJava/issues/198
+     * https://github.com/ReactiveX/RxJava/issues/198
      * 
      * Rx Design Guidelines 5.2
      * 

@@ -45,7 +45,7 @@ import rx.subscriptions.Subscriptions;
  * This is an initial start at solving this problem and solves the immediate problem of {@code groupBy} and
  * {@code pivot} and trades off the possibility of memory leak for deterministic functionality.
  *
- * @see <a href="https://github.com/Netflix/RxJava/issues/844">the Github issue describing the time gap problem</a>
+ * @see <a href="https://github.com/ReactiveX/RxJava/issues/844">the Github issue describing the time gap problem</a>
  * @param <T>
  *            the type of the items to be buffered
  */

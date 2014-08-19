@@ -441,7 +441,7 @@ public class OperatorRetryTest {
             @Override
             public void call(Subscriber<? super String> s) {
                 // if isUnsubscribed is true that means we have a bug such as
-                // https://github.com/Netflix/RxJava/issues/1024
+                // https://github.com/ReactiveX/RxJava/issues/1024
                 if (!s.isUnsubscribed()) {
                     subsCount.incrementAndGet();
                     s.onError(new RuntimeException("failed"));

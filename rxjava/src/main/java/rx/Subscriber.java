@@ -27,7 +27,7 @@ import rx.subscriptions.CompositeSubscription;
  * {@link Observable} will call a Subscriber's {@link #onCompleted} method exactly once or the Subscriber's
  * {@link #onError} method exactly once.
  * 
- * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable">RxJava Wiki: Observable</a>
+ * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Observable">RxJava Wiki: Observable</a>
  * @param <T>
  *          the type of items the Subscriber expects to observe
  */

@@ -26,7 +26,7 @@ import rx.Subscriber;
  * {@link Subscriber#onError(Throwable)} is ignored or not provided when an {@link Observable} is subscribed to.
  * <p>
  * See {@link RxJavaPlugins} or the RxJava GitHub Wiki for information on configuring plugins: <a
- * href="https://github.com/Netflix/RxJava/wiki/Plugins">https://github.com/Netflix/RxJava/wiki/Plugins</a>.
+ * href="https://github.com/ReactiveX/RxJava/wiki/Plugins">https://github.com/ReactiveX/RxJava/wiki/Plugins</a>.
  */
 public abstract class RxJavaErrorHandler {
 

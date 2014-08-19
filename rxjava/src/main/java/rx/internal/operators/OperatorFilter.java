@@ -23,7 +23,7 @@ import rx.functions.Func1;
 /**
  * Filters an Observable by discarding any items it emits that do not meet some test.
  * <p>
- * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/filter.png" alt="">
+ * <img width="640" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/filter.png" alt="">
  */
 public final class OperatorFilter<T> implements Operator<T, T> {
 

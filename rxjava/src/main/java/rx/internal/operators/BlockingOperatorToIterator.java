@@ -29,10 +29,10 @@ import rx.exceptions.Exceptions;
 /**
  * Returns an Iterator that iterates over all items emitted by a specified Observable.
  * <p>
- * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/B.toIterator.png" alt="">
+ * <img width="640" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.toIterator.png" alt="">
  * <p>
  * 
- * @see <a href="https://github.com/Netflix/RxJava/issues/50">Issue #50</a>
+ * @see <a href="https://github.com/ReactiveX/RxJava/issues/50">Issue #50</a>
  */
 public class BlockingOperatorToIterator {
 
