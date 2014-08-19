@@ -19,7 +19,7 @@ import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Observable.Operator;
 import rx.Subscriber;
-import rx.Subscription;
+import rx.functions.Action1;
 import rx.functions.Func0;
 import rx.functions.Func1;
 import rx.functions.Func2;
@@ -38,7 +38,6 @@ import java.nio.charset.CoderResult;
 import java.nio.charset.CodingErrorAction;
 import java.util.Arrays;
 import java.util.concurrent.Callable;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
 
 public class StringObservable {
@@ -56,34 +55,9 @@ public class StringObservable {
         return from(i, 8 * 1024);
     }
     
-    private static class CloseableResource<S extends Closeable> implements Subscription {
-        private final AtomicBoolean unsubscribed = new AtomicBoolean();
-        private S closable;
-
-        public CloseableResource(S closeable) {
-            this.closable = closeable;
-        }
-
-        @Override
-        public void unsubscribe() {
-            if (unsubscribed.compareAndSet(false, true)) {
-                try {
-                    closable.close();
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        }
-
-        @Override
-        public boolean isUnsubscribed() {
-            return unsubscribed.get();
-        }
-    }
-    
     /**
      * Func0 that allows throwing an {@link IOException}s commonly thrown during IO operations.
-     * @see StringObservable#from(UnsafeFunc0, UnsafeFunc1)
+     * @see StringObservable#using(UnsafeFunc0, Func1)
      *
      * @param <R>
      */
@@ -103,22 +77,27 @@ public class StringObservable {
      * @param observableFactory
      *            Converts the {@link Closeable} resource into a {@link Observable} with {@link #from(InputStream)} or {@link #from(Reader)}
      * @return
+     *            An {@link Observable} that automatically closes the resource when done.
      */
     public static <R, S extends Closeable> Observable<R> using(final UnsafeFunc0<S> resourceFactory,
             final Func1<S, Observable<R>> observableFactory) {
-        return Observable.using(new Func0<CloseableResource<S>>() {
+        return Observable.using(new Func0<S>() {
             @Override
-            public CloseableResource<S> call() {
+            public S call() {
                 try {
-                    return new CloseableResource<S>(resourceFactory.call());
+                    return resourceFactory.call();
                 } catch (Throwable e) {
                     throw new RuntimeException(e);
                 }
             }
-        }, new Func1<CloseableResource<S>, Observable<R>>() {
+        }, observableFactory, new Action1<S>() {
             @Override
-            public Observable<R> call(CloseableResource<S> t1) {
-                return observableFactory.call(t1.closable);
+            public void call(S resource) {
+                try {
+                    resource.close();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
         });
     }
@@ -403,7 +382,7 @@ public class StringObservable {
     /**
      * Maps {@link Observable}&lt;{@link Object}&gt; to {@link Observable}&lt;{@link String}&gt; by using {@link String#valueOf(Object)} 
      * @param src
-     * @return
+     * @return An {@link Observable} of only {@link String}s.
      */
     public static Observable<String> toString(Observable<?> src) {
         return src.map(new Func1<Object, String>() {
