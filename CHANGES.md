@@ -1,5 +1,271 @@
 # RxJava Releases #
 
+### Version 0.20.0 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.20.0%22)) ###
+
+RxJava 0.20.0 is a major release that adds "reactive pull" support for backpressure along with several other enhancements leading into the 1.0 release.
+
+#### Reactive Pull for Backpressure
+
+Solutions for backpressure was the major focus of this release. A "reactive pull" implementation was implemented. Documentation on this and other options for backpressure are found in the wiki: https://github.com/ReactiveX/RxJava/wiki/Backpressure
+
+The reactive pull solution evolved out of [several prototypes and interaction with many people over the months](https://github.com/ReactiveX/RxJava/issues/1000). 
+
+##### Signature Changes
+
+A new type `Producer` has been added:
+
+```java
+public interface Producer {
+    public void request(long n);
+}
+```
+
+The `Subscriber` type now has these methods added:
+
+```java
+public abstract class Subscriber<T> implements Observer<T>, Subscription {
+    public void onStart();
+    protected final void request(long n);
+    public final void setProducer(Producer producer);
+}
+```
+
+
+##### Examples
+
+
+This trivial example shows requesting values one at a time:
+
+```java
+Observable.from(1, 2, 3, 4).subscribe(new Subscriber<Integer>() {
+
+    @Override
+    public void onStart() {
+        // on start this tells it to request 1
+        // otherwise it defaults to request(Long.MAX_VALUE)
+        request(1);
+    }
+
+    @Override
+    public void onCompleted() {
+    }
+
+    @Override
+    public void onError(Throwable e) {
+    }
+
+    @Override
+    public void onNext(Integer t) {
+        System.out.println(t);
+        // as each onNext is consumed, request another 
+        // otherwise the Producer will not send more
+        request(1);
+    }
+
+});
+```
+
+The [OnSubscribeFromIterable](https://github.com/ReactiveX/RxJava/blob/1.x/rxjava/src/main/java/rx/internal/operators/OnSubscribeFromIterable.java) operator shows how an `Iterable` is consumed with backpressure.
+
+Some hi-lights (modified for simplicity rather than performance and completeness):
+
+```java
+public final class OnSubscribeFromIterable<T> implements OnSubscribe<T> {
+
+    @Override
+    public void call(final Subscriber<? super T> o) {
+        final Iterator<? extends T> it = is.iterator();
+		// instead of emitting directly to the Subscriber, it emits a Producer
+        o.setProducer(new IterableProducer<T>(o, it));
+    }
+	
+	private static final class IterableProducer<T> implements Producer {
+	
+        public void request(long n) {
+            int _c = requested.getAndAdd(n);
+            if (_c == 0) {
+                while (it.hasNext()) {
+                    if (o.isUnsubscribed()) {
+                        return;
+                    }
+                    T t = it.next();
+                    o.onNext(t);
+                    if (requested.decrementAndGet() == 0) {
+                        // we're done emitting the number requested so return
+                        return;
+                    }
+                }
+
+                o.onCompleted();
+            }
+
+        }
+	}
+}
+```
+
+The [`observeOn` operator](https://github.com/ReactiveX/RxJava/blob/1.x/rxjava/src/main/java/rx/internal/operators/OperatorObserveOn.java#L85) is a sterotypical example of queuing on one side of a thread and draining on the other, now with backpressure.
+
+```java
+private static final class ObserveOnSubscriber<T> extends Subscriber<T> {
+        @Override
+        public void onStart() {
+            // signal that this is an async operator capable of receiving this many
+            request(RxRingBuffer.SIZE);
+        }
+		
+        @Override
+        public void onNext(final T t) {
+            try {
+				// enqueue
+                queue.onNext(t);
+            } catch (MissingBackpressureException e) {
+				// fail if the upstream has not obeyed our backpressure requests
+                onError(e);
+                return;
+            }
+			// attempt to schedule draining if needed
+            schedule();
+        }
+		
+		// the scheduling polling will then drain the queue and invoke `request(n)` to request more after draining
+}
+```
+
+Many use cases will be able to use `Observable.from`, `Observable.onBackpressureDrop` and `Observable.onBackpressureBuffer` to achieve "reactive pull backpressure" without manually implementing `Producer` logic. Also, it is optional to make an `Observable` support backpressure. It can remain completely reactive and just push events as it always has. Most uses of RxJava this works just fine. If backpressure is needed then it can be migrated to use a `Producer` or several other approaches to flow control exist such as `throttle`, `sample`, `debounce`, `window`, `buffer`, `onBackpressureBuffer`, and `onBackpressureDrop`.
+
+
+The [wiki](https://github.com/ReactiveX/RxJava/wiki/Backpressure) provides further documentation.
+
+##### Relation to Reactive Streams
+
+Contributors to RxJava are involved in defining the [Reactive Streams](https://github.com/reactive-streams/reactive-streams/) spec. RxJava 1.0 is trying to comply with the semantic rules but is not attempting to comply with the type signatures. It will however have a separate module that acts as a bridge between the RxJava `Observable` and the Reactive Stream types.
+
+The reasons for this are:
+
+- Rx has `Observer.onCompleted` whereas Reactive Streams has `onComplete`. This is a massive breaking change to remove a "d".
+- The RxJava `Subscription` is used also a "Closeable"/"Disposable" and it does not work well to make it now also be used for `request(n)`, hence the separate type `Producer` in RxJava. It was attempted to reuse `rx.Subscription` but it couldn't be done without massive breaking changes.
+- Reactive Streams uses `onSubscribe(Subscription s)` whereas RxJava injects the `Subscription` as the `Subscriber`. Again, this change could not be done without major breaking changes.
+- RxJava 1.0 needs to be backwards compatible with the major Rx contracts established during the 0.x roadmap.
+
+Considering these things, the major semantics of `request(long n)` for backpressure are compatible and this will allow interop with a bridge between the interfaces. 
+
+
+
+#### New Features
+
+##### Compose/Transformer
+
+The `compose` operator is similar to `lift` but allows custom operator implementations that are chaining `Observable` operators whereas `lift` is directly implementing the raw `Subscriber` logic.
+
+Here is a trival example demonstrating how using `compose` is a better option than `lift` when existing `Observable` operators can be used to achieve the custom behavior.
+
+```java
+import rx.Observable;
+import rx.Observable.Operator;
+import rx.Observable.Transformer;
+import rx.Subscriber;
+
+public class ComposeExample {
+
+    public static void main(String[] args) {
+        Observable.just("hello").compose(appendWorldTransformer()).forEach(System.out::println);
+        Observable.just("hello").lift(appendWorldOperator()).forEach(System.out::println);
+    }
+
+    // if existing operators can be used, compose with Transformer is ideal
+    private static Transformer<? super String, String> appendWorldTransformer() {
+        return o -> o.map(s -> s + " world!").finallyDo(() -> {
+            System.out.println("  some side-effect");
+        });
+    }
+
+    // whereas lift is more low level
+    private static Operator<? super String, String> appendWorldOperator() {
+        return new Operator<String, String>() {
+
+            @Override
+            public Subscriber<? super String> call(Subscriber<? super String> child) {
+                return new Subscriber<String>(child) {
+
+                    @Override
+                    public void onCompleted() {
+                        child.onCompleted();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        child.onError(e);
+                    }
+
+                    @Override
+                    public void onNext(String t) {
+                        child.onNext(t + " world!");
+                        System.out.println("  some side-effect");
+                    }
+
+                };
+            }
+
+        };
+    }
+}
+```
+
+##### retryWhen/repeatWhen
+
+New operators `retryWhen` and `repeatWhen` were added which offer support for more advanced recursion such as retry with exponential backoff.
+
+Here is an example that increases delay between each retry:
+
+```java
+Observable.create((Subscriber<? super String> s) -> {
+    System.out.println("subscribing");
+    s.onError(new RuntimeException("always fails"));
+}).retryWhen(attempts -> {
+    return attempts.zipWith(Observable.range(1, 3), (n, i) -> i).flatMap(i -> {
+        System.out.println("delay retry by " + i + " second(s)");
+        return Observable.timer(i, TimeUnit.SECONDS);
+    });
+}).toBlocking().forEach(System.out::println);
+```
+
+
+#### Breaking Changes
+
+
+The use of `Producer` has been added in such a way that it is optional and additive, but some operators that used to have unbounded queues are now bounded. This means that if a source `Observable` emits faster than the `Observer` can consume them, a `MissingBackpressureException` can be emitted via `onError`.
+
+This semantic change can break existing code.
+
+There are two ways of resolving this:
+
+1) Modify the source `Observable` to use `Producer` and support backpressure.
+2) Use newly added operators such as `onBackpressureBuffer` or `onBackpressureDrop` to choose a strategy for the source `Observable` of how to behave when it emits more data than the consuming `Observer` is capable of handling. Use of `onBackpressureBuffer` effectively returns it to having an unbounded buffer and behaving like version 0.19 or earlier.
+
+Example:
+
+```java
+sourceObservable.onBackpressureBuffer().subscribe(slowConsumer);
+```
+
+
+#### Deprecations
+
+Various methods, operators or classes have been deprecated and will be removed in 1.0. Primarily they have been done to remove ambiguity, remove nuanced functionality that is easy to use wrong, clear out superfluous methods and eliminate cruft that was added during the 0.x development process but has been replaced.
+
+For example, `Observable.from(T)` was deprecated in favor of `Observable.just(T)` despite being a [painful breaking change](https://github.com/ReactiveX/RxJava/issues/1563) so as to solve ambiguity with `Observable.from(Iterable)`.
+
+This means that the upgrade from 0.20 to 1.0 will be breaking. This is being done so that the 1.x version can be a long-lived stable API built upon as clean a foundation as possible. 
+
+A stable API for RxJava is important because it is intended to be a foundational library that many projects will depend upon. The deprecations are intended to help this be achieved.
+
+#### Future
+
+The next release will be 1.0 (after a few release candidates). The RxJava project has been split up into many new top-level projects at https://github.com/ReactiveX so each of their release cycles and version strategies can be decoupled. 
+
+The 1.x version is intended to be stable for many years and target Java 6, 7 and 8. The expected outcome is for a 2.x version to target Java 8+ but for RxJava 1.x and 2.x to co-exist and both be living, supported versions.
+
 
 ### Version 0.20.0-RC6 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.20.0-RC6%22)) ###
 
