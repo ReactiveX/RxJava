@@ -814,6 +814,48 @@ class RxScalaDemo extends JUnitSuite {
     println(s"RxScala appears ${count.toBlocking.single} times in http://rxscala.github.io/")
   }
 
+  @Test def createExampleWithBackpressure() {
+    val o = Observable {
+      subscriber: Subscriber[String] => {
+        var emitted = 0
+        subscriber.setProducer(n => {
+            val intN = if (n >= 10) 10 else n.toInt
+            (0 until intN)
+              .takeWhile(_ => emitted < 10 && !subscriber.isUnsubscribed)
+              .foreach {
+              i =>
+                emitted += 1
+                subscriber.onNext(s"item ${emitted}")
+            }
+            if (emitted == 10 && !subscriber.isUnsubscribed) {
+              subscriber.onCompleted()
+            }
+        })
+      }
+    }.subscribeOn(IOScheduler()) // Use `subscribeOn` to make sure `Producer` will run in the same Scheduler
+    o.observeOn(ComputationScheduler()).subscribe(new Subscriber[String] {
+      override def onStart() {
+        println("Request a new one at the beginning")
+        request(1)
+      }
+
+      override def onNext(v: String) {
+        println("Received " + v)
+        println("Request a new one after receiving " + v)
+        request(1)
+      }
+
+      override def onError(e: Throwable) {
+        e.printStackTrace()
+      }
+
+      override def onCompleted() {
+        println("Done")
+      }
+    })
+    Thread.sleep(10000)
+  }
+
   def output(s: String): Unit = println(s)
 
   /** Subscribes to obs and waits until obs has completed. Note that if you subscribe to
