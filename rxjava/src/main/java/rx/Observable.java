@@ -1253,7 +1253,7 @@ public class Observable<T> {
     /**
      * Converts a {@link Future} into an Observable, with a timeout on the Future.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/from.Future.png">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/from.Future.png">
      * <p>
      * You can convert any object that supports the {@link Future} interface into an Observable that emits the
      * return value of the {@link Future#get} method of that object, by passing the object into the {@code from}
