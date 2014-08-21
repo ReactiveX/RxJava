@@ -115,7 +115,7 @@ public class BlockingOperatorLatestTest {
     public void testHasNextThrows() {
         TestScheduler scheduler = new TestScheduler();
 
-        BlockingObservable<Long> source = Observable.<Long> error(new RuntimeException("Forced failure!"), scheduler).toBlocking();
+        BlockingObservable<Long> source = Observable.<Long> error(new RuntimeException("Forced failure!")).subscribeOn(scheduler).toBlocking();
 
         Iterable<Long> iter = source.latest();
 
@@ -130,7 +130,7 @@ public class BlockingOperatorLatestTest {
     public void testNextThrows() {
         TestScheduler scheduler = new TestScheduler();
 
-        BlockingObservable<Long> source = Observable.<Long> error(new RuntimeException("Forced failure!"), scheduler).toBlocking();
+        BlockingObservable<Long> source = Observable.<Long> error(new RuntimeException("Forced failure!")).subscribeOn(scheduler).toBlocking();
 
         Iterable<Long> iter = source.latest();
         Iterator<Long> it = iter.iterator();

@@ -61,12 +61,12 @@ public class CovarianceTest {
     
     @Test
     public void testCovarianceOfCompose() {
-        Observable<HorrorMovie> movie = Observable.<HorrorMovie> from(new HorrorMovie());
+        Observable<HorrorMovie> movie = Observable.<HorrorMovie> just(new HorrorMovie());
         Observable<Movie> movie2 = movie.compose(new Transformer<Movie, Movie>() {
 
             @Override
             public Observable<Movie> call(Observable<? extends Movie> t1) {
-                return Observable.from(new Movie());
+                return Observable.just(new Movie());
             }
             
         });
@@ -74,11 +74,11 @@ public class CovarianceTest {
     
     @Test
     public void testCovarianceOfCompose2() {
-        Observable<Movie> movie = Observable.<Movie> from(new HorrorMovie());
+        Observable<Movie> movie = Observable.<Movie> just(new HorrorMovie());
         Observable<HorrorMovie> movie2 = movie.compose(new Transformer<Movie, HorrorMovie>() {
             @Override
             public Observable<HorrorMovie> call(Observable<? extends Movie> t1) {
-                return Observable.from(new HorrorMovie());
+                return Observable.just(new HorrorMovie());
             }
         });
     }

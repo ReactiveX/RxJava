@@ -98,7 +98,7 @@ public class OperatorWindowTest {
 
     @Test
     public void testOverlappingWindows() {
-        Observable<String> subject = Observable.from(new String[] { "zero", "one", "two", "three", "four", "five" }, Schedulers.trampoline());
+        Observable<String> subject = Observable.from(new String[] { "zero", "one", "two", "three", "four", "five" });
         Observable<Observable<String>> windowed = subject.window(3, 1);
 
         List<List<String>> windows = toLists(windowed);

@@ -959,7 +959,7 @@ public class ObservableTests {
     @Test
             public void testJustWithScheduler() {
                 TestScheduler scheduler = new TestScheduler();
-                Observable<Integer> observable = Observable.from(Arrays.asList(1, 2), scheduler);
+                Observable<Integer> observable = Observable.from(Arrays.asList(1, 2)).subscribeOn(scheduler);
         
                 @SuppressWarnings("unchecked")
                 Observer<Integer> observer = mock(Observer.class);
@@ -977,7 +977,7 @@ public class ObservableTests {
     @Test
     public void testStartWithWithScheduler() {
         TestScheduler scheduler = new TestScheduler();
-        Observable<Integer> observable = Observable.just(3, 4).startWith(Arrays.asList(1, 2), scheduler);
+        Observable<Integer> observable = Observable.just(3, 4).startWith(Arrays.asList(1, 2)).subscribeOn(scheduler);
 
         @SuppressWarnings("unchecked")
         Observer<Integer> observer = mock(Observer.class);

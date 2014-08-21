@@ -111,34 +111,6 @@ public class Observable<T> {
     }
 
     /**
-     * @deprecated use {@link #create(OnSubscribe)}
-     */
-    @Deprecated
-    public final static <T> Observable<T> create(final OnSubscribeFunc<T> f) {
-        return new Observable<T>(new OnSubscribe<T>() {
-
-            @Override
-            public void call(Subscriber<? super T> observer) {
-                Subscription s = f.onSubscribe(observer);
-                if (s != null && s != observer) {
-                    observer.add(s);
-                }
-            }
-
-        });
-    }
-
-    /**
-     * @deprecated use {@link OnSubscribe}
-     */
-    @Deprecated
-    public static interface OnSubscribeFunc<T> extends Function {
-
-        public Subscription onSubscribe(Observer<? super T> op);
-
-    }
-
-    /**
      * Lifts a function to the current Observable and returns a new Observable that when subscribed to will pass
      * the values of the current Observable through the Operator function.
      * <p>
@@ -1089,32 +1061,6 @@ public class Observable<T> {
     }
 
     /**
-     * Returns an Observable that emits no items to the {@link Observer} and immediately invokes its
-     * {@link Observer#onCompleted onCompleted} method on the specified Scheduler.
-     * <p>
-     * <img width="640" height="190" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/empty.s.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
-     * </dl>
-     * 
-     * @param scheduler
-     *            the Scheduler to use to call the {@link Observer#onCompleted onCompleted} method
-     * @param <T>
-     *            the type of the items (ostensibly) emitted by the Observable
-     * @return an Observable that emits no items to the {@link Observer} but immediately invokes the
-     *         {@link Observer}'s {@link Observer#onCompleted() onCompleted} method with the specified
-     *         {@code scheduler}
-     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Creating-Observables#empty-error-and-never">RxJava wiki: empty</a>
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229066.aspx">MSDN: Observable.Empty(IScheduler)</a>
-     * @deprecated use {@link #subscribeOn} to schedule
-     */
-    @Deprecated
-    public final static <T> Observable<T> empty(Scheduler scheduler) {
-        return Observable.<T> empty().subscribeOn(scheduler);
-    }
-
-    /**
      * Returns an Observable that invokes an {@link Observer}'s {@link Observer#onError onError} method when the
      * Observer subscribes to it.
      * <p>
@@ -1135,33 +1081,6 @@ public class Observable<T> {
      */
     public final static <T> Observable<T> error(Throwable exception) {
         return new ThrowObservable<T>(exception);
-    }
-
-    /**
-     * Returns an Observable that invokes an {@link Observer}'s {@link Observer#onError onError} method on the
-     * specified Scheduler.
-     * <p>
-     * <img width="640" height="190" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/error.s.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
-     * </dl>
-     * 
-     * @param exception
-     *            the particular Throwable to pass to {@link Observer#onError onError}
-     * @param scheduler
-     *            the Scheduler on which to call {@link Observer#onError onError}
-     * @param <T>
-     *            the type of the items (ostensibly) emitted by the Observable
-     * @return an Observable that invokes the {@link Observer}'s {@link Observer#onError onError} method, on
-     *         the specified Scheduler
-     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Creating-Observables#empty-error-and-never">RxJava wiki: error</a>
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh211711.aspx">MSDN: Observable.Throw</a>
-     * @deprecated use {@link #subscribeOn} to schedule
-     */
-    @Deprecated
-    public final static <T> Observable<T> error(Throwable exception, Scheduler scheduler) {
-        return Observable.<T> error(exception).subscribeOn(scheduler);
     }
 
     /**
@@ -1274,362 +1193,6 @@ public class Observable<T> {
     }
 
     /**
-     * Converts an {@link Iterable} sequence into an Observable that operates on the specified Scheduler,
-     * emitting each item from the sequence.
-     * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/from.s.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
-     * </dl>
-     * 
-     * @param iterable
-     *            the source {@link Iterable} sequence
-     * @param scheduler
-     *            the Scheduler on which the Observable is to emit the items of the Iterable
-     * @param <T>
-     *            the type of items in the {@link Iterable} sequence and the type of items to be emitted by the
-     *            resulting Observable
-     * @return an Observable that emits each item in the source {@link Iterable} sequence, on the specified
-     *         Scheduler
-     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Creating-Observables#from">RxJava wiki: from</a>
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh212140.aspx">MSDN: Observable.ToObservable</a>
-     * @deprecated use {@link #subscribeOn} to schedule the work
-     */
-    @Deprecated
-    public final static <T> Observable<T> from(Iterable<? extends T> iterable, Scheduler scheduler) {
-        return from(iterable).subscribeOn(scheduler);
-    }
-
-    /**
-     * Converts an item into an Observable that emits that item.
-     * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/from.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code from} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * 
-     * @param t1
-     *            the item
-     * @param <T>
-     *            the type of the item
-     * @return an Observable that emits the item
-     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Creating-Observables#from">RxJava wiki: from</a>
-     * @deprecated use {@link #just} instead
-     */
-    @Deprecated
-    public final static <T> Observable<T> from(T t1) {
-        return just(t1);
-    }
-
-    /**
-     * Converts two items into an Observable that emits those items.
-     * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/from.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code from} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * 
-     * @param t1
-     *            first item
-     * @param t2
-     *            second item
-     * @param <T>
-     *            the type of these items
-     * @return an Observable that emits each item
-     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Creating-Observables#from">RxJava wiki: from</a>
-     * @deprecated use {@link #just} instead
-     */
-    @Deprecated
-    // suppress unchecked because we are using varargs inside the method
-    @SuppressWarnings("unchecked")
-    public final static <T> Observable<T> from(T t1, T t2) {
-        return from(Arrays.asList(t1, t2));
-    }
-
-    /**
-     * Converts three items into an Observable that emits those items.
-     * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/from.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code from} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * 
-     * @param t1
-     *            first item
-     * @param t2
-     *            second item
-     * @param t3
-     *            third item
-     * @param <T>
-     *            the type of these items
-     * @return an Observable that emits each item
-     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Creating-Observables#from">RxJava wiki: from</a>
-     * @deprecated use {@link #just} instead
-     */
-    @Deprecated
-    // suppress unchecked because we are using varargs inside the method
-    @SuppressWarnings("unchecked")
-    public final static <T> Observable<T> from(T t1, T t2, T t3) {
-        return from(Arrays.asList(t1, t2, t3));
-    }
-
-    /**
-     * Converts four items into an Observable that emits those items.
-     * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/from.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code from} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * 
-     * @param t1
-     *            first item
-     * @param t2
-     *            second item
-     * @param t3
-     *            third item
-     * @param t4
-     *            fourth item
-     * @param <T>
-     *            the type of these items
-     * @return an Observable that emits each item
-     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Creating-Observables#from">RxJava wiki: from</a>
-     * @deprecated use {@link #just} instead
-     */
-    @Deprecated
-    // suppress unchecked because we are using varargs inside the method
-    @SuppressWarnings("unchecked")
-    public final static <T> Observable<T> from(T t1, T t2, T t3, T t4) {
-        return from(Arrays.asList(t1, t2, t3, t4));
-    }
-
-    /**
-     * Converts five items into an Observable that emits those items.
-     * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/from.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code from} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param t1
-     *            first item
-     * @param t2
-     *            second item
-     * @param t3
-     *            third item
-     * @param t4
-     *            fourth item
-     * @param t5
-     *            fifth item
-     * @param <T>
-     *            the type of these items
-     * @return an Observable that emits each item
-     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Creating-Observables#from">RxJava wiki: from</a>
-     * @deprecated use {@link #just} instead
-     */
-    @Deprecated
-    // suppress unchecked because we are using varargs inside the method
-    @SuppressWarnings("unchecked")
-    public final static <T> Observable<T> from(T t1, T t2, T t3, T t4, T t5) {
-        return from(Arrays.asList(t1, t2, t3, t4, t5));
-    }
-
-    /**
-     * Converts six items into an Observable that emits those items.
-     * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/from.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code from} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * 
-     * @param t1
-     *            first item
-     * @param t2
-     *            second item
-     * @param t3
-     *            third item
-     * @param t4
-     *            fourth item
-     * @param t5
-     *            fifth item
-     * @param t6
-     *            sixth item
-     * @param <T>
-     *            the type of these items
-     * @return an Observable that emits each item
-     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Creating-Observables#from">RxJava wiki: from</a>
-     * @deprecated use {@link #just} instead
-     */
-    @Deprecated
-    // suppress unchecked because we are using varargs inside the method
-    @SuppressWarnings("unchecked")
-    public final static <T> Observable<T> from(T t1, T t2, T t3, T t4, T t5, T t6) {
-        return from(Arrays.asList(t1, t2, t3, t4, t5, t6));
-    }
-
-    /**
-     * Converts seven items into an Observable that emits those items.
-     * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/from.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code from} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * 
-     * @param t1
-     *            first item
-     * @param t2
-     *            second item
-     * @param t3
-     *            third item
-     * @param t4
-     *            fourth item
-     * @param t5
-     *            fifth item
-     * @param t6
-     *            sixth item
-     * @param t7
-     *            seventh item
-     * @param <T>
-     *            the type of these items
-     * @return an Observable that emits each item
-     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Creating-Observables#from">RxJava wiki: from</a>
-     * @deprecated use {@link #just} instead
-     */
-    @Deprecated
-    // suppress unchecked because we are using varargs inside the method
-    @SuppressWarnings("unchecked")
-    public final static <T> Observable<T> from(T t1, T t2, T t3, T t4, T t5, T t6, T t7) {
-        return from(Arrays.asList(t1, t2, t3, t4, t5, t6, t7));
-    }
-
-    /**
-     * Converts eight items into an Observable that emits those items.
-     * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/from.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code from} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * 
-     * @param t1
-     *            first item
-     * @param t2
-     *            second item
-     * @param t3
-     *            third item
-     * @param t4
-     *            fourth item
-     * @param t5
-     *            fifth item
-     * @param t6
-     *            sixth item
-     * @param t7
-     *            seventh item
-     * @param t8
-     *            eighth item
-     * @param <T>
-     *            the type of these items
-     * @return an Observable that emits each item
-     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Creating-Observables#from">RxJava wiki: from</a>
-     * @deprecated use {@link #just} instead
-     */
-    @Deprecated
-    // suppress unchecked because we are using varargs inside the method
-    @SuppressWarnings("unchecked")
-    public final static <T> Observable<T> from(T t1, T t2, T t3, T t4, T t5, T t6, T t7, T t8) {
-        return from(Arrays.asList(t1, t2, t3, t4, t5, t6, t7, t8));
-    }
-
-    /**
-     * Converts nine items into an Observable that emits those items.
-     * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/from.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code from} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * 
-     * @param t1
-     *            first item
-     * @param t2
-     *            second item
-     * @param t3
-     *            third item
-     * @param t4
-     *            fourth item
-     * @param t5
-     *            fifth item
-     * @param t6
-     *            sixth item
-     * @param t7
-     *            seventh item
-     * @param t8
-     *            eighth item
-     * @param t9
-     *            ninth item
-     * @param <T>
-     *            the type of these items
-     * @return an Observable that emits each item
-     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Creating-Observables#from">RxJava wiki: from</a>
-     * @deprecated use {@link #just} instead
-     */
-    @Deprecated
-    // suppress unchecked because we are using varargs inside the method
-    @SuppressWarnings("unchecked")
-    public final static <T> Observable<T> from(T t1, T t2, T t3, T t4, T t5, T t6, T t7, T t8, T t9) {
-        return from(Arrays.asList(t1, t2, t3, t4, t5, t6, t7, t8, t9));
-    }
-
-    /**
-     * Converts ten items into an Observable that emits those items.
-     * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/from.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code from} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * 
-     * @param t1
-     *            first item
-     * @param t2
-     *            second item
-     * @param t3
-     *            third item
-     * @param t4
-     *            fourth item
-     * @param t5
-     *            fifth item
-     * @param t6
-     *            sixth item
-     * @param t7
-     *            seventh item
-     * @param t8
-     *            eighth item
-     * @param t9
-     *            ninth item
-     * @param t10
-     *            tenth item
-     * @param <T>
-     *            the type of these items
-     * @return an Observable that emits each item
-     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Creating-Observables#from">RxJava wiki: from</a>
-     * @deprecated use {@link #just} instead
-     */
-    @Deprecated
-    // suppress unchecked because we are using varargs inside the method
-    @SuppressWarnings("unchecked")
-    public final static <T> Observable<T> from(T t1, T t2, T t3, T t4, T t5, T t6, T t7, T t8, T t9, T t10) {
-        return from(Arrays.asList(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10));
-    }
-
-    /**
      * Converts an Array into an Observable that emits the items in the Array.
      * <p>
      * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/from.png" alt="">
@@ -1648,31 +1211,6 @@ public class Observable<T> {
      */
     public final static <T> Observable<T> from(T[] array) {
         return from(Arrays.asList(array));
-    }
-
-    /**
-     * Converts an Array into an Observable that emits the items in the Array on a specified Scheduler.
-     * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/from.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
-     * </dl>
-     * 
-     * @param items
-     *            the source Array
-     * @param scheduler
-     *            the Scheduler on which the Observable emits the items of the Array
-     * @param <T>
-     *            the type of items in the Array and the type of items to be emitted by the resulting Observable
-     * @return an Observable that emits each item in the source Array
-     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Creating-Observables#from">RxJava wiki: from</a>
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh212140.aspx">MSDN: Observable.ToObservable</a>
-     * @deprecated use {@link #subscribeOn} to schedule the work
-     */
-    @Deprecated
-    public final static <T> Observable<T> from(T[] items, Scheduler scheduler) {
-        return from(Arrays.asList(items), scheduler);
     }
 
     /**
@@ -2088,67 +1626,6 @@ public class Observable<T> {
     }
 
     /**
-     * Flattens an Iterable of Observables into one Observable, without any transformation, while limiting the
-     * number of concurrent subscriptions to these Observables, and subscribing to these Observables on a
-     * specified Scheduler.
-     * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.png" alt="">
-     * <p>
-     * You can combine the items emitted by multiple Observables so that they appear as a single Observable, by
-     * using the {@code merge} method.
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
-     * </dl>
-     * 
-     * @param sequences
-     *            the Iterable of Observables
-     * @param maxConcurrent
-     *            the maximum number of Observables that may be subscribed to concurrently
-     * @param scheduler
-     *            the Scheduler on which to traverse the Iterable of Observables
-     * @return an Observable that emits items that are the result of flattening the items emitted by the
-     *         Observables in the Iterable
-     * @throws IllegalArgumentException
-     *             if {@code maxConcurrent} is less than or equal to 0
-     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Combining-Observables#merge">RxJava wiki: merge</a>
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh244329.aspx">MSDN: Observable.Merge</a>
-     * @deprecated use {@link #subscribeOn} to schedule
-     */
-    @Deprecated
-    public final static <T> Observable<T> merge(Iterable<? extends Observable<? extends T>> sequences, int maxConcurrent, Scheduler scheduler) {
-        return merge(from(sequences, scheduler), maxConcurrent);
-    }
-
-    /**
-     * Flattens an Iterable of Observables into one Observable, without any transformation, subscribing to these
-     * Observables on a specified Scheduler.
-     * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.png" alt="">
-     * <p>
-     * You can combine the items emitted by multiple Observables so that they appear as a single Observable, by
-     * using the {@code merge} method.
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
-     * </dl>
-     * 
-     * @param sequences
-     *            the Iterable of Observables
-     * @param scheduler
-     *            the Scheduler on which to traverse the Iterable of Observables
-     * @return an Observable that emits items that are the result of flattening the items emitted by the
-     *         Observables in the Iterable
-     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Combining-Observables#merge">RxJava wiki: merge</a>
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh244336.aspx">MSDN: Observable.Merge</a>
-     * @deprecated use {@link #subscribeOn} to schedule
-     */
-    @Deprecated
-    public final static <T> Observable<T> merge(Iterable<? extends Observable<? extends T>> sequences, Scheduler scheduler) {
-        return merge(from(sequences, scheduler));
-    }
-
-    /**
      * Flattens an Observable that emits Observables into a single Observable that emits the items emitted by
      * those Observables, without any transformation.
      * <p>
@@ -2477,33 +1954,6 @@ public class Observable<T> {
      */
     public final static <T> Observable<T> merge(Observable<? extends T>[] sequences) {
         return merge(from(sequences));
-    }
-
-    /**
-     * Flattens an Array of Observables into one Observable, without any transformation, traversing the array on
-     * a specified Scheduler.
-     * <p>
-     * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.ios.png" alt="">
-     * <p>
-     * You can combine items emitted by multiple Observables so that they appear as a single Observable, by
-     * using the {@code merge} method.
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
-     * </dl>
-     * 
-     * @param sequences
-     *            the Array of Observables
-     * @param scheduler
-     *            the Scheduler on which to traverse the Array
-     * @return an Observable that emits all of the items emitted by the Observables in the Array
-     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Combining-Observables#merge">RxJava wiki: merge</a>
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229061.aspx">MSDN: Observable.Merge</a>
-     * @deprecated use {@link #subscribeOn} to schedule
-     */
-    @Deprecated
-    public final static <T> Observable<T> merge(Observable<? extends T>[] sequences, Scheduler scheduler) {
-        return merge(from(sequences, scheduler));
     }
 
     /**
@@ -3213,36 +2663,6 @@ public class Observable<T> {
             final Func1<? super Resource, ? extends Observable<? extends T>> observableFactory,
             final Action1<? super Resource> disposeAction) {
         return create(new OnSubscribeUsing<T, Resource>(resourceFactory, observableFactory, disposeAction));
-    }
-
-    /**
-     * Constructs an Observable that creates a dependent resource object.
-     * <p>
-     * <img width="640" height="400" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/using.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code using} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * 
-     * @param resourceFactory
-     *            the factory function to create a resource object that depends on the Observable
-     * @param observableFactory
-     *            the factory function to create an Observable
-     * @return the Observable whose lifetime controls the lifetime of the dependent resource object
-     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Observable-Utility-Operators#using">RxJava wiki: using</a>
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229585.aspx">MSDN: Observable.Using</a>
-     * @deprecated use the other {@code using} method with different overloads
-     */
-    @Deprecated
-    public final static <T, Resource extends Subscription> Observable<T> using(Func0<Resource> resourceFactory, Func1<? super Resource, ? extends Observable<? extends T>> observableFactory) {
-        return create(new OnSubscribeUsing<T, Resource>(resourceFactory, observableFactory, new Action1<Resource>() {
-
-            @Override
-            public void call(Resource r) {
-                r.unsubscribe();
-            }
-
-        }));
     }
 
     /**
@@ -5760,151 +5180,6 @@ public class Observable<T> {
     }
 
     /**
-     * Returns an Observable that emits the results of applying a specified function to each item emitted by the
-     * source Observable, where that function returns an Observable, and then merging those resulting
-     * Observables and emitting the results of this merger.
-     * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeMap.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code mergeMap} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * 
-     * @param func
-     *            a function that, when applied to an item emitted by the source Observable, returns an
-     *            Observable
-     * @return an Observable that emits the result of applying the transformation function to each item emitted
-     *         by the source Observable and merging the results of the Observables obtained from these
-     *         transformations
-     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Transforming-Observables#flatmap-concatmap-and-flatmapiterable">RxJava wiki: flatMap</a>
-     * @see #flatMap(Func1)
-     * @deprecated use {@link #flatMap}
-     */
-    @Deprecated
-    public final <R> Observable<R> mergeMap(Func1<? super T, ? extends Observable<? extends R>> func) {
-        return merge(map(func));
-    }
-
-    /**
-     * Returns an Observable that applies a function to each item emitted or notification raised by the source
-     * Observable and then flattens the Observables returned from these functions and emits the resulting items.
-     * <p>
-     * <img width="640" height="410" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeMap.nce.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code mergeMap} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * 
-     * @param <R>
-     *            the result type
-     * @param onNext
-     *            a function that returns an Observable to merge for each item emitted by the source Observable
-     * @param onError
-     *            a function that returns an Observable to merge for an onError notification from the source
-     *            Observable
-     * @param onCompleted
-     *            a function that returns an Observable to merge for an onCompleted notification from the source
-     *            Observable
-     * @return an Observable that emits the results of merging the Observables returned from applying the
-     *         specified functions to the emissions and notifications of the source Observable
-     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Transforming-Observables#flatmap-concatmap-and-flatmapiterable">RxJava wiki: flatMap</a>
-     * @deprecated use {@link #flatMap}
-     */
-    @Deprecated
-    public final <R> Observable<R> mergeMap(
-            Func1<? super T, ? extends Observable<? extends R>> onNext,
-            Func1<? super Throwable, ? extends Observable<? extends R>> onError,
-            Func0<? extends Observable<? extends R>> onCompleted) {
-        return merge(mapNotification(onNext, onError, onCompleted));
-    }
-
-    /**
-     * Returns an Observable that emits the results of a specified function to the pair of values emitted by the
-     * source Observable and a specified collection Observable.
-     * <p>
-     * <img width="640" height="390" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeMap.r.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code mergeMap} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * 
-     * @param <U>
-     *            the type of items emitted by the collection Observable
-     * @param <R>
-     *            the type of items emitted by the resulting Observable
-     * @param collectionSelector
-     *            a function that returns an Observable for each item emitted by the source Observable
-     * @param resultSelector
-     *            a function that combines one item emitted by each of the source and collection Observables and
-     *            returns an item to be emitted by the resulting Observable
-     * @return an Observable that emits the results of applying a function to a pair of values emitted by the
-     *         source Observable and the collection Observable
-     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Transforming-Observables#flatmap-concatmap-and-flatmapiterable">RxJava wiki: flatMap</a>
-     * @deprecated use {@link #flatMap}
-     */
-    @Deprecated
-    public final <U, R> Observable<R> mergeMap(Func1<? super T, ? extends Observable<? extends U>> collectionSelector,
-            Func2<? super T, ? super U, ? extends R> resultSelector) {
-        return flatMap(collectionSelector, resultSelector);
-    }
-
-    /**
-     * Returns an Observable that merges each item emitted by the source Observable with the values in an
-     * Iterable corresponding to that item that is generated by a selector.
-     * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeMapIterable.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code mergeMapIterable} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * 
-     * @param <R>
-     *            the type of item emitted by the resulting Observable
-     * @param collectionSelector
-     *            a function that returns an Iterable sequence of values for when given an item emitted by the
-     *            source Observable
-     * @return an Observable that emits the results of merging the items emitted by the source Observable with
-     *         the values in the Iterables corresponding to those items, as generated by {@code collectionSelector}
-     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Transforming-Observables#flatmap-concatmap-and-flatmapiterable">RxJava wiki: flatMapIterable</a>
-     * @deprecated use {@link #flatMapIterable}
-     */
-    @Deprecated
-    public final <R> Observable<R> mergeMapIterable(Func1<? super T, ? extends Iterable<? extends R>> collectionSelector) {
-        return merge(map(OperatorMapPair.convertSelector(collectionSelector)));
-    }
-
-    /**
-     * Returns an Observable that emits the results of applying a function to the pair of values from the source
-     * Observable and an Iterable corresponding to that item that is generated by a selector.
-     * <p>
-     * <img width="640" height="390" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeMapIterable.r.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code mergeMapIterable} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * 
-     * @param <U>
-     *            the collection element type
-     * @param <R>
-     *            the type of item emited by the resulting Observable
-     * @param collectionSelector
-     *            a function that returns an Iterable sequence of values for each item emitted by the source
-     *            Observable
-     * @param resultSelector
-     *            a function that returns an item based on the item emitted by the source Observable and the
-     *            Iterable returned for that item by the {@code collectionSelector}
-     * @return an Observable that emits the items returned by {@code resultSelector} for each item in the source
-     *         Observable
-     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Transforming-Observables#flatmap-concatmap-and-flatmapiterable">RxJava wiki: flatMapIterable</a>
-     * @deprecated use {@link #flatMapIterable}
-     */
-    @Deprecated
-    public final <U, R> Observable<R> mergeMapIterable(Func1<? super T, ? extends Iterable<? extends U>> collectionSelector,
-            Func2<? super T, ? super U, ? extends R> resultSelector) {
-        return mergeMap(OperatorMapPair.convertSelector(collectionSelector), resultSelector);
-    }
-
-    /**
      * Flattens this and another Observable into a single Observable, without any transformation.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.png" alt="">
@@ -5960,43 +5235,6 @@ public class Observable<T> {
         return create(new OnSubscribeMulticastSelector<T, TIntermediate, TResult>(this, subjectFactory, selector));
     }
 
-    /**
-     * Returns a {@link ConnectableObservable} that upon connection causes the source Observable to push results
-     * into the specified subject. A Connectable Observable resembles an ordinary Observable, except that it
-     * does not begin emitting items when it is subscribed to, but only when its {@code connect} method
-     * is called.
-     * <dl>
-     *  <dt><b>Backpressure Support:</b></dt>
-     *  <dd>This operator does not support backpressure because multicasting means the stream is "hot" with
-     *      multiple subscribers. Each child will need to manage backpressure independently using operators such
-     *      as {@link #onBackpressureDrop} and {@link #onBackpressureBuffer}.</dd>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code multicast} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * 
-     * @param subject
-     *            the {@link Subject} for the {@link ConnectableObservable} to push source items into
-     * @param <R>
-     *            the type of items emitted by the resulting {@code ConnectableObservable}
-     * @return a {@link ConnectableObservable} that upon connection causes the source Observable to push results
-     *         into the specified {@link Subject}
-     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Connectable-Observable-Operators#observablepublish-and-observablemulticast">RxJava wiki: Observable.publish and Observable.multicast</a>
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229708.aspx">MSDN: Observable.Multicast</a>
-     * @deprecated use {@link #multicast(Func0)} instead. This one caused nuanced bugs as it retains state.
-     */
-    @Deprecated
-    public final <R> ConnectableObservable<R> multicast(final Subject<? super T, ? extends R> subject) {
-        return new OperatorMulticast<T, R>(this, new Func0<Subject<? super T, ? extends R>>() {
-
-            @Override
-            public Subject<? super T, ? extends R> call() {
-                // same one every time, no factory behavior
-                return subject;
-            }
-            
-        });
-    }
-    
     /**
      * Returns a {@link ConnectableObservable} that upon connection causes the source Observable to push results
      * into the specified subject. A Connectable Observable resembles an ordinary Observable, except that it
@@ -6203,30 +5441,6 @@ public class Observable<T> {
      */
     public final Observable<T> onErrorReturn(Func1<Throwable, ? extends T> resumeFunction) {
         return lift(new OperatorOnErrorReturn<T>(resumeFunction));
-    }
-
-    /**
-     * Intercepts {@code onError} notifications from the source Observable and replaces them with the
-     * {@code onNext} emissions of an Observable returned by a specified function. This allows the source
-     * sequence to continue even if it issues multiple {@code onError} notifications.
-     * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/onErrorFlatMap.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code onErrorFlatMap} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     *
-     * @param resumeFunction
-     *            a function that accepts an {@link OnErrorThrowable} representing the Throwable issued by the
-     *            source Observable, and returns an Observable that emits items that will be emitted in place
-     *            of the error
-     * @return the original Observable, with appropriately modified behavior
-     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Phantom-Operators#onerrorflatmap">RxJava wiki: onErrorFlatMap</a>
-     * @deprecated see https://github.com/ReactiveX/RxJava/issues/1465
-     */
-    @Deprecated
-    public final Observable<T> onErrorFlatMap(final Func1<OnErrorThrowable, ? extends Observable<? extends T>> resumeFunction) {
-        return lift(new OperatorOnErrorFlatMap<T>(resumeFunction));
     }
 
     /**
@@ -8003,31 +7217,6 @@ public class Observable<T> {
     }
 
     /**
-     * Returns an Observable that emits the items in a specified {@link Iterable}, on a specified
-     * {@link Scheduler}, before it begins to emit items emitted by the source Observable.
-     * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/startWith.s.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
-     * </dl>
-     * 
-     * @param values
-     *            an Iterable that contains the items you want the modified Observable to emit first
-     * @param scheduler
-     *            the Scheduler to emit the prepended values on
-     * @return an Observable that emits the items in the specified {@link Iterable} and then emits the items
-     *         emitted by the source Observable
-     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Combining-Observables#startwith">RxJava wiki: startWith</a>
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229372.aspx">MSDN: Observable.StartWith</a>
-     * @deprecated use {@link #subscribeOn} to schedule
-     */
-    @Deprecated
-    public final Observable<T> startWith(Iterable<T> values, Scheduler scheduler) {
-        return concat(from(values, scheduler), this);
-    }
-
-    /**
      * Returns an Observable that emits a specified item before it begins to emit items emitted by the source
      * Observable.
      * <p>
@@ -8286,31 +7475,6 @@ public class Observable<T> {
      */
     public final Observable<T> startWith(T t1, T t2, T t3, T t4, T t5, T t6, T t7, T t8, T t9) {
         return concat(just(t1, t2, t3, t4, t5, t6, t7, t8, t9), this);
-    }
-
-    /**
-     * Returns an Observable that emits the items from a specified array, on a specified Scheduler, before it
-     * begins to emit items emitted by the source Observable.
-     * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/startWith.s.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
-     * </dl>
-     * 
-     * @param values
-     *            the items you want the modified Observable to emit first
-     * @param scheduler
-     *            the Scheduler to emit the prepended values on
-     * @return an Observable that emits the items from {@code values}, on {@code scheduler}, before it begins to
-     *         emit items emitted by the source Observable.
-     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Combining-Observables#startwith">RxJava wiki: startWith</a>
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229372.aspx">MSDN: Observable.StartWith</a>
-     * @deprecated use {@link #subscribeOn} to schedule
-     */
-    @Deprecated
-    public final Observable<T> startWith(T[] values, Scheduler scheduler) {
-        return startWith(Arrays.asList(values), scheduler);
     }
 
     /**
@@ -9626,18 +8790,6 @@ public class Observable<T> {
 
     /**
      * Converts an Observable into a {@link BlockingObservable} (an Observable with blocking operators).
-     * 
-     * @return a {@code BlockingObservable} version of this Observable
-     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Blocking-Observable-Operators">RxJava wiki: Blocking Observable Operators</a>
-     * @deprecated use {@link #toBlocking()} instead
-     */
-    @Deprecated
-    public final BlockingObservable<T> toBlockingObservable() {
-        return BlockingObservable.from(this);
-    }
-
-    /**
-     * Converts an Observable into a {@link BlockingObservable} (an Observable with blocking operators).
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code toBlocking} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -10292,39 +9444,6 @@ public class Observable<T> {
      * not pre-consumed. This allows you to zip infinite streams on either side.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * 
-     * @param <T2>
-     *            the type of items in the {@code other} Iterable
-     * @param <R>
-     *            the type of items emitted by the resulting Observable
-     * @param other
-     *            the Iterable sequence
-     * @param zipFunction
-     *            a function that combines the pairs of items from the Observable and the Iterable to generate
-     *            the items to be emitted by the resulting Observable
-     * @return an Observable that pairs up values from the source Observable and the {@code other} Iterable
-     *         sequence and emits the results of {@code zipFunction} applied to these pairs
-     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Combining-Observables#zip">RxJava wiki: zip</a>
-     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.zip.aspx">MSDN: Observable.Zip</a>
-     * @deprecated use {@link #zipWith}
-     */
-    @Deprecated
-    public final <T2, R> Observable<R> zip(Iterable<? extends T2> other, Func2<? super T, ? super T2, ? extends R> zipFunction) {
-        return lift(new OperatorZipIterable<T, T2, R>(other, zipFunction));
-    }
-    
-    /**
-     * Returns an Observable that emits items that are the result of applying a specified function to pairs of
-     * values, one each from the source Observable and a specified Iterable sequence.
-     * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.i.png" alt="">
-     * <p>
-     * Note that the {@code other} Iterable is evaluated as items are observed from the source Observable; it is
-     * not pre-consumed. This allows you to zip infinite streams on either side.
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code zipWith} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
@@ -10346,37 +9465,6 @@ public class Observable<T> {
         return lift(new OperatorZipIterable<T, T2, R>(other, zipFunction));
     }
 
-    /**
-     * Returns an Observable that emits items that are the result of applying a specified function to pairs of
-     * values, one each from the source Observable and another specified Observable.
-     * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * 
-     * @param <T2>
-     *            the type of items emitted by the {@code other} Observable
-     * @param <R>
-     *            the type of items emitted by the resulting Observable
-     * @param other
-     *            the other Observable
-     * @param zipFunction
-     *            a function that combines the pairs of items from the two Observables to generate the items to
-     *            be emitted by the resulting Observable
-     * @return an Observable that pairs up values from the source Observable and the {@code other} Observable
-     *         and emits the results of {@code zipFunction} applied to these pairs
-     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Combining-Observables#zip">RxJava wiki: zip</a>
-     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.zip.aspx">MSDN: Observable.Zip</a>
-     * @deprecated use {@link #zipWith} instead. Changed to match naming convention of {@link #mergeWith},
-     *             {@link #concatWith}, etc.
-     */
-    @Deprecated
-    public final <T2, R> Observable<R> zip(Observable<? extends T2> other, Func2<? super T, ? super T2, ? extends R> zipFunction) {
-        return zip(this, other, zipFunction);
-    }
-    
     /**
      * Returns an Observable that emits items that are the result of applying a specified function to pairs of
      * values, one each from the source Observable and another specified Observable.

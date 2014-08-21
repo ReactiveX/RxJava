@@ -32,21 +32,21 @@ public final class Schedulers {
     private static final Schedulers INSTANCE = new Schedulers();
 
     private Schedulers() {
-        Scheduler c = RxJavaPlugins.getInstance().getDefaultSchedulers().getComputationScheduler();
+        Scheduler c = RxJavaPlugins.getInstance().getSchedulersHook().getComputationScheduler();
         if (c != null) {
             computationScheduler = c;
         } else {
             computationScheduler = new EventLoopsScheduler();
         }
 
-        Scheduler io = RxJavaPlugins.getInstance().getDefaultSchedulers().getIOScheduler();
+        Scheduler io = RxJavaPlugins.getInstance().getSchedulersHook().getIOScheduler();
         if (io != null) {
             ioScheduler = io;
         } else {
             ioScheduler = new CachedThreadScheduler();
         }
 
-        Scheduler nt = RxJavaPlugins.getInstance().getDefaultSchedulers().getNewThreadScheduler();
+        Scheduler nt = RxJavaPlugins.getInstance().getSchedulersHook().getNewThreadScheduler();
         if (nt != null) {
             newThreadScheduler = nt;
         } else {
