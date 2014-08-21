@@ -95,7 +95,7 @@ public class OperatorZipIterableTest {
 
         Iterable<String> r2 = Arrays.asList("1", "2", "3");
 
-        r1.zip(r2, zipr2).subscribe(o);
+        r1.zipWith(r2, zipr2).subscribe(o);
 
         r1.onNext("one-");
         r1.onNext("two-");
@@ -121,7 +121,7 @@ public class OperatorZipIterableTest {
 
         Iterable<String> r2 = Arrays.asList("1", "2", "3");
 
-        r1.zip(r2, zipr2).subscribe(o);
+        r1.zipWith(r2, zipr2).subscribe(o);
 
         r1.onCompleted();
 
@@ -142,7 +142,7 @@ public class OperatorZipIterableTest {
 
         Iterable<String> r2 = Arrays.asList();
 
-        r1.zip(r2, zipr2).subscribe(o);
+        r1.zipWith(r2, zipr2).subscribe(o);
 
         r1.onNext("one-");
         r1.onNext("two-");
@@ -165,7 +165,7 @@ public class OperatorZipIterableTest {
 
         Iterable<String> r2 = Arrays.asList("1", "2", "3");
 
-        r1.zip(r2, zipr2).subscribe(o);
+        r1.zipWith(r2, zipr2).subscribe(o);
 
         r1.onNext("one-");
         r1.onNext("two-");
@@ -189,7 +189,7 @@ public class OperatorZipIterableTest {
 
         Iterable<String> r2 = Arrays.asList("1", "2");
 
-        r1.zip(r2, zipr2).subscribe(o);
+        r1.zipWith(r2, zipr2).subscribe(o);
 
         r1.onNext("one-");
         r1.onNext("two-");
@@ -214,7 +214,7 @@ public class OperatorZipIterableTest {
 
         Iterable<String> r2 = Arrays.asList("1", "2", "3");
 
-        r1.zip(r2, zipr2).subscribe(o);
+        r1.zipWith(r2, zipr2).subscribe(o);
 
         r1.onNext("one-");
         r1.onNext("two-");
@@ -243,7 +243,7 @@ public class OperatorZipIterableTest {
             }
         };
 
-        r1.zip(r2, zipr2).subscribe(o);
+        r1.zipWith(r2, zipr2).subscribe(o);
 
         r1.onNext("one-");
         r1.onNext("two-");
@@ -295,7 +295,7 @@ public class OperatorZipIterableTest {
 
         };
 
-        r1.zip(r2, zipr2).subscribe(o);
+        r1.zipWith(r2, zipr2).subscribe(o);
 
         r1.onNext("one-");
         r1.onError(new TestException());
@@ -340,7 +340,7 @@ public class OperatorZipIterableTest {
 
         };
 
-        r1.zip(r2, zipr2).subscribe(o);
+        r1.zipWith(r2, zipr2).subscribe(o);
 
         r1.onError(new TestException());
 
@@ -374,7 +374,7 @@ public class OperatorZipIterableTest {
         
         SquareStr squareStr = new SquareStr();
         
-        o.map(squareStr).zip(it, concat2Strings).take(2).subscribe(printer);
+        o.map(squareStr).zipWith(it, concat2Strings).take(2).subscribe(printer);
         
         assertEquals(2, squareStr.counter.get());
     }

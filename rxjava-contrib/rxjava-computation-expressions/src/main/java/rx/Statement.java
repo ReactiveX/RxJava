@@ -74,7 +74,7 @@ public final class Statement {
      */
     public static <K, R> Observable<R> switchCase(Func0<? extends K> caseSelector,
             Map<? super K, ? extends Observable<? extends R>> mapOfCases, Scheduler scheduler) {
-        return switchCase(caseSelector, mapOfCases, Observable.<R> empty(scheduler));
+        return switchCase(caseSelector, mapOfCases, Observable.<R> empty().subscribeOn(scheduler));
     }
 
     /**
@@ -179,7 +179,7 @@ public final class Statement {
      *         Observable running on the specified Scheduler otherwise
      */
     public static <R> Observable<R> ifThen(Func0<Boolean> condition, Observable<? extends R> then, Scheduler scheduler) {
-        return ifThen(condition, then, Observable.<R> empty(scheduler));
+        return ifThen(condition, then, Observable.<R> empty().subscribeOn(scheduler));
     }
 
     /**

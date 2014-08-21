@@ -112,13 +112,13 @@ public abstract class AbstractSchedulerTests {
     @Test
     public final void testNestedScheduling() {
 
-        Observable<Integer> ids = Observable.from(Arrays.asList(1, 2), getScheduler());
+        Observable<Integer> ids = Observable.from(Arrays.asList(1, 2)).subscribeOn(getScheduler());
 
         Observable<String> m = ids.flatMap(new Func1<Integer, Observable<String>>() {
 
             @Override
             public Observable<String> call(Integer id) {
-                return Observable.from(Arrays.asList("a-" + id, "b-" + id), getScheduler())
+                return Observable.from(Arrays.asList("a-" + id, "b-" + id)).subscribeOn(getScheduler())
                         .map(new Func1<String, String>() {
 
                             @Override
@@ -406,7 +406,7 @@ public abstract class AbstractSchedulerTests {
         final Scheduler scheduler = getScheduler();
 
         Observable<String> o = Observable.just("one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten")
-                .mergeMap(new Func1<String, Observable<String>>() {
+                .flatMap(new Func1<String, Observable<String>>() {
 
                     @Override
                     public Observable<String> call(final String v) {

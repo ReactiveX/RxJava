@@ -56,7 +56,7 @@ public class OperatorDeferFutureTest {
                             if (!ready.await(1000, TimeUnit.MILLISECONDS)) {
                                 throw new IllegalStateException("Not started in time");
                             }
-                            return Observable.from(1);
+                            return Observable.just(1);
                         }
                     });
                 }

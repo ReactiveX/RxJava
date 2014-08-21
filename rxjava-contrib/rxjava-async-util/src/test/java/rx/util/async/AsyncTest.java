@@ -705,7 +705,7 @@ public class AsyncTest {
                 return "one";
             }
         };
-        assertEquals("one", Async.start(func).toBlockingObservable().single());
+        assertEquals("one", Async.start(func).toBlocking().single());
     }
 
     @Test(expected = RuntimeException.class)
@@ -716,7 +716,7 @@ public class AsyncTest {
                 throw new RuntimeException("Some error");
             }
         };
-        Async.start(func).toBlockingObservable().single();
+        Async.start(func).toBlocking().single();
     }
 
     @Test

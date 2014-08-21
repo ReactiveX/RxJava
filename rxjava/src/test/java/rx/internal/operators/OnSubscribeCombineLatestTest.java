@@ -791,7 +791,7 @@ public class OnSubscribeCombineLatestTest {
 
         int NUM = RxRingBuffer.SIZE * 4;
         TestSubscriber<String> ts = new TestSubscriber<String>();
-        Observable.combineLatest(Observable.from("one", "two"),
+        Observable.combineLatest(Observable.just("one", "two"),
                 Observable.range(2, NUM), combineLatestFunction).
                 observeOn(Schedulers.computation()).subscribe(ts);
 

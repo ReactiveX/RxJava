@@ -39,7 +39,7 @@ public class OperatorSumTest {
 
     @Test
     public void testSumOfAFewInts() throws Throwable {
-        Observable<Integer> src = Observable.from(1, 2, 3, 4, 5);
+        Observable<Integer> src = Observable.just(1, 2, 3, 4, 5);
         sumIntegers(src).subscribe(w);
 
         verify(w, times(1)).onNext(anyInt());
@@ -61,7 +61,7 @@ public class OperatorSumTest {
 
     @Test
     public void testSumOfAFewLongs() throws Throwable {
-        Observable<Long> src = Observable.from(1L, 2L, 3L, 4L, 5L);
+        Observable<Long> src = Observable.just(1L, 2L, 3L, 4L, 5L);
         sumLongs(src).subscribe(wl);
 
         verify(wl, times(1)).onNext(anyLong());
@@ -83,7 +83,7 @@ public class OperatorSumTest {
 
     @Test
     public void testSumOfAFewFloats() throws Throwable {
-        Observable<Float> src = Observable.from(1.0f);
+        Observable<Float> src = Observable.just(1.0f);
         sumFloats(src).subscribe(wf);
 
         verify(wf, times(1)).onNext(anyFloat());
@@ -105,7 +105,7 @@ public class OperatorSumTest {
 
     @Test
     public void testSumOfAFewDoubles() throws Throwable {
-        Observable<Double> src = Observable.from(0.0d, 1.0d, 0.5d);
+        Observable<Double> src = Observable.just(0.0d, 1.0d, 0.5d);
         sumDoubles(src).subscribe(wd);
 
         verify(wd, times(1)).onNext(anyDouble());
@@ -139,7 +139,7 @@ public class OperatorSumTest {
 
     @Test
     public void testIntegerSumSelector() {
-        Observable<String> source = Observable.from("a", "bb", "ccc", "dddd");
+        Observable<String> source = Observable.just("a", "bb", "ccc", "dddd");
         Func1<String, Integer> length = new Func1<String, Integer>() {
             @Override
             public Integer call(String t1) {
@@ -157,7 +157,7 @@ public class OperatorSumTest {
 
     @Test
     public void testLongSumSelector() {
-        Observable<String> source = Observable.from("a", "bb", "ccc", "dddd");
+        Observable<String> source = Observable.just("a", "bb", "ccc", "dddd");
         Func1<String, Long> length = new Func1<String, Long>() {
             @Override
             public Long call(String t1) {
@@ -175,7 +175,7 @@ public class OperatorSumTest {
 
     @Test
     public void testFloatSumSelector() {
-        Observable<String> source = Observable.from("a", "bb", "ccc", "dddd");
+        Observable<String> source = Observable.just("a", "bb", "ccc", "dddd");
         Func1<String, Float> length = new Func1<String, Float>() {
             @Override
             public Float call(String t1) {
@@ -193,7 +193,7 @@ public class OperatorSumTest {
 
     @Test
     public void testDoubleSumSelector() {
-        Observable<String> source = Observable.from("a", "bb", "ccc", "dddd");
+        Observable<String> source = Observable.just("a", "bb", "ccc", "dddd");
         Func1<String, Double> length = new Func1<String, Double>() {
             @Override
             public Double call(String t1) {
@@ -283,7 +283,7 @@ public class OperatorSumTest {
 
     @Test
     public void testIntegerSumSelectorThrows() {
-        Observable<String> source = Observable.from("a");
+        Observable<String> source = Observable.just("a");
         Func1<String, Integer> length = new Func1<String, Integer>() {
             @Override
             public Integer call(String t1) {
@@ -301,7 +301,7 @@ public class OperatorSumTest {
 
     @Test
     public void testLongSumSelectorThrows() {
-        Observable<String> source = Observable.from("a");
+        Observable<String> source = Observable.just("a");
         Func1<String, Long> length = new Func1<String, Long>() {
             @Override
             public Long call(String t1) {
@@ -319,7 +319,7 @@ public class OperatorSumTest {
 
     @Test
     public void testFloatSumSelectorThrows() {
-        Observable<String> source = Observable.from("a");
+        Observable<String> source = Observable.just("a");
         Func1<String, Float> length = new Func1<String, Float>() {
             @Override
             public Float call(String t1) {
@@ -337,7 +337,7 @@ public class OperatorSumTest {
 
     @Test
     public void testDoubleSumSelectorThrows() {
-        Observable<String> source = Observable.from("a");
+        Observable<String> source = Observable.just("a");
         Func1<String, Double> length = new Func1<String, Double>() {
             @Override
             public Double call(String t1) {

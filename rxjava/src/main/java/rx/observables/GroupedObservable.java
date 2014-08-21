@@ -38,27 +38,6 @@ import rx.functions.Func1;
 public class GroupedObservable<K, T> extends Observable<T> {
     private final K key;
 
-    /**
-     * Converts an {@link Observable} into a {@code GroupedObservable} with a particular key.
-     *
-     * @param key
-     *          the key to identify the group of items emitted by this {@code GroupedObservable}
-     * @param o
-     *          the {@link Observable} to convert
-     * @return a {@code GroupedObservable} representation of {@code o}, with key {@code key}
-     * @deprecated Use Observable.groupBy with element selector instead. 
-     */
-    @Deprecated
-    public static <K, T> GroupedObservable<K, T> from(K key, final Observable<T> o) {
-        return new GroupedObservable<K, T>(key, new OnSubscribe<T>() {
-
-            @Override
-            public void call(Subscriber<? super T> s) {
-                o.unsafeSubscribe(s);
-            }
-        });
-    }
-
     public GroupedObservable(K key, OnSubscribe<T> onSubscribe) {
         super(onSubscribe);
         this.key = key;

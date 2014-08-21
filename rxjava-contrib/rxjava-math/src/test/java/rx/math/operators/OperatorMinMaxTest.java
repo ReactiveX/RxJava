@@ -35,7 +35,7 @@ import rx.functions.Func1;
 public class OperatorMinMaxTest {
     @Test
     public void testMin() {
-        Observable<Integer> observable = min(Observable.from(2, 3, 1, 4));
+        Observable<Integer> observable = min(Observable.just(2, 3, 1, 4));
 
         @SuppressWarnings("unchecked")
         Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
@@ -63,7 +63,7 @@ public class OperatorMinMaxTest {
 
     @Test
     public void testMinWithComparator() {
-        Observable<Integer> observable = min(Observable.from(2, 3, 1, 4),
+        Observable<Integer> observable = min(Observable.just(2, 3, 1, 4),
                 new Comparator<Integer>() {
                     @Override
                     public int compare(Integer o1, Integer o2) {
@@ -104,7 +104,7 @@ public class OperatorMinMaxTest {
     @Test
     public void testMinBy() {
         Observable<List<String>> observable = minBy(
-                Observable.from("1", "2", "3", "4", "5", "6"),
+                Observable.just("1", "2", "3", "4", "5", "6"),
                 new Func1<String, Integer>() {
                     @Override
                     public Integer call(String t1) {
@@ -145,7 +145,7 @@ public class OperatorMinMaxTest {
     @Test
     public void testMinByWithComparator() {
         Observable<List<String>> observable = minBy(
-                Observable.from("1", "2", "3", "4", "5", "6"),
+                Observable.just("1", "2", "3", "4", "5", "6"),
                 new Func1<String, Integer>() {
                     @Override
                     public Integer call(String t1) {
@@ -195,7 +195,7 @@ public class OperatorMinMaxTest {
 
     @Test
     public void testMax() {
-        Observable<Integer> observable = max(Observable.from(2, 3, 1, 4));
+        Observable<Integer> observable = max(Observable.just(2, 3, 1, 4));
 
         @SuppressWarnings("unchecked")
         Observer<Integer> observer = (Observer<Integer>) mock(Observer.class);
@@ -223,7 +223,7 @@ public class OperatorMinMaxTest {
 
     @Test
     public void testMaxWithComparator() {
-        Observable<Integer> observable = max(Observable.from(2, 3, 1, 4),
+        Observable<Integer> observable = max(Observable.just(2, 3, 1, 4),
                 new Comparator<Integer>() {
                     @Override
                     public int compare(Integer o1, Integer o2) {
@@ -264,7 +264,7 @@ public class OperatorMinMaxTest {
     @Test
     public void testMaxBy() {
         Observable<List<String>> observable = maxBy(
-                Observable.from("1", "2", "3", "4", "5", "6"),
+                Observable.just("1", "2", "3", "4", "5", "6"),
                 new Func1<String, Integer>() {
                     @Override
                     public Integer call(String t1) {
@@ -305,7 +305,7 @@ public class OperatorMinMaxTest {
     @Test
     public void testMaxByWithComparator() {
         Observable<List<String>> observable = maxBy(
-                Observable.from("1", "2", "3", "4", "5", "6"),
+                Observable.just("1", "2", "3", "4", "5", "6"),
                 new Func1<String, Integer>() {
                     @Override
                     public Integer call(String t1) {

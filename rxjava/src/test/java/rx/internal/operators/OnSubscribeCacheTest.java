@@ -114,7 +114,7 @@ public class OnSubscribeCacheTest {
 
         Observable<Integer> source2 = source1
                 .repeat(4)
-                .zip(Observable.timer(0, 10, TimeUnit.MILLISECONDS, Schedulers.newThread()), new Func2<Integer, Long, Integer>() {
+                .zipWith(Observable.timer(0, 10, TimeUnit.MILLISECONDS, Schedulers.newThread()), new Func2<Integer, Long, Integer>() {
                     @Override
                     public Integer call(Integer t1, Long t2) {
                         return t1;

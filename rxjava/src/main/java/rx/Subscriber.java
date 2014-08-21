@@ -40,13 +40,6 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
     /* protected by `this` */
     private long requested = Long.MIN_VALUE; // default to not set
 
-    @Deprecated
-    protected Subscriber(CompositeSubscription cs) {
-        this.op = null;
-        this.cs = new SubscriptionList();
-        add(cs);
-    }
-
     protected Subscriber() {
         this.op = null;
         this.cs = new SubscriptionList();
