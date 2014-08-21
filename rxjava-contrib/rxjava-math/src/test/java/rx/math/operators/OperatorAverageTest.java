@@ -47,7 +47,7 @@ public class OperatorAverageTest {
 
     @Test
     public void testAverageOfAFewInts() throws Throwable {
-        Observable<Integer> src = Observable.from(1, 2, 3, 4, 6);
+        Observable<Integer> src = Observable.just(1, 2, 3, 4, 6);
         averageInteger(src).subscribe(w);
 
         verify(w, times(1)).onNext(anyInt());
@@ -68,7 +68,7 @@ public class OperatorAverageTest {
 
     @Test
     public void testAverageOfAFewLongs() throws Throwable {
-        Observable<Long> src = Observable.from(1L, 2L, 3L, 4L, 6L);
+        Observable<Long> src = Observable.just(1L, 2L, 3L, 4L, 6L);
         averageLong(src).subscribe(wl);
 
         verify(wl, times(1)).onNext(anyLong());
@@ -89,7 +89,7 @@ public class OperatorAverageTest {
 
     @Test
     public void testAverageOfAFewFloats() throws Throwable {
-        Observable<Float> src = Observable.from(1.0f, 2.0f);
+        Observable<Float> src = Observable.just(1.0f, 2.0f);
         averageFloat(src).subscribe(wf);
 
         verify(wf, times(1)).onNext(anyFloat());
@@ -110,7 +110,7 @@ public class OperatorAverageTest {
 
     @Test
     public void testAverageOfAFewDoubles() throws Throwable {
-        Observable<Double> src = Observable.from(1.0d, 2.0d);
+        Observable<Double> src = Observable.just(1.0d, 2.0d);
         averageDouble(src).subscribe(wd);
 
         verify(wd, times(1)).onNext(anyDouble());
@@ -143,7 +143,7 @@ public class OperatorAverageTest {
 
     @Test
     public void testIntegerAverageSelector() {
-        Observable<String> source = Observable.from("a", "bb", "ccc", "dddd");
+        Observable<String> source = Observable.just("a", "bb", "ccc", "dddd");
         Func1<String, Integer> length = new Func1<String, Integer>() {
             @Override
             public Integer call(String t1) {
@@ -161,7 +161,7 @@ public class OperatorAverageTest {
 
     @Test
     public void testLongAverageSelector() {
-        Observable<String> source = Observable.from("a", "bb", "ccc", "dddd");
+        Observable<String> source = Observable.just("a", "bb", "ccc", "dddd");
         Func1<String, Long> length = new Func1<String, Long>() {
             @Override
             public Long call(String t1) {
@@ -179,7 +179,7 @@ public class OperatorAverageTest {
 
     @Test
     public void testFloatAverageSelector() {
-        Observable<String> source = Observable.from("a", "bb", "ccc", "dddd");
+        Observable<String> source = Observable.just("a", "bb", "ccc", "dddd");
         Func1<String, Float> length = new Func1<String, Float>() {
             @Override
             public Float call(String t1) {
@@ -197,7 +197,7 @@ public class OperatorAverageTest {
 
     @Test
     public void testDoubleAverageSelector() {
-        Observable<String> source = Observable.from("a", "bb", "ccc", "dddd");
+        Observable<String> source = Observable.just("a", "bb", "ccc", "dddd");
         Func1<String, Double> length = new Func1<String, Double>() {
             @Override
             public Double call(String t1) {
@@ -287,7 +287,7 @@ public class OperatorAverageTest {
 
     @Test
     public void testIntegerAverageSelectorThrows() {
-        Observable<String> source = Observable.from("a");
+        Observable<String> source = Observable.just("a");
         Func1<String, Integer> length = new Func1<String, Integer>() {
             @Override
             public Integer call(String t1) {
@@ -305,7 +305,7 @@ public class OperatorAverageTest {
 
     @Test
     public void testLongAverageSelectorThrows() {
-        Observable<String> source = Observable.from("a");
+        Observable<String> source = Observable.just("a");
         Func1<String, Long> length = new Func1<String, Long>() {
             @Override
             public Long call(String t1) {
@@ -323,7 +323,7 @@ public class OperatorAverageTest {
 
     @Test
     public void testFloatAverageSelectorThrows() {
-        Observable<String> source = Observable.from("a");
+        Observable<String> source = Observable.just("a");
         Func1<String, Float> length = new Func1<String, Float>() {
             @Override
             public Float call(String t1) {
@@ -341,7 +341,7 @@ public class OperatorAverageTest {
 
     @Test
     public void testDoubleAverageSelectorThrows() {
-        Observable<String> source = Observable.from("a");
+        Observable<String> source = Observable.just("a");
         Func1<String, Double> length = new Func1<String, Double>() {
             @Override
             public Double call(String t1) {

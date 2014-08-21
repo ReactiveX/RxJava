@@ -184,8 +184,8 @@ public class OperatorConditionalsTest {
 
     @Test
     public void testSimple() {
-        Observable<Integer> source1 = Observable.from(1, 2, 3);
-        Observable<Integer> source2 = Observable.from(4, 5, 6);
+        Observable<Integer> source1 = Observable.just(1, 2, 3);
+        Observable<Integer> source2 = Observable.just(4, 5, 6);
 
         Map<Integer, Observable<Integer>> map = new HashMap<Integer, Observable<Integer>>();
         map.put(1, source1);
@@ -200,8 +200,8 @@ public class OperatorConditionalsTest {
 
     @Test
     public void testDefaultCase() {
-        Observable<Integer> source1 = Observable.from(1, 2, 3);
-        Observable<Integer> source2 = Observable.from(4, 5, 6);
+        Observable<Integer> source1 = Observable.just(1, 2, 3);
+        Observable<Integer> source2 = Observable.just(4, 5, 6);
 
         Map<Integer, Observable<Integer>> map = new HashMap<Integer, Observable<Integer>>();
         map.put(1, source1);
@@ -215,7 +215,7 @@ public class OperatorConditionalsTest {
 
     @Test
     public void testCaseSelectorThrows() {
-        Observable<Integer> source1 = Observable.from(1, 2, 3);
+        Observable<Integer> source1 = Observable.just(1, 2, 3);
 
         Map<Integer, Observable<Integer>> map = new HashMap<Integer, Observable<Integer>>();
         map.put(1, source1);
@@ -228,8 +228,8 @@ public class OperatorConditionalsTest {
 
     @Test
     public void testMapGetThrows() {
-        Observable<Integer> source1 = Observable.from(1, 2, 3);
-        Observable<Integer> source2 = Observable.from(4, 5, 6);
+        Observable<Integer> source1 = Observable.just(1, 2, 3);
+        Observable<Integer> source2 = Observable.just(4, 5, 6);
 
         Map<Integer, Observable<Integer>> map = new HashMap<Integer, Observable<Integer>>() {
             private static final long serialVersionUID = -4342868139960216388L;
@@ -254,7 +254,7 @@ public class OperatorConditionalsTest {
 
     @Test
     public void testMapContainsKeyThrows() {
-        Observable<Integer> source1 = Observable.from(1, 2, 3);
+        Observable<Integer> source1 = Observable.just(1, 2, 3);
 
         Map<Integer, Observable<Integer>> map = new HashMap<Integer, Observable<Integer>>() {
             private static final long serialVersionUID = 1975411728567003983L;
@@ -278,7 +278,7 @@ public class OperatorConditionalsTest {
 
     @Test
     public void testChosenObservableThrows() {
-        Observable<Integer> source1 = Observable.from(1, 2, 3);
+        Observable<Integer> source1 = Observable.just(1, 2, 3);
         Observable<Integer> source2 = Observable.error(new RuntimeException("Forced failure"));
 
         Map<Integer, Observable<Integer>> map = new HashMap<Integer, Observable<Integer>>();
@@ -293,7 +293,7 @@ public class OperatorConditionalsTest {
 
     @Test
     public void testIfThen() {
-        Observable<Integer> source1 = Observable.from(1, 2, 3);
+        Observable<Integer> source1 = Observable.just(1, 2, 3);
 
         Observable<Integer> result = Statement.ifThen(condition, source1);
 
@@ -305,8 +305,8 @@ public class OperatorConditionalsTest {
 
     @Test
     public void testIfThenElse() {
-        Observable<Integer> source1 = Observable.from(1, 2, 3);
-        Observable<Integer> source2 = Observable.from(4, 5, 6);
+        Observable<Integer> source1 = Observable.just(1, 2, 3);
+        Observable<Integer> source2 = Observable.just(4, 5, 6);
 
         Observable<Integer> result = Statement.ifThen(condition, source1, source2);
 
@@ -318,7 +318,7 @@ public class OperatorConditionalsTest {
 
     @Test
     public void testIfThenConditonThrows() {
-        Observable<Integer> source1 = Observable.from(1, 2, 3);
+        Observable<Integer> source1 = Observable.just(1, 2, 3);
 
         Observable<Integer> result = Statement.ifThen(conditionError, source1);
 
@@ -343,7 +343,7 @@ public class OperatorConditionalsTest {
 
     @Test
     public void testIfThenElseObservableThrows() {
-        Observable<Integer> source1 = Observable.from(1, 2, 3);
+        Observable<Integer> source1 = Observable.just(1, 2, 3);
         Observable<Integer> source2 = Observable.error(new RuntimeException("Forced failure!"));
 
         Observable<Integer> result = Statement.ifThen(condition, source1, source2);
@@ -356,7 +356,7 @@ public class OperatorConditionalsTest {
 
     @Test
     public void testDoWhile() {
-        Observable<Integer> source1 = Observable.from(1, 2, 3);
+        Observable<Integer> source1 = Observable.just(1, 2, 3);
 
         Observable<Integer> result = Statement.doWhile(source1, condition);
 
@@ -365,7 +365,7 @@ public class OperatorConditionalsTest {
 
     @Test
     public void testDoWhileOnce() {
-        Observable<Integer> source1 = Observable.from(1, 2, 3);
+        Observable<Integer> source1 = Observable.just(1, 2, 3);
 
         condition.call(); // toggle to false
         Observable<Integer> result = Statement.doWhile(source1, condition);
@@ -375,7 +375,7 @@ public class OperatorConditionalsTest {
 
     @Test
     public void testDoWhileConditionThrows() {
-        Observable<Integer> source1 = Observable.from(1, 2, 3);
+        Observable<Integer> source1 = Observable.just(1, 2, 3);
         Observable<Integer> result = Statement.doWhile(source1, conditionError);
 
         observeError(result, RuntimeException.class, 1, 2, 3);
@@ -383,7 +383,7 @@ public class OperatorConditionalsTest {
 
     @Test
     public void testDoWhileSourceThrows() {
-        Observable<Integer> source1 = Observable.concat(Observable.from(1, 2, 3),
+        Observable<Integer> source1 = Observable.concat(Observable.just(1, 2, 3),
                 Observable.<Integer> error(new RuntimeException("Forced failure!")));
 
         Observable<Integer> result = Statement.doWhile(source1, condition);
@@ -404,7 +404,7 @@ public class OperatorConditionalsTest {
 
     @Test
     public void testDoWhileManyTimes() {
-        Observable<Integer> source1 = Observable.from(1, 2, 3).subscribeOn(Schedulers.trampoline());
+        Observable<Integer> source1 = Observable.just(1, 2, 3).subscribeOn(Schedulers.trampoline());
 
         List<Integer> expected = new ArrayList<Integer>(numRecursion * 3);
         for (int i = 0; i < numRecursion; i++) {
@@ -420,7 +420,7 @@ public class OperatorConditionalsTest {
 
     @Test
     public void testWhileDo() {
-        Observable<Integer> source1 = Observable.from(1, 2, 3);
+        Observable<Integer> source1 = Observable.just(1, 2, 3);
         Observable<Integer> result = Statement.whileDo(source1, countdown(2));
 
         observe(result, 1, 2, 3, 1, 2, 3);
@@ -428,7 +428,7 @@ public class OperatorConditionalsTest {
 
     @Test
     public void testWhileDoOnce() {
-        Observable<Integer> source1 = Observable.from(1, 2, 3);
+        Observable<Integer> source1 = Observable.just(1, 2, 3);
         Observable<Integer> result = Statement.whileDo(source1, countdown(1));
 
         observe(result, 1, 2, 3);
@@ -436,7 +436,7 @@ public class OperatorConditionalsTest {
 
     @Test
     public void testWhileDoZeroTimes() {
-        Observable<Integer> source1 = Observable.from(1, 2, 3);
+        Observable<Integer> source1 = Observable.just(1, 2, 3);
         Observable<Integer> result = Statement.whileDo(source1, countdown(0));
 
         observe(result);
@@ -444,7 +444,7 @@ public class OperatorConditionalsTest {
 
     @Test
     public void testWhileDoManyTimes() {
-        Observable<Integer> source1 = Observable.from(1, 2, 3).subscribeOn(Schedulers.trampoline());
+        Observable<Integer> source1 = Observable.just(1, 2, 3).subscribeOn(Schedulers.trampoline());
 
         List<Integer> expected = new ArrayList<Integer>(numRecursion * 3);
         for (int i = 0; i < numRecursion; i++) {
@@ -460,7 +460,7 @@ public class OperatorConditionalsTest {
 
     @Test
     public void testWhileDoConditionThrows() {
-        Observable<Integer> source1 = Observable.from(1, 2, 3);
+        Observable<Integer> source1 = Observable.just(1, 2, 3);
         Observable<Integer> result = Statement.whileDo(source1, conditionError);
 
         observeError(result, RuntimeException.class, 1, 2, 3);
@@ -468,7 +468,7 @@ public class OperatorConditionalsTest {
 
     @Test
     public void testWhileDoConditionThrowsImmediately() {
-        Observable<Integer> source1 = Observable.from(1, 2, 3);
+        Observable<Integer> source1 = Observable.just(1, 2, 3);
         conditionError.call();
         Observable<Integer> result = Statement.whileDo(source1, conditionError);
 
@@ -477,7 +477,7 @@ public class OperatorConditionalsTest {
 
     @Test
     public void testWhileDoSourceThrows() {
-        Observable<Integer> source1 = Observable.concat(Observable.from(1, 2, 3),
+        Observable<Integer> source1 = Observable.concat(Observable.just(1, 2, 3),
                 Observable.<Integer> error(new RuntimeException("Forced failure!")));
 
         Observable<Integer> result = Statement.whileDo(source1, condition);

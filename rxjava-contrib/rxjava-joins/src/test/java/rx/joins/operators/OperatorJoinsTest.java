@@ -386,8 +386,8 @@ public class OperatorJoinsTest {
 
     @Test
     public void whenMultipleSymmetric() {
-        Observable<Integer> source1 = Observable.from(1, 2, 3);
-        Observable<Integer> source2 = Observable.from(4, 5, 6);
+        Observable<Integer> source1 = Observable.just(1, 2, 3);
+        Observable<Integer> source2 = Observable.just(4, 5, 6);
 
         Observable<Integer> m = JoinObservable.when(JoinObservable.from(source1).and(source2).then(add)).toObservable();
         m.subscribe(observer);
@@ -401,8 +401,8 @@ public class OperatorJoinsTest {
 
     @Test
     public void whenMultipleAsymSymmetric() {
-        Observable<Integer> source1 = Observable.from(1, 2, 3);
-        Observable<Integer> source2 = Observable.from(4, 5);
+        Observable<Integer> source1 = Observable.just(1, 2, 3);
+        Observable<Integer> source2 = Observable.just(4, 5);
 
         Observable<Integer> m = JoinObservable.when(JoinObservable.from(source1).and(source2).then(add)).toObservable();
         m.subscribe(observer);

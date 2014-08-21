@@ -55,7 +55,7 @@ public class OperatorForEachFutureTest {
         final ExecutorService exec = Executors.newCachedThreadPool();
         
         try {
-            Observable<Integer> source = Observable.from(1, 2, 3)
+            Observable<Integer> source = Observable.just(1, 2, 3)
                     .subscribeOn(Schedulers.computation());
             
             final AtomicInteger sum = new AtomicInteger();
@@ -128,7 +128,7 @@ public class OperatorForEachFutureTest {
     
     @Test
     public void testSimpleScheduled() {
-        Observable<Integer> source = Observable.from(1, 2, 3)
+        Observable<Integer> source = Observable.just(1, 2, 3)
                 .subscribeOn(Schedulers.computation());
         
         final AtomicInteger sum = new AtomicInteger();

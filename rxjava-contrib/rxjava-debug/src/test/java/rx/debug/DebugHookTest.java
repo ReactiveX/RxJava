@@ -95,7 +95,7 @@ public class DebugHookTest {
         final DebugHook hook = new DebugHook(listener);
         RxJavaPlugins.getInstance().registerObservableExecutionHook(hook);
 
-        Observable.from(1).subscribe(Subscribers.empty());
+        Observable.just(1).subscribe(Subscribers.empty());
 
         final InOrder inOrder = inOrder(listener);
         inOrder.verify(listener).start(subscribe());
