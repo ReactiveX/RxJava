@@ -379,6 +379,18 @@ class RxScalaDemo extends JUnitSuite {
     waitFor(Olympics.yearTicks)
   }
 
+  @Test def groupByExample2() {
+    val medalByYear = Olympics.mountainBikeMedals.groupBy(medal => medal.year, medal => medal.country)
+
+    for ((year, countries) <- medalByYear; country <- countries) {
+      println(s"${year}: ${country}")
+    }
+
+    Olympics.yearTicks.subscribe(year => println(s"\nYear $year starts."))
+
+    waitFor(Olympics.yearTicks)
+  }
+
   @Test def groupByUntilExample() {
     val numbers = Observable.interval(250 millis).take(14)
     val grouped = numbers.groupByUntil(x => x % 2){ case (key, obs) => obs.filter(x => x == 7) }
@@ -1510,4 +1522,104 @@ class RxScalaDemo extends JUnitSuite {
     o.take(3).toBlocking.foreach(println)
   }
 
+  @Test def collectExample() {
+    val o = Observable.just(1, 1.0, "a", 2, 2.0, "b")
+    o.collect { case s: String => "Item: " + s }.foreach(println(_))
+  }
+
+  @Test def usingExample() {
+    import scala.io.{Codec, Source}
+
+    Observable.using { new java.net.URL("http://rxscala.github.io/").openStream() }(
+      input => Source.fromInputStream(input)(Codec.UTF8).getLines().toList.toObservable,
+      input => input.close
+    ).foreach(println(_))
+  }
+
+  def createFastObservable: Observable[Int] = {
+    Observable {
+      subscriber: Subscriber[Int] => {
+        (0 to 2000).takeWhile(_ => !subscriber.isUnsubscribed).foreach(subscriber.onNext(_))
+        subscriber.onCompleted()
+      }
+    }
+  }
+
+  @Test def withoutBackpressureExample() {
+    val o = createFastObservable
+    val l = new CountDownLatch(1)
+    o.observeOn(NewThreadScheduler()).subscribe(new Subscriber[Int] {
+      override def onStart() {
+        request(1)
+      }
+
+      override def onNext(n: Int) {
+        println(n)
+        Thread.sleep(10) // emulate a slow subscriber
+        request(1)
+      }
+
+      override def onError(e: Throwable) {
+        e.printStackTrace()
+        l.countDown()
+      }
+
+      override def onCompleted() {
+        l.countDown()
+      }
+    })
+    l.await()
+  }
+
+  @Test def onBackpressureDropExample() {
+    val o = createFastObservable.onBackpressureDrop
+    val l = new CountDownLatch(1)
+    o.observeOn(NewThreadScheduler()).subscribe(new Subscriber[Int] {
+      override def onStart() {
+        request(1)
+      }
+
+      override def onNext(n: Int) {
+        println(n)
+        Thread.sleep(10) // emulate a slow subscriber
+        request(1)
+      }
+
+      override def onError(e: Throwable) {
+        e.printStackTrace()
+        l.countDown()
+      }
+
+      override def onCompleted() {
+        l.countDown()
+      }
+    })
+    l.await()
+  }
+
+  @Test def onBackpressureBufferExample() {
+    val o = createFastObservable.onBackpressureBuffer
+    val l = new CountDownLatch(1)
+    o.observeOn(NewThreadScheduler()).subscribe(new Subscriber[Int] {
+      override def onStart() {
+        request(1)
+      }
+
+      override def onNext(n: Int) {
+        println(n)
+        Thread.sleep(10) // emulate a slow subscriber
+        request(1)
+      }
+
+      override def onError(e: Throwable) {
+        e.printStackTrace()
+        l.countDown()
+      }
+
+      override def onCompleted() {
+        l.countDown()
+      }
+    })
+    l.await()
+  }
 }

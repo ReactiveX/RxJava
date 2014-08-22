@@ -84,6 +84,7 @@ class CompletenessTest extends JUnitSuite {
       "buffer(Observable[_ <: TOpening], Func1[_ >: TOpening, _ <: Observable[_ <: TClosing]])" -> "slidingBuffer(Observable[Opening])(Opening => Observable[Any])",
       "cast(Class[R])" -> "[RxJava needs this one because `rx.Observable` is invariant. `Observable` in RxScala is covariant and does not need this operator.]",
       "collect(R, Action2[R, _ >: T])" -> "foldLeft(R)((R, T) => R)",
+      "compose(Transformer[_ >: T, R])" -> "compose(Observable[T] => Observable[R])",
       "concatWith(Observable[_ <: T])" -> "[use `o1 ++ o2`]",
       "contains(Any)" -> "contains(U)",
       "count()" -> "length",
@@ -94,6 +95,8 @@ class CompletenessTest extends JUnitSuite {
       "dematerialize()" -> "dematerialize(<:<[Observable[T], Observable[Notification[U]]])",
       "doOnCompleted(Action0)" -> "doOnCompleted(=> Unit)",
       "doOnEach(Action1[Notification[_ >: T]])" -> "[use `doOnEach(T => Unit, Throwable => Unit, () => Unit)`]",
+      "doOnSubscribe(Action0)" -> "doOnSubscribe(=> Unit)",
+      "doOnUnsubscribe(Action0)" -> "doOnUnsubscribe(=> Unit)",
       "doOnTerminate(Action0)" -> "doOnTerminate(=> Unit)",
       "elementAtOrDefault(Int, T)" -> "elementAtOrDefault(Int, U)",
       "finallyDo(Action0)" -> "finallyDo(=> Unit)",
@@ -115,8 +118,9 @@ class CompletenessTest extends JUnitSuite {
       "limit(Int)" -> "take(Int)",
       "flatMap(Func1[_ >: T, _ <: Observable[_ <: U]], Func2[_ >: T, _ >: U, _ <: R])" -> "flatMapWith(T => Observable[U])((T, U) => R)",
       "flatMapIterable(Func1[_ >: T, _ <: Iterable[_ <: U]], Func2[_ >: T, _ >: U, _ <: R])" -> "flatMapIterableWith(T => Iterable[U])((T, U) => R)",
+      "groupBy(Func1[_ >: T, _ <: K], Func1[_ >: T, _ <: R])" -> "groupBy(T => K, T => V)",
       "mergeWith(Observable[_ <: T])" -> "merge(Observable[U])",
-      "multicast(Subject[_ >: T, _ <: R])" -> "multicast(Subject[R])",
+      "multicast(Func0[_ <: Subject[_ >: T, _ <: R]])" -> "multicast(=> Subject[R])",
       "multicast(Func0[_ <: Subject[_ >: T, _ <: TIntermediate]], Func1[_ >: Observable[TIntermediate], _ <: Observable[TResult]])" -> "multicast(() => Subject[R])(Observable[R] => Observable[U])",
       "ofType(Class[R])" -> "[use `filter(_.isInstanceOf[Class])`]",
       "onErrorResumeNext(Func1[Throwable, _ <: Observable[_ <: T]])" -> "onErrorResumeNext(Throwable => Observable[U])",
@@ -130,8 +134,8 @@ class CompletenessTest extends JUnitSuite {
       "publishLast(Func1[_ >: Observable[T], _ <: Observable[R]])" -> "publishLast(Observable[T] => Observable[R])",
       "reduce(Func2[T, T, T])" -> "reduce((U, U) => U)",
       "reduce(R, Func2[R, _ >: T, R])" -> "foldLeft(R)((R, T) => R)",
-      "repeatWhen(Func1[_ >: Observable[_ <: Notification[_]], _ <: Observable[_ <: Notification[_]]])" -> "repeatWhen(Observable[Notification[Any]] => Observable[Notification[Any]])",
-      "repeatWhen(Func1[_ >: Observable[_ <: Notification[_]], _ <: Observable[_ <: Notification[_]]], Scheduler)" -> "repeatWhen(Observable[Notification[Any]] => Observable[Notification[Any]], Scheduler)",
+      "repeatWhen(Func1[_ >: Observable[_ <: Notification[_]], _ <: Observable[_]])" -> "repeatWhen(Observable[Notification[Any]] => Observable[Any])",
+      "repeatWhen(Func1[_ >: Observable[_ <: Notification[_]], _ <: Observable[_]], Scheduler)" -> "repeatWhen(Observable[Notification[Any]] => Observable[Any], Scheduler)",
       "replay(Func1[_ >: Observable[T], _ <: Observable[R]])" -> "replay(Observable[T] => Observable[R])",
       "replay(Func1[_ >: Observable[T], _ <: Observable[R]], Int)" -> "replay(Observable[T] => Observable[R], Int)",
       "replay(Func1[_ >: Observable[T], _ <: Observable[R]], Int, Long, TimeUnit)" -> "replay(Observable[T] => Observable[R], Int, Duration)",
@@ -141,7 +145,7 @@ class CompletenessTest extends JUnitSuite {
       "replay(Func1[_ >: Observable[T], _ <: Observable[R]], Long, TimeUnit, Scheduler)" -> "replay(Observable[T] => Observable[R], Duration, Scheduler)",
       "replay(Func1[_ >: Observable[T], _ <: Observable[R]], Scheduler)" -> "replay(Observable[T] => Observable[R], Scheduler)",
       "retry(Func2[Integer, Throwable, Boolean])" -> "retry((Int, Throwable) => Boolean)",
-      "retryWhen(Func1[_ >: Observable[_ <: Notification[_]], _ <: Observable[_ <: Notification[_]]], Scheduler)" -> "retryWhen(Observable[Notification[Any]] => Observable[Notification[Any]], Scheduler)",
+      "retryWhen(Func1[_ >: Observable[_ <: Notification[_]], _ <: Observable[_]], Scheduler)" -> "retryWhen(Observable[Notification[Any]] => Observable[Any], Scheduler)",
       "retryWhen(Func1[_ >: Observable[_ <: Notification[_]], _ <: Observable[_]])" -> "retryWhen(Observable[Notification[Any]] => Observable[Any])",
       "sample(Observable[U])" -> "sample(Observable[Any])",
       "scan(Func2[T, T, T])" -> unnecessary,
@@ -156,9 +160,7 @@ class CompletenessTest extends JUnitSuite {
       "skipWhileWithIndex(Func2[_ >: T, Integer, Boolean])" -> unnecessary,
       "skipUntil(Observable[U])" -> "dropUntil(Observable[Any])",
       "startWith(T)" -> "[use `item +: o`]",
-      "startWith(Array[T], Scheduler)" -> "[use `Observable.just(items).subscribeOn(scheduler) ++ o`]",
       "startWith(Iterable[T])" -> "[use `Observable.from(iterable) ++ o`]",
-      "startWith(Iterable[T], Scheduler)" -> "[use `Observable.from(iterable).subscribeOn(scheduler) ++ o`]",
       "startWith(Observable[T])" -> "[use `++`]",
       "skipLast(Int)" -> "dropRight(Int)",
       "skipLast(Long, TimeUnit)" -> "dropRight(Duration)",
@@ -201,6 +203,7 @@ class CompletenessTest extends JUnitSuite {
       "window(Observable[_ <: TOpening], Func1[_ >: TOpening, _ <: Observable[_ <: TClosing]])" -> "sliding(Observable[Opening])(Opening => Observable[Any])",
       "window(Long, Long, TimeUnit)" -> "sliding(Duration, Duration)",
       "window(Long, Long, TimeUnit, Scheduler)" -> "sliding(Duration, Duration, Scheduler)",
+      "window(Long, Long, TimeUnit, Int, Scheduler)" -> "sliding(Duration, Duration, Int, Scheduler)",
 
       // manually added entries for Java static methods
       "amb(Iterable[_ <: Observable[_ <: T]])" -> "amb(Observable[T]*)",
@@ -209,23 +212,18 @@ class CompletenessTest extends JUnitSuite {
       "combineLatest(List[_ <: Observable[_ <: T]], FuncN[_ <: R])" -> "combineLatest(Seq[Observable[T]])(Seq[T] => R)",
       "concat(Observable[_ <: Observable[_ <: T]])" -> "concat(<:<[Observable[T], Observable[Observable[U]]])",
       "defer(Func0[Observable[T]])" -> "defer(=> Observable[T])",
-      "from(<repeated...>[T])" -> "items(T*)",
-      "from(Array[T], Scheduler)" -> "from(Iterable[T], Scheduler)",
+      "from(Array[T])" -> "from(Iterable[T])",
       "from(Iterable[_ <: T])" -> "from(Iterable[T])",
       "from(Future[_ <: T])" -> fromFuture,
       "from(Future[_ <: T], Long, TimeUnit)" -> fromFuture,
       "from(Future[_ <: T], Scheduler)" -> fromFuture,
-      "just(T)" -> "[use `items(T*)`]",
-      "just(T, Scheduler)" -> "[use `items(T*).subscribeOn(scheduler)`]",
+      "just(T)" -> "just(T*)",
       "merge(Observable[_ <: T], Observable[_ <: T])" -> "merge(Observable[U])",
       "merge(Observable[_ <: Observable[_ <: T]])" -> "flatten(<:<[Observable[T], Observable[Observable[U]]])",
       "merge(Observable[_ <: Observable[_ <: T]], Int)" -> "flatten(Int)(<:<[Observable[T], Observable[Observable[U]]])",
       "merge(Array[Observable[_ <: T]])" -> "[use `Observable.from(array).flatten`]",
-      "merge(Array[Observable[_ <: T]], Scheduler)" -> "[use `Observable.from(array, scheduler).flatten`]",
       "merge(Iterable[_ <: Observable[_ <: T]])" -> "[use `Observable.from(iter).flatten`]",
       "merge(Iterable[_ <: Observable[_ <: T]], Int)" -> "[use `Observable.from(iter).flatten(n)`]",
-      "merge(Iterable[_ <: Observable[_ <: T]], Int, Scheduler)" -> "[use `Observable.from(iter, scheduler).flatten(n)`]",
-      "merge(Iterable[_ <: Observable[_ <: T]], Scheduler)" -> "[use `Observable.from(iter, scheduler).flatten`]",
       "mergeDelayError(Observable[_ <: T], Observable[_ <: T])" -> "mergeDelayError(Observable[U])",
       "mergeDelayError(Observable[_ <: Observable[_ <: T]])" -> "flattenDelayError(<:<[Observable[T], Observable[Observable[U]]])",
       "parallelMerge(Observable[Observable[T]], Int)" -> "parallelMerge(Int)(<:<[Observable[T], Observable[Observable[U]]])",
@@ -235,11 +233,12 @@ class CompletenessTest extends JUnitSuite {
       "range(Int, Int)" -> "[use `(start until (start + count)).toObservable` instead of `range(start, count)`]",
       "range(Int, Int, Scheduler)" -> "[use `(start until (start + count)).toObservable.subscribeOn(scheduler)` instead of `range(start, count, scheduler)`]",
       "switchOnNext(Observable[_ <: Observable[_ <: T]])" -> "switch(<:<[Observable[T], Observable[Observable[U]]])",
+      "using(Func0[Resource], Func1[_ >: Resource, _ <: Observable[_ <: T]], Action1[_ >: Resource])" -> "using(=> Resource)(Resource => Observable[T], Resource => Unit)",
       "zip(Observable[_ <: T1], Observable[_ <: T2], Func2[_ >: T1, _ >: T2, _ <: R])" -> "[use instance method `zip` and `map`]",
       "zip(Observable[_ <: Observable[_]], FuncN[_ <: R])" -> "[use `zip` in companion object and `map`]",
       "zip(Iterable[_ <: Observable[_]], FuncN[_ <: R])" -> "[use `zip` in companion object and `map`]",
       "zipWith(Observable[_ <: T2], Func2[_ >: T, _ >: T2, _ <: R])" -> "zipWith(Observable[U])((T, U) => R)",
-      "zip(Iterable[_ <: T2], Func2[_ >: T, _ >: T2, _ <: R])" -> "zipWith(Iterable[U])((T, U) => R)"
+      "zipWith(Iterable[_ <: T2], Func2[_ >: T, _ >: T2, _ <: R])" -> "zipWith(Iterable[U])((T, U) => R)"
   ) ++ List.iterate("T, T", 8)(s => s + ", T").map(
       // all 9 overloads of startWith:
       "startWith(" + _ + ")" -> "[use `Observable.just(...) ++ o`]"
@@ -248,7 +247,7 @@ class CompletenessTest extends JUnitSuite {
       "concat(" + _ + ")" -> "[unnecessary because we can use `++` instead or `Observable(o1, o2, ...).concat`]"
   ).drop(1).toMap ++ List.iterate("T", 10)(s => s + ", T").map(
       // all 10 overloads of from:
-      "from(" + _ + ")" -> "[use `items(T*)`]"
+      "just(" + _ + ")" -> "[use `just(T*)`]"
   ).toMap ++ (3 to 9).map(i => {
     // zip3-9:
     val obsArgs = (1 to i).map(j => s"Observable[_ <: T$j], ").mkString("")

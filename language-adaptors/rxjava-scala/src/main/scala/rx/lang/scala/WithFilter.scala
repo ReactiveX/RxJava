@@ -38,5 +38,7 @@ private[scala] class WithFilter[+T] (p: T => Boolean, asJava: rx.Observable[_ <:
     toScalaObservable[T](asJava.filter((x: T) => p(x) && q(x)))
   }
 
-  // there is no foreach here, that's only available on BlockingObservable
+  def foreach(onNext: T => Unit): Unit = {
+    toScalaObservable[T](asJava.filter(p)).foreach(onNext)
+  }
 }
