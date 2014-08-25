@@ -227,7 +227,11 @@ public class IndexedRingBufferTest {
         IndexedRingBuffer<String> list = IndexedRingBuffer.getInstance();
         for (int i = 0; i < 20000; i++) {
             int index = list.add(s);
-            list.remove(index);
+            if(i > 19998){
+                list.remove(index);
+            } else {
+                list.remove(index);
+            }
         }
 
         AtomicInteger c = new AtomicInteger();

@@ -15,6 +15,7 @@
  */
 package rx.internal.util;
 
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicIntegerArray;
 import java.util.concurrent.atomic.AtomicReference;
@@ -24,6 +25,14 @@ import rx.Subscription;
 import rx.functions.Func1;
 
 /**
+ *
+ * Benchmark                                              (size)   Mode   Samples        Score  Score error    Units
+ * r.i.IndexedRingBufferPerf.indexedRingBufferAdd            100  thrpt         5   425957.642     8885.501    ops/s
+ * r.i.IndexedRingBufferPerf.indexedRingBufferAdd          10000  thrpt         5     1894.572      111.046    ops/s
+ * r.i.IndexedRingBufferPerf.indexedRingBufferAddRemove      100  thrpt         5   126364.711     3652.757    ops/s
+ * r.i.IndexedRingBufferPerf.indexedRingBufferAddRemove    10000  thrpt         5      656.674       34.909    ops/s
+ *
+ *
  * Add/Remove without object allocation (after initial construction).
  * <p>
  * This is meant for hundreds or single-digit thousands of elements that need
@@ -64,7 +73,6 @@ public class IndexedRingBuffer<E> implements Subscription {
     private final ElementSection<E> elements = new ElementSection<E>();
     private final IndexSection removed = new IndexSection();
     /* package for unit testing */final AtomicInteger index = new AtomicInteger();
-    /* package for unit testing */final AtomicInteger removedIndex = new AtomicInteger();
     /* package for unit testing */static final int SIZE = 512;
 
     /**
@@ -84,13 +92,12 @@ public class IndexedRingBuffer<E> implements Subscription {
                 }
                 // we can use lazySet here because we are nulling things out and not accessing them again
                 // (relative on Mac Intel i7) lazySet gets us ~30m vs ~26m ops/second in the JMH test (100 adds per release)
-                section.array.set(i, null);
+                section.array.lazySet(i, null);
             }
             section = section.next.get();
         }
 
         index.set(0);
-        removedIndex.set(0);
         POOL.returnObject(this);
     }
 
@@ -130,23 +137,9 @@ public class IndexedRingBuffer<E> implements Subscription {
             int sectionIndex = index % SIZE;
             e = getElementSection(index).array.getAndSet(sectionIndex, null);
         }
-        pushRemovedIndex(index);
+        //pushRemovedIndex(index);
+        removed.pushIndex(index);
         return e;
-    }
-
-    private IndexSection getIndexSection(int index) {
-        // short-cut the normal case
-        if (index < SIZE) {
-            return removed;
-        }
-
-        // if we have passed the first array we get more complicated and do recursive chaining
-        int numSections = index / SIZE;
-        IndexSection a = removed;
-        for (int i = 0; i < numSections; i++) {
-            a = a.getNext();
-        }
-        return a;
     }
 
     private ElementSection<E> getElementSection(int index) {
@@ -164,25 +157,30 @@ public class IndexedRingBuffer<E> implements Subscription {
         return a;
     }
 
-    private synchronized int getIndexForAdd() {
-        /*
-         * Synchronized as I haven't yet figured out a way to do this in an atomic way that doesn't involve object allocation
-         */
-        int i;
-        int ri = getIndexFromPreviouslyRemoved();
-        if (ri >= 0) {
-            if (ri < SIZE) {
-                // fast-path when we are in the first section
-                i = removed.getAndSet(ri, -1);
-            } else {
-                int sectionIndex = ri % SIZE;
-                i = getIndexSection(ri).getAndSet(sectionIndex, -1);
-            }
-            if (i == index.get()) {
-                // if it was the last index removed, when we pick it up again we want to increment
-                index.getAndIncrement();
-            }
-        } else {
+    private int getIndexForAdd() {
+
+        int i = removed.popIndex();
+//        int ri = getIndexFromPreviouslyRemoved();
+//        if (ri >= 0) {
+//
+//            int sectionIndex = ri % SIZE;
+//            i = getIndexSection(ri).getAndSet(sectionIndex, -1);
+
+//            if (ri < SIZE) {
+//                // fast-path when we are in the first section
+//                i = removed.getAndSet(ri, -1);
+//            } else {
+//                int sectionIndex = ri % SIZE;
+//                i = getIndexSection(ri).getAndSet(sectionIndex, -1);
+//            }
+            //not sure if we actually want to do this?  currently, "index" is acting as an high water mark
+//            if (i == index.get()) {
+//                // if it was the last index removed, when we pick it up again we want to increment
+//
+//                index.getAndIncrement();
+//            }
+//        } else {
+        if(i < 0) {
             i = index.getAndIncrement();
         }
         return i;
@@ -193,40 +191,35 @@ public class IndexedRingBuffer<E> implements Subscription {
      * 
      * @return
      */
-    private synchronized int getIndexFromPreviouslyRemoved() {
-        /*
-         * Synchronized as I haven't yet figured out a way to do this in an atomic way that doesn't involve object allocation
-         */
+//    private int getIndexFromPreviouslyRemoved() {
+//
+//        // loop because of CAS - consider breaking out, trading space for speed in high contention scenarios
+//        while (true) {
+//            int currentRi = removedHead.get();
+//            if (currentRi > 0) {
+//                // claim it
+//                if(removed.get)
+//                if (removedHead.compareAndSet(currentRi, currentRi - 1)) {
+//                    return currentRi - 1;
+//                }
+//            } else {
+//                // do nothing
+//                return -1;
+//            }
+//        }
+//    }
 
-        // loop because of CAS
-        while (true) {
-            int currentRi = removedIndex.get();
-            if (currentRi > 0) {
-                // claim it
-                if (removedIndex.compareAndSet(currentRi, currentRi - 1)) {
-                    return currentRi - 1;
-                }
-            } else {
-                // do nothing
-                return -1;
-            }
-        }
-    }
-
-    private synchronized void pushRemovedIndex(int elementIndex) {
-        /*
-         * Synchronized as I haven't yet figured out a way to do this in an atomic way that doesn't involve object allocation
-         */
-
-        int i = removedIndex.getAndIncrement();
-        if (i < SIZE) {
-            // fast-path when we are in the first section
-            removed.set(i, elementIndex);
-        } else {
-            int sectionIndex = i % SIZE;
-            getIndexSection(i).set(sectionIndex, elementIndex);
-        }
-    }
+//    private void pushRemovedIndex(int elementIndex) {
+//
+//        int i = removedHead.getAndIncrement();
+//        if (i < SIZE) {
+//            // fast-path when we are in the first section
+//            removed.set(i, elementIndex);
+//        } else {
+//            int sectionIndex = i % SIZE;
+//            getIndexSection(i).set(sectionIndex, elementIndex);
+//        }
+//    }
 
     @Override
     public boolean isUnsubscribed() {
@@ -291,6 +284,7 @@ public class IndexedRingBuffer<E> implements Subscription {
         return realIndex;
     }
 
+    //A flat pool of Es, accessed by index.  Grows to meet high water mark for "waiting items"
     private static class ElementSection<E> {
         private final AtomicReferenceArray<E> array = new AtomicReferenceArray<E>(SIZE);
         private final AtomicReference<ElementSection<E>> next = new AtomicReference<ElementSection<E>>();
@@ -311,35 +305,81 @@ public class IndexedRingBuffer<E> implements Subscription {
         }
     }
 
+    //Currently used like a "stack" of available slots in the element section.  Might be better to go with a queue or slightly change the structure to avoid ABA
     private static class IndexSection {
 
-        private final AtomicIntegerArray unsafeArray = new AtomicIntegerArray(SIZE);
+        private static int CLAIMED = -1;
+        private static int DECREMENTING = -2;
+        private static int PUSHING = -3;
+        private static int UNSET = -4;
 
-        public int getAndSet(int expected, int newValue) {
-            return unsafeArray.getAndSet(expected, newValue);
+        private final AtomicInteger removedHead = new AtomicInteger(0);
+
+        private AtomicIntegerArray unsafeArray;
+
+        //Construct a static "add on" array to pull SIZE worth of UNSET values
+        private static final int[] PRIMITIVE_UNSET_ARRAY = new int[SIZE];
+        static{
+            Arrays.fill(PRIMITIVE_UNSET_ARRAY, UNSET);
         }
 
-        public void set(int i, int elementIndex) {
-            unsafeArray.set(i, elementIndex);
+        public IndexSection(){
+            unsafeArray = new AtomicIntegerArray(PRIMITIVE_UNSET_ARRAY);
         }
 
-        private final AtomicReference<IndexSection> _next = new AtomicReference<IndexSection>();
+        public int popIndex(){
+            while(true){
+                int currentH = removedHead.get();
+                if(currentH <= 0) {
+                    //Empty
+                    return -1;
+                }
 
-        IndexSection getNext() {
-            if (_next.get() != null) {
-                return _next.get();
-            } else {
-                IndexSection newSection = new IndexSection();
-                if (_next.compareAndSet(null, newSection)) {
-                    // we won
-                    return newSection;
-                } else {
-                    // we lost so get the value that won
-                    return _next.get();
+                if (unsafeArray.compareAndSet(currentH, UNSET, CLAIMED)) {
+                    int topValue = unsafeArray.get(currentH-1);
+                    if(topValue >= 0) {
+                        //We locked the head
+                        if(unsafeArray.compareAndSet(currentH-1, topValue, UNSET)){
+                            //We got our value
+                            removedHead.getAndDecrement();
+                            unsafeArray.set(currentH, UNSET);
+                            return topValue;
+                        }
+                    }
+                    unsafeArray.set(currentH, UNSET);
                 }
             }
         }
 
+        public void pushIndex(int index){
+            while(true){
+                int currentH = removedHead.get();
+
+                int currentLength = unsafeArray.length();
+                if(currentH >= currentLength){
+                    synchronized (unsafeArray){
+                        if(currentH >= currentLength){
+                            AtomicIntegerArray newArray = new AtomicIntegerArray(currentLength + SIZE);
+                            for(int i = 0; i < currentLength; i++){
+                                newArray.set(i, unsafeArray.get(i));
+                            }
+                            for(int j = currentLength; j < newArray.length(); j++){
+                                newArray.set(j, UNSET);
+                            }
+                            unsafeArray = newArray;
+                        }
+                    }
+                }
+
+                if(unsafeArray.compareAndSet(currentH, UNSET, PUSHING)){
+                    removedHead.incrementAndGet();
+                    unsafeArray.set(currentH, index);
+                    return;
+                } else {
+                    continue;
+                }
+            }
+        }
     }
 
 }
