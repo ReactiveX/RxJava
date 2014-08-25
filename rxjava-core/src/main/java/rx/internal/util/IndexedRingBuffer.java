@@ -26,13 +26,6 @@ import rx.functions.Func1;
 
 /**
  *
- * Benchmark                                              (size)   Mode   Samples        Score  Score error    Units
- * r.i.IndexedRingBufferPerf.indexedRingBufferAdd            100  thrpt         5   425957.642     8885.501    ops/s
- * r.i.IndexedRingBufferPerf.indexedRingBufferAdd          10000  thrpt         5     1894.572      111.046    ops/s
- * r.i.IndexedRingBufferPerf.indexedRingBufferAddRemove      100  thrpt         5   126364.711     3652.757    ops/s
- * r.i.IndexedRingBufferPerf.indexedRingBufferAddRemove    10000  thrpt         5      656.674       34.909    ops/s
- *
- *
  * Add/Remove without object allocation (after initial construction).
  * <p>
  * This is meant for hundreds or single-digit thousands of elements that need
@@ -137,7 +130,6 @@ public class IndexedRingBuffer<E> implements Subscription {
             int sectionIndex = index % SIZE;
             e = getElementSection(index).array.getAndSet(sectionIndex, null);
         }
-        //pushRemovedIndex(index);
         removed.pushIndex(index);
         return e;
     }
@@ -160,66 +152,12 @@ public class IndexedRingBuffer<E> implements Subscription {
     private int getIndexForAdd() {
 
         int i = removed.popIndex();
-//        int ri = getIndexFromPreviouslyRemoved();
-//        if (ri >= 0) {
-//
-//            int sectionIndex = ri % SIZE;
-//            i = getIndexSection(ri).getAndSet(sectionIndex, -1);
 
-//            if (ri < SIZE) {
-//                // fast-path when we are in the first section
-//                i = removed.getAndSet(ri, -1);
-//            } else {
-//                int sectionIndex = ri % SIZE;
-//                i = getIndexSection(ri).getAndSet(sectionIndex, -1);
-//            }
-            //not sure if we actually want to do this?  currently, "index" is acting as an high water mark
-//            if (i == index.get()) {
-//                // if it was the last index removed, when we pick it up again we want to increment
-//
-//                index.getAndIncrement();
-//            }
-//        } else {
         if(i < 0) {
             i = index.getAndIncrement();
         }
         return i;
     }
-
-    /**
-     * Returns -1 if nothing, 0 or greater if the index should be used
-     * 
-     * @return
-     */
-//    private int getIndexFromPreviouslyRemoved() {
-//
-//        // loop because of CAS - consider breaking out, trading space for speed in high contention scenarios
-//        while (true) {
-//            int currentRi = removedHead.get();
-//            if (currentRi > 0) {
-//                // claim it
-//                if(removed.get)
-//                if (removedHead.compareAndSet(currentRi, currentRi - 1)) {
-//                    return currentRi - 1;
-//                }
-//            } else {
-//                // do nothing
-//                return -1;
-//            }
-//        }
-//    }
-
-//    private void pushRemovedIndex(int elementIndex) {
-//
-//        int i = removedHead.getAndIncrement();
-//        if (i < SIZE) {
-//            // fast-path when we are in the first section
-//            removed.set(i, elementIndex);
-//        } else {
-//            int sectionIndex = i % SIZE;
-//            getIndexSection(i).set(sectionIndex, elementIndex);
-//        }
-//    }
 
     @Override
     public boolean isUnsubscribed() {
@@ -305,11 +243,10 @@ public class IndexedRingBuffer<E> implements Subscription {
         }
     }
 
-    //Currently used like a "stack" of available slots in the element section.  Might be better to go with a queue or slightly change the structure to avoid ABA
+    //Currently used like a "stack" of available slots in the element section.
     private static class IndexSection {
 
         private static int CLAIMED = -1;
-        private static int DECREMENTING = -2;
         private static int PUSHING = -3;
         private static int UNSET = -4;
 
@@ -336,11 +273,11 @@ public class IndexedRingBuffer<E> implements Subscription {
                 }
 
                 if (unsafeArray.compareAndSet(currentH, UNSET, CLAIMED)) {
+                    //We claimed the head now process the value
                     int topValue = unsafeArray.get(currentH-1);
                     if(topValue >= 0) {
-                        //We locked the head
                         if(unsafeArray.compareAndSet(currentH-1, topValue, UNSET)){
-                            //We got our value
+                            //We got our value, move the head to unblock waiters, re-UNSET the current head for future processing
                             removedHead.getAndDecrement();
                             unsafeArray.set(currentH, UNSET);
                             return topValue;
@@ -356,13 +293,16 @@ public class IndexedRingBuffer<E> implements Subscription {
                 int currentH = removedHead.get();
 
                 int currentLength = unsafeArray.length();
+                //Double checked lock for resizing since it could be expensive.  System.arraycopy doesn't work on AtomicIntegerArrays or I would have used that
                 if(currentH >= currentLength){
                     synchronized (unsafeArray){
                         if(currentH >= currentLength){
                             AtomicIntegerArray newArray = new AtomicIntegerArray(currentLength + SIZE);
+                            //Copying current state
                             for(int i = 0; i < currentLength; i++){
                                 newArray.set(i, unsafeArray.get(i));
                             }
+                            //Adding new SIZE worth of UNSET values
                             for(int j = currentLength; j < newArray.length(); j++){
                                 newArray.set(j, UNSET);
                             }
@@ -375,9 +315,8 @@ public class IndexedRingBuffer<E> implements Subscription {
                     removedHead.incrementAndGet();
                     unsafeArray.set(currentH, index);
                     return;
-                } else {
-                    continue;
                 }
+                //just continue until we can push
             }
         }
     }
