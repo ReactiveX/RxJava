@@ -15,12 +15,12 @@
  */
 package rx.internal.operators;
 
-import java.util.Arrays;
 import rx.Observable.Operator;
 import rx.Subscriber;
-import rx.exceptions.CompositeException;
 import rx.functions.Func1;
 import rx.plugins.RxJavaPlugins;
+
+import java.util.Arrays;
 
 /**
  * Instruct an Observable to emit a particular item to its Observer's <code>onNext</code> method
@@ -65,7 +65,7 @@ public final class OperatorOnErrorReturn<T> implements Operator<T, T> {
                     
                     child.onNext(result);
                 } catch (Throwable x) {
-                    child.onError(new CompositeException(Arrays.asList(e, x)));
+                    child.onError(RxJavaPlugins.getInstance().getErrorHandler().compose(Arrays.asList(e, x)));
                     return;
                 }
                 child.onCompleted();

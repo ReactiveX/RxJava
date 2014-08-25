@@ -15,15 +15,13 @@
  */
 package rx.observers;
 
-import java.util.Arrays;
-import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
-
 import rx.Subscriber;
-import rx.exceptions.CompositeException;
 import rx.exceptions.Exceptions;
 import rx.exceptions.OnErrorFailedException;
 import rx.exceptions.OnErrorNotImplementedException;
 import rx.plugins.RxJavaPlugins;
+
+import java.util.Arrays;
 
 /**
  * Wrapper around {@code Observer} that ensures compliance with the Rx contract.
@@ -147,7 +145,7 @@ public class SafeSubscriber<T> extends Subscriber<T> {
                     } catch (Throwable pluginException) {
                         handlePluginException(pluginException);
                     }
-                    throw new RuntimeException("Observer.onError not implemented and error while unsubscribing.", new CompositeException(Arrays.asList(e, unsubscribeException)));
+                    throw new RuntimeException("Observer.onError not implemented and error while unsubscribing.", RxJavaPlugins.getInstance().getErrorHandler().compose(Arrays.asList(e, unsubscribeException)));
                 }
                 throw (OnErrorNotImplementedException) e2;
             } else {
@@ -169,10 +167,10 @@ public class SafeSubscriber<T> extends Subscriber<T> {
                     } catch (Throwable pluginException) {
                         handlePluginException(pluginException);
                     }
-                    throw new OnErrorFailedException("Error occurred when trying to propagate error to Observer.onError and during unsubscription.", new CompositeException(Arrays.asList(e, e2, unsubscribeException)));
+                    throw new OnErrorFailedException("Error occurred when trying to propagate error to Observer.onError and during unsubscription.", RxJavaPlugins.getInstance().getErrorHandler().compose(Arrays.asList(e, e2, unsubscribeException)));
                 }
 
-                throw new OnErrorFailedException("Error occurred when trying to propagate error to Observer.onError", new CompositeException(Arrays.asList(e, e2)));
+                throw new OnErrorFailedException("Error occurred when trying to propagate error to Observer.onError", RxJavaPlugins.getInstance().getErrorHandler().compose(Arrays.asList(e, e2)));
             }
         }
         // if we did not throw above we will unsubscribe here, if onError failed then unsubscribe happens in the catch
