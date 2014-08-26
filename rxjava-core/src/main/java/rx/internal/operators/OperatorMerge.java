@@ -15,22 +15,22 @@
  */
 package rx.internal.operators;
 
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
-import java.util.concurrent.atomic.AtomicLongFieldUpdater;
-
 import rx.Observable;
 import rx.Observable.Operator;
 import rx.Producer;
 import rx.Subscriber;
-import rx.exceptions.CompositeException;
 import rx.exceptions.MissingBackpressureException;
 import rx.exceptions.OnErrorThrowable;
 import rx.functions.Func1;
 import rx.internal.util.RxRingBuffer;
 import rx.internal.util.ScalarSynchronousObservable;
 import rx.internal.util.SubscriptionIndexedRingBuffer;
+import rx.plugins.RxJavaPlugins;
+
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
+import java.util.concurrent.atomic.AtomicLongFieldUpdater;
 
 /**
  * Flattens a list of {@link Observable}s into one {@code Observable}, without any transformation.
@@ -463,7 +463,7 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
                     } else if (es.size() == 1) {
                         actual.onError(es.poll());
                     } else {
-                        actual.onError(new CompositeException(es));
+                        actual.onError(RxJavaPlugins.getInstance().getErrorHandler().compose(es));
                     }
                 } else {
                     actual.onCompleted();

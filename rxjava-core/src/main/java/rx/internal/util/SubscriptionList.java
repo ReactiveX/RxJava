@@ -15,14 +15,14 @@
  */
 package rx.internal.util;
 
+import rx.Subscription;
+import rx.plugins.RxJavaPlugins;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-
-import rx.Subscription;
-import rx.exceptions.CompositeException;
 
 /**
  * Subscription that represents a group of Subscriptions that are unsubscribed together.
@@ -110,11 +110,11 @@ public final class SubscriptionList implements Subscription {
                 if (t instanceof RuntimeException) {
                     throw (RuntimeException) t;
                 } else {
-                    throw new CompositeException(
+                    throw RxJavaPlugins.getInstance().getErrorHandler().compose(
                             "Failed to unsubscribe to 1 or more subscriptions.", es);
                 }
             } else {
-                throw new CompositeException(
+                throw RxJavaPlugins.getInstance().getErrorHandler().compose(
                         "Failed to unsubscribe to 2 or more subscriptions.", es);
             }
         }

@@ -17,6 +17,9 @@ package rx.plugins;
 
 import rx.Observable;
 import rx.Subscriber;
+import rx.exceptions.CompositeException;
+
+import java.util.Collection;
 
 /**
  * Abstract class for defining error handling logic in addition to the normal
@@ -43,5 +46,12 @@ public abstract class RxJavaErrorHandler {
     public void handleError(Throwable e) {
         // do nothing by default
     }
+    
+    public RuntimeException compose(String message, Collection<? extends Throwable> errors) {
+        return new CompositeException(message, errors);
+    }
 
+    public RuntimeException compose(Collection<? extends Throwable> errors) {
+        return new CompositeException(errors);
+    }
 }
