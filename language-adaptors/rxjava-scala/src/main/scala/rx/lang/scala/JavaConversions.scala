@@ -62,4 +62,12 @@ object JavaConversions {
       }
     }
   }
+
+  implicit def toJavaTransformer[T, R](transformer: Observable[T] => Observable[R]): rx.Observable.Transformer[T, R] = {
+    new rx.Observable.Transformer[T, R] {
+      override def call(o: rx.Observable[_ <: T]): rx.Observable[R] = {
+        transformer(toScalaObservable(o)).asJavaObservable.asInstanceOf[rx.Observable[R]]
+      }
+    }
+  }
 }
