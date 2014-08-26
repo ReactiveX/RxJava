@@ -16,8 +16,8 @@
 package rx.exceptions;
 
 import static org.junit.Assert.assertEquals;
-
-import org.junit.Test;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -25,6 +25,8 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import org.junit.Test;
 
 public class CompositeExceptionTest {
 
@@ -50,37 +52,75 @@ public class CompositeExceptionTest {
         Throwable e2 = new Throwable("2", rootCause);
         Throwable e3 = new Throwable("3", rootCause);
         CompositeException ce = new CompositeException("3 failures with same root cause", Arrays.asList(e1, e2, e3));
-        
+
+        System.err.println("----------------------------- print composite stacktrace");
+        ce.printStackTrace();
         assertEquals(3, ce.getExceptions().size());
+        
         assertNoCircularReferences(ce);
+        assertNotNull(getRootCause(ce));
+        System.err.println("----------------------------- print cause stacktrace");
+        ce.getCause().printStackTrace();
     }
 
     @Test(timeout = 1000)
     public void testCompositeExceptionFromParentThenChild() {
         CompositeException cex = new CompositeException(Arrays.asList(ex1, ex2));
-        assertNoCircularReferences(cex);
+        
+        System.err.println("----------------------------- print composite stacktrace");
+        cex.printStackTrace();
         assertEquals(2, cex.getExceptions().size());
+        
+        assertNoCircularReferences(cex);
+        assertNotNull(getRootCause(cex));
+        
+        System.err.println("----------------------------- print cause stacktrace");
+        cex.getCause().printStackTrace();
     }
 
     @Test(timeout = 1000)
     public void testCompositeExceptionFromChildThenParent() {
         CompositeException cex = new CompositeException(Arrays.asList(ex2, ex1));
-        assertNoCircularReferences(cex);
+        
+        System.err.println("----------------------------- print composite stacktrace");
+        cex.printStackTrace();
         assertEquals(2, cex.getExceptions().size());
+        
+        assertNoCircularReferences(cex);
+        assertNotNull(getRootCause(cex));
+        
+        System.err.println("----------------------------- print cause stacktrace");
+        cex.getCause().printStackTrace();
     }
 
     @Test(timeout = 1000)
     public void testCompositeExceptionFromChildAndComposite() {
         CompositeException cex = new CompositeException(Arrays.asList(ex1, getNewCompositeExceptionWithEx123()));
-        assertNoCircularReferences(cex);
+        
+        System.err.println("----------------------------- print composite stacktrace");
+        cex.printStackTrace();
         assertEquals(3, cex.getExceptions().size());
+        
+        assertNoCircularReferences(cex);
+        assertNotNull(getRootCause(cex));
+
+        System.err.println("----------------------------- print cause stacktrace");
+        cex.getCause().printStackTrace();
     }
 
     @Test(timeout = 1000)
     public void testCompositeExceptionFromCompositeAndChild() {
         CompositeException cex = new CompositeException(Arrays.asList(getNewCompositeExceptionWithEx123(), ex1));
-        assertNoCircularReferences(cex);
+        
+        System.err.println("----------------------------- print composite stacktrace");
+        cex.printStackTrace();
         assertEquals(3, cex.getExceptions().size());
+        
+        assertNoCircularReferences(cex);
+        assertNotNull(getRootCause(cex));
+
+        System.err.println("----------------------------- print cause stacktrace");
+        cex.getCause().printStackTrace();
     }
 
     @Test(timeout = 1000)
@@ -89,8 +129,16 @@ public class CompositeExceptionTest {
         exs.add(getNewCompositeExceptionWithEx123());
         exs.add(getNewCompositeExceptionWithEx123());
         CompositeException cex = new CompositeException(exs);
-        assertNoCircularReferences(cex);
+        
+        System.err.println("----------------------------- print composite stacktrace");
+        cex.printStackTrace();
         assertEquals(3, cex.getExceptions().size());
+        
+        assertNoCircularReferences(cex);
+        assertNotNull(getRootCause(cex));
+
+        System.err.println("----------------------------- print cause stacktrace");
+        cex.getCause().printStackTrace();
     }
 
     /**
@@ -101,9 +149,22 @@ public class CompositeExceptionTest {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         PrintStream printStream = new PrintStream(baos);
         StringWriter writer = new StringWriter();
+        ex.printStackTrace(printStream);
+        assertFalse(baos.toString().contains("CIRCULAR REFERENCE"));
+    }
 
-        ex.printStackTrace();
-        //ex.printStackTrace(printStream);
-        //assertFalse(baos.toString().contains("CIRCULAR REFERENCE"));
+    private static Throwable getRootCause(Throwable ex) {
+        Throwable root = ex.getCause();
+        if (root == null) {
+            return null;
+        } else {
+            while(true) {
+                if (root.getCause() == null) {
+                    return root;
+                } else {
+                    root = root.getCause();
+                }
+            }
+        }
     }
 }
