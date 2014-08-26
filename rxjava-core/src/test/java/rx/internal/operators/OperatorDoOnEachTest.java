@@ -15,7 +15,7 @@
  */
 package rx.internal.operators;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -28,6 +28,8 @@ import org.mockito.MockitoAnnotations;
 
 import rx.Observable;
 import rx.Observer;
+import rx.Subscriber;
+import rx.exceptions.OnErrorNotImplementedException;
 import rx.functions.Action1;
 import rx.functions.Func1;
 
@@ -121,7 +123,7 @@ public class OperatorDoOnEachTest {
     @Test
     public void testIssue1451Case1() {
         // https://github.com/Netflix/RxJava/issues/1451
-        int[] nums = {1, 2, 3};
+        int[] nums = { 1, 2, 3 };
         final AtomicInteger count = new AtomicInteger();
         for (final int n : nums) {
             Observable
@@ -147,7 +149,7 @@ public class OperatorDoOnEachTest {
     @Test
     public void testIssue1451Case2() {
         // https://github.com/Netflix/RxJava/issues/1451
-        int[] nums = {1, 2, 3};
+        int[] nums = { 1, 2, 3 };
         final AtomicInteger count = new AtomicInteger();
         for (final int n : nums) {
             Observable
@@ -168,5 +170,35 @@ public class OperatorDoOnEachTest {
                     .subscribe();
         }
         assertEquals(nums.length, count.get());
+    }
+
+    @Test
+    public void testFatalError() {
+        try {
+            Observable.just(1, 2, 3)
+                    .flatMap(new Func1<Integer, Observable<?>>() {
+                        @Override
+                        public Observable<?> call(Integer integer) {
+                            return Observable.create(new Observable.OnSubscribe<Object>() {
+                                @Override
+                                public void call(Subscriber<Object> o) {
+                                    throw new NullPointerException("Test NPE");
+                                }
+                            });
+                        }
+                    })
+                    .doOnNext(new Action1<Object>() {
+                        @Override
+                        public void call(Object o) {
+                            System.out.println("Won't come here");
+                        }
+                    })
+                    .subscribe();
+            fail("should have thrown an exception");
+        } catch (OnErrorNotImplementedException e) {
+            assertTrue(e.getCause() instanceof NullPointerException);
+            assertEquals(e.getCause().getMessage(), "Test NPE");
+            System.out.println("Received exception: " + e);
+        }
     }
 }
