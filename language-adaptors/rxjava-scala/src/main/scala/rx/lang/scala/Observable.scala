@@ -4429,7 +4429,9 @@ object Observable {
    * @param scheduler the Scheduler on which to call `onError`
    * @tparam T the type of the items (ostensibly) emitted by the Observable
    * @return an Observable that invokes the `Observer`'s `onError` method, on the specified Scheduler
+   * @deprecated use `#subscribeOn` to schedule
    */
+  @deprecated("Use with `error(Throwable).subscribeOn` instead", "0.20")
   def error[T](exception: Throwable, scheduler: Scheduler): Observable[T] = {
     toScalaObservable[T](rx.Observable.error(exception, scheduler))
   }
@@ -4467,7 +4469,9 @@ object Observable {
    *         specified scheduler
    * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#empty-error-and-never">RxJava Wiki: empty()</a>
    * @see <a href="http://msdn.microsoft.com/en-us/library/hh229066.aspx">MSDN: Observable.Empty Method (IScheduler)</a>
+   * @deprecated use `#subscribeOn` to schedule
    */
+  @deprecated("Use `empty.subscribeOn` instead", "0.20")
   def empty(scheduler: Scheduler): Observable[Nothing] = {
     toScalaObservable(rx.Observable.empty[Nothing](scalaSchedulerToJavaScheduler(scheduler)))
   }
