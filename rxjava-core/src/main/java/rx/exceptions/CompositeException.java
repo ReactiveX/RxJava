@@ -26,18 +26,18 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Exception that is a composite of 1 or more other exceptions.
- * A CompositeException does not modify the structure of any exception it wraps, but at print-time
- * iterates through the list of contained Throwables to print them all.
+ * An Exception that is a composite of one or more other Exceptions. A {@code CompositeException} does not
+ * modify the structure of any exception it wraps, but at print-time it iterates through the list of
+ * Throwables contained in the composit in order to print them all.
  *
- * Its invariant is to contains an immutable, ordered (by insertion order), unique list of non-composite exceptions.
- * This list may be queried by {@code #getExceptions()}
+ * Its invariant is to contain an immutable, ordered (by insertion order), unique list of non-composite
+ * exceptions. You can retrieve individual exceptions in this list with {@link #getExceptions()}.
  * 
- * The `printStackTrace()` implementation does custom handling of the StackTrace instead of using `getCause()` so it
- * can avoid circular references.
+ * The {@link #printStackTrace()} implementation handles the StackTrace in a customized way instead of using
+ * {@code getCause()} so that it can avoid circular references.
  * 
- * If `getCause()` is invoked, it will lazily create the causal chain but stop if it finds any Throwable in the chain
- * that it has already seen.
+ * If you invoke {@link #getCause()}, it will lazily create the causal chain but will stop if it finds any
+ * Throwable in the chain that it has already seen.
  */
 public final class CompositeException extends RuntimeException {
 
@@ -124,13 +124,14 @@ public final class CompositeException extends RuntimeException {
     }
 
     /**
-     * All of the following printStackTrace functionality is derived from JDK Throwable printStackTrace.
-     * In particular, the PrintStreamOrWriter abstraction is copied wholesale.
+     * All of the following {@code printStackTrace} functionality is derived from JDK {@link Throwable}
+     * {@code printStackTrace}. In particular, the {@code PrintStreamOrWriter} abstraction is copied wholesale.
      *
-     * Changes from the official JDK implementation:
-     * * No infinite loop detection
-     * * Smaller critical section holding printStream lock
-     * * Explicit knowledge about exceptions List that this loops through
+     * Changes from the official JDK implementation:<ul>
+     * <li>no infinite loop detection</li>
+     * <li>smaller critical section holding {@link PrintStream} lock</li>
+     * <li>explicit knowledge about the exceptions {@link List} that this loops through</li>
+     * </ul>
      */
     @Override
     public void printStackTrace() {
@@ -148,8 +149,8 @@ public final class CompositeException extends RuntimeException {
     }
 
     /**
-     * Special handling for printing out a CompositeException
-     * Loop through all inner exceptions and print them out
+     * Special handling for printing out a {@code CompositeException}.
+     * Loops through all inner exceptions and prints them out.
      * 
      * @param s
      *            stream to print to
