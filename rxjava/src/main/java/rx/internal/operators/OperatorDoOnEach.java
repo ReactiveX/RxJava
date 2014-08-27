@@ -18,6 +18,7 @@ package rx.internal.operators;
 import rx.Observable.Operator;
 import rx.Observer;
 import rx.Subscriber;
+import rx.exceptions.Exceptions;
 import rx.exceptions.OnErrorThrowable;
 
 /**
@@ -54,6 +55,8 @@ public class OperatorDoOnEach<T> implements Operator<T, T> {
 
             @Override
             public void onError(Throwable e) {
+                // need to throwIfFatal since we swallow errors after terminated
+                Exceptions.throwIfFatal(e);
                 if (done) {
                     return;
                 }
