@@ -15,12 +15,6 @@
  */
 package rx.observables;
 
-import java.util.Iterator;
-import java.util.NoSuchElementException;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Future;
-import java.util.concurrent.atomic.AtomicReference;
-
 import rx.Observable;
 import rx.Subscriber;
 import rx.functions.Action1;
@@ -31,6 +25,12 @@ import rx.internal.operators.BlockingOperatorMostRecent;
 import rx.internal.operators.BlockingOperatorNext;
 import rx.internal.operators.BlockingOperatorToFuture;
 import rx.internal.operators.BlockingOperatorToIterator;
+
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * An extension of {@link Observable} that provides blocking operators.
@@ -345,7 +345,59 @@ public class BlockingObservable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.single.aspx">MSDN: Observable.Single</a>
      */
     public T single() {
-        return from(o.single()).toIterable().iterator().next();
+        final CountDownLatch latch = new CountDownLatch(1);
+        final AtomicReference<Throwable> exceptionFromOnError = new AtomicReference<Throwable>();
+        final AtomicReference<T> value = new AtomicReference<T>();
+
+        /*
+         * Use 'subscribe' instead of 'unsafeSubscribe' for Rx contract behavior
+         * as this is the final subscribe in the chain.
+         */
+        o.single().subscribe(new Subscriber<T>() {
+            @Override
+            public void onCompleted() {
+                latch.countDown();
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                /*
+                 * If we receive an onError event we set the reference on the
+                 * outer thread so we can git it and throw after the
+                 * latch.await().
+                 *
+                 * We do this instead of throwing directly since this may be on
+                 * a different thread and the latch is still waiting.
+                 */
+                exceptionFromOnError.set(e);
+                latch.countDown();
+            }
+
+            @Override
+            public void onNext(T args) {
+                value.set(args);
+            }
+        });
+        // block until the subscription completes and then return
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            // set the interrupted flag again so callers can still get it
+            // for more information see https://github.com/ReactiveX/RxJava/pull/147#issuecomment-13624780
+            Thread.currentThread().interrupt();
+            // using Runtime so it is not checked
+            throw new RuntimeException("Interrupted while waiting for subscription to complete.", e);
+        }
+
+        if (exceptionFromOnError.get() != null) {
+            if (exceptionFromOnError.get() instanceof RuntimeException) {
+                throw (RuntimeException) exceptionFromOnError.get();
+            } else {
+                throw new RuntimeException(exceptionFromOnError.get());
+            }
+        }
+
+        return value.get();
     }
 
     /**
