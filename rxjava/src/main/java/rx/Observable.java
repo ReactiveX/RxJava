@@ -1092,7 +1092,7 @@ public class Observable<T> {
      * return value of the {@link Future#get} method of that object, by passing the object into the {@code from}
      * method.
      * <p>
-     * <em>Important note:</em> This Observable is blocking; you cannot unsubscribe from it.
+     * <em>Important note:</em> This Observable is non blocking, and the future is canceled on unsubscribe.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code from} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1119,7 +1119,7 @@ public class Observable<T> {
      * return value of the {@link Future#get} method of that object, by passing the object into the {@code from}
      * method.
      * <p>
-     * <em>Important note:</em> This Observable is blocking; you cannot unsubscribe from it.
+     * <em>Important note:</em> This Observable is non blocking, and the future is canceled on unsubscribe.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code from} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1158,7 +1158,7 @@ public class Observable<T> {
      *            the source {@link Future}
      * @param scheduler
      *            the {@link Scheduler} to wait for the Future on. Use a Scheduler such as
-     *            {@link Schedulers#io()} that can block and wait on the Future
+     *            {@link rx.schedulers.Schedulers#computation()}, as there are no blocking calls invoked
      * @param <T>
      *            the type of object that the {@link Future} returns, and also the type of item to be emitted by
      *            the resulting Observable
@@ -1166,8 +1166,40 @@ public class Observable<T> {
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Creating-Observables#from">RxJava wiki: from</a>
      */
     public final static <T> Observable<T> from(Future<? extends T> future, Scheduler scheduler) {
-        // TODO in a future revision the Scheduler will become important because we'll start polling instead of blocking on the Future
-        return create(OnSubscribeToObservableFuture.toObservableFuture(future)).subscribeOn(scheduler);
+        return create(OnSubscribeToObservableFuture.toObservableFuture(future, scheduler)).subscribeOn(scheduler);
+    }
+
+    /**
+     * Converts a {@link Future} into an Observable, with a timeout on the Future.
+     * <p>
+     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/from.Future.png">
+     * <p>
+     * You can convert any object that supports the {@link Future} interface into an Observable that emits the
+     * return value of the {@link Future#get} method of that object, by passing the object into the {@code from}
+     * method.
+     * <p>
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     * </dl>
+     *
+     * @param future
+     *            the source {@link Future}
+     * @param timeout
+     *            the maximum time to wait for future to complete
+     * @param unit
+     *            the {@link TimeUnit} of the {@code timeout} argument
+     * @param scheduler
+     *            the {@link Scheduler} to wait for the Future on. Use a Scheduler such as
+     *            {@link rx.schedulers.Schedulers#computation()}, as there are no blocking calls invoked
+     * @param <T>
+     *            the type of object that the {@link Future} returns, and also the type of item to be emitted by
+     *            the resulting Observable
+     * @return an Observable that emits the item from the source {@link Future}
+     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Creating-Observables#from">RxJava wiki: from</a>
+     */
+    public static final <T> Observable<T> from(Future<? extends T> future, long timeout, TimeUnit unit, Scheduler scheduler) {
+           return create(OnSubscribeToObservableFuture.toObservableFuture(future, timeout, unit, scheduler)).subscribeOn(scheduler);
     }
 
     /**
