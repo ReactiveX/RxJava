@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -79,7 +79,7 @@ public class BlockingObservable<T> {
      * need the {@link Subscriber#onCompleted()} or {@link Subscriber#onError(Throwable)} methods.
      * <p>
      * <img width="640" height="330" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.forEach.png" alt="">
-     * 
+     *
      * @param onNext
      *            the {@link Action1} to invoke for each item emitted by the {@code BlockingObservable}
      * @throws RuntimeException
@@ -143,7 +143,7 @@ public class BlockingObservable<T> {
      * Returns an {@link Iterator} that iterates over all items emitted by this {@code BlockingObservable}.
      * <p>
      * <img width="640" height="315" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.getIterator.png" alt="">
-     * 
+     *
      * @return an {@link Iterator} that can iterate over the items emitted by this {@code BlockingObservable}
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Blocking-Observable-Operators#transformations-tofuture-toiterable-and-toiteratorgetiterator">RxJava Wiki: getIterator()</a>
      */
@@ -154,7 +154,7 @@ public class BlockingObservable<T> {
     /**
      * Returns the first item emitted by this {@code BlockingObservable}, or throws
      * {@code NoSuchElementException} if it emits no items.
-     * 
+     *
      * @return the first item emitted by this {@code BlockingObservable}
      * @throws NoSuchElementException
      *             if this {@code BlockingObservable} emits no items
@@ -162,13 +162,13 @@ public class BlockingObservable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229177.aspx">MSDN: Observable.First</a>
      */
     public T first() {
-        return from(o.first()).single();
+        return blockForSingle(o.first());
     }
 
     /**
      * Returns the first item emitted by this {@code BlockingObservable} that matches a predicate, or throws
      * {@code NoSuchElementException} if it emits no such item.
-     * 
+     *
      * @param predicate
      *            a predicate function to evaluate items emitted by this {@code BlockingObservable}
      * @return the first item emitted by this {@code BlockingObservable} that matches the predicate
@@ -178,13 +178,13 @@ public class BlockingObservable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229739.aspx">MSDN: Observable.First</a>
      */
     public T first(Func1<? super T, Boolean> predicate) {
-        return from(o.first(predicate)).single();
+        return blockForSingle(o.first(predicate));
     }
 
     /**
      * Returns the first item emitted by this {@code BlockingObservable}, or a default value if it emits no
      * items.
-     * 
+     *
      * @param defaultValue
      *            a default value to return if this {@code BlockingObservable} emits no items
      * @return the first item emitted by this {@code BlockingObservable}, or the default value if it emits no
@@ -193,13 +193,13 @@ public class BlockingObservable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229320.aspx">MSDN: Observable.FirstOrDefault</a>
      */
     public T firstOrDefault(T defaultValue) {
-        return from(o.take(1)).singleOrDefault(defaultValue);
+        return blockForSingle(o.map(Functions.<T>identity()).firstOrDefault(defaultValue));
     }
 
     /**
      * Returns the first item emitted by this {@code BlockingObservable} that matches a predicate, or a default
      * value if it emits no such items.
-     * 
+     *
      * @param defaultValue
      *            a default value to return if this {@code BlockingObservable} emits no matching items
      * @param predicate
@@ -210,7 +210,7 @@ public class BlockingObservable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229759.aspx">MSDN: Observable.FirstOrDefault</a>
      */
     public T firstOrDefault(T defaultValue, Func1<? super T, Boolean> predicate) {
-        return from(o.filter(predicate)).firstOrDefault(defaultValue);
+        return blockForSingle(o.filter(predicate).map(Functions.<T>identity()).firstOrDefault(defaultValue));
     }
 
     /**
@@ -218,7 +218,7 @@ public class BlockingObservable<T> {
      * {@code NoSuchElementException} if this {@code BlockingObservable} emits no items.
      * <p>
      * <img width="640" height="315" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.last.png" alt="">
-     * 
+     *
      * @return the last item emitted by this {@code BlockingObservable}
      * @throws NoSuchElementException
      *             if this {@code BlockingObservable} emits no items
@@ -226,7 +226,7 @@ public class BlockingObservable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.last.aspx">MSDN: Observable.Last</a>
      */
     public T last() {
-        return from(o.last()).single();
+        return blockForSingle(o.last());
     }
 
     /**
@@ -234,7 +234,7 @@ public class BlockingObservable<T> {
      * {@code NoSuchElementException} if it emits no such items.
      * <p>
      * <img width="640" height="315" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.last.p.png" alt="">
-     * 
+     *
      * @param predicate
      *            a predicate function to evaluate items emitted by the {@code BlockingObservable}
      * @return the last item emitted by the {@code BlockingObservable} that matches the predicate
@@ -244,7 +244,7 @@ public class BlockingObservable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.last.aspx">MSDN: Observable.Last</a>
      */
     public T last(final Func1<? super T, Boolean> predicate) {
-        return from(o.last(predicate)).single();
+        return blockForSingle(o.last(predicate));
     }
 
     /**
@@ -252,7 +252,7 @@ public class BlockingObservable<T> {
      * items.
      * <p>
      * <img width="640" height="310" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.lastOrDefault.png" alt="">
-     * 
+     *
      * @param defaultValue
      *            a default value to return if this {@code BlockingObservable} emits no items
      * @return the last item emitted by the {@code BlockingObservable}, or the default value if it emits no
@@ -261,7 +261,7 @@ public class BlockingObservable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.lastordefault.aspx">MSDN: Observable.LastOrDefault</a>
      */
     public T lastOrDefault(T defaultValue) {
-        return from(o.takeLast(1)).singleOrDefault(defaultValue);
+        return blockForSingle(o.map(Functions.<T>identity()).lastOrDefault(defaultValue));
     }
 
     /**
@@ -269,7 +269,7 @@ public class BlockingObservable<T> {
      * value if it emits no such items.
      * <p>
      * <img width="640" height="315" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.lastOrDefault.p.png" alt="">
-     * 
+     *
      * @param defaultValue
      *            a default value to return if this {@code BlockingObservable} emits no matching items
      * @param predicate
@@ -280,7 +280,7 @@ public class BlockingObservable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.lastordefault.aspx">MSDN: Observable.LastOrDefault</a>
      */
     public T lastOrDefault(T defaultValue, Func1<? super T, Boolean> predicate) {
-        return from(o.filter(predicate)).lastOrDefault(defaultValue);
+        return blockForSingle(o.filter(predicate).map(Functions.<T>identity()).lastOrDefault(defaultValue));
     }
 
     /**
@@ -288,7 +288,7 @@ public class BlockingObservable<T> {
      * {@code BlockingObservable}.
      * <p>
      * <img width="640" height="490" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.mostRecent.png" alt="">
-     * 
+     *
      * @param initialValue
      *            the initial value that the {@link Iterable} sequence will yield if this
      *            {@code BlockingObservable} has not yet emitted an item
@@ -306,7 +306,7 @@ public class BlockingObservable<T> {
      * returns that item.
      * <p>
      * <img width="640" height="490" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.next.png" alt="">
-     * 
+     *
      * @return an {@link Iterable} that blocks upon each iteration until this {@code BlockingObservable} emits
      *         a new item, whereupon the Iterable returns that item
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Blocking-Observable-Operators#next">RxJava Wiki: next()</a>
@@ -325,7 +325,7 @@ public class BlockingObservable<T> {
      * <p>
      * Note also that an {@code onNext} directly followed by {@code onCompleted} might hide the {@code onNext}
      * event.
-     * 
+     *
      * @return an Iterable that always returns the latest item emitted by this {@code BlockingObservable}
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Blocking-Observable-Operators#latest">RxJava wiki: latest()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh212115.aspx">MSDN: Observable.Latest</a>
@@ -339,13 +339,13 @@ public class BlockingObservable<T> {
      * throw a {@code NoSuchElementException}.
      * <p>
      * <img width="640" height="315" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.single.png" alt="">
-     * 
+     *
      * @return the single item emitted by this {@code BlockingObservable}
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Blocking-Observable-Operators#single-and-singleordefault">RxJava Wiki: single()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.single.aspx">MSDN: Observable.Single</a>
      */
     public T single() {
-        return from(o.single()).toIterable().iterator().next();
+        return blockForSingle(o.single());
     }
 
     /**
@@ -353,7 +353,7 @@ public class BlockingObservable<T> {
      * return that item, otherwise throw a {@code NoSuchElementException}.
      * <p>
      * <img width="640" height="315" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.single.p.png" alt="">
-     * 
+     *
      * @param predicate
      *            a predicate function to evaluate items emitted by this {@link BlockingObservable}
      * @return the single item emitted by this {@code BlockingObservable} that matches the predicate
@@ -361,7 +361,7 @@ public class BlockingObservable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.single.aspx">MSDN: Observable.Single</a>
      */
     public T single(Func1<? super T, Boolean> predicate) {
-        return from(o.single(predicate)).toIterable().iterator().next();
+        return blockForSingle(o.single(predicate));
     }
 
     /**
@@ -370,7 +370,7 @@ public class BlockingObservable<T> {
      * value.
      * <p>
      * <img width="640" height="315" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.singleOrDefault.png" alt="">
-     * 
+     *
      * @param defaultValue
      *            a default value to return if this {@code BlockingObservable} emits no items
      * @return the single item emitted by this {@code BlockingObservable}, or the default value if it emits no
@@ -379,7 +379,7 @@ public class BlockingObservable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.singleordefault.aspx">MSDN: Observable.SingleOrDefault</a>
      */
     public T singleOrDefault(T defaultValue) {
-        return from(o.map(Functions.<T>identity()).singleOrDefault(defaultValue)).single();
+        return blockForSingle(o.map(Functions.<T>identity()).singleOrDefault(defaultValue));
     }
 
     /**
@@ -388,7 +388,7 @@ public class BlockingObservable<T> {
      * emits no items, return a default value.
      * <p>
      * <img width="640" height="315" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.singleOrDefault.p.png" alt="">
-     * 
+     *
      * @param defaultValue
      *            a default value to return if this {@code BlockingObservable} emits no matching items
      * @param predicate
@@ -399,7 +399,7 @@ public class BlockingObservable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.singleordefault.aspx">MSDN: Observable.SingleOrDefault</a>
      */
     public T singleOrDefault(T defaultValue, Func1<? super T, Boolean> predicate) {
-        return from(o.filter(predicate)).singleOrDefault(defaultValue);
+        return blockForSingle(o.filter(predicate).map(Functions.<T>identity()).singleOrDefault(defaultValue));
     }
 
     /**
@@ -412,7 +412,7 @@ public class BlockingObservable<T> {
      * If the {@code BlockingObservable} may emit more than one item, use {@code Observable.toList().toBlocking().toFuture()}.
      * <p>
      * <img width="640" height="395" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.toFuture.png" alt="">
-     * 
+     *
      * @return a {@link Future} that expects a single item to be emitted by this {@code BlockingObservable}
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Blocking-Observable-Operators#transformations-tofuture-toiterable-and-toiteratorgetiterator">RxJava Wiki: toFuture()</a>
      */
@@ -424,7 +424,7 @@ public class BlockingObservable<T> {
      * Converts this {@code BlockingObservable} into an {@link Iterable}.
      * <p>
      * <img width="640" height="315" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.toIterable.png" alt="">
-     * 
+     *
      * @return an {@link Iterable} version of this {@code BlockingObservable}
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Blocking-Observable-Operators#transformations-tofuture-toiterable-and-toiteratorgetiterator">RxJava Wiki: toIterable()</a>
      */
@@ -435,5 +435,53 @@ public class BlockingObservable<T> {
                 return getIterator();
             }
         };
+    }
+
+    /**
+     * Helper method which handles the actual blocking for a single response.
+     * <p>
+     * If the {@link Observable} errors, it will be thrown right away.
+     *
+     * @return the actual item.
+     */
+    private T blockForSingle(final Observable<? extends T> observable) {
+        final AtomicReference<T> returnItem = new AtomicReference<T>();
+        final AtomicReference<Throwable> returnException = new AtomicReference<Throwable>();
+        final CountDownLatch latch = new CountDownLatch(1);
+
+        observable.subscribe(new Subscriber<T>() {
+            @Override
+            public void onCompleted() {
+                latch.countDown();
+            }
+
+            @Override
+            public void onError(final Throwable e) {
+                returnException.set(e);
+                latch.countDown();
+            }
+
+            @Override
+            public void onNext(final T item) {
+                returnItem.set(item);
+            }
+        });
+
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Interrupted while waiting for subscription to complete.", e);
+        }
+
+        if (returnException.get() != null) {
+            if (returnException.get() instanceof RuntimeException) {
+                throw (RuntimeException) returnException.get();
+            } else {
+                throw new RuntimeException(returnException.get());
+            }
+        }
+
+        return returnItem.get();
     }
 }

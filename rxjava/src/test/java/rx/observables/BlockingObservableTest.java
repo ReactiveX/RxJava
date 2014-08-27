@@ -115,7 +115,6 @@ public class BlockingObservableTest {
     @Test
     public void testLastWithPredicate() {
         BlockingObservable<String> obs = BlockingObservable.from(Observable.just("one", "two", "three"));
-
         assertEquals("two", obs.last(new Func1<String, Boolean>() {
             @Override
             public Boolean call(String s) {
@@ -124,6 +123,7 @@ public class BlockingObservableTest {
         }));
     }
 
+    @Test
     public void testSingle() {
         BlockingObservable<String> observable = BlockingObservable.from(Observable.just("one"));
         assertEquals("one", observable.single());
