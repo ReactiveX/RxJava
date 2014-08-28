@@ -5,7 +5,6 @@ trait Subscriber[-T] extends Observer[T] with Subscription {
   self =>
 
   private [scala] val asJavaSubscriber: rx.Subscriber[_ >: T] = new rx.Subscriber[T] with SubscriberAdapter[T] {
-    override def onStart(): Unit = self.onStart()
     override def onNext(value: T): Unit = self.onNext(value)
     override def onError(error: Throwable): Unit = self.onError(error)
     override def onCompleted(): Unit = self.onCompleted()
@@ -36,7 +35,7 @@ trait Subscriber[-T] extends Observer[T] with Subscription {
   }
 
   override final def isUnsubscribed: Boolean = {
-    asJavaSubscriber.isUnsubscribed()
+    asJavaSubscriber.isUnsubscribed
   }
 
   def onStart(): Unit = {
