@@ -1,5 +1,9 @@
 # RxJava Releases #
 
+### Version 0.20.2 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.20.2%22)) ###
+
+* [Pull 1637] (https://github.com/ReactiveX/RxJava/pull/1637) Optimize single BlockingObservable operations
+
 ### Version 0.20.1 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.20.1%22)) ###
 
 * [Pull 1631] (https://github.com/ReactiveX/RxJava/pull/1631) Handle Fatal Exceptions in doOn* operators
