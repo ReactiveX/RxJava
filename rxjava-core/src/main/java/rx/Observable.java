@@ -2902,7 +2902,9 @@ public class Observable<T> {
      *            the number of Observables to merge into
      * @return an Observable of Observables constrained in number by {@code parallelObservables}
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#parallelmerge">RxJava wiki: parallelMerge</a>
+     * @deprecated will be removed in 1.0
      */
+    @Deprecated
     public final static <T> Observable<Observable<T>> parallelMerge(Observable<Observable<T>> source, int parallelObservables) {
         return OperatorParallelMerge.parallelMerge(source, parallelObservables);
     }
@@ -2931,7 +2933,9 @@ public class Observable<T> {
      *            the {@link Scheduler} to run each Observable on
      * @return an Observable of Observables constrained in number by {@code parallelObservables}
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Combining-Observables#parallelmerge">RxJava wiki: parallelMerge</a>
+     @deprecated will be removed in 1.0
      */
+    @Deprecated
     public final static <T> Observable<Observable<T>> parallelMerge(Observable<Observable<T>> source, int parallelObservables, Scheduler scheduler) {
         return OperatorParallelMerge.parallelMerge(source, parallelObservables, scheduler);
     }
