@@ -17,7 +17,9 @@ Learn more about RxJava on the <a href="https://github.com/ReactiveX/RxJava/wiki
 
 ## Master Build Status
 
-<a href='https://netflixoss.ci.cloudbees.com/job/RxJava-master/'><img src='https://netflixoss.ci.cloudbees.com/job/RxJava-master/badge/icon'></a>
+CloudBees: <a href='https://netflixoss.ci.cloudbees.com/job/RxJava-master/'><img src='https://netflixoss.ci.cloudbees.com/job/RxJava-master/badge/icon'></a>
+
+Travis: <a href='https://travis-ci.org/ReactiveX/RxJava/builds'><img src='https://travis-ci.org/ReactiveX/RxJava.svg?branch=1.x'></a>
 
 ## Pull Request Build Status
 
