@@ -18,6 +18,8 @@ package rx.lang.scala
 import org.junit.Test
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertEquals
 import org.scalatest.junit.JUnitSuite
 
 class SubscriberTests extends JUnitSuite {
@@ -57,4 +59,27 @@ class SubscriberTests extends JUnitSuite {
     assertTrue(subscription.isUnsubscribed)
   }
 
+  @Test def testNewSubscriber(): Unit = {
+    var didComplete = false
+    var didError = false
+    var onNextValue = 0
+
+    Observable.just(1).subscribe(new Subscriber[Int] {
+      override def onCompleted(): Unit = {
+        didComplete = true
+      }
+
+      override def onError(e: Throwable): Unit = {
+        didError = true
+      }
+
+      override def onNext(v: Int): Unit = {
+        onNextValue = v
+      }
+    })
+
+    assertTrue("Subscriber called onCompleted", didComplete)
+    assertFalse("Subscriber did not call onError", didError)
+    assertEquals(1, onNextValue)
+  }
 }
