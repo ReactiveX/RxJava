@@ -2327,62 +2327,6 @@ public class Observable<T> {
     }
 
     /**
-     * Converts an {@code Observable<Observable<T>>} into another {@code Observable<Observable<T>>} whose
-     * emitted Observables emit the same items as those emitted by the source Observable, but where the number
-     * of such Observables is restricted by {@code parallelObservables}.
-     * <p>
-     * For example, if the original {@code Observable<Observable<T>>} emits 100 Observables and
-     * {@code parallelObservables} is 8, the items emitted by the 100 original Observables will be distributed
-     * among 8 Observables emitted by the resulting Observable.
-     * <p>
-     * <img width="640" height="535" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/parallelMerge.png" alt="">
-     * <p>
-     * This is a mechanism for efficiently processing <i>n</i> number of Observables on a smaller <i>m</i>
-     * number of resources (typically CPU cores).
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code parallelMerge} by default operates on the {@code immediate} {@link Scheduler}.</dd>
-     * </dl>
-     * 
-     * @param parallelObservables
-     *            the number of Observables to merge into
-     * @return an Observable of Observables constrained in number by {@code parallelObservables}
-     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Combining-Observables#parallelmerge">RxJava wiki: parallelMerge</a>
-     */
-    public final static <T> Observable<Observable<T>> parallelMerge(Observable<Observable<T>> source, int parallelObservables) {
-        return OperatorParallelMerge.parallelMerge(source, parallelObservables);
-    }
-
-    /**
-     * Converts an {@code Observable<Observable<T>>} into another {@code Observable<Observable<T>>} whose
-     * emitted Observables emit the same items as those emitted by the source Observable, but where the number
-     * of such Observables is restricted by {@code parallelObservables}, and each runs on a defined Scheduler.
-     * <p>
-     * For example, if the original {@code Observable<Observable<T>>} emits 100 Observables and
-     * {@code parallelObservables} is 8, the items emitted by the 100 original Observables will be distributed
-     * among 8 Observables emitted by the resulting Observable.
-     * <p>
-     * <img width="640" height="535" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/parallelMerge.png" alt="">
-     * <p>
-     * This is a mechanism for efficiently processing <i>n</i> number of Observables on a smaller <i>m</i>
-     * number of resources (typically CPU cores).
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
-     * </dl>
-     * 
-     * @param parallelObservables
-     *            the number of Observables to merge into
-     * @param scheduler
-     *            the {@link Scheduler} to run each Observable on
-     * @return an Observable of Observables constrained in number by {@code parallelObservables}
-     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Combining-Observables#parallelmerge">RxJava wiki: parallelMerge</a>
-     */
-    public final static <T> Observable<Observable<T>> parallelMerge(Observable<Observable<T>> source, int parallelObservables, Scheduler scheduler) {
-        return OperatorParallelMerge.parallelMerge(source, parallelObservables, scheduler);
-    }
-
-    /**
      * Returns an Observable that emits a sequence of Integers within a specified range.
      * <p>
      * <img width="640" height="195" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/range.png" alt="">
