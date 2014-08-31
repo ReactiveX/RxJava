@@ -99,7 +99,7 @@ public enum KeyEventSource { ; // no instances
             }
         });
         
-        return filteredKeyEvents.scan(Collections.<Integer>emptySet(), new CollectKeys());
+        return filteredKeyEvents.scan(Collections.<Integer>emptySet(), new CollectKeys()).skip(1);
     }
     
 }
