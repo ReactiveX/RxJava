@@ -74,18 +74,24 @@ public final class OnSubscribeRedo<T> implements OnSubscribe<T> {
 
         @Override
         public Observable<?> call(Observable<? extends Notification<?>> ts) {
-            final Notification<Long> first = count < 0 ? Notification.<Long> createOnCompleted() : Notification.createOnNext(0l);
+            return ts.map(new Func1<Notification<?>, Notification<?>>() {
 
-            return ts.scan(first, new Func2<Notification<Long>, Notification<?>, Notification<Long>>() {
-                @SuppressWarnings("unchecked")
+                int num=0;
+                
                 @Override
-                public Notification<Long> call(Notification<Long> n, Notification<?> term) {
-                    final long value = n.getValue();
-                    if (value < count)
-                        return Notification.createOnNext(value + 1);
-                    else
-                        return (Notification<Long>) term;
+                public Notification<?> call(Notification<?> terminalNotification) {
+                    if(count == 0) {
+                        return terminalNotification;
+                    }
+                    
+                    num++;
+                    if(num <= count) {
+                        return Notification.createOnNext(num);
+                    } else {
+                        return terminalNotification;
+                    }
                 }
+                
             }).dematerialize();
         }
     }
@@ -146,6 +152,9 @@ public final class OnSubscribeRedo<T> implements OnSubscribe<T> {
     }
 
     public static <T> Observable<T> repeat(Observable<T> source, final long count, Scheduler scheduler) {
+        if(count == 0) {
+            return Observable.empty();
+        }
         if (count < 0)
             throw new IllegalArgumentException("count >= 0 expected");
         return repeat(source, new RedoFinite(count - 1), scheduler);

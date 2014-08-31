@@ -15,7 +15,10 @@
  */
 package rx.internal.operators;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import rx.Observable.Operator;
+import rx.Producer;
 import rx.Subscriber;
 import rx.exceptions.OnErrorThrowable;
 import rx.functions.Func2;
@@ -70,37 +73,73 @@ public final class OperatorScan<R, T> implements Operator<R, T> {
     }
 
     @Override
-    public Subscriber<? super T> call(final Subscriber<? super R> observer) {
-        if (initialValue != NO_INITIAL_VALUE) {
-            observer.onNext(initialValue);
-        }
-        return new Subscriber<T>(observer) {
+    public Subscriber<? super T> call(final Subscriber<? super R> child) {
+        return new Subscriber<T>(child) {
             private R value = initialValue;
+            boolean initialized = false;
 
             @SuppressWarnings("unchecked")
             @Override
-            public void onNext(T value) {
+            public void onNext(T currentValue) {
+                emitInitialValueIfNeeded(child);
+
                 if (this.value == NO_INITIAL_VALUE) {
                     // if there is NO_INITIAL_VALUE then we know it is type T for both so cast T to R
-                    this.value = (R) value;
+                    this.value = (R) currentValue;
                 } else {
                     try {
-                        this.value = accumulator.call(this.value, value);
+                        this.value = accumulator.call(this.value, currentValue);
                     } catch (Throwable e) {
-                        observer.onError(OnErrorThrowable.addValueAsLastCause(e, value));
+                        child.onError(OnErrorThrowable.addValueAsLastCause(e, currentValue));
                     }
                 }
-                observer.onNext(this.value);
+                child.onNext(this.value);
             }
 
             @Override
             public void onError(Throwable e) {
-                observer.onError(e);
+                child.onError(e);
             }
 
             @Override
             public void onCompleted() {
-                observer.onCompleted();
+                emitInitialValueIfNeeded(child);
+                child.onCompleted();
+            }
+            
+            private void emitInitialValueIfNeeded(final Subscriber<? super R> child) {
+                if (!initialized) {
+                    initialized = true;
+                    // we emit first time through if we have an initial value
+                    if (initialValue != NO_INITIAL_VALUE) {
+                        child.onNext(initialValue);
+                    }
+                }
+            }
+            
+            /**
+             * We want to adjust the requested value by subtracting 1 if we have an initial value
+             */
+            @Override
+            public void setProducer(final Producer producer) {
+                child.setProducer(new Producer() {
+
+                    final AtomicBoolean once = new AtomicBoolean();
+
+                    @Override
+                    public void request(long n) {
+                        if (once.compareAndSet(false, true)) {
+                            if (initialValue == NO_INITIAL_VALUE) {
+                                producer.request(n);
+                            } else {
+                                producer.request(n - 1);
+                            }
+                        } else {
+                            // pass-thru after first time
+                            producer.request(n);
+                        }
+                    }
+                });
             }
         };
     }
