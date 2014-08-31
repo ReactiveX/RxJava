@@ -1102,6 +1102,18 @@ public class ObservableTests {
         }
         assertEquals(nums.length, count.get());
     }
+
+    @Test
+    public void testTakeUntil() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        Observable.just(1, 2, 3, 4).takeUntil(new Func1<Integer, Boolean>() {
+            @Override
+            public Boolean call(final Integer integer) {
+                return integer > 2;
+            }
+        }).subscribe(ts);
+        ts.assertReceivedOnNext(Arrays.asList(1, 2, 3));
+    }
     
     @Test
     public void testCompose() {

@@ -43,6 +43,31 @@ public final class OperatorTakeWhile<T> implements Operator<T, T> {
         this.predicate = predicate;
     }
 
+    static public <T> OperatorTakeWhile<T> takeUntil(final Func2<? super T, ? super Integer, Boolean> underlying) {
+        return new OperatorTakeWhile<T>(new Func2<T, Integer, Boolean>() {
+
+            private boolean quitting = false;
+
+            @Override
+            public Boolean call(final T t, final Integer integer) {
+                if (quitting) {
+                    return false;
+                }
+                quitting |= underlying.call(t, integer);
+                return true;
+            }
+        });
+    }
+
+    static public <T> OperatorTakeWhile<T> takeUntil(final Func1<? super T, Boolean> underlying) {
+        return takeUntil(new Func2<T, Integer, Boolean>() {
+            @Override
+            public Boolean call(final T t, final Integer integer) {
+                return underlying.call(t);
+            }
+        });
+    }
+
     @Override
     public Subscriber<? super T> call(final Subscriber<? super T> subscriber) {
         return new Subscriber<T>(subscriber) {

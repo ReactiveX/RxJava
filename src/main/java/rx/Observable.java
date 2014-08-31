@@ -8174,6 +8174,47 @@ public class Observable<T> {
     }
 
     /**
+     * Returns an Observable that emits items emitted by the source Observable until an item satisfies a
+     * specified condition, and then completes as soon as this condition is satisfied after emitting the item.
+     * <p>
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeUntil.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code takeUntil} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param predicate
+     *            a function that evaluates an item emitted by the source Observable and returns a Boolean
+     * @return an Observable that emits the items from the source Observable until an item satisfies the
+     *         condition defined by {@code predicate}, then completes after emitting this item
+     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Conditional-and-Boolean-Operators#takeuntil">RxJava wiki: takeUntil</a>
+     */
+    public final Observable<T> takeUntil(final Func1<? super T, Boolean> predicate) {
+        return lift(OperatorTakeWhile.takeUntil(predicate));
+    }
+
+    /**
+     * Returns an Observable that emits items emitted by the source Observable until an item satisfies a
+     * predicate, where the predicate operates on both the item and its index relative to the complete
+     * sequence of emitted items, and then completes as soon as this condition is satisfied after emitting the item.
+     * <p>
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeUntil.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code takeUntil} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param predicate
+     *            a function that evaluates an item emitted by the source Observable and returns a Boolean
+     * @return an Observable that emits the items from the source Observable until an item satisfies the
+     *         condition defined by {@code predicate}, then completes after emitting this item
+     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Conditional-and-Boolean-Operators#takeuntil">RxJava wiki: takeUntil</a>
+     */
+    public final Observable<T> takeUntil(final Func2<? super T, ? super Integer, Boolean> predicate) {
+        return lift(OperatorTakeWhile.takeUntil(predicate));
+    }
+
+    /**
      * Returns an Observable that emits items emitted by the source Observable so long as each item satisfied a
      * specified condition, and then completes as soon as this condition is not satisfied.
      * <p>
