@@ -15,6 +15,7 @@
  */
 package rx.internal.operators;
 
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
@@ -23,13 +24,21 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.MockitoAnnotations;
 
 import rx.Observable;
 import rx.Observer;
+import rx.Subscriber;
+import rx.functions.Action1;
+import rx.functions.Func1;
 import rx.functions.Func2;
+import rx.internal.util.RxRingBuffer;
+import rx.observers.TestSubscriber;
+import rx.schedulers.Schedulers;
 
 public class OperatorScanTest {
 
@@ -115,5 +124,146 @@ public class OperatorScanTest {
         verify(observer, times(1)).onNext(anyInt());
         verify(observer, times(1)).onCompleted();
         verify(observer, never()).onError(any(Throwable.class));
+    }
+    
+    @Test
+    public void shouldNotEmitUntilAfterSubscription() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        Observable.range(1, 100).scan(0, new Func2<Integer, Integer, Integer>() {
+
+            @Override
+            public Integer call(Integer t1, Integer t2) {
+                return t1 + t2;
+            }
+
+        }).filter(new Func1<Integer, Boolean>() {
+
+            @Override
+            public Boolean call(Integer t1) {
+                // this will cause request(1) when 0 is emitted
+                return t1 > 0;
+            }
+            
+        }).subscribe(ts);
+        
+        assertEquals(100, ts.getOnNextEvents().size());
+    }
+    
+    @Test
+    public void testBackpressureWithInitialValue() {
+        final AtomicInteger count = new AtomicInteger();
+        Observable.range(1, 100)
+                .scan(0, new Func2<Integer, Integer, Integer>() {
+
+                    @Override
+                    public Integer call(Integer t1, Integer t2) {
+                        return t1 + t2;
+                    }
+
+                })
+                .subscribe(new Subscriber<Integer>() {
+
+                    @Override
+                    public void onStart() {
+                        request(10);
+                    }
+
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        fail(e.getMessage());
+                        e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onNext(Integer t) {
+                        count.incrementAndGet();
+                    }
+
+                });
+
+        // we only expect to receive 10 since we request(10)
+        assertEquals(10, count.get());
+    }
+    
+    @Test
+    public void testBackpressureWithoutInitialValue() {
+        final AtomicInteger count = new AtomicInteger();
+        Observable.range(1, 100)
+                .scan(new Func2<Integer, Integer, Integer>() {
+
+                    @Override
+                    public Integer call(Integer t1, Integer t2) {
+                        return t1 + t2;
+                    }
+
+                })
+                .subscribe(new Subscriber<Integer>() {
+
+                    @Override
+                    public void onStart() {
+                        request(10);
+                    }
+
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        fail(e.getMessage());
+                        e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onNext(Integer t) {
+                        count.incrementAndGet();
+                    }
+
+                });
+
+        // we only expect to receive 10 since we request(10)
+        assertEquals(10, count.get());
+    }
+    
+    @Test
+    public void testNoBackpressureWithInitialValue() {
+        final AtomicInteger count = new AtomicInteger();
+        Observable.range(1, 100)
+                .scan(0, new Func2<Integer, Integer, Integer>() {
+
+                    @Override
+                    public Integer call(Integer t1, Integer t2) {
+                        return t1 + t2;
+                    }
+
+                })
+                .subscribe(new Subscriber<Integer>() {
+
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        fail(e.getMessage());
+                        e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onNext(Integer t) {
+                        count.incrementAndGet();
+                    }
+
+                });
+
+        // we only expect to receive 101 as we'll receive all 100 + the initial value
+        assertEquals(101, count.get());
     }
 }
