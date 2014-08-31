@@ -5,6 +5,7 @@ trait Subscriber[-T] extends Observer[T] with Subscription {
   self =>
 
   private [scala] val asJavaSubscriber: rx.Subscriber[_ >: T] = new rx.Subscriber[T] with SubscriberAdapter[T] {
+    override def onStart(): Unit = self.onStart()
     override def onNext(value: T): Unit = self.onNext(value)
     override def onError(error: Throwable): Unit = self.onError(error)
     override def onCompleted(): Unit = self.onCompleted()
@@ -39,7 +40,7 @@ trait Subscriber[-T] extends Observer[T] with Subscription {
   }
 
   def onStart(): Unit = {
-    asJavaSubscriber.onStart()
+    // do nothing by default
   }
 
   protected final def request(n: Long): Unit = {
@@ -65,6 +66,7 @@ object Subscriber extends ObserverFactoryMethods[Subscriber] {
     override val asJavaObserver: rx.Observer[_ >: T] = asJavaSubscriber
     override val asJavaSubscription: rx.Subscription = asJavaSubscriber
 
+    override def onStart(): Unit = asJavaSubscriber.onStart()
     override def onNext(value: T): Unit = asJavaSubscriber.onNext(value)
     override def onError(error: Throwable): Unit = asJavaSubscriber.onError(error)
     override def onCompleted(): Unit = asJavaSubscriber.onCompleted()
