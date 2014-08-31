@@ -82,4 +82,47 @@ class SubscriberTests extends JUnitSuite {
     assertFalse("Subscriber did not call onError", didError)
     assertEquals(1, onNextValue)
   }
+
+  @Test def testOnStart(): Unit = {
+    var called = false
+    Observable.just(1).subscribe(new Subscriber[Int] {
+      override def onStart(): Unit = {
+        called = true
+      }
+
+      override def onCompleted(): Unit = {
+      }
+
+      override def onError(e: Throwable): Unit = {
+      }
+
+      override def onNext(v: Int): Unit = {
+      }
+    })
+    assertTrue("Subscriber.onStart should be called", called)
+  }
+
+  @Test def testOnStart2(): Unit = {
+    val items = scala.collection.mutable.ListBuffer[Int]()
+    var calledOnCompleted = false
+    Observable.just(1, 2, 3).subscribe(new Subscriber[Int] {
+      override def onStart(): Unit = {
+        request(1)
+      }
+
+      override def onCompleted(): Unit = {
+        calledOnCompleted = true
+      }
+
+      override def onError(e: Throwable): Unit = {
+      }
+
+      override def onNext(v: Int): Unit = {
+        items += v
+        request(1)
+      }
+    })
+    assertEquals(List(1, 2, 3), items)
+    assertTrue("Subscriber.onCompleted should be called", calledOnCompleted)
+  }
 }

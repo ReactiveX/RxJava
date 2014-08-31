@@ -539,7 +539,6 @@ class RxScalaDemo extends JUnitSuite {
   }
 
   @Test def testSingleOption() {
-    assertEquals(None,    List(1, 2).toObservable.toBlocking.singleOption)
     assertEquals(Some(1), List(1).toObservable.toBlocking.singleOption)
     assertEquals(None,    List().toObservable.toBlocking.singleOption)
   }
