@@ -95,12 +95,10 @@ public class KeyEventSourceTest {
                         .subscribe(action, error, complete);
 
                 InOrder inOrder = inOrder(action);
+                fireKeyEvent(keyEvent(1, KeyEvent.KEY_PRESSED));
+                // we receive an empty event at the beginning due to behavior of scan with an initial value
                 inOrder.verify(action, times(1)).call(
                         Collections.<Integer> emptySet());
-                verify(error, never()).call(Matchers.<Throwable> any());
-                verify(complete, never()).call();
-
-                fireKeyEvent(keyEvent(1, KeyEvent.KEY_PRESSED));
                 inOrder.verify(action, times(1)).call(
                         new HashSet<Integer>(asList(1)));
                 verify(error, never()).call(Matchers.<Throwable> any());
