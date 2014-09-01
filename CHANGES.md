@@ -1,5 +1,31 @@
 # RxJava Releases #
 
+### Version 0.20.3 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.20.3%22)) ###
+
+* [Pull 1648] (https://github.com/ReactiveX/RxJava/pull/1648) Operator Scan Backpressure Fix
+* [Pull 1651] (https://github.com/ReactiveX/RxJava/pull/1651) RxScala: Fix the problem that Subscriber.onStart isn't called
+* [Pull 1641] (https://github.com/ReactiveX/RxJava/pull/1641) RxScala: Fix infinite recursive onStart call in Subscriber
+* [Pull 1646] (https://github.com/ReactiveX/RxJava/pull/1646) Deprecate ParallelMerge
+
+### Version 1.0.0-rc.1 ([Maven Central]http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.0.0-rc.1%7C)) ###
+
+The first release candidate for [1.0.0](https://github.com/ReactiveX/RxJava/issues/1001).
+
+This is the same code as version 0.20.2 except:
+
+- all deprecated methods and types are deleted
+- now published to groupId `io.reactivex` instead of `com.netflix.rxjava`
+- artifactId is now `rxjava` instead of `rxjava-core`
+
+```
+io.reactivex:rxjava:1.0.0-rc.1
+```
+
+- all sub-projects are separated into their own projects and no longer released along with RxJava
+
+The artifacts can be found on maven Central at: http://repo1.maven.org/maven2/io/reactivex/rxjava/1.0.0-rc.1/
+
+
 ### Version 0.20.2 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.20.2%22)) ###
 
 * [Pull 1637] (https://github.com/ReactiveX/RxJava/pull/1637) Optimize single BlockingObservable operations
