@@ -7,7 +7,7 @@
 * [Pull 1641] (https://github.com/ReactiveX/RxJava/pull/1641) RxScala: Fix infinite recursive onStart call in Subscriber
 * [Pull 1646] (https://github.com/ReactiveX/RxJava/pull/1646) Deprecate ParallelMerge
 
-### Version 1.0.0-rc.1 ([Maven Central]http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.0.0-rc.1%7C)) ###
+### Version 1.0.0-rc.1 ([Maven Central](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.0.0-rc.1%7C)) ###
 
 The first release candidate for [1.0.0](https://github.com/ReactiveX/RxJava/issues/1001).
 
