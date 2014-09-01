@@ -1,5 +1,10 @@
 # RxJava Releases #
 
+### Version 1.0.0-rc.2 ([Maven Central](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.0.0-rc.1%7C)) ###
+
+* [Pull 1652] (https://github.com/ReactiveX/RxJava/pull/1652) Operator Scan Backpressure Fix
+* [Pull 1645] (https://github.com/ReactiveX/RxJava/pull/1645) Remove ParallelMerge
+
 ### Version 0.20.3 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.20.3%22)) ###
 
 * [Pull 1648] (https://github.com/ReactiveX/RxJava/pull/1648) Operator Scan Backpressure Fix
