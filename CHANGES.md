@@ -1,5 +1,12 @@
 # RxJava Releases #
 
+### Version 0.20.3 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.20.3%22)) ###
+
+* [Pull 1648] (https://github.com/ReactiveX/RxJava/pull/1648) Operator Scan Backpressure Fix
+* [Pull 1651] (https://github.com/ReactiveX/RxJava/pull/1651) RxScala: Fix the problem that Subscriber.onStart isn't called
+* [Pull 1641] (https://github.com/ReactiveX/RxJava/pull/1641) RxScala: Fix infinite recursive onStart call in Subscriber
+* [Pull 1646] (https://github.com/ReactiveX/RxJava/pull/1646) Deprecate ParallelMerge
+
 ### Version 0.20.2 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.20.2%22)) ###
 
 * [Pull 1637] (https://github.com/ReactiveX/RxJava/pull/1637) Optimize single BlockingObservable operations
