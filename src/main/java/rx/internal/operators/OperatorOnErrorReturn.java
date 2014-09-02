@@ -52,13 +52,22 @@ public final class OperatorOnErrorReturn<T> implements Operator<T, T> {
     public Subscriber<? super T> call(final Subscriber<? super T> child) {
         return new Subscriber<T>(child) {
 
+            private boolean done = false;
+
             @Override
             public void onNext(T t) {
+                if (done) {
+                    return;
+                }
                 child.onNext(t);
             }
 
             @Override
             public void onError(Throwable e) {
+                if (done) {
+                    return;
+                }
+                done = true;
                 try {
                     RxJavaPlugins.getInstance().getErrorHandler().handleError(e);
                     T result = resultFunction.call(e);
@@ -73,6 +82,10 @@ public final class OperatorOnErrorReturn<T> implements Operator<T, T> {
 
             @Override
             public void onCompleted() {
+                if (done) {
+                    return;
+                }
+                done = true;
                 child.onCompleted();
             }
             
