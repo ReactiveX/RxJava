@@ -18,6 +18,7 @@ package rx.internal.operators;
 import rx.Observable;
 import rx.Observable.Operator;
 import rx.Subscriber;
+import rx.observers.SerializedSubscriber;
 
 /**
  * Returns an Observable that emits the items from the source Observable until another Observable
@@ -35,7 +36,7 @@ public final class OperatorTakeUntil<T, E> implements Operator<T, T> {
 
     @Override
     public Subscriber<? super T> call(final Subscriber<? super T> child) {
-        final Subscriber<T> parent = new Subscriber<T>(child) {
+        final Subscriber<T> parent = new SerializedSubscriber<T>(child) {
 
             @Override
             public void onCompleted() {
