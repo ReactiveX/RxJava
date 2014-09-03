@@ -49,7 +49,7 @@
  <dt>I want to create a new Observable</dt>
   <dd class="sub"><dl>
    <dt>that emits a particular item</dt>
-    <dd class="s"><a href="https://github.com/ReactiveX/RxJava/wiki/Creating-Observables#just"><code>just(&#8239;)</code></a></dd>
+    <dd><a href="https://github.com/ReactiveX/RxJava/wiki/Creating-Observables#just"><code>just(&#8239;)</code></a></dd>
     <dd class="sub"><dl>
      <dt>that was returned from a function called at subscribe-time</dt>
       <dd class="a"><a href="https://github.com/ReactiveX/RxJava/wiki/Async-Operators#start"><code>start(&#8239;)</code></a></dd>
@@ -105,7 +105,7 @@
       </dl></dd>
     </dl></dd>
    <dt>that completes without emitting items</dt>
-    <dd class="s"><a href="https://github.com/ReactiveX/RxJava/wiki/Creating-Observables#empty"><code>empty(&#8239;)</code></a></dd>
+    <dd><a href="https://github.com/ReactiveX/RxJava/wiki/Creating-Observables#empty"><code>empty(&#8239;)</code></a></dd>
    <dt>that does nothing at all</dt>
     <dd><a href="https://github.com/ReactiveX/RxJava/wiki/Creating-Observables#never"><code>never(&#8239;)</code></a></dd>
   </dl></dd>
@@ -117,12 +117,12 @@
      <dt>where the source Observables are passed to the operator as parameters</dt>
       <dd><a href="https://github.com/ReactiveX/RxJava/wiki/Combining-Observables#merge"><code>merge(&hellip;)</code></a></dd>
      <dt>where the source Observables are found in an Array</dt>
-      <dd class="s"><a href="https://github.com/ReactiveX/RxJava/wiki/Combining-Observables#merge"><code>merge(sequences)</code></a></dd>
+      <dd><a href="https://github.com/ReactiveX/RxJava/wiki/Combining-Observables#merge"><code>merge(sequences)</code></a></dd>
      <dt>where the source Observables are found in an Iterable or Observable</dt>
-      <dd class="s"><a href="https://github.com/ReactiveX/RxJava/wiki/Combining-Observables#merge"><code>merge(sequences)</code></a></dd>
+      <dd><a href="https://github.com/ReactiveX/RxJava/wiki/Combining-Observables#merge"><code>merge(sequences)</code></a></dd>
       <dd class="sub"><dl>
        <dt>but I only want to process a certain number of them at once</dt>
-        <dd class="s"><a href="https://github.com/ReactiveX/RxJava/wiki/Combining-Observables#merge"><code>merge(sequences,maxConcurrent)</code></a></dd>
+        <dd><a href="https://github.com/ReactiveX/RxJava/wiki/Combining-Observables#merge"><code>merge(sequences,maxConcurrent)</code></a></dd>
       </dl></dd>
      <dt>but not forwarding any error notifications until all source Observables have terminated</dt>
       <dd><a href="https://github.com/ReactiveX/RxJava/wiki/Combining-Observables#mergedelayerror"><code>mergeDelayError(&#8239;)</code></a></dd>
@@ -148,8 +148,10 @@
     <dd><a href="https://github.com/ReactiveX/RxJava/wiki/Combining-Observables#switchonnext"><code>switchOnNext(&#8239;)</code></a></dd>
    <dt>and mirroring only one of those Observables (which one depends on a parameter I am passed)</dt>
     <dd class="c"><a href="https://github.com/ReactiveX/RxJava/wiki/Conditional-and-Boolean-Operators#switchCase"><code>switchCase(&#8239;)</code></a></dd>
+<!-- deprecated
    <dt>reducing an Observable that emits many Observables to one that emits as many Observables as I have processes to process them on</dt>
     <dd class="s"><a href="https://github.com/ReactiveX/RxJava/wiki/Combining-Observables#parallelmerge"><code>parallelMerge(&hellip;)</code></a></dd>
+-->
   </dl></dd>
 
  <dt>I want emit the items from an Observable after transforming them</dt>
@@ -177,7 +179,7 @@
    <dt>by attaching a timestamp to them</dt>
     <dd class="s"><a href="https://github.com/ReactiveX/RxJava/wiki/Observable-Utility-Operators#timestamp"><code>timestamp(&#8239;)</code></a></dd>
    <dt>into an indicator of the amount of time that lapsed before the emission of the item</dt>
-    <dd class="s"><a href="https://github.com/ReactiveX/RxJava/wiki/Observable-Utility-Operators#itmeinterval"><code>timeInterval(&#8239;)</code></a></dd>
+    <dd class="s"><a href="https://github.com/ReactiveX/RxJava/wiki/Observable-Utility-Operators#timeinterval"><code>timeInterval(&#8239;)</code></a></dd>
   </dl></dd>
 
  <dt>I want to shift the items emitted by an Observable forward in time before reemitting them</dt>
@@ -209,7 +211,7 @@
  <dt>I want to mirror an Observable but prefix items to its sequence</dt>
   <dd class="sub"><dl>
    <dt>obtained from an Array or Iterable</dt>
-    <dd class="s"><a href="https://github.com/ReactiveX/RxJava/wiki/Combining-Observables#startwith"><code>startWith(values)</code></a></dd>
+    <dd><a href="https://github.com/ReactiveX/RxJava/wiki/Combining-Observables#startwith"><code>startWith(values)</code></a></dd>
    <dt>obtained from an Observable</dt>
     <dd><a href="https://github.com/ReactiveX/RxJava/wiki/Combining-Observables#startwith"><code>startWith(values)</code></a></dd>
    <dt>passed as parameters to the operator</dt>
@@ -293,8 +295,10 @@
       <dd class="sub"><dl>
        <dt>and transforming the items before emitting them on those Observables</dt>
         <dd><a href="https://github.com/ReactiveX/RxJava/wiki/Transforming-Observables#groupby-and-groupbyuntil"><code>groupByUntil(keySelector,valueSelector,durationSelector)</code></a></dd>
+<!-- deprecated
        <dt>and then collecting similarly grouped Observables back together again</dt>
         <dd><a href="https://github.com/ReactiveX/RxJava/wiki/Transforming-Observables#pivot"><code>pivot(&#8239;)</code></a></dd>
+-->
       </dl></dd>
     </dl></dd>
   </dl></dd>
@@ -440,7 +444,7 @@
      <dt>based on a timer</dt>
       <dd class="s"><a href="https://github.com/ReactiveX/RxJava/wiki/Filtering-Observables#throttlewithtimeout-or-debounce"><code>throttleWithTimeout(time,unit)</code></a></dd>
      <dt>based on emissions from another Observable</dt>
-      <dd class="s"><a href="https://github.com/ReactiveX/RxJava/wiki/Filtering-Observables#throttlewithtimeout-or-debounce"><code>debounce(debounceSelector)</code></a></dd>
+      <dd><a href="https://github.com/ReactiveX/RxJava/wiki/Filtering-Observables#throttlewithtimeout-or-debounce"><code>debounce(debounceSelector)</code></a></dd>
     </dl></dd>
    <dt>by suppressing items that are duplicates of already-emitted items</dt>
     <dd><a href="https://github.com/ReactiveX/RxJava/wiki/Filtering-Observables#distinct"><code>distinct(&#8239;)</code></a></dd>
@@ -579,7 +583,7 @@
   </dl></dd>
 
  <dt>I want an Observable that will notify observers of an error</dt>
-  <dd class="s"><a href="https://github.com/ReactiveX/RxJava/wiki/Creating-Observables#error"><code>error(&#8239;)</code></a></dd>
+  <dd><a href="https://github.com/ReactiveX/RxJava/wiki/Creating-Observables#error"><code>error(&#8239;)</code></a></dd>
   <dd class="sub"><dl>
    <dt>if a specified period of time elapses without it emitting an item</dt>
     <dd class="s"><a href="https://github.com/ReactiveX/RxJava/wiki/Filtering-Observables#timeout"><code>timeout(time,unit)</code></a></dd>
@@ -599,10 +603,12 @@
       </dl></dd>
      <dt>by switching to a backup Observable returned from a function that is passed the error</dt>
       <dd><a href="https://github.com/ReactiveX/RxJava/wiki/Error-Handling-Operators#onerrorresumenext"><code>onErrorResumeNext(throwable,function)</code></a></dd>
+<!-- deprecated
       <dd class="sub"><dl>
        <dt>and by then continuing to observe the source Observable in spite of the error termination</dt>
         <dd><a href="https://github.com/ReactiveX/RxJava/wiki/Error-Handling-Operators#onerrorflatmap"><code>onErrorFlatMap(&#8239;)</code></a></dd>
       </dl></dd>
+-->
      <dt>by emitting a particular item and completing normally</dt>
       <dd><a href="https://github.com/ReactiveX/RxJava/wiki/Error-Handling-Operators#onerrorreturn"><code>onErrorReturn(&#8239;)</code></a></dd>
      <dt>by attempting to resubscribe to the upstream Observable</dt>
