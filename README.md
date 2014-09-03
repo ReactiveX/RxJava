@@ -44,7 +44,7 @@ Once we hit 1.0 it will follow the normal major.minor.patch semantic versioning 
 ## Full Documentation
 
 - [Wiki](https://github.com/ReactiveX/RxJava/wiki)
-- <a href="http://netflix.github.com/RxJava/javadoc/">Javadoc</a>
+- <a href="http://reactivex.github.com/RxJava/javadoc/">Javadoc</a>
 
 ## Binaries
 
