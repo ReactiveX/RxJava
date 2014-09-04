@@ -142,6 +142,24 @@ public class StringObservableTest {
     public void testSplitOnOh() {
         testSplit("boo:and:foo", "o", 0, "b", "", ":and:f");
     }
+    
+    @Test
+    public void testSplitOnEmptyStream() {
+        assertEquals(0, (int) StringObservable.split(Observable.<String>empty(), "\n")
+                .count().toBlocking().single());
+    }
+    
+    @Test
+    public void testSplitOnStreamThatThrowsExceptionImmediately() {
+        RuntimeException ex = new RuntimeException("boo");
+        try {
+            StringObservable.split(Observable.<String>error(ex), "\n")
+                .count().toBlocking().single();
+            fail();
+        } catch (RuntimeException e) {
+            assertEquals(ex, e);
+        }
+    }
 
     public void testSplit(String str, String regex, int limit, String... parts) {
         testSplit(str, regex, 0, Observable.from(str), parts);
