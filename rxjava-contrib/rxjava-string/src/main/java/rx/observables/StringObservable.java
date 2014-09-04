@@ -441,14 +441,16 @@ public class StringObservable {
 
                     @Override
                     public void onCompleted() {
-                        output(leftOver);
+                        if (leftOver!=null)
+                            output(leftOver);
                         if (!o.isUnsubscribed())
                             o.onCompleted();
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        output(leftOver);
+                        if (leftOver!=null)
+                            output(leftOver);
                         if (!o.isUnsubscribed())
                             o.onError(e);
                     }
