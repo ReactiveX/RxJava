@@ -54,7 +54,7 @@ Example for Maven:
 
 ```xml
 <dependency>
-    <groupId>io.reactivex.rxjava</groupId>
+    <groupId>io.reactivex</groupId>
     <artifactId>rxjava</artifactId>
     <version>x.y.z</version>
 </dependency>
@@ -62,7 +62,7 @@ Example for Maven:
 and for Ivy:
 
 ```xml
-<dependency org="io.reactivex.rxjava" name="rxjava" rev="x.y.z" />
+<dependency org="io.reactivex" name="rxjava" rev="x.y.z" />
 ```
 
 If you need to download the jars instead of using a build system, create a Maven pom file like this with the desired version:
