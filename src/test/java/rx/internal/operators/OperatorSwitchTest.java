@@ -15,6 +15,7 @@
  */
 package rx.internal.operators;
 
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.inOrder;
@@ -25,6 +26,7 @@ import static org.mockito.Mockito.verify;
 
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -512,5 +514,20 @@ public class OperatorSwitchTest {
         testSubscriber.assertReceivedOnNext(Arrays.asList("a1", "b1", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8", "c9", "c10"));
         testSubscriber.assertNoErrors();
         testSubscriber.assertTerminalEvent();
+    }
+
+    @Test
+    public void testUnsubscribe() {
+        final AtomicBoolean isUnsubscribed = new AtomicBoolean();
+        Observable.switchOnNext(
+                Observable.create(new Observable.OnSubscribe<Observable<Integer>>() {
+                    @Override
+                    public void call(final Subscriber<? super Observable<Integer>> subscriber) {
+                        subscriber.onNext(Observable.just(1));
+                        isUnsubscribed.set(subscriber.isUnsubscribed());
+                    }
+                })
+        ).take(1).subscribe();
+        assertTrue("Switch doesn't propagate 'unsubscribe'", isUnsubscribed.get());
     }
 }
