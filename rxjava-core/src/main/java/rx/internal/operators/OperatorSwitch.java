@@ -62,6 +62,7 @@ public final class OperatorSwitch<T> implements Operator<T, Observable<? extends
         volatile boolean infinite = false;
 
         public SwitchSubscriber(Subscriber<? super T> child) {
+            super(child);
             s = new SerializedSubscriber<T>(child);
             ssub = new SerialSubscription();
             child.add(ssub);
