@@ -18,6 +18,7 @@ package rx.internal.operators;
 import rx.Observable;
 import rx.Observable.Operator;
 import rx.Subscriber;
+import rx.exceptions.Exceptions;
 import rx.functions.Func1;
 import rx.plugins.RxJavaPlugins;
 
@@ -49,17 +50,29 @@ public final class OperatorOnErrorResumeNextViaFunction<T> implements Operator<T
 
     @Override
     public Subscriber<? super T> call(final Subscriber<? super T> child) {
-        return new Subscriber<T>(child) {
+        Subscriber<T> parent = new Subscriber<T>() {
 
+            private boolean done = false;
+            
             @Override
             public void onCompleted() {
+                if (done) {
+                    return;
+                }
+                done = true;
                 child.onCompleted();
             }
 
             @Override
             public void onError(Throwable e) {
+                if (done) {
+                    Exceptions.throwIfFatal(e);
+                    return;
+                }
+                done = true;
                 try {
                     RxJavaPlugins.getInstance().getErrorHandler().handleError(e);
+                    unsubscribe();
                     Observable<? extends T> resume = resumeFunction.call(e);
                     resume.unsafeSubscribe(child);
                 } catch (Throwable e2) {
@@ -69,10 +82,15 @@ public final class OperatorOnErrorResumeNextViaFunction<T> implements Operator<T
 
             @Override
             public void onNext(T t) {
+                if (done) {
+                    return;
+                }
                 child.onNext(t);
             }
 
         };
+        child.add(parent);
+        return parent;
     }
 
 }
