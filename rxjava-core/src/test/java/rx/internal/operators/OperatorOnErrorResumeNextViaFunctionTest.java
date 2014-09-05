@@ -35,6 +35,7 @@ import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Func1;
 import rx.observers.TestSubscriber;
+import rx.schedulers.Schedulers;
 
 public class OperatorOnErrorResumeNextViaFunctionTest {
 
@@ -47,6 +48,8 @@ public class OperatorOnErrorResumeNextViaFunctionTest {
             public void call(Subscriber<? super String> observer) {
                 observer.onNext("one");
                 observer.onError(new Throwable("injected failure"));
+                observer.onNext("two");
+                observer.onNext("three");
             }
         });
 
@@ -225,6 +228,47 @@ public class OperatorOnErrorResumeNextViaFunctionTest {
         ts.assertTerminalEvent();
         System.out.println(ts.getOnNextEvents());
         ts.assertReceivedOnNext(Arrays.asList("success"));
+    }
+    
+    @Test
+    public void testMapResumeAsyncNext() {
+        // Trigger multiple failures
+        Observable<String> w = Observable.just("one", "fail", "two", "three", "fail");
+
+        // Introduce map function that fails intermittently (Map does not prevent this when the observer is a
+        //  rx.operator incl onErrorResumeNextViaObservable)
+        w = w.map(new Func1<String, String>() {
+            @Override
+            public String call(String s) {
+                if ("fail".equals(s))
+                    throw new RuntimeException("Forced Failure");
+                System.out.println("BadMapper:" + s);
+                return s;
+            }
+        });
+
+        Observable<String> observable = w.onErrorResumeNext(new Func1<Throwable, Observable<String>>() {
+
+            @Override
+            public Observable<String> call(Throwable t1) {
+                return Observable.just("twoResume", "threeResume").subscribeOn(Schedulers.computation());
+            }
+            
+        });
+
+        @SuppressWarnings("unchecked")
+        Observer<String> observer = mock(Observer.class);
+        TestSubscriber<String> ts = new TestSubscriber<String>(observer);
+        observable.subscribe(ts);
+        ts.awaitTerminalEvent();
+
+        verify(observer, Mockito.never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onCompleted();
+        verify(observer, times(1)).onNext("one");
+        verify(observer, Mockito.never()).onNext("two");
+        verify(observer, Mockito.never()).onNext("three");
+        verify(observer, times(1)).onNext("twoResume");
+        verify(observer, times(1)).onNext("threeResume");
     }
 
     private static class TestObservable implements Observable.OnSubscribe<String> {
