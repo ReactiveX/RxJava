@@ -129,7 +129,7 @@ public final class OperatorScan<R, T> implements Operator<R, T> {
                     @Override
                     public void request(long n) {
                         if (once.compareAndSet(false, true)) {
-                            if (initialValue == NO_INITIAL_VALUE) {
+                            if (initialValue == NO_INITIAL_VALUE || n == Long.MAX_VALUE) {
                                 producer.request(n);
                             } else {
                                 producer.request(n - 1);
