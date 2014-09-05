@@ -18,6 +18,7 @@ package rx.internal.operators;
 import rx.Observable;
 import rx.Observable.Operator;
 import rx.Subscriber;
+import rx.exceptions.Exceptions;
 import rx.plugins.RxJavaPlugins;
 
 /**
@@ -56,13 +57,23 @@ public final class OperatorOnExceptionResumeNextViaObservable<T> implements Oper
         // needs to independently unsubscribe so child can continue with the resume
         Subscriber<T> s = new Subscriber<T>() {
 
+            private boolean done = false;
+            
             @Override
             public void onNext(T t) {
+                if (done) {
+                    return;
+                }
                 child.onNext(t);
             }
 
             @Override
             public void onError(Throwable e) {
+                if (done) {
+                    Exceptions.throwIfFatal(e);
+                    return;
+                }
+                done = true;
                 if (e instanceof Exception) {
                     RxJavaPlugins.getInstance().getErrorHandler().handleError(e);
                     unsubscribe();
@@ -74,6 +85,10 @@ public final class OperatorOnExceptionResumeNextViaObservable<T> implements Oper
 
             @Override
             public void onCompleted() {
+                if (done) {
+                    return;
+                }
+                done = true;
                 child.onCompleted();
             }
             
