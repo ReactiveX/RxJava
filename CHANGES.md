@@ -1,5 +1,15 @@
 # RxJava Releases #
 
+### Version 0.20.4 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.20.4%22)) ###
+
+* [Pull 1667] (https://github.com/ReactiveX/RxJava/pull/1667) Fix the bug that Switch doesn't propagate 'unsubscribe'
+* [Pull 1659] (https://github.com/ReactiveX/RxJava/pull/1659) OperatorScan should check for MAX_VALUE on request
+* [Pull 1657] (https://github.com/ReactiveX/RxJava/pull/1657) Ignore furthur messages after entering terminate state
+* [Pull 1669] (https://github.com/ReactiveX/RxJava/pull/1669) Error Handling Unsubscribe and Terminal State
+* [Pull 1656] (https://github.com/ReactiveX/RxJava/pull/1656) Make TakeUntil obey Rx serialization contract
+* [Pull 1664] (https://github.com/ReactiveX/RxJava/pull/1664) StringObservable.split NPE fixes
+
+
 ### Version 0.20.3 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.20.3%22)) ###
 
 * [Pull 1648] (https://github.com/ReactiveX/RxJava/pull/1648) Operator Scan Backpressure Fix
