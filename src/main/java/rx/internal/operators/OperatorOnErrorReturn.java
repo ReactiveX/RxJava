@@ -16,9 +16,11 @@
 package rx.internal.operators;
 
 import java.util.Arrays;
+
 import rx.Observable.Operator;
 import rx.Subscriber;
 import rx.exceptions.CompositeException;
+import rx.exceptions.Exceptions;
 import rx.functions.Func1;
 import rx.plugins.RxJavaPlugins;
 
@@ -50,7 +52,7 @@ public final class OperatorOnErrorReturn<T> implements Operator<T, T> {
 
     @Override
     public Subscriber<? super T> call(final Subscriber<? super T> child) {
-        return new Subscriber<T>(child) {
+        Subscriber<T> parent = new Subscriber<T>() {
 
             private boolean done = false;
 
@@ -65,13 +67,14 @@ public final class OperatorOnErrorReturn<T> implements Operator<T, T> {
             @Override
             public void onError(Throwable e) {
                 if (done) {
+                    Exceptions.throwIfFatal(e);
                     return;
                 }
                 done = true;
                 try {
                     RxJavaPlugins.getInstance().getErrorHandler().handleError(e);
+                    unsubscribe();
                     T result = resultFunction.call(e);
-                    
                     child.onNext(result);
                 } catch (Throwable x) {
                     child.onError(new CompositeException(Arrays.asList(e, x)));
@@ -90,5 +93,7 @@ public final class OperatorOnErrorReturn<T> implements Operator<T, T> {
             }
             
         };
+        child.add(parent);
+        return parent;
     }
 }

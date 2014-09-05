@@ -31,6 +31,8 @@ import rx.Observable;
 import rx.Observer;
 import rx.Subscriber;
 import rx.functions.Func1;
+import rx.observers.TestSubscriber;
+import rx.schedulers.Schedulers;
 
 public class OperatorOnErrorReturnTest {
 
@@ -103,6 +105,46 @@ public class OperatorOnErrorReturnTest {
         verify(observer, times(1)).onError(any(Throwable.class));
         verify(observer, times(0)).onCompleted();
         assertNotNull(capturedException.get());
+    }
+    
+    @Test
+    public void testMapResumeAsyncNext() {
+        // Trigger multiple failures
+        Observable<String> w = Observable.just("one", "fail", "two", "three", "fail");
+
+        // Introduce map function that fails intermittently (Map does not prevent this when the observer is a
+        //  rx.operator incl onErrorResumeNextViaObservable)
+        w = w.map(new Func1<String, String>() {
+            @Override
+            public String call(String s) {
+                if ("fail".equals(s))
+                    throw new RuntimeException("Forced Failure");
+                System.out.println("BadMapper:" + s);
+                return s;
+            }
+        });
+
+        Observable<String> observable = w.onErrorReturn(new Func1<Throwable, String>() {
+
+            @Override
+            public String call(Throwable t1) {
+                return "resume";
+            }
+            
+        });
+
+        @SuppressWarnings("unchecked")
+        Observer<String> observer = mock(Observer.class);
+        TestSubscriber<String> ts = new TestSubscriber<String>(observer);
+        observable.subscribe(ts);
+        ts.awaitTerminalEvent();
+
+        verify(observer, Mockito.never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onCompleted();
+        verify(observer, times(1)).onNext("one");
+        verify(observer, Mockito.never()).onNext("two");
+        verify(observer, Mockito.never()).onNext("three");
+        verify(observer, times(1)).onNext("resume");
     }
 
     private static class TestObservable implements Observable.OnSubscribe<String> {
