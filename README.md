@@ -102,7 +102,7 @@ You need Java 6 or later.
 To build:
 
 ```
-$ git clone git@github.com:ReactivrX/RxJava.git
+$ git clone git@github.com:ReactiveX/RxJava.git
 $ cd RxJava/
 $ ./gradlew build
 ```
