@@ -4,13 +4,9 @@ This library is a Java implementation of <a href="https://rx.codeplex.com">Rx Ob
 
 Some of the goals of RxJava are:
 
-- Stay close to the original Rx.Net implementation while adjusting naming conventions and idioms to Java
-- All contracts of Rx should be the same
-- Target the JVM not a language. The first languages supported (beyond Java itself) are 
-<a href="https://github.com/ReactiveX/RxGroovy">Groovy</a>, 
-<a href="https://github.com/ReactiveX/RxClojure">Clojure</a>, 
-and <a href="https://github.com/ReactiveX/RxScala">Scala</a>. 
-New language adapters can be <a href="https://github.com/ReactiveX/RxJava/wiki/How-to-Contribute">contributed</a>.
+- Stay close to other Rx implementations while adjusting naming conventions and idioms to Java
+- Match contracts of Rx should be the same
+- Target the JVM not a language to allow JVM-language bindings (such as [Scala](https://github.com/ReactiveX/RxScala), [Groovy](https://github.com/ReactiveX/RxGroovy), [Clojure](https://github.com/ReactiveX/RxGroovy) and [Kotlin](https://github.com/ReactiveX/RxKotlin)).
 - Support Java 6+ (to include Android support) 
 
 Learn more about RxJava on the <a href="https://github.com/ReactiveX/RxJava/wiki">Wiki Home</a> and the <a href="http://techblog.netflix.com/2013/02/rxjava-netflix-api.html">Netflix TechBlog post</a> where RxJava was introduced.
@@ -27,13 +23,8 @@ Learn more about RxJava on the <a href="https://github.com/ReactiveX/RxJava/wiki
 
 ## Versioning
 
-RxJava is working towards a 1.0 release which will be reached once it "more or less" becomes feature complete with the [Rx.Net version](https://rx.codeplex.com). The backlog of features needed to accomplish this are documented in the [project issues](https://github.com/ReactiveX/RxJava/issues).
-
-In short, once the current issue list hits 0 open we will bump to version 1.0.
-
-Until that time the "semantic versioning" will be prefixed with the 0.* and breaking changes will be done such as 0.5.x -> 0.6.x All incremental non-breaking changes with additive functionality will be done like 0.5.1 -> 0.5.2.
-
-Once we hit 1.0 it will follow the normal major.minor.patch semantic versioning approach.
+As of 1.0.0 RxJava is following semantic versioning.
+During the 0.x.y releases, the minor (.x) releases were breaking changes.
 
 ## Full Documentation
 
@@ -58,38 +49,6 @@ and for Ivy:
 ```xml
 <dependency org="io.reactivex" name="rxjava" rev="x.y.z" />
 ```
-
-If you need to download the jars instead of using a build system, create a Maven pom file like this with the desired version:
-
-```xml
-<?xml version="1.0"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-	<groupId>io.reactivex.rxjava.download</groupId>
-	<artifactId>rxjava-download</artifactId>
-	<version>1.0-SNAPSHOT</version>
-	<name>Simple POM to download rxjava</name>
-	<url>http://github.com/ReactiveX/RxJava</url>
-	<dependencies>
-		<dependency>
-			<groupId>io.reactivex.rxjava</groupId>
-			<artifactId>rxjava</artifactId>
-			<version>x.y.z</version>
-			<scope/>
-		</dependency>
-	</dependencies>
-</project>
-```
-
-Then execute:
-
-```
-mvn -f download-rxjava-pom.xml dependency:copy-dependencies
-```
-
-It will download rxjava-*.jar and its dependencies into ./target/dependency/.
-
-You need Java 6 or later.
 
 ## Build
 
