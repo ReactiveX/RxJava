@@ -71,6 +71,7 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
 
         private final RxRingBuffer queue = RxRingBuffer.getSpscInstance();
         private boolean completed = false;
+        private boolean failure = false;
 
         private volatile long requested = 0;
         @SuppressWarnings("rawtypes")
@@ -137,7 +138,11 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
             if (isUnsubscribed() || completed) {
                 return;
             }
+            // unsubscribe eagerly since time will pass before the scheduled onError results in an unsubscribe event
+            unsubscribe();
             completed = true;
+            // mark failure so the polling thread will skip onNext still in the queue
+            failure = true;
             queue.onError(e);
             schedule();
         }
@@ -166,9 +171,18 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
                             REQUESTED.incrementAndGet(this);
                             break;
                         } else {
-                            if (!on.accept(child, o)) {
-                                // non-terminal event so let's increment count
-                                emitted++;
+                            if (failure) {
+                                // completed so we will skip onNext if they exist and only emit terminal events
+                                if (on.isError(o)) {
+                                    System.out.println("Error: " + o);
+                                    // only emit error
+                                    on.accept(child, o);
+                                }
+                            } else {
+                                if (!on.accept(child, o)) {
+                                    // non-terminal event so let's increment count
+                                    emitted++;
+                                }
                             }
                         }
                     } else {
