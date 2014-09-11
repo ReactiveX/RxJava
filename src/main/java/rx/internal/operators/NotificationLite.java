@@ -76,7 +76,7 @@ public final class NotificationLite<T> {
         }
         
         public String toString() {
-            return "Notification=>Error:" + e.getMessage();
+            return "Notification=>Error:" + e;
         }
     }
 
