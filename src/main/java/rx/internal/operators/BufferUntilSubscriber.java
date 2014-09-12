@@ -16,7 +16,6 @@
 package rx.internal.operators;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 
 import rx.Observer;
@@ -62,25 +61,22 @@ public class BufferUntilSubscriber<T> extends Subject<T, T> {
 
     /** The common state. */
     static final class State<T> {
-        /** The first observer or the one which buffers until the first arrives. */
-        volatile Observer<? super T> observerRef = new BufferedObserver<T>();
-        /** Allow a single subscriber only. */
-        volatile int first;
+        volatile Observer<? super T> observerRef = null;
         /** Field updater for observerRef. */
         @SuppressWarnings("rawtypes")
         static final AtomicReferenceFieldUpdater<State, Observer> OBSERVER_UPDATER
                 = AtomicReferenceFieldUpdater.newUpdater(State.class, Observer.class, "observerRef");
-        /** Field updater for first. */
-        @SuppressWarnings("rawtypes")
-        static final AtomicIntegerFieldUpdater<State> FIRST_UPDATER
-                = AtomicIntegerFieldUpdater.newUpdater(State.class, "first");
-        
-        boolean casFirst(int expected, int next) {
-            return FIRST_UPDATER.compareAndSet(this, expected, next);
+
+        boolean casObserverRef(Observer<? super T>  expected, Observer<? super T>  next) {
+            return OBSERVER_UPDATER.compareAndSet(this, expected, next);
         }
-        void setObserverRef(Observer<? super T> o) {
-            observerRef = o;
-        }
+
+        Object guard = new Object();
+        /* protected by guard */
+        boolean emitting = false;
+
+        final ConcurrentLinkedQueue<Object> buffer = new ConcurrentLinkedQueue<Object>();
+        final NotificationLite<T> nl = NotificationLite.instance();
     }
     
     static final class OnSubscribeAction<T> implements OnSubscribe<T> {
@@ -92,23 +88,38 @@ public class BufferUntilSubscriber<T> extends Subject<T, T> {
 
         @Override
         public void call(final Subscriber<? super T> s) {
-            if (state.casFirst(0, 1)) {
-                final NotificationLite<T> nl = NotificationLite.instance();
-                // drain queued notifications before subscription
-                // we do this here before PassThruObserver so the consuming thread can do this before putting itself in the line of the producer
-                BufferedObserver<? super T> buffered = (BufferedObserver<? super T>)state.observerRef;
-                Object o;
-                while ((o = buffered.buffer.poll()) != null) {
-                    nl.accept(s, o);
-                }
-                // register real observer for pass-thru ... and drain any further events received on first notification
-                state.setObserverRef(new PassThruObserver<T>(s, buffered.buffer, state));
+            if (state.casObserverRef(null, s)) {
                 s.add(Subscriptions.create(new Action0() {
                     @Override
                     public void call() {
-                        state.setObserverRef(Subscribers.empty());
+                        state.observerRef = Subscribers.empty();
                     }
                 }));
+                boolean win = false;
+                synchronized (state.guard) {
+                    if (!state.emitting) {
+                        state.emitting = true;
+                        win = true;
+                    }
+                }
+                if (win) {
+                    final NotificationLite<T> nl = NotificationLite.instance();
+                    while(true) {
+                        Object o;
+                        while ((o = state.buffer.poll()) != null) {
+                            nl.accept(state.observerRef, o);
+                        }
+                        synchronized (state.guard) {
+                            if (state.buffer.isEmpty()) {
+                                // Although the buffer is empty, there is still a chance
+                                // that further events may be put into the `buffer`.
+                                // `emit(Object v)` should handle it.
+                                state.emitting = false;
+                                break;
+                            }
+                        }
+                    }
+                }
             } else {
                 s.onError(new IllegalStateException("Only one subscriber allowed!"));
             }
@@ -116,98 +127,61 @@ public class BufferUntilSubscriber<T> extends Subject<T, T> {
         
     }
     final State<T> state;
-    
+
+    private boolean forward = false;
+
     private BufferUntilSubscriber(State<T> state) {
         super(new OnSubscribeAction<T>(state));
         this.state = state;
     }
 
+    private void emit(Object v) {
+        synchronized (state.guard) {
+            state.buffer.add(v);
+            if (state.observerRef != null && !state.emitting) {
+                // Have an observer and nobody is emitting,
+                // should drain the `buffer`
+                forward = true;
+                state.emitting = true;
+            }
+        }
+        if (forward) {
+            Object o;
+            while ((o = state.buffer.poll()) != null) {
+                state.nl.accept(state.observerRef, o);
+            }
+            // Because `emit(Object v)` will be called in sequence,
+            // no event will be put into `buffer` after we drain it.
+        }
+    }
+
     @Override
     public void onCompleted() {
-        state.observerRef.onCompleted();
+        if (forward) {
+            state.observerRef.onCompleted();
+        }
+        else {
+            emit(state.nl.completed());
+        }
     }
 
     @Override
     public void onError(Throwable e) {
-        state.observerRef.onError(e);
+        if (forward) {
+            state.observerRef.onError(e);
+        }
+        else {
+            emit(state.nl.error(e));
+        }
     }
 
     @Override
     public void onNext(T t) {
-        state.observerRef.onNext(t);
-    }
-
-    /**
-     * This is a temporary observer between buffering and the actual that gets into the line of notifications
-     * from the producer and will drain the queue of any items received during the race of the initial drain and
-     * switching this.
-     * 
-     * It will then immediately swap itself out for the actual (after a single notification), but since this is
-     * now being done on the same producer thread no further buffering will occur.
-     */
-    private static final class PassThruObserver<T> extends Subscriber<T> {
-
-        private final Observer<? super T> actual;
-        // this assumes single threaded synchronous notifications (the Rx contract for a single Observer)
-        private final ConcurrentLinkedQueue<Object> buffer;
-        private final State<T> state;
-
-        PassThruObserver(Observer<? super T> actual, ConcurrentLinkedQueue<Object> buffer, 
-                State<T> state) {
-            this.actual = actual;
-            this.buffer = buffer;
-            this.state = state;
+        if (forward) {
+            state.observerRef.onNext(t);
         }
-
-        @Override
-        public void onCompleted() {
-            drainIfNeededAndSwitchToActual();
-            actual.onCompleted();
+        else {
+            emit(state.nl.next(t));
         }
-
-        @Override
-        public void onError(Throwable e) {
-            drainIfNeededAndSwitchToActual();
-            actual.onError(e);
-        }
-
-        @Override
-        public void onNext(T t) {
-            drainIfNeededAndSwitchToActual();
-            actual.onNext(t);
-        }
-
-        private void drainIfNeededAndSwitchToActual() {
-            final NotificationLite<T> nl = NotificationLite.instance();
-            Object o;
-            while ((o = buffer.poll()) != null) {
-                nl.accept(this, o);
-            }
-            // now we can safely change over to the actual and get rid of the pass-thru
-            // but only if not unsubscribed
-            state.setObserverRef(actual);
-        }
-
-    }
-
-    private static final class BufferedObserver<T> extends Subscriber<T> {
-        private final ConcurrentLinkedQueue<Object> buffer = new ConcurrentLinkedQueue<Object>();
-        private static final NotificationLite<Object> nl = NotificationLite.instance();
-
-        @Override
-        public void onCompleted() {
-            buffer.add(nl.completed());
-        }
-
-        @Override
-        public void onError(Throwable e) {
-            buffer.add(nl.error(e));
-        }
-
-        @Override
-        public void onNext(T t) {
-            buffer.add(nl.next(t));
-        }
-
     }
 }
