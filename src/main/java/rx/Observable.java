@@ -1057,7 +1057,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229670.aspx">MSDN: Observable.Empty</a>
      */
     public final static <T> Observable<T> empty() {
-        return from(new ArrayList<T>());
+        return from(Collections.<T>emptyList());
     }
 
     /**
