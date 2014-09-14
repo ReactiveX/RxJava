@@ -21,6 +21,7 @@ import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 import rx.Observer;
 import rx.Subscriber;
 import rx.functions.Action0;
+import rx.observers.EmptyObserver;
 import rx.observers.Subscribers;
 import rx.subjects.Subject;
 import rx.subscriptions.Subscriptions;
@@ -49,6 +50,9 @@ import rx.subscriptions.Subscriptions;
  *            the type of the items to be buffered
  */
 public class BufferUntilSubscriber<T> extends Subject<T, T> {
+
+    @SuppressWarnings("rawtypes")
+    private final static Observer EMPTY_OBSERVER = new EmptyObserver();
 
     /**
      * @warn create() undescribed
@@ -92,7 +96,7 @@ public class BufferUntilSubscriber<T> extends Subject<T, T> {
                 s.add(Subscriptions.create(new Action0() {
                     @Override
                     public void call() {
-                        state.observerRef = Subscribers.empty();
+                        state.observerRef = EMPTY_OBSERVER;
                     }
                 }));
                 boolean win = false;
