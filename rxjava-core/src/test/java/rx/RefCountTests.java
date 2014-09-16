@@ -16,6 +16,7 @@
 package rx;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -25,6 +26,7 @@ import static org.mockito.Mockito.verify;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -34,11 +36,14 @@ import org.mockito.InOrder;
 import org.mockito.MockitoAnnotations;
 
 import rx.Observable.OnSubscribe;
+import rx.Observable.Operator;
 import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Func2;
+import rx.observables.ConnectableObservable;
 import rx.observers.Subscribers;
 import rx.observers.TestSubscriber;
+import rx.schedulers.Schedulers;
 import rx.schedulers.TestScheduler;
 import rx.subjects.ReplaySubject;
 import rx.subscriptions.Subscriptions;
@@ -237,4 +242,49 @@ public class RefCountTests {
         ts2.assertNoErrors();
         ts2.assertReceivedOnNext(Arrays.asList(30));
     }
+    
+    @Test
+    public void testRefCountUnsubscribeForSynchronousSource() throws InterruptedException {
+        final CountDownLatch latch = new CountDownLatch(1);
+        Observable<Long> o = synchronousInterval().lift(detectUnsubscription(latch));
+        Subscriber<Long> sub = Subscribers.empty();
+        o.publish().refCount().subscribeOn(Schedulers.computation()).subscribe(sub);
+        Thread.sleep(100);
+        sub.unsubscribe();
+        assertTrue(latch.await(3, TimeUnit.SECONDS));
+    }
+    
+    @Test
+    public void testSubscribeToPublishWithAlreadyUnsubscribedSubscriber() {
+        Subscriber<Object> sub = Subscribers.empty();
+        sub.unsubscribe();
+        ConnectableObservable<Object> o = Observable.empty().publish();
+        o.subscribe(sub);
+        o.connect();
+    }
+    
+    private Operator<Long, Long> detectUnsubscription(final CountDownLatch latch) {
+        return new Operator<Long,Long>(){
+            @Override
+            public Subscriber<? super Long> call(Subscriber<? super Long> subscriber) {
+                latch.countDown();
+                return Subscribers.from(subscriber);
+            }};
+    }
+
+    private Observable<Long> synchronousInterval() {
+        return Observable.create(new OnSubscribe<Long>() {
+
+            @Override
+            public void call(Subscriber<? super Long> subscriber) {
+                while (!subscriber.isUnsubscribed()) {
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                    }
+                    subscriber.onNext(1L);
+                }
+            }});
+    }
+    
 }
