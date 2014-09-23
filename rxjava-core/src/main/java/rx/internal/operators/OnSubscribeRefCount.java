@@ -15,6 +15,7 @@
  */
 package rx.internal.operators;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -25,6 +26,7 @@ import rx.Subscription;
 import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.observables.ConnectableObservable;
+import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.Subscriptions;
 
 /**
@@ -36,9 +38,9 @@ import rx.subscriptions.Subscriptions;
  */
 public final class OnSubscribeRefCount<T> implements OnSubscribe<T> {
 
-    private ConnectableObservable<? extends T> source;
-    private volatile Subscription baseSubscription;
-    private AtomicInteger subscriptionCount = new AtomicInteger(0);
+    private final ConnectableObservable<? extends T> source;
+    private volatile CompositeSubscription baseSubscription = new CompositeSubscription();
+    private final AtomicInteger subscriptionCount = new AtomicInteger(0);
 
     /**
      * Ensures that subscribers wait for the first subscription to be assigned
@@ -59,44 +61,58 @@ public final class OnSubscribeRefCount<T> implements OnSubscribe<T> {
     @Override
     public void call(final Subscriber<? super T> subscriber) {
 
-        // ensure secondary subscriptions wait for baseSubscription to be set by
-        // first subscription
-        lock.writeLock().lock();
-
         if (subscriptionCount.incrementAndGet() == 1) {
-            // need to use this overload of connect to ensure that
-            // baseSubscription is set in the case that source is a synchronous
-            // Observable
-            source.connect(new Action1<Subscription>() {
-                @Override
-                public void call(Subscription subscription) {
-                    baseSubscription = subscription;
 
-                    // handle unsubscribing from the base subscription
-                    subscriber.add(disconnect());
+            // ensure secondary subscriptions wait for baseSubscription to be
+            // set by first subscription
+            lock.writeLock().lock();
 
-                    // ready to subscribe to source so do it
-                    source.unsafeSubscribe(subscriber);
+            final AtomicBoolean writeLocked = new AtomicBoolean(true);
+            
+            try {
+                // need to use this overload of connect to ensure that
+                // baseSubscription is set in the case that source is a synchronous
+                // Observable
+                source.connect(new Action1<Subscription>() {
+                    @Override
+                    public void call(Subscription subscription) {
 
-                    // release the write lock
+                        try {
+                            baseSubscription.add(subscription);
+
+                            // handle unsubscribing from the base subscription
+                            subscriber.add(disconnect());
+
+                            // ready to subscribe to source so do it
+                            source.unsafeSubscribe(subscriber);
+                        } finally {
+                            // release the write lock
+                            lock.writeLock().unlock();
+                            writeLocked.set(false);
+                        }
+                    }
+                });
+            } finally {
+                // need to cover the case where the source is subscribed to
+                // outside of this class thus preventing the above Action1 
+                // being called
+                if (writeLocked.get()) {
+                    // Action1 was not called
                     lock.writeLock().unlock();
                 }
-            });
+            }
         } else {
-            // release the write lock
-            lock.writeLock().unlock();
-
-            // wait till baseSubscription set
             lock.readLock().lock();
+            try {
+                // handle unsubscribing from the base subscription
+                subscriber.add(disconnect());
 
-            // handle unsubscribing from the base subscription
-            subscriber.add(disconnect());
-            
-            // ready to subscribe to source so do it
-            source.unsafeSubscribe(subscriber);
-            
-            //release the read lock
-            lock.readLock().unlock();
+                // ready to subscribe to source so do it
+                source.unsafeSubscribe(subscriber);
+            } finally {
+                // release the read lock
+                lock.readLock().unlock();
+            }
         }
 
     }
@@ -107,6 +123,10 @@ public final class OnSubscribeRefCount<T> implements OnSubscribe<T> {
             public void call() {
                 if (subscriptionCount.decrementAndGet() == 0) {
                     baseSubscription.unsubscribe();
+
+                    // need a new baseSubscription because once unsubscribed
+                    // stays that way
+                    baseSubscription = new CompositeSubscription();
                 }
             }
         });
