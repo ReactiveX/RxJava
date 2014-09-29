@@ -26,6 +26,10 @@ import rx.CovarianceTest.Rating;
 import rx.CovarianceTest.Result;
 import rx.functions.Action1;
 import rx.functions.Func2;
+import rx.subjects.BehaviorSubject;
+
+import static org.junit.Assert.assertNull;
+import static rx.Observable.combineLatest;
 
 public class CombineLatestTests {
     /**
@@ -65,4 +69,23 @@ public class CombineLatestTests {
             System.out.println("Result: " + t1);
         }
     };
+
+    @Test
+    public void testNullEmitting() throws Exception {
+        Observable<Boolean> nullObservable = BehaviorSubject.create((Boolean) null);
+        Observable<Boolean> nonNullObservable = BehaviorSubject.create(true);
+        Observable<Boolean> combined =
+                combineLatest(nullObservable, nonNullObservable, new Func2<Boolean, Boolean, Boolean>() {
+                    @Override
+                    public Boolean call(Boolean bool1, Boolean bool2) {
+                        return bool1 == null ? null : bool2;
+                    }
+                });
+        combined.subscribe(new Action1<Boolean>() {
+            @Override
+            public void call(Boolean aBoolean) {
+                assertNull(aBoolean);
+            }
+        });
+    }
 }
