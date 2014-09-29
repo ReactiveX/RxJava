@@ -150,7 +150,7 @@ public final class OnSubscribeCombineLatest<T, R> implements OnSubscribe<R> {
                             if (buffer.isCompleted(o)) {
                                 child.onCompleted();
                             } else {
-                                child.onNext((R) o);
+                                child.onNext(NotificationLite.<R>instance().getValue(o));
                                 emitted++;
                                 requested.decrementAndGet();
                             }
