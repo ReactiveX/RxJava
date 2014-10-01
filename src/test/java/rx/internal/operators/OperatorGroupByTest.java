@@ -49,6 +49,7 @@ import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.internal.operators.OperatorGroupBy;
 import rx.observables.GroupedObservable;
+import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 
 public class OperatorGroupByTest {
@@ -506,7 +507,7 @@ public class OperatorGroupByTest {
                     }
                 });
 
-        if (!latch.await(2000, TimeUnit.MILLISECONDS)) {
+        if (!latch.await(3000, TimeUnit.MILLISECONDS)) {
             fail("timed out");
         }
 
@@ -1019,5 +1020,48 @@ public class OperatorGroupByTest {
             return n % 2 == 0;
         }
     };
+    
+    private static Func1<Integer, Boolean> IS_EVEN2 = new Func1<Integer, Boolean>() {
+
+        @Override
+        public Boolean call(Integer n) {
+            return n % 2 == 0;
+        }
+    };
+    
+    @Test
+    public void testGroupByBackpressure() throws InterruptedException {
+
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+
+        Observable.range(1, 4000)
+                .groupBy(IS_EVEN2)
+                .flatMap(new Func1<GroupedObservable<Boolean, Integer>, Observable<String>>() {
+
+                    @Override
+                    public Observable<String> call(final GroupedObservable<Boolean, Integer> g) {
+                        return g.observeOn(Schedulers.computation()).map(new Func1<Integer, String>() {
+
+                            @Override
+                            public String call(Integer l) {
+                                if (g.getKey()) {
+                                    try {
+                                        Thread.sleep(1);
+                                    } catch (InterruptedException e) {
+                                    }
+                                    return l + " is even.";
+                                } else {
+                                    return l + " is odd.";
+                                }
+                            }
+
+                        });
+                    }
+
+                }).subscribe(ts);
+        ts.awaitTerminalEvent();
+        ts.assertNoErrors();
+    }
+    
 
 }
