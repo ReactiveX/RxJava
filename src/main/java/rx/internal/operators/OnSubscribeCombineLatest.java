@@ -138,7 +138,6 @@ public final class OnSubscribeCombineLatest<T, R> implements OnSubscribe<R> {
          * This will only allow one thread at a time to do the work, but ensures via `counter` increment/decrement
          * that there is always once who acts on each `tick`. Same concept as used in OperationObserveOn.
          */
-        @SuppressWarnings("unchecked")
         void tick() {
             if (WIP.getAndIncrement(this) == 0) {
                 int emitted = 0;
@@ -150,7 +149,7 @@ public final class OnSubscribeCombineLatest<T, R> implements OnSubscribe<R> {
                             if (buffer.isCompleted(o)) {
                                 child.onCompleted();
                             } else {
-                                child.onNext(NotificationLite.<R>instance().getValue(o));
+                                buffer.accept(o, child);
                                 emitted++;
                                 requested.decrementAndGet();
                             }
