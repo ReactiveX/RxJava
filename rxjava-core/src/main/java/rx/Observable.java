@@ -6312,6 +6312,7 @@ public class Observable<T> {
      *         Observable
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#parallel">RxJava wiki: parallel</a>
      * @see <a href="http://www.grahamlea.com/2014/07/rxjava-threading-examples/">RxJava Threading Examples</a>
+     * @deprecated see https://github.com/ReactiveX/RxJava/issues/1673
      */
     public final <R> Observable<R> parallel(Func1<Observable<T>, Observable<R>> f) {
         return parallel(f, Schedulers.computation());
@@ -6336,6 +6337,7 @@ public class Observable<T> {
      *         Observable
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Observable-Utility-Operators#parallel">RxJava wiki: parallel</a>
      * @see <a href="http://www.grahamlea.com/2014/07/rxjava-threading-examples/">RxJava Threading Examples</a>
+     * @deprecated see https://github.com/ReactiveX/RxJava/issues/1673
      */
     public final <R> Observable<R> parallel(final Func1<Observable<T>, Observable<R>> f, final Scheduler s) {
         return lift(new OperatorParallel<T, R>(f, s));
