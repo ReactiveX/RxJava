@@ -1,5 +1,12 @@
 # RxJava Releases #
 
+### Version 0.20.5 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.20.5%22)) ###
+
+* [Pull 1686] (https://github.com/ReactiveX/RxJava/pull/1686) Fix Rx serialization bug in takeUntil again and the concurrent issue in BufferUntilSubscriber
+* [Pull 1701] (https://github.com/ReactiveX/RxJava/pull/1701) Fix the compose generics
+* [Pull 1712] (https://github.com/ReactiveX/RxJava/pull/1712) Fixing regression in mergeDelayError
+* [Pull 1715] (https://github.com/ReactiveX/RxJava/pull/1715) Deprecate Observable.Parallel
+
 ### Version 0.20.4 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.20.4%22)) ###
 
 * [Pull 1667] (https://github.com/ReactiveX/RxJava/pull/1667) Fix the bug that Switch doesn't propagate 'unsubscribe'
