@@ -5426,52 +5426,6 @@ public class Observable<T> {
     }
 
     /**
-     * Performs work on the source Observable in parallel by sharding it on a {@link Schedulers#computation()}
-     * {@link Scheduler}, and returns the resulting Observable.
-     * <p>
-     * <img width="640" height="475" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/parallel.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code parallel} operates by default on the {@code computation} {@link Scheduler}.</dd>
-     * </dl>
-     * 
-     * @param f
-     *            a {@link Func1} that applies Observable Operators to {@code Observable<T>} in parallel and
-     *            returns an {@code Observable<R>}
-     * @return an Observable that emits the results of applying {@code f} to the items emitted by the source
-     *         Observable
-     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Observable-Utility-Operators#parallel">RxJava wiki: parallel</a>
-     * @see <a href="http://www.grahamlea.com/2014/07/rxjava-threading-examples/">RxJava Threading Examples</a>
-     */
-    public final <R> Observable<R> parallel(Func1<Observable<T>, Observable<R>> f) {
-        return parallel(f, Schedulers.computation());
-    }
-
-    /**
-     * Performs work on the source Observable<T> in parallel by sharding it on a {@link Scheduler}, and returns
-     * the resulting Observable.
-     * <p>
-     * <img width="640" height="475" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/parallel.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
-     * </dl>
-     * 
-     * @param f
-     *            a {@link Func1} that applies Observable Operators to {@code Observable<T>} in parallel and
-     *            returns an {@code Observable<R>}
-     * @param s
-     *            a {@link Scheduler} to perform the work on
-     * @return an Observable that emits the results of applying {@code f} to the items emitted by the source
-     *         Observable
-     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Observable-Utility-Operators#parallel">RxJava wiki: parallel</a>
-     * @see <a href="http://www.grahamlea.com/2014/07/rxjava-threading-examples/">RxJava Threading Examples</a>
-     */
-    public final <R> Observable<R> parallel(final Func1<Observable<T>, Observable<R>> f, final Scheduler s) {
-        return lift(new OperatorParallel<T, R>(f, s));
-    }
-
-    /**
      * Returns a {@link ConnectableObservable}, which waits until its
      * {@link ConnectableObservable#connect connect} method is called before it begins emitting items to those
      * {@link Observer}s that have subscribed to it.
