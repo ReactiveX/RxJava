@@ -409,7 +409,7 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
                 boolean sendOnComplete = false;
                 synchronized (this) {
                     wip--;
-                    if (wip == 0 && completed) {
+                    if ((wip == 0 && completed) || (wip < 0)) {
                         sendOnComplete = true;
                     }
                 }
