@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import org.junit.Test;
 
 import rx.Observable.Transformer;
+import rx.functions.Func1;
 import rx.functions.Func2;
 
 /**
@@ -61,12 +62,12 @@ public class CovarianceTest {
     
     @Test
     public void testCovarianceOfCompose() {
-        Observable<HorrorMovie> movie = Observable.<HorrorMovie> from(new HorrorMovie());
+        Observable<HorrorMovie> movie = Observable.just(new HorrorMovie());
         Observable<Movie> movie2 = movie.compose(new Transformer<Movie, Movie>() {
 
             @Override
-            public Observable<Movie> call(Observable<? extends Movie> t1) {
-                return Observable.from(new Movie());
+            public Observable<? extends Movie> call(Observable<? extends Movie> t1) {
+                return Observable.just(new Movie());
             }
             
         });
@@ -74,15 +75,48 @@ public class CovarianceTest {
     
     @Test
     public void testCovarianceOfCompose2() {
-        Observable<Movie> movie = Observable.<Movie> from(new HorrorMovie());
+        Observable<Movie> movie = Observable.<Movie> just(new HorrorMovie());
         Observable<HorrorMovie> movie2 = movie.compose(new Transformer<Movie, HorrorMovie>() {
             @Override
-            public Observable<HorrorMovie> call(Observable<? extends Movie> t1) {
-                return Observable.from(new HorrorMovie());
+            public Observable<? extends HorrorMovie> call(Observable<? extends Movie> t1) {
+                return Observable.just(new HorrorMovie());
             }
         });
     }
-    
+
+    @Test
+    public void testCovarianceOfCompose3() {
+        Observable<Movie> movie = Observable.<Movie>just(new HorrorMovie());
+        Observable<HorrorMovie> movie2 = movie.compose(new Transformer<Movie, HorrorMovie>() {
+            @Override
+            public Observable<? extends HorrorMovie> call(Observable<? extends Movie> t1) {
+                return Observable.just(new HorrorMovie()).map(new Func1<HorrorMovie, HorrorMovie>() {
+
+                    @Override
+                    public HorrorMovie call(HorrorMovie horrorMovie) {
+                        return horrorMovie;
+                    }
+                });
+            }
+        });
+    }
+
+    @Test
+    public void testCovarianceOfCompose4() {
+        Observable<HorrorMovie> movie = Observable.just(new HorrorMovie());
+        Observable<HorrorMovie> movie2 = movie.compose(new Transformer<HorrorMovie, HorrorMovie>() {
+            @Override
+            public Observable<? extends HorrorMovie> call(Observable<? extends HorrorMovie> t1) {
+                return t1.map(new Func1<HorrorMovie, HorrorMovie>() {
+
+                    @Override
+                    public HorrorMovie call(HorrorMovie horrorMovie) {
+                        return horrorMovie;
+                    }
+                });
+            }
+        });
+    }
     
     /*
      * Most tests are moved into their applicable classes such as [Operator]Tests.java
