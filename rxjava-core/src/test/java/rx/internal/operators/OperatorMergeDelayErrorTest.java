@@ -46,36 +46,6 @@ public class OperatorMergeDelayErrorTest {
         MockitoAnnotations.initMocks(this);
     }
 
-    @Test(timeout=1000L)
-    public void testSynchronousError() {
-        final Observable<Observable<String>> o1 = Observable.error(new RuntimeException("unit test"));
-
-        final CountDownLatch latch = new CountDownLatch(1);
-        Observable.mergeDelayError(o1).subscribe(new Subscriber<String>() {
-            @Override
-            public void onCompleted() {
-                fail("Expected onError path");
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                latch.countDown();
-            }
-
-            @Override
-            public void onNext(String s) {
-                fail("Expected onError path");
-            }
-        });
-
-        try {
-            latch.await();
-        } catch (InterruptedException ex) {
-            fail("interrupted");
-        }
-    }
-
-
     @Test
     public void testErrorDelayed1() {
         final Observable<String> o1 = Observable.create(new TestErrorObservable("four", null, "six")); // we expect to lose "six" from the source (and it should never be sent by the source since onError was called
@@ -311,6 +281,35 @@ public class OperatorMergeDelayErrorTest {
         verify(stringObserver, never()).onError(any(Throwable.class));
         verify(stringObserver, times(2)).onNext("hello");
         verify(stringObserver, times(1)).onCompleted();
+    }
+
+    @Test(timeout=1000L)
+    public void testSynchronousError() {
+        final Observable<Observable<String>> o1 = Observable.error(new RuntimeException("unit test"));
+
+        final CountDownLatch latch = new CountDownLatch(1);
+        Observable.mergeDelayError(o1).subscribe(new Subscriber<String>() {
+            @Override
+            public void onCompleted() {
+                fail("Expected onError path");
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                latch.countDown();
+            }
+
+            @Override
+            public void onNext(String s) {
+                fail("Expected onError path");
+            }
+        });
+
+        try {
+            latch.await();
+        } catch (InterruptedException ex) {
+            fail("interrupted");
+        }
     }
 
     private static class TestSynchronousObservable implements Observable.OnSubscribe<String> {
