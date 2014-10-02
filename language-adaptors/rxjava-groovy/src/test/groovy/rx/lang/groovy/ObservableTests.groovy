@@ -15,21 +15,23 @@
  */
 package rx.lang.groovy
 
-import static org.junit.Assert.*
-import static org.mockito.Matchers.*
-import static org.mockito.Mockito.*
-
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
-
 import rx.Notification
 import rx.Observable
 import rx.Observer
 import rx.Subscription
-import rx.Observable.OnSubscribeFunc
 import rx.subscriptions.Subscriptions
+
+import java.util.concurrent.CountDownLatch
+
+import static org.junit.Assert.assertEquals
+import static org.junit.Assert.fail
+import static org.mockito.Matchers.any
+import static org.mockito.Mockito.times
+import static org.mockito.Mockito.verify
 
 def class ObservableTests {
 
@@ -110,6 +112,21 @@ def class ObservableTests {
         verify(a, times(1)).received(6); // this comes before the NPE so should exist
         verify(a, times(0)).received(7);// this comes in the sequence after the NPE
         verify(a, times(1)).error(any(NullPointerException.class));
+    }
+
+    @Test(timeout=1000L)
+    public void testMergeDelayError() {
+        def o = Observable.error(new RuntimeException("unit test"))
+        def latch = new CountDownLatch(1)
+        Observable.mergeDelayError(o).subscribe(
+                {n -> println("onNext : " + n)},
+                {ex -> println("onError : " + ex)
+                    latch.countDown()},
+                {println("onCompleted")
+                    latch.countDown()}
+        )
+
+        latch.await()
     }
 
     @Test
@@ -455,7 +472,7 @@ def class ObservableTests {
         assertEquals(expected, actual);
     }
 
-    def class AsyncObservable implements OnSubscribeFunc {
+    def class AsyncObservable implements Observable.OnSubscribeFunc {
 
         public Subscription onSubscribe(final Observer<Integer> observer) {
             new Thread(new Runnable() {
@@ -497,7 +514,7 @@ def class ObservableTests {
         public void received(Object o);
     }
 
-    def class TestOnSubscribe implements OnSubscribeFunc<String> {
+    def class TestOnSubscribe implements Observable.OnSubscribeFunc<String> {
         private final int count;
 
         public TestOnSubscribe(int count) {
