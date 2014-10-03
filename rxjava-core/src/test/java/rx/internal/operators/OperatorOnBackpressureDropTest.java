@@ -17,16 +17,17 @@ package rx.internal.operators;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.concurrent.CountDownLatch;
-
 import org.junit.Test;
 
 import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Observer;
 import rx.Subscriber;
+import rx.internal.util.RxRingBuffer;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
+
+import java.util.concurrent.CountDownLatch;
 
 public class OperatorOnBackpressureDropTest {
 
@@ -40,6 +41,13 @@ public class OperatorOnBackpressureDropTest {
         // it completely ignores the `request(100)` and we get 500
         assertEquals(500, ts.getOnNextEvents().size());
         ts.assertNoErrors();
+    }
+
+    @Test(timeout = 500)
+    public void testWithObserveOn() throws InterruptedException {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        Observable.range(0, RxRingBuffer.SIZE * 10).onBackpressureDrop().onBackpressureDrop().observeOn(Schedulers.io()).subscribe(ts);
+        ts.awaitTerminalEvent();
     }
 
     @Test(timeout = 500)
