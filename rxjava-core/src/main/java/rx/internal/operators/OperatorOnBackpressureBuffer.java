@@ -48,6 +48,10 @@ public class OperatorOnBackpressureBuffer<T> implements Operator<T, T> {
         // don't pass through subscriber as we are async and doing queue draining
         // a parent being unsubscribed should not affect the children
         Subscriber<T> parent = new Subscriber<T>() {
+            @Override
+            public void onStart() {
+                request(Long.MAX_VALUE);
+            }
 
             @Override
             public void onCompleted() {
