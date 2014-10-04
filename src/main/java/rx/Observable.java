@@ -5801,8 +5801,19 @@ public class Observable<T> {
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Creating-Observables#repeatwhen">RxJava Wiki: repeatWhen()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229428.aspx">MSDN: Observable.Repeat</a>
      */
-    public final Observable<T> repeatWhen(Func1<? super Observable<? extends Notification<?>>, ? extends Observable<?>> notificationHandler, Scheduler scheduler) {
-        return OnSubscribeRedo.repeat(this, notificationHandler, scheduler);
+    public final Observable<T> repeatWhen(final Func1<? super Observable<? extends Void>, ? extends Observable<?>> notificationHandler, Scheduler scheduler) {
+        Func1<? super Observable<? extends Notification<?>>, ? extends Observable<?>> dematerializedNotificationHandler = new Func1<Observable<? extends Notification<?>>, Observable<?>>() {
+            @Override
+            public Observable<?> call(Observable<? extends Notification<?>> notifications) {
+                return notificationHandler.call(notifications.map(new Func1<Notification<?>, Void>() {
+                    @Override
+                    public Void call(Notification<?> notification) {
+                        return null;
+                    }
+                }));
+            }
+        };
+        return OnSubscribeRedo.repeat(this, dematerializedNotificationHandler, scheduler);
     }
 
     /**
@@ -5825,8 +5836,19 @@ public class Observable<T> {
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Creating-Observables#repeatwhen">RxJava Wiki: repeatWhen()</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229428.aspx">MSDN: Observable.Repeat</a>
      */
-    public final Observable<T> repeatWhen(Func1<? super Observable<? extends Notification<?>>, ? extends Observable<?>> notificationHandler) {
-        return OnSubscribeRedo.repeat(this, notificationHandler);
+    public final Observable<T> repeatWhen(final Func1<? super Observable<? extends Void>, ? extends Observable<?>> notificationHandler) {
+        Func1<? super Observable<? extends Notification<?>>, ? extends Observable<?>> dematerializedNotificationHandler = new Func1<Observable<? extends Notification<?>>, Observable<?>>() {
+            @Override
+            public Observable<?> call(Observable<? extends Notification<?>> notifications) {
+                return notificationHandler.call(notifications.map(new Func1<Notification<?>, Void>() {
+                    @Override
+                    public Void call(Notification<?> notification) {
+                        return null;
+                    }
+                }));
+            }
+        };
+        return OnSubscribeRedo.repeat(this, dematerializedNotificationHandler);
     }
 
     /**
@@ -6541,8 +6563,19 @@ public class Observable<T> {
      * @return the source Observable modified with retry logic
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Error-Handling-Operators#retrywhen">RxJava Wiki: retryWhen()</a>
      */
-    public final Observable<T> retryWhen(Func1<? super Observable<? extends Notification<?>>, ? extends Observable<?>> notificationHandler) {
-        return OnSubscribeRedo.<T> retry(this, notificationHandler);
+    public final Observable<T> retryWhen(final Func1<? super Observable<? extends Throwable>, ? extends Observable<?>> notificationHandler) {
+        Func1<? super Observable<? extends Notification<?>>, ? extends Observable<?>> dematerializedNotificationHandler = new Func1<Observable<? extends Notification<?>>, Observable<?>>() {
+            @Override
+            public Observable<?> call(Observable<? extends Notification<?>> notifications) {
+                return notificationHandler.call(notifications.map(new Func1<Notification<?>, Throwable>() {
+                    @Override
+                    public Throwable call(Notification<?> notification) {
+                        return notification.getThrowable();
+                    }
+                }));
+            }
+        };
+        return OnSubscribeRedo.<T> retry(this, dematerializedNotificationHandler);
     }
 
     /**
@@ -6566,8 +6599,19 @@ public class Observable<T> {
      * @return the source Observable modified with retry logic
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Error-Handling-Operators#retrywhen">RxJava Wiki: retryWhen()</a>
      */
-    public final Observable<T> retryWhen(Func1<? super Observable<? extends Notification<?>>, ? extends Observable<?>> notificationHandler, Scheduler scheduler) {
-        return OnSubscribeRedo.<T> retry(this, notificationHandler, scheduler);
+    public final Observable<T> retryWhen(final Func1<? super Observable<? extends Throwable>, ? extends Observable<?>> notificationHandler, Scheduler scheduler) {
+        Func1<? super Observable<? extends Notification<?>>, ? extends Observable<?>> dematerializedNotificationHandler = new Func1<Observable<? extends Notification<?>>, Observable<?>>() {
+            @Override
+            public Observable<?> call(Observable<? extends Notification<?>> notifications) {
+                return notificationHandler.call(notifications.map(new Func1<Notification<?>, Throwable>() {
+                    @Override
+                    public Throwable call(Notification<?> notification) {
+                        return notification.getThrowable();
+                    }
+                }));
+            }
+        };
+        return OnSubscribeRedo.<T> retry(this, dematerializedNotificationHandler, scheduler);
     }
 
     /**
