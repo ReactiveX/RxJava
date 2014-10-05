@@ -426,7 +426,7 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
             boolean c = false;
             synchronized (this) {
                 completed = true;
-                if (wip == 0) {
+                if (wip == 0 && (scalarValueQueue == null || scalarValueQueue.isEmpty())) {
                     c = true;
                 }
             }
@@ -496,7 +496,11 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
                 requested = Long.MAX_VALUE;
             } else {
                 REQUESTED.getAndAdd(this, n);
-                ms.drainQueuesIfNeeded();
+                if (ms.drainQueuesIfNeeded()) {
+                    if (ms.wip == 0 && ms.scalarValueQueue != null && ms.scalarValueQueue.isEmpty()) {
+                        ms.drainAndComplete();
+                    }
+                }
             }
         }
 
