@@ -15,6 +15,7 @@
  */
 package rx.internal.operators;
 
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -39,13 +40,9 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import rx.Observable;
+import rx.*;
 import rx.Observable.OnSubscribe;
-import rx.Observer;
-import rx.Scheduler;
 import rx.Scheduler.Worker;
-import rx.Subscriber;
-import rx.Subscription;
 import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Func1;
@@ -1005,4 +1002,107 @@ public class OperatorMergeTest {
         assertEquals(10000, ts.getOnNextEvents().size());
     }
 
+    @Test
+    public void shouldCompleteAfterApplyingBackpressure_NormalPath() {
+        Observable<Integer> source = Observable.mergeDelayError(Observable.just(Observable.range(1, 2)));
+        TestSubscriber<Integer> subscriber = new TestSubscriber<Integer>();
+        subscriber.requestMore(0);
+        source.subscribe(subscriber);
+        subscriber.requestMore(3); // 1, 2, <complete> - with requestMore(2) we get the 1 and 2 but not the <complete>
+        subscriber.assertReceivedOnNext(asList(1, 2));
+        subscriber.assertTerminalEvent();
+    }
+
+    @Test
+    public void shouldCompleteAfterApplyingBackpressure_FastPath() {
+        Observable<Integer> source = Observable.mergeDelayError(Observable.just(Observable.just(1)));
+        TestSubscriber<Integer> subscriber = new TestSubscriber<Integer>();
+        subscriber.requestMore(0);
+        source.subscribe(subscriber);
+        subscriber.requestMore(2); // 1, <complete> - should work as per .._NormalPath above
+        subscriber.assertReceivedOnNext(asList(1));
+        subscriber.assertTerminalEvent();
+    }
+
+    @Test
+    public void shouldNotCompleteIfThereArePendingScalarSynchronousEmissionsWhenTheLastInnerSubscriberCompletes() {
+        TestScheduler scheduler = Schedulers.test();
+        Observable<Long> source = Observable.mergeDelayError(Observable.just(1L), Observable.timer(1, TimeUnit.SECONDS, scheduler).skip(1));
+        TestSubscriber<Long> subscriber = new TestSubscriber<Long>();
+        subscriber.requestMore(0);
+        source.subscribe(subscriber);
+        scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
+        subscriber.assertReceivedOnNext(Collections.<Long>emptyList());
+        assertEquals(Collections.<Notification<Long>>emptyList(), subscriber.getOnCompletedEvents());
+        subscriber.requestMore(1);
+        subscriber.assertReceivedOnNext(asList(1L));
+        assertEquals(Collections.<Notification<Long>>emptyList(), subscriber.getOnCompletedEvents());
+        subscriber.requestMore(1);
+        subscriber.assertTerminalEvent();
+    }
+
+    @Test
+    public void delayedErrorsShouldBeEmittedWhenCompleteAfterApplyingBackpressure_NormalPath() {
+        Throwable exception = new Throwable();
+        Observable<Integer> source = Observable.mergeDelayError(Observable.range(1, 2), Observable.<Integer>error(exception));
+        TestSubscriber<Integer> subscriber = new TestSubscriber<Integer>();
+        subscriber.requestMore(0);
+        source.subscribe(subscriber);
+        subscriber.requestMore(3); // 1, 2, <error>
+        subscriber.assertReceivedOnNext(asList(1, 2));
+        subscriber.assertTerminalEvent();
+        assertEquals(asList(exception), subscriber.getOnErrorEvents());
+    }
+
+    @Test
+    public void delayedErrorsShouldBeEmittedWhenCompleteAfterApplyingBackpressure_FastPath() {
+        Throwable exception = new Throwable();
+        Observable<Integer> source = Observable.mergeDelayError(Observable.just(1), Observable.<Integer>error(exception));
+        TestSubscriber<Integer> subscriber = new TestSubscriber<Integer>();
+        subscriber.requestMore(0);
+        source.subscribe(subscriber);
+        subscriber.requestMore(2); // 1, <error>
+        subscriber.assertReceivedOnNext(asList(1));
+        subscriber.assertTerminalEvent();
+        assertEquals(asList(exception), subscriber.getOnErrorEvents());
+    }
+
+    @Test
+    public void shouldNotCompleteWhileThereAreStillScalarSynchronousEmissionsInTheQueue() {
+        Observable<Integer> source = Observable.merge(Observable.just(1), Observable.just(2));
+        TestSubscriber<Integer> subscriber = new TestSubscriber<Integer>();
+        subscriber.requestMore(1);
+        source.subscribe(subscriber);
+        subscriber.assertReceivedOnNext(asList(1));
+        subscriber.requestMore(1);
+        subscriber.assertReceivedOnNext(asList(1, 2));
+    }
+
+    @Test
+    public void shouldNotReceivedDelayedErrorWhileThereAreStillScalarSynchronousEmissionsInTheQueue() {
+        Throwable exception = new Throwable();
+        Observable<Integer> source = Observable.mergeDelayError(Observable.just(1), Observable.just(2), Observable.<Integer>error(exception));
+        TestSubscriber<Integer> subscriber = new TestSubscriber<Integer>();
+        subscriber.requestMore(1);
+        source.subscribe(subscriber);
+        subscriber.assertReceivedOnNext(asList(1));
+        assertEquals(Collections.<Throwable>emptyList(), subscriber.getOnErrorEvents());
+        subscriber.requestMore(1);
+        subscriber.assertReceivedOnNext(asList(1, 2));
+        assertEquals(asList(exception), subscriber.getOnErrorEvents());
+    }
+
+    @Test
+    public void shouldNotReceivedDelayedErrorWhileThereAreStillNormalEmissionsInTheQueue() {
+        Throwable exception = new Throwable();
+        Observable<Integer> source = Observable.mergeDelayError(Observable.range(1, 2), Observable.range(3, 2), Observable.<Integer>error(exception));
+        TestSubscriber<Integer> subscriber = new TestSubscriber<Integer>();
+        subscriber.requestMore(3);
+        source.subscribe(subscriber);
+        subscriber.assertReceivedOnNext(asList(1, 2, 3));
+        assertEquals(Collections.<Throwable>emptyList(), subscriber.getOnErrorEvents());
+        subscriber.requestMore(2);
+        subscriber.assertReceivedOnNext(asList(1, 2, 3, 4));
+        assertEquals(asList(exception), subscriber.getOnErrorEvents());
+    }
 }

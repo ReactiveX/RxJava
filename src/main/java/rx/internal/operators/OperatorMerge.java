@@ -72,9 +72,6 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
      * I'd love to have contributions that improve this class, but keep in mind the performance and GC pressure.
      * The benchmarks I use are in the JMH OperatorMergePerf class. GC memory pressure is tested using Java Flight Recorder
      * to track object allocation.
-     * 
-     * TODO There is still a known concurrency bug somewhere either in this class, in SubscriptionIndexedRingBuffer or their relationship.
-     * See https://github.com/ReactiveX/RxJava/issues/1420 for more information on this.
      */
 
     public OperatorMerge() {
@@ -426,7 +423,7 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
             boolean c = false;
             synchronized (this) {
                 completed = true;
-                if (wip == 0) {
+                if (wip == 0 && (scalarValueQueue == null || scalarValueQueue.isEmpty())) {
                     c = true;
                 }
             }
@@ -496,7 +493,17 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
                 requested = Long.MAX_VALUE;
             } else {
                 REQUESTED.getAndAdd(this, n);
-                ms.drainQueuesIfNeeded();
+                if (ms.drainQueuesIfNeeded()) {
+                    boolean sendComplete = false;
+                    synchronized (this) {
+                        if (ms.wip == 0 && ms.scalarValueQueue != null && ms.scalarValueQueue.isEmpty()) {
+                            sendComplete = true;
+                        }
+                    }
+                    if (sendComplete) {
+                        ms.drainAndComplete();
+                    }
+                }
             }
         }
 
