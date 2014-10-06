@@ -34,9 +34,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.InOrder;
 
+import rx.Notification;
 import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Observer;
@@ -48,6 +50,7 @@ import rx.exceptions.TestException;
 import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Func1;
+import rx.functions.Func2;
 import rx.internal.util.RxRingBuffer;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
@@ -391,7 +394,7 @@ public class OperatorObserveOnTest {
         inOrder.verify(o, never()).onNext(anyInt());
         inOrder.verify(o, never()).onCompleted();
     }
-    
+
     @Test
     public void testAfterUnsubscribeCalledThenObserverOnNextNeverCalled() {
         final TestScheduler testScheduler = new TestScheduler();
@@ -647,6 +650,71 @@ public class OperatorObserveOnTest {
         assertTrue(ts.getOnNextEvents().size() == ts.getOnNextEvents().get(ts.getOnNextEvents().size() - 1) + 1);
         // we should emit the error without emitting the full buffer size
         assertTrue(ts.getOnNextEvents().size() < RxRingBuffer.SIZE);
-
     }
+
+    /**
+     * Make sure we get a MissingBackpressureException propagated through when we have a fast temporal (hot) producer.
+     */
+    @Test
+    public void testHotOperatorBackpressure() {
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+        Observable.timer(0, 1, TimeUnit.MICROSECONDS)
+                .observeOn(Schedulers.computation())
+                .map(new Func1<Long, String>() {
+
+                    @Override
+                    public String call(Long t1) {
+                        System.out.println(t1);
+                        try {
+                            Thread.sleep(100);
+                        } catch (InterruptedException e) {
+                        }
+                        return t1 + " slow value";
+                    }
+
+                }).subscribe(ts);
+
+        ts.awaitTerminalEvent();
+        System.out.println("Errors: " + ts.getOnErrorEvents());
+        assertEquals(1, ts.getOnErrorEvents().size());
+        assertEquals(MissingBackpressureException.class, ts.getOnErrorEvents().get(0).getClass());
+    }
+
+    @Test
+    public void testErrorPropagatesWhenNoOutstandingRequests() {
+        Observable<Long> timer = Observable.timer(0, 1, TimeUnit.MICROSECONDS)
+                .doOnEach(new Action1<Notification<? super Long>>() {
+
+                    @Override
+                    public void call(Notification<? super Long> n) {
+                        //                        System.out.println("BEFORE " + n);
+                    }
+
+                })
+                .observeOn(Schedulers.newThread())
+                .doOnEach(new Action1<Notification<? super Long>>() {
+
+                    @Override
+                    public void call(Notification<? super Long> n) {
+                        //                        System.out.println("AFTER " + n);
+                    }
+
+                });
+
+        TestSubscriber<Long> ts = new TestSubscriber<Long>();
+
+        Observable.combineLatest(timer, Observable.<Integer> never(), new Func2<Long, Integer, Long>() {
+
+            @Override
+            public Long call(Long t1, Integer t2) {
+                return t1;
+            }
+
+        }).take(RxRingBuffer.SIZE * 2).subscribe(ts);
+
+        ts.awaitTerminalEvent();
+        assertEquals(1, ts.getOnErrorEvents().size());
+        assertEquals(MissingBackpressureException.class, ts.getOnErrorEvents().get(0).getClass());
+    }
+
 }
