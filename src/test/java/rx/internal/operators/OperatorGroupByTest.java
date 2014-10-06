@@ -19,7 +19,8 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -35,19 +36,21 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.junit.Ignore;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Matchers;
+import org.mockito.MockitoAnnotations;
 
 import rx.Notification;
 import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Observer;
 import rx.Subscriber;
+import rx.exceptions.TestException;
 import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Func1;
-import rx.internal.operators.OperatorGroupBy;
+import rx.functions.Functions;
 import rx.observables.GroupedObservable;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
@@ -60,7 +63,7 @@ public class OperatorGroupByTest {
             return s.length();
         }
     };
-    
+
     @Test
     public void testGroupBy() {
         Observable<String> source = Observable.just("one", "two", "three", "four", "five", "six");
@@ -73,7 +76,7 @@ public class OperatorGroupByTest {
         assertArrayEquals(Arrays.asList("four", "five").toArray(), map.get(4).toArray());
         assertArrayEquals(Arrays.asList("three").toArray(), map.get(5).toArray());
     }
-    
+
     @Test
     public void testGroupByWithElementSelector() {
         Observable<String> source = Observable.just("one", "two", "three", "four", "five", "six");
@@ -86,7 +89,7 @@ public class OperatorGroupByTest {
         assertArrayEquals(Arrays.asList(4, 4).toArray(), map.get(4).toArray());
         assertArrayEquals(Arrays.asList(5).toArray(), map.get(5).toArray());
     }
-    
+
     @Test
     public void testGroupByWithElementSelector2() {
         Observable<String> source = Observable.just("one", "two", "three", "four", "five", "six");
@@ -551,8 +554,8 @@ public class OperatorGroupByTest {
         assertEquals(2, eventCounter.get());
     }
 
-    @Test(timeout = 500)
-    public void testFilterGroupsUnsubscribesThem() {
+    @Test
+    public void testIgnoringGroups() {
         final AtomicInteger subscribeCounter = new AtomicInteger();
         final AtomicInteger sentEventCounter = new AtomicInteger();
         final AtomicInteger eventCounter = new AtomicInteger();
@@ -565,20 +568,24 @@ public class OperatorGroupByTest {
                         return e.source;
                     }
                 })
-                // take 2 of the 4 groups
-                .filter(new Func1<GroupedObservable<Integer, Event>, Boolean>() {
-
-                    @Override
-                    public Boolean call(GroupedObservable<Integer, Event> g) {
-                        return g.getKey() < 2;
-                    }
-
-                })
                 .flatMap(new Func1<GroupedObservable<Integer, Event>, Observable<String>>() {
 
                     @Override
                     public Observable<String> call(GroupedObservable<Integer, Event> eventGroupedObservable) {
-                        return eventGroupedObservable
+                        Observable<Event> eventStream = eventGroupedObservable;
+                        if (eventGroupedObservable.getKey() >= 2) {
+                            // filter these
+                            eventStream = eventGroupedObservable.filter(new Func1<Event, Boolean>() {
+
+                                @Override
+                                public Boolean call(Event t1) {
+                                    return false;
+                                }
+
+                            });
+                        }
+
+                        return eventStream
                                 .map(new Func1<Event, String>() {
 
                                     @Override
@@ -1020,7 +1027,7 @@ public class OperatorGroupByTest {
             return n % 2 == 0;
         }
     };
-    
+
     private static Func1<Integer, Boolean> IS_EVEN2 = new Func1<Integer, Boolean>() {
 
         @Override
@@ -1028,7 +1035,7 @@ public class OperatorGroupByTest {
             return n % 2 == 0;
         }
     };
-    
+
     @Test
     public void testGroupByBackpressure() throws InterruptedException {
 
@@ -1062,6 +1069,292 @@ public class OperatorGroupByTest {
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
     }
-    
+
+    <T, R> Func1<T, R> just(final R value) {
+        return new Func1<T, R>() {
+            @Override
+            public R call(T t1) {
+                return value;
+            }
+        };
+    }
+
+    <T> Func1<Integer, T> fail(T dummy) {
+        return new Func1<Integer, T>() {
+            @Override
+            public T call(Integer t1) {
+                throw new RuntimeException("Forced failure");
+            }
+        };
+    }
+
+    <T, R> Func1<T, R> fail2(R dummy2) {
+        return new Func1<T, R>() {
+            @Override
+            public R call(T t1) {
+                throw new RuntimeException("Forced failure");
+            }
+        };
+    }
+
+    Func1<Integer, Integer> dbl = new Func1<Integer, Integer>() {
+        @Override
+        public Integer call(Integer t1) {
+            return t1 * 2;
+        }
+    };
+    Func1<Integer, Integer> identity = Functions.identity();
+
+    @Before
+    public void before() {
+        MockitoAnnotations.initMocks(this);
+    }
+
+    @Test
+    public void normalBehavior() {
+        Observable<String> source = Observable.from(Arrays.asList(
+                "  foo",
+                " FoO ",
+                "baR  ",
+                "foO ",
+                " Baz   ",
+                "  qux ",
+                "   bar",
+                " BAR  ",
+                "FOO ",
+                "baz  ",
+                " bAZ ",
+                "    fOo    "
+                ));
+
+        /**
+         * foo FoO foO FOO fOo
+         * baR bar BAR
+         * Baz baz bAZ
+         * qux
+         * 
+         */
+        Func1<String, String> keysel = new Func1<String, String>() {
+            @Override
+            public String call(String t1) {
+                return t1.trim().toLowerCase();
+            }
+        };
+        Func1<String, String> valuesel = new Func1<String, String>() {
+            @Override
+            public String call(String t1) {
+                return t1 + t1;
+            }
+        };
+
+        Observable<String> m = source.groupBy(
+                keysel, valuesel).flatMap(new Func1<GroupedObservable<String, String>, Observable<String>>() {
+
+            @Override
+            public Observable<String> call(final GroupedObservable<String, String> g) {
+                System.out.println("-----------> NEXT: " + g.getKey());
+                return g.take(2).map(new Func1<String, String>() {
+
+                    int count = 0;
+
+                    @Override
+                    public String call(String v) {
+                        return g.getKey() + "-" + count++;
+                    }
+
+                });
+            }
+
+        });
+
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+        m.subscribe(ts);
+        ts.awaitTerminalEvent();
+        System.out.println("ts .get " + ts.getOnNextEvents());
+        ts.assertNoErrors();
+        assertEquals(ts.getOnNextEvents(),
+                Arrays.asList("foo-0", "foo-1", "bar-0", "foo-0", "baz-0", "qux-0", "bar-1", "bar-0", "foo-1", "baz-1", "baz-0", "foo-0"));
+
+    }
+
+    @Test
+    public void keySelectorThrows() {
+        Observable<Integer> source = Observable.just(0, 1, 2, 3, 4, 5, 6);
+
+        Observable<Integer> m = source.groupBy(fail(0), dbl).flatMap(FLATTEN_INTEGER);
+
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        m.subscribe(ts);
+        ts.awaitTerminalEvent();
+        assertEquals(1, ts.getOnErrorEvents().size());
+        assertEquals(0, ts.getOnNextEvents().size());
+    }
+
+    @Test
+    public void valueSelectorThrows() {
+        Observable<Integer> source = Observable.just(0, 1, 2, 3, 4, 5, 6);
+
+        Observable<Integer> m = source.groupBy(identity, fail(0)).flatMap(FLATTEN_INTEGER);
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        m.subscribe(ts);
+        ts.awaitTerminalEvent();
+        assertEquals(1, ts.getOnErrorEvents().size());
+        assertEquals(0, ts.getOnNextEvents().size());
+
+    }
+
+    @Test
+    public void innerEscapeCompleted() {
+        Observable<Integer> source = Observable.just(0);
+
+        Observable<Integer> m = source.groupBy(identity, dbl).flatMap(FLATTEN_INTEGER);
+
+        TestSubscriber<Object> ts = new TestSubscriber<Object>();
+        m.subscribe(ts);
+        ts.awaitTerminalEvent();
+        ts.assertNoErrors();
+        System.out.println(ts.getOnNextEvents());
+    }
+
+    /**
+     * Assert we get an IllegalStateException if trying to subscribe to an inner GroupedObservable more than once
+     */
+    @Test
+    public void testExceptionIfSubscribeToChildMoreThanOnce() {
+        Observable<Integer> source = Observable.just(0);
+
+        final AtomicReference<GroupedObservable<Integer, Integer>> inner = new AtomicReference<GroupedObservable<Integer, Integer>>();
+
+        Observable<GroupedObservable<Integer, Integer>> m = source.groupBy(identity, dbl);
+
+        m.subscribe(new Action1<GroupedObservable<Integer, Integer>>() {
+            @Override
+            public void call(GroupedObservable<Integer, Integer> t1) {
+                inner.set(t1);
+            }
+        });
+
+        inner.get().subscribe();
+
+        @SuppressWarnings("unchecked")
+        Observer<Integer> o2 = mock(Observer.class);
+
+        inner.get().subscribe(o2);
+
+        verify(o2, never()).onCompleted();
+        verify(o2, never()).onNext(anyInt());
+        verify(o2).onError(any(IllegalStateException.class));
+    }
+
+    @Test
+    public void testError2() {
+        Observable<Integer> source = Observable.concat(Observable.just(0),
+                Observable.<Integer> error(new TestException("Forced failure")));
+
+        Observable<Integer> m = source.groupBy(identity, dbl).flatMap(FLATTEN_INTEGER);
+
+        TestSubscriber<Object> ts = new TestSubscriber<Object>();
+        m.subscribe(ts);
+        ts.awaitTerminalEvent();
+        assertEquals(1, ts.getOnErrorEvents().size());
+        assertEquals(1, ts.getOnNextEvents().size());
+    }
+
+    @Test
+    public void testgroupByBackpressure() throws InterruptedException {
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+
+        Observable.range(1, 4000).groupBy(IS_EVEN2).flatMap(new Func1<GroupedObservable<Boolean, Integer>, Observable<String>>() {
+
+            @Override
+            public Observable<String> call(final GroupedObservable<Boolean, Integer> g) {
+                return g.doOnCompleted(new Action0() {
+
+                    @Override
+                    public void call() {
+                        System.out.println("//////////////////// COMPLETED-A");
+                    }
+
+                }).observeOn(Schedulers.computation()).map(new Func1<Integer, String>() {
+
+                    int c = 0;
+
+                    @Override
+                    public String call(Integer l) {
+                        if (g.getKey()) {
+                            if (c++ < 400) {
+                                try {
+                                    Thread.sleep(1);
+                                } catch (InterruptedException e) {
+                                }
+                            }
+                            return l + " is even.";
+                        } else {
+                            return l + " is odd.";
+                        }
+                    }
+
+                }).doOnCompleted(new Action0() {
+
+                    @Override
+                    public void call() {
+                        System.out.println("//////////////////// COMPLETED-B");
+                    }
+
+                });
+            }
+
+        }).doOnEach(new Action1<Notification<? super String>>() {
+
+            @Override
+            public void call(Notification<? super String> t1) {
+                System.out.println("NEXT: " + t1);
+            }
+
+        }).subscribe(ts);
+        ts.awaitTerminalEvent();
+        ts.assertNoErrors();
+    }
+
+    @Test
+    public void testgroupByBackpressure2() throws InterruptedException {
+
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+
+        Observable.range(1, 4000).groupBy(IS_EVEN2).flatMap(new Func1<GroupedObservable<Boolean, Integer>, Observable<String>>() {
+
+            @Override
+            public Observable<String> call(final GroupedObservable<Boolean, Integer> g) {
+                return g.take(2).observeOn(Schedulers.computation()).map(new Func1<Integer, String>() {
+
+                    @Override
+                    public String call(Integer l) {
+                        if (g.getKey()) {
+                            try {
+                                Thread.sleep(1);
+                            } catch (InterruptedException e) {
+                            }
+                            return l + " is even.";
+                        } else {
+                            return l + " is odd.";
+                        }
+                    }
+
+                });
+            }
+
+        }).subscribe(ts);
+        ts.awaitTerminalEvent();
+        ts.assertNoErrors();
+    }
+
+    static Func1<GroupedObservable<Integer, Integer>, Observable<Integer>> FLATTEN_INTEGER = new Func1<GroupedObservable<Integer, Integer>, Observable<Integer>>() {
+
+        @Override
+        public Observable<Integer> call(GroupedObservable<Integer, Integer> t) {
+            return t;
+        }
+
+    };
 
 }
