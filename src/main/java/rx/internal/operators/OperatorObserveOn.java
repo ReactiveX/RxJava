@@ -96,7 +96,6 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
                 }
 
             });
-            add(scheduledUnsubscribe);
             child.add(recursiveScheduler);
             child.add(this);
         }
@@ -169,34 +168,34 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
                 COUNTER_UPDATER.set(this, 1);
 
                 while (!scheduledUnsubscribe.isUnsubscribed()) {
-                    if (REQUESTED.getAndDecrement(this) != 0) {
+                    if (failure) {
+                        // special handling to short-circuit an error propagation
                         Object o = queue.poll();
-                        if (o == null) {
-                            // nothing in queue
-                            REQUESTED.incrementAndGet(this);
-                            break;
-                        } else {
-                            if (failure) {
-                                // completed so we will skip onNext if they exist and only emit terminal events
-                                if (on.isError(o)) {
-                                    // only emit error
-                                    on.accept(child, o);
-                                    // TODO this could hit the requested limit again ... and is skipping values
-                                    // so the request count is broken ... it needs to purge the queue
-                                    // or modify the requested amount so it will loop through everything
-                                }
+                        // completed so we will skip onNext if they exist and only emit terminal events
+                        if (on.isError(o)) {
+                            // only emit error
+                            on.accept(child, o);
+                            // we have emitted a terminal event so return (exit the loop we're in)
+                            return;
+                        }
+                    } else {
+                        if (REQUESTED.getAndDecrement(this) != 0) {
+                            Object o = queue.poll();
+                            if (o == null) {
+                                // nothing in queue
+                                REQUESTED.incrementAndGet(this);
+                                break;
                             } else {
                                 if (!on.accept(child, o)) {
                                     // non-terminal event so let's increment count
                                     emitted++;
                                 }
-
                             }
+                        } else {
+                            // we hit the end ... so increment back to 0 again
+                            REQUESTED.incrementAndGet(this);
+                            break;
                         }
-                    } else {
-                        // we hit the end ... so increment back to 0 again
-                        REQUESTED.incrementAndGet(this);
-                        break;
                     }
                 }
             } while (COUNTER_UPDATER.decrementAndGet(this) > 0);
