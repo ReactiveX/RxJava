@@ -26,7 +26,6 @@ import rx.Subscription;
 import rx.exceptions.MissingBackpressureException;
 import rx.functions.Action0;
 import rx.internal.util.RxRingBuffer;
-import rx.internal.util.SynchronizedSubscription;
 import rx.schedulers.ImmediateScheduler;
 import rx.schedulers.TrampolineScheduler;
 
@@ -100,9 +99,8 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
             add(scheduledUnsubscribe);
             child.add(recursiveScheduler);
             child.add(this);
-            
         }
-        
+
         @Override
         public void onStart() {
             // signal that this is an async operator capable of receiving this many
@@ -160,9 +158,16 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
             }
         }
 
+        // only execute this from schedule()
         private void pollQueue() {
             int emitted = 0;
-            while (true) {
+            do {
+                /*
+                 * Set to 1 otherwise it could have grown very large while in the last poll loop
+                 * and then we can end up looping all those times again here before exiting even once we've drained
+                 */
+                COUNTER_UPDATER.set(this, 1);
+
                 while (!scheduledUnsubscribe.isUnsubscribed()) {
                     if (REQUESTED.getAndDecrement(this) != 0) {
                         Object o = queue.poll();
@@ -174,15 +179,18 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
                             if (failure) {
                                 // completed so we will skip onNext if they exist and only emit terminal events
                                 if (on.isError(o)) {
-                                    System.out.println("Error: " + o);
                                     // only emit error
                                     on.accept(child, o);
+                                    // TODO this could hit the requested limit again ... and is skipping values
+                                    // so the request count is broken ... it needs to purge the queue
+                                    // or modify the requested amount so it will loop through everything
                                 }
                             } else {
                                 if (!on.accept(child, o)) {
                                     // non-terminal event so let's increment count
                                     emitted++;
                                 }
+
                             }
                         }
                     } else {
@@ -191,22 +199,11 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
                         break;
                     }
                 }
-                long c = COUNTER_UPDATER.decrementAndGet(this);
-                if (c <= 0) {
-                    // request the number of items that we emitted in this poll loop
-                    if (emitted > 0) {
-                        request(emitted);
-                    }
-                    break;
-                } else {
-                    /*
-                     * Set down to 1 and then iterate again.
-                     * we lower it to 1 otherwise it could have grown very large while in the last poll loop
-                     * and then we can end up looping all those times again here before existing even once we've drained
-                     */
-                    COUNTER_UPDATER.set(this, 1);
-                    // we now loop again, and if anything tries scheduling again after this it will increment and cause us to loop again after
-                }
+            } while (COUNTER_UPDATER.decrementAndGet(this) > 0);
+
+            // request the number of items that we emitted in this poll loop
+            if (emitted > 0) {
+                request(emitted);
             }
         }
     }

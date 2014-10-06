@@ -391,7 +391,7 @@ public class OperatorObserveOnTest {
         inOrder.verify(o, never()).onNext(anyInt());
         inOrder.verify(o, never()).onCompleted();
     }
-    
+
     @Test
     public void testAfterUnsubscribeCalledThenObserverOnNextNeverCalled() {
         final TestScheduler testScheduler = new TestScheduler();
@@ -647,6 +647,33 @@ public class OperatorObserveOnTest {
         assertTrue(ts.getOnNextEvents().size() == ts.getOnNextEvents().get(ts.getOnNextEvents().size() - 1) + 1);
         // we should emit the error without emitting the full buffer size
         assertTrue(ts.getOnNextEvents().size() < RxRingBuffer.SIZE);
-
     }
+
+    /**
+     * Make sure we get a MissingBackpressureException propagated through when we have a fast temporal (hot) producer.
+     */
+    @Test
+    public void testHotOperatorBackpressure() {
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+        Observable.timer(0, 1, TimeUnit.MILLISECONDS)
+                .observeOn(Schedulers.computation())
+                .map(new Func1<Long, String>() {
+
+                    @Override
+                    public String call(Long t1) {
+                        System.out.println(t1);
+                        try {
+                            Thread.sleep(100);
+                        } catch (InterruptedException e) {
+                        }
+                        return t1 + " slow value";
+                    }
+
+                }).subscribe(ts);
+
+        ts.awaitTerminalEvent();
+        System.out.println("Errors: " + ts.getOnErrorEvents());
+        assertEquals(MissingBackpressureException.class, ts.getOnErrorEvents().get(0).getClass());
+    }
+
 }
