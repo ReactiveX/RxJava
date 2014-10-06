@@ -183,7 +183,10 @@ public final class OnSubscribeCombineLatest<T, R> implements OnSubscribe<R> {
             }
         }
 
-        public void onNext(int index, T t) {
+        /**
+         * @return boolean true if propagated value
+         */
+        public boolean onNext(int index, T t) {
             synchronized (this) {
                 if (!haveValues.get(index)) {
                     haveValues.set(index);
@@ -192,17 +195,19 @@ public final class OnSubscribeCombineLatest<T, R> implements OnSubscribe<R> {
                 collectedValues[index] = t;
                 if (haveValuesCount != collectedValues.length) {
                     // haven't received value from each source yet so won't emit
-                    return;
-                }
-                try {
-                    buffer.onNext(combinator.call(collectedValues));
-                } catch (MissingBackpressureException e) {
-                    onError(e);
-                } catch (Throwable e) {
-                    onError(e);
+                    return false;
+                } else {
+                    try {
+                        buffer.onNext(combinator.call(collectedValues));
+                    } catch (MissingBackpressureException e) {
+                        onError(e);
+                    } catch (Throwable e) {
+                        onError(e);
+                    }
                 }
             }
             tick();
+            return true;
         }
 
         public void onError(Throwable e) {
@@ -244,7 +249,10 @@ public final class OnSubscribeCombineLatest<T, R> implements OnSubscribe<R> {
         public void onNext(T t) {
             hasValue = true;
             emitted.incrementAndGet();
-            producer.onNext(index, t);
+            boolean emitted = producer.onNext(index, t);
+            if (!emitted) {
+                request(1);
+            }
         }
 
     }

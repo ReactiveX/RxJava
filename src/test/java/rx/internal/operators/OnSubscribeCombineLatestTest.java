@@ -29,14 +29,18 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Matchers;
 
+import rx.Notification;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscriber;
+import rx.functions.Action1;
 import rx.functions.Func2;
 import rx.functions.Func3;
 import rx.functions.Func4;
@@ -803,4 +807,42 @@ public class OnSubscribeCombineLatestTest {
         assertEquals("two4", events.get(2));
         assertEquals(NUM, events.size());
     }
+
+    @Test
+    public void testWithCombineLatestIssue1717() throws InterruptedException {
+        final CountDownLatch latch = new CountDownLatch(1);
+        final AtomicInteger count = new AtomicInteger();
+        final int SIZE = 2000;
+        Observable<Long> timer = Observable.timer(0, 1, TimeUnit.MILLISECONDS)
+                .observeOn(Schedulers.newThread())
+                .doOnEach(new Action1<Notification<? super Long>>() {
+
+                    @Override
+                    public void call(Notification<? super Long> n) {
+                        //                        System.out.println(n);
+                        if (count.incrementAndGet() >= SIZE) {
+                            latch.countDown();
+                        }
+                    }
+
+                }).take(SIZE);
+
+        TestSubscriber<Long> ts = new TestSubscriber<Long>();
+
+        Observable.combineLatest(timer, Observable.<Integer> never(), new Func2<Long, Integer, Long>() {
+
+            @Override
+            public Long call(Long t1, Integer t2) {
+                return t1;
+            }
+
+        }).subscribe(ts);
+
+        if (!latch.await(SIZE + 1000, TimeUnit.MILLISECONDS)) {
+            fail("timed out");
+        }
+
+        assertEquals(SIZE, count.get());
+    }
+
 }
