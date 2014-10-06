@@ -494,7 +494,13 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
             } else {
                 REQUESTED.getAndAdd(this, n);
                 if (ms.drainQueuesIfNeeded()) {
-                    if (ms.wip == 0 && ms.scalarValueQueue != null && ms.scalarValueQueue.isEmpty()) {
+                    boolean sendComplete = false;
+                    synchronized (this) {
+                        if (ms.wip == 0 && ms.scalarValueQueue != null && ms.scalarValueQueue.isEmpty()) {
+                            sendComplete = true;
+                        }
+                    }
+                    if (sendComplete) {
                         ms.drainAndComplete();
                     }
                 }
