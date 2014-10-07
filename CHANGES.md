@@ -1,6 +1,6 @@
 # RxJava Releases #
 
-### Version 1.0.0-rc.4 ([Maven Central](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.0.0-rc.4%7C)) ###
+### Version 1.0.0-rc.4 – October 2nd 2014 ([Maven Central](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.0.0-rc.4%7C)) ###
 
 * [Pull 1687] (https://github.com/ReactiveX/RxJava/pull/1687) Don't allocate an empty ArrayList for each Observable.empty call
 * [Pull 1705] (https://github.com/ReactiveX/RxJava/pull/1705) Fix null-emitting combineLatest
@@ -10,7 +10,7 @@
 * [Pull 1712] (https://github.com/ReactiveX/RxJava/pull/1712) Fixing regression in mergeDelayError
 * [Pull 1716] (https://github.com/ReactiveX/RxJava/pull/1716) Remove Observable.Parallel
 
-### Version 0.20.5 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.20.5%22)) ###
+### Version 0.20.5 – October 2nd 2014 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.20.5%22)) ###
 
 * [Pull 1686] (https://github.com/ReactiveX/RxJava/pull/1686) Fix Rx serialization bug in takeUntil again and the concurrent issue in BufferUntilSubscriber
 * [Pull 1701] (https://github.com/ReactiveX/RxJava/pull/1701) Fix the compose generics
