@@ -4724,7 +4724,7 @@ public class Observable<T> {
      * @return an {@code Observable} that emits {@link GroupedObservable}s, each of which corresponds to a
      *         unique key value and each of which emits those items from the source Observable that share that
      *         key value
-     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Transforming-Observables#groupby-and-groupbyuntil">RxJava wiki: groupBy</a>
+     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Transforming-Observables#groupby">RxJava wiki: groupBy</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.groupby.aspx">MSDN: Observable.GroupBy</a>
      */
     public final <K, R> Observable<GroupedObservable<K, R>> groupBy(final Func1<? super T, ? extends K> keySelector, final Func1<? super T, ? extends R> elementSelector) {
@@ -4741,6 +4741,10 @@ public class Observable<T> {
      * is subscribed to. For this reason, in order to avoid memory leaks, you should not simply ignore those
      * {@code GroupedObservable}s that do not concern you. Instead, you can signal to them that they may
      * discard their buffers by applying an operator like {@link #take}{@code (0)} to them.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code groupBy} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param keySelector
      *            a function that extracts the key for each item
@@ -4749,7 +4753,7 @@ public class Observable<T> {
      * @return an {@code Observable} that emits {@link GroupedObservable}s, each of which corresponds to a
      *         unique key value and each of which emits those items from the source Observable that share that
      *         key value
-     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Transforming-Observables#groupby-and-groupbyuntil">RxJava wiki: groupBy</a>
+     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Transforming-Observables#groupby">RxJava wiki: groupBy</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.groupby.aspx">MSDN: Observable.GroupBy</a>
      */
     public final <K> Observable<GroupedObservable<K, T>> groupBy(final Func1<? super T, ? extends K> keySelector) {
@@ -5697,8 +5701,8 @@ public class Observable<T> {
     /**
      * Returns an Observable that emits the same values as the source Observable with the exception of an
      * {@code onCompleted}. An {@code onCompleted} notification from the source will result in the emission of
-     * a {@link Notification} to the Observable provided as an argument to the {@code notificationHandler}
-     * function. If the Observable returned {@code onCompletes} or {@code onErrors} then {@code repeatWhen} will
+     * a {@link void} item to the Observable provided as an argument to the {@code notificationHandler}
+     * function. If that Observable calls {@code onComplete} or {@code onError} then {@code repeatWhen} will
      * call {@code onCompleted} or {@code onError} on the child subscription. Otherwise, this Observable will
      * resubscribe to the source Observable, on a particular Scheduler.
      * <p>
@@ -5734,8 +5738,8 @@ public class Observable<T> {
     /**
      * Returns an Observable that emits the same values as the source Observable with the exception of an
      * {@code onCompleted}. An {@code onCompleted} notification from the source will result in the emission of
-     * a {@link Notification} to the Observable provided as an argument to the {@code notificationHandler}
-     * function. If the Observable returned {@code onCompletes} or {@code onErrors} then {@code repeatWhen} will
+     * a {@link void} item to the Observable provided as an argument to the {@code notificationHandler}
+     * function. If that Observable calls {@code onComplete} or {@code onError} then {@code repeatWhen} will
      * call {@code onCompleted} or {@code onError} on the child subscription. Otherwise, this Observable will
      * resubscribe to the source observable.
      * <p>
@@ -6433,8 +6437,8 @@ public class Observable<T> {
     /**
      * Returns an Observable that emits the same values as the source observable with the exception of an
      * {@code onError}. An {@code onError} notification from the source will result in the emission of a
-     * {@link Notification} to the Observable provided as an argument to the {@code notificationHandler}
-     * function. If the Observable returned {@code onCompletes} or {@code onErrors} then {@code retry} will call
+     * {@link Throwable} item to the Observable provided as an argument to the {@code notificationHandler}
+     * function. If that Observable calls {@code onComplete} or {@code onError} then {@code retry} will call
      * {@code onCompleted} or {@code onError} on the child subscription. Otherwise, this Observable will
      * resubscribe to the source Observable.    
      * <p>
@@ -6494,10 +6498,12 @@ public class Observable<T> {
     }
 
     /**
-     * Returns an Observable that emits the same values as the source observable with the exception of an {@code onError}.
-     * An onError will emit a {@link Notification} to the observable provided as an argument to the notificationHandler 
-     * func. If the observable returned {@code onCompletes} or {@code onErrors} then retry will call {@code onCompleted} 
-     * or {@code onError} on the child subscription. Otherwise, this observable will resubscribe to the source observable, on a particular Scheduler.    
+     * Returns an Observable that emits the same values as the source observable with the exception of an
+     * {@code onError}. An {@code onError} will cause the emission of the {@link Throwable} that cause the
+     * error to the Observable returned from {@code notificationHandler}. If that Observable calls
+     * {@code onComplete} or {@code onError} then {@code retry} will call {@code onCompleted} or {@code onError}
+     * on the child subscription. Otherwise, this Observable will resubscribe to the source observable, on a
+     * particular Scheduler.    
      * <p>
      * <img width="640" height="430" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/retryWhen.f.png" alt="">
      * <p>
