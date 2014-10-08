@@ -4708,6 +4708,10 @@ public class Observable<T> {
      * is subscribed to. For this reason, in order to avoid memory leaks, you should not simply ignore those
      * {@code GroupedObservable}s that do not concern you. Instead, you can signal to them that they may
      * discard their buffers by applying an operator like {@link #take}{@code (0)} to them.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code groupBy} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @param keySelector
      *            a function that extracts the key for each item
