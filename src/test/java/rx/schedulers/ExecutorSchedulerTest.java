@@ -23,11 +23,11 @@ import java.util.concurrent.Executors;
 
 public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
 
-    final static Executor executor = Executors.newFixedThreadPool(2, new RxThreadFactory("TestCustomPool-"));
-    
+    static final Executor executor = Executors.newFixedThreadPool(2, new RxThreadFactory("TestCustomPool-"));
+
     @Override
     protected Scheduler getScheduler() {
         return Schedulers.from(executor);
     }
-    
+
 }

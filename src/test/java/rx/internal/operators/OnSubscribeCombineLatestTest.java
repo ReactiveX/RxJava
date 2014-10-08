@@ -793,10 +793,10 @@ public class OnSubscribeCombineLatestTest {
     public void testBackpressure() {
         Func2<String, Integer, String> combineLatestFunction = getConcatStringIntegerCombineLatestFunction();
 
-        int NUM = RxRingBuffer.SIZE * 4;
+        int num = RxRingBuffer.SIZE * 4;
         TestSubscriber<String> ts = new TestSubscriber<String>();
         Observable.combineLatest(Observable.just("one", "two"),
-                Observable.range(2, NUM), combineLatestFunction).
+                Observable.range(2, num), combineLatestFunction).
                 observeOn(Schedulers.computation()).subscribe(ts);
 
         ts.awaitTerminalEvent();
@@ -805,14 +805,14 @@ public class OnSubscribeCombineLatestTest {
         assertEquals("two2", events.get(0));
         assertEquals("two3", events.get(1));
         assertEquals("two4", events.get(2));
-        assertEquals(NUM, events.size());
+        assertEquals(num, events.size());
     }
 
     @Test
     public void testWithCombineLatestIssue1717() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicInteger count = new AtomicInteger();
-        final int SIZE = 2000;
+        final int size = 2000;
         Observable<Long> timer = Observable.timer(0, 1, TimeUnit.MILLISECONDS)
                 .observeOn(Schedulers.newThread())
                 .doOnEach(new Action1<Notification<? super Long>>() {
@@ -820,12 +820,12 @@ public class OnSubscribeCombineLatestTest {
                     @Override
                     public void call(Notification<? super Long> n) {
                         //                        System.out.println(n);
-                        if (count.incrementAndGet() >= SIZE) {
+                        if (count.incrementAndGet() >= size) {
                             latch.countDown();
                         }
                     }
 
-                }).take(SIZE);
+                }).take(size);
 
         TestSubscriber<Long> ts = new TestSubscriber<Long>();
 
@@ -838,11 +838,11 @@ public class OnSubscribeCombineLatestTest {
 
         }).subscribe(ts);
 
-        if (!latch.await(SIZE + 1000, TimeUnit.MILLISECONDS)) {
+        if (!latch.await(size + 1000, TimeUnit.MILLISECONDS)) {
             fail("timed out");
         }
 
-        assertEquals(SIZE, count.get());
+        assertEquals(size, count.get());
     }
 
 }

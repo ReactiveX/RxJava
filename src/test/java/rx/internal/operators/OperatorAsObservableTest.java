@@ -33,19 +33,19 @@ public class OperatorAsObservableTest {
     @Test
     public void testHiding() {
         PublishSubject<Integer> src = PublishSubject.create();
-        
+
         Observable<Integer> dst = src.asObservable();
-        
+
         assertFalse(dst instanceof PublishSubject);
-        
+
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
-        
+
         dst.subscribe(o);
-        
+
         src.onNext(1);
         src.onCompleted();
-        
+
         verify(o).onNext(1);
         verify(o).onCompleted();
         verify(o, never()).onError(any(Throwable.class));
@@ -53,18 +53,18 @@ public class OperatorAsObservableTest {
     @Test
     public void testHidingError() {
         PublishSubject<Integer> src = PublishSubject.create();
-        
+
         Observable<Integer> dst = src.asObservable();
-        
+
         assertFalse(dst instanceof PublishSubject);
-        
+
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
-        
+
         dst.subscribe(o);
-        
+
         src.onError(new TestException());
-        
+
         verify(o, never()).onNext(any());
         verify(o, never()).onCompleted();
         verify(o).onError(any(TestException.class));

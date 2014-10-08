@@ -35,8 +35,10 @@ import rx.Subscription;
  * The toFuture operation throws an exception if the Observable emits more than one item. If the
  * Observable may emit more than item, use <code>toList().toFuture()</code>.
  */
-public class BlockingOperatorToFuture {
-
+public final class BlockingOperatorToFuture {
+    private BlockingOperatorToFuture() {
+        throw new IllegalStateException("No instances!");
+    }
     /**
      * Returns a Future that expects a single item from the observable.
      * 

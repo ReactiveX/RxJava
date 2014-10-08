@@ -268,7 +268,7 @@ public class OperatorMergeTest {
     }
 
     /**
-     * unit test from OperationMergeDelayError backported here to show how these use cases work with normal merge
+     * Unit test from OperationMergeDelayError backported here to show how these use cases work with normal merge.
      */
     @Test
     public void testError1() {
@@ -290,15 +290,15 @@ public class OperatorMergeTest {
     }
 
     /**
-     * unit test from OperationMergeDelayError backported here to show how these use cases work with normal merge
+     * Unit test from OperationMergeDelayError backported here to show how these use cases work with normal merge.
      */
     @Test
     public void testError2() {
         // we are using synchronous execution to test this exactly rather than non-deterministic concurrent behavior
         final Observable<String> o1 = Observable.create(new TestErrorObservable("one", "two", "three"));
         final Observable<String> o2 = Observable.create(new TestErrorObservable("four", null, "six")); // we expect to lose "six"
-        final Observable<String> o3 = Observable.create(new TestErrorObservable("seven", "eight", null));// we expect to lose all of these since o2 is done first and fails
-        final Observable<String> o4 = Observable.create(new TestErrorObservable("nine"));// we expect to lose all of these since o2 is done first and fails
+        final Observable<String> o3 = Observable.create(new TestErrorObservable("seven", "eight", null)); // we expect to lose all of these since o2 is done first and fails
+        final Observable<String> o4 = Observable.create(new TestErrorObservable("nine")); // we expect to lose all of these since o2 is done first and fails
 
         Observable<String> m = Observable.merge(o1, o2, o3, o4);
         m.subscribe(stringObserver);
@@ -663,7 +663,7 @@ public class OperatorMergeTest {
         TestSubscriber<Integer> testSubscriber = new TestSubscriber<Integer>() {
             @Override
             public void onNext(Integer t) {
-                if (t < 100)
+                if (t < 100) {
                     try {
                         // force a slow consumer
                         Thread.sleep(1);
@@ -671,6 +671,7 @@ public class OperatorMergeTest {
                         e.printStackTrace();
                     }
                 //                System.err.println("testSubscriber received => " + t + "  on thread " + Thread.currentThread());
+                }
                 super.onNext(t);
             }
         };
@@ -704,7 +705,7 @@ public class OperatorMergeTest {
         TestSubscriber<Integer> testSubscriber = new TestSubscriber<Integer>() {
             @Override
             public void onNext(Integer t) {
-                if (t < 100)
+                if (t < 100) {
                     try {
                         // force a slow consumer
                         Thread.sleep(2);
@@ -712,6 +713,7 @@ public class OperatorMergeTest {
                         e.printStackTrace();
                     }
                 //                System.err.println("testSubscriber received => " + t + "  on thread " + Thread.currentThread());
+                }
                 super.onNext(t);
             }
         };
@@ -758,7 +760,7 @@ public class OperatorMergeTest {
 
             @Override
             public void onNext(Integer t) {
-                if (i++ < 400)
+                if (i++ < 400) {
                     try {
                         // force a slow consumer
                         Thread.sleep(1);
@@ -766,6 +768,7 @@ public class OperatorMergeTest {
                         e.printStackTrace();
                     }
                 //                System.err.println("testSubscriber received => " + t + "  on thread " + Thread.currentThread());
+                }
                 super.onNext(t);
             }
         };

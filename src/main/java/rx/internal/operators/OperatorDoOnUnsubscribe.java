@@ -28,7 +28,7 @@ public class OperatorDoOnUnsubscribe<T> implements Operator<T, T> {
     private final Action0 unsubscribe;
 
     /**
-     * Constructs an instance of the operator with the callback that gets invoked when the modified Observable is unsubscribed
+     * Constructs an instance of the operator with the callback that gets invoked when the modified Observable is unsubscribed.
      * @param unsubscribe The action that gets invoked when the modified {@link rx.Observable} is unsubscribed
      */
     public OperatorDoOnUnsubscribe(Action0 unsubscribe) {

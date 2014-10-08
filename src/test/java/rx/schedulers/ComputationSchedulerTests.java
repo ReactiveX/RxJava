@@ -41,7 +41,7 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
     @Test
     public void testThreadSafetyWhenSchedulerIsHoppingBetweenThreads() {
 
-        final int NUM = 1000000;
+        final int num = 1000000;
         final CountDownLatch latch = new CountDownLatch(1);
         final HashMap<String, Integer> map = new HashMap<String, Integer>();
 
@@ -66,7 +66,7 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
                 }
                 nonThreadSafeCounter++;
                 statefulMap.put("nonThreadSafeCounter", nonThreadSafeCounter);
-                if (i < NUM) {
+                if (i < num) {
                     inner.schedule(this);
                 } else {
                     latch.countDown();
@@ -84,9 +84,9 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
         System.out.println("Count B: " + map.get("b"));
         System.out.println("nonThreadSafeCounter: " + map.get("nonThreadSafeCounter"));
 
-        assertEquals(NUM, map.get("a").intValue());
-        assertEquals(NUM, map.get("b").intValue());
-        assertEquals(NUM, map.get("nonThreadSafeCounter").intValue());
+        assertEquals(num, map.get("a").intValue());
+        assertEquals(num, map.get("b").intValue());
+        assertEquals(num, map.get("nonThreadSafeCounter").intValue());
     }
 
     @Test

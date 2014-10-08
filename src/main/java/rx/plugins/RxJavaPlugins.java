@@ -21,16 +21,16 @@ import java.util.concurrent.atomic.AtomicReference;
  * Registry for plugin implementations that allows global override and handles the retrieval of correct
  * implementation based on order of precedence:
  * <ol>
- * <li>plugin registered globally via {@code register} methods in this class</li>
+ * <li>plugin registered globally via {@code register} methods in this class,</li>
  * <li>plugin registered and retrieved using {@link java.lang.System#getProperty(String)} (see get methods for
- * property names)</li>
- * <li>default implementation</li>
+ * property names) and</li>
+ * <li>default implementation.</li>
  * </ol>
  *
  * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Plugins">RxJava Wiki: Plugins</a>
  */
 public class RxJavaPlugins {
-    private final static RxJavaPlugins INSTANCE = new RxJavaPlugins();
+    private static final RxJavaPlugins INSTANCE = new RxJavaPlugins();
 
     private final AtomicReference<RxJavaErrorHandler> errorHandler = new AtomicReference<RxJavaErrorHandler>();
     private final AtomicReference<RxJavaObservableExecutionHook> observableExecutionHook = new AtomicReference<RxJavaObservableExecutionHook>();
@@ -69,7 +69,7 @@ public class RxJavaPlugins {
             // check for an implementation from System.getProperty first
             Object impl = getPluginImplementationViaProperty(RxJavaErrorHandler.class);
             if (impl == null) {
-                // nothing set via properties so initialize with default 
+                // nothing set via properties so initialize with default
                 errorHandler.compareAndSet(null, RxJavaErrorHandlerDefault.getInstance());
                 // we don't return from here but call get() again in case of thread-race so the winner will always get returned
             } else {
@@ -111,7 +111,7 @@ public class RxJavaPlugins {
             // check for an implementation from System.getProperty first
             Object impl = getPluginImplementationViaProperty(RxJavaObservableExecutionHook.class);
             if (impl == null) {
-                // nothing set via properties so initialize with default 
+                // nothing set via properties so initialize with default
                 observableExecutionHook.compareAndSet(null, RxJavaObservableExecutionHookDefault.getInstance());
                 // we don't return from here but call get() again in case of thread-race so the winner will always get returned
             } else {

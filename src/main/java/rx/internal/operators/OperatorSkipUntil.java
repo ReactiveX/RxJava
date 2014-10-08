@@ -65,7 +65,7 @@ public final class OperatorSkipUntil<T, U> implements Operator<T, T> {
         };
         child.add(u);
         other.unsafeSubscribe(u);
-        
+
         return new Subscriber<T>(child) {
             @Override
             public void onNext(T t) {

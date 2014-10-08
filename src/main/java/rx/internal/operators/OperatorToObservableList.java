@@ -19,7 +19,6 @@ import rx.Observable.Operator;
 import rx.Subscriber;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -56,8 +55,8 @@ public final class OperatorToObservableList<T> implements Operator<List<T>, T> {
                 try {
                     completed = true;
                     /*
-                     * Ideally this should just return Collections.unmodifiableList(list) and not copy it, 
-                     * but, it ends up being a breaking change if we make that modification. 
+                     * Ideally this should just return Collections.unmodifiableList(list) and not copy it,
+                     * but, it ends up being a breaking change if we make that modification.
                      * 
                      * Here is an example of is being done with these lists that breaks if we make it immutable:
                      * 

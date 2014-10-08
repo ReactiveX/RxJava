@@ -146,7 +146,7 @@ public class OperatorSerializeTest {
     }
 
     /**
-     * A thread that will pass data to onNext
+     * A thread that will pass data to onNext.
      */
     public static class OnNextThread implements Runnable {
 
@@ -167,7 +167,7 @@ public class OperatorSerializeTest {
     }
 
     /**
-     * A thread that will call onError or onNext
+     * A thread that will call onError or onNext.
      */
     public static class CompletionThread implements Runnable {
 
@@ -211,7 +211,7 @@ public class OperatorSerializeTest {
     }
 
     /**
-     * This spawns a single thread for the subscribe execution
+     * This spawns a single thread for the subscribe execution.
      */
     private static class TestSingleThreadedObservable implements Observable.OnSubscribe<String> {
 
@@ -223,6 +223,7 @@ public class OperatorSerializeTest {
 
         }
 
+        @Override
         public void call(final Subscriber<? super String> observer) {
             System.out.println("TestSingleThreadedObservable subscribed to ...");
             t = new Thread(new Runnable() {

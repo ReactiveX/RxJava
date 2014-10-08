@@ -37,7 +37,7 @@ public final class BlockingOperatorLatest {
 
     /**
      * Returns an {@code Iterable} that blocks until or unless the {@code Observable} emits an item that has not
-     * been returned by the {@code Iterable}, then returns that item
+     * been returned by the {@code Iterable}, then returns that item.
      *
      * @param source
      *            the source {@code Observable}
@@ -102,7 +102,7 @@ public final class BlockingOperatorLatest {
                     }
 
                     @SuppressWarnings("unchecked")
-                    Notification<? extends T> n = (Notification<? extends T>)REFERENCE_UPDATER.getAndSet(this, null);
+                    Notification<? extends T> n = REFERENCE_UPDATER.getAndSet(this, null);
                     iNotif = n;
                     if (iNotif.isOnError()) {
                         throw Exceptions.propagate(iNotif.getThrowable());

@@ -17,6 +17,7 @@ package rx.internal.operators;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import rx.Observable;
 import rx.Observable.Operator;
 import rx.Producer;
@@ -36,7 +37,7 @@ public final class OperatorSwitch<T> implements Operator<T, Observable<? extends
 
     @Override
     public Subscriber<? super Observable<? extends T>> call(final Subscriber<? super T> child) {
-        return new SwitchSubscriber(child);
+        return new SwitchSubscriber<T>(child);
     }
 
     private static final class SwitchSubscriber<T> extends Subscriber<Observable<? extends T>> {
@@ -66,14 +67,14 @@ public final class OperatorSwitch<T> implements Operator<T, Observable<? extends
             s = new SerializedSubscriber<T>(child);
             ssub = new SerialSubscription();
             child.add(ssub);
-            child.setProducer(new Producer(){
+            child.setProducer(new Producer() {
 
                 @Override
                 public void request(long n) {
                     if (infinite) {
                         return;
                     }
-                    if(n == Long.MAX_VALUE) {
+                    if (n == Long.MAX_VALUE) {
                         infinite = true;
                     }
                     InnerSubscriber localSubscriber;

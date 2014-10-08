@@ -106,7 +106,7 @@ public final class OperatorScan<R, T> implements Operator<R, T> {
                 emitInitialValueIfNeeded(child);
                 child.onCompleted();
             }
-            
+
             private void emitInitialValueIfNeeded(final Subscriber<? super R> child) {
                 if (!initialized) {
                     initialized = true;
@@ -116,7 +116,7 @@ public final class OperatorScan<R, T> implements Operator<R, T> {
                     }
                 }
             }
-            
+
             /**
              * We want to adjust the requested value by subtracting 1 if we have an initial value
              */

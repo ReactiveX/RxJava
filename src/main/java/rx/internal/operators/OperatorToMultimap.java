@@ -110,7 +110,7 @@ public final class OperatorToMultimap<T, K, V> implements Operator<Map<K, Collec
             public void onStart() {
                 request(Long.MAX_VALUE);
             }
-            
+
             @Override
             public void onNext(T v) {
                 K key = keySelector.call(v);

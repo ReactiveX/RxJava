@@ -68,7 +68,7 @@ public final class BooleanSubscription implements Subscription {
     }
 
     @Override
-    public final void unsubscribe() {
+    public void unsubscribe() {
         if (UNSUBSCRIBED_UPDATER.compareAndSet(this, 0, 1)) {
             if (action != null) {
                 action.call();

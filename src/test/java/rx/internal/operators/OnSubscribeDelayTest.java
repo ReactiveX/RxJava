@@ -546,20 +546,20 @@ public class OnSubscribeDelayTest {
         verify(o, never()).onError(any(Throwable.class));
         verify(o, never()).onCompleted();
     }
-    
+
     @Test
     public void testDelayWithObservableAsTimed() {
         Observable<Long> source = Observable.interval(1L, TimeUnit.SECONDS, scheduler).take(3);
-        
+
         final Observable<Long> delayer = Observable.timer(500L, TimeUnit.MILLISECONDS, scheduler);
-        
+
         Func1<Long, Observable<Long>> delayFunc = new Func1<Long, Observable<Long>>() {
             @Override
             public Observable<Long> call(Long t1) {
                 return delayer;
             }
         };
-        
+
         Observable<Long> delayed = source.delay(delayFunc);
         delayed.subscribe(observer);
 
@@ -596,7 +596,7 @@ public class OnSubscribeDelayTest {
         verify(observer, times(1)).onCompleted();
         verify(observer, never()).onError(any(Throwable.class));
     }
-    
+
     @Test
     public void testDelayWithObservableReorder() {
         int n = 3;
@@ -606,7 +606,7 @@ public class OnSubscribeDelayTest {
         for (int i = 0; i < n; i++) {
             subjects.add(PublishSubject.<Integer>create());
         }
-        
+
         Observable<Integer> result = source.delay(new Func1<Integer, Observable<Integer>>() {
 
             @Override
@@ -614,28 +614,28 @@ public class OnSubscribeDelayTest {
                 return subjects.get(t1);
             }
         });
-        
+
         @SuppressWarnings("unchecked")
         Observer<Integer> o = mock(Observer.class);
         InOrder inOrder = inOrder(o);
-        
+
         result.subscribe(o);
-        
+
         for (int i = 0; i < n; i++) {
             source.onNext(i);
         }
         source.onCompleted();
-        
+
         inOrder.verify(o, never()).onNext(anyInt());
         inOrder.verify(o, never()).onCompleted();
-        
+
         for (int i = n - 1; i >= 0; i--) {
             subjects.get(i).onCompleted();
             inOrder.verify(o).onNext(i);
         }
-        
+
         inOrder.verify(o).onCompleted();
-        
+
         verify(o, never()).onError(any(Throwable.class));
     }
 }

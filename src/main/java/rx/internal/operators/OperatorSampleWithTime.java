@@ -48,7 +48,7 @@ public final class OperatorSampleWithTime<T> implements Operator<T, T> {
         final SerializedSubscriber<T> s = new SerializedSubscriber<T>(child);
         final Worker worker = scheduler.createWorker();
         child.add(worker);
-        
+
         SamplerSubscriber<T> sampler = new SamplerSubscriber<T>(s);
         worker.schedulePeriodically(sampler, time, time, unit);
 
@@ -70,12 +70,12 @@ public final class OperatorSampleWithTime<T> implements Operator<T, T> {
         public SamplerSubscriber(Subscriber<? super T> subscriber) {
             this.subscriber = subscriber;
         }
-        
+
         @Override
         public void onStart() {
             request(Long.MAX_VALUE);
         }
-        
+
         @Override
         public void onNext(T t) {
             value = t;

@@ -27,7 +27,6 @@ import org.mockito.Mockito;
 
 import rx.Observable;
 import rx.Observer;
-import rx.Subscriber;
 import rx.functions.Func1;
 import rx.internal.util.RxRingBuffer;
 import rx.observers.TestSubscriber;
@@ -56,7 +55,7 @@ public class OperatorFilterTest {
     }
 
     /**
-     * Make sure we are adjusting subscriber.request() for filtered items
+     * Make sure we are adjusting subscriber.request() for filtered items.
      */
     @Test(timeout = 500)
     public void testWithBackpressure() throws InterruptedException {
@@ -102,7 +101,7 @@ public class OperatorFilterTest {
     }
 
     /**
-     * Make sure we are adjusting subscriber.request() for filtered items
+     * Make sure we are adjusting subscriber.request() for filtered items.
      */
     @Test(timeout = 500000)
     public void testWithBackpressure2() throws InterruptedException {
@@ -117,19 +116,19 @@ public class OperatorFilterTest {
 
         final CountDownLatch latch = new CountDownLatch(1);
         final TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
-            
+
             @Override
             public void onCompleted() {
                 System.out.println("onCompleted");
                 latch.countDown();
             }
-            
+
             @Override
             public void onError(Throwable e) {
                 e.printStackTrace();
                 latch.countDown();
             }
-            
+
             @Override
             public void onNext(Integer t) {
                 System.out.println("Received: " + t);

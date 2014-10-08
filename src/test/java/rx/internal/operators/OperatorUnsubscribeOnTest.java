@@ -39,7 +39,7 @@ public class OperatorUnsubscribeOnTest {
 
     @Test
     public void testUnsubscribeWhenSubscribeOnAndUnsubscribeOnAreOnSameThread() throws InterruptedException {
-        UIEventLoopScheduler UI_EVENT_LOOP = new UIEventLoopScheduler();
+        UIEventLoopScheduler uiEventLoop = new UIEventLoopScheduler();
         try {
             final ThreadSubscription subscription = new ThreadSubscription();
             final AtomicReference<Thread> subscribeThread = new AtomicReference<Thread>();
@@ -56,7 +56,7 @@ public class OperatorUnsubscribeOnTest {
             });
 
             TestObserver<Integer> observer = new TestObserver<Integer>();
-            w.subscribeOn(UI_EVENT_LOOP).observeOn(Schedulers.computation()).unsubscribeOn(UI_EVENT_LOOP).subscribe(observer);
+            w.subscribeOn(uiEventLoop).observeOn(Schedulers.computation()).unsubscribeOn(uiEventLoop).subscribe(observer);
 
             Thread unsubscribeThread = subscription.getThread();
 
@@ -69,18 +69,18 @@ public class OperatorUnsubscribeOnTest {
 
             System.out.println("unsubscribeThread: " + unsubscribeThread);
             System.out.println("subscribeThread.get(): " + subscribeThread.get());
-            assertTrue(unsubscribeThread == UI_EVENT_LOOP.getThread());
+            assertTrue(unsubscribeThread == uiEventLoop.getThread());
 
             observer.assertReceivedOnNext(Arrays.asList(1, 2));
             observer.assertTerminalEvent();
         } finally {
-            UI_EVENT_LOOP.shutdown();
+            uiEventLoop.shutdown();
         }
     }
 
     @Test
     public void testUnsubscribeWhenSubscribeOnAndUnsubscribeOnAreOnDifferentThreads() throws InterruptedException {
-        UIEventLoopScheduler UI_EVENT_LOOP = new UIEventLoopScheduler();
+        UIEventLoopScheduler uiEventLoop = new UIEventLoopScheduler();
         try {
             final ThreadSubscription subscription = new ThreadSubscription();
             final AtomicReference<Thread> subscribeThread = new AtomicReference<Thread>();
@@ -97,7 +97,7 @@ public class OperatorUnsubscribeOnTest {
             });
 
             TestObserver<Integer> observer = new TestObserver<Integer>();
-            w.subscribeOn(Schedulers.newThread()).observeOn(Schedulers.computation()).unsubscribeOn(UI_EVENT_LOOP).subscribe(observer);
+            w.subscribeOn(Schedulers.newThread()).observeOn(Schedulers.computation()).unsubscribeOn(uiEventLoop).subscribe(observer);
 
             Thread unsubscribeThread = subscription.getThread();
 
@@ -110,12 +110,12 @@ public class OperatorUnsubscribeOnTest {
 
             System.out.println("unsubscribeThread: " + unsubscribeThread);
             System.out.println("subscribeThread.get(): " + subscribeThread.get());
-            assertTrue(unsubscribeThread == UI_EVENT_LOOP.getThread());
+            assertTrue(unsubscribeThread == uiEventLoop.getThread());
 
             observer.assertReceivedOnNext(Arrays.asList(1, 2));
             observer.assertTerminalEvent();
         } finally {
-            UI_EVENT_LOOP.shutdown();
+            uiEventLoop.shutdown();
         }
     }
 
@@ -181,7 +181,7 @@ public class OperatorUnsubscribeOnTest {
                 throw new RuntimeException("failed to initialize and get inner thread");
             }
         }
-        
+
         @Override
         public Worker createWorker() {
             return eventLoop;

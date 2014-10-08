@@ -26,8 +26,8 @@ public final class Actions {
     }
 
     @SuppressWarnings("unchecked")
-    public static final <T0, T1, T2, T3, T4, T5, T6, T7, T8, T9> EmptyAction<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9> empty() {
-        return (EmptyAction<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9>) EMPTY_ACTION;
+    public static <T0, T1, T2, T3, T4, T5, T6, T7, T8, T9> EmptyAction<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9> empty() {
+        return EMPTY_ACTION;
     }
 
     @SuppressWarnings("rawtypes")
@@ -89,7 +89,7 @@ public final class Actions {
         public void call(Object... args) {
         }
     }
-    
+
     /**
      * Extracts a method reference to the Observer's {@link Observer#onNext onNext} method in the form of an
      * {@link Action1}.

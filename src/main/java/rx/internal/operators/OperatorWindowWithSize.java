@@ -68,7 +68,7 @@ public final class OperatorWindowWithSize<T> implements Operator<Observable<T>, 
             // no backpressure as we are controlling data flow by window size
             request(Long.MAX_VALUE);
         }
-        
+
         @Override
         public void onNext(T t) {
             if (count++ % size == 0) {
@@ -117,7 +117,7 @@ public final class OperatorWindowWithSize<T> implements Operator<Observable<T>, 
             // no backpressure as we are controlling data flow by window size
             request(Long.MAX_VALUE);
         }
-        
+
         @Override
         public void onNext(T t) {
             if (count++ % skip == 0) {
@@ -161,7 +161,7 @@ public final class OperatorWindowWithSize<T> implements Operator<Observable<T>, 
         }
     }
     /** 
-     * Record to store the subject and the emission count. 
+     * Record to store the subject and the emission count.
      * @param <T> the subject's in-out type
      */
     static final class CountedSubject<T> {

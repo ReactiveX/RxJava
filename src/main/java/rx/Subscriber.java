@@ -16,7 +16,6 @@
 package rx;
 
 import rx.internal.util.SubscriptionList;
-import rx.subscriptions.CompositeSubscription;
 
 /**
  * Provides a mechanism for receiving push-based notifications from Observables, and permits manual
@@ -72,6 +71,7 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
      * 
      * @return {@code true} if this Subscriber has unsubscribed from its subscriptions, {@code false} otherwise
      */
+    @Override
     public final boolean isUnsubscribed() {
         return cs.isUnsubscribed();
     }
@@ -86,7 +86,7 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
     public void onStart() {
         // do nothing by default
     }
-    
+
     /**
      * Request a certain maximum number of emitted items from the Observable this Subscriber is subscribed to.
      * This is a way of requesting backpressure. To disable backpressure, pass {@code Long.MAX_VALUE} to this

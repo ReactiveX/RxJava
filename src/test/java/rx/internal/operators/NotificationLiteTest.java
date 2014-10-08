@@ -27,12 +27,12 @@ public class NotificationLiteTest {
         NotificationLite<Object> on = NotificationLite.instance();
         Object n = on.next("Hello");
         Object c = on.completed();
-        
+
         assertTrue(on.isCompleted(c));
         assertFalse(on.isCompleted(n));
-        
+
         assertEquals("Hello", on.getValue(n));
     }
-    
-    
+
+
 }

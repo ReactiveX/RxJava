@@ -133,11 +133,11 @@ public class OnSubscribeRangeTest {
     }
     void testWithBackpressureOneByOne(int start) {
         Observable<Integer> source = Observable.range(start, 100);
-        
+
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         ts.requestMore(1);
         source.subscribe(ts);
-        
+
         List<Integer> list = new ArrayList<Integer>(100);
         for (int i = 0; i < 100; i++) {
             list.add(i + start);
@@ -148,11 +148,11 @@ public class OnSubscribeRangeTest {
     }
     void testWithBackpressureAllAtOnce(int start) {
         Observable<Integer> source = Observable.range(start, 100);
-        
+
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         ts.requestMore(100);
         source.subscribe(ts);
-        
+
         List<Integer> list = new ArrayList<Integer>(100);
         for (int i = 0; i < 100; i++) {
             list.add(i + start);
@@ -175,18 +175,18 @@ public class OnSubscribeRangeTest {
     @Test
     public void testWithBackpressureRequestWayMore() {
         Observable<Integer> source = Observable.range(50, 100);
-        
+
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         ts.requestMore(150);
         source.subscribe(ts);
-        
+
         List<Integer> list = new ArrayList<Integer>(100);
         for (int i = 0; i < 100; i++) {
             list.add(i + 50);
         }
-        
+
         ts.requestMore(50); // and then some
-        
+
         ts.assertReceivedOnNext(list);
         ts.assertTerminalEvent();
     }

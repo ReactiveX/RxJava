@@ -60,7 +60,7 @@ public final class OperatorDistinct<T, U> implements Operator<T, T> {
                 keyMemory = null;
                 child.onCompleted();
             }
-            
+
         };
     }
 }

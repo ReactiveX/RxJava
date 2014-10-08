@@ -340,7 +340,7 @@ public class PublishSubjectTest {
                     }
                 });
             src.onNext(v);
-            
+
             inOrder.verify(o).onNext(v + ", " + v);
             inOrder.verify(o).onCompleted();
             verify(o, never()).onError(any(Throwable.class));

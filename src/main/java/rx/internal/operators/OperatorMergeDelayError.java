@@ -38,5 +38,5 @@ public final class OperatorMergeDelayError<T> extends OperatorMerge<T> {
     public OperatorMergeDelayError() {
         super(true);
     }
-    
+
 }

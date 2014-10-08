@@ -139,7 +139,7 @@ public class SerializedObserverTest {
     public void testMultiThreadedWithNPEinMiddle() {
         int n = 10;
         for (int i = 0; i < n; i++) {
-            TestMultiThreadedObservable onSubscribe = new TestMultiThreadedObservable("one", "two", "three", null, 
+            TestMultiThreadedObservable onSubscribe = new TestMultiThreadedObservable("one", "two", "three", null,
                     "four", "five", "six", "seven", "eight", "nine");
             Observable<String> w = Observable.create(onSubscribe);
 
@@ -313,7 +313,7 @@ public class SerializedObserverTest {
                 Future<?> f2 = tp2.submit(new OnNextThread(o, 1, onNextCount, running));
 
                 running.await(); // let one of the OnNextThread actually run before proceeding
-                
+
                 firstOnNext.await();
 
                 Thread t1 = to.getLastSeenThread();
@@ -430,7 +430,7 @@ public class SerializedObserverTest {
     }
 
     /**
-     * A thread that will pass data to onNext
+     * A thread that will pass data to onNext.
      */
     public static class OnNextThread implements Runnable {
 
@@ -476,7 +476,7 @@ public class SerializedObserverTest {
     }
 
     /**
-     * A thread that will call onError or onNext
+     * A thread that will call onError or onNext.
      */
     public static class CompletionThread implements Runnable {
 
@@ -484,8 +484,8 @@ public class SerializedObserverTest {
         private final TestConcurrencyObserverEvent event;
         private final Future<?>[] waitOnThese;
 
-        CompletionThread(Observer<String> Observer, TestConcurrencyObserverEvent event, Future<?>... waitOnThese) {
-            this.observer = Observer;
+        CompletionThread(Observer<String> observer, TestConcurrencyObserverEvent event, Future<?>... waitOnThese) {
+            this.observer = observer;
             this.event = event;
             this.waitOnThese = waitOnThese;
         }
@@ -522,7 +522,7 @@ public class SerializedObserverTest {
     private static class TestConcurrencyObserver extends Subscriber<String> {
 
         /**
-         * used to store the order and number of events received
+         * used to store the order and number of events received.
          */
         private final LinkedBlockingQueue<TestConcurrencyObserverEvent> events = new LinkedBlockingQueue<TestConcurrencyObserverEvent>();
         private final int waitTime;
@@ -566,13 +566,12 @@ public class SerializedObserverTest {
 
         /**
          * Assert the order of events is correct and return the number of onNext executions.
+         * Throws IllegalStateException if the order of events was invalid.
          * 
          * @param expectedEndingEvent
          * @return int count of onNext calls
-         * @throws IllegalStateException
-         *             If order of events was invalid.
          */
-        public int assertEvents(TestConcurrencyObserverEvent expectedEndingEvent) throws IllegalStateException {
+        public int assertEvents(TestConcurrencyObserverEvent expectedEndingEvent) {
             int nextCount = 0;
             boolean finished = false;
             for (TestConcurrencyObserverEvent e : events) {
@@ -609,7 +608,7 @@ public class SerializedObserverTest {
     }
 
     /**
-     * This spawns a single thread for the subscribe execution
+     * This spawns a single thread for the subscribe execution.
      */
     private static class TestSingleThreadedObservable implements Observable.OnSubscribe<String> {
 

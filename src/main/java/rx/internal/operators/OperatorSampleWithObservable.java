@@ -41,9 +41,9 @@ public final class OperatorSampleWithObservable<T, U> implements Operator<T, T> 
     @Override
     public Subscriber<? super T> call(Subscriber<? super T> child) {
         final SerializedSubscriber<T> s = new SerializedSubscriber<T>(child);
-    
+
         final AtomicReference<Object> value = new AtomicReference<Object>(EMPTY_TOKEN);
-        
+
         Subscriber<U> samplerSub = new Subscriber<U>(child) {
             @Override
             public void onNext(U t) {
@@ -66,9 +66,9 @@ public final class OperatorSampleWithObservable<T, U> implements Operator<T, T> 
                 s.onCompleted();
                 unsubscribe();
             }
-            
+
         };
-        
+
         Subscriber<T> result = new Subscriber<T>(child) {
             @Override
             public void onNext(T t) {
@@ -87,9 +87,9 @@ public final class OperatorSampleWithObservable<T, U> implements Operator<T, T> 
                 unsubscribe();
             }
         };
-        
+
         sampler.unsafeSubscribe(samplerSub);
-        
+
         return result;
     }
 }

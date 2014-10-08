@@ -82,7 +82,7 @@ public final class OperatorTakeLastTimed<T> implements Operator<T, T> {
                 // we do this to break the chain of the child subscriber being passed through
                 request(Long.MAX_VALUE);
             }
-            
+
             @Override
             public void onNext(T args) {
                 long t = scheduler.now();

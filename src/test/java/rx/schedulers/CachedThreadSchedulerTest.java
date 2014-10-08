@@ -32,7 +32,7 @@ public class CachedThreadSchedulerTest extends AbstractSchedulerConcurrencyTests
     }
 
     /**
-     * IO scheduler defaults to using CachedThreadScheduler
+     * IO scheduler defaults to using CachedThreadScheduler.
      */
     @Test
     public final void testIOScheduler() {

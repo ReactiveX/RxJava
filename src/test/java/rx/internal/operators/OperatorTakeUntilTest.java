@@ -131,7 +131,7 @@ public class OperatorTakeUntilTest {
     }
 
     /**
-     * If the 'other' onCompletes then we unsubscribe from the source and onComplete
+     * If the 'other' onCompletes then we unsubscribe from the source and onComplete.
      */
     @Test
     @SuppressWarnings("unchecked")

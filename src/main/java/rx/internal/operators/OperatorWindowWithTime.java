@@ -49,7 +49,7 @@ public final class OperatorWindowWithTime<T> implements Operator<Observable<T>, 
     final TimeUnit unit;
     final Scheduler scheduler;
     final int size;
-    
+
     public OperatorWindowWithTime(long timespan, long timeshift, TimeUnit unit, int size, Scheduler scheduler) {
         this.timespan = timespan;
         this.timeshift = timeshift;
@@ -57,19 +57,18 @@ public final class OperatorWindowWithTime<T> implements Operator<Observable<T>, 
         this.size = size;
         this.scheduler = scheduler;
     }
-    
-    
+
     @Override
     public Subscriber<? super T> call(Subscriber<? super Observable<T>> child) {
         Worker worker = scheduler.createWorker();
         child.add(worker);
-        
+
         if (timespan == timeshift) {
             ExactSubscriber s = new ExactSubscriber(child, worker);
             s.scheduleExact();
             return s;
         }
-        
+
         InexactSubscriber s = new InexactSubscriber(child, worker);
         s.startNewChunk();
         s.scheduleChunk();
@@ -79,14 +78,14 @@ public final class OperatorWindowWithTime<T> implements Operator<Observable<T>, 
     static final Object NEXT_SUBJECT = new Object();
     /** For error and completion indication. */
     static final NotificationLite<Object> nl = NotificationLite.instance();
-    
+
     /** The immutable windowing state with one subject. */
     static final class State<T> {
         final Observer<T> consumer;
         final Observable<T> producer;
         final int count;
         static final State<Object> EMPTY = new State<Object>(null, null, 0);
-        
+
         public State(Observer<T> consumer, Observable<T> producer, int count) {
             this.consumer = consumer;
             this.producer = producer;
@@ -116,7 +115,7 @@ public final class OperatorWindowWithTime<T> implements Operator<Observable<T>, 
         /** Guarded by guard. */
         boolean emitting;
         volatile State<T> state;
-        
+
         public ExactSubscriber(Subscriber<? super Observable<T>> child, Worker worker) {
             super(child);
             this.child = new SerializedSubscriber<Observable<T>>(child);
@@ -124,12 +123,12 @@ public final class OperatorWindowWithTime<T> implements Operator<Observable<T>, 
             this.guard = new Object();
             this.state = State.empty();
         }
-        
+
         @Override
         public void onStart() {
             request(Long.MAX_VALUE);
         }
-        
+
         @Override
         public void onNext(T t) {
             List<Object> localQueue;
@@ -205,7 +204,7 @@ public final class OperatorWindowWithTime<T> implements Operator<Observable<T>, 
         }
         void emitValue(T t) {
             State<T> s = state;
-            
+
             if (s.consumer != null) {
                 s.consumer.onNext(t);
                 if (s.count == size) {
@@ -215,10 +214,10 @@ public final class OperatorWindowWithTime<T> implements Operator<Observable<T>, 
                     s = s.next();
                 }
             }
-            
+
             state = s;
         }
-        
+
         @Override
         public void onError(Throwable e) {
             synchronized (guard) {
@@ -273,15 +272,15 @@ public final class OperatorWindowWithTime<T> implements Operator<Observable<T>, 
             }
             complete();
         }
-        
+
         void scheduleExact() {
             worker.schedulePeriodically(new Action0() {
-                
+
                 @Override
                 public void call() {
                     nextWindow();
                 }
-                
+
             }, 0, timespan, unit);
         }
         void nextWindow() {
@@ -327,7 +326,7 @@ public final class OperatorWindowWithTime<T> implements Operator<Observable<T>, 
         }
     }
     /** 
-     * Record to store the subject and the emission count. 
+     * Record to store the subject and the emission count.
      * @param <T> the subject's in-out type
      */
     static final class CountedSerializedSubject<T> {
@@ -361,7 +360,7 @@ public final class OperatorWindowWithTime<T> implements Operator<Observable<T>, 
         public void onStart() {
             request(Long.MAX_VALUE);
         }
-        
+
         @Override
         public void onNext(T t) {
             List<CountedSerializedSubject<T>> list;
@@ -426,7 +425,7 @@ public final class OperatorWindowWithTime<T> implements Operator<Observable<T>, 
                 public void call() {
                     startNewChunk();
                 }
-                
+
             }, timeshift, timeshift, unit);
         }
         void startNewChunk() {
@@ -443,14 +442,14 @@ public final class OperatorWindowWithTime<T> implements Operator<Observable<T>, 
                 onError(e);
                 return;
             }
-            
+
             worker.schedule(new Action0() {
 
                 @Override
                 public void call() {
                     terminateChunk(chunk);
                 }
-                
+
             }, timespan, unit);
         }
         void terminateChunk(CountedSerializedSubject<T> chunk) {

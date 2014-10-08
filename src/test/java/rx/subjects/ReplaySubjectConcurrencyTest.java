@@ -36,7 +36,7 @@ import rx.schedulers.Schedulers;
 
 public class ReplaySubjectConcurrencyTest {
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         try {
             for (int i = 0; i < 100; i++) {
                 new ReplaySubjectConcurrencyTest().testSubscribeCompletionRaceCondition();
@@ -301,9 +301,9 @@ public class ReplaySubjectConcurrencyTest {
         }
 
     }
-    
+
     /**
-     * https://github.com/ReactiveX/RxJava/issues/1147
+     * https://github.com/ReactiveX/RxJava/issues/1147 .
      */
     @Test
     public void testRaceForTerminalState() {
@@ -329,7 +329,7 @@ public class ReplaySubjectConcurrencyTest {
         @Override
         public void run() {
             try {
-                // a timeout exception will happen if we don't get a terminal state 
+                // a timeout exception will happen if we don't get a terminal state
                 String v = subject.timeout(2000, TimeUnit.MILLISECONDS).toBlocking().single();
                 value.set(v);
             } catch (Exception e) {

@@ -249,7 +249,7 @@ public class BehaviorSubjectTest {
     @Test(timeout = 1000)
     public void testUnsubscriptionCase() {
         BehaviorSubject<String> src = BehaviorSubject.create((String)null);
-        
+
         for (int i = 0; i < 10; i++) {
             @SuppressWarnings("unchecked")
             final Observer<Object> o = mock(Observer.class);
@@ -292,25 +292,23 @@ public class BehaviorSubjectTest {
         @SuppressWarnings("unchecked")
         final Observer<Object> o = mock(Observer.class);
         InOrder inOrder = inOrder(o);
-        
+
         source.subscribe(o);
-        
+
         inOrder.verify(o, never()).onNext(any());
         inOrder.verify(o, never()).onCompleted();
-        
+
         source.onNext(1);
-        
+
         source.onCompleted();
-        
+
         source.onNext(2);
-        
+
         verify(o, never()).onError(any(Throwable.class));
 
         inOrder.verify(o).onNext(1);
         inOrder.verify(o).onCompleted();
         inOrder.verifyNoMoreInteractions();
-        
-        
     }
     @Test
     public void testStartEmptyThenAddOne() {
@@ -331,9 +329,8 @@ public class BehaviorSubjectTest {
 
         inOrder.verify(o).onCompleted();
         inOrder.verifyNoMoreInteractions();
-        
+
         verify(o, never()).onError(any(Throwable.class));
-        
     }
     @Test
     public void testStartEmptyCompleteWithOne() {
@@ -352,19 +349,19 @@ public class BehaviorSubjectTest {
         verify(o, never()).onError(any(Throwable.class));
         verify(o, never()).onNext(any());
     }
-    
+
     @Test
     public void testTakeOneSubscriber() {
         BehaviorSubject<Integer> source = BehaviorSubject.create(1);
         @SuppressWarnings("unchecked")
         final Observer<Object> o = mock(Observer.class);
-        
+
         source.take(1).subscribe(o);
-        
+
         verify(o).onNext(1);
         verify(o).onCompleted();
         verify(o, never()).onError(any(Throwable.class));
-        
+
         assertEquals(0, source.subscriberCount());
     }
 }

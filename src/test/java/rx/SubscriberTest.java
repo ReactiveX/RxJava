@@ -19,7 +19,6 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
 
@@ -31,7 +30,7 @@ import rx.observers.TestSubscriber;
 public class SubscriberTest {
 
     /**
-     * Should request n for whatever the final Subscriber asks for
+     * Should request n for whatever the final Subscriber asks for.
      */
     @Test
     public void testRequestFromFinalSubscribeWithRequestValue() {
@@ -50,7 +49,7 @@ public class SubscriberTest {
     }
 
     /**
-     * Should request -1 for infinite
+     * Should request -1 for infinite.
      */
     @Test
     public void testRequestFromFinalSubscribeWithoutRequestValue() {

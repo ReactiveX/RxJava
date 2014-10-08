@@ -34,7 +34,6 @@ import org.junit.Test;
 
 import rx.Observable;
 import rx.Observer;
-import rx.Subscriber;
 import rx.Subscription;
 import rx.observers.TestObserver;
 import rx.observers.TestSubscriber;
@@ -80,14 +79,16 @@ public class OnSubscribeToObservableFutureTest {
 
     @Test
     public void testCancelledBeforeSubscribe() throws Exception {
+        @SuppressWarnings("unchecked")
         Future<Object> future = mock(Future.class);
         CancellationException e = new CancellationException("unit test synthetic cancellation");
         when(future.get()).thenThrow(e);
+        @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
 
         TestSubscriber<Object> testSubscriber = new TestSubscriber<Object>(o);
         testSubscriber.unsubscribe();
-        Subscription sub = Observable.from(future).subscribe(testSubscriber);
+        Observable.from(future).subscribe(testSubscriber);
         assertEquals(0, testSubscriber.getOnErrorEvents().size());
         assertEquals(0, testSubscriber.getOnCompletedEvents().size());
     }
@@ -127,6 +128,7 @@ public class OnSubscribeToObservableFutureTest {
             }
         };
 
+        @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
 
         TestSubscriber<Object> testSubscriber = new TestSubscriber<Object>(o);

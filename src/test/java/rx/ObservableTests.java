@@ -48,7 +48,6 @@ import org.mockito.MockitoAnnotations;
 import rx.Observable.OnSubscribe;
 import rx.Observable.Transformer;
 import rx.exceptions.OnErrorNotImplementedException;
-import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Action2;
 import rx.functions.Func1;
@@ -118,11 +117,11 @@ public class ObservableTests {
         Observable<String> observable = Observable.create(new OnSubscribe<String>() {
 
             @Override
-            public void call(Subscriber<? super String> Observer) {
-                Observer.onNext("one");
-                Observer.onNext("two");
-                Observer.onNext("three");
-                Observer.onCompleted();
+            public void call(Subscriber<? super String> observer) {
+                observer.onNext("one");
+                observer.onNext("two");
+                observer.onNext("three");
+                observer.onCompleted();
             }
 
         });
@@ -406,7 +405,7 @@ public class ObservableTests {
     }
 
     /**
-     * The error from the user provided Observer is handled by the subscribe try/catch because this is synchronous
+     * The error from the user provided Observer is handled by the subscribe try/catch because this is synchronous.
      * 
      * Result: Passes
      */
@@ -455,7 +454,7 @@ public class ObservableTests {
     }
 
     /**
-     * The error from the user provided Observable is handled by the subscribe try/catch because this is synchronous
+     * The error from the user provided Observable is handled by the subscribe try/catch because this is synchronous.
      * 
      * 
      * Result: Passes
@@ -960,13 +959,13 @@ public class ObservableTests {
             public void testJustWithScheduler() {
                 TestScheduler scheduler = new TestScheduler();
                 Observable<Integer> observable = Observable.from(Arrays.asList(1, 2)).subscribeOn(scheduler);
-        
+
                 @SuppressWarnings("unchecked")
                 Observer<Integer> observer = mock(Observer.class);
                 observable.subscribe(observer);
-        
+
                 scheduler.advanceTimeBy(1, TimeUnit.MILLISECONDS);
-        
+
                 InOrder inOrder = inOrder(observer);
                 inOrder.verify(observer, times(1)).onNext(1);
                 inOrder.verify(observer, times(1)).onNext(2);
@@ -1045,21 +1044,21 @@ public class ObservableTests {
 
         assertEquals("1-2-3", value);
     }
-    
+
     @Test
     public void testMergeWith() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         Observable.just(1).mergeWith(Observable.just(2)).subscribe(ts);
         ts.assertReceivedOnNext(Arrays.asList(1, 2));
     }
-    
+
     @Test
     public void testConcatWith() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         Observable.just(1).concatWith(Observable.just(2)).subscribe(ts);
         ts.assertReceivedOnNext(Arrays.asList(1, 2));
     }
-    
+
     @Test
     public void testAmbWith() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
@@ -1081,8 +1080,9 @@ public class ObservableTests {
     @Test
     public void testTakeWhileToList() {
         int[] nums = {1, 2, 3};
+        int n = nums.length;
         final AtomicInteger count = new AtomicInteger();
-        for(final int n: nums) {
+        while (n-- > 0) {
             Observable
                     .just(Boolean.TRUE, Boolean.FALSE)
                     .takeWhile(new Func1<Boolean, Boolean>() {
@@ -1102,7 +1102,7 @@ public class ObservableTests {
         }
         assertEquals(nums.length, count.get());
     }
-    
+
     @Test
     public void testCompose() {
         TestSubscriber<String> ts = new TestSubscriber<String>();
@@ -1111,15 +1111,15 @@ public class ObservableTests {
             @Override
             public Observable<String> call(Observable<? extends Integer> t1) {
                 return t1.map(new Func1<Integer, String>() {
-                    
+
                     @Override
                     public String call(Integer t1) {
                         return String.valueOf(t1);
                     }
-                    
+
                 });
             }
-            
+
         }).subscribe(ts);
         ts.assertTerminalEvent();
         ts.assertNoErrors();

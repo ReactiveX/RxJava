@@ -21,7 +21,7 @@ package rx.exceptions;
  * recover more information from an {@code OnErrorThrowable} than is found in a typical {@code Throwable}, such
  * as the item the {@code Observable} was trying to emit at the time the error was encountered.
  */
-public class OnErrorThrowable extends RuntimeException {
+public final class OnErrorThrowable extends RuntimeException {
 
     private static final long serialVersionUID = -569558213262703934L;
 
@@ -41,7 +41,7 @@ public class OnErrorThrowable extends RuntimeException {
     }
 
     /**
-     * Get the value associated with this {@code OnErrorThrowable}
+     * Get the value associated with this {@code OnErrorThrowable}.
      *
      * @return the value associated with this {@code OnErrorThrowable} (or {@code null} if there is none)
      */
@@ -50,7 +50,7 @@ public class OnErrorThrowable extends RuntimeException {
     }
 
     /**
-     * Indicates whether or not there is a value associated with this {@code OnErrorThrowable}
+     * Indicates whether or not there is a value associated with this {@code OnErrorThrowable}.
      *
      * @return {@code true} if there is a value associated with this {@code OnErrorThrowable}, otherwise
      *         {@code false}
@@ -137,14 +137,14 @@ public class OnErrorThrowable extends RuntimeException {
          *        the item that the Observable was trying to emit at the time of the exception
          * @return a string version of the object if primitive, otherwise the classname of the object
          */
-        private static String renderValue(Object value){
-            if(value == null){
+        private static String renderValue(Object value) {
+            if (value == null) {
                 return "null";
             }
-            if(value.getClass().isPrimitive()){
+            if (value.getClass().isPrimitive()) {
                 return value.toString();
             }
-            if(value instanceof String){
+            if (value instanceof String) {
                 return (String)value;
             }
             return value.getClass().getSimpleName() + ".class";

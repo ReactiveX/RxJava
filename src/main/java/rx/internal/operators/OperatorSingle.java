@@ -68,9 +68,7 @@ public final class OperatorSingle<T> implements Operator<T, T> {
 
             @Override
             public void onCompleted() {
-                if (hasTooManyElements) {
-                    // We have already sent an onError message
-                } else {
+                if (!hasTooManyElements) {
                     if (isNonEmpty) {
                         subscriber.onNext(value);
                         subscriber.onCompleted();

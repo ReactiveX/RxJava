@@ -67,19 +67,19 @@ public class OnSubscribeDeferTest {
         verify(secondObserver, times(1)).onCompleted();
 
     }
-    
+
     @Test
     public void testDeferFunctionThrows() {
         Func0<Observable<String>> factory = mock(Func0.class);
-        
+
         when(factory.call()).thenThrow(new TestException());
-        
+
         Observable<String> result = Observable.defer(factory);
-        
+
         Observer<String> o = mock(Observer.class);
-        
+
         result.subscribe(o);
-        
+
         verify(o).onError(any(TestException.class));
         verify(o, never()).onNext(any(String.class));
         verify(o, never()).onCompleted();

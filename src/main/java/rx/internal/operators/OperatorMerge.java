@@ -145,7 +145,7 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
         @Override
         public void onNext(Observable<? extends T> t) {
             if (t instanceof ScalarSynchronousObservable) {
-                handleScalarSynchronousObservable((ScalarSynchronousObservable)t);
+                handleScalarSynchronousObservable((ScalarSynchronousObservable<? extends T>)t);
             } else {
                 if (t == null || isUnsubscribed()) {
                     return;
@@ -173,7 +173,7 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
                  * 
                  * r.o.OperatorMergePerf.merge1SyncStreamOfN      1000  thrpt         5    57100.080     4686.331    ops/s
                  * r.o.OperatorMergePerf.merge1SyncStreamOfN   1000000  thrpt         5       60.875        1.622    ops/s
-                 *  
+                 * 
                  * Without this optimization:
                  * 
                  * r.o.OperatorMergePerf.merge1SyncStreamOfN      1000  thrpt         5    29863.945     1858.002    ops/s
@@ -278,11 +278,7 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
 
         private synchronized boolean releaseEmitLock() {
             emitLock = false;
-            if (missedEmitting == 0) {
-                return false;
-            } else {
-                return true;
-            }
+            return !(missedEmitting == 0);
         }
 
         private synchronized boolean getEmitLock() {
@@ -310,7 +306,7 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
                         if (!moreToDrain) {
                             return true;
                         }
-                        // otherwise we'll loop and get whatever was added 
+                        // otherwise we'll loop and get whatever was added
                     }
                 } else {
                     return false;
@@ -325,7 +321,7 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
          */
         private void drainChildrenQueues() {
             if (childrenSubscribers != null) {
-                lastDrainedIndex = childrenSubscribers.forEach(DRAIN_ACTION, lastDrainedIndex);
+                lastDrainedIndex = childrenSubscribers.forEach(drainAction, lastDrainedIndex);
             }
         }
 
@@ -363,7 +359,7 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
             return 0;
         }
 
-        final Func1<InnerSubscriber<T>, Boolean> DRAIN_ACTION = new Func1<InnerSubscriber<T>, Boolean>() {
+        final Func1<InnerSubscriber<T>, Boolean> drainAction = new Func1<InnerSubscriber<T>, Boolean>() {
 
             @Override
             public Boolean call(InnerSubscriber<T> s) {
@@ -514,6 +510,7 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
         final MergeSubscriber<T> parentSubscriber;
         final MergeProducer<T> producer;
         /** Make sure the inner termination events are delivered only once. */
+        @SuppressWarnings("unused")
         volatile int terminated;
         @SuppressWarnings("rawtypes")
         static final AtomicIntegerFieldUpdater<InnerSubscriber> ONCE_TERMINATED = AtomicIntegerFieldUpdater.newUpdater(InnerSubscriber.class, "terminated");
@@ -521,7 +518,7 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
         private final RxRingBuffer q = RxRingBuffer.getSpmcInstance();
         /* protected by emitLock */
         int emitted = 0;
-        final int THRESHOLD = (int) (q.capacity() * 0.7);
+        final int threshold = (int) (q.capacity() * 0.7);
 
         public InnerSubscriber(MergeSubscriber<T> parent, MergeProducer<T> producer) {
             this.parentSubscriber = parent;
@@ -637,7 +634,7 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
                 } finally {
                     drain = parentSubscriber.releaseEmitLock();
                 }
-                if (emitted > THRESHOLD) {
+                if (emitted > threshold) {
                     // this is for batching requests when we're in a use case that isn't queueing, always fast-pathing the onNext
                     /**
                      * <pre> {@code

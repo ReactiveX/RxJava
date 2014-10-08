@@ -158,8 +158,9 @@ public class OperatorOnExceptionResumeNextViaObservableTest {
         w = w.map(new Func1<String, String>() {
             @Override
             public String call(String s) {
-                if ("fail".equals(s))
+                if ("fail".equals(s)) {
                     throw new RuntimeException("Forced Failure");
+                }
                 System.out.println("BadMapper:" + s);
                 return s;
             }
@@ -208,14 +209,18 @@ public class OperatorOnExceptionResumeNextViaObservableTest {
                     try {
                         System.out.println("running TestObservable thread");
                         for (String s : values) {
-                            if ("EXCEPTION".equals(s))
+                            if ("EXCEPTION".equals(s)) {
                                 throw new Exception("Forced Exception");
-                            else if ("RUNTIMEEXCEPTION".equals(s))
+                            } else
+                            if ("RUNTIMEEXCEPTION".equals(s)) {
                                 throw new RuntimeException("Forced RuntimeException");
-                            else if ("ERROR".equals(s))
+                            } else
+                            if ("ERROR".equals(s)) {
                                 throw new Error("Forced Error");
-                            else if ("THROWABLE".equals(s))
+                            } else
+                            if ("THROWABLE".equals(s)) {
                                 throw new Throwable("Forced Throwable");
+                            }
                             System.out.println("TestObservable onNext: " + s);
                             observer.onNext(s);
                         }

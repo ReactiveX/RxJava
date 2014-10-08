@@ -30,7 +30,7 @@ import rx.subscriptions.CompositeSubscription;
 
 /**
  * Creates potentially overlapping windows of the source items where each window is
- * started by a value emitted by an observable and closed when an associated Observable emits 
+ * started by a value emitted by an observable and closed when an associated Observable emits
  * a value or completes.
  * 
  * @param <T> the value type
@@ -41,23 +41,23 @@ public final class OperatorWindowWithStartEndObservable<T, U, V> implements Oper
     final Observable<? extends U> windowOpenings;
     final Func1<? super U, ? extends Observable<? extends V>> windowClosingSelector;
 
-    public OperatorWindowWithStartEndObservable(Observable<? extends U> windowOpenings, 
+    public OperatorWindowWithStartEndObservable(Observable<? extends U> windowOpenings,
             Func1<? super U, ? extends Observable<? extends V>> windowClosingSelector) {
         this.windowOpenings = windowOpenings;
         this.windowClosingSelector = windowClosingSelector;
     }
-    
+
     @Override
     public Subscriber<? super T> call(Subscriber<? super Observable<T>> child) {
         final SourceSubscriber sub = new SourceSubscriber(child);
-        
+
         Subscriber<U> open = new Subscriber<U>(child) {
 
             @Override
             public void onStart() {
                 request(Long.MAX_VALUE);
             }
-            
+
             @Override
             public void onNext(U t) {
                 sub.beginWindow(t);
@@ -73,9 +73,9 @@ public final class OperatorWindowWithStartEndObservable<T, U, V> implements Oper
                 sub.onCompleted();
             }
         };
-           
+
         windowOpenings.unsafeSubscribe(open);
-        
+
         return sub;
     }
     /** Serialized access to the subject. */
@@ -87,7 +87,7 @@ public final class OperatorWindowWithStartEndObservable<T, U, V> implements Oper
             this.consumer = new SerializedObserver<T>(consumer);
             this.producer = producer;
         }
-        
+
     }
     final class SourceSubscriber extends Subscriber<T> {
         final Subscriber<? super Observable<T>> child;
@@ -105,12 +105,12 @@ public final class OperatorWindowWithStartEndObservable<T, U, V> implements Oper
             this.csub = new CompositeSubscription();
             child.add(csub);
         }
-        
+
         @Override
         public void onStart() {
             request(Long.MAX_VALUE);
         }
-        
+
         @Override
         public void onNext(T t) {
             List<SerializedSubject<T>> list;
@@ -158,7 +158,7 @@ public final class OperatorWindowWithStartEndObservable<T, U, V> implements Oper
             }
             child.onCompleted();
         }
-        
+
         void beginWindow(U token) {
             final SerializedSubject<T> s = createSerializedSubject();
             synchronized (guard) {
@@ -168,7 +168,7 @@ public final class OperatorWindowWithStartEndObservable<T, U, V> implements Oper
                 chunks.add(s);
             }
             child.onNext(s.producer);
-            
+
             Observable<? extends V> end;
             try {
                 end = windowClosingSelector.call(token);
@@ -176,7 +176,7 @@ public final class OperatorWindowWithStartEndObservable<T, U, V> implements Oper
                 onError(e);
                 return;
             }
-            
+
             Subscriber<V> v = new Subscriber<V>() {
                 boolean once = true;
                 @Override
@@ -186,7 +186,7 @@ public final class OperatorWindowWithStartEndObservable<T, U, V> implements Oper
 
                 @Override
                 public void onError(Throwable e) {
-                    
+
                 }
 
                 @Override
@@ -197,10 +197,10 @@ public final class OperatorWindowWithStartEndObservable<T, U, V> implements Oper
                         csub.remove(this);
                     }
                 }
-                
+
             };
             csub.add(v);
-            
+
             end.unsafeSubscribe(v);
         }
         void endWindow(SerializedSubject<T> window) {

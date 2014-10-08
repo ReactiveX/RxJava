@@ -27,8 +27,10 @@ import rx.schedulers.Schedulers;
 /**
  * Utility for retrieving a mock eventstream for testing.
  */
-public class EventStream {
-
+public final class EventStream {
+    private EventStream() {
+        throw new IllegalStateException("No instances!");
+    }
     public static Observable<Event> getEventStream(final String type, final int numInstances) {
         return Observable.create(new OnSubscribe<Event>() {
 

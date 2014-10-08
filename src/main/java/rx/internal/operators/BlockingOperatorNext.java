@@ -19,7 +19,6 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 import rx.Notification;
@@ -33,7 +32,9 @@ import rx.exceptions.Exceptions;
  * <img width="640" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.next.png" alt="">
  */
 public final class BlockingOperatorNext {
-
+    private BlockingOperatorNext() {
+        throw new IllegalStateException("No instances!");
+    }
     /**
      * Returns an {@code Iterable} that blocks until the {@code Observable} emits another item, then returns
      * that item.
@@ -77,11 +78,11 @@ public final class BlockingOperatorNext {
             }
             // Since an iterator should not be used in different thread,
             // so we do not need any synchronization.
-            if (hasNext == false) {
+            if (!hasNext) {
                 // the iterator has reached the end.
                 return false;
             }
-            if (isNextConsumed == false) {
+            if (!isNextConsumed) {
                 // next has not been used yet.
                 return true;
             }
@@ -96,7 +97,7 @@ public final class BlockingOperatorNext {
                     observer.setWaiting(1);
                     items.materialize().subscribe(observer);
                 }
-                
+
                 Notification<? extends T> nextNotification = observer.takeNext();
                 if (nextNotification.isOnNext()) {
                     isNextConsumed = false;
@@ -130,8 +131,7 @@ public final class BlockingOperatorNext {
             if (hasNext()) {
                 isNextConsumed = true;
                 return next;
-            }
-            else {
+            } else {
                 throw new NoSuchElementException("No more elements");
             }
         }
@@ -144,6 +144,7 @@ public final class BlockingOperatorNext {
 
     private static class NextObserver<T> extends Subscriber<Notification<? extends T>> {
         private final BlockingQueue<Notification<? extends T>> buf = new ArrayBlockingQueue<Notification<? extends T>>(1);
+        @SuppressWarnings("unused")
         volatile int waiting;
         @SuppressWarnings("rawtypes")
         static final AtomicIntegerFieldUpdater<NextObserver> WAITING_UPDATER

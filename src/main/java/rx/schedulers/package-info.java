@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 /**
- * Rx Schedulers
+ * Rx Schedulers.
  */
 package rx.schedulers;

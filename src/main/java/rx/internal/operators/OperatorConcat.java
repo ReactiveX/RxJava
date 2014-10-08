@@ -109,8 +109,8 @@ public final class OperatorConcat<T> implements Operator<T, Observable<? extends
                     // return here as we don't want to do the requestMore logic below (which would double request)
                     return;
                 }
-            } 
-                
+            }
+
             if (currentSubscriber != null) {
                 // otherwise we are just passing it through to the currentSubscriber
                 currentSubscriber.requestMore(n);

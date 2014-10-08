@@ -28,7 +28,7 @@ import rx.schedulers.Schedulers;
 public class ErrorHandlingTests {
 
     /**
-     * Test that an error from a user provided Observer.onNext is handled and emitted to the onError
+     * Test that an error from a user provided Observer.onNext is handled and emitted to the onError.
      */
     @Test
     public void testOnNextError() throws InterruptedException {
@@ -63,7 +63,7 @@ public class ErrorHandlingTests {
 
     /**
      * Test that an error from a user provided Observer.onNext is handled and emitted to the onError
-     * even when done across thread boundaries with observeOn
+     * even when done across thread boundaries with observeOn.
      */
     @Test
     public void testOnNextErrorAcrossThread() throws InterruptedException {

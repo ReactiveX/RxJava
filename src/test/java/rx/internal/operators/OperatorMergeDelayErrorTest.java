@@ -283,7 +283,7 @@ public class OperatorMergeDelayErrorTest {
         verify(stringObserver, times(1)).onCompleted();
     }
 
-    @Test(timeout=1000L)
+    @Test(timeout = 1000L)
     public void testSynchronousError() {
         final Observable<Observable<String>> o1 = Observable.error(new RuntimeException("unit test"));
 
@@ -433,19 +433,19 @@ public class OperatorMergeDelayErrorTest {
                 try {
                     t1.onNext(0);
                 } catch (Throwable swallow) {
-                    
+
                 }
                 t1.onNext(1);
                 t1.onCompleted();
             }
         });
-        
+
         Observable<Integer> result = Observable.mergeDelayError(source, Observable.just(2));
-        
+
         @SuppressWarnings("unchecked")
         final Observer<Integer> o = mock(Observer.class);
         InOrder inOrder = inOrder(o);
-        
+
         result.unsafeSubscribe(new Subscriber<Integer>() {
             int calls;
             @Override
@@ -465,9 +465,9 @@ public class OperatorMergeDelayErrorTest {
             public void onCompleted() {
                 o.onCompleted();
             }
-            
+
         });
-        
+
         inOrder.verify(o).onNext(2);
         inOrder.verify(o, never()).onNext(0);
         inOrder.verify(o, never()).onNext(1);

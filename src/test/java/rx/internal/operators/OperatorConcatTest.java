@@ -144,7 +144,7 @@ public class OperatorConcatTest {
     }
 
     /**
-     * Test an async Observable that emits more async Observables
+     * Test an async Observable that emits more async Observables.
      */
     @SuppressWarnings("unchecked")
     @Test
@@ -514,20 +514,24 @@ public class OperatorConcatTest {
                 public void run() {
                     try {
                         while (count < size && subscribed) {
-                            if (null != values)
+                            if (null != values) {
                                 observer.onNext(values.get(count));
-                            else
+                            } else {
                                 observer.onNext(seed);
+                            }
                             count++;
                             //Unblock the main thread to call unsubscribe.
-                            if (null != once)
+                            if (null != once) {
                                 once.countDown();
+                            }
                             //Block until the main thread has called unsubscribe.
-                            if (null != okToContinue)
+                            if (null != okToContinue) {
                                 okToContinue.await(5, TimeUnit.SECONDS);
+                            }
                         }
-                        if (subscribed)
+                        if (subscribed) {
                             observer.onCompleted();
+                        }
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                         fail(e.getMessage());
@@ -589,7 +593,7 @@ public class OperatorConcatTest {
         verify(o1, never()).onError(any(Throwable.class));
         verify(o2, never()).onError(any(Throwable.class));
     }
-    
+
     @Test
     public void concatVeryLongObservableOfObservables() {
         final int n = 10000;
@@ -605,13 +609,13 @@ public class OperatorConcatTest {
                 s.onCompleted();
             }
         });
-        
+
         Observable<List<Integer>> result = Observable.concat(source).toList();
-        
+
         @SuppressWarnings("unchecked")
         Observer<List<Integer>> o = mock(Observer.class);
         InOrder inOrder = inOrder(o);
-        
+
         result.subscribe(o);
 
         List<Integer> list = new ArrayList<Integer>(n);
@@ -637,13 +641,13 @@ public class OperatorConcatTest {
                 s.onCompleted();
             }
         });
-        
+
         Observable<List<Integer>> result = Observable.concat(source).take(n / 2).toList();
-        
+
         @SuppressWarnings("unchecked")
         Observer<List<Integer>> o = mock(Observer.class);
         InOrder inOrder = inOrder(o);
-        
+
         result.subscribe(o);
 
         List<Integer> list = new ArrayList<Integer>(n);
@@ -654,7 +658,7 @@ public class OperatorConcatTest {
         inOrder.verify(o).onCompleted();
         verify(o, never()).onError(any(Throwable.class));
     }
-    
+
     @Test
     public void testConcatOuterBackpressure() {
         assertEquals(1,
@@ -663,7 +667,7 @@ public class OperatorConcatTest {
                         .take(1)
                         .toBlocking().single());
     }
-    
+
     @Test
     public void testInnerBackpressureWithAlignedBoundaries() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
@@ -680,7 +684,7 @@ public class OperatorConcatTest {
     /*
      * Testing without counts aligned with buffer sizes because concat must prevent the subscription
      * to the next Observable if request == 0 which can happen at the end of a subscription
-     * if the request size == emitted size. It needs to delay subscription until the next request when aligned, 
+     * if the request size == emitted size. It needs to delay subscription until the next request when aligned,
      * when not aligned, it just subscribesNext with the outstanding request amount.
      */
     @Test

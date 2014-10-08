@@ -22,7 +22,6 @@ import rx.Observer;
 import rx.Subscriber;
 import rx.functions.Action0;
 import rx.observers.EmptyObserver;
-import rx.observers.Subscribers;
 import rx.subjects.Subject;
 import rx.subscriptions.Subscriptions;
 
@@ -49,10 +48,10 @@ import rx.subscriptions.Subscriptions;
  * @param <T>
  *            the type of the items to be buffered
  */
-public class BufferUntilSubscriber<T> extends Subject<T, T> {
+public final class BufferUntilSubscriber<T> extends Subject<T, T> {
 
     @SuppressWarnings("rawtypes")
-    private final static Observer EMPTY_OBSERVER = new EmptyObserver();
+    private static final Observer EMPTY_OBSERVER = new EmptyObserver();
 
     /**
      * @warn create() undescribed
@@ -82,7 +81,7 @@ public class BufferUntilSubscriber<T> extends Subject<T, T> {
         final ConcurrentLinkedQueue<Object> buffer = new ConcurrentLinkedQueue<Object>();
         final NotificationLite<T> nl = NotificationLite.instance();
     }
-    
+
     static final class OnSubscribeAction<T> implements OnSubscribe<T> {
         final State<T> state;
 
@@ -95,6 +94,7 @@ public class BufferUntilSubscriber<T> extends Subject<T, T> {
             if (state.casObserverRef(null, s)) {
                 s.add(Subscriptions.create(new Action0() {
                     @Override
+                    @SuppressWarnings("unchecked")
                     public void call() {
                         state.observerRef = EMPTY_OBSERVER;
                     }
@@ -108,7 +108,7 @@ public class BufferUntilSubscriber<T> extends Subject<T, T> {
                 }
                 if (win) {
                     final NotificationLite<T> nl = NotificationLite.instance();
-                    while(true) {
+                    while (true) {
                         Object o;
                         while ((o = state.buffer.poll()) != null) {
                             nl.accept(state.observerRef, o);
@@ -128,7 +128,7 @@ public class BufferUntilSubscriber<T> extends Subject<T, T> {
                 s.onError(new IllegalStateException("Only one subscriber allowed!"));
             }
         }
-        
+
     }
     final State<T> state;
 
@@ -163,8 +163,7 @@ public class BufferUntilSubscriber<T> extends Subject<T, T> {
     public void onCompleted() {
         if (forward) {
             state.observerRef.onCompleted();
-        }
-        else {
+        } else {
             emit(state.nl.completed());
         }
     }
@@ -173,8 +172,7 @@ public class BufferUntilSubscriber<T> extends Subject<T, T> {
     public void onError(Throwable e) {
         if (forward) {
             state.observerRef.onError(e);
-        }
-        else {
+        } else {
             emit(state.nl.error(e));
         }
     }
@@ -183,8 +181,7 @@ public class BufferUntilSubscriber<T> extends Subject<T, T> {
     public void onNext(T t) {
         if (forward) {
             state.observerRef.onNext(t);
-        }
-        else {
+        } else {
             emit(state.nl.next(t));
         }
     }

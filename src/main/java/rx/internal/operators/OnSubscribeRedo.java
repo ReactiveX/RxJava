@@ -76,22 +76,22 @@ public final class OnSubscribeRedo<T> implements OnSubscribe<T> {
         public Observable<?> call(Observable<? extends Notification<?>> ts) {
             return ts.map(new Func1<Notification<?>, Notification<?>>() {
 
-                int num=0;
-                
+                int num = 0;
+
                 @Override
                 public Notification<?> call(Notification<?> terminalNotification) {
-                    if(count == 0) {
+                    if (count == 0) {
                         return terminalNotification;
                     }
-                    
+
                     num++;
-                    if(num <= count) {
+                    if (num <= count) {
                         return Notification.createOnNext(num);
                     } else {
                         return terminalNotification;
                     }
                 }
-                
+
             }).dematerialize();
         }
     }
@@ -110,10 +110,10 @@ public final class OnSubscribeRedo<T> implements OnSubscribe<T> {
                 @Override
                 public Notification<Integer> call(Notification<Integer> n, Notification<?> term) {
                     final int value = n.getValue();
-                    if (predicate.call(value, term.getThrowable()).booleanValue())
+                    if (predicate.call(value, term.getThrowable()).booleanValue()) {
                         return Notification.createOnNext(value + 1);
-                    else
-                        return (Notification<Integer>) term;
+                    }
+                    return (Notification<Integer>) term;
                 }
             });
         }
@@ -124,10 +124,12 @@ public final class OnSubscribeRedo<T> implements OnSubscribe<T> {
     }
 
     public static <T> Observable<T> retry(Observable<T> source, final long count) {
-        if (count < 0)
+        if (count < 0) {
             throw new IllegalArgumentException("count >= 0 expected");
-        if (count == 0)
+        }
+        if (count == 0) {
             return source;
+        }
         return retry(source, new RedoFinite(count));
     }
 
@@ -152,11 +154,12 @@ public final class OnSubscribeRedo<T> implements OnSubscribe<T> {
     }
 
     public static <T> Observable<T> repeat(Observable<T> source, final long count, Scheduler scheduler) {
-        if(count == 0) {
+        if (count == 0) {
             return Observable.empty();
         }
-        if (count < 0)
+        if (count < 0) {
             throw new IllegalArgumentException("count >= 0 expected");
+        }
         return repeat(source, new RedoFinite(count - 1), scheduler);
     }
 
@@ -192,7 +195,7 @@ public final class OnSubscribeRedo<T> implements OnSubscribe<T> {
         final AtomicBoolean isLocked = new AtomicBoolean(true);
         final AtomicBoolean isStarted = new AtomicBoolean(false);
         // incremented when requests are made, decremented when requests are fulfilled
-        final AtomicLong consumerCapacity = new AtomicLong(0l);
+        final AtomicLong consumerCapacity = new AtomicLong(0L);
         final AtomicReference<Producer> currentProducer = new AtomicReference<Producer>();
 
         final Scheduler.Worker worker = scheduler.createWorker();
@@ -238,8 +241,8 @@ public final class OnSubscribeRedo<T> implements OnSubscribe<T> {
             }
         };
 
-        // the observable received by the control handler function will receive notifications of onCompleted in the case of 'repeat' 
-        // type operators or notifications of onError for 'retry' this is done by lifting in a custom operator to selectively divert 
+        // the observable received by the control handler function will receive notifications of onCompleted in the case of 'repeat'
+        // type operators or notifications of onError for 'retry' this is done by lifting in a custom operator to selectively divert
         // the retry/repeat relevant values to the control handler
         final Observable<?> restarts = controlHandlerFunction.call(
                 terminals.lift(new Operator<Notification<?>, Notification<?>>() {
@@ -258,11 +261,12 @@ public final class OnSubscribeRedo<T> implements OnSubscribe<T> {
 
                             @Override
                             public void onNext(Notification<?> t) {
-                                if (t.isOnCompleted() && stopOnComplete)
+                                if (t.isOnCompleted() && stopOnComplete) {
                                     child.onCompleted();
-                                else if (t.isOnError() && stopOnError)
+                                } else
+                                if (t.isOnError() && stopOnError) {
                                     child.onError(t.getThrowable());
-                                else {
+                                } else {
                                     isLocked.set(false);
                                     filteredTerminals.onNext(t);
                                 }

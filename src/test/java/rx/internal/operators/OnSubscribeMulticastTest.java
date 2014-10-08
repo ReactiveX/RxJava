@@ -114,13 +114,13 @@ public class OnSubscribeMulticastTest {
         verify(observer, times(1)).onCompleted();
 
     }
-    
+
     private static final class PublishSubjectFactory implements Func0<Subject<String, String>> {
 
         @Override
         public Subject<String, String> call() {
             return PublishSubject.<String> create();
         }
-        
+
     }
 }

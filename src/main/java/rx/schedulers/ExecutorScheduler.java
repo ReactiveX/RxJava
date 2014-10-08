@@ -58,9 +58,9 @@ import rx.subscriptions.Subscriptions;
         // TODO: use a better performing structure for task tracking
         final CompositeSubscription tasks;
         // TODO: use MpscLinkedQueue once available
-        final ConcurrentLinkedQueue<ExecutorAction> queue; 
+        final ConcurrentLinkedQueue<ExecutorAction> queue;
         final AtomicInteger wip;
-        
+
         public ExecutorSchedulerWorker(Executor executor) {
             this.executor = executor;
             this.queue = new ConcurrentLinkedQueue<ExecutorAction>();
@@ -89,7 +89,7 @@ import rx.subscriptions.Subscriptions;
                     throw t;
                 }
             }
-            
+
             return ea;
         }
 
@@ -99,7 +99,7 @@ import rx.subscriptions.Subscriptions;
                 queue.poll().run();
             } while (wip.decrementAndGet() > 0);
         }
-        
+
         @Override
         public Subscription schedule(final Action0 action, long delayTime, TimeUnit unit) {
             if (delayTime <= 0) {
@@ -114,10 +114,10 @@ import rx.subscriptions.Subscriptions;
             } else {
                 service = GenericScheduledExecutorService.getInstance();
             }
-            
+
             final MultipleAssignmentSubscription mas = new MultipleAssignmentSubscription();
             // tasks.add(mas); // Needs a removal without unsubscription
-            
+
             try {
                 Future<?> f = service.schedule(new Runnable() {
                     @Override
@@ -135,7 +135,7 @@ import rx.subscriptions.Subscriptions;
                 RxJavaPlugins.getInstance().getErrorHandler().handleError(t);
                 throw t;
             }
-            
+
             return mas;
         }
 
@@ -148,7 +148,7 @@ import rx.subscriptions.Subscriptions;
         public void unsubscribe() {
             tasks.unsubscribe();
         }
-        
+
     }
 
     /** Runs the actual action and maintains an unsubscription state. */
@@ -188,6 +188,6 @@ import rx.subscriptions.Subscriptions;
                 parent.remove(this);
             }
         }
-        
+
     }
 }

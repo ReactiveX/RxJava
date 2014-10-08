@@ -107,9 +107,8 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
         this.zipFunction = Functions.fromFunc(f);
     }
 
-    @SuppressWarnings("rawtypes")
     @Override
-    public Subscriber<? super Observable[]> call(final Subscriber<? super R> child) {
+    public Subscriber<? super Observable<?>[]> call(final Subscriber<? super R> child) {
         final Zip<R> zipper = new Zip<R>(child, zipFunction);
         final ZipProducer<R> producer = new ZipProducer<R>(zipper);
         child.setProducer(producer);
@@ -117,7 +116,7 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
         return subscriber;
     }
 
-    private final class ZipSubscriber extends Subscriber<Observable[]> {
+    private final class ZipSubscriber extends Subscriber<Observable<?>[]> {
 
         final Subscriber<? super R> child;
         final Zip<R> zipper;
@@ -146,7 +145,7 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
         }
 
         @Override
-        public void onNext(Observable[] observables) {
+        public void onNext(Observable<?>[] observables) {
             if (observables == null || observables.length == 0) {
                 child.onCompleted();
             } else {
@@ -158,7 +157,8 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
     }
 
     private static final class ZipProducer<R> extends AtomicLong implements Producer {
-
+        /** */
+        private static final long serialVersionUID = -1216676403723546796L;
         private Zip<R> zipper;
 
         public ZipProducer(Zip<R> zipper) {
@@ -179,6 +179,7 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
         private final FuncN<? extends R> zipFunction;
         private final CompositeSubscription childSubscription = new CompositeSubscription();
 
+        @SuppressWarnings("unused")
         volatile long counter;
         @SuppressWarnings("rawtypes")
         static final AtomicLongFieldUpdater<Zip> COUNTER_UPDATER = AtomicLongFieldUpdater.newUpdater(Zip.class, "counter");
@@ -190,7 +191,6 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
         private Object[] observers;
         private AtomicLong requested;
 
-        @SuppressWarnings("rawtypes")
         public Zip(final Subscriber<? super R> child, FuncN<? extends R> zipFunction) {
             this.child = child;
             this.zipFunction = zipFunction;
@@ -298,12 +298,11 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
             public void onStart() {
                 request(RxRingBuffer.SIZE);
             }
-            
+
             public void requestMore(long n) {
                 request(n);
             }
 
-            @SuppressWarnings("unchecked")
             @Override
             public void onCompleted() {
                 items.onCompleted();
@@ -316,7 +315,6 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
                 child.onError(e);
             }
 
-            @SuppressWarnings("unchecked")
             @Override
             public void onNext(Object t) {
                 try {

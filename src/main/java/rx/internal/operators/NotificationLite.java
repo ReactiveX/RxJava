@@ -53,7 +53,8 @@ public final class NotificationLite<T> {
 
     private static final Object ON_COMPLETED_SENTINEL = new Serializable() {
         private static final long serialVersionUID = 1;
-        
+
+        @Override
         public String toString() {
             return "Notification=>Completed";
         }
@@ -61,7 +62,8 @@ public final class NotificationLite<T> {
 
     private static final Object ON_NEXT_NULL_SENTINEL = new Serializable() {
         private static final long serialVersionUID = 2;
-        
+
+        @Override
         public String toString() {
             return "Notification=>NULL";
         }
@@ -74,7 +76,8 @@ public final class NotificationLite<T> {
         public OnErrorSentinel(Throwable e) {
             this.e = e;
         }
-        
+
+        @Override
         public String toString() {
             return "Notification=>Error:" + e;
         }
@@ -89,10 +92,10 @@ public final class NotificationLite<T> {
      * @return the item, or a null token representing the item if the item is {@code null}
      */
     public Object next(T t) {
-        if (t == null)
+        if (t == null) {
             return ON_NEXT_NULL_SENTINEL;
-        else
-            return t;
+        }
+        return t;
     }
 
     /**
@@ -186,15 +189,17 @@ public final class NotificationLite<T> {
      *         {@code Kind.OnError}, or {@code Kind.OnNext}
      */
     public Kind kind(Object n) {
-        if (n == null)
+        if (n == null) {
             throw new IllegalArgumentException("The lite notification can not be null");
-        else if (n == ON_COMPLETED_SENTINEL)
+        } else
+        if (n == ON_COMPLETED_SENTINEL) {
             return Kind.OnCompleted;
-        else if (n instanceof OnErrorSentinel)
+        } else
+        if (n instanceof OnErrorSentinel) {
             return Kind.OnError;
-        else
-            // value or ON_NEXT_NULL_SENTINEL but either way it's an OnNext
-            return Kind.OnNext;
+        }
+        // value or ON_NEXT_NULL_SENTINEL but either way it's an OnNext
+        return Kind.OnNext;
     }
 
     /**

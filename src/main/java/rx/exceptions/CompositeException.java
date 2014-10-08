@@ -67,7 +67,7 @@ public final class CompositeException extends RuntimeException {
     }
 
     /**
-     * Retrieves the list of exceptions that make up the {@code CompositeException}
+     * Retrieves the list of exceptions that make up the {@code CompositeException}.
      *
      * @return the exceptions that make up the {@code CompositeException}, as a {@link List} of {@link Throwable}s
      */
@@ -96,10 +96,10 @@ public final class CompositeException extends RuntimeException {
                     continue;
                 }
                 seenCauses.add(e);
-                
+
                 List<Throwable> listOfCauses = getListOfCauses(e);
                 // check if any of them have been seen before
-                for(Throwable child : listOfCauses) {
+                for (Throwable child : listOfCauses) {
                     if (seenCauses.contains(child)) {
                         // already seen this outer Throwable so skip
                         e = new RuntimeException("Duplicate found in causal chain so cropping to prevent loop ...");
@@ -184,15 +184,15 @@ public final class CompositeException extends RuntimeException {
     }
 
     private abstract static class PrintStreamOrWriter {
-        /** Returns the object to be locked when using this StreamOrWriter */
+        /** Returns the object to be locked when using this StreamOrWriter. */
         abstract Object lock();
 
-        /** Prints the specified string as a line on this StreamOrWriter */
+        /** Prints the specified string as a line on this StreamOrWriter. */
         abstract void println(Object o);
     }
 
     /**
-     * Same abstraction and implementation as in JDK to allow PrintStream and PrintWriter to share implementation
+     * Same abstraction and implementation as in JDK to allow PrintStream and PrintWriter to share implementation.
      */
     private static class WrappedPrintStream extends PrintStreamOrWriter {
         private final PrintStream printStream;
@@ -201,10 +201,12 @@ public final class CompositeException extends RuntimeException {
             this.printStream = printStream;
         }
 
+        @Override
         Object lock() {
             return printStream;
         }
 
+        @Override
         void println(Object o) {
             printStream.println(o);
         }
@@ -217,18 +219,20 @@ public final class CompositeException extends RuntimeException {
             this.printWriter = printWriter;
         }
 
+        @Override
         Object lock() {
             return printWriter;
         }
 
+        @Override
         void println(Object o) {
             printWriter.println(o);
         }
     }
 
-    /* package-private */final static class CompositeExceptionCausalChain extends RuntimeException {
+    /* package-private */static final class CompositeExceptionCausalChain extends RuntimeException {
         private static final long serialVersionUID = 3875212506787802066L;
-        /* package-private */static String MESSAGE = "Chain of Causes for CompositeException In Order Received =>";
+        /* package-private */static final String MESSAGE = "Chain of Causes for CompositeException In Order Received =>";
 
         @Override
         public String getMessage() {
@@ -236,13 +240,13 @@ public final class CompositeException extends RuntimeException {
         }
     }
 
-    private final List<Throwable> getListOfCauses(Throwable ex) {
+    private List<Throwable> getListOfCauses(Throwable ex) {
         List<Throwable> list = new ArrayList<Throwable>();
         Throwable root = ex.getCause();
         if (root == null) {
             return list;
         } else {
-            while(true) {
+            while (true) {
                 list.add(root);
                 if (root.getCause() == null) {
                     return list;

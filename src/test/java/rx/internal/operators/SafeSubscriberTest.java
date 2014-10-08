@@ -33,7 +33,7 @@ import rx.observers.TestSubscriber;
 public class SafeSubscriberTest {
 
     /**
-     * Ensure onNext can not be called after onError
+     * Ensure onNext can not be called after onError.
      */
     @Test
     public void testOnNextAfterOnError() {
@@ -55,7 +55,7 @@ public class SafeSubscriberTest {
     }
 
     /**
-     * Ensure onCompleted can not be called after onError
+     * Ensure onCompleted can not be called after onError.
      */
     @Test
     public void testOnCompletedAfterOnError() {
@@ -77,7 +77,7 @@ public class SafeSubscriberTest {
     }
 
     /**
-     * Ensure onNext can not be called after onCompleted
+     * Ensure onNext can not be called after onCompleted.
      */
     @Test
     public void testOnNextAfterOnCompleted() {
@@ -100,7 +100,7 @@ public class SafeSubscriberTest {
     }
 
     /**
-     * Ensure onError can not be called after onCompleted
+     * Ensure onError can not be called after onCompleted.
      */
     @Test
     public void testOnErrorAfterOnCompleted() {

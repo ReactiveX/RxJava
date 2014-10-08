@@ -46,7 +46,7 @@ public final class OperatorBufferWithSize<T> implements Operator<List<T>, T> {
      * @param count
      *            the number of elements a buffer should have before being emitted
      * @param skip
-     *            the interval with which chunks have to be created. Note that when {@code skip == count} 
+     *            the interval with which chunks have to be created. Note that when {@code skip == count}
      *            the operator will produce non-overlapping chunks. If
      *            {@code skip < count}, this buffer operation will produce overlapping chunks and if
      *            {@code skip > count} non-overlapping chunks will be created and some values will not be pushed
@@ -188,7 +188,7 @@ public final class OperatorBufferWithSize<T> implements Operator<List<T>, T> {
                 if (index++ % skip == 0) {
                     chunks.add(new ArrayList<T>(count));
                 }
-                
+
                 Iterator<List<T>> it = chunks.iterator();
                 while (it.hasNext()) {
                     List<T> chunk = it.next();

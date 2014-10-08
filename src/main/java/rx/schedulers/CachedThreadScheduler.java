@@ -57,7 +57,7 @@ import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
             );
         }
 
-        private static CachedWorkerPool INSTANCE = new CachedWorkerPool(
+        private static final CachedWorkerPool INSTANCE = new CachedWorkerPool(
                 60L, TimeUnit.SECONDS
         );
 
@@ -112,6 +112,7 @@ import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
     private static final class EventLoopWorker extends Scheduler.Worker {
         private final CompositeSubscription innerSubscription = new CompositeSubscription();
         private final ThreadWorker threadWorker;
+        @SuppressWarnings("unused")
         volatile int once;
         static final AtomicIntegerFieldUpdater<EventLoopWorker> ONCE_UPDATER
                 = AtomicIntegerFieldUpdater.newUpdater(EventLoopWorker.class, "once");

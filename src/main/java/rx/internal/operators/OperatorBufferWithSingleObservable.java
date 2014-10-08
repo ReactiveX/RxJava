@@ -104,12 +104,12 @@ public final class OperatorBufferWithSingleObservable<T, TClosing> implements Op
 
         child.add(closingSubscriber);
         child.add(bsub);
-        
+
         closing.unsafeSubscribe(closingSubscriber);
-        
+
         return bsub;
     }
-    
+
     final class BufferingSubscriber extends Subscriber<T> {
         final Subscriber<? super List<T>> child;
         /** Guarded by this. */
@@ -163,7 +163,7 @@ public final class OperatorBufferWithSingleObservable<T, TClosing> implements Op
             child.onCompleted();
             unsubscribe();
         }
-        
+
         void emit() {
             List<T> toEmit;
             synchronized (this) {
@@ -187,5 +187,5 @@ public final class OperatorBufferWithSingleObservable<T, TClosing> implements Op
             }
         }
     }
-    
+
 }

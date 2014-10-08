@@ -36,9 +36,9 @@ public class OperatorMaterializeTest {
         // null will cause onError to be triggered before "three" can be returned
         final TestAsyncErrorObservable o1 = new TestAsyncErrorObservable("one", "two", null, "three");
 
-        TestObserver Observer = new TestObserver();
+        TestObserver observer = new TestObserver();
         Observable<Notification<String>> m = Observable.create(o1).materialize();
-        m.subscribe(Observer);
+        m.subscribe(observer);
 
         try {
             o1.t.join();
@@ -46,24 +46,24 @@ public class OperatorMaterializeTest {
             throw new RuntimeException(e);
         }
 
-        assertFalse(Observer.onError);
-        assertTrue(Observer.onCompleted);
-        assertEquals(3, Observer.notifications.size());
-        assertEquals("one", Observer.notifications.get(0).getValue());
-        assertTrue(Observer.notifications.get(0).isOnNext());
-        assertEquals("two", Observer.notifications.get(1).getValue());
-        assertTrue(Observer.notifications.get(1).isOnNext());
-        assertEquals(NullPointerException.class, Observer.notifications.get(2).getThrowable().getClass());
-        assertTrue(Observer.notifications.get(2).isOnError());
+        assertFalse(observer.onError);
+        assertTrue(observer.onCompleted);
+        assertEquals(3, observer.notifications.size());
+        assertEquals("one", observer.notifications.get(0).getValue());
+        assertTrue(observer.notifications.get(0).isOnNext());
+        assertEquals("two", observer.notifications.get(1).getValue());
+        assertTrue(observer.notifications.get(1).isOnNext());
+        assertEquals(NullPointerException.class, observer.notifications.get(2).getThrowable().getClass());
+        assertTrue(observer.notifications.get(2).isOnError());
     }
 
     @Test
     public void testMaterialize2() {
         final TestAsyncErrorObservable o1 = new TestAsyncErrorObservable("one", "two", "three");
 
-        TestObserver Observer = new TestObserver();
+        TestObserver observer = new TestObserver();
         Observable<Notification<String>> m = Observable.create(o1).materialize();
-        m.subscribe(Observer);
+        m.subscribe(observer);
 
         try {
             o1.t.join();
@@ -71,16 +71,16 @@ public class OperatorMaterializeTest {
             throw new RuntimeException(e);
         }
 
-        assertFalse(Observer.onError);
-        assertTrue(Observer.onCompleted);
-        assertEquals(4, Observer.notifications.size());
-        assertEquals("one", Observer.notifications.get(0).getValue());
-        assertTrue(Observer.notifications.get(0).isOnNext());
-        assertEquals("two", Observer.notifications.get(1).getValue());
-        assertTrue(Observer.notifications.get(1).isOnNext());
-        assertEquals("three", Observer.notifications.get(2).getValue());
-        assertTrue(Observer.notifications.get(2).isOnNext());
-        assertTrue(Observer.notifications.get(3).isOnCompleted());
+        assertFalse(observer.onError);
+        assertTrue(observer.onCompleted);
+        assertEquals(4, observer.notifications.size());
+        assertEquals("one", observer.notifications.get(0).getValue());
+        assertTrue(observer.notifications.get(0).isOnNext());
+        assertEquals("two", observer.notifications.get(1).getValue());
+        assertTrue(observer.notifications.get(1).isOnNext());
+        assertEquals("three", observer.notifications.get(2).getValue());
+        assertTrue(observer.notifications.get(2).isOnNext());
+        assertTrue(observer.notifications.get(3).isOnCompleted());
     }
 
     @Test

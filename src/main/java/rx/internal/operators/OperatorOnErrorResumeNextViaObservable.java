@@ -52,9 +52,9 @@ public final class OperatorOnErrorResumeNextViaObservable<T> implements Operator
     public Subscriber<? super T> call(final Subscriber<? super T> child) {
         // shared subscription won't work here
         Subscriber<T> s = new Subscriber<T>() {
-            
+
             private boolean done = false;
-            
+
             @Override
             public void onNext(T t) {
                 if (done) {
@@ -83,11 +83,11 @@ public final class OperatorOnErrorResumeNextViaObservable<T> implements Operator
                 done = true;
                 child.onCompleted();
             }
-            
+
         };
         child.add(s);
-        
+
         return s;
     }
-    
+
 }

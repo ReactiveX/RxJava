@@ -23,9 +23,12 @@ import rx.functions.Action0;
 import rx.functions.Actions;
 
 /**
- * Helper methods and utilities for creating and working with {@link Subscription} objects
+ * Helper methods and utilities for creating and working with {@link Subscription} objects.
  */
 public final class Subscriptions {
+    private Subscriptions() {
+        throw new IllegalStateException("No instances!");
+    }
     /**
      * Returns a {@link Subscription} that does nothing.
      * 
@@ -46,7 +49,7 @@ public final class Subscriptions {
         return new ActionSubscription(unsubscribe);
     }
     /**
-     * Subscription that delegates the unsubscription action to an Action0 instance
+     * Subscription that delegates the unsubscription action to an Action0 instance.
      */
     private static final class ActionSubscription implements Subscription {
         volatile Action0 actual;
@@ -74,7 +77,6 @@ public final class Subscriptions {
             }
         }
     }
-    
 
     /**
      * Converts a {@link Future} into a {@link Subscription} and cancels it when unsubscribed.

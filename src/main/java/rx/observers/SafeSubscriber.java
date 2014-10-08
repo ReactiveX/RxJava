@@ -16,7 +16,6 @@
 package rx.observers;
 
 import java.util.Arrays;
-import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 import rx.Subscriber;
 import rx.exceptions.CompositeException;

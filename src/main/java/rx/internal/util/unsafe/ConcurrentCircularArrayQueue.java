@@ -82,7 +82,7 @@ public abstract class ConcurrentCircularArrayQueue<E> extends ConcurrentCircular
     }
 
     /**
-     * A plain store (no ordering/fences) of an element to a given offset
+     * A plain store (no ordering/fences) of an element to a given offset.
      * 
      * @param offset computed via {@link ConcurrentCircularArrayQueue#calcElementOffset(long)}
      * @param e a kitty
@@ -92,7 +92,7 @@ public abstract class ConcurrentCircularArrayQueue<E> extends ConcurrentCircular
     }
 
     /**
-     * A plain store (no ordering/fences) of an element to a given offset
+     * A plain store (no ordering/fences) of an element to a given offset.
      * 
      * @param buffer this.buffer
      * @param offset computed via {@link ConcurrentCircularArrayQueue#calcElementOffset(long)}
@@ -103,7 +103,7 @@ public abstract class ConcurrentCircularArrayQueue<E> extends ConcurrentCircular
     }
 
     /**
-     * An ordered store(store + StoreStore barrier) of an element to a given offset
+     * An ordered store(store + StoreStore barrier) of an element to a given offset.
      * 
      * @param offset computed via {@link ConcurrentCircularArrayQueue#calcElementOffset(long)}
      * @param e an orderly kitty
@@ -113,7 +113,7 @@ public abstract class ConcurrentCircularArrayQueue<E> extends ConcurrentCircular
     }
 
     /**
-     * An ordered store(store + StoreStore barrier) of an element to a given offset
+     * An ordered store(store + StoreStore barrier) of an element to a given offset.
      * 
      * @param buffer this.buffer
      * @param offset computed via {@link ConcurrentCircularArrayQueue#calcElementOffset(long)}

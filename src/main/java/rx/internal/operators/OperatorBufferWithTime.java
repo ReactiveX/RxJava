@@ -73,13 +73,13 @@ public final class OperatorBufferWithTime<T> implements Operator<List<T>, T> {
     public Subscriber<? super T> call(final Subscriber<? super List<T>> child) {
         final Worker inner = scheduler.createWorker();
         child.add(inner);
-        
+
         if (timespan == timeshift) {
             ExactSubscriber bsub = new ExactSubscriber(new SerializedSubscriber<List<T>>(child), inner);
             bsub.scheduleExact();
             return bsub;
         }
-        
+
         InexactSubscriber bsub = new InexactSubscriber(new SerializedSubscriber<List<T>>(child), inner);
         bsub.startNewChunk();
         bsub.scheduleChunk();

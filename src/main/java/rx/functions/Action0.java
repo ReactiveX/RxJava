@@ -16,5 +16,5 @@
 package rx.functions;
 
 public interface Action0 extends Action {
-    public void call();
+    void call();
 }

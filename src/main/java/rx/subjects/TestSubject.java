@@ -50,7 +50,7 @@ public final class TestSubject<T> extends Subject<T, T> {
             public void call(SubjectObserver<T> o) {
                 o.emitFirst(state.get(), state.nl);
             }
-            
+
         };
         state.onTerminated = state.onAdded;
 

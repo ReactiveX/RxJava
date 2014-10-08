@@ -39,8 +39,9 @@ public class OperatorSkipWhileTest {
     private static final Func1<Integer, Boolean> LESS_THAN_FIVE = new Func1<Integer, Boolean>() {
         @Override
         public Boolean call(Integer v) {
-            if (v == 42)
+            if (v == 42) {
                 throw new RuntimeException("that's not the answer to everything!");
+            }
             return v < 5;
         }
     };
@@ -119,7 +120,7 @@ public class OperatorSkipWhileTest {
         inOrder.verify(w, never()).onCompleted();
         inOrder.verify(w, times(1)).onError(any(RuntimeException.class));
     }
-    
+
     @Test
     public void testSkipManySubscribers() {
         Observable<Integer> src = Observable.range(1, 10).skipWhile(LESS_THAN_FIVE);
@@ -128,12 +129,12 @@ public class OperatorSkipWhileTest {
             @SuppressWarnings("unchecked")
             Observer<Object> o = mock(Observer.class);
             InOrder inOrder = inOrder(o);
-            
+
             src.subscribe(o);
-            
+
             for (int j = 5; j < 10; j++) {
                 inOrder.verify(o).onNext(j);
-            } 
+            }
             inOrder.verify(o).onCompleted();
             verify(o, never()).onError(any(Throwable.class));
         }
