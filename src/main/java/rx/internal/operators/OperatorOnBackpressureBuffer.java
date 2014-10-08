@@ -72,10 +72,10 @@ public class OperatorOnBackpressureBuffer<T> implements Operator<T, T> {
             }
 
         };
-        
+
         // if child unsubscribes it should unsubscribe the parent, but not the other way around
         child.add(parent);
-        
+
         return parent;
     }
 

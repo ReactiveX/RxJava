@@ -20,7 +20,7 @@ package rx;
  * 
  * @see <a href="http://msdn.microsoft.com/en-us/library/hh229462.aspx">the Microsoft Rx equivalent</a>
  */
-public class Notification<T> {
+public final class Notification<T> {
 
     private final Kind kind;
     private final Throwable throwable;
@@ -116,7 +116,7 @@ public class Notification<T> {
     }
 
     /**
-     * Retrieves the kind of this notification: {@code OnNext}, {@code OnError}, or {@code OnCompleted}
+     * Retrieves the kind of this notification: {@code OnNext}, {@code OnError}, or {@code OnCompleted}.
      * 
      * @return the kind of the notification: {@code OnNext}, {@code OnError}, or {@code OnCompleted}
      */
@@ -171,10 +171,12 @@ public class Notification<T> {
     @Override
     public String toString() {
         StringBuilder str = new StringBuilder("[").append(super.toString()).append(" ").append(getKind());
-        if (hasValue())
+        if (hasValue()) {
             str.append(" ").append(getValue());
-        if (hasThrowable())
+        }
+        if (hasThrowable()) {
             str.append(" ").append(getThrowable().getMessage());
+        }
         str.append("]");
         return str.toString();
     }
@@ -182,28 +184,36 @@ public class Notification<T> {
     @Override
     public int hashCode() {
         int hash = getKind().hashCode();
-        if (hasValue())
+        if (hasValue()) {
             hash = hash * 31 + getValue().hashCode();
-        if (hasThrowable())
+        }
+        if (hasThrowable()) {
             hash = hash * 31 + getThrowable().hashCode();
+        }
         return hash;
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null)
+        if (obj == null) {
             return false;
-        if (this == obj)
+        }
+        if (this == obj) {
             return true;
-        if (obj.getClass() != getClass())
+        }
+        if (obj.getClass() != getClass()) {
             return false;
+        }
         Notification<?> notification = (Notification<?>) obj;
-        if (notification.getKind() != getKind())
+        if (notification.getKind() != getKind()) {
             return false;
-        if (hasValue() && !getValue().equals(notification.getValue()))
+        }
+        if (hasValue() && !getValue().equals(notification.getValue())) {
             return false;
-        if (hasThrowable() && !getThrowable().equals(notification.getThrowable()))
+        }
+        if (hasThrowable() && !getThrowable().equals(notification.getThrowable())) {
             return false;
+        }
         return true;
     }
 }

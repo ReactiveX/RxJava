@@ -46,13 +46,13 @@ public final class OperatorWindowWithObservable<T, U> implements Operator<Observ
             public Observable<U> call() {
                 return other;
             }
-            
+
         };
     }
-    
+
     @Override
     public Subscriber<? super T> call(Subscriber<? super Observable<T>> child) {
-        
+
         Observable<? extends U> other;
         try {
             other = otherFactory.call();
@@ -60,14 +60,14 @@ public final class OperatorWindowWithObservable<T, U> implements Operator<Observ
             child.onError(e);
             return Subscribers.empty();
         }
-        
+
         SourceSubscriber<T> sub = new SourceSubscriber<T>(child);
         BoundarySubscriber<T, U> bs = new BoundarySubscriber<T, U>(child, sub);
-        
+
         sub.replaceWindow();
-        
+
         other.unsafeSubscribe(bs);
-        
+
         return sub;
     }
     /** Indicate the current subject should complete and a new subject be emitted. */
@@ -86,18 +86,18 @@ public final class OperatorWindowWithObservable<T, U> implements Operator<Observ
         boolean emitting;
         /** Guarded by guard. */
         List<Object> queue;
-        
+
         public SourceSubscriber(Subscriber<? super Observable<T>> child) {
             super(child);
             this.child = new SerializedSubscriber<Observable<T>>(child);
             this.guard = new Object();
         }
-        
+
         @Override
         public void onStart() {
             request(Long.MAX_VALUE);
         }
-        
+
         @Override
         public void onNext(T t) {
             List<Object> localQueue;
@@ -122,7 +122,7 @@ public final class OperatorWindowWithObservable<T, U> implements Operator<Observ
                         once = true;
                         emitValue(t);
                     }
-                    
+
                     synchronized (guard) {
                         localQueue = queue;
                         queue = null;
@@ -183,7 +183,7 @@ public final class OperatorWindowWithObservable<T, U> implements Operator<Observ
                 s.onNext(t);
             }
         }
-        
+
         @Override
         public void onError(Throwable e) {
             synchronized (guard) {
@@ -265,7 +265,7 @@ public final class OperatorWindowWithObservable<T, U> implements Operator<Observ
             Observer<T> s = consumer;
             consumer = null;
             producer = null;
-            
+
             if (s != null) {
                 s.onCompleted();
             }
@@ -276,7 +276,7 @@ public final class OperatorWindowWithObservable<T, U> implements Operator<Observ
             Observer<T> s = consumer;
             consumer = null;
             producer = null;
-            
+
             if (s != null) {
                 s.onError(e);
             }
@@ -291,12 +291,12 @@ public final class OperatorWindowWithObservable<T, U> implements Operator<Observ
             super(child);
             this.sub = sub;
         }
-        
+
         @Override
         public void onStart() {
             request(Long.MAX_VALUE);
         }
-        
+
         @Override
         public void onNext(U t) {
             sub.replaceWindow();

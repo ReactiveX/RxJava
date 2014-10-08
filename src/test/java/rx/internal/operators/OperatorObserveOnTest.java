@@ -34,7 +34,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.InOrder;
 
@@ -227,7 +226,7 @@ public class OperatorObserveOnTest {
     }
 
     /**
-     * Confirm that running on a NewThreadScheduler uses the same thread for the entire stream
+     * Confirm that running on a NewThreadScheduler uses the same thread for the entire stream.
      */
     @Test
     public void testObserveOnWithNewThreadScheduler() {
@@ -398,7 +397,8 @@ public class OperatorObserveOnTest {
     @Test
     public void testAfterUnsubscribeCalledThenObserverOnNextNeverCalled() {
         final TestScheduler testScheduler = new TestScheduler();
-        final Observer<Integer> observer = mock(Observer.class);
+        @SuppressWarnings("unchecked")
+		final Observer<Integer> observer = mock(Observer.class);
         final Subscription subscription = Observable.just(1, 2, 3)
                 .observeOn(testScheduler)
                 .subscribe(observer);
@@ -588,12 +588,8 @@ public class OperatorObserveOnTest {
         assertEquals(1, errors.size());
         System.out.println("Errors: " + errors);
         Throwable t = errors.get(0);
-        if (t instanceof MissingBackpressureException) {
-            // success, we expect this
-        } else {
-            if (t.getCause() instanceof MissingBackpressureException) {
-                // this is also okay
-            } else {
+        if (!(t instanceof MissingBackpressureException)) {
+            if (!(t.getCause() instanceof MissingBackpressureException)) {
                 fail("Expecting MissingBackpressureException");
             }
         }

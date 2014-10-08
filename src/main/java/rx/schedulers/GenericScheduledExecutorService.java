@@ -36,8 +36,8 @@ import java.util.concurrent.ScheduledExecutorService;
 
     private static final String THREAD_NAME_PREFIX = "RxScheduledExecutorPool-";
     private static final RxThreadFactory THREAD_FACTORY = new RxThreadFactory(THREAD_NAME_PREFIX);
-    
-    private final static GenericScheduledExecutorService INSTANCE = new GenericScheduledExecutorService();
+
+    private static final GenericScheduledExecutorService INSTANCE = new GenericScheduledExecutorService();
     private final ScheduledExecutorService executor;
 
     private GenericScheduledExecutorService() {

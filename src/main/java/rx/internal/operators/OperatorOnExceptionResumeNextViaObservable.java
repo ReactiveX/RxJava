@@ -25,7 +25,7 @@ import rx.plugins.RxJavaPlugins;
  * Instruct an Observable to pass control to another Observable rather than invoking
  * <code>onError</code> if it encounters an error of type {@link java.lang.Exception}.
  * <p>
- * This differs from {@link Observable#onErrorResumeNext} in that this one does not handle 
+ * This differs from {@link Observable#onErrorResumeNext} in that this one does not handle
  * {@link java.lang.Throwable} or {@link java.lang.Error} but lets those continue through.
  * <p>
  * <img width="640" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/onErrorResumeNext.png" alt="">
@@ -58,7 +58,7 @@ public final class OperatorOnExceptionResumeNextViaObservable<T> implements Oper
         Subscriber<T> s = new Subscriber<T>() {
 
             private boolean done = false;
-            
+
             @Override
             public void onNext(T t) {
                 if (done) {
@@ -91,12 +91,11 @@ public final class OperatorOnExceptionResumeNextViaObservable<T> implements Oper
                 done = true;
                 child.onCompleted();
             }
-            
+
         };
         child.add(s);
-        
+
         return s;
     }
-    
-    
+
 }

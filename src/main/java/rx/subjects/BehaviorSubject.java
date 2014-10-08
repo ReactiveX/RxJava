@@ -52,7 +52,7 @@ import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
   subject.onNext("one");
   subject.onCompleted();
   subject.subscribe(observer);
-  
+
   // observer will receive only onError
   BehaviorSubject<Object> subject = BehaviorSubject.create("default");
   subject.onNext("zero");
@@ -64,7 +64,6 @@ import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
  * @param <T>
  *          the type of item expected to be observed by the Subject
  */
-@SuppressWarnings({ "unchecked", "rawtypes" })
 public final class BehaviorSubject<T> extends Subject<T, T> {
     /**
      * Creates a {@link BehaviorSubject} without a default item.
@@ -101,10 +100,10 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
             public void call(SubjectObserver<T> o) {
                 o.emitFirst(state.get(), state.nl);
             }
-            
+
         };
         state.onTerminated = state.onAdded;
-        return new BehaviorSubject<T>(state, state); 
+        return new BehaviorSubject<T>(state, state);
     }
 
     private final SubjectSubscriptionManager<T> state;
@@ -147,7 +146,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
             }
         }
     }
-    
+
     /* test support */ int subscriberCount() {
         return state.observers().length;
     }

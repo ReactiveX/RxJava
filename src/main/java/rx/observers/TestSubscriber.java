@@ -106,7 +106,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
         lastSeenThread = Thread.currentThread();
         testObserver.onNext(t);
     }
-    
+
     /**
      * Allow calling the protected {@link #request(long)} from unit tests.
      * @param n
@@ -172,7 +172,6 @@ public class TestSubscriber<T> extends Subscriber<T> {
         }
     }
 
-    
     /**
      * Blocks until this Subscriber receives a notification that the Observable is complete (either an
      * {@code onCompleted} or {@code onError} notification).

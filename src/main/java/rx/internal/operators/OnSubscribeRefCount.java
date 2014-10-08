@@ -80,7 +80,7 @@ public final class OnSubscribeRefCount<T> implements OnSubscribe<T> {
                 queue.add(id);
                 return;
             }
-            
+
             localQueue = queue;
             queue = null;
             emitting = true;
@@ -112,7 +112,7 @@ public final class OnSubscribeRefCount<T> implements OnSubscribe<T> {
                 queue.add(id.toDisconnect()); // negative value indicates disconnect
                 return;
             }
-            
+
             localQueue = queue;
             queue = null;
             emitting = true;

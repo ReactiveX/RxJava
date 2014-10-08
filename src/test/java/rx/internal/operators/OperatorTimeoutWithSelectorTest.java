@@ -114,9 +114,9 @@ public class OperatorTimeoutWithSelectorTest {
         InOrder inOrder = inOrder(o);
 
         source.timeout(firstTimeoutFunc, timeoutFunc, other).subscribe(o);
-        
+
         timeout.onNext(1);
-        
+
         inOrder.verify(o).onNext(100);
         inOrder.verify(o).onCompleted();
         verify(o, never()).onError(any(Throwable.class));
@@ -403,7 +403,7 @@ public class OperatorTimeoutWithSelectorTest {
                 source.timeout(timeoutFunc, Observable.just(3)).subscribe(ts);
                 source.onNext(1); // start timeout
                 try {
-                    if(!enteredTimeoutOne.await(30, TimeUnit.SECONDS)) {
+                    if (!enteredTimeoutOne.await(30, TimeUnit.SECONDS)) {
                         latchTimeout.set(true);
                     }
                 } catch (InterruptedException e) {
@@ -411,7 +411,7 @@ public class OperatorTimeoutWithSelectorTest {
                 }
                 source.onNext(2); // disable timeout
                 try {
-                    if(!timeoutEmittedOne.await(30, TimeUnit.SECONDS)) {
+                    if (!timeoutEmittedOne.await(30, TimeUnit.SECONDS)) {
                         latchTimeout.set(true);
                     }
                 } catch (InterruptedException e) {
@@ -422,7 +422,7 @@ public class OperatorTimeoutWithSelectorTest {
 
         }).start();
 
-        if(!observerCompleted.await(30, TimeUnit.SECONDS)) {
+        if (!observerCompleted.await(30, TimeUnit.SECONDS)) {
             latchTimeout.set(true);
         }
 

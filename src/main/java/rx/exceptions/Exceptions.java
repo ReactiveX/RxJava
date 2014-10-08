@@ -21,7 +21,7 @@ import java.util.Set;
 /**
  * @warn javadoc class description missing
  */
-public class Exceptions {
+public final class Exceptions {
     private Exceptions() {
 
     }
@@ -78,9 +78,9 @@ public class Exceptions {
             } else {
                 throw (OnErrorFailedException) t;
             }
-        }
+        } else
         // values here derived from https://github.com/ReactiveX/RxJava/issues/748#issuecomment-32471495
-        else if (t instanceof StackOverflowError) {
+        if (t instanceof StackOverflowError) {
             throw (StackOverflowError) t;
         } else if (t instanceof VirtualMachineError) {
             throw (VirtualMachineError) t;
@@ -129,7 +129,7 @@ public class Exceptions {
     }
 
     /**
-     * Get the {@code Throwable} at the end of the causality-chain for a particular {@code Throwable}
+     * Get the {@code Throwable} at the end of the causality-chain for a particular {@code Throwable}.
      *
      * @param e
      *         the {@code Throwable} whose final cause you are curious about

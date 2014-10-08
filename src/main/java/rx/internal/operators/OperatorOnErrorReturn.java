@@ -91,7 +91,7 @@ public final class OperatorOnErrorReturn<T> implements Operator<T, T> {
                 done = true;
                 child.onCompleted();
             }
-            
+
         };
         child.add(parent);
         return parent;

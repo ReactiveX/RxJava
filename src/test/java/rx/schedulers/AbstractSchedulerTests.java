@@ -50,7 +50,7 @@ import rx.functions.Func1;
 public abstract class AbstractSchedulerTests {
 
     /**
-     * The scheduler to test
+     * The scheduler to test.
      */
     protected abstract Scheduler getScheduler();
 
@@ -150,7 +150,7 @@ public abstract class AbstractSchedulerTests {
     public final void testSequenceOfActions() throws InterruptedException {
         final Scheduler scheduler = getScheduler();
         final Scheduler.Worker inner = scheduler.createWorker();
-        
+
         final CountDownLatch latch = new CountDownLatch(2);
         final Action0 first = mock(Action0.class);
         final Action0 second = mock(Action0.class);
@@ -193,7 +193,7 @@ public abstract class AbstractSchedulerTests {
     public void testSequenceOfDelayedActions() throws InterruptedException {
         Scheduler scheduler = getScheduler();
         final Scheduler.Worker inner = scheduler.createWorker();
-        
+
         final CountDownLatch latch = new CountDownLatch(1);
         final Action0 first = mock(Action0.class);
         final Action0 second = mock(Action0.class);
@@ -225,7 +225,7 @@ public abstract class AbstractSchedulerTests {
     public void testMixOfDelayedAndNonDelayedActions() throws InterruptedException {
         Scheduler scheduler = getScheduler();
         final Scheduler.Worker inner = scheduler.createWorker();
-        
+
         final CountDownLatch latch = new CountDownLatch(1);
         final Action0 first = mock(Action0.class);
         final Action0 second = mock(Action0.class);

@@ -26,7 +26,7 @@ abstract class SpmcArrayQueueL1Pad<E> extends ConcurrentCircularArrayQueue<E> {
 }
 
 abstract class SpmcArrayQueueProducerField<E> extends SpmcArrayQueueL1Pad<E> {
-    protected final static long P_INDEX_OFFSET;
+    protected static final long P_INDEX_OFFSET;
     static {
         try {
             P_INDEX_OFFSET =
@@ -60,7 +60,7 @@ abstract class SpmcArrayQueueL2Pad<E> extends SpmcArrayQueueProducerField<E> {
 }
 
 abstract class SpmcArrayQueueConsumerField<E> extends SpmcArrayQueueL2Pad<E> {
-    protected final static long C_INDEX_OFFSET;
+    protected static final long C_INDEX_OFFSET;
     static {
         try {
             C_INDEX_OFFSET =
@@ -139,10 +139,9 @@ public final class SpmcArrayQueue<E> extends SpmcArrayQueueL3Pad<E> {
             int size = (int) (currProducerIndex - lvConsumerIndex());
             if (size == capacity) {
                 return false;
-            }
-            else {
+            } else {
                 // spin wait for slot to clear, buggers wait freedom
-                while (null != lvElement(lb, offset));
+                while (null != lvElement(lb, offset)) { }
             }
         }
         spElement(lb, offset, e);
@@ -208,10 +207,10 @@ public final class SpmcArrayQueue<E> extends SpmcArrayQueueL3Pad<E> {
             }
         }
     }
-    
+
     @Override
     public boolean isEmpty() {
-        // Order matters! 
+        // Order matters!
         // Loading consumer before producer allows for producer increments after consumer index is read.
         // This ensures the correctness of this method at least for the consumer thread. Other threads POV is not really
         // something we can fix here.

@@ -44,7 +44,7 @@ import rx.subjects.Subject;
 public class BlockingOperatorNextTest {
 
     private void fireOnNextInNewThread(final Subject<String, String> o, final String value) {
-        new Thread() {
+        Thread t = new Thread() {
             @Override
             public void run() {
                 try {
@@ -54,11 +54,12 @@ public class BlockingOperatorNextTest {
                 }
                 o.onNext(value);
             }
-        }.start();
+        };
+		t.start();
     }
 
     private void fireOnErrorInNewThread(final Subject<String, String> o) {
-        new Thread() {
+        Thread t = new Thread() {
             @Override
             public void run() {
                 try {
@@ -68,7 +69,8 @@ public class BlockingOperatorNextTest {
                 }
                 o.onError(new TestException());
             }
-        }.start();
+        };
+		t.start();
     }
 
     @Test
@@ -233,8 +235,8 @@ public class BlockingOperatorNextTest {
     @Test
     public void testNoBufferingOrBlockingOfSequence() throws Throwable {
         final CountDownLatch finished = new CountDownLatch(1);
-        final int COUNT = 30;
-        final CountDownLatch timeHasPassed = new CountDownLatch(COUNT);
+        final int maxCount = 30;
+        final CountDownLatch timeHasPassed = new CountDownLatch(maxCount);
         final AtomicBoolean running = new AtomicBoolean(true);
         final AtomicInteger count = new AtomicInteger(0);
         final Observable<Integer> obs = Observable.create(new Observable.OnSubscribe<Integer>() {
@@ -278,7 +280,7 @@ public class BlockingOperatorNextTest {
         int c = it.next();
 
         assertTrue("c should not just be the next in sequence", c != (b + 1));
-        assertTrue("expected that c [" + c + "] is higher than or equal to " + COUNT, c >= COUNT);
+        assertTrue("expected that c [" + c + "] is higher than or equal to " + maxCount, c >= maxCount);
 
         assertTrue(it.hasNext());
         int d = it.next();
@@ -296,7 +298,7 @@ public class BlockingOperatorNextTest {
 
     @Test /* (timeout = 8000) */
     public void testSingleSourceManyIterators() throws InterruptedException {
-        Observable<Long> o = Observable.interval(10, TimeUnit.MILLISECONDS);
+        Observable<Long> o = Observable.interval(20, TimeUnit.MILLISECONDS);
         PublishSubject<Void> terminal = PublishSubject.create();
         BlockingObservable<Long> source = o.takeUntil(terminal).toBlocking();
 
@@ -312,7 +314,7 @@ public class BlockingOperatorNextTest {
             terminal.onNext(null);
         }
     }
-    
+
     @Test
     public void testSynchronousNext() {
         assertEquals(1, BehaviorSubject.create(1).take(1).toBlocking().single().intValue());

@@ -46,7 +46,7 @@ public class OperatorMapTest {
     @Mock
     Observer<String> stringObserver2;
 
-    final static Func2<String, Integer, String> APPEND_INDEX = new Func2<String, Integer, String>() {
+    static final Func2<String, Integer, String> APPEND_INDEX = new Func2<String, Integer, String>() {
         @Override
         public String call(String value, Integer index) {
             return value + index;
@@ -191,7 +191,8 @@ public class OperatorMapTest {
     public void testMapWithIssue417() {
         Observable.just(1).observeOn(Schedulers.computation())
                 .map(new Func1<Integer, Integer>() {
-                    public Integer call(Integer arg0) {
+                    @Override
+					public Integer call(Integer arg0) {
                         throw new IllegalArgumentException("any error");
                     }
                 }).toBlocking().single();
@@ -205,7 +206,8 @@ public class OperatorMapTest {
         Observable<String> m = Observable.just("one")
                 .observeOn(Schedulers.computation())
                 .map(new Func1<String, String>() {
-                    public String call(String arg0) {
+                    @Override
+					public String call(String arg0) {
                         throw new IllegalArgumentException("any error");
                     }
                 });

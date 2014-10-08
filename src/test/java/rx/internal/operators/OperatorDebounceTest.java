@@ -245,17 +245,17 @@ public class OperatorDebounceTest {
     @Test
     public void debounceTimedLastIsNotLost() {
         PublishSubject<Integer> source = PublishSubject.create();
-        
+
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
 
         source.debounce(100, TimeUnit.MILLISECONDS, scheduler).subscribe(o);
-        
+
         source.onNext(1);
         source.onCompleted();
-        
+
         scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
-        
+
         verify(o).onNext(1);
         verify(o).onCompleted();
         verify(o, never()).onError(any(Throwable.class));
@@ -277,7 +277,7 @@ public class OperatorDebounceTest {
         Observer<Object> o = mock(Observer.class);
 
         source.debounce(debounceSel).subscribe(o);
-        
+
         source.onNext(1);
         source.onCompleted();
 

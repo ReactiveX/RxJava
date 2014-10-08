@@ -527,30 +527,30 @@ public class OperatorBufferTest {
     @Test(timeout = 2000)
     public void bufferWithSizeTake1() {
         Observable<Integer> source = Observable.just(1).repeat();
-        
+
         Observable<List<Integer>> result = source.buffer(2).take(1);
-        
+
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
-        
+
         result.subscribe(o);
-        
+
         verify(o).onNext(Arrays.asList(1, 1));
         verify(o).onCompleted();
         verify(o, never()).onError(any(Throwable.class));
     }
-    
+
     @Test(timeout = 2000)
     public void bufferWithSizeSkipTake1() {
         Observable<Integer> source = Observable.just(1).repeat();
-        
+
         Observable<List<Integer>> result = source.buffer(2, 3).take(1);
-        
+
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
-        
+
         result.subscribe(o);
-        
+
         verify(o).onNext(Arrays.asList(1, 1));
         verify(o).onCompleted();
         verify(o, never()).onError(any(Throwable.class));
@@ -558,16 +558,16 @@ public class OperatorBufferTest {
     @Test(timeout = 2000)
     public void bufferWithTimeTake1() {
         Observable<Long> source = Observable.timer(40, 40, TimeUnit.MILLISECONDS, scheduler);
-        
+
         Observable<List<Long>> result = source.buffer(100, TimeUnit.MILLISECONDS, scheduler).take(1);
-        
+
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
-        
+
         result.subscribe(o);
-        
+
         scheduler.advanceTimeBy(5, TimeUnit.SECONDS);
-        
+
         verify(o).onNext(Arrays.asList(0L, 1L));
         verify(o).onCompleted();
         verify(o, never()).onError(any(Throwable.class));
@@ -575,17 +575,17 @@ public class OperatorBufferTest {
     @Test(timeout = 2000)
     public void bufferWithTimeSkipTake2() {
         Observable<Long> source = Observable.timer(40, 40, TimeUnit.MILLISECONDS, scheduler);
-        
+
         Observable<List<Long>> result = source.buffer(100, 60, TimeUnit.MILLISECONDS, scheduler).take(2);
-        
+
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
         InOrder inOrder = inOrder(o);
-        
+
         result.subscribe(o);
-        
+
         scheduler.advanceTimeBy(5, TimeUnit.SECONDS);
-        
+
         inOrder.verify(o).onNext(Arrays.asList(0L, 1L));
         inOrder.verify(o).onNext(Arrays.asList(1L, 2L));
         inOrder.verify(o).onCompleted();
@@ -595,24 +595,24 @@ public class OperatorBufferTest {
     public void bufferWithBoundaryTake2() {
         Observable<Long> boundary = Observable.timer(60, 60, TimeUnit.MILLISECONDS, scheduler);
         Observable<Long> source = Observable.timer(40, 40, TimeUnit.MILLISECONDS, scheduler);
-        
+
         Observable<List<Long>> result = source.buffer(boundary).take(2);
-        
+
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
         InOrder inOrder = inOrder(o);
-        
+
         result.subscribe(o);
-        
+
         scheduler.advanceTimeBy(5, TimeUnit.SECONDS);
-        
+
         inOrder.verify(o).onNext(Arrays.asList(0L));
         inOrder.verify(o).onNext(Arrays.asList(1L));
         inOrder.verify(o).onCompleted();
         verify(o, never()).onError(any(Throwable.class));
-        
+
     }
-    
+
     @Test(timeout = 2000)
     public void bufferWithStartEndBoundaryTake2() {
         Observable<Long> start = Observable.timer(61, 61, TimeUnit.MILLISECONDS, scheduler);
@@ -622,19 +622,19 @@ public class OperatorBufferTest {
                 return Observable.timer(100, 100, TimeUnit.MILLISECONDS, scheduler);
             }
         };
-        
+
         Observable<Long> source = Observable.timer(40, 40, TimeUnit.MILLISECONDS, scheduler);
-        
+
         Observable<List<Long>> result = source.buffer(start, end).take(2);
-        
+
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
         InOrder inOrder = inOrder(o);
-        
+
         result.subscribe(o);
-        
+
         scheduler.advanceTimeBy(5, TimeUnit.SECONDS);
-        
+
         inOrder.verify(o).onNext(Arrays.asList(1L, 2L, 3L));
         inOrder.verify(o).onNext(Arrays.asList(3L, 4L));
         inOrder.verify(o).onCompleted();
@@ -643,68 +643,66 @@ public class OperatorBufferTest {
     @Test
     public void bufferWithSizeThrows() {
         PublishSubject<Integer> source = PublishSubject.create();
-        
+
         Observable<List<Integer>> result = source.buffer(2);
-        
+
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
         InOrder inOrder = inOrder(o);
-        
+
         result.subscribe(o);
-        
+
         source.onNext(1);
         source.onNext(2);
         source.onNext(3);
         source.onError(new TestException());
-        
+
         inOrder.verify(o).onNext(Arrays.asList(1, 2));
         inOrder.verify(o).onError(any(TestException.class));
         inOrder.verifyNoMoreInteractions();
         verify(o, never()).onNext(Arrays.asList(3));
         verify(o, never()).onCompleted();
-                
     }
-    
+
     @Test
     public void bufferWithTimeThrows() {
         PublishSubject<Integer> source = PublishSubject.create();
-        
+
         Observable<List<Integer>> result = source.buffer(100, TimeUnit.MILLISECONDS, scheduler);
-        
+
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
         InOrder inOrder = inOrder(o);
-        
+
         result.subscribe(o);
-        
+
         source.onNext(1);
         source.onNext(2);
         scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
         source.onNext(3);
         source.onError(new TestException());
         scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
-        
+
         inOrder.verify(o).onNext(Arrays.asList(1, 2));
         inOrder.verify(o).onError(any(TestException.class));
         inOrder.verifyNoMoreInteractions();
         verify(o, never()).onNext(Arrays.asList(3));
         verify(o, never()).onCompleted();
-                
     }
     @Test
     public void bufferWithTimeAndSize() {
         Observable<Long> source = Observable.timer(30, 30, TimeUnit.MILLISECONDS, scheduler);
-        
+
         Observable<List<Long>> result = source.buffer(100, TimeUnit.MILLISECONDS, 2, scheduler).take(3);
-        
+
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
         InOrder inOrder = inOrder(o);
-        
+
         result.subscribe(o);
-        
+
         scheduler.advanceTimeBy(5, TimeUnit.SECONDS);
-        
+
         inOrder.verify(o).onNext(Arrays.asList(0L, 1L));
         inOrder.verify(o).onNext(Arrays.asList(2L));
         inOrder.verify(o).onCompleted();
@@ -713,7 +711,7 @@ public class OperatorBufferTest {
     @Test
     public void bufferWithStartEndStartThrows() {
         PublishSubject<Integer> start = PublishSubject.create();
-        
+
         Func1<Integer, Observable<Integer>> end = new Func1<Integer, Observable<Integer>>() {
             @Override
             public Observable<Integer> call(Integer t1) {
@@ -724,17 +722,17 @@ public class OperatorBufferTest {
         PublishSubject<Integer> source = PublishSubject.create();
 
         Observable<List<Integer>> result = source.buffer(start, end);
-        
+
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
-        
+
         result.subscribe(o);
-        
+
         start.onNext(1);
         source.onNext(1);
         source.onNext(2);
         start.onError(new TestException());
-        
+
         verify(o, never()).onNext(any());
         verify(o, never()).onCompleted();
         verify(o).onError(any(TestException.class));
@@ -742,7 +740,7 @@ public class OperatorBufferTest {
     @Test
     public void bufferWithStartEndEndFunctionThrows() {
         PublishSubject<Integer> start = PublishSubject.create();
-        
+
         Func1<Integer, Observable<Integer>> end = new Func1<Integer, Observable<Integer>>() {
             @Override
             public Observable<Integer> call(Integer t1) {
@@ -753,16 +751,16 @@ public class OperatorBufferTest {
         PublishSubject<Integer> source = PublishSubject.create();
 
         Observable<List<Integer>> result = source.buffer(start, end);
-        
+
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
-        
+
         result.subscribe(o);
-        
+
         start.onNext(1);
         source.onNext(1);
         source.onNext(2);
-        
+
         verify(o, never()).onNext(any());
         verify(o, never()).onCompleted();
         verify(o).onError(any(TestException.class));
@@ -770,7 +768,7 @@ public class OperatorBufferTest {
     @Test
     public void bufferWithStartEndEndThrows() {
         PublishSubject<Integer> start = PublishSubject.create();
-        
+
         Func1<Integer, Observable<Integer>> end = new Func1<Integer, Observable<Integer>>() {
             @Override
             public Observable<Integer> call(Integer t1) {
@@ -781,16 +779,16 @@ public class OperatorBufferTest {
         PublishSubject<Integer> source = PublishSubject.create();
 
         Observable<List<Integer>> result = source.buffer(start, end);
-        
+
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
-        
+
         result.subscribe(o);
-        
+
         start.onNext(1);
         source.onNext(1);
         source.onNext(2);
-        
+
         verify(o, never()).onNext(any());
         verify(o, never()).onCompleted();
         verify(o).onError(any(TestException.class));

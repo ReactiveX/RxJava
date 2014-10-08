@@ -124,8 +124,9 @@ public class OperatorDoOnEachTest {
     public void testIssue1451Case1() {
         // https://github.com/Netflix/RxJava/issues/1451
         int[] nums = { 1, 2, 3 };
+        int n = nums.length;
         final AtomicInteger count = new AtomicInteger();
-        for (final int n : nums) {
+        while (n-- > 0) {
             Observable
                     .just(Boolean.TRUE, Boolean.FALSE)
                     .takeWhile(new Func1<Boolean, Boolean>() {
@@ -150,8 +151,9 @@ public class OperatorDoOnEachTest {
     public void testIssue1451Case2() {
         // https://github.com/Netflix/RxJava/issues/1451
         int[] nums = { 1, 2, 3 };
+        int n = nums.length;
         final AtomicInteger count = new AtomicInteger();
-        for (final int n : nums) {
+        while (n-- > 0) {
             Observable
                     .just(Boolean.TRUE, Boolean.FALSE, Boolean.FALSE)
                     .takeWhile(new Func1<Boolean, Boolean>() {

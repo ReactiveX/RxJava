@@ -119,7 +119,7 @@ public class RxRingBuffer implements Subscription {
      * 
      * With SpmcArrayQueue
      *  - requires access to Unsafe
-     *  
+     * 
      * Benchmark                                            Mode   Samples        Score  Score error    Units
      * r.i.RxRingBufferPerf.spmcCreateUseAndDestroy1       thrpt         5 27630345.474   769219.142    ops/s
      * r.i.RxRingBufferPerf.spmcCreateUseAndDestroy1000    thrpt         5    80052.046     4059.541    ops/s
@@ -160,7 +160,8 @@ public class RxRingBuffer implements Subscription {
 
     public static final int SIZE = 1024;
 
-    private static ObjectPool<Queue<Object>> SPSC_POOL = new ObjectPool<Queue<Object>>() {
+    @SuppressWarnings("unused")
+	private static final ObjectPool<Queue<Object>> SPSC_POOL = new ObjectPool<Queue<Object>>() {
 
         @Override
         protected SpscArrayQueue<Object> createObject() {
@@ -169,7 +170,7 @@ public class RxRingBuffer implements Subscription {
 
     };
 
-    private static ObjectPool<Queue<Object>> SPMC_POOL = new ObjectPool<Queue<Object>>() {
+    private static final ObjectPool<Queue<Object>> SPMC_POOL = new ObjectPool<Queue<Object>>() {
 
         @Override
         protected SpmcArrayQueue<Object> createObject() {
@@ -177,14 +178,13 @@ public class RxRingBuffer implements Subscription {
         }
 
     };
-    
+
     private RxRingBuffer(Queue<Object> queue, int size) {
         this.queue = queue;
         this.pool = null;
         this.size = size;
     }
 
-    @SuppressWarnings("unused")
     private RxRingBuffer(ObjectPool<Queue<Object>> pool, int size) {
         this.pool = pool;
         this.queue = pool.borrowObject();
@@ -312,7 +312,8 @@ public class RxRingBuffer implements Subscription {
         return on.getValue(o);
     }
 
-    public boolean accept(Object o, Observer child) {
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+	public boolean accept(Object o, Observer child) {
         return on.accept(child, o);
     }
 

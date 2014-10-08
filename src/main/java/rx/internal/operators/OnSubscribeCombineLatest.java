@@ -50,7 +50,7 @@ public final class OnSubscribeCombineLatest<T, R> implements OnSubscribe<R> {
         this.sources = sources;
         this.combinator = combinator;
         if (sources.size() > 128) {
-            // For design simplicity this is limited to 128. If more are really needed we'll need to adjust 
+            // For design simplicity this is limited to 128. If more are really needed we'll need to adjust
             // the design of how RxRingBuffer is used in the implementation below.
             throw new IllegalArgumentException("More than 128 sources to combineLatest is not supported.");
         }
@@ -74,7 +74,7 @@ public final class OnSubscribeCombineLatest<T, R> implements OnSubscribe<R> {
      * benjchristensen => This implementation uses a buffer enqueue/drain pattern. It could be optimized to have a fast-path to
      * skip the buffer and emit directly when no conflict, but that is quite complicated and I don't have the time to attempt it right now.
      */
-    final static class MultiSourceProducer<T, R> implements Producer {
+    static final class MultiSourceProducer<T, R> implements Producer {
         private final AtomicBoolean started = new AtomicBoolean();
         private final AtomicLong requested = new AtomicLong();
         private final List<? extends Observable<? extends T>> sources;
@@ -215,7 +215,7 @@ public final class OnSubscribeCombineLatest<T, R> implements OnSubscribe<R> {
         }
     }
 
-    final static class MultiSourceRequestableSubscriber<T, R> extends Subscriber<T> {
+    static final class MultiSourceRequestableSubscriber<T, R> extends Subscriber<T> {
 
         final MultiSourceProducer<T, R> producer;
         final int index;
@@ -257,7 +257,7 @@ public final class OnSubscribeCombineLatest<T, R> implements OnSubscribe<R> {
 
     }
 
-    final static class SingleSourceProducer<T, R> implements Producer {
+    static final class SingleSourceProducer<T, R> implements Producer {
         final AtomicBoolean started = new AtomicBoolean();
         final Observable<? extends T> source;
         final Subscriber<? super R> child;
@@ -282,7 +282,7 @@ public final class OnSubscribeCombineLatest<T, R> implements OnSubscribe<R> {
 
     }
 
-    final static class SingleSourceRequestableSubscriber<T, R> extends Subscriber<T> {
+    static final class SingleSourceRequestableSubscriber<T, R> extends Subscriber<T> {
 
         private final Subscriber<? super R> child;
         private final FuncN<? extends R> combinator;

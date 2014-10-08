@@ -65,9 +65,9 @@ public final class OperatorBufferWithStartEndObservable<T, TOpening, TClosing> i
 
     @Override
     public Subscriber<? super T> call(final Subscriber<? super List<T>> child) {
-        
+
         final BufferingSubscriber bsub = new BufferingSubscriber(new SerializedSubscriber<List<T>>(child));
-        
+
         Subscriber<TOpening> openSubscriber = new Subscriber<TOpening>() {
 
             @Override
@@ -84,13 +84,13 @@ public final class OperatorBufferWithStartEndObservable<T, TOpening, TClosing> i
             public void onCompleted() {
                 bsub.onCompleted();
             }
-            
+
         };
         child.add(openSubscriber);
         child.add(bsub);
-        
+
         bufferOpening.unsafeSubscribe(openSubscriber);
-        
+
         return bsub;
     }
     final class BufferingSubscriber extends Subscriber<T> {
@@ -184,10 +184,10 @@ public final class OperatorBufferWithStartEndObservable<T, TOpening, TClosing> i
                     closingSubscriptions.remove(this);
                     endBuffer(chunk);
                 }
-                
+
             };
             closingSubscriptions.add(closeSubscriber);
-            
+
             cobs.unsafeSubscribe(closeSubscriber);
         }
         void endBuffer(List<T> toEnd) {
@@ -210,6 +210,6 @@ public final class OperatorBufferWithStartEndObservable<T, TOpening, TClosing> i
                 child.onNext(toEnd);
             }
         }
-        
+
     }
 }

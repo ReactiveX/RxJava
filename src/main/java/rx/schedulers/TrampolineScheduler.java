@@ -113,7 +113,7 @@ public final class TrampolineScheduler extends Scheduler {
 
     }
 
-    private static class TimedAction implements Comparable<TimedAction> {
+    private static final class TimedAction implements Comparable<TimedAction> {
         final Action0 action;
         final Long execTime;
         final int count; // In case if time between enqueueing took less than 1ms
@@ -133,7 +133,7 @@ public final class TrampolineScheduler extends Scheduler {
             return result;
         }
     }
-    
+
     // because I can't use Integer.compare from Java 7
     private static int compare(int x, int y) {
         return (x < y) ? -1 : ((x == y) ? 0 : 1);

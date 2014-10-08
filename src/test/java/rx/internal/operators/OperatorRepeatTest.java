@@ -39,7 +39,7 @@ public class OperatorRepeatTest {
 
     @Test(timeout = 2000)
     public void testRepetition() {
-        int NUM = 10;
+        int num = 10;
         final AtomicInteger count = new AtomicInteger();
         int value = Observable.create(new OnSubscribe<Integer>() {
 
@@ -48,9 +48,9 @@ public class OperatorRepeatTest {
                 o.onNext(count.incrementAndGet());
                 o.onCompleted();
             }
-        }).repeat(Schedulers.computation()).take(NUM).toBlocking().last();
+        }).repeat(Schedulers.computation()).take(num).toBlocking().last();
 
-        assertEquals(NUM, value);
+        assertEquals(num, value);
     }
 
     @Test(timeout = 2000)
@@ -101,10 +101,10 @@ public class OperatorRepeatTest {
     @Test(timeout = 2000)
     public void testRepeatAndTake() {
         @SuppressWarnings("unchecked")
-                Observer<Object> o = mock(Observer.class);
-        
+        Observer<Object> o = mock(Observer.class);
+
         Observable.just(1).repeat().take(10).subscribe(o);
-        
+
         verify(o, times(10)).onNext(1);
         verify(o).onCompleted();
         verify(o, never()).onError(any(Throwable.class));
@@ -113,10 +113,10 @@ public class OperatorRepeatTest {
     @Test(timeout = 2000)
     public void testRepeatLimited() {
         @SuppressWarnings("unchecked")
-                Observer<Object> o = mock(Observer.class);
-        
+        Observer<Object> o = mock(Observer.class);
+
         Observable.just(1).repeat(10).subscribe(o);
-        
+
         verify(o, times(10)).onNext(1);
         verify(o).onCompleted();
         verify(o, never()).onError(any(Throwable.class));
@@ -125,23 +125,23 @@ public class OperatorRepeatTest {
     @Test(timeout = 2000)
     public void testRepeatError() {
         @SuppressWarnings("unchecked")
-                Observer<Object> o = mock(Observer.class);
-        
+        Observer<Object> o = mock(Observer.class);
+
         Observable.error(new TestException()).repeat(10).subscribe(o);
-        
+
         verify(o).onError(any(TestException.class));
         verify(o, never()).onNext(any());
         verify(o, never()).onCompleted();
-        
+
     }
 
     @Test(timeout = 2000)
     public void testRepeatZero() {
         @SuppressWarnings("unchecked")
-                Observer<Object> o = mock(Observer.class);
-        
+        Observer<Object> o = mock(Observer.class);
+
         Observable.just(1).repeat(0).subscribe(o);
-        
+
         verify(o).onCompleted();
         verify(o, never()).onNext(any());
         verify(o, never()).onError(any(Throwable.class));
@@ -150,10 +150,10 @@ public class OperatorRepeatTest {
     @Test(timeout = 2000)
     public void testRepeatOne() {
         @SuppressWarnings("unchecked")
-                Observer<Object> o = mock(Observer.class);
-        
+        Observer<Object> o = mock(Observer.class);
+
         Observable.just(1).repeat(1).subscribe(o);
-        
+
         verify(o).onCompleted();
         verify(o, times(1)).onNext(any());
         verify(o, never()).onError(any(Throwable.class));

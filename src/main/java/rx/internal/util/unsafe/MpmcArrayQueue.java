@@ -18,8 +18,6 @@ package rx.internal.util.unsafe;
 
 import static rx.internal.util.unsafe.UnsafeAccess.UNSAFE;
 
-import java.util.Queue;
-
 abstract class MpmcArrayQueueL1Pad<E> extends ConcurrentSequencedCircularArrayQueue<E> {
     long p10, p11, p12, p13, p14, p15, p16;
     long p30, p31, p32, p33, p34, p35, p36, p37;
@@ -30,7 +28,7 @@ abstract class MpmcArrayQueueL1Pad<E> extends ConcurrentSequencedCircularArrayQu
 }
 
 abstract class MpmcArrayQueueProducerField<E> extends MpmcArrayQueueL1Pad<E> {
-    private final static long P_INDEX_OFFSET;
+    private static final long P_INDEX_OFFSET;
     static {
         try {
             P_INDEX_OFFSET =
@@ -64,7 +62,7 @@ abstract class MpmcArrayQueueL2Pad<E> extends MpmcArrayQueueProducerField<E> {
 }
 
 abstract class MpmcArrayQueueConsumerField<E> extends MpmcArrayQueueL2Pad<E> {
-    private final static long C_INDEX_OFFSET;
+    private static final long C_INDEX_OFFSET;
     static {
         try {
             C_INDEX_OFFSET =
@@ -174,9 +172,9 @@ public class MpmcArrayQueue<E> extends MpmcArrayQueueConsumerField<E> {
         long seqOffset;
 
         while (true) {
-            currentConsumerIndex = lvConsumerIndex();// LoadLoad
+            currentConsumerIndex = lvConsumerIndex(); // LoadLoad
             seqOffset = calcSequenceOffset(currentConsumerIndex);
-            final long seq = lvSequence(lSequenceBuffer, seqOffset);// LoadLoad
+            final long seq = lvSequence(lSequenceBuffer, seqOffset); // LoadLoad
             final long delta = seq - (currentConsumerIndex + 1);
 
             if (delta == 0) {
@@ -204,7 +202,7 @@ public class MpmcArrayQueue<E> extends MpmcArrayQueueConsumerField<E> {
 
         // Move sequence ahead by capacity, preparing it for next offer
         // (seeing this value from a consumer will lead to retry 2)
-        soSequence(lSequenceBuffer, seqOffset, currentConsumerIndex + capacity);// StoreStore
+        soSequence(lSequenceBuffer, seqOffset, currentConsumerIndex + capacity); // StoreStore
 
         return e;
     }
@@ -231,10 +229,10 @@ public class MpmcArrayQueue<E> extends MpmcArrayQueueConsumerField<E> {
             }
         }
     }
-    
+
     @Override
     public boolean isEmpty() {
-        // Order matters! 
+        // Order matters!
         // Loading consumer before producer allows for producer increments after consumer index is read.
         // This ensures this method is conservative in it's estimate. Note that as this is an MPMC there is nothing we
         // can do to make this an exact method.

@@ -30,7 +30,7 @@ import java.util.Queue;
  * @param <M> the event/message type
  */
 interface MessagePassingQueue<M> {
-    
+
     /**
      * Called from a producer thread subject to the restrictions appropriate to the implementation and according to the
      * {@link Queue#offer(Object)} interface (but failure to offer doesn't necessitate queue is full).
@@ -63,7 +63,7 @@ interface MessagePassingQueue<M> {
      * @return number of messages in the queue, between 0 and queue capacity or {@link Integer#MAX_VALUE} if not bounded
      */
     int size();
-    
+
     /**
      * This method's accuracy is subject to concurrent modifications happening as the observation is carried out.
      * 

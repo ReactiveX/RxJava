@@ -39,7 +39,7 @@ public class RxJavaSchedulersHook {
 
     }
 
-    private final static RxJavaSchedulersHook DEFAULT_INSTANCE = new RxJavaSchedulersHook();
+    private static final RxJavaSchedulersHook DEFAULT_INSTANCE = new RxJavaSchedulersHook();
 
     /**
      * Scheduler to return from {@link rx.schedulers.Schedulers#computation()} or null if default should be

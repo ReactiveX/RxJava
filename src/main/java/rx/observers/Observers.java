@@ -23,22 +23,24 @@ import rx.functions.Action1;
 /**
  * Helper methods and utilities for creating and working with {@link Observer} objects.
  */
-public class Observers {
-
+public final class Observers {
+	private Observers() {
+		throw new IllegalStateException("No instances!");
+	}
     private static final Observer<Object> EMPTY = new Observer<Object>() {
 
         @Override
-        public final void onCompleted() {
+        public void onCompleted() {
             // do nothing
         }
 
         @Override
-        public final void onError(Throwable e) {
+        public void onError(Throwable e) {
             throw new OnErrorNotImplementedException(e);
         }
 
         @Override
-        public final void onNext(Object args) {
+        public void onNext(Object args) {
             // do nothing
         }
 
@@ -69,7 +71,7 @@ public class Observers {
      * @return an {@code Observer} that calls {@code onNext} for each emitted item from the {@code Observable}
      *         the {@code Observer} subscribes to
      */
-    public static final <T> Observer<T> create(final Action1<? super T> onNext) {
+    public static <T> Observer<T> create(final Action1<? super T> onNext) {
         if (onNext == null) {
             throw new IllegalArgumentException("onNext can not be null");
         }
@@ -77,17 +79,17 @@ public class Observers {
         return new Observer<T>() {
 
             @Override
-            public final void onCompleted() {
+            public void onCompleted() {
                 // do nothing
             }
 
             @Override
-            public final void onError(Throwable e) {
+            public void onError(Throwable e) {
                 throw new OnErrorNotImplementedException(e);
             }
 
             @Override
-            public final void onNext(T args) {
+            public void onNext(T args) {
                 onNext.call(args);
             }
 
@@ -109,7 +111,7 @@ public class Observers {
      *         the {@code Observer} subscribes to, and calls {@code onError} if the {@code Observable} notifies
      *         of an error
      */
-    public static final <T> Observer<T> create(final Action1<? super T> onNext, final Action1<Throwable> onError) {
+    public static <T> Observer<T> create(final Action1<? super T> onNext, final Action1<Throwable> onError) {
         if (onNext == null) {
             throw new IllegalArgumentException("onNext can not be null");
         }
@@ -120,17 +122,17 @@ public class Observers {
         return new Observer<T>() {
 
             @Override
-            public final void onCompleted() {
+            public void onCompleted() {
                 // do nothing
             }
 
             @Override
-            public final void onError(Throwable e) {
+            public void onError(Throwable e) {
                 onError.call(e);
             }
 
             @Override
-            public final void onNext(T args) {
+            public void onNext(T args) {
                 onNext.call(args);
             }
 
@@ -155,7 +157,7 @@ public class Observers {
      *         of an error, and calls {@code onComplete} if the {@code Observable} notifies that the observable
      *         sequence is complete
      */
-    public static final <T> Observer<T> create(final Action1<? super T> onNext, final Action1<Throwable> onError, final Action0 onComplete) {
+    public static <T> Observer<T> create(final Action1<? super T> onNext, final Action1<Throwable> onError, final Action0 onComplete) {
         if (onNext == null) {
             throw new IllegalArgumentException("onNext can not be null");
         }
@@ -169,17 +171,17 @@ public class Observers {
         return new Observer<T>() {
 
             @Override
-            public final void onCompleted() {
+            public void onCompleted() {
                 onComplete.call();
             }
 
             @Override
-            public final void onError(Throwable e) {
+            public void onError(Throwable e) {
                 onError.call(e);
             }
 
             @Override
-            public final void onNext(T args) {
+            public void onNext(T args) {
                 onNext.call(args);
             }
 

@@ -30,5 +30,5 @@ public final class OperatorAsObservable<T> implements Operator<T, T> {
     public Subscriber<? super T> call(Subscriber<? super T> s) {
         return s;
     }
-    
+
 }

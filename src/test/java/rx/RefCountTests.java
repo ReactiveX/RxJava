@@ -163,21 +163,21 @@ public class RefCountTests {
         assertEquals(1L, list3.get(1).longValue());
 
     }
-    
+
     @Test
     public void testAlreadyUnsubscribedClient() {
         Subscriber<Integer> done = Subscribers.empty();
         done.unsubscribe();
-        
+
         @SuppressWarnings("unchecked")
         Observer<Integer> o = mock(Observer.class);
-        
+
         Observable<Integer> result = Observable.just(1).publish().refCount();
-        
+
         result.subscribe(done);
-        
+
         result.subscribe(o);
-        
+
         verify(o).onNext(1);
         verify(o).onCompleted();
         verify(o, never()).onError(any(Throwable.class));
@@ -188,28 +188,28 @@ public class RefCountTests {
 
         Subscriber<Integer> done = Subscribers.empty();
         done.unsubscribe();
-        
+
         @SuppressWarnings("unchecked")
         Observer<Integer> o = mock(Observer.class);
         InOrder inOrder = inOrder(o);
-        
+
         Observable<Integer> result = source.publish().refCount();
-        
+
         result.subscribe(o);
-        
+
         source.onNext(1);
-        
+
         result.subscribe(done);
-        
+
         source.onNext(2);
         source.onCompleted();
-        
+
         inOrder.verify(o).onNext(1);
         inOrder.verify(o).onNext(2);
         inOrder.verify(o).onCompleted();
         verify(o, never()).onError(any(Throwable.class));
     }
-    
+
     @Test
     public void testConnectDisconnectConnectAndSubjectState() {
         Observable<Integer> o1 = Observable.just(10);
@@ -220,19 +220,19 @@ public class RefCountTests {
             public Integer call(Integer t1, Integer t2) {
                 return t1 + t2;
             }
-            
+
         }).publish().refCount();
-        
+
         TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>();
         TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>();
 
         combined.subscribe(ts1);
         combined.subscribe(ts2);
-        
+
         ts1.assertTerminalEvent();
         ts1.assertNoErrors();
         ts1.assertReceivedOnNext(Arrays.asList(30));
-        
+
         ts2.assertTerminalEvent();
         ts2.assertNoErrors();
         ts2.assertReceivedOnNext(Arrays.asList(30));

@@ -47,7 +47,7 @@ public final class OnSubscribeDelay<T> implements OnSubscribe<T> {
     public void call(Subscriber<? super T> child) {
         final Worker worker = scheduler.createWorker();
         child.add(worker);
-        
+
         Observable.concat(source.map(new Func1<T, Observable<T>>() {
             @Override
             public Observable<T> call(T x) {
@@ -57,7 +57,7 @@ public final class OnSubscribeDelay<T> implements OnSubscribe<T> {
             }
         })).unsafeSubscribe(child);
     }
-    
+
     /**
      * Emits a value once the call() is invoked.
      * Only one subscriber can wait for the emission.
@@ -65,7 +65,7 @@ public final class OnSubscribeDelay<T> implements OnSubscribe<T> {
      */
     public static final class Emitter<T> implements OnSubscribe<T>, Action0 {
         final T value;
-        
+
         final Object guard;
         /** Guarded by guard. */
         Subscriber<? super T> child;
@@ -76,7 +76,7 @@ public final class OnSubscribeDelay<T> implements OnSubscribe<T> {
             this.value = value;
             this.guard = new Object();
         }
-        
+
         @Override
         public void call(Subscriber<? super T> s) {
             synchronized (guard) {

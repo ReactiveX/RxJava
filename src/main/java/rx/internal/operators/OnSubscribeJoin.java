@@ -92,10 +92,10 @@ public final class OnSubscribeJoin<TLeft, TRight, TLeftDuration, TRightDuration,
 
         public void run() {
             subscriber.add(group);
-            
+
             Subscriber<TLeft> s1 = new LeftSubscriber();
             Subscriber<TRight> s2 = new RightSubscriber();
-            
+
             group.add(s1);
             group.add(s2);
 
@@ -231,7 +231,7 @@ public final class OnSubscribeJoin<TLeft, TRight, TLeftDuration, TRightDuration,
 
             @Override
             public void onNext(TRight args) {
-                int id; 
+                int id;
                 int highLeftId;
                 synchronized (guard) {
                     id = rightId++;
@@ -247,9 +247,9 @@ public final class OnSubscribeJoin<TLeft, TRight, TLeftDuration, TRightDuration,
 
                     Subscriber<TRightDuration> d2 = new RightDurationSubscriber(id);
                     group.add(d2);
-                    
+
                     duration.unsafeSubscribe(d2);
-                    
+
 
                     List<TLeft> leftValues = new ArrayList<TLeft>();
                     synchronized (guard) {
@@ -259,12 +259,12 @@ public final class OnSubscribeJoin<TLeft, TRight, TLeftDuration, TRightDuration,
                             }
                         }
                     }
-                    
+
                     for (TLeft lv : leftValues) {
                         R result = resultSelector.call(lv, args);
                         subscriber.onNext(result);
                     }
-                    
+
                 } catch (Throwable t) {
                     onError(t);
                 }

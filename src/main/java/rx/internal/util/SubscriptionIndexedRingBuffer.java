@@ -31,7 +31,7 @@ public final class SubscriptionIndexedRingBuffer<T extends Subscription> impleme
     private volatile IndexedRingBuffer<T> subscriptions = IndexedRingBuffer.getInstance();
     private volatile int unsubscribed = 0;
     @SuppressWarnings("rawtypes")
-    private final static AtomicIntegerFieldUpdater<SubscriptionIndexedRingBuffer> UNSUBSCRIBED = AtomicIntegerFieldUpdater.newUpdater(SubscriptionIndexedRingBuffer.class, "unsubscribed");
+    private static final AtomicIntegerFieldUpdater<SubscriptionIndexedRingBuffer> UNSUBSCRIBED = AtomicIntegerFieldUpdater.newUpdater(SubscriptionIndexedRingBuffer.class, "unsubscribed");
 
     public SubscriptionIndexedRingBuffer() {
     }
@@ -140,7 +140,7 @@ public final class SubscriptionIndexedRingBuffer<T extends Subscription> impleme
         subscriptions.forEach(UNSUBSCRIBE);
     }
 
-    private final static Func1<Subscription, Boolean> UNSUBSCRIBE = new Func1<Subscription, Boolean>() {
+    private static final Func1<Subscription, Boolean> UNSUBSCRIBE = new Func1<Subscription, Boolean>() {
 
         @Override
         public Boolean call(Subscription s) {

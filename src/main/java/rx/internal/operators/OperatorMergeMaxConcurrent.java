@@ -36,17 +36,17 @@ import rx.subscriptions.CompositeSubscription;
  */
 public final class OperatorMergeMaxConcurrent<T> implements Operator<T, Observable<? extends T>> {
     final int maxConcurrency;
-    
+
     public OperatorMergeMaxConcurrent(int maxConcurrency) {
         this.maxConcurrency = maxConcurrency;
     }
-    
+
     @Override
     public Subscriber<? super Observable<? extends T>> call(Subscriber<? super T> child) {
         final SerializedSubscriber<T> s = new SerializedSubscriber<T>(child);
         final CompositeSubscription csub = new CompositeSubscription();
         child.add(csub);
-        
+
         return new SourceSubscriber<T>(maxConcurrency, s, csub);
     }
     static final class SourceSubscriber<T> extends Subscriber<Observable<? extends T>> {
@@ -59,12 +59,12 @@ public final class OperatorMergeMaxConcurrent<T> implements Operator<T, Observab
         @SuppressWarnings("rawtypes")
         static final AtomicIntegerFieldUpdater<SourceSubscriber> WIP_UPDATER
                 = AtomicIntegerFieldUpdater.newUpdater(SourceSubscriber.class, "wip");
-        
+
         /** Guarded by guard. */
         int active;
         /** Guarded by guard. */
         final Queue<Observable<? extends T>> queue;
-        
+
         public SourceSubscriber(int maxConcurrency, Subscriber<T> s, CompositeSubscription csub) {
             super(s);
             this.maxConcurrency = maxConcurrency;
@@ -74,7 +74,7 @@ public final class OperatorMergeMaxConcurrent<T> implements Operator<T, Observab
             this.queue = new LinkedList<Observable<? extends T>>();
             this.wip = 1;
         }
-        
+
         @Override
         public void onNext(Observable<? extends T> t) {
             synchronized (guard) {
@@ -82,7 +82,7 @@ public final class OperatorMergeMaxConcurrent<T> implements Operator<T, Observab
             }
             subscribeNext();
         }
-        
+
         void subscribeNext() {
             Observable<? extends T> t;
             synchronized (guard) {
@@ -93,19 +93,19 @@ public final class OperatorMergeMaxConcurrent<T> implements Operator<T, Observab
                 active++;
                 queue.poll();
             }
-            
+
             Subscriber<T> itemSub = new Subscriber<T>() {
                 boolean once = true;
                 @Override
                 public void onNext(T t) {
                     s.onNext(t);
                 }
-                
+
                 @Override
                 public void onError(Throwable e) {
                     SourceSubscriber.this.onError(e);
                 }
-                
+
                 @Override
                 public void onCompleted() {
                     if (once) {
@@ -114,26 +114,26 @@ public final class OperatorMergeMaxConcurrent<T> implements Operator<T, Observab
                             active--;
                         }
                         csub.remove(this);
-                        
+
                         subscribeNext();
-                        
+
                         SourceSubscriber.this.onCompleted();
                     }
                 }
-                
+
             };
             csub.add(itemSub);
             WIP_UPDATER.incrementAndGet(this);
-            
+
             t.unsafeSubscribe(itemSub);
         }
-        
+
         @Override
         public void onError(Throwable e) {
             s.onError(e);
             unsubscribe();
         }
-        
+
         @Override
         public void onCompleted() {
             if (WIP_UPDATER.decrementAndGet(this) == 0) {

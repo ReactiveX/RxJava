@@ -16,5 +16,5 @@
 package rx.functions;
 
 public interface FuncN<R> extends Function {
-    public R call(Object... args);
+    R call(Object... args);
 }

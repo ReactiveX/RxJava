@@ -41,7 +41,7 @@ public final class OperatorDistinctUntilChanged<T, U> implements Operator<T, T> 
                 U currentKey = previousKey;
                 U key = keySelector.call(t);
                 previousKey = key;
-                
+
                 if (hasPrevious) {
                     if (!(currentKey == key || (key != null && key.equals(currentKey)))) {
                         child.onNext(t);
@@ -63,8 +63,8 @@ public final class OperatorDistinctUntilChanged<T, U> implements Operator<T, T> 
             public void onCompleted() {
                 child.onCompleted();
             }
-            
+
         };
     }
-    
+
 }

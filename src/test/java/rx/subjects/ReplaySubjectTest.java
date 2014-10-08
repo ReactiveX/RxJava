@@ -331,23 +331,23 @@ public class ReplaySubjectTest {
         System.out.println("after waiting for one");
 
         subject.onNext("three");
-        
+
         System.out.println("sent three");
-        
-        // if subscription blocked existing subscribers then 'makeSlow' would cause this to not be there yet 
+
+        // if subscription blocked existing subscribers then 'makeSlow' would cause this to not be there yet
         assertEquals("three", lastValueForObserver1.get());
-        
+
         System.out.println("about to send onCompleted");
-        
+
         subject.onCompleted();
 
         System.out.println("completed subject");
-        
-        // release 
+
+        // release
         makeSlow.countDown();
-        
+
         System.out.println("makeSlow released");
-        
+
         completed.await();
         // all of them should be emitted with the last being "three"
         assertEquals("three", lastValueForObserver2.get());
@@ -356,19 +356,19 @@ public class ReplaySubjectTest {
     @Test
     public void testSubscriptionLeak() {
         ReplaySubject<Object> replaySubject = ReplaySubject.create();
-        
+
         Subscription s = replaySubject.subscribe();
 
         assertEquals(1, replaySubject.subscriberCount());
 
         s.unsubscribe();
-        
+
         assertEquals(0, replaySubject.subscriberCount());
     }
     @Test(timeout = 1000)
     public void testUnsubscriptionCase() {
         ReplaySubject<String> src = ReplaySubject.create();
-        
+
         for (int i = 0; i < 10; i++) {
             @SuppressWarnings("unchecked")
             final Observer<Object> o = mock(Observer.class);
@@ -412,10 +412,10 @@ public class ReplaySubjectTest {
         source.onNext(1);
         source.onNext(2);
         source.onCompleted();
-        
+
         @SuppressWarnings("unchecked")
         final Observer<Integer> o = mock(Observer.class);
-        
+
         source.unsafeSubscribe(new Subscriber<Integer>() {
 
             @Override
@@ -433,7 +433,7 @@ public class ReplaySubjectTest {
                 o.onCompleted();
             }
         });
-        
+
         verify(o).onNext(1);
         verify(o).onNext(2);
         verify(o).onCompleted();
@@ -442,29 +442,29 @@ public class ReplaySubjectTest {
     @Test
     public void testNodeListSimpleAddRemove() {
         ReplaySubject.NodeList<Integer> list = new ReplaySubject.NodeList<Integer>();
-        
+
         assertEquals(0, list.size());
-        
+
         // add and remove one
-        
+
         list.addLast(1);
 
         assertEquals(1, list.size());
-        
+
         assertEquals((Integer)1, list.removeFirst());
 
         assertEquals(0, list.size());
 
         // add and remove one again
-        
+
         list.addLast(1);
 
         assertEquals(1, list.size());
-        
+
         assertEquals((Integer)1, list.removeFirst());
 
         // add and remove two items
-        
+
         list.addLast(1);
         list.addLast(2);
 
@@ -475,12 +475,12 @@ public class ReplaySubjectTest {
 
         assertEquals(0, list.size());
         // clear two items
-        
+
         list.addLast(1);
         list.addLast(2);
 
         assertEquals(2, list.size());
-        
+
         list.clear();
 
         assertEquals(0, list.size());
@@ -488,11 +488,11 @@ public class ReplaySubjectTest {
     @Test
     public void testReplay1AfterTermination() {
         ReplaySubject<Integer> source = ReplaySubject.createWithSize(1);
-        
+
         source.onNext(1);
         source.onNext(2);
         source.onCompleted();
-        
+
         for (int i = 0; i < 1; i++) {
             @SuppressWarnings("unchecked")
             Observer<Integer> o = mock(Observer.class);
@@ -526,16 +526,16 @@ public class ReplaySubjectTest {
         verify(o).onCompleted();
         verify(o, never()).onError(any(Throwable.class));
     }
-    
+
     @Test
     public void testReplayTimestampedAfterTermination() {
         TestScheduler scheduler = new TestScheduler();
         ReplaySubject<Integer> source = ReplaySubject.createWithTime(1, TimeUnit.SECONDS, scheduler);
-        
+
         source.onNext(1);
-        
+
         scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
-        
+
         source.onNext(2);
 
         scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
@@ -549,21 +549,21 @@ public class ReplaySubjectTest {
         Observer<Integer> o = mock(Observer.class);
 
         source.subscribe(o);
-        
+
         verify(o, never()).onNext(1);
         verify(o, never()).onNext(2);
         verify(o).onNext(3);
         verify(o).onCompleted();
         verify(o, never()).onError(any(Throwable.class));
     }
-    
+
     @Test
     public void testReplayTimestampedDirectly() {
         TestScheduler scheduler = new TestScheduler();
         ReplaySubject<Integer> source = ReplaySubject.createWithTime(1, TimeUnit.SECONDS, scheduler);
 
         source.onNext(1);
-        
+
         scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
 
         @SuppressWarnings("unchecked")
@@ -572,17 +572,17 @@ public class ReplaySubjectTest {
         source.subscribe(o);
 
         source.onNext(2);
-        
+
         scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
-        
+
         source.onNext(3);
-        
+
         scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
-        
+
         source.onCompleted();
-        
+
         scheduler.advanceTimeBy(1, TimeUnit.SECONDS);
-        
+
         verify(o, never()).onError(any(Throwable.class));
         verify(o, never()).onNext(1);
         verify(o).onNext(2);

@@ -61,14 +61,14 @@ public final class PublishSubject<T> extends Subject<T, T> {
             public void call(SubjectObserver<T> o) {
                 o.emitFirst(state.get(), state.nl);
             }
-            
+
         };
         return new PublishSubject<T>(state, state);
     }
 
     final SubjectSubscriptionManager<T> state;
     private final NotificationLite<T> nl = NotificationLite.instance();
-    
+
     protected PublishSubject(OnSubscribe<T> onSubscribe, SubjectSubscriptionManager<T> state) {
         super(onSubscribe);
         this.state = state;

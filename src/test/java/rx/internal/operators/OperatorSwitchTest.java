@@ -417,12 +417,12 @@ public class OperatorSwitchTest {
 
                     @Override
                     public void request(long n) {
-                        for(int i = 0; i < n && emitted < 10 && !observer.isUnsubscribed(); i++) {
+                        for (int i = 0; i < n && emitted < 10 && !observer.isUnsubscribed(); i++) {
                             scheduler.advanceTimeBy(5, TimeUnit.MILLISECONDS);
                             emitted++;
                             observer.onNext("a" + emitted);
                         }
-                        if(emitted == 10) {
+                        if (emitted == 10) {
                             observer.onCompleted();
                         }
                     }
@@ -438,12 +438,12 @@ public class OperatorSwitchTest {
 
                     @Override
                     public void request(long n) {
-                        for(int i = 0; i < n && emitted < 10 && !observer.isUnsubscribed(); i++) {
+                        for (int i = 0; i < n && emitted < 10 && !observer.isUnsubscribed(); i++) {
                             scheduler.advanceTimeBy(5, TimeUnit.MILLISECONDS);
                             emitted++;
                             observer.onNext("b" + emitted);
                         }
-                        if(emitted == 10) {
+                        if (emitted == 10) {
                             observer.onCompleted();
                         }
                     }
@@ -459,11 +459,11 @@ public class OperatorSwitchTest {
 
                     @Override
                     public void request(long n) {
-                        for(int i = 0; i < n && emitted < 10 && !observer.isUnsubscribed(); i++) {
+                        for (int i = 0; i < n && emitted < 10 && !observer.isUnsubscribed(); i++) {
                             emitted++;
                             observer.onNext("c" + emitted);
                         }
-                        if(emitted == 10) {
+                        if (emitted == 10) {
                             observer.onCompleted();
                         }
                     }
@@ -479,7 +479,7 @@ public class OperatorSwitchTest {
                 publishCompleted(observer, 30);
             }
         });
-        final TestSubscriber testSubscriber = new TestSubscriber();
+        final TestSubscriber<String> testSubscriber = new TestSubscriber<String>();
         Observable.switchOnNext(o).subscribe(new Subscriber<String>() {
 
             private int requested = 0;
@@ -504,7 +504,7 @@ public class OperatorSwitchTest {
             public void onNext(String s) {
                 testSubscriber.onNext(s);
                 requested--;
-                if(requested == 0) {
+                if (requested == 0) {
                     requested = 3;
                     request(3);
                 }

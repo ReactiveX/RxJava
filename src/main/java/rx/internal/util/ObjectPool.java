@@ -84,8 +84,8 @@ public abstract class ObjectPool<T> {
      * @return T borrowed object
      */
     public T borrowObject() {
-        T object;
-        if ((object = pool.poll()) == null) {
+        T object = pool.poll();
+        if (object == null) {
             object = createObject();
         }
 

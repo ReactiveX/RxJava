@@ -112,30 +112,30 @@ public class OperatorDematerializeTest {
     @Test
     public void testHonorsContractWhenCompleted() {
         Observable<Integer> source = Observable.just(1);
-        
+
         Observable<Integer> result = source.materialize().dematerialize();
-        
+
         @SuppressWarnings("unchecked")
         Observer<Integer> o = mock(Observer.class);
-        
+
         result.unsafeSubscribe(Subscribers.from(o));
-        
+
         verify(o).onNext(1);
         verify(o).onCompleted();
         verify(o, never()).onError(any(Throwable.class));
     }
-    
+
     @Test
     public void testHonorsContractWhenThrows() {
         Observable<Integer> source = Observable.error(new TestException());
-        
+
         Observable<Integer> result = source.materialize().dematerialize();
-        
+
         @SuppressWarnings("unchecked")
         Observer<Integer> o = mock(Observer.class);
-        
+
         result.unsafeSubscribe(Subscribers.from(o));
-        
+
         verify(o, never()).onNext(any(Integer.class));
         verify(o, never()).onCompleted();
         verify(o).onError(any(TestException.class));

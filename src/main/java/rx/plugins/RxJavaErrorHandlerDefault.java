@@ -22,7 +22,7 @@ package rx.plugins;
  */
 public class RxJavaErrorHandlerDefault extends RxJavaErrorHandler {
 
-    private static RxJavaErrorHandlerDefault INSTANCE = new RxJavaErrorHandlerDefault();
+    private static final RxJavaErrorHandlerDefault INSTANCE = new RxJavaErrorHandlerDefault();
 
     public static RxJavaErrorHandler getInstance() {
         return INSTANCE;

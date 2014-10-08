@@ -803,8 +803,8 @@ public class OperatorZipTest {
 
     @Test
     public void testStart() {
-        Observable<String> os = OBSERVABLE_OF_5_INTEGERS
-                .zipWith(OBSERVABLE_OF_5_INTEGERS, new Func2<Integer, Integer, String>() {
+        Observable<String> os = observableOf5Integers
+                .zipWith(observableOf5Integers, new Func2<Integer, Integer, String>() {
 
                     @Override
                     public String call(Integer a, Integer b) {
@@ -830,7 +830,6 @@ public class OperatorZipTest {
 
     @Test
     public void testStartAsync() throws InterruptedException {
-        final CountDownLatch latch = new CountDownLatch(1);
         Observable<String> os = ASYNC_OBSERVABLE_OF_INFINITE_INTEGERS(new CountDownLatch(1)).onBackpressureBuffer()
                 .zipWith(ASYNC_OBSERVABLE_OF_INFINITE_INTEGERS(new CountDownLatch(1)).onBackpressureBuffer(), new Func2<Integer, Integer, String>() {
 
@@ -856,7 +855,7 @@ public class OperatorZipTest {
     public void testStartInfiniteAndFinite() throws InterruptedException {
         final CountDownLatch latch = new CountDownLatch(1);
         final CountDownLatch infiniteObservable = new CountDownLatch(1);
-        Observable<String> os = OBSERVABLE_OF_5_INTEGERS
+        Observable<String> os = observableOf5Integers
                 .zipWith(ASYNC_OBSERVABLE_OF_INFINITE_INTEGERS(infiniteObservable), new Func2<Integer, Integer, String>() {
 
                     @Override
@@ -1170,7 +1169,7 @@ public class OperatorZipTest {
         return observable;
     }
 
-    Observable<Integer> OBSERVABLE_OF_5_INTEGERS = OBSERVABLE_OF_5_INTEGERS(new AtomicInteger());
+    Observable<Integer> observableOf5Integers = OBSERVABLE_OF_5_INTEGERS(new AtomicInteger());
 
     Observable<Integer> OBSERVABLE_OF_5_INTEGERS(final AtomicInteger numEmitted) {
         return Observable.create(new OnSubscribe<Integer>() {

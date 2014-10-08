@@ -46,7 +46,7 @@ public class OnSubscribeFromIterableTest {
         verify(observer, Mockito.never()).onError(any(Throwable.class));
         verify(observer, times(1)).onCompleted();
     }
-    
+
     @Test
     public void testListIterable() {
         Observable<String> observable = Observable.create(new OnSubscribeFromIterable<String>(Arrays.<String> asList("one", "two", "three")));

@@ -32,7 +32,6 @@ import rx.Observer;
 import rx.Subscriber;
 import rx.functions.Func1;
 import rx.observers.TestSubscriber;
-import rx.schedulers.Schedulers;
 
 public class OperatorOnErrorReturnTest {
 
@@ -70,7 +69,7 @@ public class OperatorOnErrorReturnTest {
     }
 
     /**
-     * Test that when a function throws an exception this is propagated through onError
+     * Test that when a function throws an exception this is propagated through onError.
      */
     @Test
     public void testFunctionThrowsError() {
@@ -106,7 +105,7 @@ public class OperatorOnErrorReturnTest {
         verify(observer, times(0)).onCompleted();
         assertNotNull(capturedException.get());
     }
-    
+
     @Test
     public void testMapResumeAsyncNext() {
         // Trigger multiple failures
@@ -117,8 +116,9 @@ public class OperatorOnErrorReturnTest {
         w = w.map(new Func1<String, String>() {
             @Override
             public String call(String s) {
-                if ("fail".equals(s))
+                if ("fail".equals(s)) {
                     throw new RuntimeException("Forced Failure");
+                }
                 System.out.println("BadMapper:" + s);
                 return s;
             }
@@ -130,7 +130,7 @@ public class OperatorOnErrorReturnTest {
             public String call(Throwable t1) {
                 return "resume";
             }
-            
+
         });
 
         @SuppressWarnings("unchecked")

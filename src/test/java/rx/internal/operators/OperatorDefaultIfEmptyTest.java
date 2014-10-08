@@ -53,17 +53,17 @@ public class OperatorDefaultIfEmptyTest {
         @SuppressWarnings("unchecked")
         Observer<Integer> observer = mock(Observer.class);
         observable.subscribe(observer);
-        
+
         verify(observer).onNext(10);
         verify(observer).onCompleted();
         verify(observer, never()).onError(any(Throwable.class));
     }
-    
+
     @Test
     public void testEmptyButClientThrows() {
         @SuppressWarnings("unchecked")
         final Observer<Integer> o = mock(Observer.class);
-        
+
         Observable.<Integer>empty().defaultIfEmpty(1).subscribe(new Subscriber<Integer>() {
             @Override
             public void onNext(Integer t) {
@@ -80,7 +80,7 @@ public class OperatorDefaultIfEmptyTest {
                 o.onCompleted();
             }
         });
-        
+
         verify(o).onError(any(TestException.class));
         verify(o, never()).onNext(any(Integer.class));
         verify(o, never()).onCompleted();

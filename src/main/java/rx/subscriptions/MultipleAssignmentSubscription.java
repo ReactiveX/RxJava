@@ -32,7 +32,7 @@ public final class MultipleAssignmentSubscription implements Subscription {
     volatile State state = EMPTY_STATE;
     static final AtomicReferenceFieldUpdater<MultipleAssignmentSubscription, State> STATE_UPDATER
             = AtomicReferenceFieldUpdater.newUpdater(MultipleAssignmentSubscription.class, State.class, "state");
-    
+
     private static final class State {
         final boolean isUnsubscribed;
         final Subscription subscription;

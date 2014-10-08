@@ -32,7 +32,7 @@ import rx.subscriptions.Subscriptions;
  * Represents the typical state and OnSubscribe logic for a Subject implementation.
  * @param <T> the source and return value type
  */
-@SuppressWarnings({"unchecked", "rawtypes"})
+@SuppressWarnings({ "unchecked", "rawtypes" })
 /* package */final class SubjectSubscriptionManager<T> implements OnSubscribe<T> {
     /** Contains the unsubscription flag and the array of active subscribers. */
     volatile State<T> state = State.EMPTY;
@@ -71,7 +71,7 @@ import rx.subscriptions.Subscriptions;
                 remove(bo);
             }
         }));
-    }    
+    }
     /** Set the latest NotificationLite value. */
     void set(Object value) {
         latest = value;
@@ -152,7 +152,7 @@ import rx.subscriptions.Subscriptions;
         static final SubjectObserver[] NO_OBSERVERS = new SubjectObserver[0];
         static final State TERMINATED = new State(true, NO_OBSERVERS);
         static final State EMPTY = new State(false, NO_OBSERVERS);
-        
+
         public State(boolean terminated, SubjectObserver[] observers) {
             this.terminated = terminated;
             this.observers = observers;
@@ -196,7 +196,7 @@ import rx.subscriptions.Subscriptions;
             return new State<T>(terminated, b);
         }
     }
-    
+
     /**
      * Observer wrapping the actual Subscriber and providing various
      * emission facilities.
@@ -319,7 +319,7 @@ import rx.subscriptions.Subscriptions;
                 nl.accept(actual, n);
             }
         }
-        
+
         /** @return the actual Observer. */
         protected Observer<? super T> getActual() {
             return actual;
@@ -329,7 +329,6 @@ import rx.subscriptions.Subscriptions;
          * @param <I> the index type
          * @return the index value
          */
-        @SuppressWarnings("unchecked")
         public <I> I index() {
             return (I)index;
         }

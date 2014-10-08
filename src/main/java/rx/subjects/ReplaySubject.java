@@ -110,7 +110,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                 state.replayObserverFromIndex(idx, o);
             }
         };
-        
+
         return new ReplaySubject<T>(ssm, ssm, state);
     }
     /**
@@ -141,7 +141,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
      * discards the oldest item.
      * <p>
      * When observers subscribe to a terminated {@code ReplaySubject}, they are guaranteed to see at most
-     * {@code size} {@code onNext} events followed by a termination event. 
+     * {@code size} {@code onNext} events followed by a termination event.
      * <p>
      * If an observer subscribes while the {@code ReplaySubject} is active, it will observe all items in the
      * buffer at that point in time and each item observed afterwards, even if the buffer evicts items due to
@@ -168,10 +168,10 @@ public final class ReplaySubject<T> extends Subject<T, T> {
      * In this setting, the {@code ReplaySubject} internally tags each observed item with a timestamp value
      * supplied by the {@link Scheduler} and keeps only those whose age is less than the supplied time value
      * converted to milliseconds. For example, an item arrives at T=0 and the max age is set to 5; at T&gt;=5
-     * this first item is then evicted by any subsequent item or termination event, leaving the buffer empty. 
+     * this first item is then evicted by any subsequent item or termination event, leaving the buffer empty.
      * <p>
      * Once the subject is terminated, observers subscribing to it will receive items that remained in the
-     * buffer after the terminal event, regardless of their age. 
+     * buffer after the terminal event, regardless of their age.
      * <p>
      * If an observer subscribes while the {@code ReplaySubject} is active, it will observe only those items
      * from within the buffer that have an age less than the specified time, and each item observed thereafter,
@@ -257,7 +257,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
      *          the shared state
      * @return the created subject
      */
-    static final <T> ReplaySubject<T> createWithState(final BoundedState<T> state,
+    static <T> ReplaySubject<T> createWithState(final BoundedState<T> state,
             Action1<SubjectObserver<T>> onStart) {
         SubjectSubscriptionManager<T> ssm = new SubjectSubscriptionManager<T>();
         ssm.onStart = onStart;
@@ -273,7 +273,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
             }
 
         };
-        
+
         return new ReplaySubject<T>(ssm, ssm, state);
     }
 
@@ -286,7 +286,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         this.ssm = ssm;
         this.state = state;
     }
-    
+
     @Override
     public void onNext(T t) {
         if (ssm.active) {
@@ -298,7 +298,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
             }
         }
     }
-    
+
     @Override
     public void onError(final Throwable e) {
         if (ssm.active) {
@@ -310,7 +310,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
             }
         }
     }
-    
+
     @Override
     public void onCompleted() {
         if (ssm.active) {
@@ -328,22 +328,21 @@ public final class ReplaySubject<T> extends Subject<T, T> {
     /* Support test. */int subscriberCount() {
         return ssm.state.observers.length;
     }
-    
+
     private boolean caughtUp(SubjectObserver<? super T> o) {
         if (!o.caughtUp) {
             o.caughtUp = true;
             state.replayObserver(o);
             return false;
-        } else {
-            // it was caught up so proceed the "raw route"
-            return true;
         }
+        // it was caught up so proceed the "raw route"
+        return true;
     }
-    
+
     // *********************
     // State implementations
     // *********************
-    
+
     /**
      * The unbounded replay state.
      * @param <T> the input and output type
@@ -374,7 +373,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         public void accept(Observer<? super T> o, int idx) {
             nl.accept(o, list.get(idx));
         }
-        
+
         @Override
         public void complete() {
             if (!terminated) {
@@ -424,10 +423,9 @@ public final class ReplaySubject<T> extends Subject<T, T> {
             return replayObserverFromIndex(idx, observer);
         }
     }
-    
-    
+
     /** 
-     * The bounded replay state. 
+     * The bounded replay state.
      * @param <T> the input and output type
      */
     static final class BoundedState<T> implements ReplayState<T, NodeList.Node<Object>> {
@@ -438,8 +436,8 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         final NotificationLite<T> nl = NotificationLite.instance();
         volatile boolean terminated;
         volatile NodeList.Node<Object> tail;
-        
-        public BoundedState(EvictionPolicy evictionPolicy, Func1<Object, Object> enterTransform, 
+
+        public BoundedState(EvictionPolicy evictionPolicy, Func1<Object, Object> enterTransform,
                 Func1<Object, Object> leaveTransform) {
             this.list = new NodeList<Object>();
             this.tail = list.tail;
@@ -465,7 +463,6 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                 list.addLast(enterTransform.call(nl.completed()));
                 tail = list.tail;
             }
-            
         }
         @Override
         public void error(Throwable e) {
@@ -530,11 +527,11 @@ public final class ReplaySubject<T> extends Subject<T, T> {
             return terminated;
         }
     }
-    
+
     // **************
     // API interfaces
     // **************
-    
+
     /**
      * General API for replay state management.
      * @param <T> the input and output type
@@ -549,7 +546,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
          */
         void replayObserver(SubjectObserver<? super T> observer);
         /**
-         * Replay the buffered values from an index position and return a new index
+         * Replay the buffered values from an index position and return a new index.
          * @param idx the current index position
          * @param observer the receiver of events
          * @return the new index position
@@ -557,7 +554,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         I replayObserverFromIndex(
                 I idx, SubjectObserver<? super T> observer);
         /**
-         * Replay the buffered values from an index position while testing for stale entries and return a new index
+         * Replay the buffered values from an index position while testing for stale entries and return a new index.
          * @param idx the current index position
          * @param observer the receiver of events
          * @return the new index position
@@ -565,21 +562,21 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         I replayObserverFromIndexTest(
                 I idx, SubjectObserver<? super T> observer, long now);
         /**
-         * Add an OnNext value to the buffer
+         * Add an OnNext value to the buffer.
          * @param value the value to add
          */
         void next(T value);
         /**
-         * Add an OnError exception and terminate the subject
+         * Add an OnError exception and terminate the subject.
          * @param e the exception to add
          */
         void error(Throwable e);
         /**
-         * Add an OnCompleted exception and terminate the subject
+         * Add an OnCompleted exception and terminate the subject.
          */
         void complete();
     }
-    
+
     /** Interface to manage eviction checking. */
     interface EvictionPolicy {
         /**
@@ -590,27 +587,27 @@ public final class ReplaySubject<T> extends Subject<T, T> {
          */
         boolean test(Object value, long now);
         /**
-         * Evict values from the list
-         * @param list 
+         * Evict values from the list.
+         * @param list the list of objects to work on
          */
         void evict(NodeList<Object> list);
     }
 
-    
+
     // ************************
     // Callback implementations
     // ************************
-    
+
     /**
      * Remove elements from the beginning of the list if the size exceeds some threshold.
      */
     static final class SizeEvictionPolicy implements EvictionPolicy {
         final int maxSize;
-        
+
         public SizeEvictionPolicy(int maxSize) {
             this.maxSize = maxSize;
         }
-        
+
         @Override
         public void evict(NodeList<Object> t1) {
             while (t1.size() > maxSize) {
@@ -630,12 +627,12 @@ public final class ReplaySubject<T> extends Subject<T, T> {
     static final class TimeEvictionPolicy implements EvictionPolicy {
         final long maxAgeMillis;
         final Scheduler scheduler;
-        
+
         public TimeEvictionPolicy(long maxAgeMillis, Scheduler scheduler) {
             this.maxAgeMillis = maxAgeMillis;
             this.scheduler = scheduler;
         }
-        
+
         @Override
         public void evict(NodeList<Object> t1) {
             long now = scheduler.now();
@@ -654,7 +651,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
             Timestamped<?> ts = (Timestamped<?>)value;
             return ts.getTimestampMillis() <= now - maxAgeMillis;
         }
-        
+
     }
     /**
      * Pairs up two eviction policy callbacks.
@@ -662,12 +659,12 @@ public final class ReplaySubject<T> extends Subject<T, T> {
     static final class PairEvictionPolicy implements EvictionPolicy {
         final EvictionPolicy first;
         final EvictionPolicy second;
-        
+
         public PairEvictionPolicy(EvictionPolicy first, EvictionPolicy second) {
             this.first = first;
             this.second = second;
         }
-        
+
         @Override
         public void evict(NodeList<Object> t1) {
             first.evict(t1);
@@ -679,7 +676,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
             return first.test(value, now) || second.test(value, now);
         }
     };
-    
+
     /** Maps the values to Timestamped. */
     static final class AddTimestamped implements Func1<Object, Object> {
         final Scheduler scheduler;
@@ -711,16 +708,16 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         public DefaultOnAdd(BoundedState<T> state) {
             this.state = state;
         }
-        
+
         @Override
         public void call(SubjectObserver<T> t1) {
             NodeList.Node<Object> l = state.replayObserverFromIndex(state.head(), t1);
             t1.index(l);
         }
-        
+
     }
     /**
-     * Action of replaying non-stale entries of the buffer on subscribe
+     * Action of replaying non-stale entries of the buffer on subscribe.
      * @param <T> the input and output value
      */
     static final class TimedOnAdd<T> implements Action1<SubjectObserver<T>> {
@@ -731,7 +728,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
             this.state = state;
             this.scheduler = scheduler;
         }
-        
+
         @Override
         public void call(SubjectObserver<T> t1) {
             NodeList.Node<Object> l;
@@ -744,7 +741,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
             }
             t1.index(l);
         }
-        
+
     }
     /**
      * A singly-linked list with volatile next node pointer.
@@ -770,7 +767,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         Node<T> tail = head;
         /** The number of elements in the list. */
         int size;
-        
+
         public void addLast(T value) {
             Node<T> t = tail;
             Node<T> t2 = new Node<T>(value);
@@ -810,6 +807,6 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         @Override
         public void evict(NodeList<Object> list) {
         }
-        
-    }    
+
+    }
 }

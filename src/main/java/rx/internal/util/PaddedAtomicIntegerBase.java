@@ -76,7 +76,7 @@ abstract class PaddedAtomicIntegerBase extends FrontPadding {
     public final int addAndGet(int delta) {
     	return updater.addAndGet(this, delta);
     }
-    
+
     @Override
     public String toString() {
         return String.valueOf(get());

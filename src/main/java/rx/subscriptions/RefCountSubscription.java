@@ -72,7 +72,7 @@ public final class RefCountSubscription implements Subscription {
     }
 
     /**
-     * Returns a new sub-subscription
+     * Returns a new sub-subscription.
      *
      * @return a new sub-subscription.
      */

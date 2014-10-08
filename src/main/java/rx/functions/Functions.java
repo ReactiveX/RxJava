@@ -15,8 +15,13 @@
  */
 package rx.functions;
 
-public class Functions {
-
+/**
+ * Utility class for the Function interfaces.
+ */
+public final class Functions {
+	private Functions() {
+		throw new IllegalStateException("No instances!");
+	}
     /**
      * Converts a {@link Func0} to a {@link FuncN} to allow heterogeneous handling of functions with different
      * arities.
@@ -411,7 +416,7 @@ public class Functions {
      */
     @SuppressWarnings("unchecked")
     public static <T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, R> NullFunction<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, R> returnNull() {
-        return (NullFunction<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9, R>) NULL_FUNCTION;
+        return NULL_FUNCTION;
     }
 
     @SuppressWarnings("rawtypes")

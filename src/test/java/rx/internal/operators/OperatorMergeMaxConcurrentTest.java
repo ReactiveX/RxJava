@@ -126,7 +126,7 @@ public class OperatorMergeMaxConcurrentTest {
         }
 
     }
-    
+
     @Test
     public void testMergeALotOfSourcesOneByOneSynchronously() {
         int n = 10000;

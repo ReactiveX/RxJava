@@ -479,7 +479,8 @@ public class OperatorGroupByTest {
                         if (group.getKey() == 0) {
                             return group.delay(100, TimeUnit.MILLISECONDS).map(new Func1<Integer, Integer>() {
 
-                                public Integer call(Integer t) {
+                                @Override
+								public Integer call(Integer t) {
                                     return t * 10;
                                 }
 
@@ -1020,7 +1021,7 @@ public class OperatorGroupByTest {
         verify(o2, never()).onError(Matchers.<Throwable> any());
     }
 
-    private static Func1<Long, Boolean> IS_EVEN = new Func1<Long, Boolean>() {
+    private static final Func1<Long, Boolean> IS_EVEN = new Func1<Long, Boolean>() {
 
         @Override
         public Boolean call(Long n) {
@@ -1028,7 +1029,7 @@ public class OperatorGroupByTest {
         }
     };
 
-    private static Func1<Integer, Boolean> IS_EVEN2 = new Func1<Integer, Boolean>() {
+    private static final Func1<Integer, Boolean> IS_EVEN2 = new Func1<Integer, Boolean>() {
 
         @Override
         public Boolean call(Integer n) {
@@ -1217,7 +1218,7 @@ public class OperatorGroupByTest {
     }
 
     /**
-     * Assert we get an IllegalStateException if trying to subscribe to an inner GroupedObservable more than once
+     * Assert we get an IllegalStateException if trying to subscribe to an inner GroupedObservable more than once.
      */
     @Test
     public void testExceptionIfSubscribeToChildMoreThanOnce() {
@@ -1348,7 +1349,7 @@ public class OperatorGroupByTest {
         ts.assertNoErrors();
     }
 
-    static Func1<GroupedObservable<Integer, Integer>, Observable<Integer>> FLATTEN_INTEGER = new Func1<GroupedObservable<Integer, Integer>, Observable<Integer>>() {
+    static final Func1<GroupedObservable<Integer, Integer>, Observable<Integer>> FLATTEN_INTEGER = new Func1<GroupedObservable<Integer, Integer>, Observable<Integer>>() {
 
         @Override
         public Observable<Integer> call(GroupedObservable<Integer, Integer> t) {

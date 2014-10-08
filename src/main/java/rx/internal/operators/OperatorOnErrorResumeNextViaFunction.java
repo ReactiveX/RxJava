@@ -53,7 +53,7 @@ public final class OperatorOnErrorResumeNextViaFunction<T> implements Operator<T
         Subscriber<T> parent = new Subscriber<T>() {
 
             private boolean done = false;
-            
+
             @Override
             public void onCompleted() {
                 if (done) {

@@ -36,16 +36,16 @@ class OperatorTimeoutBase<T> implements Operator<T, T> {
      * 
      * @param <T>
      */
-    /* package-private */static interface FirstTimeoutStub<T> extends
+    /* package-private */interface FirstTimeoutStub<T> extends
             Func3<TimeoutSubscriber<T>, Long, Scheduler.Worker, Subscription> {
     }
 
     /**
-     * Set up the timeout action based on every value
+     * Set up the timeout action based on every value.
      * 
      * @param <T>
      */
-    /* package-private */static interface TimeoutStub<T> extends
+    /* package-private */interface TimeoutStub<T> extends
             Func4<TimeoutSubscriber<T>, Long, T, Scheduler.Worker, Subscription> {
     }
 
@@ -77,7 +77,7 @@ class OperatorTimeoutBase<T> implements Operator<T, T> {
         return timeoutSubscriber;
     }
 
-    /* package-private */static class TimeoutSubscriber<T> extends
+    /* package-private */static final class TimeoutSubscriber<T> extends
             Subscriber<T> {
 
         private final SerialSubscription serial;
@@ -89,10 +89,10 @@ class OperatorTimeoutBase<T> implements Operator<T, T> {
 
         private final Observable<? extends T> other;
         private final Scheduler.Worker inner;
-        
+
         volatile int terminated;
         volatile long actual;
-        
+
         @SuppressWarnings("rawtypes")
         static final AtomicIntegerFieldUpdater<TimeoutSubscriber> TERMINATED_UPDATER
                 = AtomicIntegerFieldUpdater.newUpdater(TimeoutSubscriber.class, "terminated");

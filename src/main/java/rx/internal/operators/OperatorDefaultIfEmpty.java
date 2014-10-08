@@ -29,7 +29,7 @@ public class OperatorDefaultIfEmpty<T> implements Operator<T, T> {
     public OperatorDefaultIfEmpty(T defaultValue) {
         this.defaultValue = defaultValue;
     }
-    
+
     @Override
     public Subscriber<? super T> call(final Subscriber<? super T> child) {
         return new Subscriber<T>(child) {
@@ -57,8 +57,8 @@ public class OperatorDefaultIfEmpty<T> implements Operator<T, T> {
                 }
                 child.onCompleted();
             }
-            
+
         };
     }
-    
+
 }

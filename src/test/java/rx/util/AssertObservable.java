@@ -20,7 +20,10 @@ import rx.Observable;
 import rx.functions.Func1;
 import rx.functions.Func2;
 
-public class AssertObservable {
+public final class AssertObservable {
+	private AssertObservable() {
+		throw new IllegalStateException("No instances!");
+	}
     /**
      * Asserts that two Observables are equal. If they are not, an {@link AssertionError} is thrown
      * with the given message. If <code>expecteds</code> and <code>actuals</code> are
@@ -96,24 +99,29 @@ public class AssertObservable {
                 if (expectedNotfication.equals(actualNotification)) {
                     StringBuilder message = new StringBuilder();
                     message.append(expectedNotfication.getKind());
-                    if (expectedNotfication.hasValue())
+                    if (expectedNotfication.hasValue()) {
                         message.append(" ").append(expectedNotfication.getValue());
-                    if (expectedNotfication.hasThrowable())
+                    }
+                    if (expectedNotfication.hasThrowable()) {
                         message.append(" ").append(expectedNotfication.getThrowable());
+                    }
                     return Notification.createOnNext("equals " + message.toString());
-                }
-                else {
+                } else {
                     StringBuilder error = new StringBuilder();
                     error.append("expected:<").append(expectedNotfication.getKind());
-                    if (expectedNotfication.hasValue())
+                    if (expectedNotfication.hasValue()) {
                         error.append(" ").append(expectedNotfication.getValue());
-                    if (expectedNotfication.hasThrowable())
+                    }
+                    if (expectedNotfication.hasThrowable()) {
                         error.append(" ").append(expectedNotfication.getThrowable());
+                    }
                     error.append("> but was:<").append(actualNotification.getKind());
-                    if (actualNotification.hasValue())
+                    if (actualNotification.hasValue()) {
                         error.append(" ").append(actualNotification.getValue());
-                    if (actualNotification.hasThrowable())
+                    }
+                    if (actualNotification.hasThrowable()) {
                         error.append(" ").append(actualNotification.getThrowable());
+                    }
                     error.append(">");
 
                     return Notification.createOnError(new AssertionError(error.toString()));
@@ -130,10 +138,10 @@ public class AssertObservable {
                 message += "\n\t" + (b.isOnError() ? b.getThrowable().getMessage() : b.getValue());
                 fail |= b.isOnError();
 
-                if (fail)
+                if (fail) {
                     return Notification.createOnError(new AssertionError(message));
-                else
-                    return Notification.createOnNext(message);
+                }
+                return Notification.createOnNext(message);
             }
         };
 

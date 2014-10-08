@@ -327,14 +327,14 @@ public class CompositeSubscriptionTest {
     @Test
     public void testTryRemoveIfNotIn() {
         CompositeSubscription csub = new CompositeSubscription();
-        
+
         CompositeSubscription csub1 = new CompositeSubscription();
         CompositeSubscription csub2 = new CompositeSubscription();
-        
+
         csub.add(csub1);
         csub.remove(csub1);
         csub.add(csub2);
-        
+
         csub.remove(csub1); // try removing agian
     }
 }

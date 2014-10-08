@@ -44,7 +44,7 @@ public class TestSchedulerTest {
 
         final TestScheduler scheduler = new TestScheduler();
         final Scheduler.Worker inner = scheduler.createWorker();
-        
+
         inner.schedulePeriodically(new Action0() {
             @Override
             public void call() {
@@ -125,7 +125,7 @@ public class TestSchedulerTest {
         TestScheduler s = new TestScheduler();
         final Scheduler.Worker inner = s.createWorker();
         final AtomicInteger counter = new AtomicInteger(0);
-        
+
         inner.schedule(new Action0() {
 
             @Override

@@ -30,7 +30,7 @@ import rx.Observable.OnSubscribe;
 public class MergeTests {
 
     /**
-     * This won't compile if super/extends isn't done correctly on generics
+     * This won't compile if super/extends isn't done correctly on generics.
      */
     @Test
     public void testCovarianceOfMerge() {
@@ -47,7 +47,7 @@ public class MergeTests {
         Observable<Observable<Media>> os = Observable.just(o1, o2);
 
         List<Media> values = Observable.merge(os).toList().toBlocking().single();
-        
+
         assertEquals(4, values.size());
     }
 
@@ -72,7 +72,7 @@ public class MergeTests {
 
         assertTrue(values.get(0) instanceof HorrorMovie);
         assertTrue(values.get(1) instanceof Movie);
-        assertTrue(values.get(2) instanceof Media);
+        assertTrue(values.get(2) != null);
         assertTrue(values.get(3) instanceof HorrorMovie);
     }
 
@@ -96,7 +96,7 @@ public class MergeTests {
 
         assertTrue(values.get(0) instanceof HorrorMovie);
         assertTrue(values.get(1) instanceof Movie);
-        assertTrue(values.get(2) instanceof Media);
+        assertTrue(values.get(2) != null);
         assertTrue(values.get(3) instanceof HorrorMovie);
     }
 

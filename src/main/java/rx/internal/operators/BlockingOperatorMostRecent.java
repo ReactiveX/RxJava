@@ -29,7 +29,9 @@ import rx.exceptions.Exceptions;
  * <img width="640" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.mostRecent.png" alt="">
  */
 public final class BlockingOperatorMostRecent {
-
+	private BlockingOperatorMostRecent() {
+		throw new IllegalStateException("No instances!");
+	}
     /**
      * Returns an {@code Iterable} that always returns the item most recently emitted by the {@code Observable}.
      *
@@ -58,10 +60,10 @@ public final class BlockingOperatorMostRecent {
         };
     }
 
-    private static class MostRecentObserver<T> extends Subscriber<T> {
+    private static final class MostRecentObserver<T> extends Subscriber<T> {
         final NotificationLite<T> nl = NotificationLite.instance();
         volatile Object value;
-        
+
         private MostRecentObserver(T value) {
             this.value = nl.next(value);
         }
@@ -103,16 +105,17 @@ public final class BlockingOperatorMostRecent {
                 public T next() {
                     try {
                         // if hasNext wasn't called before calling next.
-                        if (buf == null)
+                        if (buf == null) {
                             buf = value;
-                        if (nl.isCompleted(buf))
+                        }
+                        if (nl.isCompleted(buf)) {
                             throw new NoSuchElementException();
+                        }
                         if (nl.isError(buf)) {
                             throw Exceptions.propagate(nl.getError(buf));
                         }
                         return nl.getValue(buf);
-                    }
-                    finally {
+                    } finally {
                         buf = null;
                     }
                 }

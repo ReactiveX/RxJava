@@ -39,10 +39,10 @@ import rx.subscriptions.Subscriptions;
 
 public class OnSubscribeUsingTest {
 
-    private static interface Resource {
-        public String getTextFromWeb();
+    private interface Resource {
+        String getTextFromWeb();
 
-        public void dispose();
+        void dispose();
     }
 
     private static class DisposeAction implements Action1<Resource> {
@@ -53,14 +53,14 @@ public class OnSubscribeUsingTest {
         }
 
     }
-    
+
     private final Action1<Subscription> disposeSubscription = new Action1<Subscription>() {
 
         @Override
         public void call(Subscription s) {
             s.unsubscribe();
         }
-        
+
     };
 
     @Test
@@ -83,7 +83,7 @@ public class OnSubscribeUsingTest {
         };
 
         @SuppressWarnings("unchecked")
-        Observer<String> observer = (Observer<String>) mock(Observer.class);
+        Observer<String> observer = mock(Observer.class);
         Observable<String> observable = Observable.using(resourceFactory, observableFactory, new DisposeAction());
         observable.subscribe(observer);
 
@@ -115,7 +115,7 @@ public class OnSubscribeUsingTest {
                         }
                         return "Nothing";
                     }
-                    
+
                     @Override
                     public void dispose() {
                         // do nothing
@@ -133,7 +133,7 @@ public class OnSubscribeUsingTest {
         };
 
         @SuppressWarnings("unchecked")
-        Observer<String> observer = (Observer<String>) mock(Observer.class);
+        Observer<String> observer = mock(Observer.class);
         Observable<String> observable = Observable.using(resourceFactory, observableFactory, new DisposeAction());
         observable.subscribe(observer);
         observable.subscribe(observer);
@@ -165,7 +165,7 @@ public class OnSubscribeUsingTest {
                 return Observable.empty();
             }
         };
-        
+
         Observable.using(resourceFactory, observableFactory, disposeSubscription).toBlocking().last();
     }
 
@@ -185,7 +185,7 @@ public class OnSubscribeUsingTest {
                 throw new TestException();
             }
         };
-        
+
         try {
             Observable.using(resourceFactory, observableFactory, disposeSubscription).toBlocking().last();
             fail("Should throw a TestException when the observableFactory throws it");
@@ -217,8 +217,6 @@ public class OnSubscribeUsingTest {
                 });
             }
         };
-        
-        
 
         try {
             Observable.using(resourceFactory, observableFactory, disposeSubscription).toBlocking().last();

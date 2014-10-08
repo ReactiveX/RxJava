@@ -106,9 +106,9 @@ public final class OperatorMulticast<T, R> extends ConnectableObservable<R> {
                         subject.onNext(args);
                     }
                 };
-                
+
                 // register any subscribers that are waiting with this new subject
-                for(Subscriber<? super R> s : waitingForConnect) {
+                for (Subscriber<? super R> s : waitingForConnect) {
                     subject.unsafeSubscribe(s);
                 }
                 // clear the waiting list as any new ones that come in after leaving this synchronized block will go direct to the Subject

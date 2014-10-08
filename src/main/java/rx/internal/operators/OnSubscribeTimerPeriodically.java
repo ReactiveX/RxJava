@@ -57,7 +57,7 @@ public final class OnSubscribeTimerPeriodically implements OnSubscribe<Long> {
                     }
                 }
             }
-            
+
         }, initialDelay, period, unit);
     }
 }

@@ -53,7 +53,7 @@ public class OperatorUnsubscribeOn<T> implements Operator<T, T> {
             }
 
         };
-        
+
         subscriber.add(Subscriptions.create(new Action0() {
 
             @Override
@@ -70,9 +70,7 @@ public class OperatorUnsubscribeOn<T> implements Operator<T, T> {
             }
 
         }));
-        
+
         return parent;
-
-
     }
 }

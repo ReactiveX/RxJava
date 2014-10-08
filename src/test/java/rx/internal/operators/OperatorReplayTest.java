@@ -430,7 +430,7 @@ public class OperatorReplayTest {
                 System.out.println("Sideeffect #" + v);
             }
         });
-        
+
         Observable<Integer> result = source.replay(
         new Func1<Observable<Integer>, Observable<Integer>>() {
             @Override
@@ -438,7 +438,7 @@ public class OperatorReplayTest {
                 return o.take(2);
             }
         });
-        
+
         for (int i = 1; i < 3; i++) {
             effectCounter.set(0);
             System.out.printf("- %d -%n", i);
@@ -448,14 +448,14 @@ public class OperatorReplayTest {
                 public void call(Integer t1) {
                     System.out.println(t1);
                 }
-                
+
             }, new Action1<Throwable>() {
 
                 @Override
                 public void call(Throwable t1) {
                     t1.printStackTrace();
                 }
-            }, 
+            },
             new Action0() {
                 @Override
                 public void call() {

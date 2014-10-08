@@ -1,3 +1,18 @@
+/**
+ * Copyright 2014 Netflix, Inc.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package rx.internal.operators;
 
 
@@ -62,9 +77,8 @@ final class TakeLastQueueProducer<T> implements Producer {
                 } finally {
                     deque.clear();
                 }
-            } else {
-                // backpressure path will handle Long.MAX_VALUE and emit the rest events.
             }
+            // Otherwise, backpressure path will handle Long.MAX_VALUE and emit the rest events.
         } else {
             // backpressure is requested
             if (previousRequested == 0) {
@@ -76,7 +90,11 @@ final class TakeLastQueueProducer<T> implements Producer {
                     long numToEmit = requested;
                     int emitted = 0;
                     Object o;
-                    while (--numToEmit >= 0 && (o = deque.poll()) != null) {
+                    while (--numToEmit >= 0) {
+                    	o = deque.poll();
+                    	if (o == null) {
+                    		break;
+                    	}
                         if (subscriber.isUnsubscribed()) {
                             return;
                         }
@@ -87,7 +105,7 @@ final class TakeLastQueueProducer<T> implements Producer {
                             emitted++;
                         }
                     }
-                    for (; ; ) {
+                    for (;;) {
                         long oldRequested = requested;
                         long newRequested = oldRequested - emitted;
                         if (oldRequested == Long.MAX_VALUE) {

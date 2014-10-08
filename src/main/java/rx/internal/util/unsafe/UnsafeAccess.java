@@ -24,7 +24,9 @@ import sun.misc.Unsafe;
  * otherwise NPEs will happen in environments without "suc.misc.Unsafe" such as Android.
  */
 public final class UnsafeAccess {
-
+	private UnsafeAccess() {
+		throw new IllegalStateException("No instances");
+	}
     public static final Unsafe UNSAFE;
     static {
         Unsafe u = null;
@@ -44,7 +46,7 @@ public final class UnsafeAccess {
         UNSAFE = u;
     }
 
-    public static final boolean isUnsafeAvailable() {
+    public static boolean isUnsafeAvailable() {
         return UNSAFE != null;
     }
 
@@ -56,8 +58,9 @@ public final class UnsafeAccess {
         for (;;) {
             int current = UNSAFE.getIntVolatile(obj, offset);
             int next = current + 1;
-            if (UNSAFE.compareAndSwapInt(obj, offset, current, next))
+            if (UNSAFE.compareAndSwapInt(obj, offset, current, next)) {
                 return current;
+            }
         }
     }
 
@@ -65,16 +68,18 @@ public final class UnsafeAccess {
         for (;;) {
             int current = UNSAFE.getIntVolatile(obj, offset);
             int next = current + n;
-            if (UNSAFE.compareAndSwapInt(obj, offset, current, next))
+            if (UNSAFE.compareAndSwapInt(obj, offset, current, next)) {
                 return current;
+            }
         }
     }
 
     public static int getAndSetInt(Object obj, long offset, int newValue) {
         for (;;) {
             int current = UNSAFE.getIntVolatile(obj, offset);
-            if (UNSAFE.compareAndSwapInt(obj, offset, current, newValue))
+            if (UNSAFE.compareAndSwapInt(obj, offset, current, newValue)) {
                 return current;
+            }
         }
     }
 

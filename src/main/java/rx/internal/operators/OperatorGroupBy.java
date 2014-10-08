@@ -260,7 +260,7 @@ public class OperatorGroupBy<T, K, R> implements Operator<GroupedObservable<K, R
                     BUFFERED_COUNT.addAndGet(self, -removed.buffer.size());
                 }
                 completeInner();
-                // since we may have unsubscribed early with items in the buffer 
+                // since we may have unsubscribed early with items in the buffer
                 // we remove those above and have freed up room to request more
                 // so give it a chance to request more now
                 requestMoreIfNecessary();
@@ -273,7 +273,9 @@ public class OperatorGroupBy<T, K, R> implements Operator<GroupedObservable<K, R
             REQUESTED.decrementAndGet(this);
             // short circuit buffering
             if (keyRequested != null && keyRequested.get() > 0 && (q == null || q.isEmpty())) {
-                nl.accept((Observer) groupState.getObserver(), item);
+            	@SuppressWarnings("unchecked")
+            	Observer<Object> obs = (Observer<Object>)groupState.getObserver();
+                nl.accept(obs, item);
                 keyRequested.decrementAndGet();
             } else {
                 q.add(item);
@@ -316,7 +318,9 @@ public class OperatorGroupBy<T, K, R> implements Operator<GroupedObservable<K, R
             while (groupState.requested.get() > 0) {
                 Object t = groupState.buffer.poll();
                 if (t != null) {
-                    nl.accept((Observer) groupState.getObserver(), t);
+                	@SuppressWarnings("unchecked")
+                    Observer<Object> observer = (Observer<Object>) groupState.getObserver();
+					nl.accept(observer, t);
                     groupState.requested.decrementAndGet();
                     BUFFERED_COUNT.decrementAndGet(this);
 
@@ -346,7 +350,7 @@ public class OperatorGroupBy<T, K, R> implements Operator<GroupedObservable<K, R
 
     }
 
-    private final static Func1<Object, Object> IDENTITY = new Func1<Object, Object>() {
+    private static final Func1<Object, Object> IDENTITY = new Func1<Object, Object>() {
         @Override
         public Object call(Object t) {
             return t;

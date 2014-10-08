@@ -54,13 +54,13 @@ public class OperatorRetryWithPredicateTest {
     @Test
     public void testWithNothingToRetry() {
         Observable<Integer> source = Observable.range(0, 3);
-        
+
         @SuppressWarnings("unchecked")
         Observer<Integer> o = mock(Observer.class);
         InOrder inOrder = inOrder(o);
-        
+
         source.retry(retryTwice).subscribe(o);
-        
+
         inOrder.verify(o).onNext(0);
         inOrder.verify(o).onNext(1);
         inOrder.verify(o).onNext(2);
@@ -85,11 +85,11 @@ public class OperatorRetryWithPredicateTest {
                 t1.onCompleted();
             }
         });
-        
+
         @SuppressWarnings("unchecked")
         Observer<Integer> o = mock(Observer.class);
         InOrder inOrder = inOrder(o);
-        
+
         source.retry(retryTwice).subscribe(o);
 
         inOrder.verify(o).onNext(0);
@@ -100,7 +100,6 @@ public class OperatorRetryWithPredicateTest {
         inOrder.verify(o).onNext(3);
         inOrder.verify(o).onCompleted();
         verify(o, never()).onError(any(Throwable.class));
-        
     }
     @Test
     public void testRetryTwiceAndGiveUp() {
@@ -112,11 +111,11 @@ public class OperatorRetryWithPredicateTest {
                 t1.onError(new TestException());
             }
         });
-        
+
         @SuppressWarnings("unchecked")
         Observer<Integer> o = mock(Observer.class);
         InOrder inOrder = inOrder(o);
-        
+
         source.retry(retryTwice).subscribe(o);
 
         inOrder.verify(o).onNext(0);
@@ -127,7 +126,6 @@ public class OperatorRetryWithPredicateTest {
         inOrder.verify(o).onNext(1);
         inOrder.verify(o).onError(any(TestException.class));
         verify(o, never()).onCompleted();
-        
     }
     @Test
     public void testRetryOnSpecificException() {
@@ -147,11 +145,11 @@ public class OperatorRetryWithPredicateTest {
                 t1.onCompleted();
             }
         });
-        
+
         @SuppressWarnings("unchecked")
         Observer<Integer> o = mock(Observer.class);
         InOrder inOrder = inOrder(o);
-        
+
         source.retry(retryOnTestException).subscribe(o);
 
         inOrder.verify(o).onNext(0);
@@ -183,11 +181,11 @@ public class OperatorRetryWithPredicateTest {
                 t1.onError(te);
             }
         });
-        
+
         @SuppressWarnings("unchecked")
         Observer<Integer> o = mock(Observer.class);
         InOrder inOrder = inOrder(o);
-        
+
         source.retry(retryOnTestException).subscribe(o);
 
         inOrder.verify(o).onNext(0);
@@ -200,7 +198,7 @@ public class OperatorRetryWithPredicateTest {
         verify(o, never()).onError(ioe);
         verify(o, never()).onCompleted();
     }
-    
+
     @Test
     public void testUnsubscribeFromRetry() {
         PublishSubject<Integer> subject = PublishSubject.create();
@@ -216,7 +214,7 @@ public class OperatorRetryWithPredicateTest {
         subject.onNext(2);
         assertEquals(1, count.get());
     }
-    
+
     @Test(timeout = 10000)
     public void testUnsubscribeAfterError() {
 

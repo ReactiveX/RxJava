@@ -120,7 +120,7 @@ public class SerializedObserver<T> implements Observer<T> {
         }
         drainQueue(list);
         actual.onError(e);
-        synchronized(this) {
+        synchronized (this) {
             emitting = false;
         }
     }
@@ -184,11 +184,11 @@ public class SerializedObserver<T> implements Observer<T> {
                 }
             }
         }
-        
+
         // this will only drain if terminated (done here outside of synchronized block)
         drainQueue(list);
     }
-    
+
     void drainQueue(FastList list) {
         if (list == null || list.size == 0) {
             return;

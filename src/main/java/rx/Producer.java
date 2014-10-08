@@ -29,6 +29,6 @@ public interface Producer {
      *          want the Producer to produce items at its own pace
      * @since 0.20
      */
-    public void request(long n);
+    void request(long n);
 
 }

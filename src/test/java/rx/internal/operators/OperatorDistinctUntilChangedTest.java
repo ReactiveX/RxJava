@@ -41,7 +41,7 @@ public class OperatorDistinctUntilChangedTest {
     Observer<String> w2;
 
     // nulls lead to exceptions
-    final Func1<String, String> TO_UPPER_WITH_EXCEPTION = new Func1<String, String>() {
+    static final Func1<String, String> TO_UPPER_WITH_EXCEPTION = new Func1<String, String>() {
         @Override
         public String call(String s) {
             if (s.equals("x")) {

@@ -50,7 +50,7 @@ import rx.internal.operators.BlockingOperatorToIterator;
  * @param <T>
  *           the type of item emitted by the {@code BlockingObservable}
  */
-public class BlockingObservable<T> {
+public final class BlockingObservable<T> {
 
     private final Observable<? extends T> o;
 

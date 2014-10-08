@@ -45,7 +45,7 @@ public class OperatorObserveOnPerf {
         }
 
     }
-    
+
     @Benchmark
     public void observeOnComputation(Input input) throws InterruptedException {
         LatchedObserver<Integer> o = input.newLatchedObserver();

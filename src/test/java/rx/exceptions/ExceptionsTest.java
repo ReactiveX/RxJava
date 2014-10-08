@@ -138,7 +138,7 @@ public class ExceptionsTest {
     }
 
     /**
-     * https://github.com/ReactiveX/RxJava/issues/969
+     * https://github.com/ReactiveX/RxJava/issues/969 .
      */
     @Test
     public void testOnErrorExceptionIsThrown() {
@@ -161,9 +161,8 @@ public class ExceptionsTest {
             });
             fail("expecting an exception to be thrown");
         } catch (CompositeException t) {
-            CompositeException ce = (CompositeException) t;
-            assertTrue(ce.getExceptions().get(0) instanceof IllegalArgumentException);
-            assertTrue(ce.getExceptions().get(1) instanceof IllegalStateException);
+            assertTrue(t.getExceptions().get(0) instanceof IllegalArgumentException);
+            assertTrue(t.getExceptions().get(1) instanceof IllegalStateException);
         }
     }
 

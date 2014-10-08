@@ -48,5 +48,5 @@ public final class OnSubscribeDefer<T> implements OnSubscribe<T> {
         }
         o.unsafeSubscribe(s);
     }
-    
+
 }

@@ -31,7 +31,7 @@ import rx.subscriptions.Subscriptions;
 /**
  * Given multiple {@link Observable}s, propagates the one that first emits an item.
  */
-public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
+public final class OnSubscribeAmb<T> implements OnSubscribe<T> {
 
     /**
      * Given two {@link Observable}s, propagates the one that first emits an item.
@@ -277,7 +277,7 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
             request(requested);
         }
 
-        private final void requestMore(long n) {
+        private void requestMore(long n) {
             request(n);
         }
 
@@ -328,11 +328,11 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
 
         public void unsubscribeLosers() {
             AmbSubscriber<T> winner = choice.get();
-            if(winner != null) {
+            if (winner != null) {
                 unsubscribeOthers(winner);
             }
         }
-        
+
         public void unsubscribeOthers(AmbSubscriber<T> notThis) {
             for (AmbSubscriber<T> other : ambSubscribers) {
                 if (other != notThis) {
@@ -360,16 +360,16 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
                 if (selection.choice.get() != null) {
                     // there is a single winner so we unsubscribe it
                     selection.choice.get().unsubscribe();
-                } 
+                }
                 // if we are racing with others still existing, we'll also unsubscribe them
-                if(!selection.ambSubscribers.isEmpty()) {
+                if (!selection.ambSubscribers.isEmpty()) {
                     for (AmbSubscriber<T> other : selection.ambSubscribers) {
                         other.unsubscribe();
                     }
                     selection.ambSubscribers.clear();
                 }
             }
-            
+
         }));
         subscriber.setProducer(new Producer() {
 

@@ -48,7 +48,7 @@ import rx.subscriptions.Subscriptions;
 public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedulerTests {
 
     /**
-     * Bug report: https://github.com/ReactiveX/RxJava/issues/431
+     * Bug report: https://github.com/ReactiveX/RxJava/issues/431 .
      */
     @Test
     public final void testUnSubscribeForScheduler() throws InterruptedException {
@@ -120,7 +120,7 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
                                 unsubscribeLatch.await();
                             } catch (InterruptedException e) {
                                 // we expect the countDown if unsubscribe is not working
-                                // or to be interrupted if unsubscribe is successful since 
+                                // or to be interrupted if unsubscribe is successful since
                                 // the unsubscribe will interrupt it as it is calling Future.cancel(true)
                                 // so we will ignore the stacktrace
                             }
@@ -197,7 +197,7 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
                                 unsubscribeLatch.await();
                             } catch (InterruptedException e) {
                                 // we expect the countDown if unsubscribe is not working
-                                // or to be interrupted if unsubscribe is successful since 
+                                // or to be interrupted if unsubscribe is successful since
                                 // the unsubscribe will interrupt it as it is calling Future.cancel(true)
                                 // so we will ignore the stacktrace
                             }

@@ -32,7 +32,7 @@ import rx.functions.Action1;
 import rx.observers.TestSubscriber;
 
 public class OperatorDoOnUnsubscribeTest {
-    
+
     @Test
     public void testDoOnUnsubscribe() throws Exception {
         int subCount = 3;
@@ -72,7 +72,7 @@ public class OperatorDoOnUnsubscribeTest {
                 });
 
         List<Subscription> subscriptions = new ArrayList<Subscription>();
-        List<TestSubscriber> subscribers = new ArrayList<TestSubscriber>();
+        List<TestSubscriber<Long>> subscribers = new ArrayList<TestSubscriber<Long>>();
 
         for (int i = 0; i < subCount; ++i) {
             TestSubscriber<Long> subscriber = new TestSubscriber<Long>();
@@ -133,7 +133,7 @@ public class OperatorDoOnUnsubscribeTest {
                 .refCount();
 
         List<Subscription> subscriptions = new ArrayList<Subscription>();
-        List<TestSubscriber> subscribers = new ArrayList<TestSubscriber>();
+        List<TestSubscriber<Long>> subscribers = new ArrayList<TestSubscriber<Long>>();
 
         for (int i = 0; i < subCount; ++i) {
             TestSubscriber<Long> subscriber = new TestSubscriber<Long>();

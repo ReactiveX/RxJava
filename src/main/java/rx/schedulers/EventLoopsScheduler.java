@@ -31,7 +31,7 @@ import java.util.concurrent.TimeUnit;
     /** Manages a fixed number of workers. */
     private static final String THREAD_NAME_PREFIX = "RxComputationThreadPool-";
     private static final RxThreadFactory THREAD_FACTORY = new RxThreadFactory(THREAD_NAME_PREFIX);
-    
+
     static final class FixedSchedulerPool {
         final int cores;
 
@@ -54,7 +54,7 @@ import java.util.concurrent.TimeUnit;
     }
 
     final FixedSchedulerPool pool;
-    
+
     /**
      * Create a scheduler with pool size equal to the available processor
      * count and using least-recent worker selection policy.
@@ -62,7 +62,7 @@ import java.util.concurrent.TimeUnit;
     EventLoopsScheduler() {
         pool = new FixedSchedulerPool();
     }
-    
+
     @Override
     public Worker createWorker() {
         return new EventLoopWorker(pool.getEventLoop());
@@ -74,7 +74,6 @@ import java.util.concurrent.TimeUnit;
 
         EventLoopWorker(PoolWorker poolWorker) {
             this.poolWorker = poolWorker;
-            
         }
 
         @Override
@@ -97,14 +96,14 @@ import java.util.concurrent.TimeUnit;
                 // don't schedule, we are unsubscribed
                 return Subscriptions.empty();
             }
-            
+
             ScheduledAction s = poolWorker.scheduleActual(action, delayTime, unit);
             innerSubscription.add(s);
             s.addParent(innerSubscription);
             return s;
         }
     }
-    
+
     private static final class PoolWorker extends NewThreadWorker {
         PoolWorker(ThreadFactory threadFactory) {
             super(threadFactory);

@@ -100,7 +100,7 @@ public final class OnSubscribeGroupJoin<T1, T2, D1, D2, R> implements OnSubscrib
 
             Subscriber<T1> s1 = new LeftObserver();
             Subscriber<T2> s2 = new RightObserver();
-            
+
             group.add(s1);
             group.add(s2);
 
@@ -112,7 +112,7 @@ public final class OnSubscribeGroupJoin<T1, T2, D1, D2, R> implements OnSubscrib
         public void unsubscribe() {
             cancel.unsubscribe();
         }
-        
+
         @Override
         public boolean isUnsubscribed() {
             return cancel.isUnsubscribed();
@@ -142,7 +142,7 @@ public final class OnSubscribeGroupJoin<T1, T2, D1, D2, R> implements OnSubscrib
             synchronized (guard) {
                 leftMap.clear();
                 rightMap.clear();
-            }            
+            }
             subscriber.onError(e);
             cancel.unsubscribe();
         }
@@ -155,7 +155,7 @@ public final class OnSubscribeGroupJoin<T1, T2, D1, D2, R> implements OnSubscrib
                 cancel.unsubscribe();
             }
         }
-        
+
         /** Observe the left source. */
         final class LeftObserver extends Subscriber<T1> {
             @Override
@@ -164,7 +164,7 @@ public final class OnSubscribeGroupJoin<T1, T2, D1, D2, R> implements OnSubscrib
                     int id;
                     Subject<T2, T2> subj = PublishSubject.create();
                     Observer<T2> subjSerial = new SerializedObserver<T2>(subj);
-                    
+
                     synchronized (guard) {
                         id = leftIds++;
                         leftMap.put(id, subjSerial);
@@ -184,13 +184,13 @@ public final class OnSubscribeGroupJoin<T1, T2, D1, D2, R> implements OnSubscrib
                     synchronized (guard) {
                         rightMapValues = new ArrayList<T2>(rightMap.values());
                     }
-                    
+
                     subscriber.onNext(result);
                     for (T2 t2 : rightMapValues) {
                         subjSerial.onNext(t2);
                     }
-                    
-                    
+
+
                 } catch (Throwable t) {
                     onError(t);
                 }
@@ -230,7 +230,7 @@ public final class OnSubscribeGroupJoin<T1, T2, D1, D2, R> implements OnSubscrib
                     Observable<D2> duration = rightDuration.call(args);
 
                     Subscriber<D2> d2 = new RightDurationObserver(id);
-                    
+
                     group.add(d2);
                     duration.unsafeSubscribe(d2);
 
@@ -338,7 +338,7 @@ public final class OnSubscribeGroupJoin<T1, T2, D1, D2, R> implements OnSubscrib
      * Subscribes to the underlying Observable by using a reference-counted
      * subscription.
      */
-    final static class WindowObservableFunc<T> implements OnSubscribe<T> {
+    static final class WindowObservableFunc<T> implements OnSubscribe<T> {
         final RefCountSubscription refCount;
         final Observable<T> underlying;
 
@@ -352,7 +352,7 @@ public final class OnSubscribeGroupJoin<T1, T2, D1, D2, R> implements OnSubscrib
             Subscription ref = refCount.get();
             WindowSubscriber wo = new WindowSubscriber(t1, ref);
             wo.add(ref);
-            
+
             underlying.unsafeSubscribe(wo);
         }
 

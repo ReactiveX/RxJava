@@ -16,14 +16,12 @@
  */
 package rx.internal.util.unsafe;
 
-import java.util.Queue;
-
 abstract class SpscArrayQueueColdField<E> extends ConcurrentCircularArrayQueue<E> {
     private static final Integer MAX_LOOK_AHEAD_STEP = Integer.getInteger("jctoolts.spsc.max.lookahead.step", 4096);
     protected final int lookAheadStep;
     public SpscArrayQueueColdField(int capacity) {
         super(capacity);
-        lookAheadStep = Math.min(capacity/4, MAX_LOOK_AHEAD_STEP);
+        lookAheadStep = Math.min(capacity / 4, MAX_LOOK_AHEAD_STEP);
     }
 }
 abstract class SpscArrayQueueL1Pad<E> extends SpscArrayQueueColdField<E> {
@@ -36,7 +34,7 @@ abstract class SpscArrayQueueL1Pad<E> extends SpscArrayQueueColdField<E> {
 }
 
 abstract class SpscArrayQueueProducerFields<E> extends SpscArrayQueueL1Pad<E> {
-    private final static long P_INDEX_OFFSET;
+    private static final long P_INDEX_OFFSET;
     static {
         try {
             P_INDEX_OFFSET =
@@ -67,7 +65,7 @@ abstract class SpscArrayQueueL2Pad<E> extends SpscArrayQueueProducerFields<E> {
 
 abstract class SpscArrayQueueConsumerField<E> extends SpscArrayQueueL2Pad<E> {
     protected long consumerIndex;
-    private final static long C_INDEX_OFFSET;
+    private static final long C_INDEX_OFFSET;
     static {
         try {
             C_INDEX_OFFSET =
@@ -94,13 +92,13 @@ abstract class SpscArrayQueueL3Pad<E> extends SpscArrayQueueConsumerField<E> {
 }
 
 /**
- * A Single-Producer-Single-Consumer queue backed by a pre-allocated buffer.</br> This implementation is a mashup of the
+ * A Single-Producer-Single-Consumer queue backed by a pre-allocated buffer.<br> This implementation is a mashup of the
  * <a href="http://sourceforge.net/projects/mc-fastflow/">Fast Flow</a> algorithm with an optimization of the offer
  * method taken from the <a href="http://staff.ustc.edu.cn/~bhua/publications/IJPP_draft.pdf">BQueue</a> algorithm (a
  * variation on Fast Flow).<br>
- * For convenience the relevant papers are available in the resources folder:</br>
- * <i>2010 - Pisa - SPSC Queues on Shared Cache Multi-Core Systems.pdf</br>
- * 2012 - Junchang- BQueue- Efficient and Practical Queuing.pdf </br></i>
+ * For convenience the relevant papers are available in the resources folder:<br>
+ * <i>2010 - Pisa - SPSC Queues on Shared Cache Multi-Core Systems.pdf<br>
+ * 2012 - Junchang- BQueue- Efficient and Practical Queuing.pdf <br></i>
  * This implementation is wait free.
  * 
  * @author nitsanw
@@ -126,17 +124,17 @@ public final class SpscArrayQueue<E> extends SpscArrayQueueL3Pad<E> {
         // local load of field to avoid repeated loads after volatile reads
         final E[] lElementBuffer = buffer;
         if (producerIndex >= producerLookAhead) {
-            if (null != lvElement(lElementBuffer, calcElementOffset(producerIndex + lookAheadStep))) {// LoadLoad
+            if (null != lvElement(lElementBuffer, calcElementOffset(producerIndex + lookAheadStep))) { // LoadLoad
                 return false;
             }
             producerLookAhead = producerIndex + lookAheadStep;
         }
         long offset = calcElementOffset(producerIndex);
-        producerIndex++; // do increment here so the ordered store give both a barrier 
-        soElement(lElementBuffer, offset, e);// StoreStore
+        producerIndex++; // do increment here so the ordered store give both a barrier
+        soElement(lElementBuffer, offset, e); // StoreStore
         return true;
     }
-    
+
     /**
      * {@inheritDoc}
      * <p>
@@ -147,12 +145,12 @@ public final class SpscArrayQueue<E> extends SpscArrayQueueL3Pad<E> {
         final long offset = calcElementOffset(consumerIndex);
         // local load of field to avoid repeated loads after volatile reads
         final E[] lElementBuffer = buffer;
-        final E e = lvElement(lElementBuffer, offset);// LoadLoad
+        final E e = lvElement(lElementBuffer, offset); // LoadLoad
         if (null == e) {
             return null;
         }
         consumerIndex++; // do increment here so the ordered store give both a barrier
-        soElement(lElementBuffer, offset, null);// StoreStore
+        soElement(lElementBuffer, offset, null); // StoreStore
         return e;
     }
 

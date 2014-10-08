@@ -83,7 +83,8 @@ public final class ScheduledAction implements Runnable, Subscription {
     private static final class Remover implements Subscription {
         final Subscription s;
         final CompositeSubscription parent;
-        volatile int once;
+        @SuppressWarnings("unused")
+		volatile int once;
         static final AtomicIntegerFieldUpdater<Remover> ONCE_UPDATER
                 = AtomicIntegerFieldUpdater.newUpdater(Remover.class, "once");
 

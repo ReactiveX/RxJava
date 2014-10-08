@@ -115,7 +115,7 @@ public class OperatorOnErrorResumeNextViaFunctionTest {
     }
 
     /**
-     * Test that when a function throws an exception this is propagated through onError
+     * Test that when a function throws an exception this is propagated through onError.
      */
     @Test
     public void testFunctionThrowsError() {
@@ -229,7 +229,7 @@ public class OperatorOnErrorResumeNextViaFunctionTest {
         System.out.println(ts.getOnNextEvents());
         ts.assertReceivedOnNext(Arrays.asList("success"));
     }
-    
+
     @Test
     public void testMapResumeAsyncNext() {
         // Trigger multiple failures
@@ -240,8 +240,9 @@ public class OperatorOnErrorResumeNextViaFunctionTest {
         w = w.map(new Func1<String, String>() {
             @Override
             public String call(String s) {
-                if ("fail".equals(s))
+                if ("fail".equals(s)) {
                     throw new RuntimeException("Forced Failure");
+                }
                 System.out.println("BadMapper:" + s);
                 return s;
             }
@@ -253,7 +254,7 @@ public class OperatorOnErrorResumeNextViaFunctionTest {
             public Observable<String> call(Throwable t1) {
                 return Observable.just("twoResume", "threeResume").subscribeOn(Schedulers.computation());
             }
-            
+
         });
 
         @SuppressWarnings("unchecked")

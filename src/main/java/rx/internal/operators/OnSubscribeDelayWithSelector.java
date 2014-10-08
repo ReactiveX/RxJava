@@ -57,7 +57,7 @@ public final class OnSubscribeDelayWithSelector<T, U, V> implements OnSubscribe<
         final SerializedSubscriber<T> s = new SerializedSubscriber<T>(child);
         final CompositeSubscription csub = new CompositeSubscription();
         child.add(csub);
-        
+
         Observable<U> osub;
         try {
             osub = subscriptionDelay.call();
@@ -65,7 +65,7 @@ public final class OnSubscribeDelayWithSelector<T, U, V> implements OnSubscribe<
             s.onError(e);
             return;
         }
-        
+
         Observable<Observable<T>> seqs = source.map(new Func1<T, Observable<T>>() {
             @Override
             public Observable<T> call(final T x) {
@@ -99,12 +99,12 @@ public final class OnSubscribeDelayWithSelector<T, U, V> implements OnSubscribe<
                 };
                 csub.add(itemSub);
                 itemObs.unsafeSubscribe(itemSub);
-                
+
                 return Observable.create(e);
             }
         });
         final Observable<T> delayed = Observable.merge(seqs);
-        
+
         Subscriber<U> osubSub = new Subscriber<U>(child) {
             boolean subscribed;
             @Override
@@ -128,7 +128,7 @@ public final class OnSubscribeDelayWithSelector<T, U, V> implements OnSubscribe<
                 }
             }
         };
-        
+
         osub.unsafeSubscribe(osubSub);
     }
 }

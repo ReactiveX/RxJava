@@ -83,7 +83,8 @@ public class OperatorTakeTest {
     @Test(expected = IllegalArgumentException.class)
     public void testTakeWithError() {
         Observable.from(Arrays.asList(1, 2, 3)).take(1).map(new Func1<Integer, Integer>() {
-            public Integer call(Integer t1) {
+            @Override
+			public Integer call(Integer t1) {
                 throw new IllegalArgumentException("some error");
             }
         }).toBlocking().single();
@@ -92,7 +93,8 @@ public class OperatorTakeTest {
     @Test
     public void testTakeWithErrorHappeningInOnNext() {
         Observable<Integer> w = Observable.from(Arrays.asList(1, 2, 3)).take(2).map(new Func1<Integer, Integer>() {
-            public Integer call(Integer t1) {
+            @Override
+			public Integer call(Integer t1) {
                 throw new IllegalArgumentException("some error");
             }
         });
@@ -108,7 +110,8 @@ public class OperatorTakeTest {
     @Test
     public void testTakeWithErrorHappeningInTheLastOnNext() {
         Observable<Integer> w = Observable.from(Arrays.asList(1, 2, 3)).take(1).map(new Func1<Integer, Integer>() {
-            public Integer call(Integer t1) {
+            @Override
+			public Integer call(Integer t1) {
                 throw new IllegalArgumentException("some error");
             }
         });
@@ -188,10 +191,10 @@ public class OperatorTakeTest {
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
-        
+
         Subscriber<String> subscriber = Subscribers.from(observer);
         subscriber.add(s);
-        
+
         Observable<String> take = w.lift(new OperatorTake<String>(1));
         take.subscribe(subscriber);
 
@@ -288,7 +291,7 @@ public class OperatorTakeTest {
         }
     }
 
-    private static Observable<Long> INFINITE_OBSERVABLE = Observable.create(new OnSubscribe<Long>() {
+    private static final Observable<Long> INFINITE_OBSERVABLE = Observable.create(new OnSubscribe<Long>() {
 
         @Override
         public void call(Subscriber<? super Long> op) {
@@ -300,23 +303,23 @@ public class OperatorTakeTest {
         }
 
     });
-    
+
     @Test(timeout = 2000)
     public void testTakeObserveOn() {
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
         TestSubscriber<Object> ts = new TestSubscriber<Object>(o);
-        
+
         INFINITE_OBSERVABLE.onBackpressureDrop().observeOn(Schedulers.newThread()).take(1).subscribe(ts);
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
-        
+
         verify(o).onNext(1L);
         verify(o, never()).onNext(2L);
         verify(o).onCompleted();
         verify(o, never()).onError(any(Throwable.class));
     }
-    
+
     @Test
     public void testProducerRequestThroughTake() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
@@ -339,7 +342,7 @@ public class OperatorTakeTest {
         }).take(3).subscribe(ts);
         assertEquals(3, requested.get());
     }
-    
+
     @Test
     public void testProducerRequestThroughTakeIsModified() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();

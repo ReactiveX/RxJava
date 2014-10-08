@@ -29,7 +29,6 @@ import org.junit.Test;
 import rx.Observable;
 import rx.Observer;
 import rx.exceptions.TestException;
-import rx.functions.Action1;
 import rx.functions.Func0;
 import rx.functions.Func1;
 import rx.functions.Func2;
@@ -207,8 +206,7 @@ public class OperatorFlatMapTest {
         Observable<Integer> source = Observable.concat(
                 Observable.from(Arrays.asList(10, 20, 30)),
                 Observable.<Integer> error(new RuntimeException("Forced failure!"))
-                );
-        
+        );
 
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);

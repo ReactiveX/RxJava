@@ -33,12 +33,9 @@ import org.mockito.MockitoAnnotations;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscriber;
-import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.functions.Func2;
-import rx.internal.util.RxRingBuffer;
 import rx.observers.TestSubscriber;
-import rx.schedulers.Schedulers;
 
 public class OperatorScanTest {
 
@@ -125,7 +122,7 @@ public class OperatorScanTest {
         verify(observer, times(1)).onCompleted();
         verify(observer, never()).onError(any(Throwable.class));
     }
-    
+
     @Test
     public void shouldNotEmitUntilAfterSubscription() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
@@ -143,12 +140,12 @@ public class OperatorScanTest {
                 // this will cause request(1) when 0 is emitted
                 return t1 > 0;
             }
-            
+
         }).subscribe(ts);
-        
+
         assertEquals(100, ts.getOnNextEvents().size());
     }
-    
+
     @Test
     public void testBackpressureWithInitialValue() {
         final AtomicInteger count = new AtomicInteger();
@@ -189,7 +186,7 @@ public class OperatorScanTest {
         // we only expect to receive 10 since we request(10)
         assertEquals(10, count.get());
     }
-    
+
     @Test
     public void testBackpressureWithoutInitialValue() {
         final AtomicInteger count = new AtomicInteger();
@@ -230,7 +227,7 @@ public class OperatorScanTest {
         // we only expect to receive 10 since we request(10)
         assertEquals(10, count.get());
     }
-    
+
     @Test
     public void testNoBackpressureWithInitialValue() {
         final AtomicInteger count = new AtomicInteger();

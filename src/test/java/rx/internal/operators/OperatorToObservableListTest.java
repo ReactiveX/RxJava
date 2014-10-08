@@ -45,7 +45,7 @@ public class OperatorToObservableListTest {
         verify(observer, Mockito.never()).onError(any(Throwable.class));
         verify(observer, times(1)).onCompleted();
     }
-    
+
     @Test
     public void testListViaObservable() {
         Observable<String> w = Observable.from(Arrays.asList("one", "two", "three"));

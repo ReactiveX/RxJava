@@ -24,7 +24,6 @@ import rx.functions.Func0;
 import rx.functions.Func1;
 import rx.observables.ConnectableObservable;
 import rx.observers.SafeSubscriber;
-import rx.subjects.ReplaySubject;
 import rx.subjects.Subject;
 
 /**
@@ -41,7 +40,7 @@ public final class OnSubscribeMulticastSelector<TInput, TIntermediate, TResult> 
     final Observable<? extends TInput> source;
     final Func0<? extends Subject<? super TInput, ? extends TIntermediate>> subjectFactory;
     final Func1<? super Observable<TIntermediate>, ? extends Observable<TResult>> resultSelector;
-    
+
     public OnSubscribeMulticastSelector(Observable<? extends TInput> source,
             Func0<? extends Subject<? super TInput, ? extends TIntermediate>> subjectFactory,
             Func1<? super Observable<TIntermediate>, ? extends Observable<TResult>> resultSelector) {
@@ -49,24 +48,24 @@ public final class OnSubscribeMulticastSelector<TInput, TIntermediate, TResult> 
         this.subjectFactory = subjectFactory;
         this.resultSelector = resultSelector;
     }
-    
+
     @Override
     public void call(Subscriber<? super TResult> child) {
         Observable<TResult> observable;
         ConnectableObservable<TIntermediate> connectable;
         try {
             connectable = new OperatorMulticast<TInput, TIntermediate>(source, subjectFactory);
-            
+
             observable = resultSelector.call(connectable);
         } catch (Throwable t) {
             child.onError(t);
             return;
         }
-        
+
         final SafeSubscriber<TResult> s = new SafeSubscriber<TResult>(child);
-        
+
         observable.unsafeSubscribe(s);
-        
+
         connectable.connect(new Action1<Subscription>() {
             @Override
             public void call(Subscription t1) {
@@ -74,5 +73,5 @@ public final class OnSubscribeMulticastSelector<TInput, TIntermediate, TResult> 
             }
         });
     }
-    
+
 }
