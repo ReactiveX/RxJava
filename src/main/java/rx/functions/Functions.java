@@ -19,9 +19,9 @@ package rx.functions;
  * Utility class for the Function interfaces.
  */
 public final class Functions {
-	private Functions() {
-		throw new IllegalStateException("No instances!");
-	}
+    private Functions() {
+        throw new IllegalStateException("No instances!");
+    }
     /**
      * Converts a {@link Func0} to a {@link FuncN} to allow heterogeneous handling of functions with different
      * arities.

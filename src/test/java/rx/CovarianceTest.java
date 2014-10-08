@@ -64,7 +64,7 @@ public class CovarianceTest {
     public void testCovarianceOfCompose() {
         Observable<HorrorMovie> movie = Observable.just(new HorrorMovie());
         @SuppressWarnings("unused")
-		Observable<Movie> movie2 = movie.compose(new Transformer<Movie, Movie>() {
+        Observable<Movie> movie2 = movie.compose(new Transformer<Movie, Movie>() {
 
             @Override
             public Observable<? extends Movie> call(Observable<? extends Movie> t1) {
@@ -78,7 +78,7 @@ public class CovarianceTest {
     public void testCovarianceOfCompose2() {
         Observable<Movie> movie = Observable.<Movie> just(new HorrorMovie());
         @SuppressWarnings("unused")
-		Observable<HorrorMovie> movie2 = movie.compose(new Transformer<Movie, HorrorMovie>() {
+        Observable<HorrorMovie> movie2 = movie.compose(new Transformer<Movie, HorrorMovie>() {
             @Override
             public Observable<? extends HorrorMovie> call(Observable<? extends Movie> t1) {
                 return Observable.just(new HorrorMovie());
@@ -90,7 +90,7 @@ public class CovarianceTest {
     public void testCovarianceOfCompose3() {
         Observable<Movie> movie = Observable.<Movie>just(new HorrorMovie());
         @SuppressWarnings("unused")
-		Observable<HorrorMovie> movie2 = movie.compose(new Transformer<Movie, HorrorMovie>() {
+        Observable<HorrorMovie> movie2 = movie.compose(new Transformer<Movie, HorrorMovie>() {
             @Override
             public Observable<? extends HorrorMovie> call(Observable<? extends Movie> t1) {
                 return Observable.just(new HorrorMovie()).map(new Func1<HorrorMovie, HorrorMovie>() {
@@ -108,7 +108,7 @@ public class CovarianceTest {
     public void testCovarianceOfCompose4() {
         Observable<HorrorMovie> movie = Observable.just(new HorrorMovie());
         @SuppressWarnings("unused")
-		Observable<HorrorMovie> movie2 = movie.compose(new Transformer<HorrorMovie, HorrorMovie>() {
+        Observable<HorrorMovie> movie2 = movie.compose(new Transformer<HorrorMovie, HorrorMovie>() {
             @Override
             public Observable<? extends HorrorMovie> call(Observable<? extends HorrorMovie> t1) {
                 return t1.map(new Func1<HorrorMovie, HorrorMovie>() {

@@ -80,11 +80,11 @@ public class OnSubscribeToObservableFutureTest {
     @Test
     public void testCancelledBeforeSubscribe() throws Exception {
         @SuppressWarnings("unchecked")
-		Future<Object> future = mock(Future.class);
+        Future<Object> future = mock(Future.class);
         CancellationException e = new CancellationException("unit test synthetic cancellation");
         when(future.get()).thenThrow(e);
         @SuppressWarnings("unchecked")
-		Observer<Object> o = mock(Observer.class);
+        Observer<Object> o = mock(Observer.class);
 
         TestSubscriber<Object> testSubscriber = new TestSubscriber<Object>(o);
         testSubscriber.unsubscribe();
@@ -129,7 +129,7 @@ public class OnSubscribeToObservableFutureTest {
         };
 
         @SuppressWarnings("unchecked")
-		Observer<Object> o = mock(Observer.class);
+        Observer<Object> o = mock(Observer.class);
 
         TestSubscriber<Object> testSubscriber = new TestSubscriber<Object>(o);
         Observable<Object> futureObservable = Observable.from(future);

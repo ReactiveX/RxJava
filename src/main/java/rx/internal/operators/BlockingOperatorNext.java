@@ -32,9 +32,9 @@ import rx.exceptions.Exceptions;
  * <img width="640" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.next.png" alt="">
  */
 public final class BlockingOperatorNext {
-	private BlockingOperatorNext() {
-		throw new IllegalStateException("No instances!");
-	}
+    private BlockingOperatorNext() {
+        throw new IllegalStateException("No instances!");
+    }
     /**
      * Returns an {@code Iterable} that blocks until the {@code Observable} emits another item, then returns
      * that item.

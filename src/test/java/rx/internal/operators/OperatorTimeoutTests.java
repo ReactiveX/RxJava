@@ -280,7 +280,7 @@ public class OperatorTimeoutTests {
 
         Observable<String> never = Observable.create(new OnSubscribe<String>() {
             @Override
-			public void call(Subscriber<? super String> subscriber) {
+            public void call(Subscriber<? super String> subscriber) {
                 subscriber.add(s);
             }
         });
@@ -308,7 +308,7 @@ public class OperatorTimeoutTests {
 
         Observable<String> immediatelyComplete = Observable.create(new OnSubscribe<String>() {
             @Override
-			public void call(Subscriber<? super String> subscriber) {
+            public void call(Subscriber<? super String> subscriber) {
                 subscriber.add(s);
                 subscriber.onCompleted();
             }
@@ -338,7 +338,7 @@ public class OperatorTimeoutTests {
 
         Observable<String> immediatelyError = Observable.create(new OnSubscribe<String>() {
             @Override
-			public void call(Subscriber<? super String> subscriber) {
+            public void call(Subscriber<? super String> subscriber) {
                 subscriber.add(s);
                 subscriber.onError(new IOException("Error"));
             }

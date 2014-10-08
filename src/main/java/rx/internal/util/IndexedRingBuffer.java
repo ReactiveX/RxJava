@@ -48,7 +48,7 @@ import rx.functions.Func1;
  */
 public final class IndexedRingBuffer<E> implements Subscription {
 
-	@SuppressWarnings("rawtypes")
+    @SuppressWarnings("rawtypes")
     private static final ObjectPool<IndexedRingBuffer> POOL = new ObjectPool<IndexedRingBuffer>() {
 
         @Override
@@ -58,7 +58,7 @@ public final class IndexedRingBuffer<E> implements Subscription {
 
     };
 
-	@SuppressWarnings("rawtypes")
+    @SuppressWarnings("rawtypes")
     public static IndexedRingBuffer getInstance() {
         return POOL.borrowObject();
     }

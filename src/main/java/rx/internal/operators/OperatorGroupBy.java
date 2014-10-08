@@ -273,8 +273,8 @@ public class OperatorGroupBy<T, K, R> implements Operator<GroupedObservable<K, R
             REQUESTED.decrementAndGet(this);
             // short circuit buffering
             if (keyRequested != null && keyRequested.get() > 0 && (q == null || q.isEmpty())) {
-            	@SuppressWarnings("unchecked")
-            	Observer<Object> obs = (Observer<Object>)groupState.getObserver();
+                @SuppressWarnings("unchecked")
+                Observer<Object> obs = (Observer<Object>)groupState.getObserver();
                 nl.accept(obs, item);
                 keyRequested.decrementAndGet();
             } else {
@@ -318,9 +318,9 @@ public class OperatorGroupBy<T, K, R> implements Operator<GroupedObservable<K, R
             while (groupState.requested.get() > 0) {
                 Object t = groupState.buffer.poll();
                 if (t != null) {
-                	@SuppressWarnings("unchecked")
+                    @SuppressWarnings("unchecked")
                     Observer<Object> observer = (Observer<Object>) groupState.getObserver();
-					nl.accept(observer, t);
+                    nl.accept(observer, t);
                     groupState.requested.decrementAndGet();
                     BUFFERED_COUNT.decrementAndGet(this);
 

@@ -480,7 +480,7 @@ public class OperatorGroupByTest {
                             return group.delay(100, TimeUnit.MILLISECONDS).map(new Func1<Integer, Integer>() {
 
                                 @Override
-								public Integer call(Integer t) {
+                                public Integer call(Integer t) {
                                     return t * 10;
                                 }
 

@@ -113,7 +113,7 @@ import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
         private final CompositeSubscription innerSubscription = new CompositeSubscription();
         private final ThreadWorker threadWorker;
         @SuppressWarnings("unused")
-		volatile int once;
+        volatile int once;
         static final AtomicIntegerFieldUpdater<EventLoopWorker> ONCE_UPDATER
                 = AtomicIntegerFieldUpdater.newUpdater(EventLoopWorker.class, "once");
 

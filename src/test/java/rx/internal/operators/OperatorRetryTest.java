@@ -53,7 +53,7 @@ public class OperatorRetryTest {
     @Test
     public void iterativeBackoff() {
         @SuppressWarnings("unchecked")
-		Observer<String> consumer = mock(Observer.class);
+        Observer<String> consumer = mock(Observer.class);
         Observable<String> producer = Observable.create(new OnSubscribe<String>() {
 
             private AtomicInteger count = new AtomicInteger(4);
@@ -96,8 +96,8 @@ public class OperatorRetryTest {
                         public Observable<Long> call(Tuple t) {
                             System.out.println("Retry # " + t.count);
                             return t.count > 20
-                            		? Observable.<Long>error(t.n)
-                            		: Observable.timer(t.count * 1L, TimeUnit.MILLISECONDS);
+                                    ? Observable.<Long>error(t.n)
+                                    : Observable.timer(t.count * 1L, TimeUnit.MILLISECONDS);
                         }
                     });
             }

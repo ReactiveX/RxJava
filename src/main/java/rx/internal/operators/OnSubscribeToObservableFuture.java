@@ -35,9 +35,9 @@ import rx.subscriptions.Subscriptions;
  * {@code Observable.unsafeSubscribe(Observer)} does nothing.
  */
 public final class OnSubscribeToObservableFuture {
-	private OnSubscribeToObservableFuture() {
-		throw new IllegalStateException("No instances!");
-	}
+    private OnSubscribeToObservableFuture() {
+        throw new IllegalStateException("No instances!");
+    }
     /* package accessible for unit tests */static class ToObservableFuture<T> implements OnSubscribe<T> {
         private final Future<? extends T> that;
         private final long time;

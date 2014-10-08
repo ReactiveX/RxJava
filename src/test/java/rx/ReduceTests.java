@@ -47,7 +47,7 @@ public class ReduceTests {
         Func2<Movie, Movie, Movie> chooseSecondMovie =
                 new Func2<Movie, Movie, Movie>() {
                     @Override
-					public Movie call(Movie t1, Movie t2) {
+                    public Movie call(Movie t1, Movie t2) {
                         return t2;
                     }
                 };
@@ -70,7 +70,7 @@ public class ReduceTests {
         Func2<Movie, Movie, Movie> chooseSecondMovie =
                 new Func2<Movie, Movie, Movie>() {
                     @Override
-					public Movie call(Movie t1, Movie t2) {
+                    public Movie call(Movie t1, Movie t2) {
                         return t2;
                     }
                 };
@@ -97,7 +97,7 @@ public class ReduceTests {
         Func2<Movie, Movie, Movie> chooseSecondMovie =
                 new Func2<Movie, Movie, Movie>() {
                     @Override
-					public Movie call(Movie t1, Movie t2) {
+                    public Movie call(Movie t1, Movie t2) {
                         return t2;
                     }
                 };

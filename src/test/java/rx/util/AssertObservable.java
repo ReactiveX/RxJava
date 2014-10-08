@@ -21,9 +21,9 @@ import rx.functions.Func1;
 import rx.functions.Func2;
 
 public final class AssertObservable {
-	private AssertObservable() {
-		throw new IllegalStateException("No instances!");
-	}
+    private AssertObservable() {
+        throw new IllegalStateException("No instances!");
+    }
     /**
      * Asserts that two Observables are equal. If they are not, an {@link AssertionError} is thrown
      * with the given message. If <code>expecteds</code> and <code>actuals</code> are

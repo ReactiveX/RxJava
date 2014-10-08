@@ -161,7 +161,7 @@ public class RxRingBuffer implements Subscription {
     public static final int SIZE = 1024;
 
     @SuppressWarnings("unused")
-	private static final ObjectPool<Queue<Object>> SPSC_POOL = new ObjectPool<Queue<Object>>() {
+    private static final ObjectPool<Queue<Object>> SPSC_POOL = new ObjectPool<Queue<Object>>() {
 
         @Override
         protected SpscArrayQueue<Object> createObject() {
@@ -313,7 +313,7 @@ public class RxRingBuffer implements Subscription {
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-	public boolean accept(Object o, Observer child) {
+    public boolean accept(Object o, Observer child) {
         return on.accept(child, o);
     }
 

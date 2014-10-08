@@ -55,7 +55,7 @@ public class BlockingOperatorNextTest {
                 o.onNext(value);
             }
         };
-		t.start();
+        t.start();
     }
 
     private void fireOnErrorInNewThread(final Subject<String, String> o) {
@@ -70,7 +70,7 @@ public class BlockingOperatorNextTest {
                 o.onError(new TestException());
             }
         };
-		t.start();
+        t.start();
     }
 
     @Test

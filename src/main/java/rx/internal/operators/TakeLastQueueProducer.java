@@ -91,10 +91,10 @@ final class TakeLastQueueProducer<T> implements Producer {
                     int emitted = 0;
                     Object o;
                     while (--numToEmit >= 0) {
-                    	o = deque.poll();
-                    	if (o == null) {
-                    		break;
-                    	}
+                        o = deque.poll();
+                        if (o == null) {
+                            break;
+                        }
                         if (subscriber.isUnsubscribed()) {
                             return;
                         }

@@ -511,7 +511,7 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
         final MergeProducer<T> producer;
         /** Make sure the inner termination events are delivered only once. */
         @SuppressWarnings("unused")
-		volatile int terminated;
+        volatile int terminated;
         @SuppressWarnings("rawtypes")
         static final AtomicIntegerFieldUpdater<InnerSubscriber> ONCE_TERMINATED = AtomicIntegerFieldUpdater.newUpdater(InnerSubscriber.class, "terminated");
 

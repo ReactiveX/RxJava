@@ -29,9 +29,9 @@ import rx.exceptions.Exceptions;
  * <img width="640" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.mostRecent.png" alt="">
  */
 public final class BlockingOperatorMostRecent {
-	private BlockingOperatorMostRecent() {
-		throw new IllegalStateException("No instances!");
-	}
+    private BlockingOperatorMostRecent() {
+        throw new IllegalStateException("No instances!");
+    }
     /**
      * Returns an {@code Iterable} that always returns the item most recently emitted by the {@code Observable}.
      *

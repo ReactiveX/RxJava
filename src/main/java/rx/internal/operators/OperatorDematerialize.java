@@ -51,7 +51,7 @@ public final class OperatorDematerialize<T> implements Operator<T, Notification<
                     onCompleted();
                     break;
                 default:
-                	throw new IllegalStateException("Unsupported notification kind: " + t.getKind());
+                    throw new IllegalStateException("Unsupported notification kind: " + t.getKind());
                 }
             }
 

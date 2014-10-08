@@ -17,9 +17,9 @@
 package rx.internal.util.unsafe;
 
 public final class Pow2 {
-	private Pow2() {
-		throw new IllegalStateException();
-	}
+    private Pow2() {
+        throw new IllegalStateException();
+    }
     /**
      * Find the next larger positive power of two value up from the given value. If value is a power of two then
      * this value will be returned.

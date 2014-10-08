@@ -158,8 +158,8 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
 
     private static final class ZipProducer<R> extends AtomicLong implements Producer {
         /** */
-		private static final long serialVersionUID = -1216676403723546796L;
-		private Zip<R> zipper;
+        private static final long serialVersionUID = -1216676403723546796L;
+        private Zip<R> zipper;
 
         public ZipProducer(Zip<R> zipper) {
             this.zipper = zipper;
@@ -180,7 +180,7 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
         private final CompositeSubscription childSubscription = new CompositeSubscription();
 
         @SuppressWarnings("unused")
-		volatile long counter;
+        volatile long counter;
         @SuppressWarnings("rawtypes")
         static final AtomicLongFieldUpdater<Zip> COUNTER_UPDATER = AtomicLongFieldUpdater.newUpdater(Zip.class, "counter");
 

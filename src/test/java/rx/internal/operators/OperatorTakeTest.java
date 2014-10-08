@@ -84,7 +84,7 @@ public class OperatorTakeTest {
     public void testTakeWithError() {
         Observable.from(Arrays.asList(1, 2, 3)).take(1).map(new Func1<Integer, Integer>() {
             @Override
-			public Integer call(Integer t1) {
+            public Integer call(Integer t1) {
                 throw new IllegalArgumentException("some error");
             }
         }).toBlocking().single();
@@ -94,7 +94,7 @@ public class OperatorTakeTest {
     public void testTakeWithErrorHappeningInOnNext() {
         Observable<Integer> w = Observable.from(Arrays.asList(1, 2, 3)).take(2).map(new Func1<Integer, Integer>() {
             @Override
-			public Integer call(Integer t1) {
+            public Integer call(Integer t1) {
                 throw new IllegalArgumentException("some error");
             }
         });
@@ -111,7 +111,7 @@ public class OperatorTakeTest {
     public void testTakeWithErrorHappeningInTheLastOnNext() {
         Observable<Integer> w = Observable.from(Arrays.asList(1, 2, 3)).take(1).map(new Func1<Integer, Integer>() {
             @Override
-			public Integer call(Integer t1) {
+            public Integer call(Integer t1) {
                 throw new IllegalArgumentException("some error");
             }
         });

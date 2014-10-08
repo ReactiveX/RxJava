@@ -73,12 +73,12 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
         private boolean failure = false;
 
         @SuppressWarnings("unused")
-		private volatile long requested = 0;
+        private volatile long requested = 0;
         @SuppressWarnings("rawtypes")
         static final AtomicLongFieldUpdater<ObserveOnSubscriber> REQUESTED = AtomicLongFieldUpdater.newUpdater(ObserveOnSubscriber.class, "requested");
 
         @SuppressWarnings("unused")
-		volatile long counter;
+        volatile long counter;
         @SuppressWarnings("rawtypes")
         static final AtomicLongFieldUpdater<ObserveOnSubscriber> COUNTER_UPDATER = AtomicLongFieldUpdater.newUpdater(ObserveOnSubscriber.class, "counter");
 

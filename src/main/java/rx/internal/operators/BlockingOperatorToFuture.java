@@ -36,9 +36,9 @@ import rx.Subscription;
  * Observable may emit more than item, use <code>toList().toFuture()</code>.
  */
 public final class BlockingOperatorToFuture {
-	private BlockingOperatorToFuture() {
-		throw new IllegalStateException("No instances!");
-	}
+    private BlockingOperatorToFuture() {
+        throw new IllegalStateException("No instances!");
+    }
     /**
      * Returns a Future that expects a single item from the observable.
      * 
