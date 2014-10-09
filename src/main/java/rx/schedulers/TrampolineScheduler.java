@@ -45,18 +45,12 @@ public final class TrampolineScheduler extends Scheduler {
     /* package accessible for unit tests */TrampolineScheduler() {
     }
 
-    private static final ThreadLocal<PriorityQueue<TimedAction>> QUEUE = new ThreadLocal<PriorityQueue<TimedAction>>() {
-        @Override
-        protected PriorityQueue<TimedAction> initialValue() {
-            return new PriorityQueue<TimedAction>();
-        }
-    };
-
     volatile int counter;
     static final AtomicIntegerFieldUpdater<TrampolineScheduler> COUNTER_UPDATER = AtomicIntegerFieldUpdater.newUpdater(TrampolineScheduler.class, "counter");
 
     private class InnerCurrentThreadScheduler extends Scheduler.Worker implements Subscription {
 
+        final PriorityQueue<TimedAction> queue = new PriorityQueue<TimedAction>();
         private final BooleanSubscription innerSubscription = new BooleanSubscription();
         private final AtomicInteger wip = new AtomicInteger();
 
@@ -76,7 +70,6 @@ public final class TrampolineScheduler extends Scheduler {
             if (innerSubscription.isUnsubscribed()) {
                 return Subscriptions.empty();
             }
-            PriorityQueue<TimedAction> queue = QUEUE.get();
             final TimedAction timedAction = new TimedAction(action, execTime, COUNTER_UPDATER.incrementAndGet(TrampolineScheduler.this));
             queue.add(timedAction);
 
@@ -95,7 +88,7 @@ public final class TrampolineScheduler extends Scheduler {
 
                     @Override
                     public void call() {
-                        PriorityQueue<TimedAction> _q = QUEUE.get();
+                        PriorityQueue<TimedAction> _q = queue;
                         if (_q != null) {
                             _q.remove(timedAction);
                         }
