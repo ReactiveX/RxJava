@@ -3823,7 +3823,7 @@ public class Observable<T> {
     public final <U, V> Observable<T> delay(
             Func0<? extends Observable<U>> subscriptionDelay,
             Func1<? super T, ? extends Observable<V>> itemDelay) {
-        return create(new OnSubscribeDelayWithSelector<T, U, V>(this, subscriptionDelay, itemDelay));
+        return delaySubscription(subscriptionDelay).lift(new OperatorDelayWithSelector<T, V>(this, itemDelay));
     }
 
     /**
@@ -3851,7 +3851,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.delay.aspx">MSDN: Observable.Delay</a>
      */
     public final <U> Observable<T> delay(Func1<? super T, ? extends Observable<U>> itemDelay) {
-        return create(new OnSubscribeDelayWithSelector<T, U, U>(this, itemDelay));
+        return lift(new OperatorDelayWithSelector<T, U>(this, itemDelay));
     }
 
     /**
@@ -3897,7 +3897,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229280.aspx">MSDN: Observable.Delay</a>
      */
     public final Observable<T> delay(long delay, TimeUnit unit, Scheduler scheduler) {
-        return create(new OnSubscribeDelay<T>(this, delay, unit, scheduler));
+        return lift(new OperatorDelay<T>(this, delay, unit, scheduler));
     }
 
     /**
@@ -3942,6 +3942,26 @@ public class Observable<T> {
      */
     public final Observable<T> delaySubscription(long delay, TimeUnit unit, Scheduler scheduler) {
         return create(new OnSubscribeDelaySubscription<T>(this, delay, unit, scheduler));
+    }
+    
+    /**
+     * Returns an Observable that delays the subscription to the source Observable by a given amount of time.
+     * <p>
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/delaySubscription.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>This version of {@code delay} operates by default on the {@code compuation} {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @param delay
+     *            the time to delay the subscription
+     * @param unit
+     *            the time unit of {@code delay}
+     * @return an Observable that delays the subscription to the source Observable by the given amount
+     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Observable-Utility-Operators#delaysubscription">RxJava wiki: delaySubscription</a>
+     */
+    public final <U> Observable<T> delaySubscription(Func0<? extends Observable<U>> subscriptionDelay) {
+        return create(new OnSubscribeDelaySubscriptionWithSelector<T, U>(this, subscriptionDelay));
     }
 
     /**
