@@ -16,7 +16,12 @@
 package rx.subjects;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 import rx.Observer;
+import rx.exceptions.CompositeException;
+import rx.exceptions.Exceptions;
 import rx.functions.Action1;
 import rx.internal.operators.NotificationLite;
 import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
@@ -131,8 +136,24 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
         Object last = state.get();
         if (last == null || state.active) {
             Object n = nl.error(e);
+            List<Throwable> errors = null;
             for (SubjectObserver<T> bo : state.terminate(n)) {
-                bo.emitNext(n, state.nl);
+                try {
+                    bo.emitNext(n, state.nl);
+                } catch (Throwable e2) {
+                    if (errors == null) {
+                        errors = new ArrayList<Throwable>();
+                    }
+                    errors.add(e2);
+                }
+            }
+
+            if (errors != null) {
+                if (errors.size() == 1) {
+                    Exceptions.propagate(errors.get(0));
+                } else {
+                    throw new CompositeException("Errors while emitting AsyncSubject.onError", errors);
+                }
             }
         }
     }

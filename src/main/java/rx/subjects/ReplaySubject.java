@@ -16,11 +16,14 @@
 package rx.subjects;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 import rx.Observer;
 import rx.Scheduler;
+import rx.exceptions.CompositeException;
+import rx.exceptions.Exceptions;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.functions.Functions;
@@ -303,9 +306,25 @@ public final class ReplaySubject<T> extends Subject<T, T> {
     public void onError(final Throwable e) {
         if (ssm.active) {
             state.error(e);
+            List<Throwable> errors = null;
             for (SubjectObserver<? super T> o : ssm.terminate(NotificationLite.instance().error(e))) {
-                if (caughtUp(o)) {
-                    o.onError(e);
+                try {
+                    if (caughtUp(o)) {
+                        o.onError(e);
+                    }
+                } catch (Throwable e2) {
+                    if (errors == null) {
+                        errors = new ArrayList<Throwable>();
+                    }
+                    errors.add(e2);
+                }
+            }
+
+            if (errors != null) {
+                if (errors.size() == 1) {
+                    Exceptions.propagate(errors.get(0));
+                } else {
+                    throw new CompositeException("Errors while emitting ReplaySubject.onError", errors);
                 }
             }
         }

@@ -16,6 +16,7 @@
 package rx.subjects;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -33,8 +34,11 @@ import org.mockito.Mockito;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
+import rx.exceptions.CompositeException;
+import rx.exceptions.OnErrorNotImplementedException;
 import rx.functions.Action1;
 import rx.functions.Func1;
+import rx.observers.TestSubscriber;
 
 public class PublishSubjectTest {
 
@@ -345,5 +349,50 @@ public class PublishSubjectTest {
             inOrder.verify(o).onCompleted();
             verify(o, never()).onError(any(Throwable.class));
         }
+    }
+    
+    
+    @Test
+    public void testOnErrorThrowsDoesntPreventDelivery() {
+        PublishSubject<String> ps = PublishSubject.create();
+
+        ps.subscribe();
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+        ps.subscribe(ts);
+
+        try {
+            ps.onError(new RuntimeException("an exception"));
+            fail("expect OnErrorNotImplementedException");
+        } catch (OnErrorNotImplementedException e) {
+            // ignore
+        }
+        // even though the onError above throws we should still receive it on the other subscriber 
+        assertEquals(1, ts.getOnErrorEvents().size());
+    }
+    
+    /**
+     * This one has multiple failures so should get a CompositeException
+     */
+    @Test
+    public void testOnErrorThrowsDoesntPreventDelivery2() {
+        PublishSubject<String> ps = PublishSubject.create();
+
+        ps.subscribe();
+        ps.subscribe();
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+        ps.subscribe(ts);
+        ps.subscribe();
+        ps.subscribe();
+        ps.subscribe();
+
+        try {
+            ps.onError(new RuntimeException("an exception"));
+            fail("expect OnErrorNotImplementedException");
+        } catch (CompositeException e) {
+            // we should have 5 of them
+            assertEquals(5, e.getExceptions().size());
+        }
+        // even though the onError above throws we should still receive it on the other subscriber 
+        assertEquals(1, ts.getOnErrorEvents().size());
     }
 }
