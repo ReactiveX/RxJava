@@ -15,14 +15,16 @@
  */
 package rx.internal.schedulers;
 
-import rx.Subscription;
-import rx.functions.Action0;
-import rx.subscriptions.CompositeSubscription;
-
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
+import rx.Subscription;
+import rx.exceptions.OnErrorNotImplementedException;
+import rx.functions.Action0;
+import rx.plugins.RxJavaPlugins;
+import rx.subscriptions.CompositeSubscription;
+
 /**
- * A {@code Runnable} that executes an {@code Action0} and can be cancelled. The analogue is the
+ * A {@code Runnable} that executes an {@code Action0} and can be cancelled. The analog is the
  * {@code Subscriber} in respect of an {@code Observer}.
  */
 public final class ScheduledAction implements Runnable, Subscription {
@@ -41,6 +43,16 @@ public final class ScheduledAction implements Runnable, Subscription {
     public void run() {
         try {
             action.call();
+        } catch (Throwable e) {
+            // nothing to do but print a System error as this is fatal and there is nowhere else to throw this
+            IllegalStateException ie = null;
+            if (e instanceof OnErrorNotImplementedException) {
+                ie = new IllegalStateException("Exception thrown on Scheduler.Worker thread. Add `onError` handling.", e);
+            } else {
+                ie = new IllegalStateException("Fatal Exception thrown on Scheduler.Worker thread.", e);
+            }
+            ie.printStackTrace();
+            RxJavaPlugins.getInstance().getErrorHandler().handleError(ie);
         } finally {
             unsubscribe();
         }
