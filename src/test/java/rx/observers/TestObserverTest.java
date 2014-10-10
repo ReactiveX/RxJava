@@ -119,5 +119,10 @@ public class TestObserverTest {
         inOrder.verify(mockObserver, times(1)).onCompleted();
         inOrder.verifyNoMoreInteractions();
     }
+    
+    @Test
+    public void testErrorSwallowed() {
+        Observable.error(new RuntimeException()).subscribe(new TestObserver<Object>());
+    }
 
 }

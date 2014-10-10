@@ -36,8 +36,9 @@ public class TestObserver<T> implements Observer<T> {
         this.delegate = delegate;
     }
 
+    @SuppressWarnings("unchecked")
     public TestObserver() {
-        this.delegate = Observers.empty();
+        this.delegate = (Observer<T>) INERT;
     }
 
     @Override
@@ -153,4 +154,23 @@ public class TestObserver<T> implements Observer<T> {
         }
     }
 
+    // do nothing ... including swallowing errors
+    private static Observer<Object> INERT = new Observer<Object>() {
+
+        @Override
+        public void onCompleted() {
+            
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            
+        }
+
+        @Override
+        public void onNext(Object t) {
+            
+        }
+        
+    };
 }
