@@ -3647,9 +3647,9 @@ public class Observable<T> {
      * </dl>
      * 
      * @return an Observable that emits a single item: the number of elements emitted by the source Observable
-     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Mathematical-and-Aggregate-Operators#count-and-longcount">RxJava wiki: count</a>
+     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Mathematical-and-Aggregate-Operators#count-and-countlong">RxJava wiki: count</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229470.aspx">MSDN: Observable.Count</a>
-     * @see #longCount()
+     * @see #countLong()
      */
     public final Observable<Integer> count() {
         return reduce(0, new Func2<Integer, T, Integer>() {
@@ -3670,12 +3670,12 @@ public class Observable<T> {
      *  <dd>This operator does not support backpressure because by intent it will receive all values and reduce
      *      them to a single {@code onNext}.</dd>
      *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code longCount} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dd>{@code countLong} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
      * @return an Observable that emits a single item: the number of items emitted by the source Observable as a
      *         64-bit Long item
-     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Mathematical-and-Aggregate-Operators#count-and-longcount">RxJava wiki: count</a>
+     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Mathematical-and-Aggregate-Operators#count-and-countlong">RxJava wiki: countLong</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229120.aspx">MSDN: Observable.LongCount</a>
      * @see #count()
      */
@@ -3973,19 +3973,20 @@ public class Observable<T> {
     }
     
     /**
-     * Returns an Observable that delays the subscription to the source Observable by a given amount of time.
+     * Returns an Observable that delays the subscription to the source Observable until a second Observable
+     * emits an item.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/delaySubscription.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/delaySubscription.o.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code delay} operates by default on the {@code compuation} {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param delay
-     *            the time to delay the subscription
-     * @param unit
-     *            the time unit of {@code delay}
-     * @return an Observable that delays the subscription to the source Observable by the given amount
+     * @param subscriptionDelay
+     *            a function that returns an Observable that triggers the subscription to the source Observable
+     *            once it emits any item
+     * @return an Observable that delays the subscription to the source Observable until the Observable returned
+     *         by {@code subscriptionDelay} emits an item
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Observable-Utility-Operators#delaysubscription">RxJava wiki: delaySubscription</a>
      */
     public final <U> Observable<T> delaySubscription(Func0<? extends Observable<U>> subscriptionDelay) {

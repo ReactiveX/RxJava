@@ -46,7 +46,8 @@ public class Observers {
 
     /**
      * Returns an inert {@link Observer} that does nothing in response to the emissions or notifications from
-     * any {@code Observable} it subscribes to but will throw an exception if its {@link Observer#onError onError} method is called.
+     * any {@code Observable} it subscribes to but will throw an exception if its
+     * {@link Observer#onError onError} method is called.
      *
      * @return an inert {@code Observer}
      */
@@ -58,11 +59,11 @@ public class Observers {
     /**
      * Creates an {@link Observer} that receives the emissions of any {@code Observable} it subscribes to via
      * {@link Observer#onNext onNext} but ignores {@link Observer#onCompleted onCompleted} notifications. 
-     * It will throws an {@link OnErrorNotImplementedException} if {@link Observer#onError onError} is invoked.
+     * It will throw an {@link OnErrorNotImplementedException} if {@link Observer#onError onError} is invoked.
      *
      * @param onNext
      *          a function that handles each item emitted by an {@code Observable}
-     * @throws IllegalArgument Exception
+     * @throws IllegalArgumentException
      *          if {@code onNext} is {@code null}
      * @return an {@code Observer} that calls {@code onNext} for each emitted item from the {@code Observable}
      *         the {@code Observer} subscribes to
@@ -101,7 +102,7 @@ public class Observers {
      *          a function that handles each item emitted by an {@code Observable}
      * @param onError
      *          a function that handles an error notification if one is sent by an {@code Observable}
-     * @throws IllegalArgument Exception
+     * @throws IllegalArgumentException
      *          if either {@code onNext} or {@code onError} are {@code null}
      * @return an {@code Observer} that calls {@code onNext} for each emitted item from the {@code Observable}
      *         the {@code Observer} subscribes to, and calls {@code onError} if the {@code Observable} notifies
@@ -146,7 +147,7 @@ public class Observers {
      *          a function that handles an error notification if one is sent by an {@code Observable}
      * @param onComplete
      *          a function that handles a sequence complete notification if one is sent by an {@code Observable}
-     * @throws IllegalArgument Exception
+     * @throws IllegalArgumentException
      *          if either {@code onNext}, {@code onError}, or {@code onComplete} are {@code null}
      * @return an {@code Observer} that calls {@code onNext} for each emitted item from the {@code Observable}
      *         the {@code Observer} subscribes to, calls {@code onError} if the {@code Observable} notifies
