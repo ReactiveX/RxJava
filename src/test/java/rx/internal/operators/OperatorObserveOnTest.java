@@ -687,7 +687,7 @@ public class OperatorObserveOnTest {
 
                     @Override
                     public void call(Notification<? super Long> n) {
-                        //                        System.out.println("BEFORE " + n);
+                        //                                                System.out.println("BEFORE " + n);
                     }
 
                 })
@@ -696,7 +696,11 @@ public class OperatorObserveOnTest {
 
                     @Override
                     public void call(Notification<? super Long> n) {
-                        //                        System.out.println("AFTER " + n);
+                        try {
+                            Thread.sleep(100);
+                        } catch (InterruptedException e) {
+                        }
+                        //                                                System.out.println("AFTER " + n);
                     }
 
                 });
