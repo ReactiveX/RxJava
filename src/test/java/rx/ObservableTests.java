@@ -48,7 +48,6 @@ import org.mockito.MockitoAnnotations;
 import rx.Observable.OnSubscribe;
 import rx.Observable.Transformer;
 import rx.exceptions.OnErrorNotImplementedException;
-import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Action2;
 import rx.functions.Func1;
@@ -56,6 +55,8 @@ import rx.functions.Func2;
 import rx.observables.ConnectableObservable;
 import rx.observers.TestSubscriber;
 import rx.schedulers.TestScheduler;
+import rx.subjects.ReplaySubject;
+import rx.subjects.Subject;
 import rx.subscriptions.BooleanSubscription;
 
 public class ObservableTests {
@@ -1124,6 +1125,22 @@ public class ObservableTests {
         ts.assertTerminalEvent();
         ts.assertNoErrors();
         ts.assertReceivedOnNext(Arrays.asList("1", "2", "3"));
+    }
+    
+    @Test
+    public void testErrorThrownIssue1685() {
+        Subject<Object, Object> subject = ReplaySubject.create();
+
+        Observable.error(new RuntimeException("oops"))
+            .materialize()
+            .delay(1, TimeUnit.SECONDS)
+            .dematerialize()
+            .subscribe(subject);
+
+        subject.subscribe();
+        subject.materialize().toBlocking().first();
+
+        System.out.println("Done");
     }
 
 }
