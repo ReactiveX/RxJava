@@ -24,6 +24,9 @@ import sun.misc.Unsafe;
  * otherwise NPEs will happen in environments without "suc.misc.Unsafe" such as Android.
  */
 public final class UnsafeAccess {
+    private UnsafeAccess() {
+        throw new IllegalStateException("No instances!");
+    }
 
     public static final Unsafe UNSAFE;
     static {

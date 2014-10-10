@@ -46,7 +46,7 @@ import rx.functions.Func1;
  * 
  * @param <E>
  */
-public class IndexedRingBuffer<E> implements Subscription {
+public final class IndexedRingBuffer<E> implements Subscription {
 
     private static final ObjectPool<IndexedRingBuffer> POOL = new ObjectPool<IndexedRingBuffer>() {
 

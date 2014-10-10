@@ -21,7 +21,7 @@ import java.util.Set;
 /**
  * @warn javadoc class description missing
  */
-public class Exceptions {
+public final class Exceptions {
     private Exceptions() {
 
     }

@@ -21,7 +21,7 @@ package rx.exceptions;
  * recover more information from an {@code OnErrorThrowable} than is found in a typical {@code Throwable}, such
  * as the item the {@code Observable} was trying to emit at the time the error was encountered.
  */
-public class OnErrorThrowable extends RuntimeException {
+public final class OnErrorThrowable extends RuntimeException {
 
     private static final long serialVersionUID = -569558213262703934L;
 

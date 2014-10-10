@@ -34,7 +34,11 @@ import rx.subscriptions.Subscriptions;
  * This is blocking so the {@code Subscription} returned when calling
  * {@code Observable.unsafeSubscribe(Observer)} does nothing.
  */
-public class OnSubscribeToObservableFuture {
+public final class OnSubscribeToObservableFuture {
+    private OnSubscribeToObservableFuture() {
+        throw new IllegalStateException("No instances!");
+    }
+
     /* package accessible for unit tests */static class ToObservableFuture<T> implements OnSubscribe<T> {
         private final Future<? extends T> that;
         private final long time;

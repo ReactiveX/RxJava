@@ -77,7 +77,7 @@ class OperatorTimeoutBase<T> implements Operator<T, T> {
         return timeoutSubscriber;
     }
 
-    /* package-private */static class TimeoutSubscriber<T> extends
+    /* package-private */static final class TimeoutSubscriber<T> extends
             Subscriber<T> {
 
         private final SerialSubscription serial;

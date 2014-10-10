@@ -133,7 +133,7 @@ public class OperatorSubscribeOnTest {
             return new SlowInner(actual.createWorker());
         }
 
-        private class SlowInner extends Worker {
+        private final class SlowInner extends Worker {
 
             private final Scheduler.Worker actualInner;
 

@@ -26,6 +26,9 @@ import rx.functions.Actions;
  * Helper methods and utilities for creating and working with {@link Subscription} objects
  */
 public final class Subscriptions {
+    private Subscriptions() {
+        throw new IllegalStateException("No instances!");
+    }
     /**
      * Returns a {@link Subscription} that does nothing.
      * 

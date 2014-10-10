@@ -49,7 +49,7 @@ import rx.subscriptions.Subscriptions;
  * @param <T>
  *            the type of the items to be buffered
  */
-public class BufferUntilSubscriber<T> extends Subject<T, T> {
+public final class BufferUntilSubscriber<T> extends Subject<T, T> {
 
     @SuppressWarnings("rawtypes")
     private final static Observer EMPTY_OBSERVER = new EmptyObserver();
