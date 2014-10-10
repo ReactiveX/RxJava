@@ -5722,7 +5722,7 @@ public class Observable<T> {
     /**
      * Returns an Observable that emits the same values as the source Observable with the exception of an
      * {@code onCompleted}. An {@code onCompleted} notification from the source will result in the emission of
-     * a {@link void} item to the Observable provided as an argument to the {@code notificationHandler}
+     * a {@code void} item to the Observable provided as an argument to the {@code notificationHandler}
      * function. If that Observable calls {@code onComplete} or {@code onError} then {@code repeatWhen} will
      * call {@code onCompleted} or {@code onError} on the child subscription. Otherwise, this Observable will
      * resubscribe to the source Observable, on a particular Scheduler.
@@ -5759,7 +5759,7 @@ public class Observable<T> {
     /**
      * Returns an Observable that emits the same values as the source Observable with the exception of an
      * {@code onCompleted}. An {@code onCompleted} notification from the source will result in the emission of
-     * a {@link void} item to the Observable provided as an argument to the {@code notificationHandler}
+     * a {@code void} item to the Observable provided as an argument to the {@code notificationHandler}
      * function. If that Observable calls {@code onComplete} or {@code onError} then {@code repeatWhen} will
      * call {@code onCompleted} or {@code onError} on the child subscription. Otherwise, this Observable will
      * resubscribe to the source observable.
