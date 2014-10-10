@@ -18,6 +18,20 @@ package rx.subjects;
 import rx.Subscriber;
 import rx.observers.SerializedObserver;
 
+/**
+ * Wraps a {@link Subject} so that it is safe to call its various {@code on} methods from different threads.
+ * <p>
+ * When you use an ordinary {@link Subject} as a {@link Subscriber}, you must take care not to call its
+ * {@link Subscriber#onNext} method (or its other {@code on} methods) from multiple threads, as this could lead
+ * to non-serialized calls, which violates the Observable contract and creates an ambiguity in the resulting
+ * Subject.
+ * <p>
+ * To protect a {@code Subject} from this danger, you can convert it into a {@code SerializedSubject} with code
+ * like the following:
+ * <p><pre>{@code
+ * mySafeSubject = new SerializedSubject( myUnsafeSubject );
+ * }</pre>
+ */
 public class SerializedSubject<T, R> extends Subject<T, R> {
     private final SerializedObserver<T> observer;
 

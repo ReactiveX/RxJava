@@ -28,7 +28,7 @@ public class OperatorDoOnSubscribe<T> implements Operator<T, T> {
 
     /**
      * Constructs an instance of the operator with the callback that gets invoked when the modified Observable is subscribed
-     * @param unsubscribe The action that gets invoked when the modified {@link rx.Observable} is subscribed
+     * @param subscribe the action that gets invoked when the modified {@link rx.Observable} is subscribed
      */
     public OperatorDoOnSubscribe(Action0 subscribe) {
         this.subscribe = subscribe;
