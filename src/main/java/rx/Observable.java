@@ -3659,6 +3659,34 @@ public class Observable<T> {
             }
         });
     }
+    
+    /**
+     * Returns an Observable that counts the total number of items emitted by the source Observable and emits
+     * this count as a 64-bit Long.
+     * <p>
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/longCount.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure because by intent it will receive all values and reduce
+     *      them to a single {@code onNext}.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code longCount} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @return an Observable that emits a single item: the number of items emitted by the source Observable as a
+     *         64-bit Long item
+     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Mathematical-and-Aggregate-Operators#count-and-longcount">RxJava wiki: count</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229120.aspx">MSDN: Observable.LongCount</a>
+     * @see #count()
+     */
+    public final Observable<Long> countLong() {
+        return reduce(0L, new Func2<Long, T, Long>() {
+            @Override
+            public final Long call(Long t1, T t2) {
+                return t1 + 1;
+            }
+        });
+    }
 
     /**
      * Returns an Observable that mirrors the source Observable, except that it drops items emitted by the
@@ -4992,34 +5020,6 @@ public class Observable<T> {
         return take(num);
     }
     
-    /**
-     * Returns an Observable that counts the total number of items emitted by the source Observable and emits
-     * this count as a 64-bit Long.
-     * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/longCount.png" alt="">
-     * <dl>
-     *  <dt><b>Backpressure Support:</b></dt>
-     *  <dd>This operator does not support backpressure because by intent it will receive all values and reduce
-     *      them to a single {@code onNext}.</dd>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code longCount} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * 
-     * @return an Observable that emits a single item: the number of items emitted by the source Observable as a
-     *         64-bit Long item
-     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Mathematical-and-Aggregate-Operators#count-and-longcount">RxJava wiki: count</a>
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229120.aspx">MSDN: Observable.LongCount</a>
-     * @see #count()
-     */
-    public final Observable<Long> longCount() {
-        return reduce(0L, new Func2<Long, T, Long>() {
-            @Override
-            public final Long call(Long t1, T t2) {
-                return t1 + 1;
-            }
-        });
-    }
-
     /**
      * Returns an Observable that applies a specified function to each item emitted by the source Observable and
      * emits the results of these function applications.
