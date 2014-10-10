@@ -16,7 +16,10 @@
  */
 package rx.internal.util.unsafe;
 
-public class Pow2 {
+public final class Pow2 {
+    private Pow2() {
+        throw new IllegalStateException("No instances!");
+    }
 
     /**
      * Find the next larger positive power of two value up from the given value. If value is a power of two then

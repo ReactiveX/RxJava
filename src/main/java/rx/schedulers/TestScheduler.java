@@ -34,7 +34,7 @@ public class TestScheduler extends Scheduler {
     private final Queue<TimedAction> queue = new PriorityQueue<TimedAction>(11, new CompareActionsByTime());
     private static long counter = 0;
 
-    private static class TimedAction {
+    private static final class TimedAction {
 
         private final long time;
         private final Action0 action;

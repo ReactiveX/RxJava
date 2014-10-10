@@ -22,7 +22,7 @@ import rx.internal.util.RxThreadFactory;
 /**
  * Schedules work on a new thread.
  */
-public class NewThreadScheduler extends Scheduler {
+public final class NewThreadScheduler extends Scheduler {
 
     private static final String THREAD_NAME_PREFIX = "RxNewThreadScheduler-";
     private static final RxThreadFactory THREAD_FACTORY = new RxThreadFactory(THREAD_NAME_PREFIX);

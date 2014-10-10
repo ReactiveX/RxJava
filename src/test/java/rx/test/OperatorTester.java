@@ -20,7 +20,7 @@ import rx.Scheduler;
 /**
  * Common utility functions for testing operator implementations.
  */
-public class OperatorTester {
+public final class OperatorTester {
     /*
      * This is purposefully package-only so it does not leak into the public API outside of this package.
      * 

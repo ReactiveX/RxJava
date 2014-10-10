@@ -15,7 +15,10 @@
  */
 package rx.functions;
 
-public class Functions {
+public final class Functions {
+    private Functions() {
+        throw new IllegalStateException("No instances!");
+    }
 
     /**
      * Converts a {@link Func0} to a {@link FuncN} to allow heterogeneous handling of functions with different

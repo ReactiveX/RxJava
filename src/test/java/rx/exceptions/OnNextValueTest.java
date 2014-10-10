@@ -25,7 +25,7 @@ import static org.junit.Assert.fail;
  * There is an added danger that if there is a bug in the toString method it will cause inconsistent exception creation. If the object throws an exception while rendering a string it will actually end up not seeing the real exception.
  */
 public final class OnNextValueTest {
-    private static class BadToString {
+    private static final class BadToString {
 
         private final boolean throwDuringToString;
 

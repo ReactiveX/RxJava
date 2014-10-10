@@ -110,7 +110,7 @@ public final class TrampolineScheduler extends Scheduler {
 
     }
 
-    private static class TimedAction implements Comparable<TimedAction> {
+    private static final class TimedAction implements Comparable<TimedAction> {
         final Action0 action;
         final Long execTime;
         final int count; // In case if time between enqueueing took less than 1ms

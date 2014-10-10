@@ -23,7 +23,10 @@ import rx.functions.Action1;
 /**
  * Helper methods and utilities for creating and working with {@link Observer} objects.
  */
-public class Observers {
+public final class Observers {
+    private Observers() {
+        throw new IllegalStateException("No instances!");
+    }
 
     private static final Observer<Object> EMPTY = new Observer<Object>() {
 

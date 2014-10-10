@@ -34,7 +34,10 @@ import rx.exceptions.Exceptions;
  * 
  * @see <a href="https://github.com/ReactiveX/RxJava/issues/50">Issue #50</a>
  */
-public class BlockingOperatorToIterator {
+public final class BlockingOperatorToIterator {
+    private BlockingOperatorToIterator() {
+        throw new IllegalStateException("No instances!");
+    }
 
     /**
      * Returns an iterator that iterates all values of the observable.
