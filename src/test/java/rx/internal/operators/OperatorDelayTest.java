@@ -15,6 +15,7 @@
  */
 package rx.internal.operators;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyLong;
@@ -26,6 +27,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -34,16 +36,22 @@ import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 
+import rx.Notification;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
 import rx.exceptions.TestException;
+import rx.functions.Action1;
 import rx.functions.Func0;
 import rx.functions.Func1;
+import rx.internal.util.RxRingBuffer;
+import rx.observers.TestObserver;
+import rx.observers.TestSubscriber;
+import rx.schedulers.Schedulers;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
 
-public class OnSubscribeDelayTest {
+public class OperatorDelayTest {
     @Mock
     private Observer<Long> observer;
     @Mock
@@ -546,20 +554,20 @@ public class OnSubscribeDelayTest {
         verify(o, never()).onError(any(Throwable.class));
         verify(o, never()).onCompleted();
     }
-    
+
     @Test
     public void testDelayWithObservableAsTimed() {
         Observable<Long> source = Observable.interval(1L, TimeUnit.SECONDS, scheduler).take(3);
-        
+
         final Observable<Long> delayer = Observable.timer(500L, TimeUnit.MILLISECONDS, scheduler);
-        
+
         Func1<Long, Observable<Long>> delayFunc = new Func1<Long, Observable<Long>>() {
             @Override
             public Observable<Long> call(Long t1) {
                 return delayer;
             }
         };
-        
+
         Observable<Long> delayed = source.delay(delayFunc);
         delayed.subscribe(observer);
 
@@ -596,7 +604,7 @@ public class OnSubscribeDelayTest {
         verify(observer, times(1)).onCompleted();
         verify(observer, never()).onError(any(Throwable.class));
     }
-    
+
     @Test
     public void testDelayWithObservableReorder() {
         int n = 3;
@@ -604,9 +612,9 @@ public class OnSubscribeDelayTest {
         PublishSubject<Integer> source = PublishSubject.create();
         final List<PublishSubject<Integer>> subjects = new ArrayList<PublishSubject<Integer>>();
         for (int i = 0; i < n; i++) {
-            subjects.add(PublishSubject.<Integer>create());
+            subjects.add(PublishSubject.<Integer> create());
         }
-        
+
         Observable<Integer> result = source.delay(new Func1<Integer, Observable<Integer>>() {
 
             @Override
@@ -614,28 +622,180 @@ public class OnSubscribeDelayTest {
                 return subjects.get(t1);
             }
         });
-        
+
         @SuppressWarnings("unchecked")
         Observer<Integer> o = mock(Observer.class);
         InOrder inOrder = inOrder(o);
-        
+
         result.subscribe(o);
-        
+
         for (int i = 0; i < n; i++) {
             source.onNext(i);
         }
         source.onCompleted();
-        
+
         inOrder.verify(o, never()).onNext(anyInt());
         inOrder.verify(o, never()).onCompleted();
-        
+
         for (int i = n - 1; i >= 0; i--) {
             subjects.get(i).onCompleted();
             inOrder.verify(o).onNext(i);
         }
-        
+
         inOrder.verify(o).onCompleted();
-        
+
         verify(o, never()).onError(any(Throwable.class));
+    }
+
+    @Test
+    public void testDelayEmitsEverything() {
+        Observable<Integer> source = Observable.range(1, 5);
+        Observable<Integer> delayed = source.delay(500L, TimeUnit.MILLISECONDS, scheduler);
+        delayed = delayed.doOnEach(new Action1<Notification<? super Integer>>() {
+
+            @Override
+            public void call(Notification<? super Integer> t1) {
+                System.out.println(t1);
+            }
+
+        });
+        TestObserver<Integer> observer = new TestObserver<Integer>();
+        delayed.subscribe(observer);
+        // all will be delivered after 500ms since range does not delay between them
+        scheduler.advanceTimeBy(500L, TimeUnit.MILLISECONDS);
+        observer.assertReceivedOnNext(Arrays.asList(1, 2, 3, 4, 5));
+    }
+
+    @Test
+    public void testBackpressureWithTimedDelay() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        Observable.range(1, RxRingBuffer.SIZE * 2)
+                .delay(100, TimeUnit.MILLISECONDS)
+                .observeOn(Schedulers.computation())
+                .map(new Func1<Integer, Integer>() {
+
+                    int c = 0;
+
+                    @Override
+                    public Integer call(Integer t) {
+                        if (c++ <= 0) {
+                            try {
+                                Thread.sleep(500);
+                            } catch (InterruptedException e) {
+                            }
+                        }
+                        return t;
+                    }
+
+                }).subscribe(ts);
+
+        ts.awaitTerminalEvent();
+        ts.assertNoErrors();
+        assertEquals(RxRingBuffer.SIZE * 2, ts.getOnNextEvents().size());
+    }
+    
+    @Test
+    public void testBackpressureWithSubscriptionTimedDelay() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        Observable.range(1, RxRingBuffer.SIZE * 2)
+                .delaySubscription(100, TimeUnit.MILLISECONDS)
+                .delay(100, TimeUnit.MILLISECONDS)
+                .observeOn(Schedulers.computation())
+                .map(new Func1<Integer, Integer>() {
+
+                    int c = 0;
+
+                    @Override
+                    public Integer call(Integer t) {
+                        if (c++ <= 0) {
+                            try {
+                                Thread.sleep(500);
+                            } catch (InterruptedException e) {
+                            }
+                        }
+                        return t;
+                    }
+
+                }).subscribe(ts);
+
+        ts.awaitTerminalEvent();
+        ts.assertNoErrors();
+        assertEquals(RxRingBuffer.SIZE * 2, ts.getOnNextEvents().size());
+    }
+
+    @Test
+    public void testBackpressureWithSelectorDelay() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        Observable.range(1, RxRingBuffer.SIZE * 2)
+                .delay(new Func1<Integer, Observable<Long>>() {
+
+                    @Override
+                    public Observable<Long> call(Integer i) {
+                        return Observable.timer(100, TimeUnit.MILLISECONDS);
+                    }
+
+                })
+                .observeOn(Schedulers.computation())
+                .map(new Func1<Integer, Integer>() {
+
+                    int c = 0;
+
+                    @Override
+                    public Integer call(Integer t) {
+                        if (c++ <= 0) {
+                            try {
+                                Thread.sleep(500);
+                            } catch (InterruptedException e) {
+                            }
+                        }
+                        return t;
+                    }
+
+                }).subscribe(ts);
+
+        ts.awaitTerminalEvent();
+        ts.assertNoErrors();
+        assertEquals(RxRingBuffer.SIZE * 2, ts.getOnNextEvents().size());
+    }
+
+    @Test
+    public void testBackpressureWithSelectorDelayAndSubscriptionDelay() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        Observable.range(1, RxRingBuffer.SIZE * 2)
+                .delay(new Func0<Observable<Long>>() {
+
+                    @Override
+                    public Observable<Long> call() {
+                        return Observable.timer(500, TimeUnit.MILLISECONDS);
+                    }
+                }, new Func1<Integer, Observable<Long>>() {
+
+                    @Override
+                    public Observable<Long> call(Integer i) {
+                        return Observable.timer(100, TimeUnit.MILLISECONDS);
+                    }
+
+                })
+                .observeOn(Schedulers.computation())
+                .map(new Func1<Integer, Integer>() {
+
+                    int c = 0;
+
+                    @Override
+                    public Integer call(Integer t) {
+                        if (c++ <= 0) {
+                            try {
+                                Thread.sleep(500);
+                            } catch (InterruptedException e) {
+                            }
+                        }
+                        return t;
+                    }
+
+                }).subscribe(ts);
+
+        ts.awaitTerminalEvent();
+        ts.assertNoErrors();
+        assertEquals(RxRingBuffer.SIZE * 2, ts.getOnNextEvents().size());
     }
 }
