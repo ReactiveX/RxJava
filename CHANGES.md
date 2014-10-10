@@ -1,5 +1,21 @@
 # RxJava Releases #
 
+### Version 1.0.0-rc.6 – October 10th 2014 ([Maven Central](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.0.0-rc.6%7C)) ###
+
+This release is primarily bug fixes along with API cleanup by renaming `longCount` to `countLong` to be alphabetically sorted alongside `count`.
+
+* [Pull 1745] (https://github.com/ReactiveX/RxJava/pull/1745) SerializedSubject
+* [Pull 1746] (https://github.com/ReactiveX/RxJava/pull/1746) Fatal System.err Logs on Unhandled Exceptions
+* [Pull 1743] (https://github.com/ReactiveX/RxJava/pull/1743) Subject Error Handling
+* [Pull 1742] (https://github.com/ReactiveX/RxJava/pull/1742) EmptyObserver and TestObserver
+* [Pull 1740] (https://github.com/ReactiveX/RxJava/pull/1740) longCount -> countLong
+* [Pull 1736] (https://github.com/ReactiveX/RxJava/pull/1736) Fix TrampolineScheduler NullPointerException
+* [Pull 1738] (https://github.com/ReactiveX/RxJava/pull/1738) Delay Operator with Reactive Pull Backpressure
+* [Pull 1739] (https://github.com/ReactiveX/RxJava/pull/1739) Fix Slow Non-deterministic Test
+* [Pull 1731] (https://github.com/ReactiveX/RxJava/pull/1731) Remove Unused Code
+* [Pull 1733] (https://github.com/ReactiveX/RxJava/pull/1733) Move To Proper Location
+* [Pull 1747] (https://github.com/ReactiveX/RxJava/pull/1747) Cleanup: final and utility classes
+
 ### Version 1.0.0-rc.5 – October 6th 2014 ([Maven Central](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.0.0-rc.5%7C)) ###
 
 * [Pull 1729] (https://github.com/ReactiveX/RxJava/pull/1729) CombineLatest: Request Up When Dropping Values
