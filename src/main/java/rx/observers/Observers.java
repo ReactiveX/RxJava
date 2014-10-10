@@ -46,9 +46,7 @@ public class Observers {
 
     /**
      * Returns an inert {@link Observer} that does nothing in response to the emissions or notifications from
-     * any {@code Observable} it subscribes to. This is different, however, from an {@link EmptyObserver}, in
-     * that it will throw an exception if its {@link Observer#onError onError} method is called (whereas
-     * {@code EmptyObserver} will swallow the error in such a case).
+     * any {@code Observable} it subscribes to but will throw an exception if its {@link Observer#onError onError} method is called.
      *
      * @return an inert {@code Observer}
      */
@@ -59,8 +57,8 @@ public class Observers {
 
     /**
      * Creates an {@link Observer} that receives the emissions of any {@code Observable} it subscribes to via
-     * {@link Observer#onNext onNext} but ignores {@link Observer#onError onError} and
-     * {@link Observer#onCompleted onCompleted} notifications.
+     * {@link Observer#onNext onNext} but ignores {@link Observer#onCompleted onCompleted} notifications. 
+     * It will throws an {@link OnErrorNotImplementedException} if {@link Observer#onError onError} is invoked.
      *
      * @param onNext
      *          a function that handles each item emitted by an {@code Observable}
