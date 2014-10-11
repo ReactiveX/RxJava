@@ -90,9 +90,10 @@ public final class BufferUntilSubscriber<T> extends Subject<T, T> {
         public void call(final Subscriber<? super T> s) {
             if (state.casObserverRef(null, s)) {
                 s.add(Subscriptions.create(new Action0() {
+                    @SuppressWarnings("unchecked")
                     @Override
                     public void call() {
-                        state.observerRef = Observers.empty();
+                        state.observerRef = EMPTY_OBSERVER;
                     }
                 }));
                 boolean win = false;
@@ -184,4 +185,25 @@ public final class BufferUntilSubscriber<T> extends Subject<T, T> {
             emit(state.nl.next(t));
         }
     }
+    
+    @SuppressWarnings("rawtypes")
+    private final static Observer EMPTY_OBSERVER = new Observer() {
+
+        @Override
+        public void onCompleted() {
+            
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            
+        }
+
+        @Override
+        public void onNext(Object t) {
+            
+        }
+        
+    };
+    
 }
