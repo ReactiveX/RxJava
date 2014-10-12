@@ -35,16 +35,9 @@ import rx.observers.TestSubscriber;
 
 public class OnSubscribeFromIterableTest {
 
-    @Test
+    @Test(expected = NullPointerException.class)
     public void testNull() {
-        Observable<String> observable = Observable.create(new OnSubscribeFromIterable<String>(null));
-
-        @SuppressWarnings("unchecked")
-        Observer<String> observer = mock(Observer.class);
-        observable.subscribe(observer);
-        verify(observer, Mockito.never()).onNext(any(String.class));
-        verify(observer, Mockito.never()).onError(any(Throwable.class));
-        verify(observer, times(1)).onCompleted();
+        Observable.create(new OnSubscribeFromIterable<String>(null));
     }
     
     @Test
