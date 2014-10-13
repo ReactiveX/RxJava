@@ -32,7 +32,6 @@ import rx.Observer;
 import rx.Subscriber;
 import rx.functions.Func1;
 import rx.observers.TestSubscriber;
-import rx.schedulers.Schedulers;
 
 public class OperatorOnErrorReturnTest {
 

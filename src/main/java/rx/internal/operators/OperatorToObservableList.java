@@ -19,7 +19,6 @@ import rx.Observable.Operator;
 import rx.Subscriber;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 

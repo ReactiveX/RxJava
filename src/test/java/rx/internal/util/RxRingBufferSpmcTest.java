@@ -55,8 +55,8 @@ public class RxRingBufferSpmcTest extends RxRingBufferBase {
 
         final Producer p = new Producer() {
 
-            AtomicInteger c = new AtomicInteger();
-
+            // AtomicInteger c = new AtomicInteger();
+            
             @Override
             public void request(final long n) {
                 //                System.out.println("request[" + c.incrementAndGet() + "]: " + n + "  Thread: " + Thread.currentThread());

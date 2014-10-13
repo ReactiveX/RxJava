@@ -830,7 +830,6 @@ public class OperatorZipTest {
 
     @Test
     public void testStartAsync() throws InterruptedException {
-        final CountDownLatch latch = new CountDownLatch(1);
         Observable<String> os = ASYNC_OBSERVABLE_OF_INFINITE_INTEGERS(new CountDownLatch(1)).onBackpressureBuffer()
                 .zipWith(ASYNC_OBSERVABLE_OF_INFINITE_INTEGERS(new CountDownLatch(1)).onBackpressureBuffer(), new Func2<Integer, Integer, String>() {
 
