@@ -35,14 +35,14 @@ public final class OnSubscribeFromIterable<T> implements OnSubscribe<T> {
     final Iterable<? extends T> is;
 
     public OnSubscribeFromIterable(Iterable<? extends T> iterable) {
+        if (iterable == null) {
+            throw new NullPointerException("iterable must not be null");
+        }
         this.is = iterable;
     }
 
     @Override
     public void call(final Subscriber<? super T> o) {
-        if (is == null) {
-            o.onCompleted();
-        }
         final Iterator<? extends T> it = is.iterator();
         o.setProducer(new IterableProducer<T>(o, it));
     }
