@@ -16,7 +16,6 @@
 package rx;
 
 import rx.internal.util.SubscriptionList;
-import rx.subscriptions.CompositeSubscription;
 
 /**
  * Provides a mechanism for receiving push-based notifications from Observables, and permits manual

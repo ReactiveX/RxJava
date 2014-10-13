@@ -18,8 +18,6 @@ package rx.internal.util.unsafe;
 
 import static rx.internal.util.unsafe.UnsafeAccess.UNSAFE;
 
-import java.util.Queue;
-
 abstract class MpmcArrayQueueL1Pad<E> extends ConcurrentSequencedCircularArrayQueue<E> {
     long p10, p11, p12, p13, p14, p15, p16;
     long p30, p31, p32, p33, p34, p35, p36, p37;

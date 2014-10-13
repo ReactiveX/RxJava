@@ -16,7 +16,6 @@
 package rx.observables;
 
 import rx.Observable;
-import rx.Subscriber;
 import rx.functions.Func1;
 
 /**

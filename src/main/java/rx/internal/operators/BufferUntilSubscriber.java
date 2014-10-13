@@ -21,7 +21,6 @@ import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 import rx.Observer;
 import rx.Subscriber;
 import rx.functions.Action0;
-import rx.observers.Observers;
 import rx.subjects.Subject;
 import rx.subscriptions.Subscriptions;
 

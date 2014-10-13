@@ -24,7 +24,6 @@ import rx.functions.Func0;
 import rx.functions.Func1;
 import rx.observables.ConnectableObservable;
 import rx.observers.SafeSubscriber;
-import rx.subjects.ReplaySubject;
 import rx.subjects.Subject;
 
 /**

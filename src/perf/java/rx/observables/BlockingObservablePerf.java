@@ -22,8 +22,6 @@ import org.openjdk.jmh.annotations.OutputTimeUnit;
 import org.openjdk.jmh.annotations.Param;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;
-import rx.Observable;
-import rx.functions.Func1;
 import rx.jmh.InputWithIncrementingInteger;
 
 import java.util.concurrent.TimeUnit;

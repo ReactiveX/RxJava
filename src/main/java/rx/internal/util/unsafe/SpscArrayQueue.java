@@ -16,8 +16,6 @@
  */
 package rx.internal.util.unsafe;
 
-import java.util.Queue;
-
 abstract class SpscArrayQueueColdField<E> extends ConcurrentCircularArrayQueue<E> {
     private static final Integer MAX_LOOK_AHEAD_STEP = Integer.getInteger("jctoolts.spsc.max.lookahead.step", 4096);
     protected final int lookAheadStep;

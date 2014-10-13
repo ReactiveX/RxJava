@@ -34,7 +34,6 @@ import org.junit.Test;
 
 import rx.Observable;
 import rx.Observer;
-import rx.Subscriber;
 import rx.Subscription;
 import rx.observers.TestObserver;
 import rx.observers.TestSubscriber;

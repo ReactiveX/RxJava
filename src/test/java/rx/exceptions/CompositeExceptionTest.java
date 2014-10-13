@@ -148,7 +148,6 @@ public class CompositeExceptionTest {
     private static void assertNoCircularReferences(Throwable ex) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         PrintStream printStream = new PrintStream(baos);
-        StringWriter writer = new StringWriter();
         ex.printStackTrace(printStream);
         assertFalse(baos.toString().contains("CIRCULAR REFERENCE"));
     }

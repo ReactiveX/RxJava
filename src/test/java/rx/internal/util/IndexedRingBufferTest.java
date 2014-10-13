@@ -38,8 +38,8 @@ public class IndexedRingBufferTest {
     @Test
     public void add() {
         IndexedRingBuffer<LSubscription> list = IndexedRingBuffer.getInstance();
-        int head = list.add(new LSubscription(1));
-        int n2 = list.add(new LSubscription(2));
+        list.add(new LSubscription(1));
+        list.add(new LSubscription(2));
         final AtomicInteger c = new AtomicInteger();
 
         list.forEach(newCounterAction(c));
@@ -49,7 +49,7 @@ public class IndexedRingBufferTest {
     @Test
     public void removeEnd() {
         IndexedRingBuffer<LSubscription> list = IndexedRingBuffer.getInstance();
-        int head = list.add(new LSubscription(1));
+        list.add(new LSubscription(1));
         int n2 = list.add(new LSubscription(2));
 
         final AtomicInteger c = new AtomicInteger();
@@ -66,9 +66,9 @@ public class IndexedRingBufferTest {
     @Test
     public void removeMiddle() {
         IndexedRingBuffer<LSubscription> list = IndexedRingBuffer.getInstance();
-        int head = list.add(new LSubscription(1));
+        list.add(new LSubscription(1));
         int n2 = list.add(new LSubscription(2));
-        int n3 = list.add(new LSubscription(3));
+        list.add(new LSubscription(3));
 
         list.remove(n2);
 
@@ -306,7 +306,7 @@ public class IndexedRingBufferTest {
             public void call() {
                 try {
                     for (int i = 10000; i < 20000; i++) {
-                        int index = list.add(i);
+                        list.add(i);
                         //                        Integer v = list.remove(index);
                     }
                 } catch (Exception e) {
