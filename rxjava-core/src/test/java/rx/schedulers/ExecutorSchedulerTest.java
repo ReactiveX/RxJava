@@ -18,13 +18,16 @@ package rx.schedulers;
 import rx.Scheduler;
 import rx.internal.util.RxThreadFactory;
 
+import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
 
+    final static Executor executor = Executors.newFixedThreadPool(2, new RxThreadFactory("TestCustomPool-"));
+    
     @Override
     protected Scheduler getScheduler() {
-        return Schedulers.from(Executors.newFixedThreadPool(2, new RxThreadFactory("TestCustomPool-")));
+        return Schedulers.from(executor);
     }
     
 }

@@ -1055,6 +1055,30 @@ class RxScalaDemo extends JUnitSuite {
     }.subscribe(s => println(s), e => e.printStackTrace())
   }
 
+  @Test def retryWhenExample(): Unit = {
+    Observable[String]({ subscriber =>
+      println("subscribing")
+      subscriber.onError(new RuntimeException("always fails"))
+    }).retryWhen(attempts => {
+      attempts.zipWith(Observable.from(1 to 3))((n, i) => i).flatMap(i => {
+        println("delay retry by " + i + " second(s)")
+        Observable.timer(Duration(i, TimeUnit.SECONDS))
+      })
+    }).toBlocking.foreach(s => println(s))
+  }
+
+  @Test def repeatWhenExample(): Unit = {
+    Observable[String]({ subscriber =>
+      println("subscribing")
+      subscriber.onCompleted()
+    }).repeatWhen(attempts => {
+      attempts.zipWith(Observable.from(1 to 3))((n, i) => i).flatMap(i => {
+        println("delay repeat by " + i + " second(s)")
+        Observable.timer(Duration(i, TimeUnit.SECONDS)).materialize
+      })
+    }, NewThreadScheduler()).toBlocking.foreach(s => println(s))
+  }
+
   @Test def liftExample1(): Unit = {
     // Add "No. " in front of each item
     val o = List(1, 2, 3).toObservable.lift {

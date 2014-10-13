@@ -277,8 +277,8 @@
   (let [xs [{:k :a :v 1} {:k :b :v 2} {:k :a :v 3} {:k :c :v 4}]]
     (testing "with just a key-fn"
       (is (= [[:a {:k :a :v 1}]
-              [:b {:k :b :v 2}]
               [:a {:k :a :v 3}]
+              [:b {:k :b :v 2}]
               [:c {:k :c :v 4}]]
              (->> xs
                   (rx/seq->o)
@@ -451,6 +451,44 @@
            (b/into [] (rx/mapcat (comp rx/seq->o f)
                                  (rx/seq->o as)
                                  (rx/seq->o bs)))))))
+
+(deftest test-flatmap
+  (let [f  (fn [v] [v (* v v)])
+        xs (range 10)]
+    (is (= (mapcat f xs)
+           (b/into [] (rx/flatmap (comp rx/seq->o f) (rx/seq->o xs))))))
+
+  ; group-by is a good way to test merge behavior without truly async code
+  ; here the :a and :b observables are interleaved when merged
+  (let [xs [{:k :a :v 1} {:k :b :v 2} {:k :a :v 3} {:k :c :v 4}]]
+    (is (= [[:a {:k :a :v 1}]
+            [:b {:k :b :v 2}]
+            [:a {:k :a :v 3}]
+            [:c {:k :c :v 4}]]
+           (->> xs
+                (rx/seq->o)
+                (rx/group-by :k)
+                (rx/flatmap (fn [[k vo :as me]]
+                              (is (instance? clojure.lang.MapEntry me))
+                              (rx/map #(vector k %) vo)))
+                (b/into [])))))
+
+  ; still looking for a simple demo of merging for the multi-arg case
+  ; Here, because ys is "inline", the interleaving is removed. sigh.
+  (let [xs [{:k :a :v 1} {:k :b :v 2} {:k :a :v 3} {:k :c :v 4}]
+        ys [:ay :by :cy]]
+    (is (= [[:a {:k :a :v 1} :ay]
+            [:a {:k :a :v 3} :ay]
+            [:b {:k :b :v 2} :by]
+            [:c {:k :c :v 4} :cy]]
+           (->> (rx/flatmap (fn [[k vo :as me] y]
+                              (is (instance? clojure.lang.MapEntry me))
+                              (rx/map #(vector k % y) vo))
+                            (->> xs
+                                 rx/seq->o
+                                 (rx/group-by :k))
+                            (rx/seq->o ys))
+                (b/into []))))))
 
 (deftest test-next
   (let [in [:q :r :s :t :u]]

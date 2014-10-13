@@ -37,26 +37,35 @@ import rx.subscriptions.Subscriptions;
  * @param <K> the key type
  * @param <T> the source and group value type
  */
-public final class OperatorGroupBy<K, T> implements Operator<GroupedObservable<K, T>, T> {
+public final class OperatorGroupBy<T, K, R> implements Operator<GroupedObservable<K, R>, T> {
     
     final Func1<? super T, ? extends K> keySelector;
+    final Func1<? super T, ? extends R> elementSelector;
     
+    @SuppressWarnings("unchecked")
     public OperatorGroupBy(final Func1<? super T, ? extends K> keySelector) {
+        this(keySelector, (Func1<T, R>)IDENTITY);
+    }
+    
+    public OperatorGroupBy(Func1<? super T, ? extends K> keySelector, Func1<? super T, ? extends R> elementSelector) {
         this.keySelector = keySelector;
+        this.elementSelector = elementSelector;
     }
     
     @Override
-    public Subscriber<? super T> call(final Subscriber<? super GroupedObservable<K, T>> child) {
-        return new GroupBySubscriber<K, T>(keySelector, child);
+    public Subscriber<? super T> call(final Subscriber<? super GroupedObservable<K, R>> child) {
+        return new GroupBySubscriber<K, T, R>(keySelector, elementSelector, child);
     }
-    static final class GroupBySubscriber<K, T> extends Subscriber<T> {
+    static final class GroupBySubscriber<K, T, R> extends Subscriber<T> {
         final Func1<? super T, ? extends K> keySelector;
-        final Subscriber<? super GroupedObservable<K, T>> child;
-        public GroupBySubscriber(Func1<? super T, ? extends K> keySelector, Subscriber<? super GroupedObservable<K, T>> child) {
+        final Func1<? super T, ? extends R> elementSelector;
+        final Subscriber<? super GroupedObservable<K, R>> child;
+        public GroupBySubscriber(Func1<? super T, ? extends K> keySelector, Func1<? super T, ? extends R> elementSelector, Subscriber<? super GroupedObservable<K, R>> child) {
             // a new CompositeSubscription to decouple the subscription as the inner subscriptions need a separate lifecycle
             // and will unsubscribe on this parent if they are all unsubscribed
             super();
             this.keySelector = keySelector;
+            this.elementSelector = elementSelector;
             this.child = child;
         }
         private final Map<K, BufferUntilSubscriber<T>> groups = new HashMap<K, BufferUntilSubscriber<T>>();
@@ -124,10 +133,10 @@ public final class OperatorGroupBy<K, T> implements Operator<GroupedObservable<K
                     group = BufferUntilSubscriber.create();
                     final BufferUntilSubscriber<T> _group = group;
                     
-                    GroupedObservable<K, T> go = new GroupedObservable<K, T>(key, new OnSubscribe<T>() {
+                    GroupedObservable<K, R> go = new GroupedObservable<K, R>(key, new OnSubscribe<R>() {
                         
                         @Override
-                        public void call(final Subscriber<? super T> o) {
+                        public void call(final Subscriber<? super R> o) {
                             // number of children we have running
                             COUNTER_UPDATER.incrementAndGet(GroupBySubscriber.this);
                             o.add(Subscriptions.create(new Action0() {
@@ -153,7 +162,7 @@ public final class OperatorGroupBy<K, T> implements Operator<GroupedObservable<K
                                 
                                 @Override
                                 public void onNext(T t) {
-                                    o.onNext(t);
+                                    o.onNext(elementSelector.call(t));
                                 }
                                 
                             });
@@ -185,4 +194,13 @@ public final class OperatorGroupBy<K, T> implements Operator<GroupedObservable<K
         }
         
     }
+    
+    private final static Func1<Object, Object> IDENTITY = new Func1<Object, Object>() {
+
+        @Override
+        public Object call(Object t) {
+            return t;
+        }
+        
+    };
 }

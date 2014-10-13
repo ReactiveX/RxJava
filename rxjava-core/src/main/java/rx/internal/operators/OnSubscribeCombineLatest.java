@@ -15,16 +15,19 @@
  */
 package rx.internal.operators;
 
-import java.util.ArrayList;
 import java.util.BitSet;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicLongFieldUpdater;
 
 import rx.Observable;
 import rx.Observable.OnSubscribe;
+import rx.Producer;
 import rx.Subscriber;
+import rx.exceptions.MissingBackpressureException;
 import rx.functions.FuncN;
-import rx.observers.SerializedSubscriber;
+import rx.internal.util.RxRingBuffer;
 
 /**
  * Returns an Observable that combines the emissions of multiple source observables. Once each
@@ -34,8 +37,10 @@ import rx.observers.SerializedSubscriber;
  * <p>
  * <img width="640" src="https://github.com/Netflix/RxJava/wiki/images/rx-operators/combineLatest.png" alt="">
  * 
- * @param <T> the common basetype of the source values
- * @param <R> the result type of the combinator function
+ * @param <T>
+ *            the common basetype of the source values
+ * @param <R>
+ *            the result type of the combinator function
  */
 public final class OnSubscribeCombineLatest<T, R> implements OnSubscribe<R> {
     final List<? extends Observable<? extends T>> sources;
@@ -44,6 +49,11 @@ public final class OnSubscribeCombineLatest<T, R> implements OnSubscribe<R> {
     public OnSubscribeCombineLatest(List<? extends Observable<? extends T>> sources, FuncN<? extends R> combinator) {
         this.sources = sources;
         this.combinator = combinator;
+        if (sources.size() > 128) {
+            // For design simplicity this is limited to 128. If more are really needed we'll need to adjust 
+            // the design of how RxRingBuffer is used in the implementation below.
+            throw new IllegalArgumentException("More than 128 sources to combineLatest is not supported.");
+        }
     }
 
     @Override
@@ -51,143 +61,113 @@ public final class OnSubscribeCombineLatest<T, R> implements OnSubscribe<R> {
         if (sources.isEmpty()) {
             child.onCompleted();
             return;
-        } else
+        }
         if (sources.size() == 1) {
-            sources.get(0).unsafeSubscribe(new Subscriber<T>(child) {
-                @Override
-                public void onNext(T t) {
-                    child.onNext(combinator.call(t));
-                }
-
-                @Override
-                public void onError(Throwable e) {
-                    child.onError(e);
-                }
-
-                @Override
-                public void onCompleted() {
-                    child.onCompleted();
-                }
-            });
-            return;
+            child.setProducer(new SingleSourceProducer<T, R>(child, sources.get(0), combinator));
+        } else {
+            child.setProducer(new MultiSourceProducer<T, R>(child, sources, combinator));
         }
-        
-        SerializedSubscriber<R> s = new SerializedSubscriber<R>(child);
-        List<SourceSubscriber> sourceSubscribers = new ArrayList<SourceSubscriber>(sources.size());
-        Collector collector = new Collector(s, sources.size());
-        
-        for (int i = 0; i < sources.size(); i++) {
-            SourceSubscriber sourceSub = new SourceSubscriber(i, collector);
-            child.add(sourceSub);
-            sourceSubscribers.add(sourceSub);
-        }
-        
-        for (int i = 0; i < sources.size(); i++) {
-            if (!child.isUnsubscribed()) {
-                sources.get(i).unsafeSubscribe(sourceSubscribers.get(i));
-            }
-        }        
+
     }
-    /** Combines values from each source subscriber. */
-    final class Collector {
-        final Subscriber<R> s;
-        /** Guarded by this. */
-        Object[] collectedValues;
-        /** Guarded by this. */
-        final BitSet haveValues;
-        /** Guarded by this. */
-        int haveValuesCount;
-        /** Guarded by this. */
-        final BitSet completion;
-        /** Guarded by this. */
-        int completionCount;
-        /** Guarded by this. */
-        boolean emitting;
-        /** Guarded by this. */
-        List<Object[]> queue;
-        public Collector(Subscriber<R> s, int size) {
-            this.s = s;
-            int n = size;
+
+    /*
+     * benjchristensen => This implementation uses a buffer enqueue/drain pattern. It could be optimized to have a fast-path to
+     * skip the buffer and emit directly when no conflict, but that is quite complicated and I don't have the time to attempt it right now.
+     */
+    final static class MultiSourceProducer<T, R> implements Producer {
+        private final AtomicBoolean started = new AtomicBoolean();
+        private final AtomicLong requested = new AtomicLong();
+        private final List<? extends Observable<? extends T>> sources;
+        private final Subscriber<? super R> child;
+        private final FuncN<? extends R> combinator;
+        private final MultiSourceRequestableSubscriber<T, R>[] subscribers;
+
+        /* following are guarded by WIP */
+        private final RxRingBuffer buffer = RxRingBuffer.getSpmcInstance();
+        private final Object[] collectedValues;
+        private final BitSet haveValues;
+        private volatile int haveValuesCount; // does this need to be volatile or is WIP sufficient?
+        private final BitSet completion;
+        private volatile int completionCount; // does this need to be volatile or is WIP sufficient?
+
+        @SuppressWarnings("unused")
+        private volatile long counter;
+        @SuppressWarnings("rawtypes")
+        private static final AtomicLongFieldUpdater<MultiSourceProducer> WIP = AtomicLongFieldUpdater.newUpdater(MultiSourceProducer.class, "counter");
+
+        @SuppressWarnings("unchecked")
+        public MultiSourceProducer(final Subscriber<? super R> child, final List<? extends Observable<? extends T>> sources, FuncN<? extends R> combinator) {
+            this.sources = sources;
+            this.child = child;
+            this.combinator = combinator;
+
+            int n = sources.size();
+            this.subscribers = new MultiSourceRequestableSubscriber[n];
             this.collectedValues = new Object[n];
             this.haveValues = new BitSet(n);
             this.completion = new BitSet(n);
         }
-        void next(int index, T value) {
-            Object[] localValues;
-            List<Object[]> localQueue;
-            
-            synchronized (this) {
-                if (!haveValues.get(index)) {
-                    haveValues.set(index);
-                    haveValuesCount++;
-                }
-                collectedValues[index] = value;
-                if (haveValuesCount != collectedValues.length) {
-                    return;
-                }
-                localValues = collectedValues.clone();
-                if (emitting) {
-                    if (queue == null) {
-                        queue = new LinkedList<Object[]>();
+
+        @Override
+        public void request(long n) {
+            requested.getAndAdd(n);
+            if (!started.get() && started.compareAndSet(false, true)) {
+                /*
+                 * NOTE: this logic will ONLY work if we don't have more sources than the size of the buffer.
+                 * 
+                 * We would likely need to make an RxRingBuffer that can be sized to [numSources * n] instead
+                 * of the current global default size it has.
+                 */
+                int sizePerSubscriber = RxRingBuffer.SIZE / sources.size();
+                int leftOver = RxRingBuffer.SIZE % sources.size();
+                for (int i = 0; i < sources.size(); i++) {
+                    Observable<? extends T> o = sources.get(i);
+                    int toRequest = sizePerSubscriber;
+                    if (i == sources.size() - 1) {
+                        toRequest += leftOver;
                     }
-                    queue.add(localValues);
-                    return;
+                    MultiSourceRequestableSubscriber<T, R> s = new MultiSourceRequestableSubscriber<T, R>(i, toRequest, child, this);
+                    subscribers[i] = s;
+                    o.unsafeSubscribe(s);
                 }
-                localQueue = queue;
-                queue = null;
-                emitting = true;
             }
-            boolean once = true;
-            boolean skipFinal = false;
-            /** 
-             * This logic, similar to SerializedSubscriber, ensures that the
-             * emission order is consistent with the order the synchronized above
-             * was won.
-             */
-            try {
+            tick();
+        }
+
+        /**
+         * This will only allow one thread at a time to do the work, but ensures via `counter` increment/decrement
+         * that there is always once who acts on each `tick`. Same concept as used in OperationObserveOn.
+         */
+        @SuppressWarnings("unchecked")
+        void tick() {
+            if (WIP.getAndIncrement(this) == 0) {
+                int emitted = 0;
                 do {
-                    try {
-                        if (localQueue != null) {
-                            for (Object[] o : localQueue) {
-                                s.onNext(combinator.call(o));
+                    // we only emit if requested > 0
+                    if (requested.get() > 0) {
+                        Object o = buffer.poll();
+                        if (o != null) {
+                            if (buffer.isCompleted(o)) {
+                                child.onCompleted();
+                            } else {
+                                child.onNext((R) o);
+                                emitted++;
+                                requested.decrementAndGet();
                             }
                         }
-                        if (once) {
-                            once = false;
-                            s.onNext(combinator.call(localValues));
-                        }
-                    } catch (Throwable e) {
-                        error(e);
-                        return;
                     }
-
-                    synchronized (this) {
-                        localQueue = queue;
-                        queue = null;
-                        if (localQueue == null) {
-                            skipFinal = true;
-                            emitting = false;
-                            return;
-                        }
-                    }
-                } while (!s.isUnsubscribed());
-            } finally {
-                if (!skipFinal) {
-                    synchronized (this) {
-                        emitting = false;
+                } while (WIP.decrementAndGet(this) > 0);
+                if (emitted > 0) {
+                    for (MultiSourceRequestableSubscriber<T, R> s : subscribers) {
+                        s.requestUpTo(emitted);
                     }
                 }
             }
-            
         }
-        void error(Throwable e) {
-            s.onError(e);
-            s.unsubscribe();
-        }
-        void complete(int index, boolean hadValue) {
+
+        public void onCompleted(int index, boolean hadValue) {
             if (!hadValue) {
-                s.onCompleted();
-                s.unsubscribe();
+                child.onCompleted();
                 return;
             }
             boolean done = false;
@@ -199,35 +179,130 @@ public final class OnSubscribeCombineLatest<T, R> implements OnSubscribe<R> {
                 }
             }
             if (done) {
-                s.onCompleted();
+                buffer.onCompleted();
+                tick();
             }
         }
-    }
-    /** Subscibed to a source. */
-    final class SourceSubscriber extends Subscriber<T> {
-        final int index;
-        final Collector collector;
-        private boolean hasValue;
-        public SourceSubscriber(int index, Collector collector) {
-            this.index = index;
-            this.collector = collector;
-        }
-        @Override
-        public void onNext(T t) {
-            hasValue = true;
-            collector.next(index, t);
+
+        public void onNext(int index, T t) {
+            synchronized (this) {
+                if (!haveValues.get(index)) {
+                    haveValues.set(index);
+                    haveValuesCount++;
+                }
+                collectedValues[index] = t;
+                if (haveValuesCount != collectedValues.length) {
+                    // haven't received value from each source yet so won't emit
+                    return;
+                }
+                try {
+                    buffer.onNext(combinator.call(collectedValues));
+                } catch (MissingBackpressureException e) {
+                    onError(e);
+                } catch (Throwable e) {
+                    onError(e);
+                }
+            }
+            tick();
         }
 
-        @Override
         public void onError(Throwable e) {
-            collector.error(e);
+            child.onError(e);
+        }
+    }
+
+    final static class MultiSourceRequestableSubscriber<T, R> extends Subscriber<T> {
+
+        final MultiSourceProducer<T, R> producer;
+        final int index;
+        final AtomicLong emitted = new AtomicLong();
+        boolean hasValue = false;
+
+        public MultiSourceRequestableSubscriber(int index, int initial, Subscriber<? super R> child, MultiSourceProducer<T, R> producer) {
+            super(child);
+            this.index = index;
+            this.producer = producer;
+            request(initial);
+        }
+
+        public void requestUpTo(long n) {
+            long r = Math.min(emitted.get(), n);
+            request(r);
+            emitted.addAndGet(-r);
         }
 
         @Override
         public void onCompleted() {
-            collector.complete(index, hasValue);
+            producer.onCompleted(index, hasValue);
         }
-        
-        
+
+        @Override
+        public void onError(Throwable e) {
+            producer.onError(e);
+        }
+
+        @Override
+        public void onNext(T t) {
+            hasValue = true;
+            emitted.incrementAndGet();
+            producer.onNext(index, t);
+        }
+
+    }
+
+    final static class SingleSourceProducer<T, R> implements Producer {
+        final AtomicBoolean started = new AtomicBoolean();
+        final Observable<? extends T> source;
+        final Subscriber<? super R> child;
+        final FuncN<? extends R> combinator;
+        final SingleSourceRequestableSubscriber<T, R> subscriber;
+
+        public SingleSourceProducer(final Subscriber<? super R> child, Observable<? extends T> source, FuncN<? extends R> combinator) {
+            this.source = source;
+            this.child = child;
+            this.combinator = combinator;
+            this.subscriber = new SingleSourceRequestableSubscriber<T, R>(child, combinator);
+        }
+
+        @Override
+        public void request(final long n) {
+            subscriber.requestMore(n);
+            if (started.compareAndSet(false, true)) {
+                source.unsafeSubscribe(subscriber);
+            }
+
+        }
+
+    }
+
+    final static class SingleSourceRequestableSubscriber<T, R> extends Subscriber<T> {
+
+        private final Subscriber<? super R> child;
+        private final FuncN<? extends R> combinator;
+
+        SingleSourceRequestableSubscriber(Subscriber<? super R> child, FuncN<? extends R> combinator) {
+            super(child);
+            this.child = child;
+            this.combinator = combinator;
+        }
+
+        public void requestMore(long n) {
+            request(n);
+        }
+
+        @Override
+        public void onNext(T t) {
+            child.onNext(combinator.call(t));
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            child.onError(e);
+        }
+
+        @Override
+        public void onCompleted() {
+            child.onCompleted();
+        }
     }
 }

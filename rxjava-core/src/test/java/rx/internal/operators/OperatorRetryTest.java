@@ -37,7 +37,6 @@ import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Notification;
 import rx.Observer;
-import rx.Scheduler.Worker;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Action0;

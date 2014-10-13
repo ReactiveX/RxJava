@@ -147,6 +147,10 @@ public class Observable<T> {
      * <p> {@code
      * observable.map(...).filter(...).take(5).lift(new OperatorA()).lift(new OperatorB(...)).subscribe()
      * }
+     * <p>
+     * If the operator you are creating is designed to act on the individual items emitted by a source
+     * Observable, use {@code lift}. If your operator is designed to transform the source Observable as a whole
+     * (for instance, by applying a particular set of existing RxJava operators to it) use {@link #compose}.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code lift} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -179,9 +183,44 @@ public class Observable<T> {
             }
         });
     }
+    
+    
+    /**
+     * Transform an Observable by applying a particular Transformer function to it.
+     * <p>
+     * This method operates on the Observable itself whereas {@link #lift} operates on the Observable's
+     * Subscribers or Observers.
+     * <p>
+     * If the operator you are creating is designed to act on the individual items emitted by a source
+     * Observable, use {@link #lift}. If your operator is designed to transform the source Observable as a whole
+     * (for instance, by applying a particular set of existing RxJava operators to it) use {@code compose}.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code compose} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @param transformer implements the function that transforms the source Observable
+     * @return the source Observable, transformed by the transformer function
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Implementing-Your-Own-Operators">RxJava wiki: Implementing Your Own Operators</a>
+     * @since 0.20
+     */
+    public <R> Observable<? extends R> compose(Transformer<? super T, ? extends R> transformer) {
+        return transformer.call(this);
+    }
+    
+    /**
+     * Transformer function used by {@link #compose}.
+     * @warn more complete description needed
+     * @since 0.20
+     */
+    public static interface Transformer<T, R> extends Func1<Observable<? extends T>, Observable<? extends R>> {
+        // cover for generics insanity
+    }
+    
+    
 
     /* *********************************************************************************************************
-     * Observers Below Here
+     * Operators Below Here
      * *********************************************************************************************************
      */
 
@@ -1027,7 +1066,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Creating-Observables#defer">RxJava wiki: defer</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229160.aspx">MSDN: Observable.Defer</a>
      */
-    public final static <T> Observable<T> defer(Func0<? extends Observable<? extends T>> observableFactory) {
+    public final static <T> Observable<T> defer(Func0<Observable<T>> observableFactory) {
         return create(new OnSubscribeDefer<T>(observableFactory));
     }
 
@@ -3848,7 +3887,7 @@ public class Observable<T> {
      *            Observable
      * @return an Observable that emits the result of applying the transformation function to each item emitted
      *         by the source Observable and concatinating the Observables obtained from this transformation
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#flatmap-and-concatmap">RxJava wiki: concatMap</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#flatmap-concatmap-and-flatmapiterable">RxJava wiki: concatMap</a>
      */
     public final <R> Observable<R> concatMap(Func1<? super T, ? extends Observable<? extends R>> func) {
         return concat(map(func));
@@ -3947,6 +3986,7 @@ public class Observable<T> {
      * @return an Observable that omits items emitted by the source Observable that are followed by another item
      *         within a computed debounce duration
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#throttlewithtimeout-or-debounce">RxJava wiki: debounce</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Backpressure">RxJava wiki: Backpressure</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.throttle.aspx">MSDN: Observable.Throttle</a>
      */
     public final <U> Observable<T> debounce(Func1<? super T, ? extends Observable<U>> debounceSelector) {
@@ -3985,6 +4025,7 @@ public class Observable<T> {
      * @return an Observable that filters out items from the source Observable that are too quickly followed by
      *         newer items
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#throttlewithtimeout-or-debounce">RxJava wiki: debounce</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Backpressure">RxJava wiki: Backpressure</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.throttle.aspx">MSDN: Observable.Throttle</a>
      * @see #throttleWithTimeout(long, TimeUnit)
      */
@@ -4027,6 +4068,7 @@ public class Observable<T> {
      * @return an Observable that filters out items from the source Observable that are too quickly followed by
      *         newer items
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#throttlewithtimeout-or-debounce">RxJava wiki: debounce</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Backpressure">RxJava wiki: Backpressure</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.throttle.aspx">MSDN: Observable.Throttle</a>
      * @see #throttleWithTimeout(long, TimeUnit, Scheduler)
      */
@@ -4731,11 +4773,126 @@ public class Observable<T> {
      * @return an Observable that emits the result of applying the transformation function to each item emitted
      *         by the source Observable and merging the results of the Observables obtained from this
      *         transformation
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#flatmap-and-concatmap">RxJava wiki: flatMap</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#flatmap-concatmap-and-flatmapiterable">RxJava wiki: flatMap</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.selectmany.aspx">MSDN: Observable.SelectMany</a>
      */
     public final <R> Observable<R> flatMap(Func1<? super T, ? extends Observable<? extends R>> func) {
-        return mergeMap(func);
+        return merge(map(func));
+    }
+    
+    /**
+     * Returns an Observable that applies a function to each item emitted or notification raised by the source
+     * Observable and then flattens the Observables returned from these functions and emits the resulting items.
+     * <p>
+     * <img width="640" height="410" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeMap.nce.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @param <R>
+     *            the result type
+     * @param onNext
+     *            a function that returns an Observable to merge for each item emitted by the source Observable
+     * @param onError
+     *            a function that returns an Observable to merge for an onError notification from the source
+     *            Observable
+     * @param onCompleted
+     *            a function that returns an Observable to merge for an onCompleted notification from the source
+     *            Observable
+     * @return an Observable that emits the results of merging the Observables returned from applying the
+     *         specified functions to the emissions and notifications of the source Observable
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#flatmap-concatmap-and-flatmapiterable">RxJava wiki: flatMap</a>
+     * @since 0.20
+     */
+    public final <R> Observable<R> flatMap(
+            Func1<? super T, ? extends Observable<? extends R>> onNext,
+            Func1<? super Throwable, ? extends Observable<? extends R>> onError,
+            Func0<? extends Observable<? extends R>> onCompleted) {
+        return merge(mapNotification(onNext, onError, onCompleted));
+    }
+
+    /**
+     * Returns an Observable that emits the results of a specified function to the pair of values emitted by the
+     * source Observable and a specified collection Observable.
+     * <p>
+     * <img width="640" height="390" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeMap.r.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @param <U>
+     *            the type of items emitted by the collection Observable
+     * @param <R>
+     *            the type of items emitted by the resulting Observable
+     * @param collectionSelector
+     *            a function that returns an Observable for each item emitted by the source Observable
+     * @param resultSelector
+     *            a function that combines one item emitted by each of the source and collection Observables and
+     *            returns an item to be emitted by the resulting Observable
+     * @return an Observable that emits the results of applying a function to a pair of values emitted by the
+     *         source Observable and the collection Observable
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#flatmap-concatmap-and-flatmapiterable">RxJava wiki: flatMap</a>
+     * @since 0.20
+     */
+    public final <U, R> Observable<R> flatMap(final Func1<? super T, ? extends Observable<? extends U>> collectionSelector,
+            final Func2<? super T, ? super U, ? extends R> resultSelector) {
+        return merge(lift(new OperatorMapPair<T, U, R>(collectionSelector, resultSelector)));
+    }
+
+    /**
+     * Returns an Observable that merges each item emitted by the source Observable with the values in an
+     * Iterable corresponding to that item that is generated by a selector.
+     * <p>
+     * <img width="640" height="310" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeMapIterable.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code flatMapIterable} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @param <R>
+     *            the type of item emitted by the resulting Observable
+     * @param collectionSelector
+     *            a function that returns an Iterable sequence of values for when given an item emitted by the
+     *            source Observable
+     * @return an Observable that emits the results of merging the items emitted by the source Observable with
+     *         the values in the Iterables corresponding to those items, as generated by {@code collectionSelector}
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#flatmap-concatmap-and-flatmapiterable">RxJava wiki: flatMapIterable</a>
+     * @since 0.20
+     */
+    public final <R> Observable<R> flatMapIterable(Func1<? super T, ? extends Iterable<? extends R>> collectionSelector) {
+        return merge(map(OperatorMapPair.convertSelector(collectionSelector)));
+    }
+
+    /**
+     * Returns an Observable that emits the results of applying a function to the pair of values from the source
+     * Observable and an Iterable corresponding to that item that is generated by a selector.
+     * <p>
+     * <img width="640" height="390" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/mergeMapIterable.r.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code flatMapIterable} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @param <U>
+     *            the collection element type
+     * @param <R>
+     *            the type of item emited by the resulting Observable
+     * @param collectionSelector
+     *            a function that returns an Iterable sequence of values for each item emitted by the source
+     *            Observable
+     * @param resultSelector
+     *            a function that returns an item based on the item emitted by the source Observable and the
+     *            Iterable returned for that item by the {@code collectionSelector}
+     * @return an Observable that emits the items returned by {@code resultSelector} for each item in the source
+     *         Observable
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#flatmap-concatmap-and-flatmapiterable">RxJava wiki: flatMapIterable</a>
+     * @since 0.20
+     */
+    public final <U, R> Observable<R> flatMapIterable(Func1<? super T, ? extends Iterable<? extends U>> collectionSelector,
+            Func2<? super T, ? super U, ? extends R> resultSelector) {
+        return flatMap(OperatorMapPair.convertSelector(collectionSelector), resultSelector);
     }
 
     /**
@@ -4835,6 +4992,45 @@ public class Observable<T> {
      * 
      * @param keySelector
      *            a function that extracts the key for each item
+     * @param elementSelector
+     *            a function that extracts the return element for each item
+     * @param <K>
+     *            the key type
+     * @param <R>
+     *            the element type
+     * @return an {@code Observable} that emits {@link GroupedObservable}s, each of which corresponds to a
+     *         unique key value and each of which emits those items from the source Observable that share that
+     *         key value
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#groupby-and-groupbyuntil">RxJava wiki: groupBy</a>
+     * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.groupby.aspx">MSDN: Observable.GroupBy</a>
+     * @since 0.20
+     */
+    public final <K, R> Observable<GroupedObservable<K, R>> groupBy(final Func1<? super T, ? extends K> keySelector, final Func1<? super T, ? extends R> elementSelector) {
+        return lift(new OperatorGroupBy<T, K, R>(keySelector, elementSelector));
+    }
+    
+    /**
+     * Groups the items emitted by an {@code Observable} according to a specified criterion, and emits these
+     * grouped items as {@link GroupedObservable}s, one {@code GroupedObservable} per group.
+     * <p>
+     * <img width="640" height="360" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/groupBy.png" alt="">
+     * <p>
+     * <em>Note:</em> A {@link GroupedObservable} will cache the items it is to emit until such time as it
+     * is subscribed to. For this reason, in order to avoid memory leaks, you should not simply ignore those
+     * {@code GroupedObservable}s that do not concern you. Instead, you can signal to them that they may
+     * discard their buffers by applying an operator like {@link #take}{@code (0)} to them.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure as splitting a stream effectively turns it into a "hot
+     *      observable" and blocking any one group would block the entire parent stream. If you need
+     *      backpressure on individual groups then you should use operators such as {@link #onBackpressureDrop}
+     *      or {@link #onBackpressureBuffer}.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code groupBy} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @param keySelector
+     *            a function that extracts the key for each item
      * @param <K>
      *            the key type
      * @return an {@code Observable} that emits {@link GroupedObservable}s, each of which corresponds to a
@@ -4844,7 +5040,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.groupby.aspx">MSDN: Observable.GroupBy</a>
      */
     public final <K> Observable<GroupedObservable<K, T>> groupBy(final Func1<? super T, ? extends K> keySelector) {
-        return lift(new OperatorGroupBy<K, T>(keySelector));
+        return lift(new OperatorGroupBy<T, K, T>(keySelector));
     }
 
     /**
@@ -5179,6 +5375,10 @@ public class Observable<T> {
     public final <R> Observable<R> map(Func1<? super T, ? extends R> func) {
         return lift(new OperatorMap<T, R>(func));
     }
+    
+    private final <R> Observable<R> mapNotification(Func1<? super T, ? extends R> onNext, Func1<? super Throwable, ? extends R> onError, Func0<? extends R> onCompleted) {
+        return lift(new OperatorMapNotification<T, R>(onNext, onError, onCompleted));
+    }
 
     /**
      * Returns an Observable that represents all of the emissions <em>and</em> notifications from the source
@@ -5216,9 +5416,11 @@ public class Observable<T> {
      * @return an Observable that emits the result of applying the transformation function to each item emitted
      *         by the source Observable and merging the results of the Observables obtained from these
      *         transformations
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#mergemap-and-mergemapiterable">RxJava wiki: mergeMap</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#flatmap-concatmap-and-flatmapiterable">RxJava wiki: flatMap</a>
      * @see #flatMap(Func1)
+     * @deprecated use {@link #flatMap}
      */
+    @Deprecated
     public final <R> Observable<R> mergeMap(Func1<? super T, ? extends Observable<? extends R>> func) {
         return merge(map(func));
     }
@@ -5245,13 +5447,15 @@ public class Observable<T> {
      *            Observable
      * @return an Observable that emits the results of merging the Observables returned from applying the
      *         specified functions to the emissions and notifications of the source Observable
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#mergemap-and-mergemapiterable">RxJava wiki: mergeMap</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#flatmap-concatmap-and-flatmapiterable">RxJava wiki: flatMap</a>
+     * @deprecated use {@link #flatMap}
      */
+    @Deprecated
     public final <R> Observable<R> mergeMap(
             Func1<? super T, ? extends Observable<? extends R>> onNext,
             Func1<? super Throwable, ? extends Observable<? extends R>> onError,
             Func0<? extends Observable<? extends R>> onCompleted) {
-        return lift(new OperatorMergeMapTransform<T, R>(onNext, onError, onCompleted));
+        return merge(mapNotification(onNext, onError, onCompleted));
     }
 
     /**
@@ -5275,11 +5479,13 @@ public class Observable<T> {
      *            returns an item to be emitted by the resulting Observable
      * @return an Observable that emits the results of applying a function to a pair of values emitted by the
      *         source Observable and the collection Observable
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#mergemap-and-mergemapiterable">RxJava wiki: mergeMap</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#flatmap-concatmap-and-flatmapiterable">RxJava wiki: flatMap</a>
+     * @deprecated use {@link #flatMap}
      */
+    @Deprecated
     public final <U, R> Observable<R> mergeMap(Func1<? super T, ? extends Observable<? extends U>> collectionSelector,
             Func2<? super T, ? super U, ? extends R> resultSelector) {
-        return lift(new OperatorMergeMapPair<T, U, R>(collectionSelector, resultSelector));
+        return flatMap(collectionSelector, resultSelector);
     }
 
     /**
@@ -5299,10 +5505,12 @@ public class Observable<T> {
      *            source Observable
      * @return an Observable that emits the results of merging the items emitted by the source Observable with
      *         the values in the Iterables corresponding to those items, as generated by {@code collectionSelector}
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#mergemap-and-mergemapiterable">RxJava wiki: mergeMapIterable</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#flatmap-concatmap-and-flatmapiterable">RxJava wiki: flatMapIterable</a>
+     * @deprecated use {@link #flatMapIterable}
      */
+    @Deprecated
     public final <R> Observable<R> mergeMapIterable(Func1<? super T, ? extends Iterable<? extends R>> collectionSelector) {
-        return merge(map(OperatorMergeMapPair.convertSelector(collectionSelector)));
+        return merge(map(OperatorMapPair.convertSelector(collectionSelector)));
     }
 
     /**
@@ -5327,11 +5535,13 @@ public class Observable<T> {
      *            Iterable returned for that item by the {@code collectionSelector}
      * @return an Observable that emits the items returned by {@code resultSelector} for each item in the source
      *         Observable
-     * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#mergemap-and-mergemapiterable">RxJava wiki: mergeMapIterable</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Transforming-Observables#flatmap-concatmap-and-flatmapiterable">RxJava wiki: flatMapIterable</a>
+     * @deprecated use {@link #flatMapIterable}
      */
+    @Deprecated
     public final <U, R> Observable<R> mergeMapIterable(Func1<? super T, ? extends Iterable<? extends U>> collectionSelector,
             Func2<? super T, ? super U, ? extends R> resultSelector) {
-        return mergeMap(OperatorMergeMapPair.convertSelector(collectionSelector), resultSelector);
+        return mergeMap(OperatorMapPair.convertSelector(collectionSelector), resultSelector);
     }
 
     /**
@@ -5503,6 +5713,8 @@ public class Observable<T> {
     /**
      * Instructs an Observable that is emitting items faster than its observer can consume them to buffer these
      * items indefinitely until they can be emitted.
+     * <p>
+     * <img width="640" height="300" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/bp.obp.buffer.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code onBackpressureBuffer} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -5519,6 +5731,8 @@ public class Observable<T> {
     /**
      * Use this operator when the upstream does not natively support backpressure and you wish to drop
      * {@code onNext} when unable to handle further events.
+     * <p>
+     * <img width="640" height="245" src="https://raw.github.com/wiki/Netflix/RxJava/images/rx-operators/bp.obp.drop.png" alt="">
      * <p>
      * If the downstream request count hits 0 then {@code onNext} will be dropped until {@code request(long n)}
      * is invoked again to increase the request count.
@@ -6910,6 +7124,7 @@ public class Observable<T> {
      * @return an Observable that emits the results of sampling the items emitted by the source Observable at
      *         the specified time interval
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#sample-or-throttlelast">RxJava wiki: sample</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Backpressure">RxJava wiki: Backpressure</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sample.aspx">MSDN: Observable.Sample</a>
      * @see #throttleLast(long, TimeUnit)
      */
@@ -6938,6 +7153,7 @@ public class Observable<T> {
      * @return an Observable that emits the results of sampling the items emitted by the source Observable at
      *         the specified time interval
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#sample-or-throttlelast">RxJava wiki: sample</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Backpressure">RxJava wiki: Backpressure</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sample.aspx">MSDN: Observable.Sample</a>
      * @see #throttleLast(long, TimeUnit, Scheduler)
      */
@@ -6964,6 +7180,7 @@ public class Observable<T> {
      * @return an Observable that emits the results of sampling the items emitted by this Observable whenever
      *         the {@code sampler} Observable emits an item or completes
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#sample-or-throttlelast">RxJava wiki: sample</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Backpressure">RxJava wiki: Backpressure</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sample.aspx">MSDN: Observable.Sample</a>
      */
     public final <U> Observable<T> sample(Observable<U> sampler) {
@@ -8562,6 +8779,7 @@ public class Observable<T> {
      *            the unit of time of {@code windowDuration}
      * @return an Observable that performs the throttle operation
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#throttlefirst">RxJava wiki: throttleFirst</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Backpressure">RxJava wiki: Backpressure</a>
      */
     public final Observable<T> throttleFirst(long windowDuration, TimeUnit unit) {
         return lift(new OperatorThrottleFirst<T>(windowDuration, unit, Schedulers.computation()));
@@ -8591,6 +8809,7 @@ public class Observable<T> {
      *            event
      * @return an Observable that performs the throttle operation
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#throttlefirst">RxJava wiki: throttleFirst</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Backpressure">RxJava wiki: Backpressure</a>
      */
     public final Observable<T> throttleFirst(long skipDuration, TimeUnit unit, Scheduler scheduler) {
         return lift(new OperatorThrottleFirst<T>(skipDuration, unit, scheduler));
@@ -8618,6 +8837,7 @@ public class Observable<T> {
      *            the unit of time of {@code intervalDuration}
      * @return an Observable that performs the throttle operation
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#sample-or-throttlelast">RxJava wiki: throttleLast</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Backpressure">RxJava wiki: Backpressure</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sample.aspx">MSDN: Observable.Sample</a>
      * @see #sample(long, TimeUnit)
      */
@@ -8650,6 +8870,7 @@ public class Observable<T> {
      *            event
      * @return an Observable that performs the throttle operation
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#sample-or-throttlelast">RxJava wiki: throttleLast</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Backpressure">RxJava wiki: Backpressure</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.sample.aspx">MSDN: Observable.Sample</a>
      * @see #sample(long, TimeUnit, Scheduler)
      */
@@ -8688,6 +8909,7 @@ public class Observable<T> {
      *            the {@link TimeUnit} of {@code timeout}
      * @return an Observable that filters out items that are too quickly followed by newer items
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#throttlewithtimeout-or-debounce">RxJava wiki: throttleWithTimeout</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Backpressure">RxJava wiki: Backpressure</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.throttle.aspx">MSDN: Observable.Throttle</a>
      * @see #debounce(long, TimeUnit)
      */
@@ -8730,6 +8952,7 @@ public class Observable<T> {
      *            item
      * @return an Observable that filters out items that are too quickly followed by newer items
      * @see <a href="https://github.com/Netflix/RxJava/wiki/Filtering-Observables#throttlewithtimeout-or-debounce">RxJava wiki: throttleWithTimeout</a>
+     * @see <a href="https://github.com/Netflix/RxJava/wiki/Backpressure">RxJava wiki: Backpressure</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.throttle.aspx">MSDN: Observable.Throttle</a>
      * @see #debounce(long, TimeUnit, Scheduler)
      */

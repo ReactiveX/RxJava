@@ -59,11 +59,11 @@ public class OperatorGroupByTest {
             return s.length();
         }
     };
-
+    
     @Test
     public void testGroupBy() {
         Observable<String> source = Observable.from("one", "two", "three", "four", "five", "six");
-        Observable<GroupedObservable<Integer, String>> grouped = source.lift(new OperatorGroupBy<Integer, String>(length));
+        Observable<GroupedObservable<Integer, String>> grouped = source.lift(new OperatorGroupBy<String, Integer, String>(length));
 
         Map<Integer, Collection<String>> map = toMap(grouped);
 
@@ -72,11 +72,37 @@ public class OperatorGroupByTest {
         assertArrayEquals(Arrays.asList("four", "five").toArray(), map.get(4).toArray());
         assertArrayEquals(Arrays.asList("three").toArray(), map.get(5).toArray());
     }
+    
+    @Test
+    public void testGroupByWithElementSelector() {
+        Observable<String> source = Observable.from("one", "two", "three", "four", "five", "six");
+        Observable<GroupedObservable<Integer, Integer>> grouped = source.lift(new OperatorGroupBy<String, Integer, Integer>(length, length));
+
+        Map<Integer, Collection<Integer>> map = toMap(grouped);
+
+        assertEquals(3, map.size());
+        assertArrayEquals(Arrays.asList(3, 3, 3).toArray(), map.get(3).toArray());
+        assertArrayEquals(Arrays.asList(4, 4).toArray(), map.get(4).toArray());
+        assertArrayEquals(Arrays.asList(5).toArray(), map.get(5).toArray());
+    }
+    
+    @Test
+    public void testGroupByWithElementSelector2() {
+        Observable<String> source = Observable.from("one", "two", "three", "four", "five", "six");
+        Observable<GroupedObservable<Integer, Integer>> grouped = source.groupBy(length, length);
+
+        Map<Integer, Collection<Integer>> map = toMap(grouped);
+
+        assertEquals(3, map.size());
+        assertArrayEquals(Arrays.asList(3, 3, 3).toArray(), map.get(3).toArray());
+        assertArrayEquals(Arrays.asList(4, 4).toArray(), map.get(4).toArray());
+        assertArrayEquals(Arrays.asList(5).toArray(), map.get(5).toArray());
+    }
 
     @Test
     public void testEmpty() {
         Observable<String> source = Observable.empty();
-        Observable<GroupedObservable<Integer, String>> grouped = source.lift(new OperatorGroupBy<Integer, String>(length));
+        Observable<GroupedObservable<Integer, String>> grouped = source.lift(new OperatorGroupBy<String, Integer, String>(length));
 
         Map<Integer, Collection<String>> map = toMap(grouped);
 
@@ -89,7 +115,7 @@ public class OperatorGroupByTest {
         Observable<String> errorSource = Observable.error(new RuntimeException("forced failure"));
         Observable<String> source = Observable.concat(sourceStrings, errorSource);
 
-        Observable<GroupedObservable<Integer, String>> grouped = source.lift(new OperatorGroupBy<Integer, String>(length));
+        Observable<GroupedObservable<Integer, String>> grouped = source.lift(new OperatorGroupBy<String, Integer, String>(length));
 
         final AtomicInteger groupCounter = new AtomicInteger();
         final AtomicInteger eventCounter = new AtomicInteger();

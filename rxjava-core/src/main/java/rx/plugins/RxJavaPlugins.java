@@ -34,7 +34,9 @@ public class RxJavaPlugins {
 
     private final AtomicReference<RxJavaErrorHandler> errorHandler = new AtomicReference<RxJavaErrorHandler>();
     private final AtomicReference<RxJavaObservableExecutionHook> observableExecutionHook = new AtomicReference<RxJavaObservableExecutionHook>();
+    //deprecated
     private final AtomicReference<RxJavaDefaultSchedulers> schedulerOverrides = new AtomicReference<RxJavaDefaultSchedulers>();
+    private final AtomicReference<RxJavaSchedulersHook> schedulersHook = new AtomicReference<RxJavaSchedulersHook>();
 
     /**
      * Retrieves the single {@code RxJavaPlugins} instance.
@@ -52,6 +54,7 @@ public class RxJavaPlugins {
     /* package accessible for unit tests */void reset() {
         INSTANCE.errorHandler.set(null);
         INSTANCE.observableExecutionHook.set(null);
+        INSTANCE.schedulersHook.set(null);
     }
 
     /**
@@ -205,6 +208,48 @@ public class RxJavaPlugins {
     public void registerDefaultSchedulers(RxJavaDefaultSchedulers impl) {
         if (!schedulerOverrides.compareAndSet(null, impl)) {
             throw new IllegalStateException("Another strategy was already registered: " + schedulerOverrides.get());
+        }
+    }
+
+    /**
+     * Retrieves the instance of {@link RxJavaSchedulersHook} to use based on order of precedence as defined
+     * in the {@link RxJavaPlugins} class header.
+     * <p>
+     * Override the default by calling {@link #registerSchedulersHook(RxJavaSchedulersHook)} or by setting
+     * the property {@code rxjava.plugin.RxJavaSchedulersHook.implementation} with the full classname to
+     * load.
+     *
+     * @return the {@link RxJavaSchedulersHook} implementation in use
+     */
+    public RxJavaSchedulersHook getSchedulersHook() {
+        if (schedulersHook.get() == null) {
+            // check for an implementation from System.getProperty first
+            Object impl = getPluginImplementationViaProperty(RxJavaSchedulersHook.class);
+            if (impl == null) {
+                // nothing set via properties so initialize with default
+                schedulersHook.compareAndSet(null, RxJavaSchedulersHook.getDefaultInstance());
+                // we don't return from here but call get() again in case of thread-race so the winner will always get returned
+            } else {
+                // we received an implementation from the system property so use it
+                schedulersHook.compareAndSet(null, (RxJavaSchedulersHook) impl);
+            }
+        }
+        return schedulersHook.get();
+    }
+
+    /**
+     * Registers an {@link RxJavaSchedulersHook} implementation as a global override of any injected or
+     * default implementations.
+     *
+     * @param impl
+     *            {@link RxJavaSchedulersHook} implementation
+     * @throws IllegalStateException
+     *             if called more than once or after the default was initialized (if usage occurs before trying
+     *             to register)
+     */
+    public void registerSchedulersHook(RxJavaSchedulersHook impl) {
+        if (!schedulersHook.compareAndSet(null, impl)) {
+            throw new IllegalStateException("Another strategy was already registered: " + schedulersHook.get());
         }
     }
 }

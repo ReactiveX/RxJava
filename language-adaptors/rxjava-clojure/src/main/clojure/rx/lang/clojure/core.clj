@@ -2,7 +2,7 @@
   (:refer-clojure :exclude [concat cons count cycle
                             distinct do drop drop-while
                             empty every?
-                            filter first future
+                            filter first future flatmap
                             group-by
                             interleave interpose into iterate
                             keep keep-indexed
@@ -616,17 +616,46 @@
   return an Observable. The resulting observables are concatentated together
   into one observable.
 
+  WARNING: This operator, like clojure.core/mapcat, preserves ordering of the
+  generated Observables. In an asynchronous context, this may cause unintended
+  blocking. Try flatmap instead.
+
   If multiple Observables are given, the arguments to f are the first item from
   each observable, then the second item, etc.
 
   See:
     clojure.core/mapcat
-    rx.Observable/flatMap
+    flatmap
+    rx.Observable/concatMap
   "
   [f & xs]
   (if (clojure.core/next xs)
     (mapcat* f (seq->o xs))
     ; use built-in flatMap for single-arg case
+    (.concatMap ^Observable (clojure.core/first xs) (iop/fn* f))))
+
+(defn ^Observable flatmap*
+  "Same as multi-arg flatmap, but input is an Observable of Observables.
+
+  See:
+    flatmap
+  "
+  [f ^Observable xs]
+  (->> xs
+       (map* f)
+       (merge*)))
+
+(defn ^Observable flatmap
+  "Like mapcat, but the Observables produced by f are merged rather than concatenated.
+  This behavior is preferable in asynchronous contexts where order is not important.
+
+  See:
+    mapcat
+    rx.Observable/flatMap
+  "
+  [f & xs]
+  (if (clojure.core/next xs)
+    (flatmap* f (seq->o xs))
     (.flatMap ^Observable (clojure.core/first xs) (iop/fn* f))))
 
 (defn map-indexed

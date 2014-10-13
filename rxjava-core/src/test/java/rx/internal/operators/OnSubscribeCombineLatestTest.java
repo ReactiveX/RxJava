@@ -15,6 +15,7 @@
  */
 package rx.internal.operators;
 
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.inOrder;
@@ -45,6 +46,8 @@ import rx.functions.Func7;
 import rx.functions.Func8;
 import rx.functions.Func9;
 import rx.functions.FuncN;
+import rx.internal.util.RxRingBuffer;
+import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 
@@ -320,7 +323,6 @@ public class OnSubscribeCombineLatestTest {
 
         source.subscribe(observer);
 
-
         a.onNext(1);
 
         inOrder.verify(observer, never()).onNext(any());
@@ -370,7 +372,6 @@ public class OnSubscribeCombineLatestTest {
 
         source.subscribe(observer1);
         source.subscribe(observer2);
-
 
         a.onNext(1);
 
@@ -425,7 +426,6 @@ public class OnSubscribeCombineLatestTest {
 
         source.subscribe(observer);
 
-
         b.onNext(0x10);
         b.onNext(0x20);
 
@@ -449,7 +449,6 @@ public class OnSubscribeCombineLatestTest {
 
         source.subscribe(observer);
 
-
         a.onNext(0x1);
         a.onNext(0x2);
 
@@ -460,10 +459,11 @@ public class OnSubscribeCombineLatestTest {
         verify(observer, never()).onNext(any());
         verify(observer, never()).onError(any(Throwable.class));
     }
-    
+
     public void test0Sources() {
-        
+
     }
+
     @Test
     public void test1ToNSources() {
         int n = 30;
@@ -482,19 +482,20 @@ public class OnSubscribeCombineLatestTest {
                 sources.add(Observable.just(j));
                 values.add(j);
             }
-            
+
             Observable<List<Object>> result = Observable.combineLatest(sources, func);
-            
+
             @SuppressWarnings("unchecked")
             Observer<List<Object>> o = mock(Observer.class);
-            
+
             result.subscribe(o);
-            
+
             verify(o).onNext(values);
             verify(o).onCompleted();
             verify(o, never()).onError(any(Throwable.class));
         }
     }
+
     @Test(timeout = 5000)
     public void test1ToNSourcesScheduled() throws InterruptedException {
         int n = 10;
@@ -513,14 +514,14 @@ public class OnSubscribeCombineLatestTest {
                 sources.add(Observable.just(j, Schedulers.io()));
                 values.add(j);
             }
-            
+
             Observable<List<Object>> result = Observable.combineLatest(sources, func);
-            
+
             @SuppressWarnings("unchecked")
             final Observer<List<Object>> o = mock(Observer.class);
-            
+
             final CountDownLatch cdl = new CountDownLatch(1);
-            
+
             Subscriber<List<Object>> s = new Subscriber<List<Object>>() {
 
                 @Override
@@ -540,84 +541,88 @@ public class OnSubscribeCombineLatestTest {
                     cdl.countDown();
                 }
             };
-            
+
             result.subscribe(s);
-            
+
             cdl.await();
-            
+
             verify(o).onNext(values);
             verify(o).onCompleted();
             verify(o, never()).onError(any(Throwable.class));
         }
     }
+
     @Test
     public void test2SourcesOverload() {
         Observable<Integer> s1 = Observable.just(1);
         Observable<Integer> s2 = Observable.just(2);
-        
+
         Observable<List<Integer>> result = Observable.combineLatest(s1, s2, new Func2<Integer, Integer, List<Integer>>() {
             @Override
             public List<Integer> call(Integer t1, Integer t2) {
                 return Arrays.asList(t1, t2);
             }
         });
-        
+
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
-        
+
         result.subscribe(o);
-        
+
         verify(o).onNext(Arrays.asList(1, 2));
         verify(o).onCompleted();
         verify(o, never()).onError(any(Throwable.class));
     }
+
     @Test
     public void test3SourcesOverload() {
         Observable<Integer> s1 = Observable.just(1);
         Observable<Integer> s2 = Observable.just(2);
         Observable<Integer> s3 = Observable.just(3);
-        
-        Observable<List<Integer>> result = Observable.combineLatest(s1, s2, s3, 
+
+        Observable<List<Integer>> result = Observable.combineLatest(s1, s2, s3,
                 new Func3<Integer, Integer, Integer, List<Integer>>() {
-            @Override
-            public List<Integer> call(Integer t1, Integer t2, Integer t3) {
-                return Arrays.asList(t1, t2, t3);
-            }
-        });
-        
+                    @Override
+                    public List<Integer> call(Integer t1, Integer t2, Integer t3) {
+                        return Arrays.asList(t1, t2, t3);
+                    }
+                });
+
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
-        
+
         result.subscribe(o);
-        
+
         verify(o).onNext(Arrays.asList(1, 2, 3));
         verify(o).onCompleted();
         verify(o, never()).onError(any(Throwable.class));
     }
+
     @Test
     public void test4SourcesOverload() {
         Observable<Integer> s1 = Observable.just(1);
         Observable<Integer> s2 = Observable.just(2);
         Observable<Integer> s3 = Observable.just(3);
         Observable<Integer> s4 = Observable.just(4);
-        
-        Observable<List<Integer>> result = Observable.combineLatest(s1, s2, s3, s4, 
+
+        Observable<List<Integer>> result = Observable.combineLatest(s1, s2, s3, s4,
                 new Func4<Integer, Integer, Integer, Integer, List<Integer>>() {
-            @Override
-            public List<Integer> call(Integer t1, Integer t2, Integer t3, Integer t4) {
-                return Arrays.asList(t1, t2, t3, t4);
-            }
-        });
-        
+                    @Override
+                    public List<Integer> call(Integer t1, Integer t2, Integer t3, Integer t4) {
+                        return Arrays.asList(t1, t2, t3, t4);
+                    }
+                });
+
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
-        
+
         result.subscribe(o);
-        
+
         verify(o).onNext(Arrays.asList(1, 2, 3, 4));
         verify(o).onCompleted();
         verify(o, never()).onError(any(Throwable.class));
     }
+
     @Test
     public void test5SourcesOverload() {
         Observable<Integer> s1 = Observable.just(1);
@@ -625,24 +630,25 @@ public class OnSubscribeCombineLatestTest {
         Observable<Integer> s3 = Observable.just(3);
         Observable<Integer> s4 = Observable.just(4);
         Observable<Integer> s5 = Observable.just(5);
-        
-        Observable<List<Integer>> result = Observable.combineLatest(s1, s2, s3, s4, s5, 
+
+        Observable<List<Integer>> result = Observable.combineLatest(s1, s2, s3, s4, s5,
                 new Func5<Integer, Integer, Integer, Integer, Integer, List<Integer>>() {
-            @Override
-            public List<Integer> call(Integer t1, Integer t2, Integer t3, Integer t4, Integer t5) {
-                return Arrays.asList(t1, t2, t3, t4, t5);
-            }
-        });
-        
+                    @Override
+                    public List<Integer> call(Integer t1, Integer t2, Integer t3, Integer t4, Integer t5) {
+                        return Arrays.asList(t1, t2, t3, t4, t5);
+                    }
+                });
+
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
-        
+
         result.subscribe(o);
-        
+
         verify(o).onNext(Arrays.asList(1, 2, 3, 4, 5));
         verify(o).onCompleted();
         verify(o, never()).onError(any(Throwable.class));
     }
+
     @Test
     public void test6SourcesOverload() {
         Observable<Integer> s1 = Observable.just(1);
@@ -651,24 +657,25 @@ public class OnSubscribeCombineLatestTest {
         Observable<Integer> s4 = Observable.just(4);
         Observable<Integer> s5 = Observable.just(5);
         Observable<Integer> s6 = Observable.just(6);
-        
+
         Observable<List<Integer>> result = Observable.combineLatest(s1, s2, s3, s4, s5, s6,
                 new Func6<Integer, Integer, Integer, Integer, Integer, Integer, List<Integer>>() {
-            @Override
-            public List<Integer> call(Integer t1, Integer t2, Integer t3, Integer t4, Integer t5, Integer t6) {
-                return Arrays.asList(t1, t2, t3, t4, t5, t6);
-            }
-        });
-        
+                    @Override
+                    public List<Integer> call(Integer t1, Integer t2, Integer t3, Integer t4, Integer t5, Integer t6) {
+                        return Arrays.asList(t1, t2, t3, t4, t5, t6);
+                    }
+                });
+
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
-        
+
         result.subscribe(o);
-        
+
         verify(o).onNext(Arrays.asList(1, 2, 3, 4, 5, 6));
         verify(o).onCompleted();
         verify(o, never()).onError(any(Throwable.class));
     }
+
     @Test
     public void test7SourcesOverload() {
         Observable<Integer> s1 = Observable.just(1);
@@ -678,24 +685,25 @@ public class OnSubscribeCombineLatestTest {
         Observable<Integer> s5 = Observable.just(5);
         Observable<Integer> s6 = Observable.just(6);
         Observable<Integer> s7 = Observable.just(7);
-        
+
         Observable<List<Integer>> result = Observable.combineLatest(s1, s2, s3, s4, s5, s6, s7,
                 new Func7<Integer, Integer, Integer, Integer, Integer, Integer, Integer, List<Integer>>() {
-            @Override
-            public List<Integer> call(Integer t1, Integer t2, Integer t3, Integer t4, Integer t5, Integer t6, Integer t7) {
-                return Arrays.asList(t1, t2, t3, t4, t5, t6, t7);
-            }
-        });
-        
+                    @Override
+                    public List<Integer> call(Integer t1, Integer t2, Integer t3, Integer t4, Integer t5, Integer t6, Integer t7) {
+                        return Arrays.asList(t1, t2, t3, t4, t5, t6, t7);
+                    }
+                });
+
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
-        
+
         result.subscribe(o);
-        
+
         verify(o).onNext(Arrays.asList(1, 2, 3, 4, 5, 6, 7));
         verify(o).onCompleted();
         verify(o, never()).onError(any(Throwable.class));
     }
+
     @Test
     public void test8SourcesOverload() {
         Observable<Integer> s1 = Observable.just(1);
@@ -706,24 +714,25 @@ public class OnSubscribeCombineLatestTest {
         Observable<Integer> s6 = Observable.just(6);
         Observable<Integer> s7 = Observable.just(7);
         Observable<Integer> s8 = Observable.just(8);
-        
+
         Observable<List<Integer>> result = Observable.combineLatest(s1, s2, s3, s4, s5, s6, s7, s8,
                 new Func8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, List<Integer>>() {
-            @Override
-            public List<Integer> call(Integer t1, Integer t2, Integer t3, Integer t4, Integer t5, Integer t6, Integer t7, Integer t8) {
-                return Arrays.asList(t1, t2, t3, t4, t5, t6, t7, t8);
-            }
-        });
-        
+                    @Override
+                    public List<Integer> call(Integer t1, Integer t2, Integer t3, Integer t4, Integer t5, Integer t6, Integer t7, Integer t8) {
+                        return Arrays.asList(t1, t2, t3, t4, t5, t6, t7, t8);
+                    }
+                });
+
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
-        
+
         result.subscribe(o);
-        
+
         verify(o).onNext(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8));
         verify(o).onCompleted();
         verify(o, never()).onError(any(Throwable.class));
     }
+
     @Test
     public void test9SourcesOverload() {
         Observable<Integer> s1 = Observable.just(1);
@@ -735,43 +744,63 @@ public class OnSubscribeCombineLatestTest {
         Observable<Integer> s7 = Observable.just(7);
         Observable<Integer> s8 = Observable.just(8);
         Observable<Integer> s9 = Observable.just(9);
-        
+
         Observable<List<Integer>> result = Observable.combineLatest(s1, s2, s3, s4, s5, s6, s7, s8, s9,
                 new Func9<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, List<Integer>>() {
-            @Override
-            public List<Integer> call(Integer t1, Integer t2, Integer t3, Integer t4, Integer t5, Integer t6, Integer t7, Integer t8, Integer t9) {
-                return Arrays.asList(t1, t2, t3, t4, t5, t6, t7, t8, t9);
-            }
-        });
-        
+                    @Override
+                    public List<Integer> call(Integer t1, Integer t2, Integer t3, Integer t4, Integer t5, Integer t6, Integer t7, Integer t8, Integer t9) {
+                        return Arrays.asList(t1, t2, t3, t4, t5, t6, t7, t8, t9);
+                    }
+                });
+
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
-        
+
         result.subscribe(o);
-        
+
         verify(o).onNext(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9));
         verify(o).onCompleted();
         verify(o, never()).onError(any(Throwable.class));
     }
+
     @Test
     public void testZeroSources() {
-        Observable<Object> result = Observable.combineLatest(Collections.<Observable<Object>>emptyList(), new FuncN<Object>() {
+        Observable<Object> result = Observable.combineLatest(Collections.<Observable<Object>> emptyList(), new FuncN<Object>() {
 
             @Override
             public Object call(Object... args) {
                 return args;
             }
-            
+
         });
-        
+
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
-        
+
         result.subscribe(o);
-        
+
         verify(o).onCompleted();
         verify(o, never()).onNext(any());
         verify(o, never()).onError(any(Throwable.class));
-        
+
+    }
+
+    @Test
+    public void testBackpressure() {
+        Func2<String, Integer, String> combineLatestFunction = getConcatStringIntegerCombineLatestFunction();
+
+        int NUM = RxRingBuffer.SIZE * 4;
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+        Observable.combineLatest(Observable.from("one", "two"),
+                Observable.range(2, NUM), combineLatestFunction).
+                observeOn(Schedulers.computation()).subscribe(ts);
+
+        ts.awaitTerminalEvent();
+        ts.assertNoErrors();
+        List<String> events = ts.getOnNextEvents();
+        assertEquals("two2", events.get(0));
+        assertEquals("two3", events.get(1));
+        assertEquals("two4", events.get(2));
+        assertEquals(NUM, events.size());
     }
 }
