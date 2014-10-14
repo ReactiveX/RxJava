@@ -98,7 +98,7 @@ public class OnSubscribeAmbTest {
                 observable2, observable3));
 
         @SuppressWarnings("unchecked")
-        Observer<String> observer = (Observer<String>) mock(Observer.class);
+        Observer<String> observer = mock(Observer.class);
         o.subscribe(observer);
 
         scheduler.advanceTimeBy(100000, TimeUnit.MILLISECONDS);
@@ -127,7 +127,7 @@ public class OnSubscribeAmbTest {
                 observable2, observable3));
 
         @SuppressWarnings("unchecked")
-        Observer<String> observer = (Observer<String>) mock(Observer.class);
+        Observer<String> observer = mock(Observer.class);
         o.subscribe(observer);
 
         scheduler.advanceTimeBy(100000, TimeUnit.MILLISECONDS);
@@ -154,7 +154,7 @@ public class OnSubscribeAmbTest {
                 observable2, observable3));
 
         @SuppressWarnings("unchecked")
-        Observer<String> observer = (Observer<String>) mock(Observer.class);
+        Observer<String> observer = mock(Observer.class);
         o.subscribe(observer);
 
         scheduler.advanceTimeBy(100000, TimeUnit.MILLISECONDS);
