@@ -83,7 +83,7 @@ public class OnSubscribeUsingTest {
         };
 
         @SuppressWarnings("unchecked")
-        Observer<String> observer = (Observer<String>) mock(Observer.class);
+        Observer<String> observer = mock(Observer.class);
         Observable<String> observable = Observable.using(resourceFactory, observableFactory, new DisposeAction());
         observable.subscribe(observer);
 
@@ -133,7 +133,7 @@ public class OnSubscribeUsingTest {
         };
 
         @SuppressWarnings("unchecked")
-        Observer<String> observer = (Observer<String>) mock(Observer.class);
+        Observer<String> observer = mock(Observer.class);
         Observable<String> observable = Observable.using(resourceFactory, observableFactory, new DisposeAction());
         observable.subscribe(observer);
         observable.subscribe(observer);

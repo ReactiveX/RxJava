@@ -38,7 +38,7 @@ public class BackpressureTests {
 
     @Test
     public void testObserveOn() {
-        int NUM = (int) ((int) RxRingBuffer.SIZE * 2.1);
+        int NUM = (int) (RxRingBuffer.SIZE * 2.1);
         AtomicInteger c = new AtomicInteger();
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         incrementingIntegers(c).observeOn(Schedulers.computation()).take(NUM).subscribe(ts);
@@ -51,7 +51,7 @@ public class BackpressureTests {
 
     @Test
     public void testObserveOnWithSlowConsumer() {
-        int NUM = (int) ((int) RxRingBuffer.SIZE * 0.2);
+        int NUM = (int) (RxRingBuffer.SIZE * 0.2);
         AtomicInteger c = new AtomicInteger();
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         incrementingIntegers(c).observeOn(Schedulers.computation()).map(new Func1<Integer, Integer>() {
@@ -76,7 +76,7 @@ public class BackpressureTests {
 
     @Test
     public void testMergeSync() {
-        int NUM = (int) ((int) RxRingBuffer.SIZE * 4.1);
+        int NUM = (int) (RxRingBuffer.SIZE * 4.1);
         AtomicInteger c1 = new AtomicInteger();
         AtomicInteger c2 = new AtomicInteger();
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
@@ -97,7 +97,7 @@ public class BackpressureTests {
 
     @Test
     public void testMergeAsync() {
-        int NUM = (int) ((int) RxRingBuffer.SIZE * 4.1);
+        int NUM = (int) (RxRingBuffer.SIZE * 4.1);
         AtomicInteger c1 = new AtomicInteger();
         AtomicInteger c2 = new AtomicInteger();
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
@@ -119,7 +119,7 @@ public class BackpressureTests {
 
     @Test
     public void testMergeAsyncThenObserveOn() {
-        int NUM = (int) ((int) RxRingBuffer.SIZE * 4.1);
+        int NUM = (int) (RxRingBuffer.SIZE * 4.1);
         AtomicInteger c1 = new AtomicInteger();
         AtomicInteger c2 = new AtomicInteger();
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
@@ -141,7 +141,7 @@ public class BackpressureTests {
 
     @Test
     public void testFlatMapSync() {
-        int NUM = (int) ((int) RxRingBuffer.SIZE * 2.1);
+        int NUM = (int) (RxRingBuffer.SIZE * 2.1);
         AtomicInteger c = new AtomicInteger();
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         incrementingIntegers(c).flatMap(new Func1<Integer, Observable<Integer>>() {
@@ -162,7 +162,7 @@ public class BackpressureTests {
 
     @Test
     public void testFlatMapAsync() {
-        int NUM = (int) ((int) RxRingBuffer.SIZE * 2.1);
+        int NUM = (int) (RxRingBuffer.SIZE * 2.1);
         AtomicInteger c = new AtomicInteger();
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         incrementingIntegers(c).subscribeOn(Schedulers.computation()).flatMap(new Func1<Integer, Observable<Integer>>() {
@@ -185,7 +185,7 @@ public class BackpressureTests {
 
     @Test
     public void testZipSync() {
-        int NUM = (int) ((int) RxRingBuffer.SIZE * 4.1);
+        int NUM = (int) (RxRingBuffer.SIZE * 4.1);
         AtomicInteger c1 = new AtomicInteger();
         AtomicInteger c2 = new AtomicInteger();
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
@@ -212,7 +212,7 @@ public class BackpressureTests {
 
     @Test
     public void testZipAsync() {
-        int NUM = (int) ((int) RxRingBuffer.SIZE * 2.1);
+        int NUM = (int) (RxRingBuffer.SIZE * 2.1);
         AtomicInteger c1 = new AtomicInteger();
         AtomicInteger c2 = new AtomicInteger();
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
@@ -241,7 +241,7 @@ public class BackpressureTests {
     public void testSubscribeOnScheduling() {
         // in a loop for repeating the concurrency in this to increase chance of failure
         for (int i = 0; i < 100; i++) {
-            int NUM = (int) ((int) RxRingBuffer.SIZE * 2.1);
+            int NUM = (int) (RxRingBuffer.SIZE * 2.1);
             AtomicInteger c = new AtomicInteger();
             ConcurrentLinkedQueue<Thread> threads = new ConcurrentLinkedQueue<Thread>();
             TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
@@ -271,7 +271,7 @@ public class BackpressureTests {
 
     @Test
     public void testTakeFilterSkipChainAsync() {
-        int NUM = (int) ((int) RxRingBuffer.SIZE * 2.1);
+        int NUM = (int) (RxRingBuffer.SIZE * 2.1);
         AtomicInteger c = new AtomicInteger();
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         incrementingIntegers(c).observeOn(Schedulers.computation())
@@ -411,7 +411,7 @@ public class BackpressureTests {
 
     @Test(timeout = 2000)
     public void testOnBackpressureDrop() {
-        int NUM = (int) ((int) RxRingBuffer.SIZE * 1.1); // > 1 so that take doesn't prevent buffer overflow
+        int NUM = (int) (RxRingBuffer.SIZE * 1.1); // > 1 so that take doesn't prevent buffer overflow
         AtomicInteger c = new AtomicInteger();
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         firehose(c).onBackpressureDrop().observeOn(Schedulers.computation()).map(SLOW_PASS_THRU).take(NUM).subscribe(ts);
@@ -425,7 +425,7 @@ public class BackpressureTests {
 
     @Test(timeout = 2000)
     public void testOnBackpressureBuffer() {
-        int NUM = (int) ((int) RxRingBuffer.SIZE * 1.1); // > 1 so that take doesn't prevent buffer overflow
+        int NUM = (int) (RxRingBuffer.SIZE * 1.1); // > 1 so that take doesn't prevent buffer overflow
         AtomicInteger c = new AtomicInteger();
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         firehose(c).takeWhile(new Func1<Integer, Boolean>() {
