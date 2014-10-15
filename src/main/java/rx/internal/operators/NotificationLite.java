@@ -54,6 +54,7 @@ public final class NotificationLite<T> {
     private static final Object ON_COMPLETED_SENTINEL = new Serializable() {
         private static final long serialVersionUID = 1;
         
+        @Override
         public String toString() {
             return "Notification=>Completed";
         }
@@ -62,6 +63,7 @@ public final class NotificationLite<T> {
     private static final Object ON_NEXT_NULL_SENTINEL = new Serializable() {
         private static final long serialVersionUID = 2;
         
+        @Override
         public String toString() {
             return "Notification=>NULL";
         }
@@ -75,6 +77,7 @@ public final class NotificationLite<T> {
             this.e = e;
         }
         
+        @Override
         public String toString() {
             return "Notification=>Error:" + e;
         }

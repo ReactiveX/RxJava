@@ -69,7 +69,6 @@ import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
  * @param <T>
  *          the type of item expected to be observed by the Subject
  */
-@SuppressWarnings({ "unchecked", "rawtypes" })
 public final class BehaviorSubject<T> extends Subject<T, T> {
     /**
      * Creates a {@link BehaviorSubject} without a default item.

@@ -41,7 +41,6 @@ public final class OnSubscribeRange implements OnSubscribe<Integer> {
 
     private static final class RangeProducer implements Producer {
         private final Subscriber<? super Integer> o;
-        @SuppressWarnings("unused")
         // accessed by REQUESTED_UPDATER
         private volatile long requested;
         private static final AtomicLongFieldUpdater<RangeProducer> REQUESTED_UPDATER = AtomicLongFieldUpdater.newUpdater(RangeProducer.class, "requested");

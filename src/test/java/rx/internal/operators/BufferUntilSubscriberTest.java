@@ -41,7 +41,7 @@ public class BufferUntilSubscriberTest {
         final CountDownLatch latch = new CountDownLatch(NITERS);
         for (int iters = 0; iters < NITERS; iters++) {
             final CountDownLatch innerLatch = new CountDownLatch(1);
-            final PublishSubject s = PublishSubject.create();
+            final PublishSubject<Void> s = PublishSubject.create();
             final AtomicBoolean completed = new AtomicBoolean();
             Observable.from(numbers)
                     .takeUntil(s)

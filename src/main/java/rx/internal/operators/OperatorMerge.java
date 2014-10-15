@@ -145,7 +145,8 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
         @Override
         public void onNext(Observable<? extends T> t) {
             if (t instanceof ScalarSynchronousObservable) {
-                handleScalarSynchronousObservable((ScalarSynchronousObservable)t);
+                ScalarSynchronousObservable<? extends T> t2 = (ScalarSynchronousObservable<? extends T>)t;
+                handleScalarSynchronousObservable(t2);
             } else {
                 if (t == null || isUnsubscribed()) {
                     return;

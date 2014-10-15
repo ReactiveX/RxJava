@@ -479,7 +479,7 @@ public class OperatorSwitchTest {
                 publishCompleted(observer, 30);
             }
         });
-        final TestSubscriber testSubscriber = new TestSubscriber();
+        final TestSubscriber<String> testSubscriber = new TestSubscriber<String>();
         Observable.switchOnNext(o).subscribe(new Subscriber<String>() {
 
             private int requested = 0;

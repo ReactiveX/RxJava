@@ -29,6 +29,7 @@ public class IndexedRingBufferPerf {
 
     @Benchmark
     public void indexedRingBufferAdd(IndexedRingBufferInput input) throws InterruptedException, MissingBackpressureException {
+        @SuppressWarnings("unchecked")
         IndexedRingBuffer<Integer> list = IndexedRingBuffer.getInstance();
         for (int i = 0; i < input.size; i++) {
             list.add(i);
@@ -39,6 +40,7 @@ public class IndexedRingBufferPerf {
 
     @Benchmark
     public void indexedRingBufferAddRemove(IndexedRingBufferInput input) throws InterruptedException, MissingBackpressureException {
+        @SuppressWarnings("unchecked")
         IndexedRingBuffer<Integer> list = IndexedRingBuffer.getInstance();
         for (int i = 0; i < input.size; i++) {
             list.add(i);

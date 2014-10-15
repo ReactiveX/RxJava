@@ -184,7 +184,6 @@ public class RxRingBuffer implements Subscription {
         this.size = size;
     }
 
-    @SuppressWarnings("unused")
     private RxRingBuffer(ObjectPool<Queue<Object>> pool, int size) {
         this.pool = pool;
         this.queue = pool.borrowObject();
@@ -312,6 +311,7 @@ public class RxRingBuffer implements Subscription {
         return on.getValue(o);
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public boolean accept(Object o, Observer child) {
         return on.accept(child, o);
     }

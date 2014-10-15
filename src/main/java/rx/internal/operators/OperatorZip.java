@@ -190,7 +190,6 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
         private Object[] observers;
         private AtomicLong requested;
 
-        @SuppressWarnings("rawtypes")
         public Zip(final Subscriber<? super R> child, FuncN<? extends R> zipFunction) {
             this.child = child;
             this.zipFunction = zipFunction;
@@ -303,7 +302,6 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
                 request(n);
             }
 
-            @SuppressWarnings("unchecked")
             @Override
             public void onCompleted() {
                 items.onCompleted();
@@ -316,7 +314,6 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
                 child.onError(e);
             }
 
-            @SuppressWarnings("unchecked")
             @Override
             public void onNext(Object t) {
                 try {

@@ -329,7 +329,6 @@ import rx.subscriptions.Subscriptions;
          * @param <I> the index type
          * @return the index value
          */
-        @SuppressWarnings("unchecked")
         public <I> I index() {
             return (I)index;
         }

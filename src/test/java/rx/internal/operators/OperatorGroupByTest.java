@@ -478,7 +478,7 @@ public class OperatorGroupByTest {
                     public Observable<Integer> call(GroupedObservable<Integer, Integer> group) {
                         if (group.getKey() == 0) {
                             return group.delay(100, TimeUnit.MILLISECONDS).map(new Func1<Integer, Integer>() {
-
+                                @Override
                                 public Integer call(Integer t) {
                                     return t * 10;
                                 }

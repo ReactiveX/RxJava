@@ -37,17 +37,20 @@ public class IntervalDemo {
     public void testLongObservable(Observable<Long> o, final String testname) throws Exception {
         final List<Long> l = new ArrayList<Long>();
         Action1<Long> onNext = new Action1<Long>() {
+            @Override
             public void call(Long i) {
                 l.add(i);
                 System.out.println(testname + " got " + i);
             }
         };
         Action1<Throwable> onError = new Action1<Throwable>() {
+            @Override
             public void call(Throwable t) {
                 t.printStackTrace();
             }
         };
         Action0 onComplete = new Action0() {
+            @Override
             public void call() {
                 System.out.println(testname + " complete");
             }
