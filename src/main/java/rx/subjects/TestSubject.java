@@ -68,7 +68,14 @@ public final class TestSubject<T> extends Subject<T, T> {
 
     @Override
     public void onCompleted() {
-        onCompleted(innerScheduler.now());
+        innerScheduler.schedule(new Action0() {
+
+            @Override
+            public void call() {
+                _onCompleted();
+            }
+
+        });
     }
 
     private void _onCompleted() {
@@ -99,7 +106,14 @@ public final class TestSubject<T> extends Subject<T, T> {
 
     @Override
     public void onError(final Throwable e) {
-        onError(e, innerScheduler.now());
+        innerScheduler.schedule(new Action0() {
+
+            @Override
+            public void call() {
+                _onError(e);
+            }
+
+        });
     }
 
     private void _onError(final Throwable e) {
@@ -131,8 +145,15 @@ public final class TestSubject<T> extends Subject<T, T> {
     }
 
     @Override
-    public void onNext(T v) {
-        onNext(v, innerScheduler.now());
+    public void onNext(final T v) {
+        innerScheduler.schedule(new Action0() {
+
+            @Override
+            public void call() {
+                _onNext(v);
+            }
+
+        });
     }
 
     private void _onNext(T v) {
