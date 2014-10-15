@@ -191,6 +191,7 @@ public class OperatorMapTest {
     public void testMapWithIssue417() {
         Observable.just(1).observeOn(Schedulers.computation())
                 .map(new Func1<Integer, Integer>() {
+                    @Override
                     public Integer call(Integer arg0) {
                         throw new IllegalArgumentException("any error");
                     }
@@ -205,6 +206,7 @@ public class OperatorMapTest {
         Observable<String> m = Observable.just("one")
                 .observeOn(Schedulers.computation())
                 .map(new Func1<String, String>() {
+                    @Override
                     public String call(String arg0) {
                         throw new IllegalArgumentException("any error");
                     }

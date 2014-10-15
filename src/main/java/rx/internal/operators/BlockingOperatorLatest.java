@@ -102,7 +102,7 @@ public final class BlockingOperatorLatest {
                     }
 
                     @SuppressWarnings("unchecked")
-                    Notification<? extends T> n = (Notification<? extends T>)REFERENCE_UPDATER.getAndSet(this, null);
+                    Notification<? extends T> n = REFERENCE_UPDATER.getAndSet(this, null);
                     iNotif = n;
                     if (iNotif.isOnError()) {
                         throw Exceptions.propagate(iNotif.getThrowable());

@@ -52,6 +52,7 @@ public class OperatorRetryTest {
 
     @Test
     public void iterativeBackoff() {
+        @SuppressWarnings("unchecked")
         Observer<String> consumer = mock(Observer.class);
         Observable<String> producer = Observable.create(new OnSubscribe<String>() {
 

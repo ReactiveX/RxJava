@@ -3628,6 +3628,7 @@ public class Observable<T> {
      */
     public final Observable<Boolean> contains(final Object element) {
         return exists(new Func1<T, Boolean>() {
+            @Override
             public final Boolean call(T t1) {
                 return element == null ? t1 == null : element.equals(t1);
             }
@@ -5188,6 +5189,7 @@ public class Observable<T> {
      */
     public final <R> Observable<R> ofType(final Class<R> klass) {
         return filter(new Func1<T, Boolean>() {
+            @Override
             public final Boolean call(T t) {
                 return klass.isInstance(t);
             }

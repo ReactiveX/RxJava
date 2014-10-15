@@ -223,6 +223,7 @@ public class OperatorSerializeTest {
 
         }
 
+        @Override
         public void call(final Subscriber<? super String> observer) {
             System.out.println("TestSingleThreadedObservable subscribed to ...");
             t = new Thread(new Runnable() {

@@ -397,6 +397,7 @@ public class OperatorObserveOnTest {
     @Test
     public void testAfterUnsubscribeCalledThenObserverOnNextNeverCalled() {
         final TestScheduler testScheduler = new TestScheduler();
+        @SuppressWarnings("unchecked")
         final Observer<Integer> observer = mock(Observer.class);
         final Subscription subscription = Observable.just(1, 2, 3)
                 .observeOn(testScheduler)

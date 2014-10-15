@@ -46,6 +46,7 @@ public class ReduceTests {
 
         Func2<Movie, Movie, Movie> chooseSecondMovie =
                 new Func2<Movie, Movie, Movie>() {
+                    @Override
                     public Movie call(Movie t1, Movie t2) {
                         return t2;
                     }
@@ -68,6 +69,7 @@ public class ReduceTests {
 
         Func2<Movie, Movie, Movie> chooseSecondMovie =
                 new Func2<Movie, Movie, Movie>() {
+                    @Override
                     public Movie call(Movie t1, Movie t2) {
                         return t2;
                     }
@@ -94,6 +96,7 @@ public class ReduceTests {
     public void libraryFunctionActingOnMovieObservables(Observable<Movie> obs) {
         Func2<Movie, Movie, Movie> chooseSecondMovie =
                 new Func2<Movie, Movie, Movie>() {
+                    @Override
                     public Movie call(Movie t1, Movie t2) {
                         return t2;
                     }

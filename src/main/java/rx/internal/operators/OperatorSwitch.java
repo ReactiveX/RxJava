@@ -36,7 +36,7 @@ public final class OperatorSwitch<T> implements Operator<T, Observable<? extends
 
     @Override
     public Subscriber<? super Observable<? extends T>> call(final Subscriber<? super T> child) {
-        return new SwitchSubscriber(child);
+        return new SwitchSubscriber<T>(child);
     }
 
     private static final class SwitchSubscriber<T> extends Subscriber<Observable<? extends T>> {

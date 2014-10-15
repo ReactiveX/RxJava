@@ -41,6 +41,7 @@ public final class OnSubscribeUsing<T, Resource> implements OnSubscribe<T> {
         this.dispose = dispose;
     }
 
+    @Override
     public void call(Subscriber<? super T> subscriber) {
         try {
             final Resource resource = resourceFactory.call();
