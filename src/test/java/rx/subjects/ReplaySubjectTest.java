@@ -637,4 +637,45 @@ public class ReplaySubjectTest {
         // even though the onError above throws we should still receive it on the other subscriber 
         assertEquals(1, ts.getOnErrorEvents().size());
     }
+    
+    @Test
+    public void testBackpressureUnbounded() {
+        ReplaySubject<Integer> source = ReplaySubject.create();
+        Observable.range(1, 10).subscribe(source);
+        
+        @SuppressWarnings("unchecked")
+        final Observer<Integer> o = mock(Observer.class);
+        InOrder inOrder = inOrder(o);
+        
+        Subscriber<Integer> s = new Subscriber<Integer>() {
+            @Override
+            public void onStart() {
+                request(5);
+            }
+            @Override
+            public void onNext(Integer t) {
+                o.onNext(t);
+            }
+            @Override
+            public void onError(Throwable e) {
+                o.onError(e);
+            }
+            @Override
+            public void onCompleted() {
+                o.onCompleted();
+            }
+        };
+        
+        source.subscribe(s);
+        
+        for (int i = 1; i <= 5; i++) {
+            inOrder.verify(o).onNext(i);
+        }
+        for (int i = 6; i <= 10; i++) {
+            inOrder.verify(o, never()).onNext(i);
+        }
+        
+        verify(o, never()).onCompleted();
+        verify(o, never()).onError(any(Throwable.class));
+    }
 }
