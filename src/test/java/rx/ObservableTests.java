@@ -1110,7 +1110,7 @@ public class ObservableTests {
         Observable.just(1, 2, 3).compose(new Transformer<Integer, String>() {
 
             @Override
-            public Observable<String> call(Observable<? extends Integer> t1) {
+            public Observable<String> call(Observable<Integer> t1) {
                 return t1.map(new Func1<Integer, String>() {
                     
                     @Override

@@ -16,6 +16,10 @@
 package rx;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
 
@@ -66,7 +70,7 @@ public class CovarianceTest {
         Observable<Movie> movie2 = movie.compose(new Transformer<Movie, Movie>() {
 
             @Override
-            public Observable<? extends Movie> call(Observable<? extends Movie> t1) {
+            public Observable<? extends Movie> call(Observable<Movie> t1) {
                 return Observable.just(new Movie());
             }
             
@@ -78,7 +82,7 @@ public class CovarianceTest {
         Observable<Movie> movie = Observable.<Movie> just(new HorrorMovie());
         Observable<HorrorMovie> movie2 = movie.compose(new Transformer<Movie, HorrorMovie>() {
             @Override
-            public Observable<? extends HorrorMovie> call(Observable<? extends Movie> t1) {
+            public Observable<? extends HorrorMovie> call(Observable<Movie> t1) {
                 return Observable.just(new HorrorMovie());
             }
         });
@@ -89,7 +93,7 @@ public class CovarianceTest {
         Observable<Movie> movie = Observable.<Movie>just(new HorrorMovie());
         Observable<HorrorMovie> movie2 = movie.compose(new Transformer<Movie, HorrorMovie>() {
             @Override
-            public Observable<? extends HorrorMovie> call(Observable<? extends Movie> t1) {
+            public Observable<? extends HorrorMovie> call(Observable<Movie> t1) {
                 return Observable.just(new HorrorMovie()).map(new Func1<HorrorMovie, HorrorMovie>() {
 
                     @Override
@@ -106,7 +110,7 @@ public class CovarianceTest {
         Observable<HorrorMovie> movie = Observable.just(new HorrorMovie());
         Observable<HorrorMovie> movie2 = movie.compose(new Transformer<HorrorMovie, HorrorMovie>() {
             @Override
-            public Observable<? extends HorrorMovie> call(Observable<? extends HorrorMovie> t1) {
+            public Observable<? extends HorrorMovie> call(Observable<HorrorMovie> t1) {
                 return t1.map(new Func1<HorrorMovie, HorrorMovie>() {
 
                     @Override
@@ -118,6 +122,52 @@ public class CovarianceTest {
         });
     }
     
+    @Test
+    public void testComposeWithDeltaLogic() {
+        List<Movie> list1 = Arrays.asList(new Movie(), new HorrorMovie(), new ActionMovie());
+        List<Movie> list2 = Arrays.asList(new ActionMovie(), new Movie(), new HorrorMovie(), new ActionMovie());
+        Observable<List<Movie>> movies = Observable.just(list1, list2);
+        movies.compose(deltaTransformer);
+    }
+
+    static Transformer<List<Movie>, Movie> deltaTransformer = new Transformer<List<Movie>, Movie>() {
+        @Override
+        public Observable<Movie> call(Observable<List<Movie>> movieList) {
+            return movieList
+                .startWith(new ArrayList<Movie>())
+                .buffer(2, 1)
+                .skip(1)
+                .flatMap(calculateDelta);
+        }
+    };
+
+    static Func1<List<List<Movie>>, Observable<Movie>> calculateDelta = new Func1<List<List<Movie>>, Observable<Movie>>() {
+        public Observable<Movie> call(List<List<Movie>> listOfLists) {
+            if (listOfLists.size() == 1) {
+                return Observable.from(listOfLists.get(0));
+            } else {
+                // diff the two
+                List<Movie> newList = listOfLists.get(1);
+                List<Movie> oldList = new ArrayList<Movie>(listOfLists.get(0));
+
+                Set<Movie> delta = new LinkedHashSet<Movie>();
+                delta.addAll(newList);
+                // remove all that match in old
+                delta.removeAll(oldList);
+
+                // filter oldList to those that aren't in the newList
+                oldList.removeAll(newList);
+
+                // for all left in the oldList we'll create DROP events
+                for (Movie old : oldList) {
+                    delta.add(new Movie());
+                }
+
+                return Observable.from(delta);
+            }
+        };
+    };
+
     /*
      * Most tests are moved into their applicable classes such as [Operator]Tests.java
      */
