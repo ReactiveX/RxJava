@@ -21,6 +21,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import java.util.concurrent.TimeUnit;
+
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -29,6 +31,8 @@ import rx.Observer;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Func1;
+import rx.observers.TestSubscriber;
+import rx.schedulers.Schedulers;
 
 public class OperatorOnErrorResumeNextViaObservableTest {
 
@@ -142,5 +146,33 @@ public class OperatorOnErrorResumeNextViaObservableTest {
             t.start();
             System.out.println("done starting TestObservable thread");
         }
+    }
+    
+    @Test
+    public void testBackpressure() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        Observable.range(0, 100000)
+                .onErrorResumeNext(Observable.just(1))
+                .observeOn(Schedulers.computation())
+                .map(new Func1<Integer, Integer>() {
+                    int c = 0;
+
+                    @Override
+                    public Integer call(Integer t1) {
+                        if (c++ <= 1) {
+                            // slow
+                            try {
+                                Thread.sleep(500);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        return t1;
+                    }
+
+                })
+                .subscribe(ts);
+        ts.awaitTerminalEvent();
+        ts.assertNoErrors();
     }
 }
