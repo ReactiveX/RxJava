@@ -173,6 +173,8 @@ import rx.subscriptions.Subscriptions;
                 actual.call();
             } catch (Throwable t) {
                 RxJavaPlugins.getInstance().getErrorHandler().handleError(t);
+                Thread thread = Thread.currentThread();
+                thread.getUncaughtExceptionHandler().uncaughtException(thread, t);
             } finally {
                 unsubscribe();
             }

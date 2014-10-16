@@ -15,6 +15,7 @@
  */
 package rx.schedulers;
 
+import org.junit.Test;
 import rx.Scheduler;
 import rx.internal.util.RxThreadFactory;
 
@@ -29,5 +30,14 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
     protected Scheduler getScheduler() {
         return Schedulers.from(executor);
     }
-    
+
+    @Test
+    public final void testUnhandledErrorIsDeliveredToThreadHandler() throws InterruptedException {
+        SchedulerTests.testUnhandledErrorIsDeliveredToThreadHandler(getScheduler());
+    }
+
+    @Test
+    public final void testHandledErrorIsNotDeliveredToThreadHandler() throws InterruptedException {
+        SchedulerTests.testHandledErrorIsNotDeliveredToThreadHandler(getScheduler());
+    }
 }
