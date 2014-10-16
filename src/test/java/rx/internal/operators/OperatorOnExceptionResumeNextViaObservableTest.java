@@ -30,6 +30,8 @@ import rx.Observable;
 import rx.Observer;
 import rx.Subscriber;
 import rx.functions.Func1;
+import rx.observers.TestSubscriber;
+import rx.schedulers.Schedulers;
 
 public class OperatorOnExceptionResumeNextViaObservableTest {
 
@@ -188,6 +190,36 @@ public class OperatorOnExceptionResumeNextViaObservableTest {
         verify(observer, Mockito.never()).onError(any(Throwable.class));
         verify(observer, times(1)).onCompleted();
     }
+    
+    
+    @Test
+    public void testBackpressure() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        Observable.range(0, 100000)
+                .onExceptionResumeNext(Observable.just(1))
+                .observeOn(Schedulers.computation())
+                .map(new Func1<Integer, Integer>() {
+                    int c = 0;
+
+                    @Override
+                    public Integer call(Integer t1) {
+                        if (c++ <= 1) {
+                            // slow
+                            try {
+                                Thread.sleep(500);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        return t1;
+                    }
+
+                })
+                .subscribe(ts);
+        ts.awaitTerminalEvent();
+        ts.assertNoErrors();
+    }
+
 
     private static class TestObservable implements Observable.OnSubscribe<String> {
 

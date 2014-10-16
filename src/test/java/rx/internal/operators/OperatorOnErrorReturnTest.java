@@ -32,6 +32,7 @@ import rx.Observer;
 import rx.Subscriber;
 import rx.functions.Func1;
 import rx.observers.TestSubscriber;
+import rx.schedulers.Schedulers;
 
 public class OperatorOnErrorReturnTest {
 
@@ -145,6 +146,41 @@ public class OperatorOnErrorReturnTest {
         verify(observer, Mockito.never()).onNext("three");
         verify(observer, times(1)).onNext("resume");
     }
+    
+    @Test
+    public void testBackpressure() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        Observable.range(0, 100000)
+                .onErrorReturn(new Func1<Throwable, Integer>() {
+
+					@Override
+					public Integer call(Throwable t1) {
+						return 1;
+					}
+                	
+                })
+                .observeOn(Schedulers.computation())
+                .map(new Func1<Integer, Integer>() {
+                    int c = 0;
+
+                    @Override
+                    public Integer call(Integer t1) {
+                        if (c++ <= 1) {
+                            // slow
+                            try {
+                                Thread.sleep(500);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                        return t1;
+                    }
+
+                })
+                .subscribe(ts);
+        ts.awaitTerminalEvent();
+        ts.assertNoErrors();
+    }
 
     private static class TestObservable implements Observable.OnSubscribe<String> {
 
@@ -180,4 +216,7 @@ public class OperatorOnErrorReturnTest {
             System.out.println("done starting TestObservable thread");
         }
     }
+    
+    
+    
 }

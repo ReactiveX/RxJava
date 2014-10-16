@@ -16,6 +16,7 @@
 package rx.internal.operators;
 
 import rx.Observable;
+import rx.Producer;
 import rx.Observable.Operator;
 import rx.Subscriber;
 import rx.exceptions.Exceptions;
@@ -90,6 +91,16 @@ public final class OperatorOnExceptionResumeNextViaObservable<T> implements Oper
                 }
                 done = true;
                 child.onCompleted();
+            }
+            
+            @Override
+            public void setProducer(final Producer producer) {
+                child.setProducer(new Producer() {
+                    @Override
+                    public void request(long n) {
+                        producer.request(n);
+                    }
+                });
             }
             
         };
