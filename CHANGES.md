@@ -1,5 +1,11 @@
 # RxJava Releases #
 
+### Version 0.20.6 – October 15th 2014 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.20.6%22)) ###
+
+* [Pull 1721] (https://github.com/ReactiveX/RxJava/pull/1721) Bug in the onBackpressure operators 
+* [Pull 1695] (https://github.com/ReactiveX/RxJava/pull/1695) rewrite OnSubscribeRefCount to handle synchronous source
+* [Pull 1761] (https://github.com/ReactiveX/RxJava/pull/1761) Fix null-emitting combineLatest
+
 ### Version 1.0.0-rc.6 – October 10th 2014 ([Maven Central](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.0.0-rc.6%7C)) ###
 
 This release is primarily bug fixes along with API cleanup by renaming `longCount` to `countLong` to be alphabetically sorted alongside `count`.
