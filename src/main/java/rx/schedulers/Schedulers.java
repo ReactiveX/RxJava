@@ -15,43 +15,37 @@
  */
 package rx.schedulers;
 
-import rx.Scheduler;
-import rx.plugins.RxJavaPlugins;
-
 import java.util.concurrent.Executor;
+
+import rx.Scheduler;
+import rx.Subscription;
+import rx.plugins.RxJavaPlugins;
 
 /**
  * Static factory methods for creating Schedulers.
  */
 public final class Schedulers {
 
-    private final Scheduler computationScheduler;
-    private final Scheduler ioScheduler;
-    private final Scheduler newThreadScheduler;
-
-    private static final Schedulers INSTANCE = new Schedulers();
-
-    private Schedulers() {
-        Scheduler c = RxJavaPlugins.getInstance().getSchedulersHook().getComputationScheduler();
-        if (c != null) {
-            computationScheduler = c;
-        } else {
-            computationScheduler = new EventLoopsScheduler();
-        }
-
-        Scheduler io = RxJavaPlugins.getInstance().getSchedulersHook().getIOScheduler();
-        if (io != null) {
-            ioScheduler = io;
-        } else {
-            ioScheduler = new CachedThreadScheduler();
-        }
-
+    private static final Object computationGuard = new Object();
+    /** The computation scheduler instance, guarded by computationGuard. */
+    private static Scheduler computationScheduler;
+    private static final Object ioGuard = new Object();
+    /** The io scheduler instance, guarded by ioGuard. */
+    private static Scheduler ioScheduler;
+    /** The new thread scheduler, fixed because it doesn't need to support shutdown. */
+    private static final Scheduler newThreadScheduler;
+    
+    static {
         Scheduler nt = RxJavaPlugins.getInstance().getSchedulersHook().getNewThreadScheduler();
         if (nt != null) {
             newThreadScheduler = nt;
         } else {
             newThreadScheduler = NewThreadScheduler.instance();
         }
+    }
+    
+    private Schedulers() {
+        throw new IllegalStateException("No instances!");
     }
 
     /**
@@ -81,7 +75,7 @@ public final class Schedulers {
      * @return a {@link NewThreadScheduler} instance
      */
     public static Scheduler newThread() {
-        return INSTANCE.newThreadScheduler;
+        return newThreadScheduler;
     }
 
     /**
@@ -96,7 +90,17 @@ public final class Schedulers {
      * @return a {@link Scheduler} meant for computation-bound work
      */
     public static Scheduler computation() {
-        return INSTANCE.computationScheduler;
+        synchronized (computationGuard) {
+            if (computationScheduler == null) {
+                Scheduler c = RxJavaPlugins.getInstance().getSchedulersHook().getComputationScheduler();
+                if (c != null) {
+                    computationScheduler = c;
+                } else {
+                    computationScheduler = new EventLoopsScheduler();
+                }
+            }
+            return computationScheduler;
+        }
     }
 
     /**
@@ -113,7 +117,17 @@ public final class Schedulers {
      * @return a {@link Scheduler} meant for IO-bound work
      */
     public static Scheduler io() {
-        return INSTANCE.ioScheduler;
+        synchronized (ioGuard) {
+            if (ioScheduler == null) {
+                Scheduler io = RxJavaPlugins.getInstance().getSchedulersHook().getIOScheduler();
+                if (io != null) {
+                    ioScheduler = io;
+                } else {
+                    ioScheduler = new CachedThreadScheduler();
+                }
+            }
+            return ioScheduler;
+        }
     }
 
     /**
@@ -135,5 +149,42 @@ public final class Schedulers {
      */
     public static Scheduler from(Executor executor) {
         return new ExecutorScheduler(executor);
+    }
+    /**
+     * Shuts down the threads of the Computation and IO schedulers.
+     * The newThread() scheduler doesn't need to be shut down as its workers shut themselves
+     * down once they complete.
+     */
+    public static void shutdown() {
+        synchronized (computationGuard) {
+            if (computationScheduler instanceof Subscription) {
+                ((Subscription) computationScheduler).unsubscribe();
+                computationScheduler = null;
+            }
+        }
+        synchronized (ioGuard) {
+            if (ioScheduler instanceof Subscription) {
+                ((Subscription) ioScheduler).unsubscribe();
+                ioScheduler = null;
+            }
+        }
+    }
+    /**
+     * Test support.
+     * @return returns true if there is a computation scheduler instance available.
+     */
+    static boolean hasComputationScheduler() {
+        synchronized (computationGuard) {
+            return computationScheduler != null;
+        }
+    }
+    /**
+     * Test support.
+     * @return returns true if there is an io scheduler instance available.
+     */
+    static boolean hasIOScheduler() {
+        synchronized (ioGuard) {
+            return ioScheduler != null;
+        }
     }
 }
