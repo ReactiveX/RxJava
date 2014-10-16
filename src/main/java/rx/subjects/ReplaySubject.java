@@ -290,7 +290,11 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         if (ssm.active) {
             state.next(t);
             for (SubjectSubscriptionManager.SubjectObserver<? super T> o : ssm.observers()) {
-                state.replayObserver(o);
+                if (o.caughtUp) {
+                    o.onNext(t);
+                } else {
+                    state.replayObserver(o);
+                }
             }
         }
     }
@@ -302,7 +306,11 @@ public final class ReplaySubject<T> extends Subject<T, T> {
             List<Throwable> errors = null;
             for (SubjectObserver<? super T> o : ssm.terminate(NotificationLite.instance().error(e))) {
                 try {
-                    state.replayObserver(o);
+                    if (o.caughtUp) {
+                        o.onError(e);
+                    } else {
+                        state.replayObserver(o);
+                    }
                 } catch (Throwable e2) {
                     if (errors == null) {
                         errors = new ArrayList<Throwable>();
@@ -326,7 +334,11 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         if (ssm.active) {
             state.complete();
             for (SubjectObserver<? super T> o : ssm.terminate(NotificationLite.instance().completed())) {
-                state.replayObserver(o);
+                if (o.caughtUp) {
+                    o.onCompleted();
+                } else {
+                    state.replayObserver(o);
+                }
             }
         }
     }
@@ -368,10 +380,6 @@ public final class ReplaySubject<T> extends Subject<T, T> {
             }
         }
 
-        public void accept(Observer<? super T> o, int idx) {
-            nl.accept(o, list.get(idx));
-        }
-        
         @Override
         public void complete() {
             if (!terminated) {
@@ -408,17 +416,30 @@ public final class ReplaySubject<T> extends Subject<T, T> {
          * @param observer
          */
         public void requestMore(SubjectObserver<? super T> observer) {
+            synchronized (observer) {
+                if (observer.emitting) {
+                    return;
+                }
+                observer.emitting = true;
+            }
             long n = observer.requested();
             Integer oIdx = observer.index();
             int idx = oIdx != null ? oIdx.intValue() : 0;
-            int max = index;
-            while (n > 0 && idx < max) {
-                accept(observer, idx);
-                idx++;
-                observer.index(idx);
-                max = index;
-                n = observer.deliveredOne();
-            }
+            do {
+                while (n > 0 && idx < index) {
+                    nl.accept(observer, list.get(idx));
+                    idx++;
+                    n = observer.deliveredOne();
+                }
+                synchronized (observer) {
+                    if (n == 0 || idx == index) {
+                        observer.emitting = false;
+                        observer.caughtUp = n == Long.MAX_VALUE;
+                        observer.index(idx);
+                        return;
+                    }
+                }
+            } while (true);
         }
     }
     

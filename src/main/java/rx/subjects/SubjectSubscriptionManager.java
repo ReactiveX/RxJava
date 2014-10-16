@@ -218,7 +218,9 @@ import rx.subscriptions.Subscriptions;
         /* volatile */boolean fastPath;
         /** Indicate where the observer is at replaying. */
         private volatile Object index;
-        
+        /** Indicates the observer runs without backpressure and it has caught up with the tail. */
+        public volatile boolean caughtUp;
+        /** The number of requested events. */
         private volatile long requested;
         private static final AtomicLongFieldUpdater<SubjectObserver> REQUESTED_UPDATER =
                 AtomicLongFieldUpdater.newUpdater(SubjectObserver.class, "requested");
