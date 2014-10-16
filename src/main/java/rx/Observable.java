@@ -175,20 +175,11 @@ public class Observable<T> {
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Implementing-Your-Own-Operators">RxJava wiki: Implementing Your Own Operators</a>
      */
     @SuppressWarnings("unchecked")
-    public <R> Observable<R> compose(Transformer<? super T, ? extends R> transformer) {
+    public <R> Observable<R> compose(Func1<? extends Observable<? super T>, Observable<? extends R>> transformer) {
         // Casting to Observable<R> is type-safe because we know Observable is covariant.
-        return (Observable<R>) transformer.call(this);
+        return (Observable<R>) ((Func1) transformer).call(this);
     }
-    
-    /**
-     * Transformer function used by {@link #compose}.
-     * @warn more complete description needed
-     */
-    public static interface Transformer<T, R> extends Func1<Observable<? extends T>, Observable<? extends R>> {
-        // cover for generics insanity
-    }
-    
-    
+
 
     /* *********************************************************************************************************
      * Operators Below Here

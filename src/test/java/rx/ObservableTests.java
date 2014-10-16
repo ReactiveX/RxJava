@@ -46,7 +46,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import rx.Observable.OnSubscribe;
-import rx.Observable.Transformer;
 import rx.exceptions.OnErrorNotImplementedException;
 import rx.functions.Action1;
 import rx.functions.Action2;
@@ -1107,10 +1106,10 @@ public class ObservableTests {
     @Test
     public void testCompose() {
         TestSubscriber<String> ts = new TestSubscriber<String>();
-        Observable.just(1, 2, 3).compose(new Transformer<Integer, String>() {
+        Observable.just(1, 2, 3).compose(new Func1<Observable<Integer>, Observable<? extends String>>() {
 
             @Override
-            public Observable<String> call(Observable<? extends Integer> t1) {
+            public Observable<String> call(Observable<Integer> t1) {
                 return t1.map(new Func1<Integer, String>() {
                     
                     @Override
