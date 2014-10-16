@@ -1,5 +1,11 @@
 # RxJava Releases #
 
+### Version 0.20.6 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.20.6%22)) ###
+
+* [Pull 1721] (https://github.com/ReactiveX/RxJava/pull/1721) Bug in the onBackpressure operators 
+* [Pull 1695] (https://github.com/ReactiveX/RxJava/pull/1695) rewrite OnSubscribeRefCount to handle synchronous source
+* [Pull 1761] (https://github.com/ReactiveX/RxJava/pull/1761) Fix null-emitting combineLatest
+
 ### Version 0.20.5 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.20.5%22)) ###
 
 * [Pull 1686] (https://github.com/ReactiveX/RxJava/pull/1686) Fix Rx serialization bug in takeUntil again and the concurrent issue in BufferUntilSubscriber
