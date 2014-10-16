@@ -1,5 +1,13 @@
 # RxJava Releases #
 
+### Version 1.0.0-rc.7 – October 16th 2014 ([Maven Central](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.0.0-rc.7%7C)) ###
+
+* [Pull 1767] (https://github.com/ReactiveX/RxJava/pull/1767) ExecutorScheduler delivers uncaught exceptions
+* [Pull 1765] (https://github.com/ReactiveX/RxJava/pull/1765) backpressure support in onErrorResumeNext* operators
+* [Pull 1766] (https://github.com/ReactiveX/RxJava/pull/1766) Unhandled errors go to UncaughtExceptionHandler
+* [Pull 1755] (https://github.com/ReactiveX/RxJava/pull/1755) OnSubscribeRefCount with Synchronous Support
+* [Pull 1750] (https://github.com/ReactiveX/RxJava/pull/1750) Fix NPE when iterable is null
+
 ### Version 0.20.6 – October 15th 2014 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.20.6%22)) ###
 
 * [Pull 1721] (https://github.com/ReactiveX/RxJava/pull/1721) Bug in the onBackpressure operators 
