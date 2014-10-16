@@ -137,4 +137,14 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
             }
         });
     }
+
+    @Test
+    public final void testUnhandledErrorIsDeliveredToThreadHandler() throws InterruptedException {
+        SchedulerTests.testUnhandledErrorIsDeliveredToThreadHandler(getScheduler());
+    }
+
+    @Test
+    public final void testHandledErrorIsNotDeliveredToThreadHandler() throws InterruptedException {
+        SchedulerTests.testHandledErrorIsNotDeliveredToThreadHandler(getScheduler());
+    }
 }

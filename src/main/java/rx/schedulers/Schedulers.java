@@ -75,7 +75,9 @@ public final class Schedulers {
 
     /**
      * Creates and returns a {@link Scheduler} that creates a new {@link Thread} for each unit of work.
-     * 
+     * <p>
+     * Unhandled errors will be delivered to the scheduler Thread's {@link java.lang.Thread.UncaughtExceptionHandler}.
+     *
      * @return a {@link NewThreadScheduler} instance
      */
     public static Scheduler newThread() {
@@ -88,7 +90,9 @@ public final class Schedulers {
      * This can be used for event-loops, processing callbacks and other computational work.
      * <p>
      * Do not perform IO-bound work on this scheduler. Use {@link #io()} instead.
-     * 
+     * <p>
+     * Unhandled errors will be delivered to the scheduler Thread's {@link java.lang.Thread.UncaughtExceptionHandler}.
+     *
      * @return a {@link Scheduler} meant for computation-bound work
      */
     public static Scheduler computation() {
@@ -103,7 +107,9 @@ public final class Schedulers {
      * This can be used for asynchronously performing blocking IO.
      * <p>
      * Do not perform computational work on this scheduler. Use {@link #computation()} instead.
-     * 
+     * <p>
+     * Unhandled errors will be delivered to the scheduler Thread's {@link java.lang.Thread.UncaughtExceptionHandler}.
+     *
      * @return a {@link Scheduler} meant for IO-bound work
      */
     public static Scheduler io() {

@@ -51,8 +51,9 @@ public final class ScheduledAction implements Runnable, Subscription {
             } else {
                 ie = new IllegalStateException("Fatal Exception thrown on Scheduler.Worker thread.", e);
             }
-            ie.printStackTrace();
             RxJavaPlugins.getInstance().getErrorHandler().handleError(ie);
+            Thread thread = Thread.currentThread();
+            thread.getUncaughtExceptionHandler().uncaughtException(thread, ie);
         } finally {
             unsubscribe();
         }

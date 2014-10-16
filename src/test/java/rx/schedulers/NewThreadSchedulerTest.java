@@ -16,6 +16,7 @@
 
 package rx.schedulers;
 
+import org.junit.Test;
 import rx.Scheduler;
 
 public class NewThreadSchedulerTest extends AbstractSchedulerConcurrencyTests {
@@ -23,5 +24,15 @@ public class NewThreadSchedulerTest extends AbstractSchedulerConcurrencyTests {
     @Override
     protected Scheduler getScheduler() {
         return Schedulers.newThread();
+    }
+
+    @Test
+    public final void testUnhandledErrorIsDeliveredToThreadHandler() throws InterruptedException {
+        SchedulerTests.testUnhandledErrorIsDeliveredToThreadHandler(getScheduler());
+    }
+
+    @Test
+    public final void testHandledErrorIsNotDeliveredToThreadHandler() throws InterruptedException {
+        SchedulerTests.testHandledErrorIsNotDeliveredToThreadHandler(getScheduler());
     }
 }
