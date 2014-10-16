@@ -18,6 +18,7 @@ package rx.internal.operators;
 import java.util.Arrays;
 
 import rx.Observable.Operator;
+import rx.Producer;
 import rx.Subscriber;
 import rx.exceptions.CompositeException;
 import rx.exceptions.Exceptions;
@@ -90,6 +91,16 @@ public final class OperatorOnErrorReturn<T> implements Operator<T, T> {
                 }
                 done = true;
                 child.onCompleted();
+            }
+            
+            @Override
+            public void setProducer(final Producer producer) {
+                child.setProducer(new Producer() {
+                    @Override
+                    public void request(long n) {
+                        producer.request(n);
+                    }
+                });
             }
             
         };
