@@ -92,13 +92,6 @@ public final class ReplaySubject<T> extends Subject<T, T> {
     public static <T> ReplaySubject<T> create(int capacity) {
         final UnboundedReplayState<T> state = new UnboundedReplayState<T>(capacity);
         SubjectSubscriptionManager<T> ssm = new SubjectSubscriptionManager<T>();
-        ssm.onStart = new Action1<SubjectObserver<T>>() {
-            @Override
-            public void call(SubjectObserver<T> o) {
-                // replay history for this observer using the subscribing thread
-                state.replayObserver(o);
-            }
-        };
         ssm.onTerminated = new Action1<SubjectObserver<T>>() {
             @Override
             public void call(SubjectObserver<T> o) {
@@ -290,11 +283,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         if (ssm.active) {
             state.next(t);
             for (SubjectSubscriptionManager.SubjectObserver<? super T> o : ssm.observers()) {
-                if (o.caughtUp) {
-                    o.onNext(t);
-                } else {
-                    state.replayObserver(o);
-                }
+                state.replayObserver(o);
             }
         }
     }
@@ -306,11 +295,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
             List<Throwable> errors = null;
             for (SubjectObserver<? super T> o : ssm.terminate(NotificationLite.instance().error(e))) {
                 try {
-                    if (o.caughtUp) {
-                        o.onError(e);
-                    } else {
-                        state.replayObserver(o);
-                    }
+                    state.replayObserver(o);
                 } catch (Throwable e2) {
                     if (errors == null) {
                         errors = new ArrayList<Throwable>();
@@ -334,11 +319,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         if (ssm.active) {
             state.complete();
             for (SubjectObserver<? super T> o : ssm.terminate(NotificationLite.instance().completed())) {
-                if (o.caughtUp) {
-                    o.onCompleted();
-                } else {
-                    state.replayObserver(o);
-                }
+                state.replayObserver(o);
             }
         }
     }
@@ -425,21 +406,31 @@ public final class ReplaySubject<T> extends Subject<T, T> {
             long n = observer.requested();
             Integer oIdx = observer.index();
             int idx = oIdx != null ? oIdx.intValue() : 0;
-            do {
-                while (n > 0 && idx < index) {
-                    nl.accept(observer, list.get(idx));
-                    idx++;
-                    n = observer.deliveredOne();
-                }
-                synchronized (observer) {
-                    if (n == 0 || idx == index) {
+            boolean runFinal = true;
+            try {
+                do {
+                    while (n > 0 && idx < index) {
+                        nl.accept(observer, list.get(idx));
+                        idx++;
+                        n = observer.deliveredOne();
+                    }
+                    synchronized (observer) {
+                        boolean atEnd = idx == index;
+                        if (n == 0 || atEnd) {
+                            observer.index(idx);
+                            runFinal = false;
+                            observer.emitting = false;
+                            break;
+                        }
+                    }
+                } while (true);
+            } finally {
+                if (runFinal) {
+                    synchronized (observer) {
                         observer.emitting = false;
-                        observer.caughtUp = n == Long.MAX_VALUE;
-                        observer.index(idx);
-                        return;
                     }
                 }
-            } while (true);
+            }
         }
     }
     
