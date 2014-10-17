@@ -32,7 +32,7 @@ import rx.internal.util.RxThreadFactory;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.Subscriptions;
 
-/* package */final class CachedThreadScheduler extends Scheduler implements Subscription {
+/* package */final class CachedThreadScheduler extends Scheduler {
     /* private */static final String WORKER_THREAD_NAME_PREFIX = "RxCachedThreadScheduler-";
     private static final RxThreadFactory WORKER_THREAD_FACTORY =
             new RxThreadFactory(WORKER_THREAD_NAME_PREFIX);
@@ -193,11 +193,7 @@ import rx.subscriptions.Subscriptions;
     }
     
     @Override
-    public boolean isUnsubscribed() {
-        return done == 1;
-    }
-    @Override
-    public void unsubscribe() {
+    public void shutdown() {
         if (DONE_UPDATER.getAndSet(this, 1) == 0) {
             workerPool.unsubscribe();
         }

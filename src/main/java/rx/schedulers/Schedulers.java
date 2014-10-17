@@ -18,7 +18,6 @@ package rx.schedulers;
 import java.util.concurrent.Executor;
 
 import rx.Scheduler;
-import rx.Subscription;
 import rx.plugins.RxJavaPlugins;
 
 /**
@@ -165,16 +164,16 @@ public final class Schedulers {
      */
     public static void shutdown() {
         synchronized (computationGuard) {
-            if (computationScheduler instanceof Subscription) {
-                ((Subscription) computationScheduler).unsubscribe();
-                computationScheduler = null;
+            if (computationScheduler != null) {
+                computationScheduler.shutdown();
             }
+            computationScheduler = null;
         }
         synchronized (ioGuard) {
-            if (ioScheduler instanceof Subscription) {
-                ((Subscription) ioScheduler).unsubscribe();
-                ioScheduler = null;
+            if (ioScheduler != null) {
+                ioScheduler.shutdown();
             }
+            ioScheduler = null;
         }
     }
     /**

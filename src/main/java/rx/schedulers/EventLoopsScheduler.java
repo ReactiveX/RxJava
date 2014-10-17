@@ -27,7 +27,7 @@ import rx.internal.util.RxThreadFactory;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.Subscriptions;
 
-/* package */class EventLoopsScheduler extends Scheduler implements Subscription {
+/* package */class EventLoopsScheduler extends Scheduler {
     /** Manages a fixed number of workers. */
     /* private */static final String THREAD_NAME_PREFIX = "RxComputationThreadPool-";
     private static final RxThreadFactory THREAD_FACTORY = new RxThreadFactory(THREAD_NAME_PREFIX);
@@ -111,16 +111,7 @@ import rx.subscriptions.Subscriptions;
         }
     }
     @Override
-    public boolean isUnsubscribed() {
-        for (PoolWorker pw : pool.eventLoops) {
-            if (pw.isUnsubscribed()) {
-                return true;
-            }
-        }
-        return false;
-    }
-    @Override
-    public void unsubscribe() {
+    public void shutdown() {
         for (PoolWorker pw : pool.eventLoops) {
             pw.unsubscribe();
         }

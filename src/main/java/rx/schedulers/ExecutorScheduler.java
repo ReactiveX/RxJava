@@ -17,12 +17,14 @@ package rx.schedulers;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
+
 import rx.Scheduler;
 import rx.Subscription;
 import rx.functions.Action0;
@@ -191,5 +193,11 @@ import rx.subscriptions.Subscriptions;
             }
         }
         
+    }
+    @Override
+    public void shutdown() {
+        if (executor instanceof ExecutorService) {
+            ((ExecutorService) executor).shutdownNow();
+        }
     }
 }
