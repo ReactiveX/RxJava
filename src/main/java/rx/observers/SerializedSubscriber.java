@@ -219,7 +219,8 @@ public class SerializedSubscriber<T> extends Subscriber<T> {
                             }
                             queue.addFirst(list, n);
                             list = null;
-                        } else
+                        }
+                        // if requests became available in the meantime
                         if (r > 0) {
                             list = queue;
                             queue = null;
