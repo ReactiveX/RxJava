@@ -296,7 +296,7 @@ public class BlockingOperatorNextTest {
 
     @Test /* (timeout = 8000) */
     public void testSingleSourceManyIterators() throws InterruptedException {
-        Observable<Long> o = Observable.interval(10, TimeUnit.MILLISECONDS);
+        Observable<Long> o = Observable.interval(100, TimeUnit.MILLISECONDS);
         PublishSubject<Void> terminal = PublishSubject.create();
         BlockingObservable<Long> source = o.takeUntil(terminal).toBlocking();
 
