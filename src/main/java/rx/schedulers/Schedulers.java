@@ -28,10 +28,10 @@ public final class Schedulers {
 
     private static final Object computationGuard = new Object();
     /** The computation scheduler instance, guarded by computationGuard. */
-    private static Scheduler computationScheduler;
+    private static volatile Scheduler computationScheduler;
     private static final Object ioGuard = new Object();
     /** The io scheduler instance, guarded by ioGuard. */
-    private static Scheduler ioScheduler;
+    private static volatile Scheduler ioScheduler;
     /** The new thread scheduler, fixed because it doesn't need to support shutdown. */
     private static final Scheduler newThreadScheduler;
     
@@ -90,6 +90,10 @@ public final class Schedulers {
      * @return a {@link Scheduler} meant for computation-bound work
      */
     public static Scheduler computation() {
+        Scheduler s = computationScheduler;
+        if (s != null) {
+            return s;
+        }
         synchronized (computationGuard) {
             if (computationScheduler == null) {
                 Scheduler c = RxJavaPlugins.getInstance().getSchedulersHook().getComputationScheduler();
@@ -117,6 +121,10 @@ public final class Schedulers {
      * @return a {@link Scheduler} meant for IO-bound work
      */
     public static Scheduler io() {
+        Scheduler s = ioScheduler;
+        if (s != null) {
+            return s;
+        }
         synchronized (ioGuard) {
             if (ioScheduler == null) {
                 Scheduler io = RxJavaPlugins.getInstance().getSchedulersHook().getIOScheduler();
@@ -174,17 +182,13 @@ public final class Schedulers {
      * @return returns true if there is a computation scheduler instance available.
      */
     static boolean hasComputationScheduler() {
-        synchronized (computationGuard) {
-            return computationScheduler != null;
-        }
+        return computationScheduler != null;
     }
     /**
      * Test support.
      * @return returns true if there is an io scheduler instance available.
      */
     static boolean hasIOScheduler() {
-        synchronized (ioGuard) {
-            return ioScheduler != null;
-        }
+        return ioScheduler != null;
     }
 }
