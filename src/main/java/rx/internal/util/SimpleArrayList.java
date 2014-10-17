@@ -46,15 +46,17 @@ public class SimpleArrayList {
         int os = other.size - start;
         int news = s + os;
         Object[] a = array;
-        if (news >= a.length) {
-            Object[] array2 = new Object[news + (s >> 2)];
-            System.arraycopy(other, start, array2, 0, os);
-            System.arraycopy(a, 0, array2, os, s);
-            array = a;
+        if (a == null || news >= a.length) {
+            Object[] array2 = new Object[Math.max(16, news + (s >> 2))];
+            System.arraycopy(other.array, start, array2, 0, os);
+            if (a != null) {
+                System.arraycopy(a, 0, array2, os, s);
+            }
+            array = array2;
             size = news;
         } else {
             System.arraycopy(a, 0, a, os, s);
-            System.arraycopy(other, start, a, 0, os);
+            System.arraycopy(other.array, start, a, 0, os);
             size = news;
         }
     }

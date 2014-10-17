@@ -49,6 +49,7 @@ import rx.Observer;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.schedulers.Schedulers;
+import rx.subjects.PublishSubject;
 
 public class SerializedObserverTest {
 
@@ -816,42 +817,79 @@ public class SerializedObserverTest {
         }
 
     }
-    
+
+    static final class RequestableSubscriber extends Subscriber<Integer> {
+        final Observer<Integer> o;
+        final List<Integer> values;
+        public RequestableSubscriber(Observer<Integer> mock) {
+            this.o = mock;
+            this.values = new ArrayList<Integer>();
+        }
+        @Override
+        public void onStart() {
+            request(5);
+        }
+        @Override
+        public void onNext(Integer t) {
+            o.onNext(t);
+            values.add(t);
+        }
+        @Override
+        public void onError(Throwable e) {
+            o.onError(e);
+        }
+        @Override
+        public void onCompleted() {
+            o.onCompleted();
+        }
+        public void requestMore(long n) {
+            request(n);
+        }
+    };
+
     @Test
     public void testBackpressureSimple() {
         
         @SuppressWarnings("unchecked")
         final Observer<Integer> o = mock(Observer.class);
         
-        final List<Integer> values = new ArrayList<Integer>();
-        
-        Subscriber<Integer> s = new Subscriber<Integer>() {
-            @Override
-            public void onStart() {
-                request(5);
-            }
-            @Override
-            public void onNext(Integer t) {
-                o.onNext(t);
-                values.add(t);
-            }
-            @Override
-            public void onError(Throwable e) {
-                o.onError(e);
-            }
-            @Override
-            public void onCompleted() {
-                o.onCompleted();
-            }
-        };
-        
         // should deliver the first 5
-        SerializedSubscriber<Integer> ssub = new SerializedSubscriber<Integer>(s);
+        RequestableSubscriber rs = new RequestableSubscriber(o);
+        SerializedSubscriber<Integer> ssub = new SerializedSubscriber<Integer>(rs);
         Observable.range(1, 15).subscribe(ssub);
         
-        assertEquals(Arrays.asList(1, 2, 3, 4, 5), values);
+        assertEquals(Arrays.asList(1, 2, 3, 4, 5), rs.values);
         // request another 5
-        s.onStart();
+        rs.requestMore(5);
+
+        for (int i = 1; i <= 10; i++) {
+            verify(o).onNext(i);
+        }
+        for (int i = 11; i <= 15; i++) {
+            verify(o, never()).onNext(i);
+        }
+        verify(o, never()).onCompleted();
+        verify(o, never()).onError(any(Throwable.class));
+    }
+    @Test
+    public void testBackpressureNoUpstreamBackpressureSupport() {
+        
+        @SuppressWarnings("unchecked")
+        final Observer<Integer> o = mock(Observer.class);
+        
+        // should deliver the first 5
+        RequestableSubscriber rs = new RequestableSubscriber(o);
+        SerializedSubscriber<Integer> ssub = new SerializedSubscriber<Integer>(rs);
+        PublishSubject<Integer> source = PublishSubject.create();
+        source.subscribe(ssub);
+        
+        for (int i = 1; i <= 15; i++) {
+            source.onNext(i);
+        }
+        
+        assertEquals(Arrays.asList(1, 2, 3, 4, 5), rs.values);
+        // request another 5
+        rs.requestMore(5);
 
         for (int i = 1; i <= 10; i++) {
             verify(o).onNext(i);

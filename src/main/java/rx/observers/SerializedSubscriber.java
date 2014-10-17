@@ -67,6 +67,12 @@ public class SerializedSubscriber<T> extends Subscriber<T> {
     @Override
     public void onStart() {
         s.onStart();
+        s.setProducer(new Producer() {
+            @Override
+            public void request(long n) {
+                requestInternal(n);
+            }
+        });
     }
     
     @Override
@@ -167,55 +173,62 @@ public class SerializedSubscriber<T> extends Subscriber<T> {
             boolean once = o != null;
             do {
                 long r = req;
-                int deliveredCount = 0;
+                int n = 0;
                 int available = list != null ? list.size : 0;
                 
                 if (r == Long.MAX_VALUE || r == Long.MIN_VALUE) {
                     for (int i = 0; i < available; i++) {
                         accept(list.array[i]);
                     }
-                    deliveredCount = available;
                     if (once) {
                         accept(o);
                         once = false;
-                        deliveredCount++;
+                    }
+                    synchronized (this) {
+                        list = queue;
+                        queue = null;
+                        if (list == null) {
+                            emitting = false;
+                            runFinal = false;
+                            return;
+                        }                        
                     }
                 } else {
-                    int n = (int)Math.min(r, available);
+                    n = (int)Math.min(r, available);
                     for (int i = 0; i < n; i++) {
                         accept(list.array[i]);
                     }
-                    deliveredCount = n;
-                    if (once && r > available) {
+                    r -= n;
+                    if (once && r > 0) {
                         accept(o);
                         n++;
-                        deliveredCount++;
                         once = false;
                     }
                     r = REQUESTED_UPDATER.addAndGet(this, -n);
-                }
-                synchronized (this) {
-                    if (r == Long.MAX_VALUE || r == Long.MIN_VALUE) {
-                        list = queue;
-                        queue = null;
-                    } else
-                    if (deliveredCount < available) {
-                        list.add(o);
-                        SimpleArrayList list2 = queue;
-                        if (list2 != null) {
-                            list2.addFirst(list, deliveredCount);
-                            list = list2;
-                        } else {
-                            list2 = new SimpleArrayList();
-                            list2.addFirst(list, deliveredCount);
-                            queue = list2;
-                            list = list2;
+                    synchronized (this) {
+                        if (once) {
+                            if (list == null) {
+                                list = new SimpleArrayList();
+                            }
+                            list.add(o);
+                            available++;
                         }
-                    }
-                    if (list == null) {
-                        emitting = false;
-                        runFinal = false;
-                        return;
+                        if (n < available) {
+                            if (queue == null) {
+                                queue = new SimpleArrayList();
+                            }
+                            queue.addFirst(list, n);
+                            list = null;
+                        } else
+                        if (r > 0) {
+                            list = queue;
+                            queue = null;
+                        }
+                        if (list == null) {
+                            emitting = false;
+                            runFinal = false;
+                            return;
+                        }
                     }
                 }
             } while (true);
