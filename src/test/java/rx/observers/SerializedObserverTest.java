@@ -21,10 +21,14 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -811,5 +815,51 @@ public class SerializedObserverTest {
             }
         }
 
+    }
+    
+    @Test
+    public void testBackpressureSimple() {
+        
+        @SuppressWarnings("unchecked")
+        final Observer<Integer> o = mock(Observer.class);
+        
+        final List<Integer> values = new ArrayList<Integer>();
+        
+        Subscriber<Integer> s = new Subscriber<Integer>() {
+            @Override
+            public void onStart() {
+                request(5);
+            }
+            @Override
+            public void onNext(Integer t) {
+                o.onNext(t);
+                values.add(t);
+            }
+            @Override
+            public void onError(Throwable e) {
+                o.onError(e);
+            }
+            @Override
+            public void onCompleted() {
+                o.onCompleted();
+            }
+        };
+        
+        // should deliver the first 5
+        SerializedSubscriber<Integer> ssub = new SerializedSubscriber<Integer>(s);
+        Observable.range(1, 15).subscribe(ssub);
+        
+        assertEquals(Arrays.asList(1, 2, 3, 4, 5), values);
+        // request another 5
+        s.onStart();
+
+        for (int i = 1; i <= 10; i++) {
+            verify(o).onNext(i);
+        }
+        for (int i = 11; i <= 15; i++) {
+            verify(o, never()).onNext(i);
+        }
+        verify(o, never()).onCompleted();
+        verify(o, never()).onError(any(Throwable.class));
     }
 }

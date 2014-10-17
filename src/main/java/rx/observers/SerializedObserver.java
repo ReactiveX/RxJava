@@ -17,6 +17,7 @@ package rx.observers;
 
 import rx.Observer;
 import rx.exceptions.Exceptions;
+import rx.internal.util.SimpleArrayList;
 
 /**
  * Enforces single-threaded, serialized, ordered execution of {@link #onNext}, {@link #onCompleted}, and
@@ -37,32 +38,11 @@ public class SerializedObserver<T> implements Observer<T> {
 
     private boolean emitting = false;
     private boolean terminated = false;
-    private FastList queue;
+    private SimpleArrayList queue;
 
     private static final int MAX_DRAIN_ITERATION = Integer.MAX_VALUE;
     private static final Object NULL_SENTINEL = new Object();
     private static final Object COMPLETE_SENTINEL = new Object();
-
-    static final class FastList {
-        Object[] array;
-        int size;
-
-        public void add(Object o) {
-            int s = size;
-            Object[] a = array;
-            if (a == null) {
-                a = new Object[16];
-                array = a;
-            } else if (s == a.length) {
-                Object[] array2 = new Object[s + (s >> 2)];
-                System.arraycopy(a, 0, array2, 0, s);
-                a = array2;
-                array = a;
-            }
-            a[s] = o;
-            size = s + 1;
-        }
-    }
 
     private static final class ErrorSentinel {
         final Throwable e;
@@ -78,7 +58,7 @@ public class SerializedObserver<T> implements Observer<T> {
 
     @Override
     public void onCompleted() {
-        FastList list;
+        SimpleArrayList list;
         synchronized (this) {
             if (terminated) {
                 return;
@@ -86,7 +66,7 @@ public class SerializedObserver<T> implements Observer<T> {
             terminated = true;
             if (emitting) {
                 if (queue == null) {
-                    queue = new FastList();
+                    queue = new SimpleArrayList();
                 }
                 queue.add(COMPLETE_SENTINEL);
                 return;
@@ -102,14 +82,14 @@ public class SerializedObserver<T> implements Observer<T> {
     @Override
     public void onError(final Throwable e) {
         Exceptions.throwIfFatal(e);
-        FastList list;
+        SimpleArrayList list;
         synchronized (this) {
             if (terminated) {
                 return;
             }
             if (emitting) {
                 if (queue == null) {
-                    queue = new FastList();
+                    queue = new SimpleArrayList();
                 }
                 queue.add(new ErrorSentinel(e));
                 return;
@@ -127,7 +107,7 @@ public class SerializedObserver<T> implements Observer<T> {
 
     @Override
     public void onNext(T t) {
-        FastList list;
+        SimpleArrayList list;
 
         synchronized (this) {
             if (terminated) {
@@ -135,7 +115,7 @@ public class SerializedObserver<T> implements Observer<T> {
             }
             if (emitting) {
                 if (queue == null) {
-                    queue = new FastList();
+                    queue = new SimpleArrayList();
                 }
                 queue.add(t != null ? t : NULL_SENTINEL);
                 // another thread is emitting so we add to the queue and return
@@ -189,7 +169,7 @@ public class SerializedObserver<T> implements Observer<T> {
         drainQueue(list);
     }
     
-    void drainQueue(FastList list) {
+    void drainQueue(SimpleArrayList list) {
         if (list == null || list.size == 0) {
             return;
         }
