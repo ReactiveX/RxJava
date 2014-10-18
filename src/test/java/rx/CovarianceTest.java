@@ -15,6 +15,8 @@
  */
 package rx;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
@@ -26,6 +28,8 @@ import org.junit.Test;
 import rx.Observable.Transformer;
 import rx.functions.Func1;
 import rx.functions.Func2;
+import rx.observables.GroupedObservable;
+import rx.observers.TestSubscriber;
 
 /**
  * Test super/extends of generics.
@@ -63,7 +67,45 @@ public class CovarianceTest {
         o2.toSortedList(SORT_FUNCTION);
     }
 
-    
+    @Test
+    public void testGroupByCompose() {
+        Observable<Movie> movies = Observable.just(new HorrorMovie(), new ActionMovie(), new Movie());
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+        movies.groupBy(new Func1<Movie, Class<? extends Movie>>() {
+
+            @Override
+            public Class<? extends Movie> call(Movie m) {
+                return m.getClass();
+            }
+
+        }).flatMap(new Func1<GroupedObservable<Class<? extends Movie>, Movie>, Observable<String>>() {
+
+            @Override
+            public Observable<String> call(GroupedObservable<Class<? extends Movie>, Movie> g) {
+                return g.compose(new Transformer<Movie, Movie>() {
+
+                    @Override
+                    public Observable<? extends Movie> call(Observable<Movie> m) {
+                        return m.concatWith(Observable.just(new ActionMovie()));
+                    }
+
+                }).map(new Func1<Movie, String>() {
+
+                    @Override
+                    public String call(Movie m) {
+                        return m.toString();
+                    }
+
+                });
+            }
+
+        }).subscribe(ts);
+        ts.assertTerminalEvent();
+        ts.assertNoErrors();
+        //        System.out.println(ts.getOnNextEvents());
+        assertEquals(6, ts.getOnNextEvents().size());
+    }
+
     @Test
     public void testCovarianceOfCompose() {
         Observable<HorrorMovie> movie = Observable.just(new HorrorMovie());
