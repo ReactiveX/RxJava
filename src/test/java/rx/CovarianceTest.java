@@ -85,7 +85,7 @@ public class CovarianceTest {
                 return g.compose(new Transformer<Movie, Movie>() {
 
                     @Override
-                    public Observable<? extends Movie> call(Observable<Movie> m) {
+                    public Observable<Movie> call(Observable<Movie> m) {
                         return m.concatWith(Observable.just(new ActionMovie()));
                     }
 
@@ -112,7 +112,7 @@ public class CovarianceTest {
         Observable<Movie> movie2 = movie.compose(new Transformer<Movie, Movie>() {
 
             @Override
-            public Observable<? extends Movie> call(Observable<Movie> t1) {
+            public Observable<Movie> call(Observable<Movie> t1) {
                 return Observable.just(new Movie());
             }
             
@@ -124,7 +124,7 @@ public class CovarianceTest {
         Observable<Movie> movie = Observable.<Movie> just(new HorrorMovie());
         Observable<HorrorMovie> movie2 = movie.compose(new Transformer<Movie, HorrorMovie>() {
             @Override
-            public Observable<? extends HorrorMovie> call(Observable<Movie> t1) {
+            public Observable<HorrorMovie> call(Observable<Movie> t1) {
                 return Observable.just(new HorrorMovie());
             }
         });
@@ -135,7 +135,7 @@ public class CovarianceTest {
         Observable<Movie> movie = Observable.<Movie>just(new HorrorMovie());
         Observable<HorrorMovie> movie2 = movie.compose(new Transformer<Movie, HorrorMovie>() {
             @Override
-            public Observable<? extends HorrorMovie> call(Observable<Movie> t1) {
+            public Observable<HorrorMovie> call(Observable<Movie> t1) {
                 return Observable.just(new HorrorMovie()).map(new Func1<HorrorMovie, HorrorMovie>() {
 
                     @Override
@@ -152,7 +152,7 @@ public class CovarianceTest {
         Observable<HorrorMovie> movie = Observable.just(new HorrorMovie());
         Observable<HorrorMovie> movie2 = movie.compose(new Transformer<HorrorMovie, HorrorMovie>() {
             @Override
-            public Observable<? extends HorrorMovie> call(Observable<HorrorMovie> t1) {
+            public Observable<HorrorMovie> call(Observable<HorrorMovie> t1) {
                 return t1.map(new Func1<HorrorMovie, HorrorMovie>() {
 
                     @Override
