@@ -16,6 +16,7 @@
 package rx.plugins;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -41,7 +42,7 @@ public class RxJavaPluginsTest {
     @Test
     public void testErrorHandlerDefaultImpl() {
         RxJavaErrorHandler impl = new RxJavaPlugins().getErrorHandler();
-        assertTrue(impl instanceof RxJavaErrorHandlerDefault);
+        assertSame(RxJavaPlugins.DEFAULT_ERROR_HANDLER, impl);
     }
 
     @Test

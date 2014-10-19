@@ -55,6 +55,9 @@ public class RxJavaPlugins {
         INSTANCE.schedulersHook.set(null);
     }
 
+    static final RxJavaErrorHandler DEFAULT_ERROR_HANDLER = new RxJavaErrorHandler() {
+    };
+
     /**
      * Retrieves an instance of {@link RxJavaErrorHandler} to use based on order of precedence as defined in
      * {@link RxJavaPlugins} class header.
@@ -70,7 +73,7 @@ public class RxJavaPlugins {
             Object impl = getPluginImplementationViaProperty(RxJavaErrorHandler.class);
             if (impl == null) {
                 // nothing set via properties so initialize with default 
-                errorHandler.compareAndSet(null, RxJavaErrorHandlerDefault.getInstance());
+                errorHandler.compareAndSet(null, DEFAULT_ERROR_HANDLER);
                 // we don't return from here but call get() again in case of thread-race so the winner will always get returned
             } else {
                 // we received an implementation from the system property so use it
