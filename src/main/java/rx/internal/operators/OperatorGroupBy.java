@@ -188,7 +188,7 @@ public class OperatorGroupBy<T, K, R> implements Operator<GroupedObservable<K, R
         private GroupState<K, T> createNewGroup(final K key) {
             final GroupState<K, T> groupState = new GroupState<K, T>();
 
-            GroupedObservable<K, R> go = new GroupedObservable<K, R>(key, new OnSubscribe<R>() {
+            GroupedObservable<K, R> go = GroupedObservable.create(key, new OnSubscribe<R>() {
 
                 @Override
                 public void call(final Subscriber<? super R> o) {
