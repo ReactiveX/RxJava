@@ -5386,14 +5386,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.publish.aspx">MSDN: Observable.Publish</a>
      */
     public final ConnectableObservable<T> publish() {
-        return new OperatorMulticast<T, T>(this, new Func0<Subject<? super T, ? extends T>>() {
-
-            @Override
-            public Subject<? super T, ? extends T> call() {
-                return PublishSubject.<T> create();
-            }
-            
-        });
+        return OperatorPublish.create(this);
     }
 
     /**
@@ -5421,12 +5414,13 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.publish.aspx">MSDN: Observable.Publish</a>
      */
     public final <R> Observable<R> publish(Func1<? super Observable<T>, ? extends Observable<R>> selector) {
-        return multicast(new Func0<Subject<T, T>>() {
-            @Override
-            public final Subject<T, T> call() {
-                return PublishSubject.create();
-            }
-        }, selector);
+        return OperatorPublish.create(this, selector);
+//        return multicast(new Func0<Subject<T, T>>() {
+//            @Override
+//            public final Subject<T, T> call() {
+//                return PublishSubject.create();
+//            }
+//        }, selector);
     }
 
     /**

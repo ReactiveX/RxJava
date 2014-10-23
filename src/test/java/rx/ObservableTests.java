@@ -502,58 +502,6 @@ public class ObservableTests {
     }
 
     @Test
-    public void testPublish() throws InterruptedException {
-        final AtomicInteger counter = new AtomicInteger();
-        ConnectableObservable<String> o = Observable.create(new OnSubscribe<String>() {
-
-            @Override
-            public void call(final Subscriber<? super String> observer) {
-                new Thread(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        counter.incrementAndGet();
-                        observer.onNext("one");
-                        observer.onCompleted();
-                    }
-                }).start();
-            }
-        }).publish();
-
-        final CountDownLatch latch = new CountDownLatch(2);
-
-        // subscribe once
-        o.subscribe(new Action1<String>() {
-
-            @Override
-            public void call(String v) {
-                assertEquals("one", v);
-                latch.countDown();
-            }
-        });
-
-        // subscribe again
-        o.subscribe(new Action1<String>() {
-
-            @Override
-            public void call(String v) {
-                assertEquals("one", v);
-                latch.countDown();
-            }
-        });
-
-        Subscription s = o.connect();
-        try {
-            if (!latch.await(1000, TimeUnit.MILLISECONDS)) {
-                fail("subscriptions did not receive values");
-            }
-            assertEquals(1, counter.get());
-        } finally {
-            s.unsubscribe();
-        }
-    }
-
-    @Test
     public void testPublishLast() throws InterruptedException {
         final AtomicInteger count = new AtomicInteger();
         ConnectableObservable<String> connectable = Observable.create(new OnSubscribe<String>() {
