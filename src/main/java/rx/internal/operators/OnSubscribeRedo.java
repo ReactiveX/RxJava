@@ -206,6 +206,10 @@ public final class OnSubscribeRedo<T> implements OnSubscribe<T> {
         final Action0 subscribeToSource = new Action0() {
             @Override
             public void call() {
+                if (child.isUnsubscribed()) {
+                    return;
+                }
+
                 Subscriber<T> terminalDelegatingSubscriber = new Subscriber<T>() {
                     @Override
                     public void onCompleted() {

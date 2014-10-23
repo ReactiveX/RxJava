@@ -245,6 +245,37 @@ public class OperatorRetryTest {
     }
 
     @Test
+    public void testSingleSubscriptionOnFirst() throws Exception {
+        final AtomicInteger inc = new AtomicInteger(0);
+        Observable.OnSubscribe<Integer> onSubscribe = new OnSubscribe<Integer>() {
+            @Override
+            public void call(Subscriber<? super Integer> subscriber) {
+                final int emit = inc.incrementAndGet();
+                subscriber.onNext(emit);
+                subscriber.onCompleted();
+            }
+        };
+
+        int first = Observable.create(onSubscribe)
+                .retryWhen(new Func1<Observable<? extends Throwable>, Observable<?>>() {
+                    @Override
+                    public Observable<?> call(Observable<? extends Throwable> attempt) {
+                        return attempt.zipWith(Observable.just(1), new Func2<Throwable, Integer, Void>() {
+                            @Override
+                            public Void call(Throwable o, Integer integer) {
+                                return null;
+                            }
+                        });
+                    }
+                })
+                .toBlocking()
+                .first();
+
+        assertEquals("Observer did not receive the expected output", 1, first);
+        assertEquals("Subscribe was not called once", 1, inc.get());
+    }
+
+    @Test
     public void testOriginFails() {
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
