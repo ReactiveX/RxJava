@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,7 +29,10 @@ import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 
+import rx.Observable;
+import rx.Observable.OnSubscribe;
 import rx.Scheduler;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Action0;
 import rx.functions.Func1;
@@ -39,12 +42,13 @@ public class TestSchedulerTest {
     @SuppressWarnings("unchecked")
     // mocking is unchecked, unfortunately
     @Test
-    public final void testPeriodicScheduling() {
+    public final
+    void testPeriodicScheduling() {
         final Func1<Long, Void> calledOp = mock(Func1.class);
 
         final TestScheduler scheduler = new TestScheduler();
         final Scheduler.Worker inner = scheduler.createWorker();
-        
+
         inner.schedulePeriodically(new Action0() {
             @Override
             public void call() {
@@ -81,7 +85,8 @@ public class TestSchedulerTest {
     @SuppressWarnings("unchecked")
     // mocking is unchecked, unfortunately
     @Test
-    public final void testPeriodicSchedulingUnsubscription() {
+    public final
+    void testPeriodicSchedulingUnsubscription() {
         final Func1<Long, Void> calledOp = mock(Func1.class);
 
         final TestScheduler scheduler = new TestScheduler();
@@ -125,7 +130,7 @@ public class TestSchedulerTest {
         TestScheduler s = new TestScheduler();
         final Scheduler.Worker inner = s.createWorker();
         final AtomicInteger counter = new AtomicInteger(0);
-        
+
         inner.schedule(new Action0() {
 
             @Override
@@ -160,4 +165,42 @@ public class TestSchedulerTest {
         assertEquals(0, counter.get());
     }
 
+    @Test
+    public final void testNestedSchedule() {
+        final TestScheduler scheduler = new TestScheduler();
+        final Scheduler.Worker inner = scheduler.createWorker();
+        final Action0 calledOp = mock(Action0.class);
+
+        Observable<Object> poller;
+        poller = Observable.create(new OnSubscribe<Object>() {
+            @Override
+            public void call(final Subscriber<? super Object> aSubscriber) {
+                inner.schedule(new Action0() {
+                    @Override
+                    public void call() {
+                        if (!aSubscriber.isUnsubscribed()) {
+                            calledOp.call();
+                            inner.schedule(this, 5, TimeUnit.SECONDS);
+                        }
+                    }
+                });
+            }
+        });
+
+        InOrder inOrder = Mockito.inOrder(calledOp);
+
+        Subscription sub;
+        sub = poller.subscribe();
+
+        scheduler.advanceTimeTo(6, TimeUnit.SECONDS);
+        inOrder.verify(calledOp, times(2)).call();
+
+        sub.unsubscribe();
+        scheduler.advanceTimeTo(11, TimeUnit.SECONDS);
+        inOrder.verify(calledOp, never()).call();
+
+        sub = poller.subscribe();
+        scheduler.advanceTimeTo(12, TimeUnit.SECONDS);
+        inOrder.verify(calledOp, times(1)).call();
+    }
 }
