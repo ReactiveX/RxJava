@@ -6925,28 +6925,6 @@ public class Observable<T> {
     }
 
     /**
-     * Returns an Observable that skips all items emitted by the source Observable as long as a specified
-     * condition holds true, but emits all further source items as soon as the condition becomes false.
-     * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/skipWhileWithIndex.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code skipWhileWithIndex} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * 
-     * @param predicate
-     *            a function to test each item emitted from the source Observable. It takes the emitted item as
-     *            the first parameter and the sequential index of the emitted item as a second parameter.
-     * @return an Observable that begins emitting items emitted by the source Observable when the specified
-     *         predicate becomes false
-     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Conditional-and-Boolean-Operators#skipwhile-and-skipwhilewithindex">RxJava wiki: skipWhileWithIndex</a>
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh211631.aspx">MSDN: Observable.SkipWhile</a>
-     */
-    public final Observable<T> skipWhileWithIndex(Func2<? super T, Integer, Boolean> predicate) {
-        return lift(new OperatorSkipWhile<T>(predicate));
-    }
-
-    /**
      * Returns an Observable that emits the items in a specified {@link Observable} before it begins to emit
      * items emitted by the source Observable.
      * <p>
@@ -8019,30 +7997,6 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh244231.aspx">MSDN: Observable.TakeWhile</a>
      */
     public final Observable<T> takeWhile(final Func1<? super T, Boolean> predicate) {
-        return lift(new OperatorTakeWhile<T>(predicate));
-    }
-
-    /**
-     * Returns an Observable that emits the items emitted by a source Observable so long as a given predicate
-     * remains true, where the predicate operates on both the item and its index relative to the complete
-     * sequence of emitted items.
-     * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeWhileWithIndex.png" alt="">
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code takeWhile} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * 
-     * @param predicate
-     *            a function to test each item emitted by the source Observable for a condition; the second
-     *            parameter of the function represents the sequential index of the source item; it returns a
-     *            Boolean
-     * @return an Observable that emits items from the source Observable so long as the predicate continues to
-     *         return {@code true} for each item, then completes
-     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Conditional-and-Boolean-Operators#takewhile-and-takewhilewithindex">RxJava wiki: takeWhileWithIndex</a>
-     * @see <a href="http://msdn.microsoft.com/en-us/library/hh229131.aspx">MSDN: Observable.TakeWhile</a>
-     */
-    public final Observable<T> takeWhileWithIndex(final Func2<? super T, ? super Integer, Boolean> predicate) {
         return lift(new OperatorTakeWhile<T>(predicate));
     }
 
