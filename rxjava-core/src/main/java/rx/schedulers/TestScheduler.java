@@ -111,7 +111,7 @@ public class TestScheduler extends Scheduler {
             if (current.time > targetTimeInNanos) {
                 break;
             }
-            time = current.time;
+            time = current.time == 0 ? time : current.time;
             queue.remove();
 
             // Only execute if not unsubscribed
