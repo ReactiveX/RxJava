@@ -89,10 +89,12 @@ public class OperatorTakeWhileTest {
     @Test
     public void testTakeWhile2() {
         Observable<String> w = Observable.just("one", "two", "three");
-        Observable<String> take = w.takeWhileWithIndex(new Func2<String, Integer, Boolean>() {
+        Observable<String> take = w.takeWhile(new Func1<String, Boolean>() {
+            int index = 0;
+
             @Override
-            public Boolean call(String input, Integer index) {
-                return index < 2;
+            public Boolean call(String input) {
+                return index++ < 2;
             }
         });
 
@@ -158,10 +160,12 @@ public class OperatorTakeWhileTest {
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
-        Observable<String> take = Observable.create(w).takeWhileWithIndex(new Func2<String, Integer, Boolean>() {
+        Observable<String> take = Observable.create(w).takeWhile(new Func1<String, Boolean>() {
+            int index = 0;
+
             @Override
-            public Boolean call(String s, Integer index) {
-                return index < 1;
+            public Boolean call(String s) {
+                return index++ < 1;
             }
         });
         take.subscribe(observer);

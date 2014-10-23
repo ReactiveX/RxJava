@@ -45,17 +45,18 @@ public class OperatorSkipWhileTest {
         }
     };
 
-    private static final Func2<Integer, Integer, Boolean> INDEX_LESS_THAN_THREE = new Func2<Integer, Integer, Boolean>() {
+    private static final Func1<Integer, Boolean> INDEX_LESS_THAN_THREE = new Func1<Integer, Boolean>() {
+        int index = 0;
         @Override
-        public Boolean call(Integer value, Integer index) {
-            return index < 3;
+        public Boolean call(Integer value) {
+            return index++ < 3;
         }
     };
 
     @Test
     public void testSkipWithIndex() {
         Observable<Integer> src = Observable.just(1, 2, 3, 4, 5);
-        src.skipWhileWithIndex(INDEX_LESS_THAN_THREE).subscribe(w);
+        src.skipWhile(INDEX_LESS_THAN_THREE).subscribe(w);
 
         InOrder inOrder = inOrder(w);
         inOrder.verify(w, times(1)).onNext(4);
