@@ -35,7 +35,7 @@ public class OnSubscribeMulticastTest {
     public void testMulticast() {
         Subject<String, String> source = PublishSubject.create();
 
-        ConnectableObservable<String> multicasted = source.multicast(new PublishSubjectFactory());
+        ConnectableObservable<String> multicasted = new OperatorMulticast<String, String>(source, new PublishSubjectFactory());
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
@@ -62,7 +62,7 @@ public class OnSubscribeMulticastTest {
     public void testMulticastConnectTwice() {
         Subject<String, String> source = PublishSubject.create();
 
-        ConnectableObservable<String> multicasted = source.multicast(new PublishSubjectFactory());
+        ConnectableObservable<String> multicasted = new OperatorMulticast<String, String>(source, new PublishSubjectFactory());
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
@@ -86,7 +86,7 @@ public class OnSubscribeMulticastTest {
     public void testMulticastDisconnect() {
         Subject<String, String> source = PublishSubject.create();
 
-        ConnectableObservable<String> multicasted = source.multicast(new PublishSubjectFactory());
+        ConnectableObservable<String> multicasted = new OperatorMulticast<String, String>(source, new PublishSubjectFactory());
 
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
