@@ -517,7 +517,7 @@ public class ObservableTests {
                     }
                 }).start();
             }
-        }).publishLast();
+        }).takeLast(1).publish();
 
         // subscribe once
         final CountDownLatch latch = new CountDownLatch(1);
