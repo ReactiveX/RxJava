@@ -1,5 +1,17 @@
 # RxJava Releases #
 
+### Version 1.0.0-rc.8 – October 23rd 2014 ([Maven Central](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.0.0-rc.8%7C)) ###
+
+* [Pull 1771] (https://github.com/ReactiveX/RxJava/pull/1771) On error return backpressure
+* [Pull 1776] (https://github.com/ReactiveX/RxJava/pull/1776) Observable.compose Generics
+* [Pull 1778] (https://github.com/ReactiveX/RxJava/pull/1778) Change Transformer to Func1<Observable<T>, Observable<R>>
+* [Pull 1775] (https://github.com/ReactiveX/RxJava/pull/1775) BlockingOperatorNextTest.testSingleSourceManyIterators fix
+* [Pull 1784] (https://github.com/ReactiveX/RxJava/pull/1784) Publish with Backpressure
+* [Pull 1786] (https://github.com/ReactiveX/RxJava/pull/1786) Remove Multicast
+* [Pull 1787] (https://github.com/ReactiveX/RxJava/pull/1787) Remove *withIndex Operators
+* [Pull 1789] (https://github.com/ReactiveX/RxJava/pull/1789) GroupedObservable.from/create
+* [Pull 1793] (https://github.com/ReactiveX/RxJava/pull/1793) Take/Redo Unsubscribe
+
 ### Version 1.0.0-rc.7 – October 16th 2014 ([Maven Central](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.0.0-rc.7%7C)) ###
 
 * [Pull 1767] (https://github.com/ReactiveX/RxJava/pull/1767) ExecutorScheduler delivers uncaught exceptions
