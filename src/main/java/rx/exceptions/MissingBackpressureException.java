@@ -15,6 +15,28 @@
  */
 package rx.exceptions;
 
+/**
+ * {@code MissingBackpressureException} indicates that a Subscriber or operator attempted to apply reactive pull
+ * backpressure to an Observable that does not implement it.
+ * <p>
+ * If an Observable has not been written to support reactive pull backpressure (such support is not a
+ * requirement for Observables), you can apply one of the following operators to it, each of which forces a
+ * simple form of backpressure behavior:
+ * <dl>
+ *  <dt><code>onBackpressureBuffer</code></dt>
+ *   <dd>maintains a buffer of all emissions from the source Observable and emits them to downstream Subscribers
+ *       according to the requests they generate</dd>
+ *  <dt><code>onBackpressureDrop</code></dt>
+ *   <dd>drops emissions from the source Observable unless there is a pending request from a downstream
+ *       Subscriber, in which case it will emit enough items to fulfill the request</dd>
+ * </dl>
+ * If you do not apply either of these operators to an Observable that does not support backpressure, and if
+ * either you as the Subscriber or some operator between you and the Observable attempts to apply reactive pull
+ * backpressure, you will encounter a {@code MissingBackpressureException} which you will be notified of via
+ * your {@code onError} callback.
+ *
+ * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Backpressure">RxJava wiki: Backpressure</a>
+ */
 public class MissingBackpressureException extends Exception {
 
     private static final long serialVersionUID = 7250870679677032194L;
