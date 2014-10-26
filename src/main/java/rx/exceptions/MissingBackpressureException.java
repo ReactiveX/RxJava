@@ -34,8 +34,15 @@ package rx.exceptions;
  * either you as the Subscriber or some operator between you and the Observable attempts to apply reactive pull
  * backpressure, you will encounter a {@code MissingBackpressureException} which you will be notified of via
  * your {@code onError} callback.
- *
- * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Backpressure">RxJava wiki: Backpressure</a>
+ * <p>
+ * There are, however, other options. You can throttle an over-producing Observable with operators like
+ * {@code sample}/{@code throttleLast}, {@code throttleFirst}, or {@code throttleWithTimeout}/{@code debounce}.
+ * You can also take the large number of items emitted by an over-producing Observable and package them into
+ * a smaller set of emissions by using operators like {@code buffer} and {@code window}.
+ * <p>
+ * For a more complete discussion of the options available to you for dealing with issues related to
+ * backpressure and flow control in RxJava, see
+ * <a href="https://github.com/ReactiveX/RxJava/wiki/Backpressure">RxJava wiki: Backpressure</a>.
  */
 public class MissingBackpressureException extends Exception {
 
