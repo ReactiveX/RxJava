@@ -136,4 +136,8 @@ public final class AsyncSubject<T> extends Subject<T, T> {
         lastValue = nl.next(v);
     }
 
+    @Override
+    public boolean hasObservers() {
+        return state.observers().length > 0;
+    }
 }

@@ -34,6 +34,7 @@ import rx.observers.SerializedObserver;
  */
 public class SerializedSubject<T, R> extends Subject<T, R> {
     private final SerializedObserver<T> observer;
+    private final Subject<T, R> actual;
 
     public SerializedSubject(final Subject<T, R> actual) {
         super(new OnSubscribe<R>() {
@@ -44,6 +45,7 @@ public class SerializedSubject<T, R> extends Subject<T, R> {
             }
 
         });
+        this.actual = actual;
         this.observer = new SerializedObserver<T>(actual);
     }
 
@@ -62,4 +64,8 @@ public class SerializedSubject<T, R> extends Subject<T, R> {
         observer.onNext(t);
     }
 
+    @Override
+    public boolean hasObservers() {
+        return actual.hasObservers();
+    }
 }

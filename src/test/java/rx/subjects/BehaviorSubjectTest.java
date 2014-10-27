@@ -16,6 +16,7 @@
 package rx.subjects;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.inOrder;
@@ -370,6 +371,7 @@ public class BehaviorSubjectTest {
         verify(o, never()).onError(any(Throwable.class));
         
         assertEquals(0, source.subscriberCount());
+        assertFalse(source.hasObservers());
     }
     
     @Test

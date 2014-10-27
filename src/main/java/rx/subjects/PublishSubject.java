@@ -121,4 +121,9 @@ public final class PublishSubject<T> extends Subject<T, T> {
             bo.onNext(v);
         }
     }
+
+    @Override
+    public boolean hasObservers() {
+        return state.observers().length > 0;
+    }
 }
