@@ -26,6 +26,12 @@ Learn more about RxJava on the <a href="https://github.com/ReactiveX/RxJava/wiki
 As of 1.0.0 RxJava is following semantic versioning.
 During the 0.x.y releases, the minor (.x) releases were breaking changes.
 
+The 0.x releases were published under the `com.netflix.rxjava` GroupId. The 1.x releases are published under `io.reactivex`. All usage of 0.x and `com.netflix.rxjava` should eventually be migrated to 1.x and `io.reactivex`. This was done as part of the migration of the project from `Netflix/RxJava` to `ReactiveX/RxJava`.
+
+During the transition it will be possible for an application to resolve both the `com.netflix.rxjava` and `io.reactivex` artifacts. This is unfortunate but was accepted as a reasonable cost for adopting the new name as we hit version 1.0.
+
+The 0.20.x branch is being maintained with bug fixes on the `com.netflix.rxjava` GroupId until version 1.0 Final is released to allow time to migrate between the artifacts.
+
 ## Full Documentation
 
 - [Wiki](https://github.com/ReactiveX/RxJava/wiki)
