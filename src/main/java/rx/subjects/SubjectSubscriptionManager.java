@@ -17,10 +17,12 @@ package rx.subjects;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLongFieldUpdater;
 import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 
 import rx.Observable.OnSubscribe;
 import rx.Observer;
+import rx.Producer;
 import rx.Subscriber;
 import rx.functions.Action0;
 import rx.functions.Action1;
@@ -50,11 +52,13 @@ import rx.subscriptions.Subscriptions;
     Action1<SubjectObserver<T>> onAdded = Actions.empty();
     /** Action called when the subscriber wants to subscribe to a terminal state. */
     Action1<SubjectObserver<T>> onTerminated = Actions.empty();
+    /** Action called when the subscriber requested more values. */
+    Action1<SubjectObserver<T>> onRequestMore = Actions.empty();
     /** The notification lite. */
     public final NotificationLite<T> nl = NotificationLite.instance();
     @Override
     public void call(final Subscriber<? super T> child) {
-        SubjectObserver<T> bo = new SubjectObserver<T>(child);
+        SubjectObserver<T> bo = new SubjectObserver<T>(child, onRequestMore);
         addUnsubscriber(child, bo);
         onStart.call(bo);
         if (!child.isUnsubscribed()) {
@@ -202,9 +206,9 @@ import rx.subscriptions.Subscriptions;
      * emission facilities.
      * @param <T> the consumed value type of the actual Observer
      */
-    protected static final class SubjectObserver<T> implements Observer<T> {
+    protected static final class SubjectObserver<T> implements Observer<T>, Producer {
         /** The actual Observer. */
-        final Observer<? super T> actual;
+        final Subscriber<? super T> actual;
         /** Was the emitFirst run? Guarded by this. */
         boolean first = true;
         /** Guarded by this. */
@@ -212,12 +216,56 @@ import rx.subscriptions.Subscriptions;
         /** Guarded by this. */
         List<Object> queue;
         /* volatile */boolean fastPath;
-        /** Indicate that the observer has caught up. */
-        protected volatile boolean caughtUp;
         /** Indicate where the observer is at replaying. */
         private volatile Object index;
-        public SubjectObserver(Observer<? super T> actual) {
+        /** The number of requested events. */
+        private volatile long requested;
+        private static final AtomicLongFieldUpdater<SubjectObserver> REQUESTED_UPDATER =
+                AtomicLongFieldUpdater.newUpdater(SubjectObserver.class, "requested");
+        private final Action1<SubjectObserver<T>> onRequestMore;
+        
+        public SubjectObserver(Subscriber<? super T> actual, Action1<SubjectObserver<T>> onRequestMore) {
             this.actual = actual;
+            this.onRequestMore = onRequestMore;
+            actual.setProducer(this);
+        }
+        public long requested() {
+            return requested;
+        }
+        @Override
+        public void request(long n) {
+            long r;
+            do {
+                r = requested;
+                if (r == Long.MAX_VALUE) {
+                    // if unbounded, then stay unbounded 
+                    return;
+                }
+                long u = r + n;
+                if (REQUESTED_UPDATER.compareAndSet(this, r, u)) {
+                    break;
+                }
+            } while (true);
+            
+            if (r == 0) {
+                onRequestMore.call(this);
+            }
+        }
+        /**
+         * @return Atomically decrement the request counter and return the new remaining count.
+         */
+        public long deliveredOne() {
+            long r;
+            do {
+                r = requested;
+                if (r == Long.MAX_VALUE) {
+                    // if unbounded, stay unbounded
+                    return r;
+                }
+                if (REQUESTED_UPDATER.compareAndSet(this, r, r - 1)) {
+                    return r - 1;
+                }
+            } while (true);
         }
         @Override
         public void onNext(T t) {

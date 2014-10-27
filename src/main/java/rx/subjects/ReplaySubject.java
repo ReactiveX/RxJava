@@ -92,25 +92,17 @@ public final class ReplaySubject<T> extends Subject<T, T> {
     public static <T> ReplaySubject<T> create(int capacity) {
         final UnboundedReplayState<T> state = new UnboundedReplayState<T>(capacity);
         SubjectSubscriptionManager<T> ssm = new SubjectSubscriptionManager<T>();
-        ssm.onStart = new Action1<SubjectObserver<T>>() {
-            @Override
-            public void call(SubjectObserver<T> o) {
-                // replay history for this observer using the subscribing thread
-                int lastIndex = state.replayObserverFromIndex(0, o);
-
-                // now that it is caught up add to observers
-                o.index(lastIndex);
-            }
-        };
         ssm.onTerminated = new Action1<SubjectObserver<T>>() {
             @Override
             public void call(SubjectObserver<T> o) {
-                Integer idx = o.index();
-                if (idx == null) {
-                    idx = 0;
-                }
                 // we will finish replaying if there is anything left
-                state.replayObserverFromIndex(idx, o);
+                state.replayObserver(o);
+            }
+        };
+        ssm.onRequestMore = new Action1<SubjectObserver<T>>() {
+            @Override
+            public void call(SubjectObserver<T> o) {
+                state.requestMore(o);
             }
         };
         
@@ -268,11 +260,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
 
             @Override
             public void call(SubjectObserver<T> t1) {
-                NodeList.Node<Object> l = t1.index();
-                if (l == null) {
-                    l = state.head();
-                }
-                state.replayObserverFromIndex(l, t1);
+                state.replayObserver(t1);
             }
 
         };
@@ -295,9 +283,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         if (ssm.active) {
             state.next(t);
             for (SubjectSubscriptionManager.SubjectObserver<? super T> o : ssm.observers()) {
-                if (caughtUp(o)) {
-                    o.onNext(t);
-                }
+                state.replayObserver(o);
             }
         }
     }
@@ -309,9 +295,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
             List<Throwable> errors = null;
             for (SubjectObserver<? super T> o : ssm.terminate(NotificationLite.instance().error(e))) {
                 try {
-                    if (caughtUp(o)) {
-                        o.onError(e);
-                    }
+                    state.replayObserver(o);
                 } catch (Throwable e2) {
                     if (errors == null) {
                         errors = new ArrayList<Throwable>();
@@ -335,9 +319,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         if (ssm.active) {
             state.complete();
             for (SubjectObserver<? super T> o : ssm.terminate(NotificationLite.instance().completed())) {
-                if (caughtUp(o)) {
-                    o.onCompleted();
-                }
+                state.replayObserver(o);
             }
         }
     }
@@ -346,17 +328,6 @@ public final class ReplaySubject<T> extends Subject<T, T> {
      */
     /* Support test. */int subscriberCount() {
         return ssm.state.observers.length;
-    }
-    
-    private boolean caughtUp(SubjectObserver<? super T> o) {
-        if (!o.caughtUp) {
-            o.caughtUp = true;
-            state.replayObserver(o);
-            return false;
-        } else {
-            // it was caught up so proceed the "raw route"
-            return true;
-        }
     }
     
     // *********************
@@ -390,10 +361,6 @@ public final class ReplaySubject<T> extends Subject<T, T> {
             }
         }
 
-        public void accept(Observer<? super T> o, int idx) {
-            nl.accept(o, list.get(idx));
-        }
-        
         @Override
         public void complete() {
             if (!terminated) {
@@ -418,29 +385,52 @@ public final class ReplaySubject<T> extends Subject<T, T> {
 
         @Override
         public void replayObserver(SubjectObserver<? super T> observer) {
-            Integer lastEmittedLink = observer.index();
-            if (lastEmittedLink != null) {
-                int l = replayObserverFromIndex(lastEmittedLink, observer);
-                observer.index(l);
-            } else {
-                throw new IllegalStateException("failed to find lastEmittedLink for: " + observer);
-            }
+            requestMore(observer);
         }
 
         @Override
-        public Integer replayObserverFromIndex(Integer idx, SubjectObserver<? super T> observer) {
-            int i = idx;
-            while (i < index) {
-                accept(observer, i);
-                i++;
-            }
-
-            return i;
+        public void replayObserverTest(SubjectObserver<? super T> observer, long now) {
+            replayObserver(observer);
         }
-
-        @Override
-        public Integer replayObserverFromIndexTest(Integer idx, SubjectObserver<? super T> observer, long now) {
-            return replayObserverFromIndex(idx, observer);
+        /**
+         * Emits min(available, requested) events from the buffer to the target SubjectObserver.
+         * @param observer
+         */
+        public void requestMore(SubjectObserver<? super T> observer) {
+            synchronized (observer) {
+                if (observer.emitting) {
+                    return;
+                }
+                observer.emitting = true;
+            }
+            long n = observer.requested();
+            Integer oIdx = observer.index();
+            int idx = oIdx != null ? oIdx.intValue() : 0;
+            boolean runFinal = true;
+            try {
+                do {
+                    while (n > 0 && idx < index) {
+                        nl.accept(observer, list.get(idx));
+                        idx++;
+                        n = observer.deliveredOne();
+                    }
+                    synchronized (observer) {
+                        boolean atEnd = idx == index;
+                        if (n == 0 || atEnd) {
+                            observer.index(idx);
+                            runFinal = false;
+                            observer.emitting = false;
+                            break;
+                        }
+                    }
+                } while (true);
+            } finally {
+                if (runFinal) {
+                    synchronized (observer) {
+                        observer.emitting = false;
+                    }
+                }
+            }
         }
     }
     
@@ -478,10 +468,18 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         public void complete() {
             if (!terminated) {
                 terminated = true;
+                Node<Object> prevTail = list.tail;
                 // don't evict the terminal value
                 evictionPolicy.evict(list);
+                
+                boolean relinkTail = list.isEmpty();
                 // so add it later
                 list.addLast(enterTransform.call(nl.completed()));
+                // if the list got empty, we need to link the pre-eviction tail node to point to
+                // the current tail so subscribers walking it still can detect the tail
+                if (relinkTail) {
+                    prevTail.next = list.tail;
+                }
                 tail = list.tail;
             }
             
@@ -490,10 +488,18 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         public void error(Throwable e) {
             if (!terminated) {
                 terminated = true;
+                Node<Object> prevTail = list.tail;
                 // don't evict the terminal value
                 evictionPolicy.evict(list);
+
+                boolean relinkTail = list.isEmpty();
                 // so add it later
                 list.addLast(enterTransform.call(nl.error(e)));
+                // if the list got empty, we need to link the pre-eviction tail node to point to
+                // the current tail so subscribers walking it still can detect the tail
+                if (relinkTail) {
+                    prevTail.next = list.tail;
+                }
                 tail = list.tail;
             }
         }
@@ -520,29 +526,29 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         }
         @Override
         public void replayObserver(SubjectObserver<? super T> observer) {
-            NodeList.Node<Object> lastEmittedLink = observer.index();
-            NodeList.Node<Object> l = replayObserverFromIndex(lastEmittedLink, observer);
-            observer.index(l);
-        }
-
-        @Override
-        public NodeList.Node<Object> replayObserverFromIndex(
-                NodeList.Node<Object> l, SubjectObserver<? super T> observer) {
+            NodeList.Node<Object> l = observer.index();
+            if (l == null) {
+                l = head();
+            }
             while (l != tail()) {
                 accept(observer, l.next);
                 l = l.next;
             }
-            return l;
+            observer.index(l);
         }
+
         @Override
-        public NodeList.Node<Object> replayObserverFromIndexTest(
-                NodeList.Node<Object> l, SubjectObserver<? super T> observer, long now) {
+        public void replayObserverTest(SubjectObserver<? super T> observer, long now) {
+            NodeList.Node<Object> l = observer.index();
+            if (l == null) {
+                l = head();
+            }
             while (l != tail()) {
                 acceptTest(observer, l.next, now);
                 l = l.next;
             }
-            return l;
-        }
+            observer.index(l);
+       }
 
         @Override
         public boolean terminated() {
@@ -568,21 +574,11 @@ public final class ReplaySubject<T> extends Subject<T, T> {
          */
         void replayObserver(SubjectObserver<? super T> observer);
         /**
-         * Replay the buffered values from an index position and return a new index
-         * @param idx the current index position
-         * @param observer the receiver of events
-         * @return the new index position
-         */
-        I replayObserverFromIndex(
-                I idx, SubjectObserver<? super T> observer);
-        /**
          * Replay the buffered values from an index position while testing for stale entries and return a new index
          * @param idx the current index position
          * @param observer the receiver of events
-         * @return the new index position
          */
-        I replayObserverFromIndexTest(
-                I idx, SubjectObserver<? super T> observer, long now);
+        void replayObserverTest(SubjectObserver<? super T> observer, long now);
         /**
          * Add an OnNext value to the buffer
          * @param value the value to add
@@ -733,8 +729,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         
         @Override
         public void call(SubjectObserver<T> t1) {
-            NodeList.Node<Object> l = state.replayObserverFromIndex(state.head(), t1);
-            t1.index(l);
+            state.replayObserver(t1);
         }
         
     }
@@ -753,15 +748,13 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         
         @Override
         public void call(SubjectObserver<T> t1) {
-            NodeList.Node<Object> l;
             if (!state.terminated) {
                 // ignore stale entries if still active
-                l = state.replayObserverFromIndexTest(state.head(), t1, scheduler.now());
+                state.replayObserverTest(t1, scheduler.now());
             }  else {
                 // accept all if terminated
-                l = state.replayObserverFromIndex(state.head(), t1);
+                state.replayObserver(t1);
             }
-            t1.index(l);
         }
         
     }

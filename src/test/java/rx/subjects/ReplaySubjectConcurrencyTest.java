@@ -245,7 +245,7 @@ public class ReplaySubjectConcurrencyTest {
      */
     @Test(timeout = 10000)
     public void testSubscribeCompletionRaceCondition() {
-        for (int i = 0; i < 50; i++) {
+        for (int i = 0; i < 1; i++) {
             final ReplaySubject<String> subject = ReplaySubject.create();
             final AtomicReference<String> value1 = new AtomicReference<String>();
 
@@ -273,10 +273,10 @@ public class ReplaySubjectConcurrencyTest {
                 }
             });
 
-            SubjectObserverThread t2 = new SubjectObserverThread(subject);
-            SubjectObserverThread t3 = new SubjectObserverThread(subject);
-            SubjectObserverThread t4 = new SubjectObserverThread(subject);
-            SubjectObserverThread t5 = new SubjectObserverThread(subject);
+            SubjectObserverThread t2 = new SubjectObserverThread(subject, i);
+            SubjectObserverThread t3 = new SubjectObserverThread(subject, i);
+            SubjectObserverThread t4 = new SubjectObserverThread(subject, i);
+            SubjectObserverThread t5 = new SubjectObserverThread(subject, i);
 
             t2.start();
             t3.start();
@@ -321,9 +321,11 @@ public class ReplaySubjectConcurrencyTest {
 
         private final ReplaySubject<String> subject;
         private final AtomicReference<String> value = new AtomicReference<String>();
+        private final int turn;
 
-        public SubjectObserverThread(ReplaySubject<String> subject) {
+        public SubjectObserverThread(ReplaySubject<String> subject, int turn) {
             this.subject = subject;
+            this.turn = turn;
         }
 
         @Override
@@ -333,7 +335,10 @@ public class ReplaySubjectConcurrencyTest {
                 String v = subject.timeout(2000, TimeUnit.MILLISECONDS).toBlocking().single();
                 value.set(v);
             } catch (Exception e) {
-                e.printStackTrace();
+                synchronized (System.err) {
+                    System.err.println("Turn: " + turn);
+                    e.printStackTrace();
+                }
             }
         }
     }
