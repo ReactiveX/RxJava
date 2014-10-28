@@ -86,7 +86,7 @@ public final class TestSubject<T> extends Subject<T, T> {
 
     /**
      * Schedule a call to {@code onCompleted} relative to "now()" +n milliseconds in the future.
-     * 
+     *
      * @param timeInMilliseconds
      *         the number of milliseconds in the future relative to "now()" at which to call {@code onCompleted}
      */
@@ -119,7 +119,7 @@ public final class TestSubject<T> extends Subject<T, T> {
 
     /**
      * Schedule a call to {@code onError} relative to "now()" +n milliseconds in the future.
-     * 
+     *
      * @param e
      *         the {@code Throwable} to pass to the {@code onError} method
      * @param timeInMilliseconds
@@ -152,7 +152,7 @@ public final class TestSubject<T> extends Subject<T, T> {
 
     /**
      * Schedule a call to {@code onNext} relative to "now()" +n milliseconds in the future.
-     * 
+     *
      * @param v
      *         the item to emit
      * @param timeInMilliseconds
@@ -167,5 +167,10 @@ public final class TestSubject<T> extends Subject<T, T> {
             }
 
         }, timeInMilliseconds, TimeUnit.MILLISECONDS);
+    }
+
+    @Override
+    public boolean hasObservers() {
+        return state.observers().length > 0;
     }
 }

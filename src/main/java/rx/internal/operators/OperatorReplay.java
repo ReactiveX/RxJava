@@ -99,5 +99,9 @@ public final class OperatorReplay {
             subject.onCompleted();
         }
 
+        @Override
+        public boolean hasObservers() {
+            return this.subject.hasObservers();
+        }
     }
 }

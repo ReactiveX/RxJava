@@ -25,4 +25,10 @@ public abstract class Subject<T, R> extends Observable<R> implements Observer<T>
     protected Subject(OnSubscribe<R> onSubscribe) {
         super(onSubscribe);
     }
+
+    /**
+     * Indicates whether the {@link Subject} has {@link Observer Observers} subscribed to it.
+     * @return true if there is at least one Observer subscribed to this Subject, false otherwise
+     */
+    public abstract boolean hasObservers();
 }

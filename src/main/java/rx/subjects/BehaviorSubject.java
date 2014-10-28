@@ -167,8 +167,13 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
             }
         }
     }
-    
+
     /* test support */ int subscriberCount() {
         return state.observers().length;
+    }
+
+    @Override
+    public boolean hasObservers() {
+        return state.observers().length > 0;
     }
 }

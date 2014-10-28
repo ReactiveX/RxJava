@@ -347,7 +347,12 @@ public final class ReplaySubject<T> extends Subject<T, T> {
     /* Support test. */int subscriberCount() {
         return ssm.state.observers.length;
     }
-    
+
+    @Override
+    public boolean hasObservers() {
+        return ssm.observers().length > 0;
+    }
+
     private boolean caughtUp(SubjectObserver<? super T> o) {
         if (!o.caughtUp) {
             o.caughtUp = true;

@@ -184,7 +184,14 @@ public final class BufferUntilSubscriber<T> extends Subject<T, T> {
             emit(state.nl.next(t));
         }
     }
-    
+
+    @Override
+    public boolean hasObservers() {
+        synchronized (state.guard) {
+            return state.observerRef != null;
+        }
+    }
+
     @SuppressWarnings("rawtypes")
     private final static Observer EMPTY_OBSERVER = new Observer() {
 
