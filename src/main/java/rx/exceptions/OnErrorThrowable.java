@@ -138,16 +138,19 @@ public final class OnErrorThrowable extends RuntimeException {
          * @return a string version of the object if primitive, otherwise the classname of the object
          */
         private static String renderValue(Object value){
-            if(value == null){
+            if (value == null) {
                 return "null";
             }
-            if(value.getClass().isPrimitive()){
+            if (value.getClass().isPrimitive()) {
                 return value.toString();
             }
-            if(value instanceof String){
-                return (String)value;
+            if (value instanceof String) {
+                return (String) value;
             }
-            return value.getClass().getSimpleName() + ".class";
+            if (value instanceof Enum) {
+                return ((Enum) value).name();
+            }
+            return value.getClass().getName() + ".class";
         }
     }
 }
