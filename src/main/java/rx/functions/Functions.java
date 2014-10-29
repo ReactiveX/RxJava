@@ -345,19 +345,6 @@ public final class Functions {
     }
 
     /**
-     * Constructs a predicate that returns true for each input for which the source predicate returns false, and
-     * vice versa.
-     * 
-     * @param predicate
-     *            the source predicate to negate
-     * @return a function that returns a Boolean that represents an inversion of the logical effect of
-     *         {@code predicate}
-     */
-    public static <T> Func1<T, Boolean> not(Func1<? super T, Boolean> predicate) {
-        return new Not<T>(predicate);
-    }
-
-    /**
      * Returns a function that always returns {@code true}.
      *
      * @return a {@link Func1} that accepts an Object and returns the Boolean {@code true}

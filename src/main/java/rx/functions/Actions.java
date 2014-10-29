@@ -91,60 +91,6 @@ public final class Actions {
     }
     
     /**
-     * Extracts a method reference to the Observer's {@link Observer#onNext onNext} method in the form of an
-     * {@link Action1}.
-     * <p>Java 8: observer::onNext</p>
-     * 
-     * @param observer
-     *            the {@link Observer} to use
-     * @return an action which calls observer's {@code onNext} method.
-     */
-    public static <T> Action1<T> onNextFrom(final Observer<T> observer) {
-        return new Action1<T>() {
-            @Override
-            public void call(T t1) {
-                observer.onNext(t1);
-            }
-        };
-    }
-
-    /**
-     * Extracts a method reference to the Observer's {@link Observer#onError(java.lang.Throwable) onError}
-     * method in the form of an {@link Action1}.
-     * <p>Java 8: observer::onError</p>
-     * 
-     * @param observer
-     *            the {@link Observer} to use
-     * @return an action which calls observer's {@code onError} method.
-     */
-    public static <T> Action1<Throwable> onErrorFrom(final Observer<T> observer) {
-        return new Action1<Throwable>() {
-            @Override
-            public void call(Throwable t1) {
-                observer.onError(t1);
-            }
-        };
-    }
-
-    /**
-     * Extracts a method reference to the Observer's {@link Observer#onCompleted() onCompleted} method in the
-     * form of an {@link Action0}.
-     * <p>Java 8: observer::onCompleted</p>
-     * 
-     * @param observer
-     *            the {@link Observer} to use
-     * @return an action which calls observer's {@code onCompleted} method.
-     */
-    public static <T> Action0 onCompletedFrom(final Observer<T> observer) {
-        return new Action0() {
-            @Override
-            public void call() {
-                observer.onCompleted();
-            }
-        };
-    }
-
-    /**
      * Converts an {@link Action0} to a function that calls the action and returns {@code null}.
      * 
      * @param action
