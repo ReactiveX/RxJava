@@ -6,7 +6,7 @@ Some of the goals of RxJava are:
 
 - Stay close to other Rx implementations while adjusting naming conventions and idioms to Java
 - Match contracts of Rx should be the same
-- Target the JVM not a language to allow JVM-language bindings (such as [Scala](https://github.com/ReactiveX/RxScala), [Groovy](https://github.com/ReactiveX/RxGroovy), [Clojure](https://github.com/ReactiveX/RxGroovy) and [Kotlin](https://github.com/ReactiveX/RxKotlin)).
+- Target the JVM not a language to allow JVM-language bindings (such as [Scala](https://github.com/ReactiveX/RxScala), [Groovy](https://github.com/ReactiveX/RxGroovy), [Clojure](https://github.com/ReactiveX/RxClojure) and [Kotlin](https://github.com/ReactiveX/RxKotlin)).
 - Support Java 6+ (to include Android support) 
 
 Learn more about RxJava on the <a href="https://github.com/ReactiveX/RxJava/wiki">Wiki Home</a> and the <a href="http://techblog.netflix.com/2013/02/rxjava-netflix-api.html">Netflix TechBlog post</a> where RxJava was introduced.
