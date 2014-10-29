@@ -6510,7 +6510,7 @@ public class Observable<T> {
 
     /**
      * Returns a new {@link Observable} that multicasts (shares) the original {@link Observable}. As long as
-     * there is more than one {@link Subscriber} this {@link Observable} will be subscribed and emitting data. 
+     * there is at least one {@link Subscriber} this {@link Observable} will be subscribed and emitting data. 
      * When all subscribers have unsubscribed it will unsubscribe from the source {@link Observable}. 
      * <p>
      * This is an alias for {@link #publish()}.{@link ConnectableObservable#refCount()}.
