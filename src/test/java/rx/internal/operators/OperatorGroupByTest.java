@@ -50,7 +50,7 @@ import rx.exceptions.TestException;
 import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Func1;
-import rx.functions.Functions;
+import rx.internal.util.UtilityFunctions;
 import rx.observables.GroupedObservable;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
@@ -1103,7 +1103,7 @@ public class OperatorGroupByTest {
             return t1 * 2;
         }
     };
-    Func1<Integer, Integer> identity = Functions.identity();
+    Func1<Integer, Integer> identity = UtilityFunctions.identity();
 
     @Before
     public void before() {

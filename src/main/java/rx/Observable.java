@@ -12,8 +12,6 @@
  */
 package rx;
 
-import static rx.functions.Functions.alwaysFalse;
-
 import java.util.*;
 import java.util.concurrent.*;
 
@@ -21,6 +19,8 @@ import rx.exceptions.*;
 import rx.functions.*;
 import rx.internal.operators.*;
 import rx.internal.util.ScalarSynchronousObservable;
+import rx.internal.util.UtilityFunctions;
+
 import rx.observables.*;
 import rx.observers.SafeSubscriber;
 import rx.plugins.*;
@@ -4030,7 +4030,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229764.aspx">MSDN: Observable.distinct</a>
      */
     public final Observable<T> distinct() {
-        return lift(new OperatorDistinct<T, T>(Functions.<T>identity()));
+        return lift(new OperatorDistinct<T, T>(UtilityFunctions.<T>identity()));
     }
 
     /**
@@ -4070,7 +4070,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229494.aspx">MSDN: Observable.distinctUntilChanged</a>
      */
     public final Observable<T> distinctUntilChanged() {
-        return lift(new OperatorDistinctUntilChanged<T, T>(Functions.<T>identity()));
+        return lift(new OperatorDistinctUntilChanged<T, T>(UtilityFunctions.<T>identity()));
     }
 
     /**
@@ -4854,7 +4854,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229242.aspx">MSDN: Observable.IgnoreElements</a>
      */
     public final Observable<T> ignoreElements() {
-        return filter(alwaysFalse());
+        return filter(UtilityFunctions.alwaysFalse());
     }
 
     /**
@@ -4874,7 +4874,7 @@ public class Observable<T> {
      * @see <a href= "http://msdn.microsoft.com/en-us/library/hh229905.aspx">MSDN: Observable.Any</a>
      */
     public final Observable<Boolean> isEmpty() {
-        return lift(new OperatorAny<T>(Functions.alwaysTrue(), true));
+        return lift(new OperatorAny<T>(UtilityFunctions.alwaysTrue(), true));
     }
 
     /**
@@ -8481,7 +8481,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229137.aspx">MSDN: Observable.ToDictionary</a>
      */
     public final <K> Observable<Map<K, T>> toMap(Func1<? super T, ? extends K> keySelector) {
-        return lift(new OperatorToMap<T, K, T>(keySelector, Functions.<T>identity()));
+        return lift(new OperatorToMap<T, K, T>(keySelector, UtilityFunctions.<T>identity()));
     }
 
     /**
@@ -8558,7 +8558,7 @@ public class Observable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh212098.aspx">MSDN: Observable.ToLookup</a>
      */
     public final <K> Observable<Map<K, Collection<T>>> toMultimap(Func1<? super T, ? extends K> keySelector) {
-        return lift(new OperatorToMultimap<T, K, T>(keySelector, Functions.<T>identity()));
+        return lift(new OperatorToMultimap<T, K, T>(keySelector, UtilityFunctions.<T>identity()));
     }
 
     /**

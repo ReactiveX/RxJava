@@ -21,21 +21,22 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import java.util.Arrays;
+
 import org.junit.Test;
 
 import rx.Observable;
 import rx.Observer;
 import rx.functions.Func1;
 import rx.functions.Functions;
-
-import java.util.Arrays;
+import rx.internal.util.UtilityFunctions;
 
 public class OperatorAnyTest {
 
     @Test
     public void testAnyWithTwoItems() {
         Observable<Integer> w = Observable.just(1, 2);
-        Observable<Boolean> observable = w.exists(Functions.alwaysTrue());
+        Observable<Boolean> observable = w.exists(UtilityFunctions.alwaysTrue());
 
         @SuppressWarnings("unchecked")
         Observer<Boolean> observer = mock(Observer.class);
@@ -63,7 +64,7 @@ public class OperatorAnyTest {
     @Test
     public void testAnyWithOneItem() {
         Observable<Integer> w = Observable.just(1);
-        Observable<Boolean> observable = w.exists(Functions.alwaysTrue());
+        Observable<Boolean> observable = w.exists(UtilityFunctions.alwaysTrue());
 
         @SuppressWarnings("unchecked")
         Observer<Boolean> observer = mock(Observer.class);
@@ -91,7 +92,7 @@ public class OperatorAnyTest {
     @Test
     public void testAnyWithEmpty() {
         Observable<Integer> w = Observable.empty();
-        Observable<Boolean> observable = w.exists(Functions.alwaysTrue());
+        Observable<Boolean> observable = w.exists(UtilityFunctions.alwaysTrue());
 
         @SuppressWarnings("unchecked")
         Observer<Boolean> observer = mock(Observer.class);

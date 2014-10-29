@@ -31,6 +31,7 @@ import rx.internal.operators.BlockingOperatorMostRecent;
 import rx.internal.operators.BlockingOperatorNext;
 import rx.internal.operators.BlockingOperatorToFuture;
 import rx.internal.operators.BlockingOperatorToIterator;
+import rx.internal.util.UtilityFunctions;
 
 /**
  * An extension of {@link Observable} that provides blocking operators.
@@ -193,7 +194,7 @@ public final class BlockingObservable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229320.aspx">MSDN: Observable.FirstOrDefault</a>
      */
     public T firstOrDefault(T defaultValue) {
-        return blockForSingle(o.map(Functions.<T>identity()).firstOrDefault(defaultValue));
+        return blockForSingle(o.map(UtilityFunctions.<T>identity()).firstOrDefault(defaultValue));
     }
 
     /**
@@ -210,7 +211,7 @@ public final class BlockingObservable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh229759.aspx">MSDN: Observable.FirstOrDefault</a>
      */
     public T firstOrDefault(T defaultValue, Func1<? super T, Boolean> predicate) {
-        return blockForSingle(o.filter(predicate).map(Functions.<T>identity()).firstOrDefault(defaultValue));
+        return blockForSingle(o.filter(predicate).map(UtilityFunctions.<T>identity()).firstOrDefault(defaultValue));
     }
 
     /**
@@ -261,7 +262,7 @@ public final class BlockingObservable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.lastordefault.aspx">MSDN: Observable.LastOrDefault</a>
      */
     public T lastOrDefault(T defaultValue) {
-        return blockForSingle(o.map(Functions.<T>identity()).lastOrDefault(defaultValue));
+        return blockForSingle(o.map(UtilityFunctions.<T>identity()).lastOrDefault(defaultValue));
     }
 
     /**
@@ -280,7 +281,7 @@ public final class BlockingObservable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.lastordefault.aspx">MSDN: Observable.LastOrDefault</a>
      */
     public T lastOrDefault(T defaultValue, Func1<? super T, Boolean> predicate) {
-        return blockForSingle(o.filter(predicate).map(Functions.<T>identity()).lastOrDefault(defaultValue));
+        return blockForSingle(o.filter(predicate).map(UtilityFunctions.<T>identity()).lastOrDefault(defaultValue));
     }
 
     /**
@@ -379,7 +380,7 @@ public final class BlockingObservable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.singleordefault.aspx">MSDN: Observable.SingleOrDefault</a>
      */
     public T singleOrDefault(T defaultValue) {
-        return blockForSingle(o.map(Functions.<T>identity()).singleOrDefault(defaultValue));
+        return blockForSingle(o.map(UtilityFunctions.<T>identity()).singleOrDefault(defaultValue));
     }
 
     /**
@@ -399,7 +400,7 @@ public final class BlockingObservable<T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.linq.observable.singleordefault.aspx">MSDN: Observable.SingleOrDefault</a>
      */
     public T singleOrDefault(T defaultValue, Func1<? super T, Boolean> predicate) {
-        return blockForSingle(o.filter(predicate).map(Functions.<T>identity()).singleOrDefault(defaultValue));
+        return blockForSingle(o.filter(predicate).map(UtilityFunctions.<T>identity()).singleOrDefault(defaultValue));
     }
 
     /**
