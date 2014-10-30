@@ -32,7 +32,7 @@ import rx.Observer;
 import rx.exceptions.TestException;
 import rx.functions.Func1;
 import rx.functions.Func2;
-import rx.functions.Functions;
+import rx.internal.util.UtilityFunctions;
 
 public class OperatorReduceTest {
     @Mock
@@ -53,7 +53,7 @@ public class OperatorReduceTest {
     @Test
     public void testAggregateAsIntSum() {
 
-        Observable<Integer> result = Observable.just(1, 2, 3, 4, 5).reduce(0, sum).map(Functions.<Integer> identity());
+        Observable<Integer> result = Observable.just(1, 2, 3, 4, 5).reduce(0, sum).map(UtilityFunctions.<Integer> identity());
 
         result.subscribe(observer);
 
@@ -66,7 +66,7 @@ public class OperatorReduceTest {
     public void testAggregateAsIntSumSourceThrows() {
         Observable<Integer> result = Observable.concat(Observable.just(1, 2, 3, 4, 5),
                 Observable.<Integer> error(new TestException()))
-                .reduce(0, sum).map(Functions.<Integer> identity());
+                .reduce(0, sum).map(UtilityFunctions.<Integer> identity());
 
         result.subscribe(observer);
 
@@ -85,7 +85,7 @@ public class OperatorReduceTest {
         };
 
         Observable<Integer> result = Observable.just(1, 2, 3, 4, 5)
-                .reduce(0, sumErr).map(Functions.<Integer> identity());
+                .reduce(0, sumErr).map(UtilityFunctions.<Integer> identity());
 
         result.subscribe(observer);
 

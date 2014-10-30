@@ -33,7 +33,7 @@ import rx.Observable;
 import rx.Observer;
 import rx.functions.Func0;
 import rx.functions.Func1;
-import rx.functions.Functions;
+import rx.internal.util.UtilityFunctions;
 
 public class OperatorToMapTest {
     @Mock
@@ -179,7 +179,7 @@ public class OperatorToMapTest {
                 return t1.length();
             }
         };
-        Observable<Map<Integer, String>> mapped = source.toMap(lengthFunc, Functions.<String>identity(), mapFactory);
+        Observable<Map<Integer, String>> mapped = source.toMap(lengthFunc, UtilityFunctions.<String>identity(), mapFactory);
 
         Map<Integer, String> expected = new LinkedHashMap<Integer, String>();
         expected.put(2, "bb");
@@ -210,7 +210,7 @@ public class OperatorToMapTest {
                 return t1.length();
             }
         };
-        Observable<Map<Integer, String>> mapped = source.toMap(lengthFunc, Functions.<String>identity(), mapFactory);
+        Observable<Map<Integer, String>> mapped = source.toMap(lengthFunc, UtilityFunctions.<String>identity(), mapFactory);
 
         Map<Integer, String> expected = new LinkedHashMap<Integer, String>();
         expected.put(2, "bb");

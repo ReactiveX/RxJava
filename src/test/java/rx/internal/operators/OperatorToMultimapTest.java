@@ -38,9 +38,9 @@ import rx.Observable;
 import rx.Observer;
 import rx.functions.Func0;
 import rx.functions.Func1;
-import rx.functions.Functions;
 import rx.internal.operators.OperatorToMultimap.DefaultMultimapCollectionFactory;
 import rx.internal.operators.OperatorToMultimap.DefaultToMultimapFactory;
+import rx.internal.util.UtilityFunctions;
 
 public class OperatorToMultimapTest {
     @Mock
@@ -118,7 +118,7 @@ public class OperatorToMultimapTest {
         };
 
         Observable<Map<Integer, Collection<String>>> mapped = source.toMultimap(
-                lengthFunc, Functions.<String>identity(),
+                lengthFunc, UtilityFunctions.<String>identity(),
                 mapFactory, new DefaultMultimapCollectionFactory<Integer, String>());
 
         Map<Integer, Collection<String>> expected = new HashMap<Integer, Collection<String>>();
@@ -149,7 +149,7 @@ public class OperatorToMultimapTest {
         };
 
         Observable<Map<Integer, Collection<String>>> mapped = source.toMultimap(
-                lengthFunc, Functions.<String>identity(),
+                lengthFunc, UtilityFunctions.<String>identity(),
                 new DefaultToMultimapFactory<Integer, String>(), collectionFactory);
 
         Map<Integer, Collection<String>> expected = new HashMap<Integer, Collection<String>>();
@@ -228,7 +228,7 @@ public class OperatorToMultimapTest {
             }
         };
 
-        Observable<Map<Integer, Collection<String>>> mapped = source.toMultimap(lengthFunc, Functions.<String>identity(), mapFactory);
+        Observable<Map<Integer, Collection<String>>> mapped = source.toMultimap(lengthFunc, UtilityFunctions.<String>identity(), mapFactory);
 
         Map<Integer, Collection<String>> expected = new HashMap<Integer, Collection<String>>();
         expected.put(2, Arrays.asList("cc", "dd"));
@@ -257,7 +257,7 @@ public class OperatorToMultimapTest {
             }
         };
 
-        Observable<Map<Integer, Collection<String>>> mapped = source.toMultimap(lengthFunc, Functions.<String>identity(), new DefaultToMultimapFactory<Integer, String>(), collectionFactory);
+        Observable<Map<Integer, Collection<String>>> mapped = source.toMultimap(lengthFunc, UtilityFunctions.<String>identity(), new DefaultToMultimapFactory<Integer, String>(), collectionFactory);
 
         Map<Integer, Collection<String>> expected = new HashMap<Integer, Collection<String>>();
         expected.put(2, Arrays.asList("cc", "dd"));

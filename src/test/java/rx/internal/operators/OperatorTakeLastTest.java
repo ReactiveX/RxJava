@@ -32,8 +32,8 @@ import rx.Observable;
 import rx.Observer;
 import rx.Subscriber;
 import rx.functions.Func1;
-import rx.functions.Functions;
 import rx.internal.util.RxRingBuffer;
+import rx.internal.util.UtilityFunctions;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 
@@ -156,7 +156,7 @@ public class OperatorTakeLastTest {
         assertEquals(0, Observable
                 .empty()
                 .count()
-                .filter(Functions.alwaysFalse())
+                .filter(UtilityFunctions.alwaysFalse())
                 .toList()
                 .toBlocking().single().size());
     }

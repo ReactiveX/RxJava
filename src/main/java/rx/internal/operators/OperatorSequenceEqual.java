@@ -21,7 +21,7 @@ import static rx.Observable.zip;
 import rx.Observable;
 import rx.functions.Func1;
 import rx.functions.Func2;
-import rx.functions.Functions;
+import rx.internal.util.UtilityFunctions;
 
 /**
  * Returns an {@link Observable} that emits a single {@code Boolean} value that indicates whether two source
@@ -84,6 +84,6 @@ public final class OperatorSequenceEqual {
                         return equality.call((T)t1, (T)t2);
                     }
 
-                }).all(Functions.<Boolean> identity());
+                }).all(UtilityFunctions.<Boolean> identity());
     }
 }

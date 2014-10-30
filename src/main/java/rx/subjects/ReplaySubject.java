@@ -28,6 +28,7 @@ import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.functions.Functions;
 import rx.internal.operators.NotificationLite;
+import rx.internal.util.UtilityFunctions;
 import rx.schedulers.Timestamped;
 import rx.subjects.ReplaySubject.NodeList.Node;
 import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
@@ -132,8 +133,8 @@ public final class ReplaySubject<T> extends Subject<T, T> {
     /* public */ static <T> ReplaySubject<T> createUnbounded() {
         final BoundedState<T> state = new BoundedState<T>(
             new EmptyEvictionPolicy(),
-            Functions.identity(),
-            Functions.identity()
+            UtilityFunctions.identity(),
+            UtilityFunctions.identity()
         );
         return createWithState(state, new DefaultOnAdd<T>(state));
     }
@@ -160,8 +161,8 @@ public final class ReplaySubject<T> extends Subject<T, T> {
     public static <T> ReplaySubject<T> createWithSize(int size) {
         final BoundedState<T> state = new BoundedState<T>(
             new SizeEvictionPolicy(size),
-            Functions.identity(),
-            Functions.identity()
+            UtilityFunctions.identity(),
+            UtilityFunctions.identity()
         );
         return createWithState(state, new DefaultOnAdd<T>(state));
     }
