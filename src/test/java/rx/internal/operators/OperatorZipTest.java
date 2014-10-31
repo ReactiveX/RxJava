@@ -1217,4 +1217,30 @@ public class OperatorZipTest {
 
         });
     }
+
+    @Test(timeout = 30000)
+    public void testIssue1812() {
+        // https://github.com/ReactiveX/RxJava/issues/1812
+        Observable<Integer> zip1 = Observable.zip(Observable.range(0, 1026), Observable.range(0, 1026),
+                new Func2<Integer, Integer, Integer>() {
+
+                    @Override
+                    public Integer call(Integer i1, Integer i2) {
+                        return i1 + i2;
+                    }
+                });
+        Observable<Integer> zip2 = Observable.zip(zip1, Observable.range(0, 1026),
+                new Func2<Integer, Integer, Integer>() {
+
+                    @Override
+                    public Integer call(Integer i1, Integer i2) {
+                        return i1 + i2;
+                    }
+                });
+        List<Integer> expected = new ArrayList<Integer>();
+        for (int i = 0; i < 1026; i++) {
+            expected.add(i * 3);
+        }
+        assertEquals(expected, zip2.toList().toBlocking().single());
+    }
 }

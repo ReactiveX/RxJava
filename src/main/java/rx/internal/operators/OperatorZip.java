@@ -227,7 +227,7 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
             if (COUNTER_UPDATER.getAndIncrement(this) == 0) {
                 do {
                     // we only emit if requested > 0
-                    if (requested.get() > 0) {
+                    while (requested.get() > 0) {
                         final Object[] vs = new Object[observers.length];
                         boolean allHaveValues = true;
                         for (int i = 0; i < observers.length; i++) {
@@ -279,6 +279,8 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
                                 }
                                 emitted = 0;
                             }
+                        } else {
+                            break;
                         }
                     }
                 } while (COUNTER_UPDATER.decrementAndGet(this) > 0);
