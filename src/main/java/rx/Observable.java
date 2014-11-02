@@ -139,16 +139,25 @@ public class Observable<T> {
             public void call(Subscriber<? super R> o) {
                 try {
                     Subscriber<? super T> st = hook.onLift(lift).call(o);
-                    // new Subscriber created and being subscribed with so 'onStart' it
-                    st.onStart();
-                    onSubscribe.call(st);
+                    try {
+                        // new Subscriber created and being subscribed with so 'onStart' it
+                        st.onStart();
+                        onSubscribe.call(st);
+                    } catch (Throwable e) {
+                        // localized capture of errors rather than it skipping all operators 
+                        // and ending up in the try/catch of the subscribe method which then
+                        // prevents onErrorResumeNext and other similar approaches to error handling
+                        if (e instanceof OnErrorNotImplementedException) {
+                            throw (OnErrorNotImplementedException) e;
+                        }
+                        st.onError(e);
+                    }
                 } catch (Throwable e) {
-                    // localized capture of errors rather than it skipping all operators 
-                    // and ending up in the try/catch of the subscribe method which then
-                    // prevents onErrorResumeNext and other similar approaches to error handling
                     if (e instanceof OnErrorNotImplementedException) {
                         throw (OnErrorNotImplementedException) e;
                     }
+                    // if the lift function failed all we can do is pass the error to the final Subscriber
+                    // as we don't have the operator available to us
                     o.onError(e);
                 }
             }
