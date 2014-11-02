@@ -27,6 +27,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import rx.Observable;
+import rx.Observable.OnSubscribe;
 import rx.Observer;
 import rx.Subscriber;
 import rx.Subscription;
@@ -104,6 +105,55 @@ public class OperatorOnErrorResumeNextViaObservableTest {
         verify(observer, Mockito.never()).onNext("three");
         verify(observer, times(1)).onNext("twoResume");
         verify(observer, times(1)).onNext("threeResume");
+    }
+    
+    @Test
+    public void testResumeNextWithFailedOnSubscribe() {
+        Subscription s = mock(Subscription.class);
+        Observable<String> testObservable = Observable.create(new OnSubscribe<String>() {
+
+            @Override
+            public void call(Subscriber<? super String> t1) {
+                throw new RuntimeException("force failure");
+            }
+            
+        });
+        Observable<String> resume = Observable.just("resume");
+        Observable<String> observable = testObservable.onErrorResumeNext(resume);
+
+        @SuppressWarnings("unchecked")
+        Observer<String> observer = mock(Observer.class);
+        observable.subscribe(observer);
+
+        verify(observer, Mockito.never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onCompleted();
+        verify(observer, times(1)).onNext("resume");
+    }
+    
+    @Test
+    public void testResumeNextWithFailedOnSubscribeAsync() {
+        Subscription s = mock(Subscription.class);
+        Observable<String> testObservable = Observable.create(new OnSubscribe<String>() {
+
+            @Override
+            public void call(Subscriber<? super String> t1) {
+                throw new RuntimeException("force failure");
+            }
+            
+        });
+        Observable<String> resume = Observable.just("resume");
+        Observable<String> observable = testObservable.subscribeOn(Schedulers.io()).onErrorResumeNext(resume);
+
+        @SuppressWarnings("unchecked")
+        Observer<String> observer = mock(Observer.class);
+        TestSubscriber<String> ts = new TestSubscriber<String>(observer);
+        observable.subscribe(ts);
+
+        ts.awaitTerminalEvent();
+        
+        verify(observer, Mockito.never()).onError(any(Throwable.class));
+        verify(observer, times(1)).onCompleted();
+        verify(observer, times(1)).onNext("resume");
     }
 
     private static class TestObservable implements Observable.OnSubscribe<String> {
