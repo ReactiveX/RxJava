@@ -176,6 +176,10 @@ public final class OperatorConcat<T> implements Operator<T, Observable<? extends
 
         private final Subscriber<T> child;
         private final ConcatSubscriber<T> parent;
+        @SuppressWarnings("unused")
+        private volatile int once = 0;
+        @SuppressWarnings("rawtypes")
+        private final static AtomicIntegerFieldUpdater<ConcatInnerSubscriber> ONCE_UPDATER = AtomicIntegerFieldUpdater.newUpdater(ConcatInnerSubscriber.class, "once");
 
         public ConcatInnerSubscriber(ConcatSubscriber<T> parent, Subscriber<T> child, long initialRequest) {
             this.parent = parent;
@@ -195,14 +199,18 @@ public final class OperatorConcat<T> implements Operator<T, Observable<? extends
 
         @Override
         public void onError(Throwable e) {
-            // terminal error through parent so everything gets cleaned up, including this inner
-            parent.onError(e);
+            if (ONCE_UPDATER.compareAndSet(this, 0, 1)) {
+                // terminal error through parent so everything gets cleaned up, including this inner
+                parent.onError(e);
+            }
         }
 
         @Override
         public void onCompleted() {
-            // terminal completion to parent so it continues to the next
-            parent.completeInner();
+            if (ONCE_UPDATER.compareAndSet(this, 0, 1)) {
+                // terminal completion to parent so it continues to the next
+                parent.completeInner();
+            }
         }
 
     };
