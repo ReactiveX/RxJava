@@ -1,5 +1,17 @@
 # RxJava Releases #
 
+### Version 1.0.0-rc.9 – November 2nd 2014 ([Maven Central](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.0.0-rc.9%7C)) ###
+
+* [Pull 1788] (https://github.com/ReactiveX/RxJava/pull/1788 Remove PublishLast/InitialValue
+* [Pull 1796] (https://github.com/ReactiveX/RxJava/pull/1796 Improve TestSubject Javadoc
+* [Pull 1803] (https://github.com/ReactiveX/RxJava/pull/1803 Print full classname (inner class support) and fix enum output
+* [Pull 1802] (https://github.com/ReactiveX/RxJava/pull/1802 add hasObservers method to Subjects
+* [Pull 1806] (https://github.com/ReactiveX/RxJava/pull/1806 Remove Unnecessary Utilities
+* [Pull 1809] (https://github.com/ReactiveX/RxJava/pull/1809 Remove Utility Functions from Public API
+* [Pull 1813] (https://github.com/ReactiveX/RxJava/pull/1813 Fix issue #1812 that zip may swallow requests
+* [Pull 1817] (https://github.com/ReactiveX/RxJava/pull/1817 Fix Synchronous OnSubscribe Exception Skips Operators
+* [Pull 1819] (https://github.com/ReactiveX/RxJava/pull/1819 Fix Concat Breaks with Double onCompleted
+
 ### Version 1.0.0-rc.8 – October 23rd 2014 ([Maven Central](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.0.0-rc.8%7C)) ###
 
 * [Pull 1771] (https://github.com/ReactiveX/RxJava/pull/1771) On error return backpressure
