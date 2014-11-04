@@ -155,5 +155,10 @@ public abstract class Scheduler {
     public long now() {
         return System.currentTimeMillis();
     }
-
+    /**
+     * Shuts down the threads associated with this scheduler.
+     */
+    public void shutdown() {
+        // do nothing by default
+    }
 }

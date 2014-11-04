@@ -15,6 +15,9 @@
  */
 package rx.schedulers;
 
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
+
 import rx.Scheduler;
 import rx.Subscription;
 import rx.functions.Action0;
@@ -24,12 +27,9 @@ import rx.internal.util.RxThreadFactory;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.Subscriptions;
 
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
-
 /* package */class EventLoopsScheduler extends Scheduler {
     /** Manages a fixed number of workers. */
-    private static final String THREAD_NAME_PREFIX = "RxComputationThreadPool-";
+    /* private */static final String THREAD_NAME_PREFIX = "RxComputationThreadPool-";
     private static final RxThreadFactory THREAD_FACTORY = new RxThreadFactory(THREAD_NAME_PREFIX);
     
     static final class FixedSchedulerPool {
@@ -108,6 +108,12 @@ import java.util.concurrent.TimeUnit;
     private static final class PoolWorker extends NewThreadWorker {
         PoolWorker(ThreadFactory threadFactory) {
             super(threadFactory);
+        }
+    }
+    @Override
+    public void shutdown() {
+        for (PoolWorker pw : pool.eventLoops) {
+            pw.unsubscribe();
         }
     }
 }
