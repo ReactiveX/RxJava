@@ -24,7 +24,6 @@ import rx.internal.util.RxThreadFactory;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.Subscriptions;
 
-import java.util.Iterator;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
@@ -84,12 +83,11 @@ import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
             if (!expiringWorkerQueue.isEmpty()) {
                 long currentTimestamp = now();
 
-                Iterator<ThreadWorker> threadWorkerIterator = expiringWorkerQueue.iterator();
-                while (threadWorkerIterator.hasNext()) {
-                    ThreadWorker threadWorker = threadWorkerIterator.next();
+                for (ThreadWorker threadWorker : expiringWorkerQueue) {
                     if (threadWorker.getExpirationTime() <= currentTimestamp) {
-                        threadWorkerIterator.remove();
-                        threadWorker.unsubscribe();
+                        if (expiringWorkerQueue.remove(threadWorker)) {
+                            threadWorker.unsubscribe();
+                        }
                     } else {
                         // Queue is ordered with the worker that will expire first in the beginning, so when we
                         // find a non-expired worker we can stop evicting.
