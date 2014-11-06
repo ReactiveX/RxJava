@@ -397,6 +397,11 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
 
         @Override
         public void onError(Throwable e) {
+            completed = true;
+            innerError(e);
+        }
+        
+        private void innerError(Throwable e) {
             if (delayErrors) {
                 synchronized (this) {
                     if (exceptions == null) {
@@ -540,7 +545,7 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
         public void onError(Throwable e) {
             // it doesn't go through queues, it immediately onErrors and tears everything down
             if (ONCE_TERMINATED.compareAndSet(this, 0, 1)) {
-                parentSubscriber.onError(e);
+                parentSubscriber.innerError(e);
             }
         }
 

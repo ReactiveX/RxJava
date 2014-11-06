@@ -30,6 +30,7 @@ import rx.exceptions.TestException;
 import rx.observers.TestSubscriber;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -477,6 +478,20 @@ public class OperatorMergeDelayErrorTest {
         inOrder.verify(o, never()).onNext(anyInt());
         inOrder.verify(o).onError(any(TestException.class));
         verify(o, never()).onCompleted();
+    }
+
+    @Test
+    public void testErrorInParentObservable() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        Observable.mergeDelayError(
+                Observable.just(Observable.just(1), Observable.just(2))
+                        .startWith(Observable.<Integer> error(new RuntimeException()))
+                ).subscribe(ts);
+        ts.awaitTerminalEvent();
+        ts.assertTerminalEvent();
+        ts.assertReceivedOnNext(Arrays.asList(1, 2));
+        assertEquals(1, ts.getOnErrorEvents().size());
+
     }
 
     @Test
