@@ -148,6 +148,49 @@ public class OperatorWindowWithSizeTest {
         assertTrue(count.get() < 100000);
     }
 
+    @Test
+    public void testWindowUnsubscribeOverlapping() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        final AtomicInteger count = new AtomicInteger();
+        Observable.merge(Observable.range(1, 10000).doOnNext(new Action1<Integer>() {
+
+            @Override
+            public void call(Integer t1) {
+                count.incrementAndGet();
+            }
+
+        }).window(5, 4).take(2)).subscribe(ts);
+        ts.awaitTerminalEvent(500, TimeUnit.MILLISECONDS);
+        ts.assertTerminalEvent();
+        //        System.out.println(ts.getOnNextEvents());
+        ts.assertReceivedOnNext(Arrays.asList(1, 2, 3, 4, 5, 5, 6, 7, 8, 9));
+        assertEquals(9, count.get());
+    }
+
+    @Test
+    public void testWindowUnsubscribeOverlappingAsyncSource() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        final AtomicInteger count = new AtomicInteger();
+        Observable.merge(Observable.range(1, 100000)
+                .doOnNext(new Action1<Integer>() {
+
+                    @Override
+                    public void call(Integer t1) {
+                        count.incrementAndGet();
+                    }
+
+                })
+                .observeOn(Schedulers.computation())
+                .window(5, 4)
+                .take(2))
+                .subscribe(ts);
+        ts.awaitTerminalEvent(500, TimeUnit.MILLISECONDS);
+        ts.assertTerminalEvent();
+        ts.assertReceivedOnNext(Arrays.asList(1, 2, 3, 4, 5, 5, 6, 7, 8, 9));
+        // make sure we don't emit all values ... the unsubscribe should propagate
+        assertTrue(count.get() < 100000);
+    }
+
     private List<String> list(String... args) {
         List<String> list = new ArrayList<String>();
         for (String arg : args) {

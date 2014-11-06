@@ -124,14 +124,35 @@ public final class OperatorWindowWithSize<T> implements Operator<Observable<T>, 
             child.onCompleted();
         }
     }
+
     /** Subscriber with inexact, possibly overlapping or skipping windows. */
     final class InexactSubscriber extends Subscriber<T> {
         final Subscriber<? super Observable<T>> child;
         int count;
-        final List<CountedSubject<T>> chunks;
+        final List<CountedSubject<T>> chunks = new LinkedList<CountedSubject<T>>();
+        Subscription parentSubscription = this;
+
         public InexactSubscriber(Subscriber<? super Observable<T>> child) {
+            /**
+             * See https://github.com/ReactiveX/RxJava/issues/1546
+             * We cannot compose through a Subscription because unsubscribing
+             * applies to the outer, not the inner.
+             */
             this.child = child;
-            this.chunks = new LinkedList<CountedSubject<T>>();
+            /*
+             * Add unsubscribe hook to child to get unsubscribe on outer (unsubscribing on next window, not on the inner window itself)
+             */
+            child.add(Subscriptions.create(new Action0() {
+
+                @Override
+                public void call() {
+                    // if no window we unsubscribe up otherwise wait until window ends
+                    if (chunks == null || chunks.size() == 0) {
+                        parentSubscription.unsubscribe();
+                    }
+                }
+
+            }));
         }
 
         @Override
@@ -143,10 +164,13 @@ public final class OperatorWindowWithSize<T> implements Operator<Observable<T>, 
         @Override
         public void onNext(T t) {
             if (count++ % skip == 0) {
-                CountedSubject<T> cs = createCountedSubject();
-                chunks.add(cs);
-                child.onNext(cs.producer);
+                if (!child.isUnsubscribed()) {
+                    CountedSubject<T> cs = createCountedSubject();
+                    chunks.add(cs);
+                    child.onNext(cs.producer);
+                }
             }
+
             Iterator<CountedSubject<T>> it = chunks.iterator();
             while (it.hasNext()) {
                 CountedSubject<T> cs = it.next();
@@ -155,6 +179,10 @@ public final class OperatorWindowWithSize<T> implements Operator<Observable<T>, 
                     it.remove();
                     cs.consumer.onCompleted();
                 }
+            }
+            if (chunks.size() == 0 && child.isUnsubscribed()) {
+                parentSubscription.unsubscribe();
+                return;
             }
         }
 
@@ -177,6 +205,7 @@ public final class OperatorWindowWithSize<T> implements Operator<Observable<T>, 
             }
             child.onCompleted();
         }
+
         CountedSubject<T> createCountedSubject() {
             final BufferUntilSubscriber<T> bus = BufferUntilSubscriber.create();
             return new CountedSubject<T>(bus, bus);
