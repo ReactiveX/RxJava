@@ -19,8 +19,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+
 import rx.Observable;
 import rx.Observable.Operator;
+import rx.Subscription;
+import rx.functions.Action0;
+import rx.subscriptions.Subscriptions;
 import rx.Observer;
 import rx.Subscriber;
 
@@ -56,11 +60,29 @@ public final class OperatorWindowWithSize<T> implements Operator<Observable<T>, 
     final class ExactSubscriber extends Subscriber<T> {
         final Subscriber<? super Observable<T>> child;
         int count;
-        Observer<T> consumer;
-        Observable<T> producer;
+        BufferUntilSubscriber<T> window;
+        Subscription parentSubscription = this;
         public ExactSubscriber(Subscriber<? super Observable<T>> child) {
-            super(child);
+            /**
+             * See https://github.com/ReactiveX/RxJava/issues/1546
+             * We cannot compose through a Subscription because unsubscribing
+             * applies to the outer, not the inner.
+             */
             this.child = child;
+            /*
+             * Add unsubscribe hook to child to get unsubscribe on outer (unsubscribing on next window, not on the inner window itself)
+             */
+            child.add(Subscriptions.create(new Action0() {
+
+                @Override
+                public void call() {
+                    // if no window we unsubscribe up otherwise wait until window ends
+                    if(window == null) {
+                        parentSubscription.unsubscribe();
+                    }
+                }
+                
+            }));
         }
 
         @Override
@@ -71,35 +93,35 @@ public final class OperatorWindowWithSize<T> implements Operator<Observable<T>, 
         
         @Override
         public void onNext(T t) {
-            if (count++ % size == 0) {
-                if (consumer != null) {
-                    consumer.onCompleted();
-                }
-                createNewWindow();
-                child.onNext(producer);
+            if (window == null) {
+                window = BufferUntilSubscriber.create();
+                child.onNext(window);                
             }
-            consumer.onNext(t);
+            window.onNext(t);
+            if (++count % size == 0) {
+                window.onCompleted();
+                window = null;
+                if (child.isUnsubscribed()) {
+                    parentSubscription.unsubscribe();
+                    return;
+                }
+            }
         }
 
         @Override
         public void onError(Throwable e) {
-            if (consumer != null) {
-                consumer.onError(e);
+            if (window != null) {
+                window.onError(e);
             }
             child.onError(e);
         }
 
         @Override
         public void onCompleted() {
-            if (consumer != null) {
-                consumer.onCompleted();
+            if (window != null) {
+                window.onCompleted();
             }
             child.onCompleted();
-        }
-        void createNewWindow() {
-            final BufferUntilSubscriber<T> bus = BufferUntilSubscriber.create();
-            consumer = bus;
-            producer = bus;
         }
     }
     /** Subscriber with inexact, possibly overlapping or skipping windows. */
