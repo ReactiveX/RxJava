@@ -61,7 +61,8 @@ public final class OperatorWindowWithSize<T> implements Operator<Observable<T>, 
         final Subscriber<? super Observable<T>> child;
         int count;
         BufferUntilSubscriber<T> window;
-        Subscription parentSubscription = this;
+        volatile boolean noWindow = true;
+        final Subscription parentSubscription = this;
         public ExactSubscriber(Subscriber<? super Observable<T>> child) {
             /**
              * See https://github.com/ReactiveX/RxJava/issues/1546
@@ -77,7 +78,7 @@ public final class OperatorWindowWithSize<T> implements Operator<Observable<T>, 
                 @Override
                 public void call() {
                     // if no window we unsubscribe up otherwise wait until window ends
-                    if(window == null) {
+                    if(noWindow) {
                         parentSubscription.unsubscribe();
                     }
                 }
@@ -94,6 +95,7 @@ public final class OperatorWindowWithSize<T> implements Operator<Observable<T>, 
         @Override
         public void onNext(T t) {
             if (window == null) {
+                noWindow = false;
                 window = BufferUntilSubscriber.create();
                 child.onNext(window);                
             }
@@ -101,6 +103,7 @@ public final class OperatorWindowWithSize<T> implements Operator<Observable<T>, 
             if (++count % size == 0) {
                 window.onCompleted();
                 window = null;
+                noWindow = true;
                 if (child.isUnsubscribed()) {
                     parentSubscription.unsubscribe();
                     return;
@@ -130,7 +133,7 @@ public final class OperatorWindowWithSize<T> implements Operator<Observable<T>, 
         final Subscriber<? super Observable<T>> child;
         int count;
         final List<CountedSubject<T>> chunks = new LinkedList<CountedSubject<T>>();
-        Subscription parentSubscription = this;
+        final Subscription parentSubscription = this;
 
         public InexactSubscriber(Subscriber<? super Observable<T>> child) {
             /**
