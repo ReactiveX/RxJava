@@ -15,9 +15,7 @@
  */
 package rx.internal.operators;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.inOrder;
@@ -28,9 +26,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import java.util.Arrays;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
 import org.mockito.InOrder;
@@ -43,7 +43,6 @@ import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Action1;
 import rx.functions.Func1;
-import rx.internal.operators.OperatorTake;
 import rx.observers.Subscribers;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
@@ -364,5 +363,29 @@ public class OperatorTakeTest {
 
         }).take(1).subscribe(ts);
         assertEquals(1, requested.get());
+    }
+    
+    @Test
+    public void testInterrupt() throws InterruptedException {
+        final AtomicReference<Object> exception = new AtomicReference<Object>();
+        final CountDownLatch latch = new CountDownLatch(1);
+        Observable.just(1).subscribeOn(Schedulers.computation()).take(1).subscribe(new Action1<Integer>() {
+
+            @Override
+            public void call(Integer t1) {
+                try {
+                    Thread.sleep(100);
+                } catch (Exception e) {
+                    exception.set(e);
+                    e.printStackTrace();
+                } finally {
+                    latch.countDown();
+                }
+            }
+
+        });
+
+        latch.await();
+        assertNull(exception.get());
     }
 }

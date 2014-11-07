@@ -63,13 +63,11 @@ public final class OperatorTake<T> implements Operator<T, T> {
                 if (!isUnsubscribed()) {
                     if (++count >= limit) {
                         completed = true;
-                        // unsubscribe before emitting onNext so shutdown happens before possible effects
-                        // of onNext such as product.request(n) calls be sent upstream. 
-                        unsubscribe();
                     }
                     child.onNext(i);
                     if (completed) {
                         child.onCompleted();
+                        unsubscribe();
                     }
                 }
             }
@@ -83,11 +81,13 @@ public final class OperatorTake<T> implements Operator<T, T> {
 
                     @Override
                     public void request(long n) {
-                        long c = limit - count;
-                        if (n < c) {
-                            producer.request(n);
-                        } else {
-                            producer.request(c);
+                        if (!completed) {
+                            long c = limit - count;
+                            if (n < c) {
+                                producer.request(n);
+                            } else {
+                                producer.request(c);
+                            }
                         }
                     }
                 });
