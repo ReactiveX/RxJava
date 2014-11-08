@@ -21,7 +21,9 @@ import rx.Observable.Operator;
 import rx.Producer;
 import rx.Subscriber;
 import rx.exceptions.OnErrorThrowable;
+import rx.functions.Func0;
 import rx.functions.Func2;
+import rx.internal.util.UtilityFunctions;
 
 /**
  * Returns an Observable that applies a function to the first item emitted by a source Observable, then feeds
@@ -38,7 +40,7 @@ import rx.functions.Func2;
  */
 public final class OperatorScan<R, T> implements Operator<R, T> {
 
-    private final R initialValue;
+    private final Func0<R> initialValueFactory;
     private final Func2<R, ? super T, R> accumulator;
     // sentinel if we don't receive an initial value
     private static final Object NO_INITIAL_VALUE = new Object();
@@ -54,8 +56,19 @@ public final class OperatorScan<R, T> implements Operator<R, T> {
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh212007.aspx">Observable.Scan(TSource, TAccumulate) Method (IObservable(TSource), TAccumulate, Func(TAccumulate, TSource,
      *      TAccumulate))</a>
      */
-    public OperatorScan(R initialValue, Func2<R, ? super T, R> accumulator) {
-        this.initialValue = initialValue;
+    public OperatorScan(final R initialValue, Func2<R, ? super T, R> accumulator) {
+        this(new Func0<R>() {
+
+            @Override
+            public R call() {
+                return initialValue;
+            }
+            
+        }, accumulator);
+    }
+    
+    public OperatorScan(Func0<R> initialValueFactory, Func2<R, ? super T, R> accumulator) {
+        this.initialValueFactory = initialValueFactory;
         this.accumulator = accumulator;
     }
 
@@ -75,6 +88,7 @@ public final class OperatorScan<R, T> implements Operator<R, T> {
     @Override
     public Subscriber<? super T> call(final Subscriber<? super R> child) {
         return new Subscriber<T>(child) {
+            private final R initialValue = initialValueFactory.call();
             private R value = initialValue;
             boolean initialized = false;
 
