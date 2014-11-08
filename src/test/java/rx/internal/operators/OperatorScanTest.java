@@ -15,7 +15,8 @@
  */
 package rx.internal.operators;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
@@ -24,6 +25,9 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Before;
@@ -33,6 +37,7 @@ import org.mockito.MockitoAnnotations;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscriber;
+import rx.functions.Func0;
 import rx.functions.Func1;
 import rx.functions.Func2;
 import rx.observers.TestSubscriber;
@@ -262,5 +267,29 @@ public class OperatorScanTest {
 
         // we only expect to receive 101 as we'll receive all 100 + the initial value
         assertEquals(101, count.get());
+    }
+
+    @Test
+    public void testSeedFactory() {
+        Observable<List<Integer>> o = Observable.range(1, 10)
+                .scan(new Func0<List<Integer>>() {
+
+                    @Override
+                    public List<Integer> call() {
+                        return new ArrayList<Integer>();
+                    }
+                    
+                }, new Func2<List<Integer>, Integer, List<Integer>>() {
+
+                    @Override
+                    public List<Integer> call(List<Integer> list, Integer t2) {
+                        list.add(t2);
+                        return list;
+                    }
+
+                }).takeLast(1);
+
+        assertEquals(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10), o.toBlocking().single());
+        assertEquals(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10), o.toBlocking().single());
     }
 }
