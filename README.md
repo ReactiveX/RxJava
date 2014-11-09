@@ -1,15 +1,19 @@
 # RxJava: Reactive Extensions for the JVM
 
-This library is a Java implementation of <a href="https://rx.codeplex.com">Rx Observables</a>.
+RxJava is a Java VM implementation of [Reactive Extensions](://reactivex.io): a library for composing asynchronous and event-based programs by using observable sequences.
 
-Some of the goals of RxJava are:
+It extends the [observer pattern](http://en.wikipedia.org/wiki/Observer_pattern) to support sequences of data/events and adds operators that allow you to compose sequences together declaratively while abstracting away concerns about things like low-level threading, synchronization, thread-safety and concurrent data structures.
 
-- Stay close to other Rx implementations while adjusting naming conventions and idioms to Java
-- Match contracts of Rx should be the same
-- Target the JVM not a language to allow JVM-language bindings (such as [Scala](https://github.com/ReactiveX/RxScala), [Groovy](https://github.com/ReactiveX/RxGroovy), [Clojure](https://github.com/ReactiveX/RxClojure) and [Kotlin](https://github.com/ReactiveX/RxKotlin)).
-- Support Java 6+ (to include Android support) 
+- Zero Dependencies
+- < 700KB Jar
+- Java 6+ & [Android](https://github.com/ReactiveX/RxAndroid) 2.3+
+- Java 8 lambda support
+- Polyglot ([Scala](https://github.com/ReactiveX/RxScala), [Groovy](https://github.com/ReactiveX/RxGroovy), [Clojure](https://github.com/ReactiveX/RxClojure) and [Kotlin](https://github.com/ReactiveX/RxKotlin))
+- Non-opinionated about source of concurrency (threads, pools, event loops, fibers, actors, etc)
+- Async or synchronous execution
+- Virtual time and schedulers for parameterized concurrency
 
-Learn more about RxJava on the <a href="https://github.com/ReactiveX/RxJava/wiki">Wiki Home</a> and the <a href="http://techblog.netflix.com/2013/02/rxjava-netflix-api.html">Netflix TechBlog post</a> where RxJava was introduced.
+Learn more about RxJava on the <a href="https://github.com/ReactiveX/RxJava/wiki">Wiki Home</a>.
 
 ## Master Build Status
 
