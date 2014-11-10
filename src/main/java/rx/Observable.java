@@ -5357,7 +5357,7 @@ public class Observable<T> {
     }
 
     /**
-     * Returns an Observable that applies a function of your choosing to the first item emitted by a source
+     * Returns an Observable that applies a specified accumulator function to the first item emitted by a source
      * Observable, then feeds the result of that function along with the second item emitted by the source
      * Observable into the same function, and so on until all items have been emitted by the source Observable,
      * and emits the final result from the final call to your function as its sole item.
@@ -5397,7 +5397,7 @@ public class Observable<T> {
     }
 
     /**
-     * Returns an Observable that applies a function of your choosing to the first item emitted by a source
+     * Returns an Observable that applies a specified accumulator function to the first item emitted by a source
      * Observable and a specified seed value, then feeds the result of that function along with the second item
      * emitted by an Observable into the same function, and so on until all items have been emitted by the
      * source Observable, emitting the final result from the final call to your function as its sole item.
@@ -5431,7 +5431,7 @@ public class Observable<T> {
     }
     
     /**
-     * Returns an Observable that applies a function of your choosing to the first item emitted by a source
+     * Returns an Observable that applies a specified accumulator function to the first item emitted by a source
      * Observable and a specified seed value, then feeds the result of that function along with the second item
      * emitted by an Observable into the same function, and so on until all items have been emitted by the
      * source Observable, emitting the final result from the final call to your function as its sole item.
