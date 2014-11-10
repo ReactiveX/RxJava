@@ -25,7 +25,8 @@ import rx.exceptions.OnErrorNotImplementedException;
 import rx.plugins.RxJavaPlugins;
 
 /**
- * Wrapper around {@code Observer} that ensures compliance with the Rx contract.
+ * {@code SafeSubscriber} is a wrapper around {@code Subscriber} that ensures that the {@code Subscriber}
+ * complies with the Rx contract.
  * <p>
  * The following is taken from <a href="http://go.microsoft.com/fwlink/?LinkID=205219">the Rx Design Guidelines
  * document</a>:
@@ -33,8 +34,8 @@ import rx.plugins.RxJavaPlugins;
  * Messages sent to instances of the {@code IObserver} interface follow the following grammar:
  * </p><blockquote><p> {@code OnNext* (OnCompleted | OnError)?} </p></blockquote><p>
  * This grammar allows observable sequences to send any amount (0 or more) of {@code OnNext} messages to the
- * subscribed observer instance, optionally followed by a single success ({@code OnCompleted}) or failure
- * ({@code OnError}) message.
+ * subscriber, optionally followed by a single success ({@code OnCompleted}) or failure ({@code OnError})
+ * message.
  * </p><p>
  * The single message indicating that an observable sequence has finished ensures that consumers of the
  * observable sequence can deterministically establish that it is safe to perform cleanup operations.
@@ -47,10 +48,10 @@ import rx.plugins.RxJavaPlugins;
  * <ul>
  * <li>Allows only single execution of either {@code onError} or {@code onCompleted}.</li>
  * <li>Ensures that once an {@code onCompleted} or {@code onError} is performed, no further calls can be executed</li>
- * <li>If {@code unsubscribe} is called, calls {@code completed} and forbids any further {@code onNext} calls.</li>
- * <li>When {@code onError} or {@code onComplete} occur, unsubscribes from the {@code Observable} (if executing asynchronously).</li>
+ * <li>If {@code unsubscribe} is called, calls {@code onCompleted} and forbids any further {@code onNext} calls.</li>
+ * <li>When {@code onError} or {@code onCompleted} occur, unsubscribes from the {@code Observable} (if executing asynchronously).</li>
  * </ul>
- * <p> {@code SafeSubscriber} will not synchronize {@code onNext} execution. Use {@link SerializedSubscriber} to do
+ * {@code SafeSubscriber} will not synchronize {@code onNext} execution. Use {@link SerializedSubscriber} to do
  * that.
  * 
  * @param <T>
