@@ -22,24 +22,26 @@ import rx.schedulers.Schedulers;
 import rx.subscriptions.MultipleAssignmentSubscription;
 
 /**
- * Represents an object that schedules units of work.
- * <p>
- * Common implementations can be found in {@link Schedulers}.
- * <p>
- * Why is this an abstract class instead of an interface?
- * <ol>
- * <li>Java doesn't support extension methods and there are many overload methods needing default
- * implementations.</li>
- * <li>Virtual extension methods aren't available until Java8 which RxJava will not set as a minimum target for
- * a long time.</li>
- * <li>If only an interface were used Scheduler implementations would then need to extend from an
- * AbstractScheduler pair that gives all of the functionality unless they intend on copy/pasting the
- * functionality.</li>
- * <li>Without virtual extension methods even additive changes are breaking and thus severely impede library
- * maintenance.</li>
- * </ol>
+ * A {@code Scheduler} is an object that schedules units of work. You can find common implementations of this
+ * class in {@link Schedulers}.
  */
 public abstract class Scheduler {
+/*
+ * Why is this an abstract class instead of an interface?
+ *
+ *  : Java doesn't support extension methods and there are many overload methods needing default
+ *    implementations.
+ *
+ *  : Virtual extension methods aren't available until Java8 which RxJava will not set as a minimum target for
+ *    a long time.
+ *
+ *  : If only an interface were used Scheduler implementations would then need to extend from an
+ *    AbstractScheduler pair that gives all of the functionality unless they intend on copy/pasting the
+ *    functionality.
+ *
+ *  : Without virtual extension methods even additive changes are breaking and thus severely impede library
+ *    maintenance.
+ */
 
     /**
      * Retrieves or creates a new {@link Scheduler.Worker} that represents serial execution of actions.
