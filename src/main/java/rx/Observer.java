@@ -50,9 +50,9 @@ public interface Observer<T> {
     /**
      * Provides the Observer with a new item to observe.
      * <p>
-     * The {@link Observable} may call this closure 0 or more times.
+     * The {@link Observable} may call this method 0 or more times.
      * <p>
-     * The {@code Observable} will not call this closure again after it calls either {@link #onCompleted} or
+     * The {@code Observable} will not call this method again after it calls either {@link #onCompleted} or
      * {@link #onError}.
      * 
      * @param t
