@@ -5159,13 +5159,13 @@ public class Observable<T> {
     }
 
     /**
-     * Use this operator when the upstream does not natively support backpressure and you wish to drop
-     * {@code onNext} when unable to handle further events.
+     * Instructs an Observable that is emitting items faster than its observer can consume them to discard,
+     * rather than emit, those items that its observer is not prepared to observe.
      * <p>
      * <img width="640" height="245" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/bp.obp.drop.png" alt="">
      * <p>
-     * If the downstream request count hits 0 then {@code onNext} will be dropped until {@code request(long n)}
-     * is invoked again to increase the request count.
+     * If the downstream request count hits 0 then the Observable will refrain from calling {@code onNext} until
+     * the observer invokes {@code request(n)} again to increase the request count.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code onBackpressureDrop} does not operate by default on a particular {@link Scheduler}.</dd>
