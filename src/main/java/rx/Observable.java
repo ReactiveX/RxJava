@@ -2619,7 +2619,7 @@ public class Observable<T> {
     }
 
     /**
-     * Returns an Observable that emits the results of a function of your choosing applied to combinations of
+     * Returns an Observable that emits the results of a specified combiner function applied to combinations of
      * items emitted, in sequence, by an Iterable of other Observables.
      * <p>
      * {@code zip} applies this function in strict sequence, so the first item emitted by the new Observable
@@ -2654,7 +2654,7 @@ public class Observable<T> {
     }
 
     /**
-     * Returns an Observable that emits the results of a function of your choosing applied to combinations of
+     * Returns an Observable that emits the results of a specified combiner function applied to combinations of
      * <i>n</i> items emitted, in sequence, by the <i>n</i> Observables emitted by a specified Observable.
      * <p>
      * {@code zip} applies this function in strict sequence, so the first item emitted by the new Observable
@@ -2692,7 +2692,7 @@ public class Observable<T> {
     }
 
     /**
-     * Returns an Observable that emits the results of a function of your choosing applied to combinations of
+     * Returns an Observable that emits the results of a specified combiner function applied to combinations of
      * two items emitted, in sequence, by two other Observables.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
@@ -2726,7 +2726,7 @@ public class Observable<T> {
     }
 
     /**
-     * Returns an Observable that emits the results of a function of your choosing applied to combinations of
+     * Returns an Observable that emits the results of a specified combiner function applied to combinations of
      * three items emitted, in sequence, by three other Observables.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
@@ -2763,7 +2763,7 @@ public class Observable<T> {
     }
 
     /**
-     * Returns an Observable that emits the results of a function of your choosing applied to combinations of
+     * Returns an Observable that emits the results of a specified combiner function applied to combinations of
      * four items emitted, in sequence, by four other Observables.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
@@ -2802,7 +2802,7 @@ public class Observable<T> {
     }
 
     /**
-     * Returns an Observable that emits the results of a function of your choosing applied to combinations of
+     * Returns an Observable that emits the results of a specified combiner function applied to combinations of
      * five items emitted, in sequence, by five other Observables.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
@@ -2843,7 +2843,7 @@ public class Observable<T> {
     }
 
     /**
-     * Returns an Observable that emits the results of a function of your choosing applied to combinations of
+     * Returns an Observable that emits the results of a specified combiner function applied to combinations of
      * six items emitted, in sequence, by six other Observables.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
@@ -2886,7 +2886,7 @@ public class Observable<T> {
     }
 
     /**
-     * Returns an Observable that emits the results of a function of your choosing applied to combinations of
+     * Returns an Observable that emits the results of a specified combiner function applied to combinations of
      * seven items emitted, in sequence, by seven other Observables.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
@@ -2931,7 +2931,7 @@ public class Observable<T> {
     }
 
     /**
-     * Returns an Observable that emits the results of a function of your choosing applied to combinations of
+     * Returns an Observable that emits the results of a specified combiner function applied to combinations of
      * eight items emitted, in sequence, by eight other Observables.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
@@ -2978,7 +2978,7 @@ public class Observable<T> {
     }
 
     /**
-     * Returns an Observable that emits the results of a function of your choosing applied to combinations of
+     * Returns an Observable that emits the results of a specified combiner function applied to combinations of
      * nine items emitted, in sequence, by nine other Observables.
      * <p>
      * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
