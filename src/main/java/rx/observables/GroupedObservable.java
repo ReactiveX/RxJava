@@ -24,9 +24,9 @@ import rx.functions.Func1;
  * An {@link Observable} that has been grouped by key, the value of which can be obtained with {@link #getKey()}.
  * <p>
  * <em>Note:</em> A {@link GroupedObservable} will cache the items it is to emit until such time as it
- * is subscribed to. For this reason, in order to avoid memory leaks, you should not simply ignore those {@code GroupedObservable}s that do not concern you. Instead, you can signal to them that they
- * may
- * discard their buffers by applying an operator like {@link Observable#take}{@code (0)} to them.
+ * is subscribed to. For this reason, in order to avoid memory leaks, you should not simply ignore those
+ * {@code GroupedObservable}s that do not concern you. Instead, you can signal to them that they
+ * may discard their buffers by applying an operator like {@link Observable#take take}{@code (0)} to them.
  * 
  * @param <K>
  *            the type of the key
