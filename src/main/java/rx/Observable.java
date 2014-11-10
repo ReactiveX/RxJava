@@ -5450,7 +5450,7 @@ public class Observable<T> {
      * </dl>
      * 
      * @param initialValueFactory
-    *            factory to produce the initial (seed) accumulator item each time the Observable is subscribed to
+     *            factory to produce the initial (seed) accumulator item each time the Observable is subscribed to
      * @param accumulator
      *            an accumulator function to be invoked on each item emitted by the source Observable, the
      *            result of which will be used in the next accumulator call
@@ -6537,8 +6537,8 @@ public class Observable<T> {
      * <p>
      * This sort of function is sometimes called an accumulator.
      * <p>
-     * Note that the Observable that results from this method will emit {@code initialValue} as its first
-     * emitted item.
+     * Note that the Observable that results from this method will emit the item returned from
+     * {@code initialValueFactory} as its first emitted item.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code scan} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -6550,8 +6550,8 @@ public class Observable<T> {
      *            an accumulator function to be invoked on each item emitted by the source Observable, whose
      *            result will be emitted to {@link Observer}s via {@link Observer#onNext onNext} and used in the
      *            next accumulator call
-     * @return an Observable that emits {@code initialValue} followed by the results of each call to the
-     *         accumulator function
+     * @return an Observable that emits the item returned from {@code initialValueFactory} followed by the
+     *         results of each call to the accumulator function
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Transforming-Observables#scan">RxJava wiki: scan</a>
      * @see <a href="http://msdn.microsoft.com/en-us/library/hh211665.aspx">MSDN: Observable.Scan</a>
      */
