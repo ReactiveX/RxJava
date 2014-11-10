@@ -16,7 +16,7 @@
 package rx.exceptions;
 
 /**
- * {@code MissingBackpressureException} indicates that a Subscriber or operator attempted to apply reactive pull
+ * Represents an exception that indicates that a Subscriber or operator attempted to apply reactive pull
  * backpressure to an Observable that does not implement it.
  * <p>
  * If an Observable has not been written to support reactive pull backpressure (such support is not a

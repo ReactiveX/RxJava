@@ -28,7 +28,8 @@ public final class Exceptions {
 
     /**
      * @warn javadoc missing
-     * @return
+     * @return because {@code propagate} itself throws an exception or error, this is a sort of phantom return
+     *         value; {@code propagate} does not actually return anything
      */
     public static RuntimeException propagate(Throwable t) {
         /*

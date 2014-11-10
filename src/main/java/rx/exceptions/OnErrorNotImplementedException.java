@@ -18,7 +18,8 @@ package rx.exceptions;
 import rx.Subscriber;
 
 /**
- * Used to re-throw {@link Subscriber#onError(Throwable)} when an implementation doesn't exist.
+ * Represents an exception used to re-throw {@link Subscriber#onError(Throwable)} when an implementation doesn't
+ * exist.
  * <p>
  * Rx Design Guidelines 5.2:
  * <blockquote><p>

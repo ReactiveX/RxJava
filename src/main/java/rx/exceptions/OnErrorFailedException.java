@@ -18,7 +18,7 @@ package rx.exceptions;
 import rx.Subscriber;
 
 /**
- * Used to re-throw errors thrown from {@link Subscriber#onError(Throwable)}.
+ * Represents an exception used to re-throw errors thrown from {@link Subscriber#onError(Throwable)}.
  * <p>
  * @see <a href="https://github.com/ReactiveX/RxJava/issues/969">RxJava issue #969</a>
  */

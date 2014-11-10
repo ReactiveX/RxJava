@@ -26,8 +26,8 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * An Exception that is a composite of one or more other Exceptions. A {@code CompositeException} does not
- * modify the structure of any exception it wraps, but at print-time it iterates through the list of
+ * Represents an exception that is a composite of one or more other exceptions. A {@code CompositeException}
+ * does not modify the structure of any exception it wraps, but at print-time it iterates through the list of
  * Throwables contained in the composit in order to print them all.
  *
  * Its invariant is to contain an immutable, ordered (by insertion order), unique list of non-composite
