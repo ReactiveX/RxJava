@@ -3068,9 +3068,9 @@ public class Observable<T> {
     }
 
     /**
-     * Disguises a object of an Observable subclass as a simple Observable object. Useful for instance when you
-     * have an implementation of a subclass of Observable but you want to hide the properties and methods of
-     * this subclass from whomever you are passing the Observable to.
+     * Portrays a object of an Observable subclass as a simple Observable object. This is useful, for instance,
+     * when you have an implementation of a subclass of Observable but you want to hide the properties and
+     * methods of this subclass from whomever you are passing the Observable to.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code asObservable} does not operate by default on a particular {@link Scheduler}.</dd>
