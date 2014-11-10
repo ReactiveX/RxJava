@@ -27,8 +27,6 @@ import rx.exceptions.CompositeException;
 
 /**
  * Subscription that represents a group of Subscriptions that are unsubscribed together.
- * 
- * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.disposables.compositedisposable(v=vs.103).aspx">Rx.Net equivalent CompositeDisposable</a>
  */
 public final class CompositeSubscription implements Subscription {
 

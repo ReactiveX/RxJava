@@ -23,8 +23,6 @@ import rx.Subscription;
 /**
  * Keeps track of the sub-subscriptions and unsubscribes the underlying subscription once all sub-subscriptions
  * have unsubscribed.
- * 
- * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.disposables.refcountdisposable.aspx">MSDN RefCountDisposable</a>
  */
 public final class RefCountSubscription implements Subscription {
     private final Subscription actual;

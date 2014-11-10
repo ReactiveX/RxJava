@@ -17,8 +17,6 @@ package rx;
 
 /**
  * An object representing a notification sent to an {@link Observable}.
- * 
- * @see <a href="http://msdn.microsoft.com/en-us/library/hh229462.aspx">the Microsoft Rx equivalent</a>
  */
 public final class Notification<T> {
 

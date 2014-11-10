@@ -22,8 +22,6 @@ import rx.Subscription;
 /**
  * Represents a subscription whose underlying subscription can be swapped for another subscription which causes
  * the previous underlying subscription to be unsubscribed.
- * 
- * @see <a href="http://msdn.microsoft.com/en-us/library/system.reactive.disposables.serialdisposable(v=vs.103).aspx">Rx.Net equivalent SerialDisposable</a>
  */
 public final class SerialSubscription implements Subscription {
     static final State EMPTY_STATE = new State(false, Subscriptions.empty());
