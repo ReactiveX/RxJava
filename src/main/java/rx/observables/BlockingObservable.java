@@ -77,10 +77,12 @@ public final class BlockingObservable<T> {
      * <p>
      * <em>Note:</em> This will block even if the underlying Observable is asynchronous.
      * <p>
-     * This is similar to {@link Observable#subscribe(Subscriber)}, but it blocks. Because it blocks it does not
-     * need the {@link Subscriber#onCompleted()} or {@link Subscriber#onError(Throwable)} methods.
-     * <p>
      * <img width="640" height="330" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/B.forEach.png" alt="">
+     * <p>
+     * This is similar to {@link Observable#subscribe(Subscriber)}, but it blocks. Because it blocks it does not
+     * need the {@link Subscriber#onCompleted()} or {@link Subscriber#onError(Throwable)} methods. If the
+     * underlying Observable terminates with an error, rather than calling {@code onError}, this method will
+     * throw an exception.
      *
      * @param onNext
      *            the {@link Action1} to invoke for each item emitted by the {@code BlockingObservable}
