@@ -96,6 +96,7 @@ public final class BlockingOperatorLatest {
                     try {
                         notify.acquire();
                     } catch (InterruptedException ex) {
+                        unsubscribe();
                         Thread.currentThread().interrupt();
                         iNotif = Notification.createOnError(ex);
                         throw Exceptions.propagate(ex);
