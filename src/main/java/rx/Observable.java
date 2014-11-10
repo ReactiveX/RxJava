@@ -5313,7 +5313,7 @@ public class Observable<T> {
     }
 
     /**
-     * Returns a {@link ConnectableObservable}, which waits until its
+     * Returns a {@link ConnectableObservable}, which is a variety of Observable that waits until its
      * {@link ConnectableObservable#connect connect} method is called before it begins emitting items to those
      * {@link Observer}s that have subscribed to it.
      * <p>
