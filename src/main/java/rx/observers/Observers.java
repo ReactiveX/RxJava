@@ -61,8 +61,8 @@ public final class Observers {
 
     /**
      * Creates an {@link Observer} that receives the emissions of any {@code Observable} it subscribes to via
-     * {@link Observer#onNext onNext} but ignores {@link Observer#onCompleted onCompleted} notifications. 
-     * It will throw an {@link OnErrorNotImplementedException} if {@link Observer#onError onError} is invoked.
+     * {@link Observer#onNext onNext} but ignores {@link Observer#onCompleted onCompleted} notifications; 
+     * it will throw an {@link OnErrorNotImplementedException} if {@link Observer#onError onError} is invoked.
      *
      * @param onNext
      *          a function that handles each item emitted by an {@code Observable}
