@@ -22,6 +22,7 @@ import java.util.List;
 
 import rx.Observable;
 import rx.Observable.Operator;
+import rx.Producer;
 import rx.Subscription;
 import rx.functions.Action0;
 import rx.subscriptions.Subscriptions;
@@ -87,9 +88,8 @@ public final class OperatorWindowWithSize<T> implements Operator<Observable<T>, 
         }
 
         @Override
-        public void onStart() {
-            // no backpressure as we are controlling data flow by window size
-            request(Long.MAX_VALUE);
+        public void setProducer(Producer producer) {
+            child.setProducer(new NonOverlappingBufferProducer(producer, size));
         }
         
         @Override
@@ -159,9 +159,8 @@ public final class OperatorWindowWithSize<T> implements Operator<Observable<T>, 
         }
 
         @Override
-        public void onStart() {
-            // no backpressure as we are controlling data flow by window size
-            request(Long.MAX_VALUE);
+        public void setProducer(Producer producer) {
+            child.setProducer(new OverlappingBufferProducer(producer, size, skip));
         }
         
         @Override
