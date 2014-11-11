@@ -71,24 +71,7 @@ public final class OperatorBufferWithSize<T> implements Operator<List<T>, T> {
 
                 @Override
                 public void setProducer(final Producer producer) {
-                    child.setProducer(new Producer() {
-
-                        private volatile boolean infinite = false;
-
-                        @Override
-                        public void request(long n) {
-                            if (infinite) {
-                                return;
-                            }
-                            if (n >= Long.MAX_VALUE / count) {
-                                // n == Long.MAX_VALUE or n * count >= Long.MAX_VALUE
-                                infinite = true;
-                                producer.request(Long.MAX_VALUE);
-                            } else {
-                                producer.request(n * count);
-                            }
-                        }
-                    });
+                    child.setProducer(new NonOverlappingBufferProducer(producer, count));
                 }
 
                 @Override
@@ -132,55 +115,7 @@ public final class OperatorBufferWithSize<T> implements Operator<List<T>, T> {
 
             @Override
             public void setProducer(final Producer producer) {
-                child.setProducer(new Producer() {
-
-                    private volatile boolean firstRequest = true;
-                    private volatile boolean infinite = false;
-
-                    private void requestInfinite() {
-                        infinite = true;
-                        producer.request(Long.MAX_VALUE);
-                    }
-
-                    @Override
-                    public void request(long n) {
-                        if (infinite) {
-                            return;
-                        }
-                        if (n == Long.MAX_VALUE) {
-                            requestInfinite();
-                            return;
-                        } else {
-                            if (firstRequest) {
-                                firstRequest = false;
-                                if (n - 1 >= (Long.MAX_VALUE - count) / skip) {
-                                    // count + skip * (n - 1) >= Long.MAX_VALUE
-                                    requestInfinite();
-                                    return;
-                                }
-                                // count = 5, skip = 2, n = 3
-                                // * * * * *
-                                //     * * * * *
-                                //         * * * * *
-                                // request = 5 + 2 * ( 3 - 1)
-                                producer.request(count + skip * (n - 1));
-                            } else {
-                                if (n >= Long.MAX_VALUE / skip) {
-                                    // skip * n >= Long.MAX_VALUE
-                                    requestInfinite();
-                                    return;
-                                }
-                                // count = 5, skip = 2, n = 3
-                                // (* * *) * *
-                                // (    *) * * * *
-                                //           * * * * *
-                                // request = skip * n
-                                // "()" means the items already emitted before this request
-                                producer.request(skip * n);
-                            }
-                        }
-                    }
-                });
+                child.setProducer(new OverlappingBufferProducer(producer, count, skip));
             }
 
             @Override
