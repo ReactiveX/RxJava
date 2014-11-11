@@ -5,7 +5,7 @@ dependencies {
     compile project(':rxjava-core')
 
     // clojure
-    compile 'org.clojure:clojure:1.4.+'
+    compile 'org.clojure:clojure:1.4.0'
 
     // this should be 'compile' for the 'examples' module
     testCompile 'clj-http:clj-http:0.6.4' // https://clojars.org/clj-http
