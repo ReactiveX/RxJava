@@ -695,5 +695,27 @@ public class OperatorConcatTest {
         ts.assertNoErrors();
         assertEquals((RxRingBuffer.SIZE * 4) + 20, ts.getOnNextEvents().size());
     }
+    
+    // https://github.com/ReactiveX/RxJava/issues/1818
+    @Test
+    public void testConcatWithNonCompliantSourceDoubleOnComplete() {
+        Observable<String> o = Observable.create(new OnSubscribe<String>() {
+
+            @Override
+            public void call(Subscriber<? super String> s) {
+                s.onNext("hello");
+                s.onCompleted();
+                s.onCompleted();
+            }
+            
+        });
+        
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+        Observable.concat(o, o).subscribe(ts);
+        ts.awaitTerminalEvent(500, TimeUnit.MILLISECONDS);
+        ts.assertTerminalEvent();
+        ts.assertNoErrors();
+        ts.assertReceivedOnNext(Arrays.asList("hello", "hello"));
+    }
 
 }
