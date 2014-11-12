@@ -1,5 +1,16 @@
 # RxJava Releases #
 
+### Version 1.0.0-rc.10 – November 8th 2014 ([Maven Central](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.0.0-rc.10%7C)) ###
+
+* [Pull 1834] (https://github.com/ReactiveX/RxJava/pull/1834) Subject.toSerialized
+* [Pull 1832] (https://github.com/ReactiveX/RxJava/pull/1832) Fix Take Early Unsubscription Causing Interrupts
+* [Pull 1835] (https://github.com/ReactiveX/RxJava/pull/1835) Scan/Reduce with Seed Factory
+* [Pull 1836] (https://github.com/ReactiveX/RxJava/pull/1836) Reduce Ring Buffer Default Sizes (and lower for Android)
+* [Pull 1833] (https://github.com/ReactiveX/RxJava/pull/1833) Fix Thread Safety for Unsubscribe of Window
+* [Pull 1827] (https://github.com/ReactiveX/RxJava/pull/1827) CacheThreadScheduler Evictor should Check Removal
+* [Pull 1830] (https://github.com/ReactiveX/RxJava/pull/1830) Fix mergeDelayError Handling of Error in Parent Observable
+* [Pull 1829] (https://github.com/ReactiveX/RxJava/pull/1829) Fix Window by Count Unsubscribe Behavior
+
 ### Version 1.0.0-rc.9 – November 2nd 2014 ([Maven Central](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.0.0-rc.9%7C)) ###
 
 * [Pull 1788] (https://github.com/ReactiveX/RxJava/pull/1788) Remove PublishLast/InitialValue
