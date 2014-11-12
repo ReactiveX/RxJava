@@ -1,5 +1,9 @@
 # RxJava Releases #
 
+### Version 0.20.7 – November 11th 2014 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.20.7%22)) ###
+
+* [Pull 1863] (https://github.com/ReactiveX/RxJava/pull/1863) Fix Concat Breaks with Double onCompleted
+
 ### Version 1.0.0-rc.10 – November 8th 2014 ([Maven Central](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.0.0-rc.10%7C)) ###
 
 * [Pull 1834] (https://github.com/ReactiveX/RxJava/pull/1834) Subject.toSerialized
