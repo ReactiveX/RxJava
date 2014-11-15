@@ -37,6 +37,7 @@ import org.mockito.MockitoAnnotations;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscriber;
+import rx.functions.Action2;
 import rx.functions.Func0;
 import rx.functions.Func1;
 import rx.functions.Func2;
@@ -269,22 +270,24 @@ public class OperatorScanTest {
         assertEquals(101, count.get());
     }
 
+    /**
+     * This uses the public API collect which uses scan under the covers.
+     */
     @Test
     public void testSeedFactory() {
         Observable<List<Integer>> o = Observable.range(1, 10)
-                .scan(new Func0<List<Integer>>() {
+                .collect(new Func0<List<Integer>>() {
 
                     @Override
                     public List<Integer> call() {
                         return new ArrayList<Integer>();
                     }
                     
-                }, new Func2<List<Integer>, Integer, List<Integer>>() {
+                }, new Action2<List<Integer>, Integer>() {
 
                     @Override
-                    public List<Integer> call(List<Integer> list, Integer t2) {
+                    public void call(List<Integer> list, Integer t2) {
                         list.add(t2);
-                        return list;
                     }
 
                 }).takeLast(1);
