@@ -3459,7 +3459,7 @@ public class Observable<T> {
      *  <dd>{@code collect} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param state
+     * @param stateFactory
      *           the mutable data structure that will collect the items
      * @param collector
      *           a function that accepts the {@code state} and an emitted item, and modifies {@code state}
@@ -3468,7 +3468,7 @@ public class Observable<T> {
      *         into a single mutable data structure
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Mathematical-and-Aggregate-Operators#collect">RxJava wiki: collect</a>
      */
-    public final <R> Observable<R> collect(R state, final Action2<R, ? super T> collector) {
+    public final <R> Observable<R> collect(Func0<R> stateFactory, final Action2<R, ? super T> collector) {
         Func2<R, T, R> accumulator = new Func2<R, T, R>() {
 
             @Override
@@ -3478,7 +3478,14 @@ public class Observable<T> {
             }
 
         };
-        return reduce(state, accumulator);
+        
+        /*
+         * Discussion and confirmation of implementation at
+         * https://github.com/ReactiveX/RxJava/issues/423#issuecomment-27642532
+         * 
+         * It should use last() not takeLast(1) since it needs to emit an error if the sequence is empty.
+         */
+        return lift(new OperatorScan<R, T>(stateFactory, accumulator)).last();
     }
 
     /**
@@ -5294,40 +5301,6 @@ public class Observable<T> {
     }
     
     /**
-     * Returns an Observable that applies a specified accumulator function to the first item emitted by a source
-     * Observable and a specified seed value, then feeds the result of that function along with the second item
-     * emitted by an Observable into the same function, and so on until all items have been emitted by the
-     * source Observable, emitting the final result from the final call to your function as its sole item.
-     * <p>
-     * <img width="640" height="325" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/reduceSeed.png" alt="">
-     * <p>
-     * This technique, which is called "reduce" here, is sometimec called "aggregate," "fold," "accumulate,"
-     * "compress," or "inject" in other programming contexts. Groovy, for instance, has an {@code inject} method
-     * that does a similar operation on lists.
-     * <dl>
-     *  <dt><b>Backpressure Support:</b></dt>
-     *  <dd>This operator does not support backpressure because by intent it will receive all values and reduce
-     *      them to a single {@code onNext}.</dd>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code reduce} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * 
-     * @param initialValueFactory
-     *            factory to produce the initial (seed) accumulator item each time the Observable is subscribed to
-     * @param accumulator
-     *            an accumulator function to be invoked on each item emitted by the source Observable, the
-     *            result of which will be used in the next accumulator call
-     * @return an Observable that emits a single item that is the result of accumulating the output from the
-     *         items emitted by the source Observable
-     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Mathematical-and-Aggregate-Operators#reduce">RxJava wiki: reduce</a>
-     * @see <a href="http://en.wikipedia.org/wiki/Fold_(higher-order_function)">Wikipedia: Fold (higher-order function)</a>
-     */
-    public final <R> Observable<R> reduce(Func0<R> initialValueFactory, Func2<R, ? super T, R> accumulator) {
-        return scan(initialValueFactory, accumulator).takeLast(1);
-    }
-    
-
-    /**
      * Returns an Observable that repeats the sequence of items emitted by the source Observable indefinitely.
      * <p>
      * <img width="640" height="309" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/repeat.o.png" alt="">
@@ -6358,37 +6331,6 @@ public class Observable<T> {
      */
     public final <R> Observable<R> scan(R initialValue, Func2<R, ? super T, R> accumulator) {
         return lift(new OperatorScan<R, T>(initialValue, accumulator));
-    }
-    
-    /**
-     * Returns an Observable that applies a specified accumulator function to the first item emitted by a source
-     * Observable and a seed value, then feeds the result of that function along with the second item emitted by
-     * the source Observable into the same function, and so on until all items have been emitted by the source
-     * Observable, emitting the result of each of these iterations.
-     * <p>
-     * <img width="640" height="320" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/scanSeed.png" alt="">
-     * <p>
-     * This sort of function is sometimes called an accumulator.
-     * <p>
-     * Note that the Observable that results from this method will emit the item returned from
-     * {@code initialValueFactory} as its first emitted item.
-     * <dl>
-     *  <dt><b>Scheduler:</b></dt>
-     *  <dd>{@code scan} does not operate by default on a particular {@link Scheduler}.</dd>
-     * </dl>
-     * 
-     * @param initialValueFactory
-     *            factory to produce the initial (seed) accumulator item each time the Observable is subscribed to
-     * @param accumulator
-     *            an accumulator function to be invoked on each item emitted by the source Observable, whose
-     *            result will be emitted to {@link Observer}s via {@link Observer#onNext onNext} and used in the
-     *            next accumulator call
-     * @return an Observable that emits the item returned from {@code initialValueFactory} followed by the
-     *         results of each call to the accumulator function
-     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Transforming-Observables#scan">RxJava wiki: scan</a>
-     */
-    public final <R> Observable<R> scan(Func0<R> initialValueFactory, Func2<R, ? super T, R> accumulator) {
-        return lift(new OperatorScan<R, T>(initialValueFactory, accumulator));
     }
 
     /**
