@@ -30,6 +30,7 @@ import org.mockito.MockitoAnnotations;
 import rx.Observable;
 import rx.Observer;
 import rx.exceptions.TestException;
+import rx.functions.Func0;
 import rx.functions.Func1;
 import rx.functions.Func2;
 import rx.internal.util.UtilityFunctions;
@@ -53,7 +54,7 @@ public class OperatorReduceTest {
     @Test
     public void testAggregateAsIntSum() {
 
-        Observable<Integer> result = Observable.just(1, 2, 3, 4, 5).reduce(0, sum).map(UtilityFunctions.<Integer> identity());
+        Observable<Integer> result = Observable.just(1, 2, 3, 4, 5).reduce(sum).map(UtilityFunctions.<Integer> identity());
 
         result.subscribe(observer);
 
@@ -66,7 +67,7 @@ public class OperatorReduceTest {
     public void testAggregateAsIntSumSourceThrows() {
         Observable<Integer> result = Observable.concat(Observable.just(1, 2, 3, 4, 5),
                 Observable.<Integer> error(new TestException()))
-                .reduce(0, sum).map(UtilityFunctions.<Integer> identity());
+                .reduce(sum).map(UtilityFunctions.<Integer> identity());
 
         result.subscribe(observer);
 
@@ -85,7 +86,7 @@ public class OperatorReduceTest {
         };
 
         Observable<Integer> result = Observable.just(1, 2, 3, 4, 5)
-                .reduce(0, sumErr).map(UtilityFunctions.<Integer> identity());
+                .reduce(sumErr).map(UtilityFunctions.<Integer> identity());
 
         result.subscribe(observer);
 
@@ -106,7 +107,7 @@ public class OperatorReduceTest {
         };
 
         Observable<Integer> result = Observable.just(1, 2, 3, 4, 5)
-                .reduce(0, sum).map(error);
+                .reduce(sum).map(error);
 
         result.subscribe(observer);
 
@@ -127,7 +128,14 @@ public class OperatorReduceTest {
     @Test
     public void testBackpressureWithInitialValue() throws InterruptedException {
         Observable<Integer> source = Observable.just(1, 2, 3, 4, 5, 6);
-        Observable<Integer> reduced = source.reduce(0, sum);
+        Observable<Integer> reduced = source.reduce(new Func0<Integer>() {
+
+            @Override
+            public Integer call() {
+                return 0;
+            }
+            
+        }, sum);
 
         Integer r = reduced.toBlocking().first();
         assertEquals(21, r.intValue());
