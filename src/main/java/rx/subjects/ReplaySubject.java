@@ -26,7 +26,6 @@ import rx.exceptions.CompositeException;
 import rx.exceptions.Exceptions;
 import rx.functions.Action1;
 import rx.functions.Func1;
-import rx.functions.Functions;
 import rx.internal.operators.NotificationLite;
 import rx.internal.util.UtilityFunctions;
 import rx.schedulers.Timestamped;
@@ -358,6 +357,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         if (!o.caughtUp) {
             o.caughtUp = true;
             state.replayObserver(o);
+            o.index(null); // once caught up, no need for the index anymore
             return false;
         } else {
             // it was caught up so proceed the "raw route"
