@@ -136,18 +136,6 @@ public abstract class Scheduler {
     }
 
     /**
-     * Indicates the parallelism available to this Scheduler.
-     * <p>
-     * This defaults to {@code Runtime.getRuntime().availableProcessors()} but can be overridden for use cases
-     * such as scheduling work on a computer cluster.
-     * 
-     * @return the scheduler's available degree of parallelism
-     */
-    public int parallelism() {
-        return Runtime.getRuntime().availableProcessors();
-    }
-
-    /**
      * Gets the current time, in milliseconds, according to this Scheduler.
      *
      * @return the scheduler's notion of current absolute time in milliseconds
