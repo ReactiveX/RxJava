@@ -45,6 +45,7 @@ import rx.Producer;
 import rx.Scheduler;
 import rx.Subscriber;
 import rx.functions.Action0;
+import rx.functions.Func0;
 import rx.functions.Func1;
 import rx.functions.Func2;
 import rx.schedulers.Schedulers;
@@ -105,7 +106,14 @@ public final class OnSubscribeRedo<T> implements OnSubscribe<T> {
 
         @Override
         public Observable<? extends Notification<?>> call(Observable<? extends Notification<?>> ts) {
-            return ts.scan(Notification.createOnNext(0), new Func2<Notification<Integer>, Notification<?>, Notification<Integer>>() {
+            return ts.scan(new Func0<Notification<Integer>>() {
+
+                @Override
+                public Notification<Integer> call() {
+                    return Notification.createOnNext(0);
+                }
+                
+            }, new Func2<Notification<Integer>, Notification<?>, Notification<Integer>>() {
                 @SuppressWarnings("unchecked")
                 @Override
                 public Notification<Integer> call(Notification<Integer> n, Notification<?> term) {

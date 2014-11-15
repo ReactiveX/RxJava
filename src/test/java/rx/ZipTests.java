@@ -35,6 +35,7 @@ import rx.CovarianceTest.Rating;
 import rx.CovarianceTest.Result;
 import rx.EventStream.Event;
 import rx.functions.Action1;
+import rx.functions.Func0;
 import rx.functions.Func1;
 import rx.functions.Func2;
 import rx.functions.FuncN;
@@ -57,7 +58,14 @@ public class ZipTests {
 
                     @Override
                     public Observable<Map<String, String>> call(final GroupedObservable<String, Event> ge) {
-                        return ge.scan(new HashMap<String, String>(), new Func2<Map<String, String>, Event, Map<String, String>>() {
+                        return ge.scan(new Func0<Map<String, String>>() {
+
+                            @Override
+                            public Map<String, String> call() {
+                                return new HashMap<String, String>();
+                            }
+                            
+                        }, new Func2<Map<String, String>, Event, Map<String, String>>() {
 
                             @Override
                             public Map<String, String> call(Map<String, String> accum, Event perInstanceEvent) {

@@ -50,6 +50,7 @@ import rx.Observable.Transformer;
 import rx.exceptions.OnErrorNotImplementedException;
 import rx.functions.Action1;
 import rx.functions.Action2;
+import rx.functions.Func0;
 import rx.functions.Func1;
 import rx.functions.Func2;
 import rx.observables.ConnectableObservable;
@@ -277,7 +278,7 @@ public class ObservableTests {
     @Test
     public void testReduceWithEmptyObservableAndSeed() {
         Observable<Integer> observable = Observable.range(1, 0);
-        int value = observable.reduce(1, new Func2<Integer, Integer, Integer>() {
+        int value = observable.startWith(1).reduce(new Func2<Integer, Integer, Integer>() {
 
             @Override
             public Integer call(Integer t1, Integer t2) {
@@ -292,7 +293,7 @@ public class ObservableTests {
     @Test
     public void testReduceWithInitialValue() {
         Observable<Integer> observable = Observable.just(1, 2, 3, 4);
-        observable.reduce(50, new Func2<Integer, Integer, Integer>() {
+        observable.startWith(50).reduce(new Func2<Integer, Integer, Integer>() {
 
             @Override
             public Integer call(Integer t1, Integer t2) {
@@ -965,7 +966,14 @@ public class ObservableTests {
 
     @Test
     public void testCollectToList() {
-        List<Integer> list = Observable.just(1, 2, 3).collect(new ArrayList<Integer>(), new Action2<List<Integer>, Integer>() {
+        List<Integer> list = Observable.just(1, 2, 3).collect(new Func0<List<Integer>>() {
+
+            @Override
+            public List<Integer> call() {
+                return new ArrayList<Integer>();
+            }
+            
+        }, new Action2<List<Integer>, Integer>() {
 
             @Override
             public void call(List<Integer> list, Integer v) {
@@ -981,7 +989,14 @@ public class ObservableTests {
 
     @Test
     public void testCollectToString() {
-        String value = Observable.just(1, 2, 3).collect(new StringBuilder(), new Action2<StringBuilder, Integer>() {
+        String value = Observable.just(1, 2, 3).collect(new Func0<StringBuilder>() {
+
+            @Override
+            public StringBuilder call() {
+                return new StringBuilder();
+            }
+            
+        }, new Action2<StringBuilder, Integer>() {
 
             @Override
             public void call(StringBuilder sb, Integer v) {

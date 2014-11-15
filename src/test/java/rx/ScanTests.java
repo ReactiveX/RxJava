@@ -22,6 +22,7 @@ import org.junit.Test;
 
 import rx.EventStream.Event;
 import rx.functions.Action1;
+import rx.functions.Func0;
 import rx.functions.Func2;
 
 public class ScanTests {
@@ -30,7 +31,14 @@ public class ScanTests {
     public void testUnsubscribeScan() {
 
         EventStream.getEventStream("HTTP-ClusterB", 20)
-                .scan(new HashMap<String, String>(), new Func2<Map<String, String>, Event, Map<String, String>>() {
+                .scan(new Func0<Map<String, String>>() {
+
+                    @Override
+                    public Map<String, String> call() {
+                        return new HashMap<String, String>();
+                    }
+                    
+                }, new Func2<Map<String, String>, Event, Map<String, String>>() {
 
                     @Override
                     public Map<String, String> call(Map<String, String> accum, Event perInstanceEvent) {

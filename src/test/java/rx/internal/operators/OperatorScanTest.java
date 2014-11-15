@@ -56,7 +56,14 @@ public class OperatorScanTest {
 
         Observable<Integer> observable = Observable.just(1, 2, 3);
 
-        Observable<String> m = observable.scan("", new Func2<String, Integer, String>() {
+        Observable<String> m = observable.scan(new Func0<String>() {
+
+            @Override
+            public String call() {
+                return "";
+            }
+            
+        }, new Func2<String, Integer, String>() {
 
             @Override
             public String call(String s, Integer n) {
@@ -131,7 +138,7 @@ public class OperatorScanTest {
     @Test
     public void shouldNotEmitUntilAfterSubscription() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        Observable.range(1, 100).scan(0, new Func2<Integer, Integer, Integer>() {
+        Observable.range(1, 100).scan(new Func2<Integer, Integer, Integer>() {
 
             @Override
             public Integer call(Integer t1, Integer t2) {
@@ -155,7 +162,14 @@ public class OperatorScanTest {
     public void testBackpressureWithInitialValue() {
         final AtomicInteger count = new AtomicInteger();
         Observable.range(1, 100)
-                .scan(0, new Func2<Integer, Integer, Integer>() {
+                .scan(new Func0<Integer>() {
+
+                    @Override
+                    public Integer call() {
+                        return 0;
+                    }
+                    
+                }, new Func2<Integer, Integer, Integer>() {
 
                     @Override
                     public Integer call(Integer t1, Integer t2) {
@@ -237,7 +251,14 @@ public class OperatorScanTest {
     public void testNoBackpressureWithInitialValue() {
         final AtomicInteger count = new AtomicInteger();
         Observable.range(1, 100)
-                .scan(0, new Func2<Integer, Integer, Integer>() {
+                .scan(new Func0<Integer>() {
+
+                    @Override
+                    public Integer call() {
+                        return 0;
+                    }
+                    
+                }, new Func2<Integer, Integer, Integer>() {
 
                     @Override
                     public Integer call(Integer t1, Integer t2) {
