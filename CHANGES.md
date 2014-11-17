@@ -1,5 +1,11 @@
 # RxJava Releases #
 
+### Version 1.0.0-rc.11 – November 15th 2014 ([Maven Central](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.0.0-rc.11%7C)) ###
+
+* [Pull 1882] (https://github.com/ReactiveX/RxJava/pull/1882) Remove Unused Scheduler.parallelism
+* [Pull 1884] (https://github.com/ReactiveX/RxJava/pull/1884) Fix Scan/Reduce/Collect Factory Ambiguity 
+* [Pull 1866] (https://github.com/ReactiveX/RxJava/pull/1866) Fix memory leak in bounded ReplaySubject due to retaining the node index
+
 ### Version 0.20.7 – November 11th 2014 ([Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.netflix.rxjava%22%20AND%20v%3A%220.20.7%22)) ###
 
 * [Pull 1863] (https://github.com/ReactiveX/RxJava/pull/1863) Fix Concat Breaks with Double onCompleted
