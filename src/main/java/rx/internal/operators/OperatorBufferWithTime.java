@@ -75,7 +75,7 @@ public final class OperatorBufferWithTime<T> implements Operator<List<T>, T> {
         SerializedSubscriber<List<T>> serialized = new SerializedSubscriber<List<T>>(child);
         
         if (timespan == timeshift) {
-			ExactSubscriber bsub = new ExactSubscriber(serialized, inner);
+            ExactSubscriber bsub = new ExactSubscriber(serialized, inner);
             bsub.add(inner);
             child.add(bsub);
             bsub.scheduleExact();
