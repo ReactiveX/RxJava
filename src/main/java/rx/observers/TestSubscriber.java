@@ -136,8 +136,8 @@ public class TestSubscriber<T> extends Subscriber<T> {
     /**
      * Allow calling the protected {@link #request(long)} from unit tests.
      *
-     * @param n
-     * @warn parameter "n" not described
+     * @param n the maximum number of items you want the Observable to emit to the Subscriber at this time, or
+     *           {@code Long.MAX_VALUE} if you want the Observable to emit items at its own pace
      */
     public void requestMore(long n) {
         request(n);
