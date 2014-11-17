@@ -981,4 +981,38 @@ public class OperatorBufferTest {
         });
         assertEquals(Long.MAX_VALUE, requested.get());
     }
+    @Test(timeout = 3000)
+    public void testBufferWithTimeDoesntUnsubscribeDownstream() throws InterruptedException {
+    	@SuppressWarnings("unchecked")
+    	final Observer<Object> o = mock(Observer.class);
+    	
+    	
+    	final CountDownLatch cdl = new CountDownLatch(1);
+    	Subscriber<Object> s = new Subscriber<Object>() {
+    		@Override
+    		public void onNext(Object t) {
+    			o.onNext(t);
+    		}
+    		@Override
+    		public void onError(Throwable e) {
+    			o.onError(e);
+    			cdl.countDown();
+    		}
+    		@Override
+    		public void onCompleted() {
+    			o.onCompleted();
+    			cdl.countDown();
+    		}
+    	};
+    	
+    	Observable.range(1, 1).delay(1, TimeUnit.SECONDS).buffer(2, TimeUnit.SECONDS).unsafeSubscribe(s);
+    	
+    	cdl.await();
+    	
+    	verify(o).onNext(Arrays.asList(1));
+    	verify(o).onCompleted();
+    	verify(o, never()).onError(any(Throwable.class));
+    	
+    	assertFalse(s.isUnsubscribed());
+    }
 }

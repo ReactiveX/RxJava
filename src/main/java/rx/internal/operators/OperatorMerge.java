@@ -501,7 +501,7 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
                 REQUESTED.getAndAdd(this, n);
                 if (ms.drainQueuesIfNeeded()) {
                     boolean sendComplete = false;
-                    synchronized (this) {
+                    synchronized (ms) {
                         if (ms.wip == 0 && ms.scalarValueQueue != null && ms.scalarValueQueue.isEmpty()) {
                             sendComplete = true;
                         }
