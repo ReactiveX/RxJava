@@ -72,15 +72,19 @@ public final class OperatorBufferWithTime<T> implements Operator<List<T>, T> {
     @Override
     public Subscriber<? super T> call(final Subscriber<? super List<T>> child) {
         final Worker inner = scheduler.createWorker();
-        child.add(inner);
+        SerializedSubscriber<List<T>> serialized = new SerializedSubscriber<List<T>>(child);
         
         if (timespan == timeshift) {
-            ExactSubscriber bsub = new ExactSubscriber(new SerializedSubscriber<List<T>>(child), inner);
+            ExactSubscriber bsub = new ExactSubscriber(serialized, inner);
+            bsub.add(inner);
+            child.add(bsub);
             bsub.scheduleExact();
             return bsub;
         }
         
-        InexactSubscriber bsub = new InexactSubscriber(new SerializedSubscriber<List<T>>(child), inner);
+        InexactSubscriber bsub = new InexactSubscriber(serialized, inner);
+        bsub.add(inner);
+        child.add(bsub);
         bsub.startNewChunk();
         bsub.scheduleChunk();
         return bsub;
@@ -94,7 +98,6 @@ public final class OperatorBufferWithTime<T> implements Operator<List<T>, T> {
         /** Guarded by this. */
         boolean done;
         public InexactSubscriber(Subscriber<? super List<T>> child, Worker inner) {
-            super(child);
             this.child = child;
             this.inner = inner;
             this.chunks = new LinkedList<List<T>>();
@@ -219,7 +222,6 @@ public final class OperatorBufferWithTime<T> implements Operator<List<T>, T> {
         /** Guarded by this. */
         boolean done;
         public ExactSubscriber(Subscriber<? super List<T>> child, Worker inner) {
-            super(child);
             this.child = child;
             this.inner = inner;
             this.chunk = new ArrayList<T>();
