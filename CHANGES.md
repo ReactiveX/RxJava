@@ -1,5 +1,9 @@
 # RxJava Releases #
 
+### Version 1.0.0-rc.12 – November 17th 2014 ([Maven Central](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.0.0-rc.12%7C)) ###
+
+* [Pull 1886] (https://github.com/ReactiveX/RxJava/pull/1886) Buffer with time and merge fix
+
 ### Version 1.0.0-rc.11 – November 15th 2014 ([Maven Central](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.0.0-rc.11%7C)) ###
 
 * [Pull 1882] (https://github.com/ReactiveX/RxJava/pull/1882) Remove Unused Scheduler.parallelism
