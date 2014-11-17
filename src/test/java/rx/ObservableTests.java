@@ -115,6 +115,15 @@ public class ObservableTests {
     }
 
     @Test
+    public void fromString(){
+        String foo = "foo";
+
+        assertEquals("f", Observable.from(foo).first().toBlocking().single());
+        assertEquals("o", Observable.from(foo).skip(1).take(1).toBlocking().single());
+        assertEquals("o", Observable.from(foo).takeLast(1).toBlocking().single());
+    }
+
+    @Test
     public void testCreate() {
 
         Observable<String> observable = Observable.create(new OnSubscribe<String>() {
