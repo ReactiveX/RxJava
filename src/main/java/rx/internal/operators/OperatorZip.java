@@ -162,6 +162,7 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
         private Zip<R> zipper;
 
         public ZipProducer(Zip<R> zipper) {
+            super(-1L);
             this.zipper = zipper;
         }
 
@@ -198,13 +199,15 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
 
         @SuppressWarnings("unchecked")
         public void start(@SuppressWarnings("rawtypes") Observable[] os, AtomicLong requested) {
-            observers = new Object[os.length];
+            Object[] subscribers = new Object[os.length];
             this.requested = requested;
             for (int i = 0; i < os.length; i++) {
                 InnerSubscriber io = new InnerSubscriber();
-                observers[i] = io;
+                subscribers[i] = io;
                 childSubscription.add(io);
             }
+            this.observers = subscribers;
+            this.requested.incrementAndGet();
 
             for (int i = 0; i < os.length; i++) {
                 os[i].unsafeSubscribe((InnerSubscriber) observers[i]);
