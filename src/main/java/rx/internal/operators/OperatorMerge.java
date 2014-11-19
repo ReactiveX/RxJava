@@ -31,6 +31,7 @@ import rx.functions.Func1;
 import rx.internal.util.RxRingBuffer;
 import rx.internal.util.ScalarSynchronousObservable;
 import rx.internal.util.SubscriptionIndexedRingBuffer;
+import rx.subscriptions.CompositeSubscription;
 
 /**
  * Flattens a list of {@link Observable}s into one {@code Observable}, without any transformation.
@@ -93,6 +94,7 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
     private static final class MergeSubscriber<T> extends Subscriber<Observable<? extends T>> {
         final NotificationLite<T> on = NotificationLite.instance();
         final Subscriber<? super T> actual;
+        final CompositeSubscription buffers;
         private final MergeProducer<T> mergeProducer;
         private int wip;
         private boolean completed;
@@ -127,8 +129,10 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
             this.actual = actual;
             this.mergeProducer = new MergeProducer<T>(this);
             this.delayErrors = delayErrors;
+            this.buffers = new CompositeSubscription();
             // decoupled the subscription chain because we need to decouple and control backpressure
             actual.add(this);
+            actual.add(buffers);
             actual.setProducer(mergeProducer);
         }
 
@@ -540,6 +544,7 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
             this.parentSubscriber = parent;
             this.producer = producer;
             request(q.capacity());
+            parent.buffers.add(q);
         }
 
         @Override
@@ -718,16 +723,16 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
                     break;
                 } else if (q.isCompleted(o)) {
                     parentSubscriber.completeInner(this);
-                    q.unsubscribe();
+                    parentSubscriber.buffers.remove(q);
                 } else {
                     try {
                         if (!q.accept(o, parentSubscriber.actual)) {
                             emitted++;
                         } else {
-                            q.unsubscribe();
+                            parentSubscriber.buffers.remove(q);
                         }
                     } catch (Throwable e) {
-                        q.unsubscribe();
+                        parentSubscriber.buffers.remove(q);
                         // special error handling due to complexity of merge
                         onError(OnErrorThrowable.addValueAsLastCause(e, o));
                     }
@@ -746,16 +751,16 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
             while ((o = q.poll()) != null) {
                 if (q.isCompleted(o)) {
                     parentSubscriber.completeInner(this);
-                    q.unsubscribe();
+                    parentSubscriber.buffers.remove(q);
                 } else {
                     try {
                         if (!q.accept(o, parentSubscriber.actual)) {
                             emitted++;
                         } else {
-                            q.unsubscribe();
+                            parentSubscriber.buffers.remove(q);
                         }
                     } catch (Throwable e) {
-                        q.unsubscribe();
+                        parentSubscriber.buffers.remove(q);
                         // special error handling due to complexity of merge
                         onError(OnErrorThrowable.addValueAsLastCause(e, o));
                     }
