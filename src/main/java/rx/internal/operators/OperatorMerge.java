@@ -539,7 +539,6 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
         public InnerSubscriber(MergeSubscriber<T> parent, MergeProducer<T> producer) {
             this.parentSubscriber = parent;
             this.producer = producer;
-            add(q);
             request(q.capacity());
         }
 
@@ -719,12 +718,16 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
                     break;
                 } else if (q.isCompleted(o)) {
                     parentSubscriber.completeInner(this);
+                    q.unsubscribe();
                 } else {
                     try {
                         if (!q.accept(o, parentSubscriber.actual)) {
                             emitted++;
+                        } else {
+                            q.unsubscribe();
                         }
                     } catch (Throwable e) {
+                        q.unsubscribe();
                         // special error handling due to complexity of merge
                         onError(OnErrorThrowable.addValueAsLastCause(e, o));
                     }
@@ -743,12 +746,16 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
             while ((o = q.poll()) != null) {
                 if (q.isCompleted(o)) {
                     parentSubscriber.completeInner(this);
+                    q.unsubscribe();
                 } else {
                     try {
                         if (!q.accept(o, parentSubscriber.actual)) {
                             emitted++;
+                        } else {
+                            q.unsubscribe();
                         }
                     } catch (Throwable e) {
+                        q.unsubscribe();
                         // special error handling due to complexity of merge
                         onError(OnErrorThrowable.addValueAsLastCause(e, o));
                     }
