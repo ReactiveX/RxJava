@@ -397,11 +397,13 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
 
         @Override
         public void onError(Throwable e) {
-            completed = true;
-            innerError(e);
+            if (!completed) {
+                completed = true;
+                innerError(e, true);
+            }
         }
         
-        private void innerError(Throwable e) {
+        private void innerError(Throwable e, boolean parent) {
             if (delayErrors) {
                 synchronized (this) {
                     if (exceptions == null) {
@@ -411,7 +413,9 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
                 exceptions.add(e);
                 boolean sendOnComplete = false;
                 synchronized (this) {
-                    wip--;
+                    if (!parent) {
+                        wip--;
+                    }
                     if ((wip == 0 && completed) || (wip < 0)) {
                         sendOnComplete = true;
                     }
@@ -545,7 +549,7 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
         public void onError(Throwable e) {
             // it doesn't go through queues, it immediately onErrors and tears everything down
             if (ONCE_TERMINATED.compareAndSet(this, 0, 1)) {
-                parentSubscriber.innerError(e);
+                parentSubscriber.innerError(e, false);
             }
         }
 
