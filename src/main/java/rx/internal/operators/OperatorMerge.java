@@ -307,7 +307,9 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
                     } finally {
                         boolean moreToDrain = releaseEmitLock();
                         // request outside of lock
-                        request(emitted);
+                        if (emitted > 0) {
+                            request(emitted);
+                        }
                         if (!moreToDrain) {
                             return true;
                         }
@@ -524,6 +526,7 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
         final MergeSubscriber<T> parentSubscriber;
         final MergeProducer<T> producer;
         /** Make sure the inner termination events are delivered only once. */
+        @SuppressWarnings("unused")
         volatile int terminated;
         @SuppressWarnings("rawtypes")
         static final AtomicIntegerFieldUpdater<InnerSubscriber> ONCE_TERMINATED = AtomicIntegerFieldUpdater.newUpdater(InnerSubscriber.class, "terminated");
