@@ -609,47 +609,50 @@ public class OperatorObserveOnTest {
 
     @Test
     public void testOnErrorCutsAheadOfOnNext() {
-        final PublishSubject<Long> subject = PublishSubject.create();
-
-        final AtomicLong counter = new AtomicLong();
-        TestSubscriber<Long> ts = new TestSubscriber<Long>(new Observer<Long>() {
-
-            @Override
-            public void onCompleted() {
-
-            }
-
-            @Override
-            public void onError(Throwable e) {
-
-            }
-
-            @Override
-            public void onNext(Long t) {
-                // simulate slow consumer to force backpressure failure
-                try {
-                    Thread.sleep(1);
-                } catch (InterruptedException e) {
+        for (int i = 0; i < 50; i++) {
+            final PublishSubject<Long> subject = PublishSubject.create();
+    
+            final AtomicLong counter = new AtomicLong();
+            TestSubscriber<Long> ts = new TestSubscriber<Long>(new Observer<Long>() {
+    
+                @Override
+                public void onCompleted() {
+    
                 }
+    
+                @Override
+                public void onError(Throwable e) {
+    
+                }
+    
+                @Override
+                public void onNext(Long t) {
+                    // simulate slow consumer to force backpressure failure
+                    try {
+                        Thread.sleep(1);
+                    } catch (InterruptedException e) {
+                    }
+                }
+    
+            });
+            subject.observeOn(Schedulers.computation()).subscribe(ts);
+    
+            // this will blow up with backpressure
+            while (counter.get() < 102400) {
+                subject.onNext(counter.get());
+                counter.incrementAndGet();
             }
-
-        });
-        subject.observeOn(Schedulers.computation()).subscribe(ts);
-
-        // this will blow up with backpressure
-        while (counter.get() < 102400) {
-            subject.onNext(counter.get());
-            counter.incrementAndGet();
+    
+            ts.awaitTerminalEvent();
+            assertEquals(1, ts.getOnErrorEvents().size());
+            assertTrue(ts.getOnErrorEvents().get(0) instanceof MissingBackpressureException);
+            // assert that the values are sequential, that cutting in didn't allow skipping some but emitting others.
+            // example [0, 1, 2] not [0, 1, 4]
+            List<Long> onNextEvents = ts.getOnNextEvents();
+            assertTrue(onNextEvents.isEmpty() || onNextEvents.size() == onNextEvents.get(onNextEvents.size() - 1) + 1);
+            // we should emit the error without emitting the full buffer size
+            assertTrue(onNextEvents.size() < RxRingBuffer.SIZE);
         }
-
-        ts.awaitTerminalEvent();
-        assertEquals(1, ts.getOnErrorEvents().size());
-        assertTrue(ts.getOnErrorEvents().get(0) instanceof MissingBackpressureException);
-        // assert that the values are sequential, that cutting in didn't allow skipping some but emitting others.
-        // example [0, 1, 2] not [0, 1, 4]
-        assertTrue(ts.getOnNextEvents().size() == ts.getOnNextEvents().get(ts.getOnNextEvents().size() - 1) + 1);
-        // we should emit the error without emitting the full buffer size
-        assertTrue(ts.getOnNextEvents().size() < RxRingBuffer.SIZE);
     }
 
     /**

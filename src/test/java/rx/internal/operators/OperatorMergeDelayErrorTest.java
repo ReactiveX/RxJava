@@ -496,26 +496,32 @@ public class OperatorMergeDelayErrorTest {
 
     @Test
     public void testErrorInParentObservableDelayed() throws Exception {
-        final TestASynchronous1sDelayedObservable o1 = new TestASynchronous1sDelayedObservable();
-        final TestASynchronous1sDelayedObservable o2 = new TestASynchronous1sDelayedObservable();
-        Observable<Observable<String>> parentObservable = Observable.create(new Observable.OnSubscribe<Observable<String>>() {
-            @Override
-            public void call(Subscriber<? super Observable<String>> op) {
-                op.onNext(Observable.create(o1));
-                op.onNext(Observable.create(o2));
-                op.onError(new NullPointerException("throwing exception in parent"));
-            }
-        });
-
-        TestSubscriber<String> ts = new TestSubscriber<String>(stringObserver);
-        Observable<String> m = Observable.mergeDelayError(parentObservable);
-        m.subscribe(ts);
-        ts.awaitTerminalEvent(2000, TimeUnit.MILLISECONDS);
-        ts.assertTerminalEvent();
-
-        verify(stringObserver, times(2)).onNext("hello");
-        verify(stringObserver, times(1)).onError(any(NullPointerException.class));
-        verify(stringObserver, never()).onCompleted();
+        for (int i = 0; i < 50; i++) {
+            final TestASynchronous1sDelayedObservable o1 = new TestASynchronous1sDelayedObservable();
+            final TestASynchronous1sDelayedObservable o2 = new TestASynchronous1sDelayedObservable();
+            Observable<Observable<String>> parentObservable = Observable.create(new Observable.OnSubscribe<Observable<String>>() {
+                @Override
+                public void call(Subscriber<? super Observable<String>> op) {
+                    op.onNext(Observable.create(o1));
+                    op.onNext(Observable.create(o2));
+                    op.onError(new NullPointerException("throwing exception in parent"));
+                }
+            });
+    
+            @SuppressWarnings("unchecked")
+            Observer<String> stringObserver = mock(Observer.class);
+            
+            TestSubscriber<String> ts = new TestSubscriber<String>(stringObserver);
+            Observable<String> m = Observable.mergeDelayError(parentObservable);
+            m.subscribe(ts);
+            System.out.println("testErrorInParentObservableDelayed | " + i);
+            ts.awaitTerminalEvent(2000, TimeUnit.MILLISECONDS);
+            ts.assertTerminalEvent();
+    
+            verify(stringObserver, times(2)).onNext("hello");
+            verify(stringObserver, times(1)).onError(any(NullPointerException.class));
+            verify(stringObserver, never()).onCompleted();
+        }
     }
 
     private static class TestASynchronous1sDelayedObservable implements Observable.OnSubscribe<String> {
