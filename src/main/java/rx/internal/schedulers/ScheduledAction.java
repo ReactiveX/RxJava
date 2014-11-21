@@ -15,10 +15,13 @@
  */
 package rx.internal.schedulers;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 import rx.Subscription;
+import rx.exceptions.CompositeException;
 import rx.exceptions.OnErrorNotImplementedException;
 import rx.functions.Action0;
 import rx.plugins.RxJavaPlugins;
@@ -29,20 +32,22 @@ import rx.subscriptions.CompositeSubscription;
  * {@code Subscriber} in respect of an {@code Observer}.
  */
 public final class ScheduledAction implements Runnable, Subscription {
-    final CompositeSubscription cancel;
+    final Subscription[] cancel;
+    volatile int count;
     final Action0 action;
     /** Set by the run() method to avoid self interrupting at the end of the run method. */
-    volatile Thread runner;
+    Thread runner;
 
     public ScheduledAction(Action0 action) {
         this.action = action;
-        this.cancel = new CompositeSubscription();
+        this.cancel = new Subscription[4];
     }
 
     @Override
     public void run() {
+        Thread thread = Thread.currentThread();
         try {
-            runner = Thread.currentThread();
+            runner = thread;
             action.call();
         } catch (Throwable e) {
             // nothing to do but print a System error as this is fatal and there is nowhere else to throw this
@@ -53,7 +58,6 @@ public final class ScheduledAction implements Runnable, Subscription {
                 ie = new IllegalStateException("Fatal Exception thrown on Scheduler.Worker thread.", e);
             }
             RxJavaPlugins.getInstance().getErrorHandler().handleError(ie);
-            Thread thread = Thread.currentThread();
             thread.getUncaughtExceptionHandler().uncaughtException(thread, ie);
         } finally {
             unsubscribe();
@@ -62,14 +66,24 @@ public final class ScheduledAction implements Runnable, Subscription {
 
     @Override
     public boolean isUnsubscribed() {
-        return cancel.isUnsubscribed();
+        return count < 0;
     }
 
     @Override
     public void unsubscribe() {
-        cancel.unsubscribe();
+        Subscription[] subs = cancel;
+        if (count >= 0) {
+            synchronized (this) {
+                if (count < 0) {
+                    return;
+                }
+                count = -1;
+            }
+        }
+        unsubscribeFromAll(subs);
     }
 
+    
     /**
      * Adds a general Subscription to this {@code ScheduledAction} that will be unsubscribed
      * if the underlying {@code action} completes or the this scheduled action is cancelled.
@@ -77,7 +91,51 @@ public final class ScheduledAction implements Runnable, Subscription {
      * @param s the Subscription to add
      */
     public void add(Subscription s) {
-        cancel.add(s);
+        if (count >= 0) {
+            synchronized (this) {
+                int c = count;
+                if (c >= 0) {
+                    cancel[c] = s;
+                    count = c + 1;
+                    return;
+                }
+            }
+        }
+        s.unsubscribe();
+    }
+
+    private static void unsubscribeFromAll(Subscription... subscriptions) {
+        if (subscriptions == null) {
+            return;
+        }
+        List<Throwable> es = null;
+        for (Subscription s : subscriptions) {
+            if (s == null) {
+                break;
+            }
+            try {
+                s.unsubscribe();
+            } catch (Throwable e) {
+                if (es == null) {
+                    es = new ArrayList<Throwable>();
+                }
+                es.add(e);
+            }
+        }
+        if (es != null) {
+            if (es.size() == 1) {
+                Throwable t = es.get(0);
+                if (t instanceof RuntimeException) {
+                    throw (RuntimeException) t;
+                } else {
+                    throw new CompositeException(
+                            "Failed to unsubscribe to 1 or more subscriptions.", es);
+                }
+            } else {
+                throw new CompositeException(
+                        "Failed to unsubscribe to 2 or more subscriptions.", es);
+            }
+        }
     }
 
     /**
@@ -86,7 +144,7 @@ public final class ScheduledAction implements Runnable, Subscription {
      * @param f the future to add
      */
     public void add(final Future<?> f) {
-        cancel.add(new FutureCompleter(f));
+        add(new FutureCompleter(f));
     }
     
     /**
@@ -97,7 +155,7 @@ public final class ScheduledAction implements Runnable, Subscription {
      *            the parent {@code CompositeSubscription} to add
      */
     public void addParent(CompositeSubscription parent) {
-        cancel.add(new Remover(this, parent));
+        add(new Remover(this, parent));
     }
 
     /**
