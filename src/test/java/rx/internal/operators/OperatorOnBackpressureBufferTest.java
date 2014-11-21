@@ -15,9 +15,8 @@
  */
 package rx.internal.operators;
 
-import static org.junit.Assert.assertEquals;
-
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 
@@ -25,8 +24,14 @@ import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Observer;
 import rx.Subscriber;
+import rx.Subscription;
+import rx.exceptions.MissingBackpressureException;
+import rx.functions.Action0;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class OperatorOnBackpressureBufferTest {
 
@@ -81,6 +86,56 @@ public class OperatorOnBackpressureBufferTest {
         assertEquals(499, ts.getOnNextEvents().get(499).intValue());
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testFixBackpressureBufferNegativeCapacity() throws InterruptedException {
+        Observable.empty().onBackpressureBuffer(-1);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testFixBackpressureBufferZeroCapacity() throws InterruptedException {
+        Observable.empty().onBackpressureBuffer(-1);
+    }
+
+    @Test
+    public void testFixBackpressureBoundedBuffer() throws InterruptedException {
+        final CountDownLatch l1 = new CountDownLatch(100);
+        final CountDownLatch backpressureCallback = new CountDownLatch(1);
+        TestSubscriber<Long> ts = new TestSubscriber<Long>(new Observer<Long>() {
+
+            @Override
+            public void onCompleted() { }
+
+            @Override
+            public void onError(Throwable e) { }
+
+            @Override
+            public void onNext(Long t) {
+                l1.countDown();
+            }
+
+        });
+
+        ts.requestMore(100);
+        Subscription s = infinite.subscribeOn(Schedulers.computation())
+                                 .onBackpressureBuffer(500, new Action0() {
+                                     @Override
+                                     public void call() {
+                                         backpressureCallback.countDown();
+                                     }
+                                 }).take(1000).subscribe(ts);
+        l1.await();
+
+        ts.requestMore(50);
+
+        assertTrue(backpressureCallback.await(500, TimeUnit.MILLISECONDS));
+        assertTrue(ts.getOnErrorEvents().get(0) instanceof MissingBackpressureException);
+
+        int size = ts.getOnNextEvents().size();
+        assertTrue(size <= 150);  // will get up to 50 more
+        assertTrue(ts.getOnNextEvents().get(size-1) == size-1);
+        assertTrue(s.isUnsubscribed());
+    }
+
     static final Observable<Long> infinite = Observable.create(new OnSubscribe<Long>() {
 
         @Override
@@ -92,4 +147,5 @@ public class OperatorOnBackpressureBufferTest {
         }
 
     });
+
 }
