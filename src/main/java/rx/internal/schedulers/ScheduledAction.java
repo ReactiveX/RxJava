@@ -15,13 +15,11 @@
  */
 package rx.internal.schedulers;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.Future;
-import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Subscription;
-import rx.exceptions.CompositeException;
 import rx.exceptions.OnErrorNotImplementedException;
 import rx.functions.Action0;
 import rx.plugins.RxJavaPlugins;
@@ -31,23 +29,21 @@ import rx.subscriptions.CompositeSubscription;
  * A {@code Runnable} that executes an {@code Action0} and can be cancelled. The analog is the
  * {@code Subscriber} in respect of an {@code Observer}.
  */
-public final class ScheduledAction implements Runnable, Subscription {
-    final Subscription[] cancel;
-    volatile int count;
+public final class ScheduledAction extends AtomicReference<Thread> implements Runnable, Subscription {
+    /** */
+    private static final long serialVersionUID = -3962399486978279857L;
+    final CompositeSubscription cancel;
     final Action0 action;
-    /** Set by the run() method to avoid self interrupting at the end of the run method. */
-    Thread runner;
 
     public ScheduledAction(Action0 action) {
         this.action = action;
-        this.cancel = new Subscription[4];
+        this.cancel = new CompositeSubscription();
     }
 
     @Override
     public void run() {
-        Thread thread = Thread.currentThread();
         try {
-            runner = thread;
+            lazySet(Thread.currentThread());
             action.call();
         } catch (Throwable e) {
             // nothing to do but print a System error as this is fatal and there is nowhere else to throw this
@@ -58,6 +54,7 @@ public final class ScheduledAction implements Runnable, Subscription {
                 ie = new IllegalStateException("Fatal Exception thrown on Scheduler.Worker thread.", e);
             }
             RxJavaPlugins.getInstance().getErrorHandler().handleError(ie);
+            Thread thread = Thread.currentThread();
             thread.getUncaughtExceptionHandler().uncaughtException(thread, ie);
         } finally {
             unsubscribe();
@@ -66,24 +63,16 @@ public final class ScheduledAction implements Runnable, Subscription {
 
     @Override
     public boolean isUnsubscribed() {
-        return count < 0;
+        return cancel.isUnsubscribed();
     }
 
     @Override
     public void unsubscribe() {
-        Subscription[] subs = cancel;
-        if (count >= 0) {
-            synchronized (this) {
-                if (count < 0) {
-                    return;
-                }
-                count = -1;
-            }
+        if (!cancel.isUnsubscribed()) {
+            cancel.unsubscribe();
         }
-        unsubscribeFromAll(subs);
     }
 
-    
     /**
      * Adds a general Subscription to this {@code ScheduledAction} that will be unsubscribed
      * if the underlying {@code action} completes or the this scheduled action is cancelled.
@@ -91,51 +80,7 @@ public final class ScheduledAction implements Runnable, Subscription {
      * @param s the Subscription to add
      */
     public void add(Subscription s) {
-        if (count >= 0) {
-            synchronized (this) {
-                int c = count;
-                if (c >= 0) {
-                    cancel[c] = s;
-                    count = c + 1;
-                    return;
-                }
-            }
-        }
-        s.unsubscribe();
-    }
-
-    private static void unsubscribeFromAll(Subscription... subscriptions) {
-        if (subscriptions == null) {
-            return;
-        }
-        List<Throwable> es = null;
-        for (Subscription s : subscriptions) {
-            if (s == null) {
-                break;
-            }
-            try {
-                s.unsubscribe();
-            } catch (Throwable e) {
-                if (es == null) {
-                    es = new ArrayList<Throwable>();
-                }
-                es.add(e);
-            }
-        }
-        if (es != null) {
-            if (es.size() == 1) {
-                Throwable t = es.get(0);
-                if (t instanceof RuntimeException) {
-                    throw (RuntimeException) t;
-                } else {
-                    throw new CompositeException(
-                            "Failed to unsubscribe to 1 or more subscriptions.", es);
-                }
-            } else {
-                throw new CompositeException(
-                        "Failed to unsubscribe to 2 or more subscriptions.", es);
-            }
-        }
+        cancel.add(s);
     }
 
     /**
@@ -144,7 +89,7 @@ public final class ScheduledAction implements Runnable, Subscription {
      * @param f the future to add
      */
     public void add(final Future<?> f) {
-        add(new FutureCompleter(f));
+        cancel.add(new FutureCompleter(f));
     }
     
     /**
@@ -155,7 +100,7 @@ public final class ScheduledAction implements Runnable, Subscription {
      *            the parent {@code CompositeSubscription} to add
      */
     public void addParent(CompositeSubscription parent) {
-        add(new Remover(this, parent));
+        cancel.add(new Remover(this, parent));
     }
 
     /**
@@ -173,7 +118,7 @@ public final class ScheduledAction implements Runnable, Subscription {
 
         @Override
         public void unsubscribe() {
-            if (runner != Thread.currentThread()) {
+            if (ScheduledAction.this.get() != Thread.currentThread()) {
                 f.cancel(true);
             } else {
                 f.cancel(false);
@@ -186,13 +131,11 @@ public final class ScheduledAction implements Runnable, Subscription {
     }
 
     /** Remove a child subscription from a composite when unsubscribing. */
-    private static final class Remover implements Subscription {
+    private static final class Remover extends AtomicBoolean implements Subscription {
+        /** */
+        private static final long serialVersionUID = 247232374289553518L;
         final Subscription s;
         final CompositeSubscription parent;
-        @SuppressWarnings("unused")
-        volatile int once;
-        static final AtomicIntegerFieldUpdater<Remover> ONCE_UPDATER
-                = AtomicIntegerFieldUpdater.newUpdater(Remover.class, "once");
 
         public Remover(Subscription s, CompositeSubscription parent) {
             this.s = s;
@@ -206,7 +149,7 @@ public final class ScheduledAction implements Runnable, Subscription {
 
         @Override
         public void unsubscribe() {
-            if (ONCE_UPDATER.compareAndSet(this, 0, 1)) {
+            if (compareAndSet(false, true)) {
                 parent.remove(s);
             }
         }
