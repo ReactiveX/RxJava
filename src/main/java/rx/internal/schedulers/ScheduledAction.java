@@ -23,7 +23,6 @@ import rx.exceptions.OnErrorNotImplementedException;
 import rx.functions.Action0;
 import rx.plugins.RxJavaPlugins;
 import rx.subscriptions.CompositeSubscription;
-import rx.subscriptions.Subscriptions;
 
 /**
  * A {@code Runnable} that executes an {@code Action0} and can be cancelled. The analog is the
@@ -32,9 +31,6 @@ import rx.subscriptions.Subscriptions;
 public final class ScheduledAction implements Runnable, Subscription {
     final CompositeSubscription cancel;
     final Action0 action;
-    volatile int once;
-    static final AtomicIntegerFieldUpdater<ScheduledAction> ONCE_UPDATER
-            = AtomicIntegerFieldUpdater.newUpdater(ScheduledAction.class, "once");
     /** Set by the run() method to avoid self interrupting at the end of the run method. */
     volatile Thread runner;
 
@@ -71,9 +67,7 @@ public final class ScheduledAction implements Runnable, Subscription {
 
     @Override
     public void unsubscribe() {
-        if (ONCE_UPDATER.compareAndSet(this, 0, 1)) {
-            cancel.unsubscribe();
-        }
+        cancel.unsubscribe();
     }
 
     /**
@@ -92,7 +86,7 @@ public final class ScheduledAction implements Runnable, Subscription {
      * @param f the future to add
      */
     public void add(final Future<?> f) {
-        cancel.add(Subscriptions.create(new FutureCompleter(f)));
+        cancel.add(new FutureCompleter(f));
     }
     
     /**
@@ -112,7 +106,7 @@ public final class ScheduledAction implements Runnable, Subscription {
      * prevent unnecessary self-interrupting if the unsubscription
      * happens from the same thread.
      */
-    private final class FutureCompleter implements Action0 {
+    private final class FutureCompleter implements Subscription {
         private final Future<?> f;
 
         private FutureCompleter(Future<?> f) {
@@ -120,10 +114,16 @@ public final class ScheduledAction implements Runnable, Subscription {
         }
 
         @Override
-        public void call() {
+        public void unsubscribe() {
             if (runner != Thread.currentThread()) {
                 f.cancel(true);
+            } else {
+                f.cancel(false);
             }
+        }
+        @Override
+        public boolean isUnsubscribed() {
+            return f.isCancelled();
         }
     }
 
