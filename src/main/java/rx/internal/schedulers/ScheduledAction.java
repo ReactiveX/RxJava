@@ -15,6 +15,7 @@
  */
 package rx.internal.schedulers;
 
+import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 import rx.Subscription;
@@ -22,6 +23,7 @@ import rx.exceptions.OnErrorNotImplementedException;
 import rx.functions.Action0;
 import rx.plugins.RxJavaPlugins;
 import rx.subscriptions.CompositeSubscription;
+import rx.subscriptions.Subscriptions;
 
 /**
  * A {@code Runnable} that executes an {@code Action0} and can be cancelled. The analog is the
@@ -33,6 +35,8 @@ public final class ScheduledAction implements Runnable, Subscription {
     volatile int once;
     static final AtomicIntegerFieldUpdater<ScheduledAction> ONCE_UPDATER
             = AtomicIntegerFieldUpdater.newUpdater(ScheduledAction.class, "once");
+    /** Set by the run() method to avoid self interrupting at the end of the run method. */
+    volatile Thread runner;
 
     public ScheduledAction(Action0 action) {
         this.action = action;
@@ -42,6 +46,7 @@ public final class ScheduledAction implements Runnable, Subscription {
     @Override
     public void run() {
         try {
+            runner = Thread.currentThread();
             action.call();
         } catch (Throwable e) {
             // nothing to do but print a System error as this is fatal and there is nowhere else to throw this
@@ -72,15 +77,24 @@ public final class ScheduledAction implements Runnable, Subscription {
     }
 
     /**
-     * @warn javadoc missing
+     * Adds a general Subscription to this {@code ScheduledAction} that will be unsubscribed
+     * if the underlying {@code action} completes or the this scheduled action is cancelled.
      *
-     * @param s
-     * @warn param "s" undescribed
+     * @param s the Subscription to add
      */
     public void add(Subscription s) {
         cancel.add(s);
     }
 
+    /**
+     * Adds the given Future to the unsubscription composite in order to support
+     * cancelling the underlying task in the executor framework.
+     * @param f the future to add
+     */
+    public void add(final Future<?> f) {
+        cancel.add(Subscriptions.create(new FutureCompleter(f)));
+    }
+    
     /**
      * Adds a parent {@link CompositeSubscription} to this {@code ScheduledAction} so when the action is
      * cancelled or terminates, it can remove itself from this parent.
@@ -92,10 +106,32 @@ public final class ScheduledAction implements Runnable, Subscription {
         cancel.add(new Remover(this, parent));
     }
 
+    /**
+     * Cancels the captured future if the caller of the call method
+     * is not the same as the runner of the outer ScheduledAction to
+     * prevent unnecessary self-interrupting if the unsubscription
+     * happens from the same thread.
+     */
+    private final class FutureCompleter implements Action0 {
+        private final Future<?> f;
+
+        private FutureCompleter(Future<?> f) {
+            this.f = f;
+        }
+
+        @Override
+        public void call() {
+            if (runner != Thread.currentThread()) {
+                f.cancel(true);
+            }
+        }
+    }
+
     /** Remove a child subscription from a composite when unsubscribing. */
     private static final class Remover implements Subscription {
         final Subscription s;
         final CompositeSubscription parent;
+        @SuppressWarnings("unused")
         volatile int once;
         static final AtomicIntegerFieldUpdater<Remover> ONCE_UPDATER
                 = AtomicIntegerFieldUpdater.newUpdater(Remover.class, "once");
