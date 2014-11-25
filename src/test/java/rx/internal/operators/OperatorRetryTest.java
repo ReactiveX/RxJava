@@ -38,6 +38,7 @@ import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.functions.Func2;
 import rx.internal.util.RxRingBuffer;
+import rx.observables.GroupedObservable;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
@@ -405,10 +406,14 @@ public class OperatorRetryTest {
         public void call(Subscriber<? super String> o) {
             o.onNext("beginningEveryTime");
             if (count.getAndIncrement() < numFailures) {
+                System.out.println("FuncWithErrors @ " + count.get()); 
                 o.onError(new RuntimeException("forced failure: " + count.get()));
             } else {
+                System.out.println("FuncWithErrors @ onSuccessOnly"); 
                 o.onNext("onSuccessOnly");
+                System.out.println("FuncWithErrors @ onCompleted"); 
                 o.onCompleted();
+                System.out.println("FuncWithErrors !"); 
             }
         }
     }
@@ -663,7 +668,7 @@ public class OperatorRetryTest {
         assertEquals("Start 6 threads, retry 5 then fail on 6", 6, so.efforts.get());
     }
     
-    @Test
+    @Test(timeout = 3000)
     public void testRetryWithBackpressure() {
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
@@ -680,6 +685,91 @@ public class OperatorRetryTest {
         inOrder.verify(observer, never()).onError(any(Throwable.class));
         // should have a single success
         inOrder.verify(observer, times(1)).onNext("onSuccessOnly");
+        // should have a single successful onCompleted
+        inOrder.verify(observer, times(1)).onCompleted();
+        inOrder.verifyNoMoreInteractions();
+    }
+    @Test(timeout = 3000)
+    public void testIssue1900() throws InterruptedException {
+        @SuppressWarnings("unchecked")
+        Observer<String> observer = mock(Observer.class);
+        final int NUM_MSG = 1034;
+        final AtomicInteger count = new AtomicInteger();
+
+        Observable<String> origin = Observable.range(0, NUM_MSG)
+                .map(new Func1<Integer, String>() {
+                    @Override
+                    public String call(Integer t1) {
+                        return "msg: " + count.incrementAndGet();
+                    }
+                });
+        
+        origin.retry()
+        .groupBy(new Func1<String, String>() {
+            @Override
+            public String call(String t1) {
+                return t1;
+            }
+        })
+        .flatMap(new Func1<GroupedObservable<String,String>, Observable<String>>() {
+            @Override
+            public Observable<String> call(GroupedObservable<String, String> t1) {
+                return t1.take(1);
+            }
+        })
+        .unsafeSubscribe(new TestSubscriber<String>(observer));
+        
+        InOrder inOrder = inOrder(observer);
+        // should show 3 attempts
+        inOrder.verify(observer, times(NUM_MSG)).onNext(any(java.lang.String.class));
+        //        // should have no errors
+        inOrder.verify(observer, never()).onError(any(Throwable.class));
+        // should have a single success
+        //inOrder.verify(observer, times(1)).onNext("onSuccessOnly");
+        // should have a single successful onCompleted
+        inOrder.verify(observer, times(1)).onCompleted();
+        inOrder.verifyNoMoreInteractions();
+    }
+    @Test/*(timeout = 3000)*/
+    public void testIssue1900SourceNotSupportingBackpressure() {
+        @SuppressWarnings("unchecked")
+        Observer<String> observer = mock(Observer.class);
+        final int NUM_MSG = 1034;
+        final AtomicInteger count = new AtomicInteger();
+
+        Observable<String> origin = Observable.create(new Observable.OnSubscribe<String>() {
+
+            @Override
+            public void call(Subscriber<? super String> o) {
+                for(int i=0; i<NUM_MSG; i++) {
+                    o.onNext("msg:" + count.incrementAndGet());
+                }   
+                o.onCompleted();
+            }
+        });
+        
+        origin.retry()
+        .groupBy(new Func1<String, String>() {
+            @Override
+            public String call(String t1) {
+                return t1;
+            }
+        })
+        .flatMap(new Func1<GroupedObservable<String,String>, Observable<String>>() {
+            @Override
+            public Observable<String> call(GroupedObservable<String, String> t1) {
+                return t1.take(1);
+            }
+        })
+        .unsafeSubscribe(new TestSubscriber<String>(observer));
+        
+        InOrder inOrder = inOrder(observer);
+        // should show 3 attempts
+        inOrder.verify(observer, times(NUM_MSG)).onNext(any(java.lang.String.class));
+        //        // should have no errors
+        inOrder.verify(observer, never()).onError(any(Throwable.class));
+        // should have a single success
+        //inOrder.verify(observer, times(1)).onNext("onSuccessOnly");
         // should have a single successful onCompleted
         inOrder.verify(observer, times(1)).onCompleted();
         inOrder.verifyNoMoreInteractions();

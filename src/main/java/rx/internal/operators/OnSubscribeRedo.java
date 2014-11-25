@@ -190,7 +190,7 @@ public final class OnSubscribeRedo<T> implements OnSubscribe<T> {
     @Override
     public void call(final Subscriber<? super T> child) {
         final AtomicBoolean isLocked = new AtomicBoolean(true);
-        final AtomicBoolean isStarted = new AtomicBoolean(false);
+        final AtomicBoolean resumeBoundary = new AtomicBoolean(true);
         // incremented when requests are made, decremented when requests are fulfilled
         final AtomicLong consumerCapacity = new AtomicLong(0l);
         final AtomicReference<Producer> currentProducer = new AtomicReference<Producer>();
@@ -300,6 +300,8 @@ public final class OnSubscribeRedo<T> implements OnSubscribe<T> {
                         if (!isLocked.get() && !child.isUnsubscribed()) {
                             if (consumerCapacity.get() > 0) {
                                 worker.schedule(subscribeToSource);
+                            } else {
+                                resumeBoundary.compareAndSet(false, true);
                             }
                         }
                     }
@@ -315,22 +317,17 @@ public final class OnSubscribeRedo<T> implements OnSubscribe<T> {
         child.setProducer(new Producer() {
 
             @Override
-            public void request(long n) {
-                if (isStarted.compareAndSet(false, true)) {
-                    consumerCapacity.set(n);
+            public void request(final long n) {
+                long c = consumerCapacity.getAndAdd(n);
+                Producer producer = currentProducer.get();
+                if (producer != null) {
+                    producer.request(c + n);
+                } else
+                if (c == 0 && resumeBoundary.compareAndSet(true, false)) {
                     worker.schedule(subscribeToSource);
-                } else {
-                    if (consumerCapacity.getAndAdd(n) == 0) {
-                        // restart
-                        worker.schedule(subscribeToSource);
-                    } else {
-                        if (currentProducer.get() != null) {
-                            currentProducer.get().request(n);
-                        }
-                    }
                 }
             }
         });
-
+        
     }
 }
