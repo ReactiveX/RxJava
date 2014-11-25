@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,19 +27,22 @@ import rx.subscriptions.BooleanSubscription;
 import rx.subscriptions.Subscriptions;
 
 /**
- * The {@code TestScheduler} is useful for debugging. It allows you to test schedules of events by manually
- * advancing the clock at whatever pace you choose.
+ * The {@code TestScheduler} is useful for debugging. It allows you to test
+ * schedules of events by manually advancing the clock at whatever pace you
+ * choose.
  */
 public class TestScheduler extends Scheduler {
-    private final Queue<TimedAction> queue = new PriorityQueue<TimedAction>(11, new CompareActionsByTime());
-    private static long counter = 0;
+    private final Queue<TimedAction> queue   = new PriorityQueue<TimedAction>(11, new CompareActionsByTime());
+    private static long              counter = 0;
 
     private static class TimedAction {
 
-        private final long time;
+        private final long    time;
         private final Action0 action;
-        private final Worker scheduler;
-        private final long count = counter++; // for differentiating tasks at same time
+        private final Worker  scheduler;
+        private final long    count = counter++; // for differentiating tasks at
+
+        // same time
 
         private TimedAction(Worker scheduler, long time, Action0 action) {
             this.time = time;
@@ -76,9 +79,9 @@ public class TestScheduler extends Scheduler {
      * Moves the Scheduler's clock forward by a specified amount of time.
      *
      * @param delayTime
-     *          the amount of time to move the Scheduler's clock forward
+     *            the amount of time to move the Scheduler's clock forward
      * @param unit
-     *          the units of time that {@code delayTime} is expressed in
+     *            the units of time that {@code delayTime} is expressed in
      */
     public void advanceTimeBy(long delayTime, TimeUnit unit) {
         advanceTimeTo(time + unit.toNanos(delayTime), TimeUnit.NANOSECONDS);
@@ -88,9 +91,9 @@ public class TestScheduler extends Scheduler {
      * Moves the Scheduler's clock to a particular moment in time.
      *
      * @param delayTime
-     *          the point in time to move the Scheduler's clock to
+     *            the point in time to move the Scheduler's clock to
      * @param unit
-     *          the units of time that {@code delayTime} is expressed in
+     *            the units of time that {@code delayTime} is expressed in
      */
     public void advanceTimeTo(long delayTime, TimeUnit unit) {
         long targetTime = unit.toNanos(delayTime);
@@ -98,8 +101,8 @@ public class TestScheduler extends Scheduler {
     }
 
     /**
-     * Triggers any actions that have not yet been triggered and that are scheduled to be triggered at or
-     * before this Scheduler's present time.
+     * Triggers any actions that have not yet been triggered and that are
+     * scheduled to be triggered at or before this Scheduler's present time.
      */
     public void triggerActions() {
         triggerActions(time);
@@ -111,7 +114,7 @@ public class TestScheduler extends Scheduler {
             if (current.time > targetTimeInNanos) {
                 break;
             }
-            time = current.time;
+            time = current.time == 0 ? time : current.time;
             queue.remove();
 
             // Only execute if not unsubscribed
@@ -129,7 +132,7 @@ public class TestScheduler extends Scheduler {
 
     private final class InnerTestScheduler extends Worker {
 
-        private BooleanSubscription s = new BooleanSubscription();
+        private final BooleanSubscription s = new BooleanSubscription();
 
         @Override
         public void unsubscribe() {
