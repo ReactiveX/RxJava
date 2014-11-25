@@ -730,7 +730,7 @@ public class OperatorRetryTest {
         inOrder.verify(observer, times(1)).onCompleted();
         inOrder.verifyNoMoreInteractions();
     }
-    @Test/*(timeout = 3000)*/
+    @Test(timeout = 3000)
     public void testIssue1900SourceNotSupportingBackpressure() {
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
