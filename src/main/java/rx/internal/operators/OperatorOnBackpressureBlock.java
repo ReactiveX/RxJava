@@ -24,7 +24,7 @@ import rx.Producer;
 import rx.Subscriber;
 
 /**
- * Operator that uses blocks the producer thread in case a backpressure is needed.
+ * Operator that blocks the producer thread in case a backpressure is needed.
  */
 public class OperatorOnBackpressureBlock<T> implements Operator<T, T> {
     final int max;
