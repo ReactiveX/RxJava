@@ -117,11 +117,7 @@ public class OperatorOnBackpressureBlock<T> implements Operator<T, T> {
                                 }
                                 return;
                             }
-                            if (n == Long.MAX_VALUE) {
-                                return;
-                            } else {
-                                break;
-                            }
+                            break;
                         } else {
                             child.onNext(nl.getValue(o));
                             n--;
@@ -129,13 +125,23 @@ public class OperatorOnBackpressureBlock<T> implements Operator<T, T> {
                         }
                     }
                     synchronized (this) {
-                        if (requestedCount == Long.MAX_VALUE || emitted == 0) {
-                            skipFinal = true;
-                            emitting = false;
-                            return;
+                        // if no backpressure below
+                        if (requestedCount == Long.MAX_VALUE) {
+                            // no new data arrived since the last poll
+                            if (queue.peek() == null) {
+                                skipFinal = true;
+                                emitting = false;
+                                return;
+                            }
+                            n = Long.MAX_VALUE;
                         } else {
+                            if (emitted == 0) {
+                                skipFinal = true;
+                                emitting = false;
+                                return;
+                            }
                             requestedCount -= emitted;
-                            n += requestedCount;
+                            n = requestedCount;
                         }
                     }
                 }

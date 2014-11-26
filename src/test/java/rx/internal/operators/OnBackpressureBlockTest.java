@@ -204,7 +204,7 @@ public class OnBackpressureBlockTest {
         assertTrue(o.getOnErrorEvents().get(0) instanceof TestException);
         assertTrue(o.getOnCompletedEvents().isEmpty());
     }
-    @Test
+    @Test(timeout = 10000)
     public void testTakeWorksWithSubscriberRequesting() {
         Observable<Integer> source = Observable.range(1, 10)
                 .concatWith(Observable.<Integer>error(new TestException("Forced failure")))
@@ -227,7 +227,7 @@ public class OnBackpressureBlockTest {
         o.assertNoErrors();
         o.assertTerminalEvent();
     }
-    @Test
+    @Test(timeout = 10000)
     public void testTakeWorksSubscriberRequestUnlimited() {
         Observable<Integer> source = Observable.range(1, 10)
                 .concatWith(Observable.<Integer>error(new TestException("Forced failure")))
@@ -243,7 +243,7 @@ public class OnBackpressureBlockTest {
         o.assertNoErrors();
         o.assertTerminalEvent();
     }
-    @Test
+    @Test(timeout = 10000)
     public void testTakeWorksSubscriberRequestUnlimitedBufferedException() {
         Observable<Integer> source = Observable.range(1, 10)
                 .concatWith(Observable.<Integer>error(new TestException("Forced failure")))
