@@ -12,20 +12,142 @@
  */
 package rx;
 
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
-import rx.exceptions.*;
-import rx.functions.*;
-import rx.internal.operators.*;
+import rx.exceptions.Exceptions;
+import rx.exceptions.OnErrorNotImplementedException;
+import rx.functions.Action0;
+import rx.functions.Action1;
+import rx.functions.Action2;
+import rx.functions.Func0;
+import rx.functions.Func1;
+import rx.functions.Func2;
+import rx.functions.Func3;
+import rx.functions.Func4;
+import rx.functions.Func5;
+import rx.functions.Func6;
+import rx.functions.Func7;
+import rx.functions.Func8;
+import rx.functions.Func9;
+import rx.functions.FuncN;
+import rx.functions.Functions;
+import rx.internal.operators.OnSubscribeAmb;
+import rx.internal.operators.OnSubscribeCache;
+import rx.internal.operators.OnSubscribeCombineLatest;
+import rx.internal.operators.OnSubscribeDefer;
+import rx.internal.operators.OnSubscribeDelaySubscription;
+import rx.internal.operators.OnSubscribeDelaySubscriptionWithSelector;
+import rx.internal.operators.OnSubscribeFromIterable;
+import rx.internal.operators.OnSubscribeGroupJoin;
+import rx.internal.operators.OnSubscribeJoin;
+import rx.internal.operators.OnSubscribeMulticastSelector;
+import rx.internal.operators.OnSubscribeRange;
+import rx.internal.operators.OnSubscribeRedo;
+import rx.internal.operators.OnSubscribeTimerOnce;
+import rx.internal.operators.OnSubscribeTimerPeriodically;
+import rx.internal.operators.OnSubscribeToObservableFuture;
+import rx.internal.operators.OnSubscribeUsing;
+import rx.internal.operators.OperatorAll;
+import rx.internal.operators.OperatorAny;
+import rx.internal.operators.OperatorAsObservable;
+import rx.internal.operators.OperatorBufferWithSingleObservable;
+import rx.internal.operators.OperatorBufferWithSize;
+import rx.internal.operators.OperatorBufferWithStartEndObservable;
+import rx.internal.operators.OperatorBufferWithTime;
+import rx.internal.operators.OperatorCast;
+import rx.internal.operators.OperatorConcat;
+import rx.internal.operators.OperatorDebounceWithSelector;
+import rx.internal.operators.OperatorDebounceWithTime;
+import rx.internal.operators.OperatorDefaultIfEmpty;
+import rx.internal.operators.OperatorDelay;
+import rx.internal.operators.OperatorDelayWithSelector;
+import rx.internal.operators.OperatorDematerialize;
+import rx.internal.operators.OperatorDistinct;
+import rx.internal.operators.OperatorDistinctUntilChanged;
+import rx.internal.operators.OperatorDoOnEach;
+import rx.internal.operators.OperatorDoOnSubscribe;
+import rx.internal.operators.OperatorDoOnUnsubscribe;
+import rx.internal.operators.OperatorElementAt;
+import rx.internal.operators.OperatorFilter;
+import rx.internal.operators.OperatorFinally;
+import rx.internal.operators.OperatorGroupBy;
+import rx.internal.operators.OperatorMap;
+import rx.internal.operators.OperatorMapNotification;
+import rx.internal.operators.OperatorMapPair;
+import rx.internal.operators.OperatorMaterialize;
+import rx.internal.operators.OperatorMerge;
+import rx.internal.operators.OperatorMergeDelayError;
+import rx.internal.operators.OperatorMergeMaxConcurrent;
+import rx.internal.operators.OperatorMulticast;
+import rx.internal.operators.OperatorObserveOn;
+import rx.internal.operators.OperatorOnBackpressureBlock;
+import rx.internal.operators.OperatorOnBackpressureBuffer;
+import rx.internal.operators.OperatorOnBackpressureDrop;
+import rx.internal.operators.OperatorOnErrorResumeNextViaFunction;
+import rx.internal.operators.OperatorOnErrorResumeNextViaObservable;
+import rx.internal.operators.OperatorOnErrorReturn;
+import rx.internal.operators.OperatorOnExceptionResumeNextViaObservable;
+import rx.internal.operators.OperatorPublish;
+import rx.internal.operators.OperatorReplay;
+import rx.internal.operators.OperatorRetryWithPredicate;
+import rx.internal.operators.OperatorSampleWithObservable;
+import rx.internal.operators.OperatorSampleWithTime;
+import rx.internal.operators.OperatorScan;
+import rx.internal.operators.OperatorSequenceEqual;
+import rx.internal.operators.OperatorSerialize;
+import rx.internal.operators.OperatorSingle;
+import rx.internal.operators.OperatorSkip;
+import rx.internal.operators.OperatorSkipLast;
+import rx.internal.operators.OperatorSkipLastTimed;
+import rx.internal.operators.OperatorSkipTimed;
+import rx.internal.operators.OperatorSkipUntil;
+import rx.internal.operators.OperatorSkipWhile;
+import rx.internal.operators.OperatorSubscribeOn;
+import rx.internal.operators.OperatorSwitch;
+import rx.internal.operators.OperatorTake;
+import rx.internal.operators.OperatorTakeLast;
+import rx.internal.operators.OperatorTakeLastTimed;
+import rx.internal.operators.OperatorTakeTimed;
+import rx.internal.operators.OperatorTakeUntil;
+import rx.internal.operators.OperatorTakeWhile;
+import rx.internal.operators.OperatorThrottleFirst;
+import rx.internal.operators.OperatorTimeInterval;
+import rx.internal.operators.OperatorTimeout;
+import rx.internal.operators.OperatorTimeoutWithSelector;
+import rx.internal.operators.OperatorTimestamp;
+import rx.internal.operators.OperatorToMap;
+import rx.internal.operators.OperatorToMultimap;
+import rx.internal.operators.OperatorToObservableList;
+import rx.internal.operators.OperatorToObservableSortedList;
+import rx.internal.operators.OperatorUnsubscribeOn;
+import rx.internal.operators.OperatorWindowWithObservable;
+import rx.internal.operators.OperatorWindowWithSize;
+import rx.internal.operators.OperatorWindowWithStartEndObservable;
+import rx.internal.operators.OperatorWindowWithTime;
+import rx.internal.operators.OperatorZip;
+import rx.internal.operators.OperatorZipIterable;
+import rx.internal.util.RxRingBuffer;
 import rx.internal.util.ScalarSynchronousObservable;
 import rx.internal.util.UtilityFunctions;
-
-import rx.observables.*;
+import rx.observables.BlockingObservable;
+import rx.observables.ConnectableObservable;
+import rx.observables.GroupedObservable;
 import rx.observers.SafeSubscriber;
-import rx.plugins.*;
-import rx.schedulers.*;
-import rx.subjects.*;
+import rx.plugins.RxJavaObservableExecutionHook;
+import rx.plugins.RxJavaPlugins;
+import rx.schedulers.Schedulers;
+import rx.schedulers.TimeInterval;
+import rx.schedulers.Timestamped;
+import rx.subjects.ReplaySubject;
+import rx.subjects.Subject;
 import rx.subscriptions.Subscriptions;
 
 /**
@@ -182,6 +304,7 @@ public class Observable<T> {
      * @return the source Observable, transformed by the transformer function
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Implementing-Your-Own-Operators">RxJava wiki: Implementing Your Own Operators</a>
      */
+    @SuppressWarnings("unchecked")
     public <R> Observable<R> compose(Transformer<? super T, ? extends R> transformer) {
         return ((Transformer<T, R>) transformer).call(this);
     }
@@ -5052,6 +5175,43 @@ public class Observable<T> {
      */
     public final Observable<T> onBackpressureDrop() {
         return lift(new OperatorOnBackpressureDrop<T>());
+    }
+    
+    /**
+     * Instructs an Observable that is emitting items faster than its observer can consume them is to
+     * block the producer thread.
+     * <p>
+     * The producer side can emit up to {@code maxQueueLength} onNext elements without blocking, but the
+     * consumer side considers the amount its downstream requested through {@code Producer.request(n)}
+     * and doesn't emit more than requested even if more is available. For example, using 
+     * {@code onBackpressureBlock(384).observeOn(Schedulers.io())} will not throw a MissingBackpressureException.
+     * <p>
+     * Note that if the upstream Observable does support backpressure, this operator ignores that capability
+     * and doesn't propagate any backpressure requests from downstream.
+     *  
+     * @param maxQueueLength the maximum number of items the producer can emit without blocking
+     * @return the source Observable modified to block {@code onNext} notifications on overflow
+     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Backpressure">RxJava wiki: Backpressure</a>
+     */
+    public final Observable<T> onBackpressureBlock(int maxQueueLength) {
+        return lift(new OperatorOnBackpressureBlock<T>(maxQueueLength));
+    }
+    /**
+     * Instructs an Observable that is emitting items faster than its observer can consume them is to
+     * block the producer thread if the number of undelivered onNext events reaches the system-wide ring buffer size.
+     * <p>
+     * The producer side can emit up to the system-wide ring buffer size onNext elements without blocking, but the
+     * consumer side considers the amount its downstream requested through {@code Producer.request(n)}
+     * and doesn't emit more than requested even if available.
+     * <p>
+     * Note that if the upstream Observable does support backpressure, this operator ignores that capability
+     * and doesn't propagate any backpressure requests from downstream.
+     * 
+     * @return the source Observable modified to block {@code onNext} notifications on overflow
+     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Backpressure">RxJava wiki: Backpressure</a>
+     */
+    public final Observable<T> onBackpressureBlock() {
+        return onBackpressureBlock(RxRingBuffer.SIZE);
     }
     
     /**
