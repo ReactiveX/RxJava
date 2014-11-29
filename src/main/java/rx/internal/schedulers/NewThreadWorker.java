@@ -67,7 +67,7 @@ public class NewThreadWorker extends Scheduler.Worker implements Subscription {
         } else {
             f = executor.schedule(run, delayTime, unit);
         }
-        run.add(Subscriptions.from(f));
+        run.add(f);
 
         return run;
     }
