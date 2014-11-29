@@ -306,7 +306,7 @@ public class OperatorGroupBy<T, K, R> implements Operator<GroupedObservable<K, R
         }
 
         private void requestMoreIfNecessary() {
-            if (REQUESTED.get(this) == 0) {
+            if (REQUESTED.get(this) == 0 && terminated == 0) {
                 long toRequest = MAX_QUEUE_SIZE - BUFFERED_COUNT.get(this);
                 if (toRequest > 0 && REQUESTED.compareAndSet(this, 0, toRequest)) {
                     request(toRequest);
