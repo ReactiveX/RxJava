@@ -332,7 +332,7 @@ public class RxRingBuffer implements Subscription {
      */
     public void onNext(Object o) throws MissingBackpressureException {
         Queue<Object> q = queue;
-		if (q == null) {
+        if (q == null) {
             throw new IllegalStateException("This instance has been unsubscribed and the queue is no longer usable.");
         }
         if (!q.offer(on.next(o))) {
@@ -364,7 +364,7 @@ public class RxRingBuffer implements Subscription {
 
     public int count() {
         Queue<Object> q = queue;
-		if (q == null) {
+        if (q == null) {
             return 0;
         }
         return q.size();
@@ -372,7 +372,7 @@ public class RxRingBuffer implements Subscription {
 
     public boolean isEmpty() {
         Queue<Object> q = queue;
-		if (q == null) {
+        if (q == null) {
             return true;
         }
         return q.isEmpty();
@@ -380,7 +380,7 @@ public class RxRingBuffer implements Subscription {
 
     public Object poll() {
         Queue<Object> q = queue;
-		if (q == null) {
+        if (q == null) {
             // we are unsubscribed and have released the undelrying queue
             return null;
         }
@@ -408,7 +408,7 @@ public class RxRingBuffer implements Subscription {
 
     public Object peek() {
         Queue<Object> q = queue;
-		if (q == null) {
+        if (q == null) {
             // we are unsubscribed and have released the undelrying queue
             return null;
         }
