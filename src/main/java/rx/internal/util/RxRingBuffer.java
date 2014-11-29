@@ -331,10 +331,11 @@ public class RxRingBuffer implements Subscription {
      *             if more onNext are sent than have been requested
      */
     public void onNext(Object o) throws MissingBackpressureException {
-        if (queue == null) {
+        Queue<Object> q = queue;
+		if (q == null) {
             throw new IllegalStateException("This instance has been unsubscribed and the queue is no longer usable.");
         }
-        if (!queue.offer(on.next(o))) {
+        if (!q.offer(on.next(o))) {
             throw new MissingBackpressureException();
         }
     }
@@ -362,26 +363,29 @@ public class RxRingBuffer implements Subscription {
     }
 
     public int count() {
-        if (queue == null) {
+        Queue<Object> q = queue;
+		if (q == null) {
             return 0;
         }
-        return queue.size();
+        return q.size();
     }
 
     public boolean isEmpty() {
-        if (queue == null) {
+        Queue<Object> q = queue;
+		if (q == null) {
             return true;
         }
-        return queue.isEmpty();
+        return q.isEmpty();
     }
 
     public Object poll() {
-        if (queue == null) {
+        Queue<Object> q = queue;
+		if (q == null) {
             // we are unsubscribed and have released the undelrying queue
             return null;
         }
         Object o;
-        o = queue.poll();
+        o = q.poll();
         /*
          * benjchristensen July 10 2014 => The check for 'queue.isEmpty()' came from a very rare concurrency bug where poll()
          * is invoked, then an "onNext + onCompleted/onError" arrives before hitting the if check below. In that case,
@@ -394,7 +398,7 @@ public class RxRingBuffer implements Subscription {
          * a +1 of the size, or -1 of how many onNext can be sent. See comment on 'terminalState' above for why it
          * is currently the way it is.
          */
-        if (o == null && terminalState != null && queue.isEmpty()) {
+        if (o == null && terminalState != null && q.isEmpty()) {
             o = terminalState;
             // once emitted we clear so a poll loop will finish
             terminalState = null;
@@ -403,13 +407,14 @@ public class RxRingBuffer implements Subscription {
     }
 
     public Object peek() {
-        if (queue == null) {
+        Queue<Object> q = queue;
+		if (q == null) {
             // we are unsubscribed and have released the undelrying queue
             return null;
         }
         Object o;
-        o = queue.peek();
-        if (o == null && terminalState != null && queue.isEmpty()) {
+        o = q.peek();
+        if (o == null && terminalState != null && q.isEmpty()) {
             o = terminalState;
         }
         return o;
