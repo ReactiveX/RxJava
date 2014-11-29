@@ -29,7 +29,10 @@ import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 
+import rx.Observable;
+import rx.Observable.OnSubscribe;
 import rx.Scheduler;
+import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Action0;
 import rx.functions.Func1;
@@ -160,4 +163,42 @@ public class TestSchedulerTest {
         assertEquals(0, counter.get());
     }
 
+    @Test
+    public final void testNestedSchedule() {
+        final TestScheduler scheduler = new TestScheduler();
+        final Scheduler.Worker inner = scheduler.createWorker();
+        final Action0 calledOp = mock(Action0.class);
+
+        Observable<Object> poller;
+        poller = Observable.create(new OnSubscribe<Object>() {
+            @Override
+            public void call(final Subscriber<? super Object> aSubscriber) {
+                inner.schedule(new Action0() {
+                    @Override
+                    public void call() {
+                        if (!aSubscriber.isUnsubscribed()) {
+                            calledOp.call();
+                            inner.schedule(this, 5, TimeUnit.SECONDS);
+                        }
+                    }
+                });
+            }
+        });
+
+        InOrder inOrder = Mockito.inOrder(calledOp);
+
+        Subscription sub;
+        sub = poller.subscribe();
+
+        scheduler.advanceTimeTo(6, TimeUnit.SECONDS);
+        inOrder.verify(calledOp, times(2)).call();
+
+        sub.unsubscribe();
+        scheduler.advanceTimeTo(11, TimeUnit.SECONDS);
+        inOrder.verify(calledOp, never()).call();
+
+        sub = poller.subscribe();
+        scheduler.advanceTimeTo(12, TimeUnit.SECONDS);
+        inOrder.verify(calledOp, times(1)).call();
+    }
 }
