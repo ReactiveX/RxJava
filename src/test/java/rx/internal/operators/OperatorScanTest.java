@@ -295,4 +295,21 @@ public class OperatorScanTest {
         assertEquals(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10), o.toBlocking().single());
         assertEquals(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10), o.toBlocking().single());
     }
+
+    @Test
+    public void testScanWithRequestOne() {
+        Observable<Integer> o = Observable.just(1, 2).scan(0, new Func2<Integer, Integer, Integer>() {
+
+            @Override
+            public Integer call(Integer t1, Integer t2) {
+                return t1 + t2;
+            }
+
+        }).take(1);
+        TestSubscriber<Integer> subscriber = new TestSubscriber<Integer>();
+        o.subscribe(subscriber);
+        subscriber.assertReceivedOnNext(Arrays.asList(0));
+        subscriber.assertTerminalEvent();
+        subscriber.assertNoErrors();
+    }
 }

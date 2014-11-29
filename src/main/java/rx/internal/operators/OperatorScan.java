@@ -140,17 +140,30 @@ public final class OperatorScan<R, T> implements Operator<R, T> {
 
                     final AtomicBoolean once = new AtomicBoolean();
 
+                    final AtomicBoolean excessive = new AtomicBoolean();
+
                     @Override
                     public void request(long n) {
                         if (once.compareAndSet(false, true)) {
                             if (initialValue == NO_INITIAL_VALUE || n == Long.MAX_VALUE) {
                                 producer.request(n);
                             } else {
-                                producer.request(n - 1);
+                                if (n == Long.MAX_VALUE) {
+                                    producer.request(Long.MAX_VALUE);
+                                } else if (n == 1) {
+                                    excessive.set(true);
+                                    producer.request(1); // request at least 1
+                                } else {
+                                    producer.request(n - 1);
+                                }
                             }
                         } else {
                             // pass-thru after first time
-                            producer.request(n);
+                            if (excessive.compareAndSet(true, false) && n != Long.MAX_VALUE) {
+                                producer.request(n - 1);
+                            } else {
+                                producer.request(n);
+                            }
                         }
                     }
                 });
