@@ -1,5 +1,10 @@
 # RxJava Releases #
 
+### Version 1.0.1 – November 28th 2014 ([Maven Central](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.0.1%7C)) ###
+
+* [Pull 1893] (https://github.com/ReactiveX/RxJava/pull/1893) Fixed incorrect error merging.
+* [Pull 1901] (https://github.com/ReactiveX/RxJava/pull/1901) Fixed redo & groupBy backpressure management
+
 ### Version 1.0.0 – November 18th 2014 ([Maven Central](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.0.0%7C)) ###
 
 After 2+ years of internal and open source development, 3600+ commits, 100+ releases, and with the help of 97 contributors RxJava has hit version 1.0.0.
