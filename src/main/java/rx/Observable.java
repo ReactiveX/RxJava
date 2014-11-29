@@ -15,12 +15,12 @@ package rx;
 import java.util.*;
 import java.util.concurrent.*;
 
+import rx.annotations.Experimental;
 import rx.exceptions.*;
 import rx.functions.*;
 import rx.internal.operators.*;
 import rx.internal.util.ScalarSynchronousObservable;
 import rx.internal.util.UtilityFunctions;
-
 import rx.observables.*;
 import rx.observers.SafeSubscriber;
 import rx.plugins.*;
@@ -5070,7 +5070,9 @@ public class Observable<T> {
      * @param maxQueueLength the maximum number of items the producer can emit without blocking
      * @return the source Observable modified to block {@code onNext} notifications on overflow
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Backpressure">RxJava wiki: Backpressure</a>
+     * @Experimental The behavior of this can change at any time. 
      */
+    @Experimental
     public final Observable<T> onBackpressureBlock(int maxQueueLength) {
         return lift(new OperatorOnBackpressureBlock<T>(maxQueueLength));
     }
@@ -5087,7 +5089,9 @@ public class Observable<T> {
      * 
      * @return the source Observable modified to block {@code onNext} notifications on overflow
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Backpressure">RxJava wiki: Backpressure</a>
+     * @Experimental The behavior of this can change at any time. 
      */
+    @Experimental
     public final Observable<T> onBackpressureBlock() {
         return onBackpressureBlock(rx.internal.util.RxRingBuffer.SIZE);
     }
