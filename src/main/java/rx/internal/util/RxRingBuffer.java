@@ -16,14 +16,13 @@
 package rx.internal.util;
 
 import java.util.Queue;
+import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 import rx.Observer;
 import rx.Subscription;
 import rx.exceptions.MissingBackpressureException;
 import rx.internal.operators.NotificationLite;
-import rx.internal.util.unsafe.SpmcArrayQueue;
-import rx.internal.util.unsafe.SpscArrayQueue;
-import rx.internal.util.unsafe.UnsafeAccess;
+import rx.internal.util.unsafe.SpscLinkedQueue;
 
 /**
  * This assumes Spsc or Spmc usage. This means only a single producer calling the on* methods. This is the Rx contract of an Observer.
@@ -32,121 +31,22 @@ import rx.internal.util.unsafe.UnsafeAccess;
 public class RxRingBuffer implements Subscription {
 
     public static RxRingBuffer getSpscInstance() {
-        if (UnsafeAccess.isUnsafeAvailable()) {
-            // TODO the SpscArrayQueue isn't ready yet so using SpmcArrayQueue for now
-            return new RxRingBuffer(SPMC_POOL, SIZE);
-        } else {
-            return new RxRingBuffer();
-        }
+        return new RxRingBuffer(new SpscLinkedQueue<Object>(), SIZE);
     }
 
+    @Deprecated
     public static RxRingBuffer getSpmcInstance() {
-        if (UnsafeAccess.isUnsafeAvailable()) {
-            return new RxRingBuffer(SPMC_POOL, SIZE);
-        } else {
-            return new RxRingBuffer();
-        }
+        // TODO right now this is returning an Spsc queue. Why did anything need Spmc before?
+        return new RxRingBuffer(new SpscLinkedQueue<Object>(), SIZE);
     }
-
-    /**
-     * Queue implementation testing that led to current choices of data structures:
-     * 
-     * With synchronized LinkedList
-     * <pre> {@code
-     * Benchmark                                        Mode   Samples        Score  Score error    Units
-     * r.i.RxRingBufferPerf.ringBufferAddRemove1       thrpt         5 19118392.046  1002814.238    ops/s
-     * r.i.RxRingBufferPerf.ringBufferAddRemove1000    thrpt         5    17891.641      252.747    ops/s
-     * 
-     * With MpscPaddedQueue (single consumer, so failing 1 unit test)
-     * 
-     * Benchmark                                        Mode   Samples        Score  Score error    Units
-     * r.i.RxRingBufferPerf.ringBufferAddRemove1       thrpt         5 22164483.238  3035027.348    ops/s
-     * r.i.RxRingBufferPerf.ringBufferAddRemove1000    thrpt         5    23154.303      602.548    ops/s
-     * 
-     * 
-     * With ConcurrentLinkedQueue (tracking count separately)
-     * 
-     * Benchmark                                        Mode   Samples        Score  Score error    Units
-     * r.i.RxRingBufferPerf.ringBufferAddRemove1       thrpt         5 17353906.092   378756.411    ops/s
-     * r.i.RxRingBufferPerf.ringBufferAddRemove1000    thrpt         5    19224.411     1010.610    ops/s
-     * 
-     * With ConcurrentLinkedQueue (using queue.size() method for count)
-     * 
-     * Benchmark                                        Mode   Samples        Score  Score error    Units
-     * r.i.RxRingBufferPerf.ringBufferAddRemove1       thrpt         5 23951121.098  1982380.330    ops/s
-     * r.i.RxRingBufferPerf.ringBufferAddRemove1000    thrpt         5     1142.351       33.592    ops/s
-     * 
-     * With SynchronizedQueue (synchronized LinkedList ... no object pooling)
-     * 
-     * r.i.RxRingBufferPerf.createUseAndDestroy1       thrpt         5 33231667.136   685757.510    ops/s
-     * r.i.RxRingBufferPerf.createUseAndDestroy1000    thrpt         5    74623.614     5493.766    ops/s
-     * r.i.RxRingBufferPerf.ringBufferAddRemove1       thrpt         5 22907359.257   707026.632    ops/s
-     * r.i.RxRingBufferPerf.ringBufferAddRemove1000    thrpt         5    22222.410      320.829    ops/s
-     * 
-     * With ArrayBlockingQueue
-     * 
-     * Benchmark                                            Mode   Samples        Score  Score error    Units
-     * r.i.RxRingBufferPerf.createUseAndDestroy1       thrpt         5  2389804.664    68990.804    ops/s
-     * r.i.RxRingBufferPerf.createUseAndDestroy1000    thrpt         5    27384.274     1411.789    ops/s
-     * r.i.RxRingBufferPerf.ringBufferAddRemove1       thrpt         5 26497037.559    91176.247    ops/s
-     * r.i.RxRingBufferPerf.ringBufferAddRemove1000    thrpt         5    17985.144      237.771    ops/s
-     * 
-     * With ArrayBlockingQueue and Object Pool
-     * 
-     * Benchmark                                            Mode   Samples        Score  Score error    Units
-     * r.i.RxRingBufferPerf.createUseAndDestroy1       thrpt         5 12465685.522   399070.770    ops/s
-     * r.i.RxRingBufferPerf.createUseAndDestroy1000    thrpt         5    27701.294      395.217    ops/s
-     * r.i.RxRingBufferPerf.ringBufferAddRemove1       thrpt         5 26399625.086   695639.436    ops/s
-     * r.i.RxRingBufferPerf.ringBufferAddRemove1000    thrpt         5    17985.427      253.190    ops/s
-     * 
-     * With SpscArrayQueue (single consumer, so failing 1 unit test)
-     *  - requires access to Unsafe
-     * 
-     * Benchmark                                        Mode   Samples        Score  Score error    Units
-     * r.i.RxRingBufferPerf.createUseAndDestroy1       thrpt         5  1922996.035    49183.766    ops/s
-     * r.i.RxRingBufferPerf.createUseAndDestroy1000    thrpt         5    70890.186     1382.550    ops/s
-     * r.i.RxRingBufferPerf.ringBufferAddRemove1       thrpt         5 80637811.605  3509706.954    ops/s
-     * r.i.RxRingBufferPerf.ringBufferAddRemove1000    thrpt         5    71822.453     4127.660    ops/s
-     * 
-     * 
-     * With SpscArrayQueue and Object Pool (object pool improves createUseAndDestroy1 by 10x)
-     * 
-     * Benchmark                                        Mode   Samples        Score  Score error    Units
-     * r.i.RxRingBufferPerf.createUseAndDestroy1       thrpt         5 25220069.264  1329078.785    ops/s
-     * r.i.RxRingBufferPerf.createUseAndDestroy1000    thrpt         5    72313.457     3535.447    ops/s
-     * r.i.RxRingBufferPerf.ringBufferAddRemove1       thrpt         5 81863840.884  2191416.069    ops/s
-     * r.i.RxRingBufferPerf.ringBufferAddRemove1000    thrpt         5    73140.822     1528.764    ops/s
-     * 
-     * With SpmcArrayQueue
-     *  - requires access to Unsafe
-     *  
-     * Benchmark                                            Mode   Samples        Score  Score error    Units
-     * r.i.RxRingBufferPerf.spmcCreateUseAndDestroy1       thrpt         5 27630345.474   769219.142    ops/s
-     * r.i.RxRingBufferPerf.spmcCreateUseAndDestroy1000    thrpt         5    80052.046     4059.541    ops/s
-     * r.i.RxRingBufferPerf.spmcRingBufferAddRemove1       thrpt         5 44449524.222   563068.793    ops/s
-     * r.i.RxRingBufferPerf.spmcRingBufferAddRemove1000    thrpt         5    65231.253     1805.732    ops/s
-     * 
-     * With SpmcArrayQueue and ObjectPool (object pool improves createUseAndDestroy1 by 10x)
-     * 
-     * Benchmark                                        Mode   Samples        Score  Score error    Units
-     * r.i.RxRingBufferPerf.createUseAndDestroy1       thrpt         5 18489343.061  1011872.825    ops/s
-     * r.i.RxRingBufferPerf.createUseAndDestroy1000    thrpt         5    46416.434     1439.144    ops/s
-     * r.i.RxRingBufferPerf.ringBufferAddRemove        thrpt         5 38280945.847  1071801.279    ops/s
-     * r.i.RxRingBufferPerf.ringBufferAddRemove1000    thrpt         5    42337.663     1052.231    ops/s
-     * 
-     * --------------
-     * 
-     * When UnsafeAccess.isUnsafeAvailable() == true we can use the Spmc/SpscArrayQueue implementations.
-     * 
-     * } </pre>
-     */
 
     private static final NotificationLite<Object> on = NotificationLite.instance();
 
     private Queue<Object> queue;
 
     private final int size;
-    private final ObjectPool<Queue<Object>> pool;
+    private volatile int _count = 0;
+    private static final AtomicIntegerFieldUpdater<RxRingBuffer> COUNT = AtomicIntegerFieldUpdater.newUpdater(RxRingBuffer.class, "_count"); 
 
     /**
      * We store the terminal state separately so it doesn't count against the size.
@@ -276,43 +176,14 @@ public class RxRingBuffer implements Subscription {
     }
     public static final int SIZE = _size;
 
-    private static ObjectPool<Queue<Object>> SPSC_POOL = new ObjectPool<Queue<Object>>() {
-
-        @Override
-        protected SpscArrayQueue<Object> createObject() {
-            return new SpscArrayQueue<Object>(SIZE);
-        }
-
-    };
-
-    private static ObjectPool<Queue<Object>> SPMC_POOL = new ObjectPool<Queue<Object>>() {
-
-        @Override
-        protected SpmcArrayQueue<Object> createObject() {
-            return new SpmcArrayQueue<Object>(SIZE);
-        }
-
-    };
     
     private RxRingBuffer(Queue<Object> queue, int size) {
         this.queue = queue;
-        this.pool = null;
         this.size = size;
     }
 
-    private RxRingBuffer(ObjectPool<Queue<Object>> pool, int size) {
-        this.pool = pool;
-        this.queue = pool.borrowObject();
-        this.size = size;
-    }
-
+    @Deprecated
     public void release() {
-        if (pool != null) {
-            Queue<Object> q = queue;
-            q.clear();
-            queue = null;
-            pool.returnObject(q);
-        }
     }
 
     @Override
@@ -334,9 +205,19 @@ public class RxRingBuffer implements Subscription {
         if (queue == null) {
             throw new IllegalStateException("This instance has been unsubscribed and the queue is no longer usable.");
         }
-        if (!queue.offer(on.next(o))) {
+        
+        if(COUNT.incrementAndGet(this) <= size) {
+            queue.offer(on.next(o));
+        } else {
+            // decrement since we went over
+            COUNT.decrementAndGet(this);
+            // throw exception since we exceeded size limit
             throw new MissingBackpressureException();
         }
+        
+//        if (!queue.offer(on.next(o))) {
+//            throw new MissingBackpressureException();
+//        }
     }
 
     public void onCompleted() {
@@ -365,7 +246,8 @@ public class RxRingBuffer implements Subscription {
         if (queue == null) {
             return 0;
         }
-        return queue.size();
+        return _count;
+//        return queue.size();
     }
 
     public boolean isEmpty() {
@@ -398,6 +280,9 @@ public class RxRingBuffer implements Subscription {
             o = terminalState;
             // once emitted we clear so a poll loop will finish
             terminalState = null;
+        } else {
+            // decrement when we drain
+            COUNT.decrementAndGet(this);
         }
         return o;
     }
