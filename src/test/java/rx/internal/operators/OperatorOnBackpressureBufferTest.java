@@ -15,8 +15,7 @@
  */
 package rx.internal.operators;
 
-import static org.junit.Assert.assertEquals;
-
+import java.nio.BufferOverflowException;
 import java.util.concurrent.CountDownLatch;
 
 import org.junit.Test;
@@ -25,8 +24,14 @@ import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Observer;
 import rx.Subscriber;
+import rx.Subscription;
+import rx.functions.Func0;
+import rx.observables.ConnectableObservable;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class OperatorOnBackpressureBufferTest {
 
@@ -81,6 +86,68 @@ public class OperatorOnBackpressureBufferTest {
         assertEquals(499, ts.getOnNextEvents().get(499).intValue());
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testFixBackpressureBufferNegativeCapacity() throws InterruptedException {
+        Observable.empty().onBackpressureBuffer(-1);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testFixBackpressureBufferZeroCapacity() throws InterruptedException {
+        Observable.empty().onBackpressureBuffer(-1);
+    }
+
+    @Test(timeout = 500)
+    public void testFixBackpressureBoundedBuffer() throws InterruptedException {
+        final CountDownLatch l1 = new CountDownLatch(250);
+        final CountDownLatch l2 = new CountDownLatch(500);
+        final CountDownLatch l3 = new CountDownLatch(1);
+        TestSubscriber<Long> ts = new TestSubscriber<Long>(new Observer<Long>() {
+
+            @Override
+            public void onCompleted() {
+            }
+
+            @Override
+            public void onError(Throwable e) {
+            }
+
+            @Override
+            public void onNext(Long t) {
+                l1.countDown();
+                l2.countDown();
+            }
+
+        });
+
+        ts.requestMore(500);
+
+        final ConnectableObservable<Long> flood =
+            infinite.subscribeOn(Schedulers.computation())
+                    .publish();
+        final ConnectableObservable<Long> batch =
+            infinite.subscribeOn(Schedulers.computation())
+                    .onBackpressureBuffer(100, new Func0<Void>() {
+                        @Override
+                        public Void call() {
+                            l3.countDown();
+                            return null;
+                        }
+                    }).publish();
+        Subscription s = batch.subscribe(ts);
+        batch.connect();          // first controlled batch
+
+        l1.await();
+        flood.connect();          // open flood
+        l2.await();               // ts can only swallow 250 more
+        l3.await();               // hold until it chokes
+
+        assertEquals(500, ts.getOnNextEvents().size());
+        assertEquals(0, ts.getOnNextEvents().get(0).intValue());
+        assertTrue(ts.getOnErrorEvents().get(0) instanceof BufferOverflowException);
+        assertTrue(s.isUnsubscribed());
+
+    }
+
     static final Observable<Long> infinite = Observable.create(new OnSubscribe<Long>() {
 
         @Override
@@ -92,4 +159,5 @@ public class OperatorOnBackpressureBufferTest {
         }
 
     });
+
 }
