@@ -265,4 +265,16 @@ public class AtomicPerf {
             bh.consume(VolatileLongFieldState.UPDATER.compareAndSet(state, 1L, 2L));
         }
     }
+    @Benchmark
+    public void atomicIntGetAndSet(AtomicIntState state, Times repeat, Blackhole bh) {
+        for (int i = 0; i < repeat.times; i++) {
+            bh.consume(state.value.getAndSet(i));
+        }
+    }
+    @Benchmark
+    public void atomicLongGetAndSet(AtomicLongState state, Times repeat, Blackhole bh) {
+        for (long i = 0; i < repeat.times; i++) {
+            bh.consume(state.value.getAndSet(i));
+        }
+    }
 }
