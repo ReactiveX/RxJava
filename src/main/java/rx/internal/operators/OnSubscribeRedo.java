@@ -225,14 +225,19 @@ public final class OnSubscribeRedo<T> implements OnSubscribe<T> {
 
                     @Override
                     public void onNext(T v) {
-                        consumerCapacity.decrementAndGet();
+                        if (consumerCapacity.get() != Long.MAX_VALUE) {
+                            consumerCapacity.decrementAndGet();
+                        }
                         child.onNext(v);
                     }
 
                     @Override
                     public void setProducer(Producer producer) {
                         currentProducer.set(producer);
-                        producer.request(consumerCapacity.get());
+                        long c = consumerCapacity.get();
+                        if (c > 0) {
+                            producer.request(c);
+                        }
                     }
                 };
                 // new subscription each time so if it unsubscribes itself it does not prevent retries
@@ -321,7 +326,7 @@ public final class OnSubscribeRedo<T> implements OnSubscribe<T> {
                 long c = consumerCapacity.getAndAdd(n);
                 Producer producer = currentProducer.get();
                 if (producer != null) {
-                    producer.request(c + n);
+                    producer.request(n);
                 } else
                 if (c == 0 && resumeBoundary.compareAndSet(true, false)) {
                     worker.schedule(subscribeToSource);
