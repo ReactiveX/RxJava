@@ -16,7 +16,6 @@
 package rx.internal.util;
 
 import java.util.Queue;
-import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 import rx.Observer;
 import rx.Subscription;
@@ -45,9 +44,15 @@ public class RxRingBuffer implements Subscription {
     private Queue<Object> queue;
 
     private final int size;
-    private volatile int _count = 0;
-    private static final AtomicIntegerFieldUpdater<RxRingBuffer> COUNT = AtomicIntegerFieldUpdater.newUpdater(RxRingBuffer.class, "_count"); 
-
+    
+    /** Keeps track how many items were produced. */
+    private long producerIndexCached;
+    /** Shows how many items were produced to other threads. */
+    private volatile long producerIndexShared;
+    /** Keeps track how many items were consumed. */
+    private long consumerIndexCached;
+    /** Shows how many items were consumed to other threads. */
+    private volatile long consumerIndexShared;
     /**
      * We store the terminal state separately so it doesn't count against the size.
      * We don't just +1 the size since some of the queues require sizes that are a power of 2.
@@ -202,15 +207,15 @@ public class RxRingBuffer implements Subscription {
      *             if more onNext are sent than have been requested
      */
     public void onNext(Object o) throws MissingBackpressureException {
-        if (queue == null) {
+        Queue<Object> q = queue;
+        if (q == null) {
             throw new IllegalStateException("This instance has been unsubscribed and the queue is no longer usable.");
         }
         
-        if(COUNT.incrementAndGet(this) <= size) {
-            queue.offer(on.next(o));
+        if(producerQueueSize() < size) {
+            produce();
+            q.offer(on.next(o));
         } else {
-            // decrement since we went over
-            COUNT.decrementAndGet(this);
             // throw exception since we exceeded size limit
             throw new MissingBackpressureException();
         }
@@ -242,28 +247,61 @@ public class RxRingBuffer implements Subscription {
         return size;
     }
 
+    /**
+     * @return Returns the queue size from the view of the producer.
+     */
+    protected int producerQueueSize() {
+        long diff = producerIndexCached - consumerIndexShared;
+        if (diff > Integer.MAX_VALUE) {
+            return Integer.MAX_VALUE;
+        }
+        return (int)diff;
+    }
+    /**
+     * @return Returns the queue size from the view of the consumer.
+     */
+    protected int consumerQueueSize() {
+        long diff = producerIndexShared - consumerIndexCached;
+        if (diff > Integer.MAX_VALUE) {
+            return Integer.MAX_VALUE;
+        }
+        return (int)diff;
+    }
+    protected void produce() {
+        producerIndexShared = ++producerIndexCached;
+    }
+    protected void consume() {
+        consumerIndexShared = ++consumerIndexCached;
+    }
+    
     public int count() {
         if (queue == null) {
             return 0;
         }
-        return _count;
+        long diff = producerIndexShared - consumerIndexShared;
+        if (diff > Integer.MAX_VALUE) {
+            return Integer.MAX_VALUE;
+        }
+        return (int)diff;
 //        return queue.size();
     }
 
     public boolean isEmpty() {
-        if (queue == null) {
+        Queue<Object> q = queue;
+        if (q == null) {
             return true;
         }
-        return queue.isEmpty();
+        return q.isEmpty();
     }
 
     public Object poll() {
-        if (queue == null) {
+        Queue<Object> q = queue;
+        if (q == null) {
             // we are unsubscribed and have released the undelrying queue
             return null;
         }
         Object o;
-        o = queue.poll();
+        o = q.poll();
         /*
          * benjchristensen July 10 2014 => The check for 'queue.isEmpty()' came from a very rare concurrency bug where poll()
          * is invoked, then an "onNext + onCompleted/onError" arrives before hitting the if check below. In that case,
@@ -276,25 +314,26 @@ public class RxRingBuffer implements Subscription {
          * a +1 of the size, or -1 of how many onNext can be sent. See comment on 'terminalState' above for why it
          * is currently the way it is.
          */
-        if (o == null && terminalState != null && queue.isEmpty()) {
+        if (o == null && terminalState != null && q.isEmpty()) {
             o = terminalState;
             // once emitted we clear so a poll loop will finish
             terminalState = null;
         } else {
             // decrement when we drain
-            COUNT.decrementAndGet(this);
+            consume();
         }
         return o;
     }
 
     public Object peek() {
-        if (queue == null) {
+        Queue<Object> q = queue;
+        if (q == null) {
             // we are unsubscribed and have released the undelrying queue
             return null;
         }
         Object o;
-        o = queue.peek();
-        if (o == null && terminalState != null && queue.isEmpty()) {
+        o = q.peek();
+        if (o == null && terminalState != null && q.isEmpty()) {
             o = terminalState;
         }
         return o;
