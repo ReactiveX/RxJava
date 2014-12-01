@@ -15,12 +15,12 @@ package rx;
 import java.util.*;
 import java.util.concurrent.*;
 
+import rx.annotations.Experimental;
 import rx.exceptions.*;
 import rx.functions.*;
 import rx.internal.operators.*;
 import rx.internal.util.ScalarSynchronousObservable;
 import rx.internal.util.UtilityFunctions;
-
 import rx.observables.*;
 import rx.observers.SafeSubscriber;
 import rx.plugins.*;
@@ -182,6 +182,7 @@ public class Observable<T> {
      * @return the source Observable, transformed by the transformer function
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Implementing-Your-Own-Operators">RxJava wiki: Implementing Your Own Operators</a>
      */
+    @SuppressWarnings("unchecked")
     public <R> Observable<R> compose(Transformer<? super T, ? extends R> transformer) {
         return ((Transformer<T, R>) transformer).call(this);
     }
@@ -5052,6 +5053,47 @@ public class Observable<T> {
      */
     public final Observable<T> onBackpressureDrop() {
         return lift(new OperatorOnBackpressureDrop<T>());
+    }
+    
+    /**
+     * Instructs an Observable that is emitting items faster than its observer can consume them is to
+     * block the producer thread.
+     * <p>
+     * The producer side can emit up to {@code maxQueueLength} onNext elements without blocking, but the
+     * consumer side considers the amount its downstream requested through {@code Producer.request(n)}
+     * and doesn't emit more than requested even if more is available. For example, using 
+     * {@code onBackpressureBlock(384).observeOn(Schedulers.io())} will not throw a MissingBackpressureException.
+     * <p>
+     * Note that if the upstream Observable does support backpressure, this operator ignores that capability
+     * and doesn't propagate any backpressure requests from downstream.
+     *  
+     * @param maxQueueLength the maximum number of items the producer can emit without blocking
+     * @return the source Observable modified to block {@code onNext} notifications on overflow
+     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Backpressure">RxJava wiki: Backpressure</a>
+     * @Experimental The behavior of this can change at any time. 
+     */
+    @Experimental
+    public final Observable<T> onBackpressureBlock(int maxQueueLength) {
+        return lift(new OperatorOnBackpressureBlock<T>(maxQueueLength));
+    }
+    /**
+     * Instructs an Observable that is emitting items faster than its observer can consume them is to
+     * block the producer thread if the number of undelivered onNext events reaches the system-wide ring buffer size.
+     * <p>
+     * The producer side can emit up to the system-wide ring buffer size onNext elements without blocking, but the
+     * consumer side considers the amount its downstream requested through {@code Producer.request(n)}
+     * and doesn't emit more than requested even if available.
+     * <p>
+     * Note that if the upstream Observable does support backpressure, this operator ignores that capability
+     * and doesn't propagate any backpressure requests from downstream.
+     * 
+     * @return the source Observable modified to block {@code onNext} notifications on overflow
+     * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Backpressure">RxJava wiki: Backpressure</a>
+     * @Experimental The behavior of this can change at any time. 
+     */
+    @Experimental
+    public final Observable<T> onBackpressureBlock() {
+        return onBackpressureBlock(rx.internal.util.RxRingBuffer.SIZE);
     }
     
     /**
