@@ -15,39 +15,25 @@
  */
 package rx.internal.operators;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.*;
+
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.*;
 
 import org.junit.Test;
-import org.mockito.InOrder;
-import org.mockito.Mockito;
+import org.mockito.*;
 
-import rx.Observable;
+import rx.*;
 import rx.Observable.OnSubscribe;
-import rx.Observer;
-import rx.Subscriber;
-import rx.Subscription;
-import rx.functions.Action0;
-import rx.functions.Action1;
-import rx.functions.Func1;
-import rx.functions.Func2;
+import rx.functions.*;
 import rx.internal.util.RxRingBuffer;
 import rx.observables.GroupedObservable;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.Subscriptions;
-
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class OperatorRetryTest {
 
@@ -403,18 +389,38 @@ public class OperatorRetryTest {
         }
 
         @Override
-        public void call(Subscriber<? super String> o) {
-            o.onNext("beginningEveryTime");
-            if (count.getAndIncrement() < numFailures) {
-                System.out.println("FuncWithErrors @ " + count.get()); 
-                o.onError(new RuntimeException("forced failure: " + count.get()));
-            } else {
-                System.out.println("FuncWithErrors @ onSuccessOnly"); 
-                o.onNext("onSuccessOnly");
-                System.out.println("FuncWithErrors @ onCompleted"); 
-                o.onCompleted();
-                System.out.println("FuncWithErrors !"); 
-            }
+        public void call(final Subscriber<? super String> o) {
+            o.setProducer(new Producer() {
+                final AtomicLong req = new AtomicLong();
+                @Override
+                public void request(long n) {
+                    if (n == Long.MAX_VALUE) {
+                        o.onNext("beginningEveryTime");
+                        if (count.getAndIncrement() < numFailures) {
+                            o.onError(new RuntimeException("forced failure: " + count.get()));
+                        } else {
+                            o.onNext("onSuccessOnly");
+                            o.onCompleted();
+                        }
+                        return;
+                    }
+                    if (n > 0 && req.getAndAdd(1) == 0) {
+                        int i = count.getAndIncrement();
+                        if (i < numFailures) {
+                            o.onNext("beginningEveryTime");
+                            o.onError(new RuntimeException("forced failure: " + count.get()));
+                        } else
+                        if (i == numFailures) {
+                            o.onNext("beginningEveryTime");
+                        } else
+                        if (i > numFailures) {
+                            o.onNext("onSuccessOnly");
+                            o.onCompleted();
+                        }
+                        req.decrementAndGet();
+                    }
+                }
+            });
         }
     }
 
@@ -668,26 +674,28 @@ public class OperatorRetryTest {
         assertEquals("Start 6 threads, retry 5 then fail on 6", 6, so.efforts.get());
     }
     
-    @Test(timeout = 3000)
+    @Test(timeout = 10000)
     public void testRetryWithBackpressure() {
-        @SuppressWarnings("unchecked")
-        Observer<String> observer = mock(Observer.class);
-        int NUM_RETRIES = RxRingBuffer.SIZE * 2;
-        Observable<String> origin = Observable.create(new FuncWithErrors(NUM_RETRIES));
-        TestSubscriber<String> ts = new TestSubscriber<String>(observer);
-        origin.retry().observeOn(Schedulers.computation()).unsafeSubscribe(ts);
-        ts.awaitTerminalEvent();
-        
-        InOrder inOrder = inOrder(observer);
-        // should show 3 attempts
-        inOrder.verify(observer, times(NUM_RETRIES + 1)).onNext("beginningEveryTime");
-        // should have no errors
-        inOrder.verify(observer, never()).onError(any(Throwable.class));
-        // should have a single success
-        inOrder.verify(observer, times(1)).onNext("onSuccessOnly");
-        // should have a single successful onCompleted
-        inOrder.verify(observer, times(1)).onCompleted();
-        inOrder.verifyNoMoreInteractions();
+        for (int i = 0; i < 200; i++) {
+            @SuppressWarnings("unchecked")
+            Observer<String> observer = mock(Observer.class);
+            int NUM_RETRIES = RxRingBuffer.SIZE * 2;
+            Observable<String> origin = Observable.create(new FuncWithErrors(NUM_RETRIES));
+            TestSubscriber<String> ts = new TestSubscriber<String>(observer);
+            origin.retry().observeOn(Schedulers.computation()).unsafeSubscribe(ts);
+            ts.awaitTerminalEvent();
+            
+            InOrder inOrder = inOrder(observer);
+            // should have no errors
+            verify(observer, never()).onError(any(Throwable.class));
+            // should show NUM_RETRIES attempts
+            inOrder.verify(observer, times(NUM_RETRIES + 1)).onNext("beginningEveryTime");
+            // should have a single success
+            inOrder.verify(observer, times(1)).onNext("onSuccessOnly");
+            // should have a single successful onCompleted
+            inOrder.verify(observer, times(1)).onCompleted();
+            inOrder.verifyNoMoreInteractions();
+        }
     }
     @Test(timeout = 3000)
     public void testIssue1900() throws InterruptedException {
