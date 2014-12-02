@@ -1,5 +1,28 @@
 # RxJava Releases #
 
+### Version 1.0.2 – December 1st 2014 ([Maven Central](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.0.2%7C)) ###
+
+This release adds `@Beta` and `@Experimental` annotations to mark APIs that are not yet stable. 
+
+The lifecycle and stability of these are [documented in the README](https://github.com/ReactiveX/RxJava/blob/1.x/README.md#versioning) as follows:
+
+#### @Beta
+
+APIs marked with the `@Beta` annotation at the class or method level are subject to change. They can be modified in any way, or even removed, at any time. If your code is a library itself (i.e. it is used on the CLASSPATH of users outside your own control), you should not use beta APIs, unless you repackage them (e.g. using ProGuard, shading, etc).
+
+#### @Experimental
+
+APIs marked with the `@Experimental` annotation at the class or method level will almost certainly change. They can be modified in any way, or even removed, at any time. You should not use or rely on them in any production code. They are purely to allow broad testing and feedback. 
+
+-----
+
+* [Pull 1905] (https://github.com/ReactiveX/RxJava/pull/1905) Beta & Experimental Annotations
+* [Pull 1907] (https://github.com/ReactiveX/RxJava/pull/1907) Experimental: onBackpressureBlock
+* [Pull 1903] (https://github.com/ReactiveX/RxJava/pull/1903) Fix TestScheduler Handling of Immediate vs Virtual Time
+* [Pull 1898] (https://github.com/ReactiveX/RxJava/pull/1898) Scheduled action no interrupt
+* [Pull 1904] (https://github.com/ReactiveX/RxJava/pull/1904) Fix the bug that Scan may request 0 when n is 1
+* [Pull 1912] (https://github.com/ReactiveX/RxJava/pull/1912) Fixed retry without backpressure & test function to support bp
+
 ### Version 1.0.1 – November 28th 2014 ([Maven Central](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.0.1%7C)) ###
 
 * [Pull 1893] (https://github.com/ReactiveX/RxJava/pull/1893) Fixed incorrect error merging.
