@@ -37,8 +37,8 @@ public class NewThreadWorker extends Scheduler.Worker implements Subscription {
         // Java 7+: cancelled future tasks can be removed from the executor thus avoiding memory leak
         for (Method m : executor.getClass().getMethods()) {
             if (m.getName().equals("setRemoveOnCancelPolicy")
-                    && m.getParameterCount() == 1
-                    && m.getParameters()[0].getType() == Boolean.TYPE) {
+                    && m.getParameterTypes().length == 1
+                    && m.getParameterTypes()[0] == Boolean.TYPE) {
                 try {
                     m.invoke(executor, true);
                 } catch (Exception ex) {
