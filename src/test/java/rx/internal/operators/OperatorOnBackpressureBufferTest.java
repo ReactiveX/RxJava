@@ -15,6 +15,9 @@
  */
 package rx.internal.operators;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.nio.BufferOverflowException;
 import java.util.concurrent.CountDownLatch;
 
@@ -25,13 +28,10 @@ import rx.Observable.OnSubscribe;
 import rx.Observer;
 import rx.Subscriber;
 import rx.Subscription;
-import rx.functions.Func0;
+import rx.functions.Action0;
 import rx.observables.ConnectableObservable;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 public class OperatorOnBackpressureBufferTest {
 
@@ -126,11 +126,10 @@ public class OperatorOnBackpressureBufferTest {
                     .publish();
         final ConnectableObservable<Long> batch =
             infinite.subscribeOn(Schedulers.computation())
-                    .onBackpressureBuffer(100, new Func0<Void>() {
+                    .onBackpressureBuffer(100, new Action0() {
                         @Override
-                        public Void call() {
+                        public void call() {
                             l3.countDown();
-                            return null;
                         }
                     }).publish();
         Subscription s = batch.subscribe(ts);

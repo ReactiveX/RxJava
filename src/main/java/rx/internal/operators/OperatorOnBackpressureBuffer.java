@@ -24,14 +24,14 @@ import java.util.concurrent.atomic.AtomicLong;
 import rx.Observable.Operator;
 import rx.Producer;
 import rx.Subscriber;
-import rx.functions.Func0;
+import rx.functions.Action0;
 
 public class OperatorOnBackpressureBuffer<T> implements Operator<T, T> {
 
     private final NotificationLite<T> on = NotificationLite.instance();
 
     private final Long capacity;
-    private final Func0 onOverflow;
+    private final Action0 onOverflow;
 
     public OperatorOnBackpressureBuffer() {
         this.capacity = null;
@@ -42,7 +42,7 @@ public class OperatorOnBackpressureBuffer<T> implements Operator<T, T> {
         this(capacity, null);
     }
 
-    public OperatorOnBackpressureBuffer(long capacity, Func0<Void> onOverflow) {
+    public OperatorOnBackpressureBuffer(long capacity, Action0 onOverflow) {
         if (capacity <= 0) {
             throw new IllegalArgumentException("Buffer capacity must be > 0");
         }
