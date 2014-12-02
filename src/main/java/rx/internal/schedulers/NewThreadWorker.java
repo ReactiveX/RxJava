@@ -15,14 +15,13 @@
  */
 package rx.internal.schedulers;
 
-import rx.Scheduler;
-import rx.Subscription;
-import rx.functions.Action0;
-import rx.plugins.RxJavaPlugins;
-import rx.plugins.RxJavaSchedulersHook;
-import rx.subscriptions.Subscriptions;
-
+import java.lang.reflect.Method;
 import java.util.concurrent.*;
+
+import rx.*;
+import rx.functions.Action0;
+import rx.plugins.*;
+import rx.subscriptions.Subscriptions;
 
 /**
  * @warn class description missing
@@ -35,6 +34,19 @@ public class NewThreadWorker extends Scheduler.Worker implements Subscription {
     /* package */
     public NewThreadWorker(ThreadFactory threadFactory) {
         executor = Executors.newScheduledThreadPool(1, threadFactory);
+        // Java 7+: cancelled future tasks can be removed from the executor thus avoiding memory leak
+        for (Method m : executor.getClass().getMethods()) {
+            if (m.getName().equals("setRemoveOnCancelPolicy")
+                    && m.getParameterCount() == 1
+                    && m.getParameters()[0].getType() == Boolean.TYPE) {
+                try {
+                    m.invoke(executor, true);
+                } catch (Exception ex) {
+                    RxJavaPlugins.getInstance().getErrorHandler().handleError(ex);
+                }
+                break;
+            }
+        }
         schedulersHook = RxJavaPlugins.getInstance().getSchedulersHook();
     }
 
