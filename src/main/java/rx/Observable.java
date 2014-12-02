@@ -5056,7 +5056,7 @@ public class Observable<T> {
     }
     
     /**
-     * Instructs an Observable that is emitting items faster than its observer can consume them is to
+     * Instructs an Observable that is emitting items faster than its observer can consume them to
      * block the producer thread.
      * <p>
      * The producer side can emit up to {@code maxQueueLength} onNext elements without blocking, but the
@@ -5071,17 +5071,18 @@ public class Observable<T> {
      * @return the source Observable modified to block {@code onNext} notifications on overflow
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Backpressure">RxJava wiki: Backpressure</a>
      * @Experimental The behavior of this can change at any time. 
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
     @Experimental
     public final Observable<T> onBackpressureBlock(int maxQueueLength) {
         return lift(new OperatorOnBackpressureBlock<T>(maxQueueLength));
     }
     /**
-     * Instructs an Observable that is emitting items faster than its observer can consume them is to
-     * block the producer thread if the number of undelivered onNext events reaches the system-wide ring buffer size.
+     * Instructs an Observable that is emitting items faster than its observer can consume them to block the
+     * producer thread if the number of undelivered onNext events reaches the system-wide ring buffer size.
      * <p>
-     * The producer side can emit up to the system-wide ring buffer size onNext elements without blocking, but the
-     * consumer side considers the amount its downstream requested through {@code Producer.request(n)}
+     * The producer side can emit up to the system-wide ring buffer size onNext elements without blocking, but
+     * the consumer side considers the amount its downstream requested through {@code Producer.request(n)}
      * and doesn't emit more than requested even if available.
      * <p>
      * Note that if the upstream Observable does support backpressure, this operator ignores that capability
@@ -5090,6 +5091,7 @@ public class Observable<T> {
      * @return the source Observable modified to block {@code onNext} notifications on overflow
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Backpressure">RxJava wiki: Backpressure</a>
      * @Experimental The behavior of this can change at any time. 
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
     @Experimental
     public final Observable<T> onBackpressureBlock() {
