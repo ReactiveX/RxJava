@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Control;
 
-import rx.internal.util.unsafe.SpscLinkedQueue;
+import rx.internal.util.AtomicArrayQueue;
 
 /**
  * gradlew benchmarks "-Pjmh=-f 1 -tu s -bm thrpt -wi 5 -i 5 -r 1 .*ConcurrentQueueThroughputBusy.*"
@@ -31,7 +31,7 @@ import rx.internal.util.unsafe.SpscLinkedQueue;
 @Warmup(iterations = 5, time = 1, timeUnit = TimeUnit.SECONDS)
 @Measurement(iterations = 5, time = 3, timeUnit = TimeUnit.SECONDS)
 public class ConcurrentQueueThroughputBusy {
-    private final SpscLinkedQueue<Object> q = new SpscLinkedQueue<Object>();
+    private final AtomicArrayQueue q = new AtomicArrayQueue(8, 1024 * 1024);
     private final static Integer ONE = 777;
 
     @Benchmark
