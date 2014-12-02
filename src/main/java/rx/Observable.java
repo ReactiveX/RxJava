@@ -5059,6 +5059,8 @@ public class Observable<T> {
      * Instructs an Observable that is emitting items faster than its observer can consume them to
      * block the producer thread.
      * <p>
+     * <img width="640" height="245" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/bp.obp.block.png" alt="">
+     * <p>
      * The producer side can emit up to {@code maxQueueLength} onNext elements without blocking, but the
      * consumer side considers the amount its downstream requested through {@code Producer.request(n)}
      * and doesn't emit more than requested even if more is available. For example, using 
@@ -5080,6 +5082,8 @@ public class Observable<T> {
     /**
      * Instructs an Observable that is emitting items faster than its observer can consume them to block the
      * producer thread if the number of undelivered onNext events reaches the system-wide ring buffer size.
+     * <p>
+     * <img width="640" height="245" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/bp.obp.block.png" alt="">
      * <p>
      * The producer side can emit up to the system-wide ring buffer size onNext elements without blocking, but
      * the consumer side considers the amount its downstream requested through {@code Producer.request(n)}
