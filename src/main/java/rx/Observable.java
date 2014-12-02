@@ -15,6 +15,7 @@ package rx;
 import java.util.*;
 import java.util.concurrent.*;
 
+import rx.annotations.Beta;
 import rx.annotations.Experimental;
 import rx.exceptions.*;
 import rx.functions.*;
@@ -5049,7 +5050,9 @@ public class Observable<T> {
      *
      * @return the source Observable modified to buffer items up to the given capacity.
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Backpressure">RxJava wiki: Backpressure</a>
+     * @Beta
      */
+    @Beta
     public final Observable<T> onBackpressureBuffer(long capacity) {
         return lift(new OperatorOnBackpressureBuffer<T>(capacity));
     }
@@ -5068,8 +5071,10 @@ public class Observable<T> {
      *
      * @return the source Observable modified to buffer items up to the given capacity.
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Backpressure">RxJava wiki: Backpressure</a>
+     * @Beta
      */
-    public final Observable<T> onBackpressureBuffer(long capacity, Func0<Void> onOverflow) {
+    @Beta
+    public final Observable<T> onBackpressureBuffer(long capacity, Action0 onOverflow) {
         return lift(new OperatorOnBackpressureBuffer<T>(capacity, onOverflow));
     }
 
