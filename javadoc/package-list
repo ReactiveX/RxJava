@@ -1,4 +1,5 @@
 rx
+rx.annotations
 rx.exceptions
 rx.functions
 rx.observables
