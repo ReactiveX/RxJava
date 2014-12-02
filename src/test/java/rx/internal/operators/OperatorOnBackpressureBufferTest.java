@@ -28,6 +28,7 @@ import rx.Observable.OnSubscribe;
 import rx.Observer;
 import rx.Subscriber;
 import rx.Subscription;
+import rx.exceptions.MissingBackpressureException;
 import rx.functions.Action0;
 import rx.observables.ConnectableObservable;
 import rx.observers.TestSubscriber;
@@ -142,7 +143,7 @@ public class OperatorOnBackpressureBufferTest {
 
         assertEquals(500, ts.getOnNextEvents().size());
         assertEquals(0, ts.getOnNextEvents().get(0).intValue());
-        assertTrue(ts.getOnErrorEvents().get(0) instanceof BufferOverflowException);
+        assertTrue(ts.getOnErrorEvents().get(0) instanceof MissingBackpressureException);
         assertTrue(s.isUnsubscribed());
 
     }

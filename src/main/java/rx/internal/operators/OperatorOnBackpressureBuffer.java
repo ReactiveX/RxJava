@@ -15,7 +15,6 @@
  */
 package rx.internal.operators;
 
-import java.nio.BufferOverflowException;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -24,6 +23,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import rx.Observable.Operator;
 import rx.Producer;
 import rx.Subscriber;
+import rx.exceptions.MissingBackpressureException;
 import rx.functions.Action0;
 
 public class OperatorOnBackpressureBuffer<T> implements Operator<T, T> {
@@ -111,7 +111,7 @@ public class OperatorOnBackpressureBuffer<T> implements Operator<T, T> {
                     if (currCapacity <= 0) {
                         if (saturated.compareAndSet(false, true)) {
                             // ensure single completion contract
-                            child.onError(new BufferOverflowException());
+                            child.onError(new MissingBackpressureException("Overflowed buffer of " + OperatorOnBackpressureBuffer.this.capacity));
                             unsubscribe();
                             if (onOverflow != null) {
                                 onOverflow.call();
