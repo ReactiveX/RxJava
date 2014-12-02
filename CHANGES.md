@@ -6,15 +6,13 @@ This release adds `@Beta` and `@Experimental` annotations to mark APIs that are 
 
 The lifecycle and stability of these are [documented in the README](https://github.com/ReactiveX/RxJava/blob/1.x/README.md#versioning) as follows:
 
-#### @Beta
+> #### @Beta
 
-APIs marked with the `@Beta` annotation at the class or method level are subject to change. They can be modified in any way, or even removed, at any time. If your code is a library itself (i.e. it is used on the CLASSPATH of users outside your own control), you should not use beta APIs, unless you repackage them (e.g. using ProGuard, shading, etc).
+> APIs marked with the `@Beta` annotation at the class or method level are subject to change. They can be modified in any way, or even removed, at any time. If your code is a library itself (i.e. it is used on the CLASSPATH of users outside your own control), you should not use beta APIs, unless you repackage them (e.g. using ProGuard, shading, etc).
 
-#### @Experimental
+> #### @Experimental
 
-APIs marked with the `@Experimental` annotation at the class or method level will almost certainly change. They can be modified in any way, or even removed, at any time. You should not use or rely on them in any production code. They are purely to allow broad testing and feedback. 
-
------
+> APIs marked with the `@Experimental` annotation at the class or method level will almost certainly change. They can be modified in any way, or even removed, at any time. You should not use or rely on them in any production code. They are purely to allow broad testing and feedback. 
 
 * [Pull 1905] (https://github.com/ReactiveX/RxJava/pull/1905) Beta & Experimental Annotations
 * [Pull 1907] (https://github.com/ReactiveX/RxJava/pull/1907) Experimental: onBackpressureBlock
