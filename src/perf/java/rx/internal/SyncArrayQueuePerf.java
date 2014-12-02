@@ -102,14 +102,14 @@ public class SyncArrayQueuePerf {
         }
     }
     @Benchmark
-    public void abqAddRemove1(CAQState state, Times times, Blackhole bh) {
+    public void caqAddRemove1(CAQState state, Times times, Blackhole bh) {
         for (int i = 0; i < times.times; i++) {
             state.queue.offer(0);
             bh.consume(state.queue.poll());
         }
     }
     @Benchmark
-    public void abqAddRemoveN(CAQState state, Times times, Blackhole bh) {
+    public void caqAddRemoveN(CAQState state, Times times, Blackhole bh) {
         for (int i = 0; i < times.times; i++) {
             state.queue.offer(0);
         }
