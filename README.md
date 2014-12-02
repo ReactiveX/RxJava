@@ -45,6 +45,9 @@ APIs marked with the `@Experimental` annotation at the class or method level wil
 
 APIs marked with the `@Deprecated` annotation at the class or method level will remain supported until the next major release but it is recommended to stop using them. 
 
+#### rx.internal.*
+
+All code inside the `rx.internal.*` packages is considered private API and should not be relied upon at all. It can change at any time. 
 
 ## Full Documentation
 
