@@ -17,21 +17,44 @@ package rx.internal.operators;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
 import rx.Observable.Operator;
 import rx.Producer;
 import rx.Subscriber;
+import rx.exceptions.MissingBackpressureException;
+import rx.functions.Action0;
 
 public class OperatorOnBackpressureBuffer<T> implements Operator<T, T> {
 
     private final NotificationLite<T> on = NotificationLite.instance();
 
+    private final Long capacity;
+    private final Action0 onOverflow;
+
+    public OperatorOnBackpressureBuffer() {
+        this.capacity = null;
+        this.onOverflow = null;
+    }
+
+    public OperatorOnBackpressureBuffer(long capacity) {
+        this(capacity, null);
+    }
+
+    public OperatorOnBackpressureBuffer(long capacity, Action0 onOverflow) {
+        if (capacity <= 0) {
+            throw new IllegalArgumentException("Buffer capacity must be > 0");
+        }
+        this.capacity = capacity;
+        this.onOverflow = onOverflow;
+    }
+
     @Override
     public Subscriber<? super T> call(final Subscriber<? super T> child) {
         // TODO get a different queue implementation
-        // TODO start with size hint
         final ConcurrentLinkedQueue<Object> queue = new ConcurrentLinkedQueue<Object>();
+        final AtomicLong capacity = (this.capacity == null) ? null : new AtomicLong(this.capacity);
         final AtomicLong wip = new AtomicLong();
         final AtomicLong requested = new AtomicLong();
 
@@ -40,7 +63,7 @@ public class OperatorOnBackpressureBuffer<T> implements Operator<T, T> {
             @Override
             public void request(long n) {
                 if (requested.getAndAdd(n) == 0) {
-                    pollQueue(wip, requested, queue, child);
+                    pollQueue(wip, requested, capacity, queue, child);
                 }
             }
 
@@ -48,6 +71,9 @@ public class OperatorOnBackpressureBuffer<T> implements Operator<T, T> {
         // don't pass through subscriber as we are async and doing queue draining
         // a parent being unsubscribed should not affect the children
         Subscriber<T> parent = new Subscriber<T>() {
+
+            private AtomicBoolean saturated = new AtomicBoolean(false);
+
             @Override
             public void onStart() {
                 request(Long.MAX_VALUE);
@@ -56,21 +82,47 @@ public class OperatorOnBackpressureBuffer<T> implements Operator<T, T> {
             @Override
             public void onCompleted() {
                 queue.offer(on.completed());
-                pollQueue(wip, requested, queue, child);
+                pollQueue(wip, requested, capacity, queue, child);
             }
 
             @Override
             public void onError(Throwable e) {
                 queue.offer(on.error(e));
-                pollQueue(wip, requested, queue, child);
+                pollQueue(wip, requested, capacity, queue, child);
             }
 
             @Override
             public void onNext(T t) {
+                if (!ensureCapacity()) {
+                    return;
+                }
                 queue.offer(on.next(t));
-                pollQueue(wip, requested, queue, child);
+                pollQueue(wip, requested, capacity, queue, child);
             }
 
+            private boolean ensureCapacity() {
+                if (capacity == null) {
+                    return true;
+                }
+
+                long currCapacity;
+                do {
+                    currCapacity = capacity.get();
+                    if (currCapacity <= 0) {
+                        if (saturated.compareAndSet(false, true)) {
+                            // ensure single completion contract
+                            child.onError(new MissingBackpressureException("Overflowed buffer of " + OperatorOnBackpressureBuffer.this.capacity));
+                            unsubscribe();
+                            if (onOverflow != null) {
+                                onOverflow.call();
+                            }
+                        }
+                        return false;
+                    }
+                // ensure no other thread stole our slot, or retry
+                } while (!capacity.compareAndSet(currCapacity, currCapacity - 1));
+                return true;
+            }
         };
         
         // if child unsubscribes it should unsubscribe the parent, but not the other way around
@@ -79,7 +131,7 @@ public class OperatorOnBackpressureBuffer<T> implements Operator<T, T> {
         return parent;
     }
 
-    private void pollQueue(AtomicLong wip, AtomicLong requested, Queue<Object> queue, Subscriber<? super T> child) {
+    private void pollQueue(AtomicLong wip, AtomicLong requested, AtomicLong capacity, Queue<Object> queue, Subscriber<? super T> child) {
         // TODO can we do this without putting everything in the queue first so we can fast-path the case when we don't need to queue?
         if (requested.get() > 0) {
             // only one draining at a time
@@ -95,6 +147,9 @@ public class OperatorOnBackpressureBuffer<T> implements Operator<T, T> {
                                 // nothing in queue
                                 requested.incrementAndGet();
                                 return;
+                            }
+                            if (capacity != null) { // it's bounded
+                                capacity.incrementAndGet();
                             }
                             on.accept(child, o);
                         } else {
