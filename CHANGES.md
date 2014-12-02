@@ -4,6 +4,13 @@
 
 This release adds `@Beta` and `@Experimental` annotations to mark APIs that are not yet stable. 
 
+An example of how this looks in the [Javadocs](http://reactivex.io/RxJava/javadoc/rx/Observable.html#onBackpressureBlock()) is:
+
+```
+@Experimental
+public final Observable<T> onBackpressureBlock()
+```
+
 The lifecycle and stability of these are [documented in the README](https://github.com/ReactiveX/RxJava/blob/1.x/README.md#versioning) as follows:
 
 > #### @Beta
