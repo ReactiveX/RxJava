@@ -32,9 +32,6 @@ public class AtomicArrayQueue {
     public AtomicArrayQueue() {
         this(8, Integer.MAX_VALUE);
     }
-    public AtomicArrayQueue(int initialCapacity) {
-        this(16, Integer.MAX_VALUE);
-    }
     public AtomicArrayQueue(int initialCapacity, int maxCapacity) {
         int c0;
         if (initialCapacity >= 1 << 30) {
@@ -119,6 +116,7 @@ public class AtomicArrayQueue {
             Object o = b.getAndSet(ro, null);
             if (o == TOMBSTONE) {
                 // the offer is in copy, try again with a fresh buffer
+                b.lazySet(ro, TOMBSTONE); // in case the new buffer is late
                 continue;
             } else
             if (o == null) {

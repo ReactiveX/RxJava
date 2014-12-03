@@ -19,6 +19,7 @@ import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Control;
 
 import rx.internal.util.AtomicArrayQueue;
+import rx.internal.util.unsafe.SpscLinkedQueue;
 
 /**
  * gradlew benchmarks "-Pjmh=-f 1 -tu s -bm thrpt -wi 5 -i 5 -r 1 .*ConcurrentQueueThroughputBusy.*"
