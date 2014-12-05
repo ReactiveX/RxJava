@@ -23,6 +23,7 @@ import rx.*;
 import rx.Observable.OnSubscribe;
 import rx.annotations.Experimental;
 import rx.exceptions.CompositeException;
+import rx.functions.*;
 
 /**
  * Abstract base class for the OnSubscribe interface that supports building
@@ -77,6 +78,85 @@ public abstract class AbstractOnSubscribe<T, S> implements OnSubscribe<T> {
      */
     public final Observable<T> toObservable() {
         return Observable.create(this);
+    }
+    
+    /**
+     * Creates an AbstractOnSubscribe instance which calls the provided {@code next} action.
+     * <p>
+     * This is a convenience method to help create AbstractOnSubscribe instances with the
+     * help of lambdas.
+     * @param <T> the value type
+     * @param <S> the per-subscriber user-defined state type
+     * @param next the next action to call
+     * @return an AbstractOnSubscribe instance
+     */
+    public static <T, S> AbstractOnSubscribe<T, S> create(Action1<SubscriptionState<T, S>> next) {
+        return create(next, new Func0<S>() {
+            @Override
+            public S call() {
+                return null;
+            }
+        }, Actions.empty());
+    }
+    /**
+     * Creates an AbstractOnSubscribe instance which creates a custom state with the
+     * {@code onSubscribe} function and calls the provided {@code next} action.
+     * <p>
+     * This is a convenience method to help create AbstractOnSubscribe instances with the
+     * help of lambdas.
+     * @param <T> the value type
+     * @param <S> the per-subscriber user-defined state type
+     * @param next the next action to call
+     * @param onSubscribe the function that returns a per-subscriber state to be used by next
+     * @return an AbstractOnSubscribe instance
+     */
+    public static <T, S> AbstractOnSubscribe<T, S> create(Action1<SubscriptionState<T, S>> next,
+            Func0<? extends S> onSubscribe) {
+        return create(next, onSubscribe, Actions.empty());
+    }
+    /**
+     * Creates an AbstractOnSubscribe instance which creates a custom state with the
+     * {@code onSubscribe} function, calls the provided {@code next} action and
+     * calls the {@code onTerminated} action to release the state when its no longer needed.
+     * <p>
+     * This is a convenience method to help create AbstractOnSubscribe instances with the
+     * help of lambdas.
+     * @param <T> the value type
+     * @param <S> the per-subscriber user-defined state type
+     * @param next the next action to call
+     * @param onSubscribe the function that returns a per-subscriber state to be used by next
+     * @param onTerminated the action to call to release the state created by the onSubscribe function
+     * @return an AbstractOnSubscribe instance
+     */
+    public static <T, S> AbstractOnSubscribe<T, S> create(Action1<SubscriptionState<T, S>> next,
+            Func0<? extends S> onSubscribe, Action1<? super S> onTerminated) {
+        return new LambdaOnSubscribe<T, S>(next, onSubscribe, onTerminated);
+    }
+    /**
+     * An implementation that forwards the 3 main methods to functional callbacks.
+     */
+    private static final class LambdaOnSubscribe<T, S> extends AbstractOnSubscribe<T, S> {
+        final Action1<SubscriptionState<T, S>> next;
+        final Func0<? extends S> onSubscribe;
+        final Action1<? super S> onTerminated;
+        private LambdaOnSubscribe(Action1<SubscriptionState<T, S>> next,
+                Func0<? extends S> onSubscribe, Action1<? super S> onTerminated) {
+            this.next = next;
+            this.onSubscribe = onSubscribe;
+            this.onTerminated = onTerminated;
+        }
+        @Override
+        protected S onSubscribe(Subscriber<? super T> subscriber) {
+            return onSubscribe.call();
+        }
+        @Override
+        protected void onTerminated(S state) {
+            onTerminated.call(state);
+        }
+        @Override
+        protected void next(SubscriptionState<T, S> state) {
+            next.call(state);
+        }
     }
     /**
      * Contains the producer loop that reacts to downstream requests of work.
