@@ -151,6 +151,7 @@ public abstract class AbstractOnSubscribe<T, S> implements OnSubscribe<T> {
         private final S state;
         private final AtomicLong requestCount;
         private final AtomicInteger inUse;
+        private final AtomicInteger done;
         private int phase;
         private long calls;
         private T theValue;
@@ -163,6 +164,7 @@ public abstract class AbstractOnSubscribe<T, S> implements OnSubscribe<T> {
             this.state = state;
             this.requestCount = new AtomicLong();
             this.inUse = new AtomicInteger(1);
+            this.done = new AtomicInteger();
         }
         /**
          * @return the per-subscriber specific user-defined state created via AbstractOnSubscribe.onSubscribe.
@@ -335,11 +337,13 @@ public abstract class AbstractOnSubscribe<T, S> implements OnSubscribe<T> {
         }
         @Override
         public boolean isUnsubscribed() {
-            return inUse.get() <= 0;
+            return done.get() != 0;
         }
         @Override
         public void unsubscribe() {
-            free();
+            if (done.compareAndSet(0, 1)) {
+                free();
+            }
         }
     }
 }
