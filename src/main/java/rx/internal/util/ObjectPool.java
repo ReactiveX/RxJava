@@ -17,7 +17,11 @@
  */
 package rx.internal.util;
 
+import java.lang.ref.Reference;
+import java.lang.ref.ReferenceQueue;
+import java.lang.ref.WeakReference;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
 
@@ -28,13 +32,19 @@ import rx.internal.util.unsafe.UnsafeAccess;
 import rx.schedulers.Schedulers;
 
 public abstract class ObjectPool<T> {
-    private Queue<T> pool;
+    private final Queue<T> pool;
     private final int maxSize;
 
-    private Scheduler.Worker schedulerWorker;
+    private final Scheduler.Worker schedulerWorker;
+
+    /*
+     * Approach to using WeakReference inspired by https://gist.github.com/UnquietCode/5717608
+     */
+    private final ConcurrentHashMap<WeakReference<Ref<T>>, T> references = new ConcurrentHashMap<WeakReference<Ref<T>>, T>();
+    private final ReferenceQueue<Ref<T>> referenceQueue = new ReferenceQueue<Ref<T>>();
 
     public ObjectPool() {
-        this(0, 0, 67);
+        this(0, 0, 7);
     }
 
     /**
@@ -51,8 +61,16 @@ public abstract class ObjectPool<T> {
      */
     private ObjectPool(final int min, final int max, final long validationInterval) {
         this.maxSize = max;
-        // initialize pool
-        initialize(min);
+        //         initialize pool
+        if (UnsafeAccess.isUnsafeAvailable()) {
+            pool = new MpmcArrayQueue<T>(Math.max(maxSize, 1024));
+        } else {
+            pool = new ConcurrentLinkedQueue<T>();
+        }
+
+        for (int i = 0; i < min; i++) {
+            pool.add(createObject());
+        }
 
         schedulerWorker = Schedulers.computation().createWorker();
         schedulerWorker.schedulePeriodically(new Action0() {
@@ -60,6 +78,20 @@ public abstract class ObjectPool<T> {
             @Override
             public void call() {
                 int size = pool.size();
+                Reference<? extends Ref<T>> r = null;
+                while ((r = referenceQueue.poll()) != null) {
+                    // we got one that was ready for GC so use it
+                    T availableObject = references.remove(r);
+                    if (availableObject != null) {
+                        if (size < min) {
+                            // reset and add
+                            resetObject(availableObject);
+                            pool.offer(availableObject);
+                            size++;
+                        }
+                    }
+                }
+
                 if (size < min) {
                     int sizeToBeAdded = max - size;
                     for (int i = 0; i < sizeToBeAdded; i++) {
@@ -75,6 +107,7 @@ public abstract class ObjectPool<T> {
             }
 
         }, validationInterval, validationInterval, TimeUnit.SECONDS);
+
     }
 
     /**
@@ -83,27 +116,21 @@ public abstract class ObjectPool<T> {
      *
      * @return T borrowed object
      */
-    public T borrowObject() {
-        T object;
+    public Ref<T> borrowObject() {
+        T object = null;
         if ((object = pool.poll()) == null) {
             object = createObject();
         }
 
-        return object;
-    }
+        Ref<T> ref = new Ref<T>(object);
 
-    /**
-     * Returns object back to the pool.
-     *
-     * @param object
-     *            object to be returned
-     */
-    public void returnObject(T object) {
-        if (object == null) {
-            return;
+        // only try and reclaim if we're under our size limit
+        if (references.size() < maxSize) {
+            WeakReference<Ref<T>> weakRef = new WeakReference<Ref<T>>(ref, referenceQueue);
+            references.put(weakRef, object);
         }
 
-        this.pool.offer(object);
+        return ref;
     }
 
     /**
@@ -120,15 +147,17 @@ public abstract class ObjectPool<T> {
      */
     protected abstract T createObject();
 
-    private void initialize(final int min) {
-        if (UnsafeAccess.isUnsafeAvailable()) {
-            pool = new MpmcArrayQueue<T>(Math.max(maxSize, 1024));
-        } else {
-            pool = new ConcurrentLinkedQueue<T>();
+    protected abstract void resetObject(T t);
+
+    public static class Ref<T> {
+        private final T t;
+
+        private Ref(T t) {
+            this.t = t;
         }
 
-        for (int i = 0; i < min; i++) {
-            pool.add(createObject());
+        public T get() {
+            return t;
         }
     }
 }

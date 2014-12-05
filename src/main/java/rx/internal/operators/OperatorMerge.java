@@ -273,7 +273,6 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
         private void initScalarValueQueueIfNeeded() {
             if (scalarValueQueue == null) {
                 scalarValueQueue = RxRingBuffer.getSpmcInstance();
-                add(scalarValueQueue);
             }
         }
 
@@ -539,7 +538,6 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
         public InnerSubscriber(MergeSubscriber<T> parent, MergeProducer<T> producer) {
             this.parentSubscriber = parent;
             this.producer = producer;
-            add(q);
             request(q.capacity());
         }
 

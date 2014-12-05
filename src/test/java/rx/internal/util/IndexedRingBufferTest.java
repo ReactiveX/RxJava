@@ -31,14 +31,17 @@ import rx.Scheduler;
 import rx.Subscription;
 import rx.functions.Action0;
 import rx.functions.Func1;
+import rx.internal.util.ObjectPool.Ref;
 import rx.schedulers.Schedulers;
 
 public class IndexedRingBufferTest {
 
     @Test
     public void add() {
-        @SuppressWarnings("unchecked")
-        IndexedRingBuffer<LSubscription> list = IndexedRingBuffer.getInstance();
+        @SuppressWarnings({ "unchecked", "rawtypes" })
+        Ref<IndexedRingBuffer> ref = IndexedRingBuffer.getInstance();
+        @SuppressWarnings({ "unchecked", "rawtypes" })
+        IndexedRingBuffer<LSubscription> list = ref.get();
         list.add(new LSubscription(1));
         list.add(new LSubscription(2));
         final AtomicInteger c = new AtomicInteger();
@@ -49,8 +52,10 @@ public class IndexedRingBufferTest {
 
     @Test
     public void removeEnd() {
-        @SuppressWarnings("unchecked")
-        IndexedRingBuffer<LSubscription> list = IndexedRingBuffer.getInstance();
+        @SuppressWarnings({ "unchecked", "rawtypes" })
+        Ref<IndexedRingBuffer> ref = IndexedRingBuffer.getInstance();
+        @SuppressWarnings({ "unchecked", "rawtypes" })
+        IndexedRingBuffer<LSubscription> list = ref.get();
         list.add(new LSubscription(1));
         int n2 = list.add(new LSubscription(2));
 
@@ -67,8 +72,10 @@ public class IndexedRingBufferTest {
 
     @Test
     public void removeMiddle() {
-        @SuppressWarnings("unchecked")
-        IndexedRingBuffer<LSubscription> list = IndexedRingBuffer.getInstance();
+        @SuppressWarnings({ "unchecked", "rawtypes" })
+        Ref<IndexedRingBuffer> ref = IndexedRingBuffer.getInstance();
+        @SuppressWarnings({ "unchecked", "rawtypes" })
+        IndexedRingBuffer<LSubscription> list = ref.get();
         list.add(new LSubscription(1));
         int n2 = list.add(new LSubscription(2));
         list.add(new LSubscription(3));
@@ -82,8 +89,10 @@ public class IndexedRingBufferTest {
 
     @Test
     public void addRemoveAdd() {
-        @SuppressWarnings("unchecked")
-        IndexedRingBuffer<String> list = IndexedRingBuffer.getInstance();
+        @SuppressWarnings({ "unchecked", "rawtypes" })
+        Ref<IndexedRingBuffer> ref = IndexedRingBuffer.getInstance();
+        @SuppressWarnings({ "unchecked", "rawtypes" })
+        IndexedRingBuffer<String> list = ref.get();
         list.add("one");
         list.add("two");
         list.add("three");
@@ -119,8 +128,10 @@ public class IndexedRingBufferTest {
     @Test
     public void addThousands() {
         String s = "s";
-        @SuppressWarnings("unchecked")
-        IndexedRingBuffer<String> list = IndexedRingBuffer.getInstance();
+        @SuppressWarnings({ "unchecked", "rawtypes" })
+        Ref<IndexedRingBuffer> ref = IndexedRingBuffer.getInstance();
+        @SuppressWarnings({ "unchecked", "rawtypes" })
+        IndexedRingBuffer<String> list = ref.get();
         for (int i = 0; i < 10000; i++) {
             list.add(s);
         }
@@ -145,8 +156,10 @@ public class IndexedRingBufferTest {
 
     @Test
     public void testForEachWithIndex() {
-        @SuppressWarnings("unchecked")
-        IndexedRingBuffer<String> buffer = IndexedRingBuffer.getInstance();
+        @SuppressWarnings({ "unchecked", "rawtypes" })
+        Ref<IndexedRingBuffer> ref = IndexedRingBuffer.getInstance();
+        @SuppressWarnings({ "unchecked", "rawtypes" })
+        IndexedRingBuffer<String> buffer = ref.get();
         buffer.add("zero");
         buffer.add("one");
         buffer.add("two");
@@ -212,8 +225,10 @@ public class IndexedRingBufferTest {
 
     @Test
     public void testForEachAcrossSections() {
-        @SuppressWarnings("unchecked")
-        IndexedRingBuffer<Integer> buffer = IndexedRingBuffer.getInstance();
+        @SuppressWarnings({ "unchecked", "rawtypes" })
+        Ref<IndexedRingBuffer> ref = IndexedRingBuffer.getInstance();
+        @SuppressWarnings({ "unchecked", "rawtypes" })
+        IndexedRingBuffer<Integer> buffer = ref.get();
         for (int i = 0; i < 10000; i++) {
             buffer.add(i);
         }
@@ -231,8 +246,10 @@ public class IndexedRingBufferTest {
     @Test
     public void longRunningAddRemoveAddDoesntLeakMemory() {
         String s = "s";
-        @SuppressWarnings("unchecked")
-        IndexedRingBuffer<String> list = IndexedRingBuffer.getInstance();
+        @SuppressWarnings({ "unchecked", "rawtypes" })
+        Ref<IndexedRingBuffer> ref = IndexedRingBuffer.getInstance();
+        @SuppressWarnings({ "unchecked", "rawtypes" })
+        IndexedRingBuffer<String> list = ref.get();
         for (int i = 0; i < 20000; i++) {
             int index = list.add(s);
             list.remove(index);
@@ -249,8 +266,10 @@ public class IndexedRingBufferTest {
 
     @Test
     public void testConcurrentAdds() throws InterruptedException {
-        @SuppressWarnings("unchecked")
-        final IndexedRingBuffer<Integer> list = IndexedRingBuffer.getInstance();
+        @SuppressWarnings({ "unchecked", "rawtypes" })
+        Ref<IndexedRingBuffer> ref = IndexedRingBuffer.getInstance();
+        @SuppressWarnings({ "unchecked", "rawtypes" })
+        final IndexedRingBuffer<Integer> list = ref.get();
 
         Scheduler.Worker w1 = Schedulers.computation().createWorker();
         Scheduler.Worker w2 = Schedulers.computation().createWorker();
@@ -300,8 +319,10 @@ public class IndexedRingBufferTest {
 
     @Test
     public void testConcurrentAddAndRemoves() throws InterruptedException {
-        @SuppressWarnings("unchecked")
-        final IndexedRingBuffer<Integer> list = IndexedRingBuffer.getInstance();
+        @SuppressWarnings({ "unchecked", "rawtypes" })
+        Ref<IndexedRingBuffer> ref = IndexedRingBuffer.getInstance();
+        @SuppressWarnings({ "unchecked", "rawtypes" })
+        final IndexedRingBuffer<Integer> list = ref.get();
 
         final List<Exception> exceptions = Collections.synchronizedList(new ArrayList<Exception>());
 
