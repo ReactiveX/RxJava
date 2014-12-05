@@ -472,7 +472,6 @@ public class AbstractOnSubscribeTest {
 
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
-        InOrder inOrder = inOrder(o);
 
         TestSubscriber<Object> ts = new TestSubscriber<Object>(o);
 
@@ -481,11 +480,12 @@ public class AbstractOnSubscribeTest {
         ts.awaitTerminalEvent();
         
         verify(o, never()).onError(any(Throwable.class));
-        for (int i = 1; i <= count; i++) {
-            inOrder.verify(o).onNext(i);
+        verify(o, times(count + 1)).onNext(any(Integer.class));
+        verify(o).onCompleted();
+        
+        for (int i = 0; i < ts.getOnNextEvents().size(); i++) {
+            Object object = ts.getOnNextEvents().get(i);
+            assertEquals(i + 1, object);
         }
-        inOrder.verify(o).onCompleted();
-        inOrder.verifyNoMoreInteractions();
-
     }
 }
