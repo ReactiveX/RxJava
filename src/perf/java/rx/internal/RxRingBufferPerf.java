@@ -57,7 +57,6 @@ public class RxRingBufferPerf {
         for (int i = 0; i < 1000; i++) {
             input.bh.consume(buffer.poll());
         }
-        buffer.release();
     }
 
     @Benchmark
@@ -65,7 +64,6 @@ public class RxRingBufferPerf {
         RxRingBuffer buffer = RxRingBuffer.getSpmcInstance();
         buffer.onNext("a");
         input.bh.consume(buffer.poll());
-        buffer.release();
     }
 
     @Benchmark
@@ -93,7 +91,6 @@ public class RxRingBufferPerf {
         for (int i = 0; i < 1000; i++) {
             input.bh.consume(buffer.poll());
         }
-        buffer.release();
     }
 
     @Benchmark
@@ -101,7 +98,6 @@ public class RxRingBufferPerf {
         RxRingBuffer buffer = RxRingBuffer.getSpscInstance();
         buffer.onNext("a");
         input.bh.consume(buffer.poll());
-        buffer.release();
     }
 
     @State(Scope.Thread)
