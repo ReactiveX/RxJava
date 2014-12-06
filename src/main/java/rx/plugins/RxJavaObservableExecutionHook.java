@@ -18,6 +18,7 @@ package rx.plugins;
 import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Observable.Operator;
+import rx.Producer;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Func1;
@@ -117,5 +118,16 @@ public abstract class RxJavaObservableExecutionHook {
      */
     public <T, R> Operator<? extends R, ? super T> onLift(final Operator<? extends R, ? super T> lift) {
         return lift;
+    }
+
+    /**
+     * Invoked as each request for more values comes in from operators that need back pressure limit buffer sizes.
+     * Operators that don't have buffers you'll generally only see one request for {@link Long#MAX_VALUE}.
+     * 
+     * @param subscriber  The {@link Subscriber} that is receiving the request.
+     * @param producer  The {@link Producer} that the request will be sent to.
+     * @param n  The amount requested.
+     */
+    public <T> void onRequest(Subscriber<T> subscriber, Producer producer, long n) {
     }
 }
