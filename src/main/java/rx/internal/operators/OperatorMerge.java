@@ -186,7 +186,8 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
             InnerSubscriber<T> i = new InnerSubscriber<T>(this, producerIfNeeded);
             i.sindex = childrenSubscribers.add(i);
             t.unsafeSubscribe(i);
-            request(1);
+            if (!isUnsubscribed())
+                request(1);
         }
 
         private void handleScalarSynchronousObservable(ScalarSynchronousObservable<? extends T> t) {
