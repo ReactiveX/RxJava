@@ -16,6 +16,8 @@
 package rx;
 
 import rx.internal.util.SubscriptionList;
+import rx.plugins.RxJavaObservableExecutionHook;
+import rx.plugins.RxJavaPlugins;
 
 /**
  * Provides a mechanism for receiving push-based notifications from Observables, and permits manual
@@ -38,6 +40,8 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
     private Producer p;
     /* protected by `this` */
     private long requested = Long.MIN_VALUE; // default to not set
+
+    private final RxJavaObservableExecutionHook hook = RxJavaPlugins.getInstance().getObservableExecutionHook();
 
     protected Subscriber() {
         this.op = null;
@@ -104,6 +108,7 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
         }
         // after releasing lock
         if (shouldRequest != null) {
+            hook.onRequest(this, shouldRequest, n);
             shouldRequest.request(n);
         }
     }
@@ -134,8 +139,10 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
         } else {
             // we execute the request with whatever has been requested (or Long.MAX_VALUE)
             if (toRequest == Long.MIN_VALUE) {
+                hook.onRequest(this, p, Long.MAX_VALUE);
                 p.request(Long.MAX_VALUE);
             } else {
+                hook.onRequest(this, p, toRequest);
                 p.request(toRequest);
             }
         }
