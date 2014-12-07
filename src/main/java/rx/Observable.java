@@ -57,10 +57,10 @@ public class Observable<T> {
      *            {@link OnSubscribe} to be executed when {@link #subscribe(Subscriber)} is called
      */
     protected Observable(OnSubscribe<T> f) {
-        this.onSubscribe = f;
+        this.onSubscribe = hook.onCreate(f);
     }
 
-    private static final RxJavaObservableExecutionHook hook = RxJavaPlugins.getInstance().getObservableExecutionHook();
+    private final RxJavaObservableExecutionHook hook = RxJavaPlugins.getInstance().getObservableExecutionHook();
 
     /**
      * Returns an Observable that will execute the specified function when a {@link Subscriber} subscribes to
@@ -92,7 +92,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Creating-Observables#create">RxJava wiki: create</a>
      */
     public final static <T> Observable<T> create(OnSubscribe<T> f) {
-        return new Observable<T>(hook.onCreate(f));
+        return new Observable<T>(f);
     }
 
     /**
