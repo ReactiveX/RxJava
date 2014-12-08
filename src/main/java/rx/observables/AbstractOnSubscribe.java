@@ -26,11 +26,117 @@ import rx.exceptions.CompositeException;
 import rx.functions.*;
 
 /**
- * Abstract base class for the OnSubscribe interface that supports building
+ * Abstract base class for the OnSubscribe interface that helps building
  * observable sources one onNext at a time and automatically supports
  * unsubscription and backpressure.
  * <p>
+ * <h1>Usage rules</h1>
+ * Implementors of the {@code next()} method
+ * <ul>
+ * <li>should either
+ *   <ul>
+ *   <li>create the next value and signal it via {@code state.onNext()},</li>
+ *   <li>signal a terminal condition via {@code state.onError()} or {@code state.onCompleted()} or</li>
+ *   <li>signal a stop condition via {@code state.stop()} indicating no further values will be sent.</li>
+ *   </ul>
+ * </li>
+ * <li>may
+ *   <ul>
+ *   <li>call {@code state.onNext()} and either {@code state.onError()} or {@code state.onCompleted()} together and
+ *   <li>block or sleep.
+ *   </ul>
+ * </li>
+ * <li>should not
+ *   <ul>
+ *   <li>do nothing or do async work and not produce any event or request stopping. If neither of 
+ *   the methods are called, an {@code IllegalStateException} is forwarded to the {@code Subscriber} and
+ *   the Observable is terminated;</li>
+ *   <li>call the {@code state.onXYZ} methods more than once (yields {@code IllegalStateException}).</li>
+ *   </ul>
+ * </li>
+ * </ul>
  * 
+ * The {@code SubscriptionState} object features counters that may help implement a state machine:
+ * <ul>
+ * <li>A call counter, accessible via {@code state.calls()} that tells how many times 
+ * the {@code next()} was run (zero based).
+ * <li>A phase counter, accessible via {@code state.phase()} that helps track the current emission 
+ * phase and may be used in a {@code switch ()} statement to implement the state machine. 
+ * (It was named phase to avoid confusion with the per-subscriber state.)</li>
+ * <li>The current phase can be arbitrarily changed via {@code state.advancePhase()}, 
+ * {@code state.advancePhaseBy(int)} and {@code state.phase(int)}.</li>
+ * 
+ * </ul>
+ * <p>
+ * The implementors of the {@code AbstractOnSubscribe} may override the {@code onSubscribe} to perform
+ * special actions (such as registering {@code Subscription}s with {@code Subscriber.add()}) and return additional state for each subscriber subscribing. This custom state is
+ * accessible through the {@code state.state()} method. If the custom state requires some form of cleanup,
+ * the {@code onTerminated} method can be overridden.
+ * <p>
+ * For convenience, lambda-accepting static factory methods, named {@code create()}, are available. Another
+ * convenience is the {@code toObservable} which turns an {@code AbstractOnSubscribe} instance into an {@code Observable} fluently.
+ * 
+ * <h1>Examples</h1>
+ * Note: the examples use the lambda-helper factories to avoid boilerplane.
+ * 
+ * <h3>Implement: just</h3>
+ * <pre><code>
+ * AbstractOnSubscribe.create(s -> {
+ *   s.onNext(1);
+ *   s.onCompleted();
+ * }).toObservable().subscribe(System.out::println);
+ * </code></pre>
+
+ * <h3>Implement: from Iterable</h3>
+ * <pre><code>
+ * Iterable<T> iterable = ...;
+ * AbstractOnSubscribe.create(s -> {
+ *   Iterator<T> it = s.state();
+ *   if (it.hasNext()) {
+ *     s.onNext(it.next());
+ *   }
+ *   if (!it.hasNext()) {
+ *     s.onCompleted();
+ *   }
+ * }, u -> iterable.iterator()).subscribe(System.out::println);
+ * </code></pre>
+
+ * <h3>Implement source that fails a number of times before succeeding</h3>
+ * <pre><code>
+ * AtomicInteger fails = new AtomicInteger();
+ * int numFails = 50;
+ * AbstractOnSubscribe.create(s -> {
+ *   long c = s.calls();
+ *   switch (s.phase()) {
+ *   case 0:
+ *     s.onNext("Beginning");
+ *     s.onError(new RuntimeException("Oh, failure.");
+ *     if (c == numFails.getAndIncrement()) {
+ *       s.advancePhase();
+ *     }
+ *     break;
+ *   case 1:
+ *     s.onNext("Beginning");
+ *     s.advancePhase();
+ *   case 2:
+ *     s.onNext("Finally working");
+ *     s.onCompleted();
+ *     s.advancePhase();
+ *   default:
+ *     throw new IllegalStateException("How did we get here?");
+ *   }
+ * }).subscribe(System.out::println);
+ * </code></pre>
+
+ * <h3>Implement: never</h3>
+ * <pre><code>
+ * AbstractOnSubscribe.create(s -> {
+ *   s.stop();
+ * }).toObservable()
+ * .timeout(1, TimeUnit.SECONDS)
+ * .subscribe(System.out::println, Throwable::printStacktrace, () -> System.out.println("Done"));
+ * </code></pre>
+
  * @param <T> the value type
  * @param <S> the per-subscriber user-defined state type
  */
@@ -40,7 +146,7 @@ public abstract class AbstractOnSubscribe<T, S> implements OnSubscribe<T> {
      * Called when a Subscriber subscribes and let's the implementor
      * create a per-subscriber custom state.
      * <p>
-     * Override this method to have custom state per subscriber.
+     * Override this method to have custom state per-subscriber.
      * The default implementation returns {@code null}.
      * @param subscriber the subscriber who is subscribing
      * @return the custom state
@@ -68,7 +174,7 @@ public abstract class AbstractOnSubscribe<T, S> implements OnSubscribe<T> {
     public final void call(final Subscriber<? super T> subscriber) {
         final S custom = onSubscribe(subscriber);
         final SubscriptionState<T, S> state = new SubscriptionState<T, S>(this, subscriber, custom);
-        subscriber.add(state);
+        subscriber.add(new SubscriptionCompleter<T, S>(state));
         subscriber.setProducer(new SubscriptionProducer<T, S>(state));
     }
     
@@ -79,6 +185,14 @@ public abstract class AbstractOnSubscribe<T, S> implements OnSubscribe<T> {
     public final Observable<T> toObservable() {
         return Observable.create(this);
     }
+
+    /** Function that returns null. */
+    private static final Func1<Object, Object> NULL_FUNC1 = new Func1<Object, Object>() {
+        @Override
+        public Object call(Object t1) {
+            return null;
+        }
+    };
     
     /**
      * Creates an AbstractOnSubscribe instance which calls the provided {@code next} action.
@@ -91,12 +205,10 @@ public abstract class AbstractOnSubscribe<T, S> implements OnSubscribe<T> {
      * @return an AbstractOnSubscribe instance
      */
     public static <T, S> AbstractOnSubscribe<T, S> create(Action1<SubscriptionState<T, S>> next) {
-        return create(next, new Func0<S>() {
-            @Override
-            public S call() {
-                return null;
-            }
-        }, Actions.empty());
+        @SuppressWarnings("unchecked")
+        Func1<? super Subscriber<? super T>, ? extends S> nullFunc =
+                (Func1<? super Subscriber<? super T>, ? extends S>)NULL_FUNC1;
+        return create(next, nullFunc, Actions.empty());
     }
     /**
      * Creates an AbstractOnSubscribe instance which creates a custom state with the
@@ -111,7 +223,7 @@ public abstract class AbstractOnSubscribe<T, S> implements OnSubscribe<T> {
      * @return an AbstractOnSubscribe instance
      */
     public static <T, S> AbstractOnSubscribe<T, S> create(Action1<SubscriptionState<T, S>> next,
-            Func0<? extends S> onSubscribe) {
+            Func1<? super Subscriber<? super T>, ? extends S> onSubscribe) {
         return create(next, onSubscribe, Actions.empty());
     }
     /**
@@ -129,25 +241,27 @@ public abstract class AbstractOnSubscribe<T, S> implements OnSubscribe<T> {
      * @return an AbstractOnSubscribe instance
      */
     public static <T, S> AbstractOnSubscribe<T, S> create(Action1<SubscriptionState<T, S>> next,
-            Func0<? extends S> onSubscribe, Action1<? super S> onTerminated) {
+            Func1<? super Subscriber<? super T>, ? extends S> onSubscribe, Action1<? super S> onTerminated) {
         return new LambdaOnSubscribe<T, S>(next, onSubscribe, onTerminated);
     }
     /**
      * An implementation that forwards the 3 main methods to functional callbacks.
+     * @param <T> the value type
+     * @param <S> the per-subscriber user-defined state type
      */
     private static final class LambdaOnSubscribe<T, S> extends AbstractOnSubscribe<T, S> {
         final Action1<SubscriptionState<T, S>> next;
-        final Func0<? extends S> onSubscribe;
+        final Func1<? super Subscriber<? super T>, ? extends S> onSubscribe;
         final Action1<? super S> onTerminated;
         private LambdaOnSubscribe(Action1<SubscriptionState<T, S>> next,
-                Func0<? extends S> onSubscribe, Action1<? super S> onTerminated) {
+                Func1<? super Subscriber<? super T>, ? extends S> onSubscribe, Action1<? super S> onTerminated) {
             this.next = next;
             this.onSubscribe = onSubscribe;
             this.onTerminated = onTerminated;
         }
         @Override
         protected S onSubscribe(Subscriber<? super T> subscriber) {
-            return onSubscribe.call();
+            return onSubscribe.call(subscriber);
         }
         @Override
         protected void onTerminated(S state) {
@@ -157,6 +271,30 @@ public abstract class AbstractOnSubscribe<T, S> implements OnSubscribe<T> {
         protected void next(SubscriptionState<T, S> state) {
             next.call(state);
         }
+    }
+    /**
+     * Manages unsubscription of the state.
+     * @param <T> the value type
+     * @param <S> the per-subscriber user-defined state type
+     */
+    private static final class SubscriptionCompleter<T, S> extends AtomicBoolean implements Subscription {
+        /** */
+        private static final long serialVersionUID = 7993888274897325004L;
+        private final SubscriptionState<T, S> state;
+        private SubscriptionCompleter(SubscriptionState<T, S> state) {
+            this.state = state;
+        }
+        @Override
+        public boolean isUnsubscribed() {
+            return get();
+        }
+        @Override
+        public void unsubscribe() {
+            if (compareAndSet(false, true)) {
+                state.free();
+            }
+        }
+
     }
     /**
      * Contains the producer loop that reacts to downstream requests of work.
@@ -172,22 +310,7 @@ public abstract class AbstractOnSubscribe<T, S> implements OnSubscribe<T> {
         public void request(long n) {
             if (n == Long.MAX_VALUE) {
                 for (; !state.subscriber.isUnsubscribed(); ) {
-                    if (state.use()) {
-                        try {
-                            state.parent.next(state);
-                            state.calls++;
-                            if (state.accept()) {
-                                state.terminate();
-                                break;
-                            }
-                        } catch (Throwable t) {
-                            state.terminate();
-                            state.subscriber.onError(t);
-                            break;
-                        } finally {
-                            state.free();
-                        }
-                    } else {
+                    if (!doNext()) {
                         break;
                     }
                 }
@@ -195,27 +318,41 @@ public abstract class AbstractOnSubscribe<T, S> implements OnSubscribe<T> {
             if (n > 0 && state.requestCount.getAndAdd(n) == 0) {
                 if (!state.subscriber.isUnsubscribed()) {
                     do {
-                        if (state.use()) {
-                            try {
-                                state.parent.next(state);
-                                state.calls++;
-                                if (state.accept()) {
-                                    state.terminate();
-                                    break;
-                                }
-                            } catch (Throwable t) {
-                                state.terminate();
-                                state.subscriber.onError(t);
-                                break;
-                            } finally {
-                                state.free();
-                            }
-                        } else {
+                        if (!doNext()) {
                             break;
                         }
                     } while (state.requestCount.decrementAndGet() > 0 && !state.subscriber.isUnsubscribed());
                 }
             }
+        }
+        /**
+         * Executes the user-overridden next() method and performs state bookkeeping and
+         * verification.
+         * @return true if the outer loop may continue
+         */
+        protected boolean doNext() {
+            if (state.use()) {
+                try {
+                    int p = state.phase();
+                    state.parent.next(state);
+                    if (!state.verify()) {
+                        throw new IllegalStateException("No event produced or stop called @ Phase: " + p + " -> " + state.phase() + ", Calls: " + state.calls());
+                    }
+                    if (state.accept() || state.stopRequested()) {
+                        state.terminate();
+                        return false;
+                    }
+                    state.calls++;
+                } catch (Throwable t) {
+                    state.terminate();
+                    state.subscriber.onError(t);
+                    return false;
+                } finally {
+                    state.free();
+                }
+                return true;
+            }
+            return false;
         }
     }
     /**
@@ -225,18 +362,18 @@ public abstract class AbstractOnSubscribe<T, S> implements OnSubscribe<T> {
      * @param <T> the value type 
      * @param <S> the per-subscriber user-defined state type
      */
-    public static final class SubscriptionState<T, S> implements Subscription {
+    public static final class SubscriptionState<T, S> {
         private final AbstractOnSubscribe<T, S> parent;
         private final Subscriber<? super T> subscriber;
         private final S state;
         private final AtomicLong requestCount;
         private final AtomicInteger inUse;
-        private final AtomicInteger done;
         private int phase;
         private long calls;
         private T theValue;
         private boolean hasOnNext;
         private boolean hasCompleted;
+        private boolean stopRequested;
         private Throwable theException;
         private SubscriptionState(AbstractOnSubscribe<T, S> parent, Subscriber<? super T> subscriber, S state) {
             this.parent = parent;
@@ -244,7 +381,6 @@ public abstract class AbstractOnSubscribe<T, S> implements OnSubscribe<T> {
             this.state = state;
             this.requestCount = new AtomicLong();
             this.inUse = new AtomicInteger(1);
-            this.done = new AtomicInteger();
         }
         /**
          * @return the per-subscriber specific user-defined state created via AbstractOnSubscribe.onSubscribe.
@@ -335,6 +471,12 @@ public abstract class AbstractOnSubscribe<T, S> implements OnSubscribe<T> {
             hasCompleted = true;
         }
         /**
+         * Signals that there won't be any further events.
+         */
+        public void stop() {
+            stopRequested = true;
+        }
+        /**
          * Emits the onNextValue and/or the terminal value to the actual subscriber.
          * @return true if the event was a terminal event
          */
@@ -370,6 +512,17 @@ public abstract class AbstractOnSubscribe<T, S> implements OnSubscribe<T> {
                 return true;
             }
             return false;
+        }
+        /**
+         * Verify if the next() generated an event or requested a stop.
+         * @return true if either event was generated or stop was requested
+         */
+        protected boolean verify() {
+            return hasOnNext || hasCompleted || stopRequested;
+        }
+        /** @returns true if the next() requested a stop. */
+        protected boolean stopRequested() {
+            return stopRequested;
         }
         /**
          * Request the state to be used by onNext or returns false if
@@ -413,16 +566,6 @@ public abstract class AbstractOnSubscribe<T, S> implements OnSubscribe<T> {
                     parent.onTerminated(state);
                     break;
                 }
-            }
-        }
-        @Override
-        public boolean isUnsubscribed() {
-            return done.get() != 0;
-        }
-        @Override
-        public void unsubscribe() {
-            if (done.compareAndSet(0, 1)) {
-                free();
             }
         }
     }

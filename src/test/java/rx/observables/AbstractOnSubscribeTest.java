@@ -16,9 +16,9 @@
 
 package rx.observables;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
-import static org.junit.Assert.*;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -30,6 +30,8 @@ import rx.*;
 import rx.Observable;
 import rx.Observer;
 import rx.exceptions.TestException;
+import rx.functions.*;
+import rx.observables.AbstractOnSubscribe.SubscriptionState;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 
@@ -138,7 +140,7 @@ public class AbstractOnSubscribeTest {
         AbstractOnSubscribe<Integer, Void> aos = new AbstractOnSubscribe<Integer, Void>() {
             @Override
             protected void next(SubscriptionState<Integer, Void> state) {
-                state.unsubscribe();
+                state.stop();
             }
         };
         
@@ -270,8 +272,9 @@ public class AbstractOnSubscribeTest {
                 case 0:
                     if (c < count) {
                         state.onNext("Beginning");
-                    } else {
-                        state.advancePhase();
+                        if (c == count - 1) {
+                            state.advancePhase();
+                        }
                     }
                     break;
                 case 1:
@@ -337,7 +340,7 @@ public class AbstractOnSubscribeTest {
         Observer<Object> o = mock(Observer.class);
         InOrder inOrder = inOrder(o);
         
-        aos.toObservable().retry().subscribe(o);
+        aos.toObservable().retry(2 * count).subscribe(o);
         
         verify(o, never()).onError(any(Throwable.class));
         inOrder.verify(o, times(count + 1)).onNext("Beginning");
@@ -408,7 +411,7 @@ public class AbstractOnSubscribeTest {
             @Override
             protected void next(SubscriptionState<Integer, Void> state) {
                 states.put(state, state);
-                state.unsubscribe();
+                state.stop();
             }
         };
         Observable<Integer> source = aos.toObservable();
@@ -487,5 +490,17 @@ public class AbstractOnSubscribeTest {
             Object object = ts.getOnNextEvents().get(i);
             assertEquals(i + 1, object);
         }
+    }
+    @Test
+    public void testMissingEmission() {
+        @SuppressWarnings("unchecked")
+        Observer<Object> o = mock(Observer.class);
+
+        Action1<SubscriptionState<Object, Void>> empty = Actions.empty();
+        AbstractOnSubscribe.create(empty).toObservable().subscribe(o);
+        
+        verify(o, never()).onCompleted();
+        verify(o, never()).onNext(any(Object.class));
+        verify(o).onError(any(IllegalStateException.class));
     }
 }
