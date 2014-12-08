@@ -46,47 +46,51 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
         final HashMap<String, Integer> map = new HashMap<String, Integer>();
 
         final Scheduler.Worker inner = Schedulers.computation().createWorker();
-
-        inner.schedule(new Action0() {
-
-            private HashMap<String, Integer> statefulMap = map;
-            int nonThreadSafeCounter = 0;
-
-            @Override
-            public void call() {
-                Integer i = statefulMap.get("a");
-                if (i == null) {
-                    i = 1;
-                    statefulMap.put("a", i);
-                    statefulMap.put("b", i);
-                } else {
-                    i++;
-                    statefulMap.put("a", i);
-                    statefulMap.put("b", i);
-                }
-                nonThreadSafeCounter++;
-                statefulMap.put("nonThreadSafeCounter", nonThreadSafeCounter);
-                if (i < NUM) {
-                    inner.schedule(this);
-                } else {
-                    latch.countDown();
-                }
-            }
-        });
-
+        
         try {
-            latch.await();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+            inner.schedule(new Action0() {
+    
+                private HashMap<String, Integer> statefulMap = map;
+                int nonThreadSafeCounter = 0;
+    
+                @Override
+                public void call() {
+                    Integer i = statefulMap.get("a");
+                    if (i == null) {
+                        i = 1;
+                        statefulMap.put("a", i);
+                        statefulMap.put("b", i);
+                    } else {
+                        i++;
+                        statefulMap.put("a", i);
+                        statefulMap.put("b", i);
+                    }
+                    nonThreadSafeCounter++;
+                    statefulMap.put("nonThreadSafeCounter", nonThreadSafeCounter);
+                    if (i < NUM) {
+                        inner.schedule(this);
+                    } else {
+                        latch.countDown();
+                    }
+                }
+            });
+    
+            try {
+                latch.await();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+    
+            System.out.println("Count A: " + map.get("a"));
+            System.out.println("Count B: " + map.get("b"));
+            System.out.println("nonThreadSafeCounter: " + map.get("nonThreadSafeCounter"));
+    
+            assertEquals(NUM, map.get("a").intValue());
+            assertEquals(NUM, map.get("b").intValue());
+            assertEquals(NUM, map.get("nonThreadSafeCounter").intValue());
+        } finally {
+            inner.unsubscribe();
         }
-
-        System.out.println("Count A: " + map.get("a"));
-        System.out.println("Count B: " + map.get("b"));
-        System.out.println("nonThreadSafeCounter: " + map.get("nonThreadSafeCounter"));
-
-        assertEquals(NUM, map.get("a").intValue());
-        assertEquals(NUM, map.get("b").intValue());
-        assertEquals(NUM, map.get("nonThreadSafeCounter").intValue());
     }
 
     @Test
