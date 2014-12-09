@@ -21,6 +21,7 @@ import rx.Observer;
 import rx.Subscription;
 import rx.exceptions.MissingBackpressureException;
 import rx.internal.operators.NotificationLite;
+import rx.internal.util.ObjectPool.Ref;
 import rx.internal.util.unsafe.SpmcArrayQueue;
 import rx.internal.util.unsafe.SpscArrayQueue;
 import rx.internal.util.unsafe.UnsafeAccess;
@@ -29,7 +30,7 @@ import rx.internal.util.unsafe.UnsafeAccess;
  * This assumes Spsc or Spmc usage. This means only a single producer calling the on* methods. This is the Rx contract of an Observer.
  * Concurrent invocations of on* methods will not be thread-safe.
  */
-public class RxRingBuffer implements Subscription {
+public class RxRingBuffer {
 
     public static RxRingBuffer getSpscInstance() {
         if (UnsafeAccess.isUnsafeAvailable()) {
@@ -144,6 +145,7 @@ public class RxRingBuffer implements Subscription {
     private static final NotificationLite<Object> on = NotificationLite.instance();
 
     private Queue<Object> queue;
+    private Ref<Queue<Object>> queueRef;
 
     private final int size;
     private final ObjectPool<Queue<Object>> pool;
@@ -283,6 +285,11 @@ public class RxRingBuffer implements Subscription {
             return new SpscArrayQueue<Object>(SIZE);
         }
 
+        @Override
+        protected void resetObject(Queue<Object> queue) {
+            queue.clear();
+        }
+
     };
 
     private static ObjectPool<Queue<Object>> SPMC_POOL = new ObjectPool<Queue<Object>>() {
@@ -290,6 +297,11 @@ public class RxRingBuffer implements Subscription {
         @Override
         protected SpmcArrayQueue<Object> createObject() {
             return new SpmcArrayQueue<Object>(SIZE);
+        }
+        
+        @Override
+        protected void resetObject(Queue<Object> queue) {
+            queue.clear();
         }
 
     };
@@ -302,22 +314,10 @@ public class RxRingBuffer implements Subscription {
 
     private RxRingBuffer(ObjectPool<Queue<Object>> pool, int size) {
         this.pool = pool;
-        this.queue = pool.borrowObject();
+        this.queueRef = pool.borrowObject();
+        // keep a reference to the queueRef as long as we have a ref to the queue
+        this.queue = queueRef.get();
         this.size = size;
-    }
-
-    public void release() {
-        if (pool != null) {
-            Queue<Object> q = queue;
-            q.clear();
-            queue = null;
-            pool.returnObject(q);
-        }
-    }
-
-    @Override
-    public void unsubscribe() {
-        release();
     }
 
     /* package accessible for unit tests */RxRingBuffer() {
@@ -434,11 +434,6 @@ public class RxRingBuffer implements Subscription {
 
     public Throwable asError(Object o) {
         return on.getError(o);
-    }
-
-    @Override
-    public boolean isUnsubscribed() {
-        return queue == null;
     }
 
 }

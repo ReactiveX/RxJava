@@ -22,6 +22,7 @@ import java.util.concurrent.atomic.AtomicReferenceArray;
 
 import rx.Subscription;
 import rx.functions.Func1;
+import rx.internal.util.ObjectPool.Ref;
 
 /**
  * Add/Remove without object allocation (after initial construction).
@@ -46,7 +47,7 @@ import rx.functions.Func1;
  * 
  * @param <E>
  */
-public final class IndexedRingBuffer<E> implements Subscription {
+public final class IndexedRingBuffer<E> {
 
     private static final ObjectPool<IndexedRingBuffer> POOL = new ObjectPool<IndexedRingBuffer>() {
 
@@ -55,9 +56,36 @@ public final class IndexedRingBuffer<E> implements Subscription {
             return new IndexedRingBuffer();
         }
 
+        @Override
+        protected void resetObject(IndexedRingBuffer buffer) {
+            /**
+             * This resets the arrays, nulls out references before returning it to the pool.
+             * This extra CPU cost is far smaller than the object allocation cost of not pooling.
+             */
+            // need to clear all elements so we don't leak memory
+            int maxIndex = buffer.index.get();
+            int realIndex = 0;
+            ElementSection<Object> section = buffer.elements;
+            outer: while (section != null) {
+                for (int i = 0; i < SIZE; i++, realIndex++) {
+                    if (realIndex >= maxIndex) {
+                        section = null;
+                        break outer;
+                    }
+                    // we can use lazySet here because we are nulling things out and not accessing them again
+                    // (relative on Mac Intel i7) lazySet gets us ~30m vs ~26m ops/second in the JMH test (100 adds per release)
+                    section.array.set(i, null);
+                }
+                section = section.next.get();
+            }
+
+            buffer.index.set(0);
+            buffer.removedIndex.set(0);
+        }
+
     };
 
-    public final static IndexedRingBuffer getInstance() {
+    public final static Ref<IndexedRingBuffer> getInstance() {
         return POOL.borrowObject();
     }
 
@@ -65,12 +93,12 @@ public final class IndexedRingBuffer<E> implements Subscription {
     private final IndexSection removed = new IndexSection();
     /* package for unit testing */final AtomicInteger index = new AtomicInteger();
     /* package for unit testing */final AtomicInteger removedIndex = new AtomicInteger();
-    
+
     // default size of ring buffer
     /**
      * Set at 256 ... Android defaults far smaller which likely will never hit the use cases that require the higher buffers.
      * <p>
-     * The 10000 size test represents something that should be a rare use case (merging 10000 concurrent Observables for example) 
+     * The 10000 size test represents something that should be a rare use case (merging 10000 concurrent Observables for example)
      * 
      * <pre> {@code
      * ./gradlew benchmarks '-Pjmh=-f 1 -tu s -bm thrpt -wi 5 -i 5 -r 1 .*IndexedRingBufferPerf.*'
@@ -254,40 +282,8 @@ public final class IndexedRingBuffer<E> implements Subscription {
             }
         }
     }
-    
+
     /* package for unit testing */static final int SIZE = _size;
-
-    /**
-     * This resets the arrays, nulls out references and returns it to the pool.
-     * This extra CPU cost is far smaller than the object allocation cost of not pooling.
-     */
-    public void releaseToPool() {
-        // need to clear all elements so we don't leak memory
-        int maxIndex = index.get();
-        int realIndex = 0;
-        ElementSection<E> section = elements;
-        outer: while (section != null) {
-            for (int i = 0; i < SIZE; i++, realIndex++) {
-                if (realIndex >= maxIndex) {
-                    section = null;
-                    break outer;
-                }
-                // we can use lazySet here because we are nulling things out and not accessing them again
-                // (relative on Mac Intel i7) lazySet gets us ~30m vs ~26m ops/second in the JMH test (100 adds per release)
-                section.array.set(i, null);
-            }
-            section = section.next.get();
-        }
-
-        index.set(0);
-        removedIndex.set(0);
-        POOL.returnObject(this);
-    }
-
-    @Override
-    public void unsubscribe() {
-        releaseToPool();
-    }
 
     private IndexedRingBuffer() {
     }
@@ -416,11 +412,6 @@ public final class IndexedRingBuffer<E> implements Subscription {
             int sectionIndex = i % SIZE;
             getIndexSection(i).set(sectionIndex, elementIndex);
         }
-    }
-
-    @Override
-    public boolean isUnsubscribed() {
-        return false;
     }
 
     public int forEach(Func1<? super E, Boolean> action) {

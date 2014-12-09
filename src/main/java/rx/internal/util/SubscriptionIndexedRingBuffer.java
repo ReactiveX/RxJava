@@ -19,6 +19,7 @@ import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 import rx.Subscription;
 import rx.functions.Func1;
+import rx.internal.util.ObjectPool.Ref;
 
 /**
  * Similar to CompositeSubscription but giving extra access to internals so we can reuse a datastructure.
@@ -28,7 +29,8 @@ import rx.functions.Func1;
 public final class SubscriptionIndexedRingBuffer<T extends Subscription> implements Subscription {
 
     @SuppressWarnings("unchecked")
-    private volatile IndexedRingBuffer<T> subscriptions = IndexedRingBuffer.getInstance();
+    private final Ref<IndexedRingBuffer> subscriptionsRef = IndexedRingBuffer.getInstance();
+    private final IndexedRingBuffer<T> subscriptions = subscriptionsRef.get();
     private volatile int unsubscribed = 0;
     @SuppressWarnings("rawtypes")
     private final static AtomicIntegerFieldUpdater<SubscriptionIndexedRingBuffer> UNSUBSCRIBED = AtomicIntegerFieldUpdater.newUpdater(SubscriptionIndexedRingBuffer.class, "unsubscribed");
@@ -107,10 +109,6 @@ public final class SubscriptionIndexedRingBuffer<T extends Subscription> impleme
         if (UNSUBSCRIBED.compareAndSet(this, 0, 1) && subscriptions != null) {
             // we will only get here once
             unsubscribeFromAll(subscriptions);
-
-            IndexedRingBuffer<T> s = subscriptions;
-            subscriptions = null;
-            s.unsubscribe();
         }
     }
 
