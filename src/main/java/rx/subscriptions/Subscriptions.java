@@ -133,7 +133,10 @@ public final class Subscriptions {
 
         @Override
         public boolean isUnsubscribed() {
-            return false;
+            // When a method returns `Subscriptions.empty()`, it means nothing to do and also means
+            // `Subscription` has been unsubscribed. Therefore `Subscriptions.empty().isUnsubscribed()`
+            // should always return `true`.
+            return true;
         }
     }
 }
