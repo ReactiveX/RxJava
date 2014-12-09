@@ -16,12 +16,16 @@
 
 package rx.schedulers;
 
+import java.lang.management.*;
+import java.util.concurrent.*;
+
+import junit.framework.Assert;
+
 import org.junit.Test;
+
 import rx.Observable;
 import rx.Scheduler;
-import rx.functions.Action1;
-import rx.functions.Func1;
-
+import rx.functions.*;
 import static org.junit.Assert.assertTrue;
 
 public class CachedThreadSchedulerTest extends AbstractSchedulerConcurrencyTests {
@@ -66,4 +70,59 @@ public class CachedThreadSchedulerTest extends AbstractSchedulerConcurrencyTests
     public final void testHandledErrorIsNotDeliveredToThreadHandler() throws InterruptedException {
         SchedulerTests.testHandledErrorIsNotDeliveredToThreadHandler(getScheduler());
     }
+    
+    @Test(timeout = 30000)
+    public void testCancelledTaskRetention() throws InterruptedException {
+        try {
+            ScheduledThreadPoolExecutor.class.getMethod("setRemoveOnCancelPolicy", Boolean.TYPE);
+
+            System.out.println("Wait before GC");
+            Thread.sleep(1000);
+            
+            System.out.println("GC");
+            System.gc();
+            
+            Thread.sleep(1000);
+
+            
+            MemoryMXBean memoryMXBean = ManagementFactory.getMemoryMXBean();
+            MemoryUsage memHeap = memoryMXBean.getHeapMemoryUsage();
+            long initial = memHeap.getUsed();
+            
+            System.out.printf("Starting: %.3f MB%n", initial / 1024.0 / 1024.0);
+            
+            Scheduler.Worker w = Schedulers.io().createWorker();
+            for (int i = 0; i < 750000; i++) {
+                if (i % 50000 == 0) {
+                    System.out.println("  -> still scheduling: " + i);
+                }
+                w.schedule(Actions.empty(), 1, TimeUnit.DAYS);
+            }
+            
+            memHeap = memoryMXBean.getHeapMemoryUsage();
+            long after = memHeap.getUsed();
+            System.out.printf("Peak: %.3f MB%n", after / 1024.0 / 1024.0);
+            
+            w.unsubscribe();
+            
+            System.out.println("Wait before second GC");
+            Thread.sleep(1000);
+            
+            System.out.println("Second GC");
+            System.gc();
+            
+            Thread.sleep(1000);
+            
+            memHeap = memoryMXBean.getHeapMemoryUsage();
+            long finish = memHeap.getUsed();
+            System.out.printf("After: %.3f MB%n", finish / 1024.0 / 1024.0);
+            
+            if (finish > initial * 5) {
+                Assert.fail(String.format("Tasks retained: %.3f -> %.3f -> %.3f", initial / 1024 / 1024.0, after / 1024 / 1024.0, finish / 1024 / 1024d));
+            }
+        } catch (NoSuchMethodException ex) {
+            // not supported, no reason to test for it
+        }
+    }
+
 }
