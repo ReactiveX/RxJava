@@ -51,7 +51,7 @@ public class OperatorTimeoutWithSelector<T, U, V> extends
                     } catch (Throwable t) {
                         Exceptions.throwIfFatal(t);
                         timeoutSubscriber.onError(t);
-                        return Subscriptions.empty();
+                        return Subscriptions.unsubscribed();
                     }
                     return o.unsafeSubscribe(new Subscriber<U>() {
 
@@ -72,7 +72,7 @@ public class OperatorTimeoutWithSelector<T, U, V> extends
 
                     });
                 } else {
-                    return Subscriptions.empty();
+                    return Subscriptions.unsubscribed();
                 }
             }
         }, new TimeoutStub<T>() {
@@ -87,7 +87,7 @@ public class OperatorTimeoutWithSelector<T, U, V> extends
                 } catch (Throwable t) {
                     Exceptions.throwIfFatal(t);
                     timeoutSubscriber.onError(t);
-                    return Subscriptions.empty();
+                    return Subscriptions.unsubscribed();
                 }
                 return o.unsafeSubscribe(new Subscriber<V>() {
 

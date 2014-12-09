@@ -56,7 +56,7 @@ public final class ImmediateScheduler extends Scheduler {
         @Override
         public Subscription schedule(Action0 action) {
             action.call();
-            return Subscriptions.empty();
+            return Subscriptions.unsubscribed();
         }
 
         @Override

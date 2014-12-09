@@ -68,7 +68,7 @@ public final class TrampolineScheduler extends Scheduler {
 
         private Subscription enqueue(Action0 action, long execTime) {
             if (innerSubscription.isUnsubscribed()) {
-                return Subscriptions.empty();
+                return Subscriptions.unsubscribed();
             }
             final TimedAction timedAction = new TimedAction(action, execTime, COUNTER_UPDATER.incrementAndGet(TrampolineScheduler.this));
             queue.add(timedAction);
@@ -81,7 +81,7 @@ public final class TrampolineScheduler extends Scheduler {
                         polled.action.call();
                     }
                 } while (wip.decrementAndGet() > 0);
-                return Subscriptions.empty();
+                return Subscriptions.unsubscribed();
             } else {
                 // queue wasn't empty, a parent is already processing so we just add to the end of the queue
                 return Subscriptions.create(new Action0() {

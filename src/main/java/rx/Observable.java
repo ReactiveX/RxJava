@@ -7305,7 +7305,7 @@ public class Observable<T> {
                 // TODO why aren't we throwing the hook's return value.
                 throw r;
             }
-            return Subscriptions.empty();
+            return Subscriptions.unsubscribed();
         }
     }
 
@@ -7394,7 +7394,7 @@ public class Observable<T> {
                 // TODO why aren't we throwing the hook's return value.
                 throw r;
             }
-            return Subscriptions.empty();
+            return Subscriptions.unsubscribed();
         }
     }
 

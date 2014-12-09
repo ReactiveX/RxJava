@@ -24,7 +24,7 @@ import rx.Subscription;
  * the previous underlying subscription to be unsubscribed.
  */
 public final class SerialSubscription implements Subscription {
-    static final State EMPTY_STATE = new State(false, Subscriptions.empty());
+    static final State EMPTY_STATE = new State(false, Subscriptions.unsubscribed());
     volatile State state = EMPTY_STATE;
     static final AtomicReferenceFieldUpdater<SerialSubscription, State> STATE_UPDATER
             = AtomicReferenceFieldUpdater.newUpdater(SerialSubscription.class, State.class, "state");

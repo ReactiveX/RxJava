@@ -58,7 +58,7 @@ public class NewThreadWorker extends Scheduler.Worker implements Subscription {
     @Override
     public Subscription schedule(final Action0 action, long delayTime, TimeUnit unit) {
         if (isUnsubscribed) {
-            return Subscriptions.empty();
+            return Subscriptions.unsubscribed();
         }
         return scheduleActual(action, delayTime, unit);
     }

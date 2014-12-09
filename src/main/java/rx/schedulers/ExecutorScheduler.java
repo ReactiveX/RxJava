@@ -71,7 +71,7 @@ import rx.subscriptions.Subscriptions;
         @Override
         public Subscription schedule(Action0 action) {
             if (isUnsubscribed()) {
-                return Subscriptions.empty();
+                return Subscriptions.unsubscribed();
             }
             ExecutorAction ea = new ExecutorAction(action, tasks);
             tasks.add(ea);
@@ -106,7 +106,7 @@ import rx.subscriptions.Subscriptions;
                 return schedule(action);
             }
             if (isUnsubscribed()) {
-                return Subscriptions.empty();
+                return Subscriptions.unsubscribed();
             }
             ScheduledExecutorService service;
             if (executor instanceof ScheduledExecutorService) {

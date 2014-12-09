@@ -95,7 +95,7 @@ import java.util.concurrent.TimeUnit;
         public Subscription schedule(Action0 action, long delayTime, TimeUnit unit) {
             if (innerSubscription.isUnsubscribed()) {
                 // don't schedule, we are unsubscribed
-                return Subscriptions.empty();
+                return Subscriptions.unsubscribed();
             }
             
             ScheduledAction s = poolWorker.scheduleActual(action, delayTime, unit);

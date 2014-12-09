@@ -15,6 +15,8 @@
  */
 package rx.subscriptions;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -34,5 +36,19 @@ public class SubscriptionsTest {
         subscription.unsubscribe();
         subscription.unsubscribe();
         verify(unsubscribe, times(1)).call();
+    }
+
+    @Test
+    public void testEmpty() {
+        Subscription empty = Subscriptions.empty();
+        assertFalse(empty.isUnsubscribed());
+        empty.unsubscribe();
+        assertTrue(empty.isUnsubscribed());
+    }
+
+    @Test
+    public void testUnsubscribed() {
+        Subscription unsubscribed = Subscriptions.unsubscribed();
+        assertTrue(unsubscribed.isUnsubscribed());
     }
 }
