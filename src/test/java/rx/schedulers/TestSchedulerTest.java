@@ -48,37 +48,41 @@ public class TestSchedulerTest {
         final TestScheduler scheduler = new TestScheduler();
         final Scheduler.Worker inner = scheduler.createWorker();
         
-        inner.schedulePeriodically(new Action0() {
-            @Override
-            public void call() {
-                System.out.println(scheduler.now());
-                calledOp.call(scheduler.now());
-            }
-        }, 1, 2, TimeUnit.SECONDS);
-
-        verify(calledOp, never()).call(anyLong());
-
-        InOrder inOrder = Mockito.inOrder(calledOp);
-
-        scheduler.advanceTimeBy(999L, TimeUnit.MILLISECONDS);
-        inOrder.verify(calledOp, never()).call(anyLong());
-
-        scheduler.advanceTimeBy(1L, TimeUnit.MILLISECONDS);
-        inOrder.verify(calledOp, times(1)).call(1000L);
-
-        scheduler.advanceTimeBy(1999L, TimeUnit.MILLISECONDS);
-        inOrder.verify(calledOp, never()).call(3000L);
-
-        scheduler.advanceTimeBy(1L, TimeUnit.MILLISECONDS);
-        inOrder.verify(calledOp, times(1)).call(3000L);
-
-        scheduler.advanceTimeBy(5L, TimeUnit.SECONDS);
-        inOrder.verify(calledOp, times(1)).call(5000L);
-        inOrder.verify(calledOp, times(1)).call(7000L);
-
-        inner.unsubscribe();
-        scheduler.advanceTimeBy(11L, TimeUnit.SECONDS);
-        inOrder.verify(calledOp, never()).call(anyLong());
+        try {
+            inner.schedulePeriodically(new Action0() {
+                @Override
+                public void call() {
+                    System.out.println(scheduler.now());
+                    calledOp.call(scheduler.now());
+                }
+            }, 1, 2, TimeUnit.SECONDS);
+    
+            verify(calledOp, never()).call(anyLong());
+    
+            InOrder inOrder = Mockito.inOrder(calledOp);
+    
+            scheduler.advanceTimeBy(999L, TimeUnit.MILLISECONDS);
+            inOrder.verify(calledOp, never()).call(anyLong());
+    
+            scheduler.advanceTimeBy(1L, TimeUnit.MILLISECONDS);
+            inOrder.verify(calledOp, times(1)).call(1000L);
+    
+            scheduler.advanceTimeBy(1999L, TimeUnit.MILLISECONDS);
+            inOrder.verify(calledOp, never()).call(3000L);
+    
+            scheduler.advanceTimeBy(1L, TimeUnit.MILLISECONDS);
+            inOrder.verify(calledOp, times(1)).call(3000L);
+    
+            scheduler.advanceTimeBy(5L, TimeUnit.SECONDS);
+            inOrder.verify(calledOp, times(1)).call(5000L);
+            inOrder.verify(calledOp, times(1)).call(7000L);
+    
+            inner.unsubscribe();
+            scheduler.advanceTimeBy(11L, TimeUnit.SECONDS);
+            inOrder.verify(calledOp, never()).call(anyLong());
+        } finally {
+            inner.unsubscribe();
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -90,37 +94,41 @@ public class TestSchedulerTest {
         final TestScheduler scheduler = new TestScheduler();
         final Scheduler.Worker inner = scheduler.createWorker();
 
-        final Subscription subscription = inner.schedulePeriodically(new Action0() {
-            @Override
-            public void call() {
-                System.out.println(scheduler.now());
-                calledOp.call(scheduler.now());
-            }
-        }, 1, 2, TimeUnit.SECONDS);
-
-        verify(calledOp, never()).call(anyLong());
-
-        InOrder inOrder = Mockito.inOrder(calledOp);
-
-        scheduler.advanceTimeBy(999L, TimeUnit.MILLISECONDS);
-        inOrder.verify(calledOp, never()).call(anyLong());
-
-        scheduler.advanceTimeBy(1L, TimeUnit.MILLISECONDS);
-        inOrder.verify(calledOp, times(1)).call(1000L);
-
-        scheduler.advanceTimeBy(1999L, TimeUnit.MILLISECONDS);
-        inOrder.verify(calledOp, never()).call(3000L);
-
-        scheduler.advanceTimeBy(1L, TimeUnit.MILLISECONDS);
-        inOrder.verify(calledOp, times(1)).call(3000L);
-
-        scheduler.advanceTimeBy(5L, TimeUnit.SECONDS);
-        inOrder.verify(calledOp, times(1)).call(5000L);
-        inOrder.verify(calledOp, times(1)).call(7000L);
-
-        subscription.unsubscribe();
-        scheduler.advanceTimeBy(11L, TimeUnit.SECONDS);
-        inOrder.verify(calledOp, never()).call(anyLong());
+        try {
+            final Subscription subscription = inner.schedulePeriodically(new Action0() {
+                @Override
+                public void call() {
+                    System.out.println(scheduler.now());
+                    calledOp.call(scheduler.now());
+                }
+            }, 1, 2, TimeUnit.SECONDS);
+    
+            verify(calledOp, never()).call(anyLong());
+    
+            InOrder inOrder = Mockito.inOrder(calledOp);
+    
+            scheduler.advanceTimeBy(999L, TimeUnit.MILLISECONDS);
+            inOrder.verify(calledOp, never()).call(anyLong());
+    
+            scheduler.advanceTimeBy(1L, TimeUnit.MILLISECONDS);
+            inOrder.verify(calledOp, times(1)).call(1000L);
+    
+            scheduler.advanceTimeBy(1999L, TimeUnit.MILLISECONDS);
+            inOrder.verify(calledOp, never()).call(3000L);
+    
+            scheduler.advanceTimeBy(1L, TimeUnit.MILLISECONDS);
+            inOrder.verify(calledOp, times(1)).call(3000L);
+    
+            scheduler.advanceTimeBy(5L, TimeUnit.SECONDS);
+            inOrder.verify(calledOp, times(1)).call(5000L);
+            inOrder.verify(calledOp, times(1)).call(7000L);
+    
+            subscription.unsubscribe();
+            scheduler.advanceTimeBy(11L, TimeUnit.SECONDS);
+            inOrder.verify(calledOp, never()).call(anyLong());
+        } finally {
+            inner.unsubscribe();
+        }
     }
 
     @Test
@@ -129,76 +137,89 @@ public class TestSchedulerTest {
         final Scheduler.Worker inner = s.createWorker();
         final AtomicInteger counter = new AtomicInteger(0);
         
-        inner.schedule(new Action0() {
-
-            @Override
-            public void call() {
-                counter.incrementAndGet();
-                System.out.println("counter: " + counter.get());
-                inner.schedule(this);
-            }
-
-        });
-        inner.unsubscribe();
-        assertEquals(0, counter.get());
+        try {
+            inner.schedule(new Action0() {
+    
+                @Override
+                public void call() {
+                    counter.incrementAndGet();
+                    System.out.println("counter: " + counter.get());
+                    inner.schedule(this);
+                }
+    
+            });
+            inner.unsubscribe();
+            assertEquals(0, counter.get());
+        } finally {
+            inner.unsubscribe();
+        }
     }
 
     @Test
     public final void testImmediateUnsubscribes2() {
         TestScheduler s = new TestScheduler();
         final Scheduler.Worker inner = s.createWorker();
-        final AtomicInteger counter = new AtomicInteger(0);
-
-        final Subscription subscription = inner.schedule(new Action0() {
-
-            @Override
-            public void call() {
-                counter.incrementAndGet();
-                System.out.println("counter: " + counter.get());
-                inner.schedule(this);
-            }
-
-        });
-        subscription.unsubscribe();
-        assertEquals(0, counter.get());
+        try {
+            final AtomicInteger counter = new AtomicInteger(0);
+    
+            final Subscription subscription = inner.schedule(new Action0() {
+    
+                @Override
+                public void call() {
+                    counter.incrementAndGet();
+                    System.out.println("counter: " + counter.get());
+                    inner.schedule(this);
+                }
+    
+            });
+            subscription.unsubscribe();
+            assertEquals(0, counter.get());
+        } finally {
+            inner.unsubscribe();
+        }
     }
 
     @Test
     public final void testNestedSchedule() {
         final TestScheduler scheduler = new TestScheduler();
         final Scheduler.Worker inner = scheduler.createWorker();
-        final Action0 calledOp = mock(Action0.class);
-
-        Observable<Object> poller;
-        poller = Observable.create(new OnSubscribe<Object>() {
-            @Override
-            public void call(final Subscriber<? super Object> aSubscriber) {
-                inner.schedule(new Action0() {
-                    @Override
-                    public void call() {
-                        if (!aSubscriber.isUnsubscribed()) {
-                            calledOp.call();
-                            inner.schedule(this, 5, TimeUnit.SECONDS);
+        
+        try {
+            final Action0 calledOp = mock(Action0.class);
+    
+            Observable<Object> poller;
+            poller = Observable.create(new OnSubscribe<Object>() {
+                @Override
+                public void call(final Subscriber<? super Object> aSubscriber) {
+                    inner.schedule(new Action0() {
+                        @Override
+                        public void call() {
+                            if (!aSubscriber.isUnsubscribed()) {
+                                calledOp.call();
+                                inner.schedule(this, 5, TimeUnit.SECONDS);
+                            }
                         }
-                    }
-                });
-            }
-        });
-
-        InOrder inOrder = Mockito.inOrder(calledOp);
-
-        Subscription sub;
-        sub = poller.subscribe();
-
-        scheduler.advanceTimeTo(6, TimeUnit.SECONDS);
-        inOrder.verify(calledOp, times(2)).call();
-
-        sub.unsubscribe();
-        scheduler.advanceTimeTo(11, TimeUnit.SECONDS);
-        inOrder.verify(calledOp, never()).call();
-
-        sub = poller.subscribe();
-        scheduler.advanceTimeTo(12, TimeUnit.SECONDS);
-        inOrder.verify(calledOp, times(1)).call();
+                    });
+                }
+            });
+    
+            InOrder inOrder = Mockito.inOrder(calledOp);
+    
+            Subscription sub;
+            sub = poller.subscribe();
+    
+            scheduler.advanceTimeTo(6, TimeUnit.SECONDS);
+            inOrder.verify(calledOp, times(2)).call();
+    
+            sub.unsubscribe();
+            scheduler.advanceTimeTo(11, TimeUnit.SECONDS);
+            inOrder.verify(calledOp, never()).call();
+    
+            sub = poller.subscribe();
+            scheduler.advanceTimeTo(12, TimeUnit.SECONDS);
+            inOrder.verify(calledOp, times(1)).call();
+        } finally {
+            inner.unsubscribe();
+        }
     }
 }

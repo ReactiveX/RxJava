@@ -58,55 +58,59 @@ public abstract class AbstractSchedulerTests {
     public void testNestedActions() throws InterruptedException {
         Scheduler scheduler = getScheduler();
         final Scheduler.Worker inner = scheduler.createWorker();
-        final CountDownLatch latch = new CountDownLatch(1);
-
-        final Action0 firstStepStart = mock(Action0.class);
-        final Action0 firstStepEnd = mock(Action0.class);
-
-        final Action0 secondStepStart = mock(Action0.class);
-        final Action0 secondStepEnd = mock(Action0.class);
-
-        final Action0 thirdStepStart = mock(Action0.class);
-        final Action0 thirdStepEnd = mock(Action0.class);
-
-        final Action0 firstAction = new Action0() {
-            @Override
-            public void call() {
-                firstStepStart.call();
-                firstStepEnd.call();
-                latch.countDown();
-            }
-        };
-        final Action0 secondAction = new Action0() {
-            @Override
-            public void call() {
-                secondStepStart.call();
-                inner.schedule(firstAction);
-                secondStepEnd.call();
-
-            }
-        };
-        final Action0 thirdAction = new Action0() {
-            @Override
-            public void call() {
-                thirdStepStart.call();
-                inner.schedule(secondAction);
-                thirdStepEnd.call();
-            }
-        };
-
-        InOrder inOrder = inOrder(firstStepStart, firstStepEnd, secondStepStart, secondStepEnd, thirdStepStart, thirdStepEnd);
-
-        inner.schedule(thirdAction);
-
-        latch.await();
-
-        inOrder.verify(thirdStepStart, times(1)).call();
-        inOrder.verify(thirdStepEnd, times(1)).call();
-        inOrder.verify(secondStepStart, times(1)).call();
-        inOrder.verify(secondStepEnd, times(1)).call();
-        inOrder.verify(firstStepStart, times(1)).call();
-        inOrder.verify(firstStepEnd, times(1)).call();
+        try {
+            final CountDownLatch latch = new CountDownLatch(1);
+    
+            final Action0 firstStepStart = mock(Action0.class);
+            final Action0 firstStepEnd = mock(Action0.class);
+    
+            final Action0 secondStepStart = mock(Action0.class);
+            final Action0 secondStepEnd = mock(Action0.class);
+    
+            final Action0 thirdStepStart = mock(Action0.class);
+            final Action0 thirdStepEnd = mock(Action0.class);
+    
+            final Action0 firstAction = new Action0() {
+                @Override
+                public void call() {
+                    firstStepStart.call();
+                    firstStepEnd.call();
+                    latch.countDown();
+                }
+            };
+            final Action0 secondAction = new Action0() {
+                @Override
+                public void call() {
+                    secondStepStart.call();
+                    inner.schedule(firstAction);
+                    secondStepEnd.call();
+    
+                }
+            };
+            final Action0 thirdAction = new Action0() {
+                @Override
+                public void call() {
+                    thirdStepStart.call();
+                    inner.schedule(secondAction);
+                    thirdStepEnd.call();
+                }
+            };
+    
+            InOrder inOrder = inOrder(firstStepStart, firstStepEnd, secondStepStart, secondStepEnd, thirdStepStart, thirdStepEnd);
+    
+            inner.schedule(thirdAction);
+    
+            latch.await();
+    
+            inOrder.verify(thirdStepStart, times(1)).call();
+            inOrder.verify(thirdStepEnd, times(1)).call();
+            inOrder.verify(secondStepStart, times(1)).call();
+            inOrder.verify(secondStepEnd, times(1)).call();
+            inOrder.verify(firstStepStart, times(1)).call();
+            inOrder.verify(firstStepEnd, times(1)).call();
+        } finally {
+            inner.unsubscribe();
+        }
     }
 
     @Test
@@ -194,31 +198,34 @@ public abstract class AbstractSchedulerTests {
         Scheduler scheduler = getScheduler();
         final Scheduler.Worker inner = scheduler.createWorker();
         
-        final CountDownLatch latch = new CountDownLatch(1);
-        final Action0 first = mock(Action0.class);
-        final Action0 second = mock(Action0.class);
-
-        inner.schedule(new Action0() {
-            @Override
-            public void call() {
-                inner.schedule(first, 30, TimeUnit.MILLISECONDS);
-                inner.schedule(second, 10, TimeUnit.MILLISECONDS);
-                inner.schedule(new Action0() {
-
-                    @Override
-                    public void call() {
-                        latch.countDown();
-                    }
-                }, 40, TimeUnit.MILLISECONDS);
-            }
-        });
-
-        latch.await();
-        InOrder inOrder = inOrder(first, second);
-
-        inOrder.verify(second, times(1)).call();
-        inOrder.verify(first, times(1)).call();
-
+        try {
+            final CountDownLatch latch = new CountDownLatch(1);
+            final Action0 first = mock(Action0.class);
+            final Action0 second = mock(Action0.class);
+    
+            inner.schedule(new Action0() {
+                @Override
+                public void call() {
+                    inner.schedule(first, 30, TimeUnit.MILLISECONDS);
+                    inner.schedule(second, 10, TimeUnit.MILLISECONDS);
+                    inner.schedule(new Action0() {
+    
+                        @Override
+                        public void call() {
+                            latch.countDown();
+                        }
+                    }, 40, TimeUnit.MILLISECONDS);
+                }
+            });
+    
+            latch.await();
+            InOrder inOrder = inOrder(first, second);
+    
+            inOrder.verify(second, times(1)).call();
+            inOrder.verify(first, times(1)).call();
+        } finally {
+            inner.unsubscribe();
+        }
     }
 
     @Test
@@ -226,85 +233,100 @@ public abstract class AbstractSchedulerTests {
         Scheduler scheduler = getScheduler();
         final Scheduler.Worker inner = scheduler.createWorker();
         
-        final CountDownLatch latch = new CountDownLatch(1);
-        final Action0 first = mock(Action0.class);
-        final Action0 second = mock(Action0.class);
-        final Action0 third = mock(Action0.class);
-        final Action0 fourth = mock(Action0.class);
-
-        inner.schedule(new Action0() {
-            @Override
-            public void call() {
-                inner.schedule(first);
-                inner.schedule(second, 300, TimeUnit.MILLISECONDS);
-                inner.schedule(third, 100, TimeUnit.MILLISECONDS);
-                inner.schedule(fourth);
-                inner.schedule(new Action0() {
-
-                    @Override
-                    public void call() {
-                        latch.countDown();
-                    }
-                }, 400, TimeUnit.MILLISECONDS);
-            }
-        });
-
-        latch.await();
-        InOrder inOrder = inOrder(first, second, third, fourth);
-
-        inOrder.verify(first, times(1)).call();
-        inOrder.verify(fourth, times(1)).call();
-        inOrder.verify(third, times(1)).call();
-        inOrder.verify(second, times(1)).call();
+        try {
+            final CountDownLatch latch = new CountDownLatch(1);
+            final Action0 first = mock(Action0.class);
+            final Action0 second = mock(Action0.class);
+            final Action0 third = mock(Action0.class);
+            final Action0 fourth = mock(Action0.class);
+    
+            inner.schedule(new Action0() {
+                @Override
+                public void call() {
+                    inner.schedule(first);
+                    inner.schedule(second, 300, TimeUnit.MILLISECONDS);
+                    inner.schedule(third, 100, TimeUnit.MILLISECONDS);
+                    inner.schedule(fourth);
+                    inner.schedule(new Action0() {
+    
+                        @Override
+                        public void call() {
+                            latch.countDown();
+                        }
+                    }, 400, TimeUnit.MILLISECONDS);
+                }
+            });
+    
+            latch.await();
+            InOrder inOrder = inOrder(first, second, third, fourth);
+    
+            inOrder.verify(first, times(1)).call();
+            inOrder.verify(fourth, times(1)).call();
+            inOrder.verify(third, times(1)).call();
+            inOrder.verify(second, times(1)).call();
+        } finally {
+            inner.unsubscribe();
+        }
     }
 
     @Test
     public final void testRecursiveExecution() throws InterruptedException {
         final Scheduler scheduler = getScheduler();
         final Scheduler.Worker inner = scheduler.createWorker();
-        final AtomicInteger i = new AtomicInteger();
-        final CountDownLatch latch = new CountDownLatch(1);
-        inner.schedule(new Action0() {
-
-            @Override
-            public void call() {
-                if (i.incrementAndGet() < 100) {
-                    inner.schedule(this);
-                } else {
-                    latch.countDown();
+        
+        try {
+            
+            final AtomicInteger i = new AtomicInteger();
+            final CountDownLatch latch = new CountDownLatch(1);
+            inner.schedule(new Action0() {
+    
+                @Override
+                public void call() {
+                    if (i.incrementAndGet() < 100) {
+                        inner.schedule(this);
+                    } else {
+                        latch.countDown();
+                    }
                 }
-            }
-        });
-
-        latch.await();
-        assertEquals(100, i.get());
+            });
+    
+            latch.await();
+            assertEquals(100, i.get());
+        } finally {
+            inner.unsubscribe();
+        }
     }
 
     @Test
     public final void testRecursiveExecutionWithDelayTime() throws InterruptedException {
         Scheduler scheduler = getScheduler();
         final Scheduler.Worker inner = scheduler.createWorker();
-        final AtomicInteger i = new AtomicInteger();
-        final CountDownLatch latch = new CountDownLatch(1);
-
-        inner.schedule(new Action0() {
-
-            int state = 0;
-
-            @Override
-            public void call() {
-                i.set(state);
-                if (state++ < 100) {
-                    inner.schedule(this, 1, TimeUnit.MILLISECONDS);
-                } else {
-                    latch.countDown();
+        
+        try {
+            final AtomicInteger i = new AtomicInteger();
+            final CountDownLatch latch = new CountDownLatch(1);
+    
+            inner.schedule(new Action0() {
+    
+                int state = 0;
+    
+                @Override
+                public void call() {
+                    i.set(state);
+                    if (state++ < 100) {
+                        inner.schedule(this, 1, TimeUnit.MILLISECONDS);
+                    } else {
+                        latch.countDown();
+                    }
                 }
-            }
-
-        });
-
-        latch.await();
-        assertEquals(100, i.get());
+    
+            });
+    
+            latch.await();
+            assertEquals(100, i.get());
+        } finally {
+            inner.unsubscribe();
+        }
     }
 
     @Test
