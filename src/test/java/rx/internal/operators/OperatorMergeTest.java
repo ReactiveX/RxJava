@@ -1105,4 +1105,62 @@ public class OperatorMergeTest {
         subscriber.assertReceivedOnNext(asList(1, 2, 3, 4));
         assertEquals(asList(exception), subscriber.getOnErrorEvents());
     }
+    
+    @Test
+    public void testMergeKeepsRequesting() throws InterruptedException {
+        final CountDownLatch latch = new CountDownLatch(1);
+        Observable.range(1, 2)
+        // produce many integers per second
+                .flatMap(new Func1<Integer, Observable<Integer>>() {
+                    @Override
+                    public Observable<Integer> call(final Integer number) {
+                        return Observable.range(1, Integer.MAX_VALUE)
+                        // pause a bit
+                                .doOnNext(pauseForMs(1))
+                                // buffer on backpressure
+                                .onBackpressureBuffer()
+                                // do in parallel
+                                .subscribeOn(Schedulers.computation());
+                    }
+
+                })
+                // take a number bigger than 2* RxRingBuffer.SIZE (used by
+                // OperatorMerge)
+                .take(RxRingBuffer.SIZE * 2 + 1)
+                // log count
+                .doOnNext(printCount())
+                // release latch
+                .doOnCompleted(new Action0() {
+                    @Override
+                    public void call() {
+                        latch.countDown();
+                    }
+                }).subscribe();
+        assertTrue(latch.await(5, TimeUnit.SECONDS));
+    }
+
+    private static Action1<Integer> printCount() {
+        return new Action1<Integer>() {
+            long count;
+
+            @Override
+            public void call(Integer t1) {
+                count++;
+                System.out.println("count=" + count);
+            }
+        };
+    }
+
+    private static Action1<Integer> pauseForMs(final long time) {
+        return new Action1<Integer>() {
+            @Override
+            public void call(Integer s) {
+                try {
+                    Thread.sleep(time);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        };
+    }
 }
