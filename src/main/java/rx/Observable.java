@@ -5037,10 +5037,10 @@ public class Observable<T> {
     }
 
     /**
-     * Instructs an Observable that is emitting items faster than its observer can consume them to buffer
-     * up to a given amount of items until they can be emitted. The resulting Observable will {@code onError} emitting a
-     * {@link java.nio.BufferOverflowException} as soon as the buffer's capacity is exceeded, dropping all
-     * undelivered items, and unsubscribing from the source.
+     * Instructs an Observable that is emitting items faster than its observer can consume them to buffer up to
+     * a given amount of items until they can be emitted. The resulting Observable will {@code onError} emitting
+     * a {@code BufferOverflowException} as soon as the buffer's capacity is exceeded, dropping all undelivered
+     * items, and unsubscribing from the source.
      * <p>
      * <img width="640" height="300" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/bp.obp.buffer.png" alt="">
      * <dl>
@@ -5048,9 +5048,10 @@ public class Observable<T> {
      *  <dd>{@code onBackpressureBuffer} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @return the source Observable modified to buffer items up to the given capacity.
+     * @return the source Observable modified to buffer items up to the given capacity
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Backpressure">RxJava wiki: Backpressure</a>
      * @Beta
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
     @Beta
     public final Observable<T> onBackpressureBuffer(long capacity) {
@@ -5058,10 +5059,10 @@ public class Observable<T> {
     }
 
     /**
-     * Instructs an Observable that is emitting items faster than its observer can consume them to buffer
-     * up to a given amount of items until they can be emitted. The resulting Observable will {@code onError} emitting a
-     * {@link java.nio.BufferOverflowException} as soon as the buffer's capacity is exceeded, dropping all
-     * undelivered items, unsubscribing from the source, and notifying the producer with {@code onOverflow}.
+     * Instructs an Observable that is emitting items faster than its observer can consume them to buffer up to
+     * a given amount of items until they can be emitted. The resulting Observable will {@code onError} emitting
+     * a {@code BufferOverflowException} as soon as the buffer's capacity is exceeded, dropping all undelivered
+     * items, unsubscribing from the source, and notifying the producer with {@code onOverflow}.
      * <p>
      * <img width="640" height="300" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/bp.obp.buffer.png" alt="">
      * <dl>
@@ -5069,8 +5070,9 @@ public class Observable<T> {
      *  <dd>{@code onBackpressureBuffer} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      *
-     * @return the source Observable modified to buffer items up to the given capacity.
+     * @return the source Observable modified to buffer items up to the given capacity
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Backpressure">RxJava wiki: Backpressure</a>
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      * @Beta
      */
     @Beta
