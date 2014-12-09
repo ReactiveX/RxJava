@@ -535,12 +535,16 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
         /* protected by emitLock */
         int emitted = 0;
         final int THRESHOLD = (int) (q.capacity() * 0.7);
+        
+        private volatile int requestedInner;
+        private final int DEFAULT_REQUEST_SIZE = q.capacity();
 
         public InnerSubscriber(MergeSubscriber<T> parent, MergeProducer<T> producer) {
             this.parentSubscriber = parent;
             this.producer = producer;
             add(q);
-            request(q.capacity());
+            requestedInner=DEFAULT_REQUEST_SIZE;
+            request(DEFAULT_REQUEST_SIZE);
         }
 
         @Override
@@ -641,6 +645,7 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
                                 }
                                 emitted++;
                                 MergeProducer.REQUESTED.decrementAndGet(producer);
+                                reduceInnerRequested(1);
                             }
                         } else {
                             // no requests available, so enqueue it
@@ -733,7 +738,18 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
 
             // decrement the number we emitted from outstanding requests
             MergeProducer.REQUESTED.getAndAdd(producer, -emitted);
+            reduceInnerRequested(emitted);
             return emitted;
+        }
+        
+        private void reduceInnerRequested(long count) {
+            requestedInner-=count;
+            if (requestedInner==0 && producer.requested >0) {
+                //TODO or perhaps n = Math.min(producer.requested, DEFAULT_REQUEST_SIZE)?
+                long n = DEFAULT_REQUEST_SIZE;
+                requestedInner +=n;
+                request(n);
+            }
         }
 
         private int drainAll() {
