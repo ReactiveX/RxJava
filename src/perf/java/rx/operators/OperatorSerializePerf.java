@@ -17,20 +17,13 @@ package rx.operators;
 
 import java.util.concurrent.TimeUnit;
 
-import org.openjdk.jmh.annotations.BenchmarkMode;
-import org.openjdk.jmh.annotations.Benchmark;
-import org.openjdk.jmh.annotations.Mode;
-import org.openjdk.jmh.annotations.OutputTimeUnit;
-import org.openjdk.jmh.annotations.Param;
-import org.openjdk.jmh.annotations.Scope;
-import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
 
-import rx.Observable;
+import rx.*;
 import rx.Observable.OnSubscribe;
-import rx.Subscriber;
-import rx.jmh.InputWithIncrementingInteger;
-import rx.jmh.LatchedObserver;
+import rx.functions.Func1;
+import rx.jmh.*;
 import rx.schedulers.Schedulers;
 
 @BenchmarkMode(Mode.Throughput)
@@ -81,7 +74,7 @@ public class OperatorSerializePerf {
     }
 
     @State(Scope.Thread)
-    public static class InputWithInterval extends InputWithIncrementingInteger {
+    public static class InputWithInterval extends InputWithIncrementingInteger implements Func1<Long, Integer> {
 
         @Param({ "1", "1000" })
         public int size;
@@ -97,7 +90,11 @@ public class OperatorSerializePerf {
         public void setup(Blackhole bh) {
             super.setup(bh);
 
-            interval = Observable.timer(0, 1, TimeUnit.MILLISECONDS).take(size).cast(Integer.class);
+            interval = Observable.timer(0, 1, TimeUnit.MILLISECONDS).take(size).map(this);
+        }
+        @Override
+        public Integer call(Long t1) {
+            return t1.intValue();
         }
     }
 
