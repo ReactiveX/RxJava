@@ -106,7 +106,8 @@ public class OperatorOnBackpressureBlock<T> implements Operator<T, T> {
             try {
                 while (true) {
                     int emitted = 0;
-                    while (n > 0) {
+                    // we have nonzero requests or a terminated state
+                    while (n > 0 || terminated) {
                         Object o = queue.poll();
                         if (o == null) {
                             if (terminated) {
@@ -127,21 +128,22 @@ public class OperatorOnBackpressureBlock<T> implements Operator<T, T> {
                     synchronized (this) {
                         // if no backpressure below
                         if (requestedCount == Long.MAX_VALUE) {
-                            // no new data arrived since the last poll
-                            if (queue.peek() == null) {
+                            // no new data arrived since the last poll nor have we terminated
+                            if (queue.peek() == null && !terminated) {
                                 skipFinal = true;
                                 emitting = false;
                                 return;
                             }
                             n = Long.MAX_VALUE;
                         } else {
-                            if (emitted == 0) {
+                            requestedCount -= emitted;
+                            n = requestedCount;
+                            // no new requests, no new data and we haven't terminated
+                            if ((n == 0 || queue.peek() == null) && !terminated) {
                                 skipFinal = true;
                                 emitting = false;
                                 return;
                             }
-                            requestedCount -= emitted;
-                            n = requestedCount;
                         }
                     }
                 }
