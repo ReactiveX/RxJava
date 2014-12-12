@@ -77,7 +77,6 @@ public class OperatorGroupBy<T, K, R> implements Operator<GroupedObservable<K, R
         final Func1<? super T, ? extends K> keySelector;
         final Func1<? super T, ? extends R> elementSelector;
         final Subscriber<? super GroupedObservable<K, R>> child;
-        final Subscription parentSubscription = this;
 
         public GroupBySubscriber(
                 Func1<? super T, ? extends K> keySelector,
@@ -93,7 +92,7 @@ public class OperatorGroupBy<T, K, R> implements Operator<GroupedObservable<K, R
                 public void call() {
                     // if no group we unsubscribe up otherwise wait until group ends
                     if (groups.isEmpty()) {
-                        parentSubscription.unsubscribe();
+                        self.unsubscribe();
                     }
                 }
 
