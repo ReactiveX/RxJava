@@ -50,6 +50,7 @@ public final class OperatorSampleWithTime<T> implements Operator<T, T> {
         child.add(worker);
         
         SamplerSubscriber<T> sampler = new SamplerSubscriber<T>(s);
+        child.add(sampler);
         worker.schedulePeriodically(sampler, time, time, unit);
 
         return sampler;
