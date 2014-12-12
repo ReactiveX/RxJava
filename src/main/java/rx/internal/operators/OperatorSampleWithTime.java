@@ -68,6 +68,7 @@ public final class OperatorSampleWithTime<T> implements Operator<T, T> {
         static final AtomicReferenceFieldUpdater<SamplerSubscriber, Object> VALUE_UPDATER
                 = AtomicReferenceFieldUpdater.newUpdater(SamplerSubscriber.class, Object.class, "value");
         public SamplerSubscriber(Subscriber<? super T> subscriber) {
+            super(subscriber);
             this.subscriber = subscriber;
         }
         

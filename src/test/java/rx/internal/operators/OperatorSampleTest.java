@@ -28,14 +28,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InOrder;
 
-import rx.Observable;
+import rx.*;
 import rx.Observable.OnSubscribe;
-import rx.Observer;
-import rx.Scheduler;
-import rx.Subscriber;
 import rx.functions.Action0;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
+import rx.subscriptions.Subscriptions;
 
 public class OperatorSampleTest {
     private TestScheduler scheduler;
@@ -270,5 +268,20 @@ public class OperatorSampleTest {
         inOrder.verify(observer2, times(1)).onNext(1);
         inOrder.verify(observer2, times(1)).onError(any(RuntimeException.class));
         verify(observer, never()).onCompleted();
+    }
+
+    @Test
+    public void testSampleUnsubscribe() {
+        final Subscription s = mock(Subscription.class);
+        Observable<Integer> o = Observable.create(
+                new OnSubscribe<Integer>() {
+                    @Override
+                    public void call(Subscriber<? super Integer> subscriber) {
+                        subscriber.add(s);
+                    }
+                }
+        );
+        o.throttleLast(1, TimeUnit.MILLISECONDS).subscribe().unsubscribe();
+        verify(s).unsubscribe();
     }
 }
