@@ -80,8 +80,7 @@ public class OperatorGroupBy<T, K, R> implements Operator<GroupedObservable<K, R
 
         @SuppressWarnings("rawtypes")
         static final AtomicIntegerFieldUpdater<GroupBySubscriber> WIP_FOR_UNSUBSCRIBE_UPDATER = AtomicIntegerFieldUpdater.newUpdater(GroupBySubscriber.class, "wipForUnsubscribe");
-        volatile int wipForUnsubscribe = 0;
-        boolean isUnsubscribed = false;
+        volatile int wipForUnsubscribe = 1;
 
         public GroupBySubscriber(
                 Func1<? super T, ? extends K> keySelector,
@@ -95,15 +94,7 @@ public class OperatorGroupBy<T, K, R> implements Operator<GroupedObservable<K, R
 
                 @Override
                 public void call() {
-                    if (WIP_FOR_UNSUBSCRIBE_UPDATER.getAndIncrement(self) == 0) {
-                        if (groups.isEmpty()) {
-                            isUnsubscribed = true;
-                        }
-                    } else {
-                        // someone is putting, so groups is not empty
-                    }
-                    WIP_FOR_UNSUBSCRIBE_UPDATER.decrementAndGet(self);
-                    if (isUnsubscribed) {
+                    if (WIP_FOR_UNSUBSCRIBE_UPDATER.decrementAndGet(self) == 0) {
                         self.unsubscribe();
                     }
                 }
@@ -278,17 +269,15 @@ public class OperatorGroupBy<T, K, R> implements Operator<GroupedObservable<K, R
             });
 
             GroupState<K, T> putIfAbsent;
-            while (true) {
-                if (WIP_FOR_UNSUBSCRIBE_UPDATER.getAndIncrement(this) == 0) {
-                    if (isUnsubscribed) {
-                        WIP_FOR_UNSUBSCRIBE_UPDATER.decrementAndGet(this);
-                        return null;
-                    }
+            for (;;) {
+                int wip = wipForUnsubscribe;
+                if (wip <= 0) {
+                    return null;
+                }
+                if (WIP_FOR_UNSUBSCRIBE_UPDATER.compareAndSet(this, wip, wip + 1)) {
                     putIfAbsent = groups.putIfAbsent(key, groupState);
-                    WIP_FOR_UNSUBSCRIBE_UPDATER.decrementAndGet(this);
                     break;
                 }
-                WIP_FOR_UNSUBSCRIBE_UPDATER.decrementAndGet(this);
             }
             if (putIfAbsent != null) {
                 // this shouldn't happen (because we receive onNext sequentially) and would mean we have a bug
@@ -381,6 +370,9 @@ public class OperatorGroupBy<T, K, R> implements Operator<GroupedObservable<K, R
         }
 
         private void completeInner() {
+            if (WIP_FOR_UNSUBSCRIBE_UPDATER.decrementAndGet(this) == 0) {
+                unsubscribe();
+            }
             // if we have no outstanding groups (all completed or unsubscribe) and terminated/unsubscribed on outer
             if (groups.isEmpty() && (terminated == 1 || child.isUnsubscribed())) {
                 // completionEmitted ensures we only emit onCompleted once
