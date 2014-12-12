@@ -78,6 +78,10 @@ public class OperatorGroupBy<T, K, R> implements Operator<GroupedObservable<K, R
         final Func1<? super T, ? extends R> elementSelector;
         final Subscriber<? super GroupedObservable<K, R>> child;
 
+        final Object lock = new Object();
+        // Guarded by "lock"
+        boolean isUnsubscribed = false;
+
         public GroupBySubscriber(
                 Func1<? super T, ? extends K> keySelector,
                 Func1<? super T, ? extends R> elementSelector,
@@ -90,8 +94,12 @@ public class OperatorGroupBy<T, K, R> implements Operator<GroupedObservable<K, R
 
                 @Override
                 public void call() {
-                    // if no group we unsubscribe up otherwise wait until group ends
-                    if (groups.isEmpty()) {
+                    synchronized (lock) {
+                        if (groups.isEmpty()) {
+                            isUnsubscribed = true;
+                        }
+                    }
+                    if (isUnsubscribed) {
                         self.unsubscribe();
                     }
                 }
@@ -151,7 +159,7 @@ public class OperatorGroupBy<T, K, R> implements Operator<GroupedObservable<K, R
                 }
 
                 // special case (no groups emitted ... or all unsubscribed)
-                if (groups.size() == 0) {
+                if (groups.isEmpty()) {
                     // we must track 'completionEmitted' seperately from 'completed' since `completeInner` can result in childObserver.onCompleted() being emitted
                     if (COMPLETION_EMITTED_UPDATER.compareAndSet(this, 0, 1)) {
                         child.onCompleted();
@@ -263,7 +271,13 @@ public class OperatorGroupBy<T, K, R> implements Operator<GroupedObservable<K, R
                 }
             });
 
-            GroupState<K, T> putIfAbsent = groups.putIfAbsent(key, groupState);
+            GroupState<K, T> putIfAbsent;
+            synchronized (lock) {
+                if (isUnsubscribed) {
+                    return null;
+                }
+                putIfAbsent = groups.putIfAbsent(key, groupState);
+            }
             if (putIfAbsent != null) {
                 // this shouldn't happen (because we receive onNext sequentially) and would mean we have a bug
                 throw new IllegalStateException("Group already existed while creating a new one");
@@ -277,7 +291,7 @@ public class OperatorGroupBy<T, K, R> implements Operator<GroupedObservable<K, R
             GroupState<K, T> removed;
             removed = groups.remove(key);
             if (removed != null) {
-                if (removed.buffer.size() > 0) {
+                if (!removed.buffer.isEmpty()) {
                     BUFFERED_COUNT.addAndGet(self, -removed.buffer.size());
                 }
                 completeInner();
@@ -356,7 +370,7 @@ public class OperatorGroupBy<T, K, R> implements Operator<GroupedObservable<K, R
 
         private void completeInner() {
             // if we have no outstanding groups (all completed or unsubscribe) and terminated/unsubscribed on outer
-            if (groups.size() == 0 && (terminated == 1 || child.isUnsubscribed())) {
+            if (groups.isEmpty() && (terminated == 1 || child.isUnsubscribed())) {
                 // completionEmitted ensures we only emit onCompleted once
                 if (COMPLETION_EMITTED_UPDATER.compareAndSet(this, 0, 1)) {
 
