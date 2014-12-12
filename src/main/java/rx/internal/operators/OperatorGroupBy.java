@@ -19,6 +19,7 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicLongFieldUpdater;
@@ -34,6 +35,7 @@ import rx.functions.Action0;
 import rx.functions.Func1;
 import rx.observables.GroupedObservable;
 import rx.subjects.Subject;
+import rx.subscriptions.Subscriptions;
 
 /**
  * Groups the items emitted by an Observable according to a specified criterion, and emits these
@@ -76,6 +78,10 @@ public class OperatorGroupBy<T, K, R> implements Operator<GroupedObservable<K, R
         final Func1<? super T, ? extends R> elementSelector;
         final Subscriber<? super GroupedObservable<K, R>> child;
 
+        @SuppressWarnings("rawtypes")
+        static final AtomicIntegerFieldUpdater<GroupBySubscriber> WIP_FOR_UNSUBSCRIBE_UPDATER = AtomicIntegerFieldUpdater.newUpdater(GroupBySubscriber.class, "wipForUnsubscribe");
+        volatile int wipForUnsubscribe = 1;
+
         public GroupBySubscriber(
                 Func1<? super T, ? extends K> keySelector,
                 Func1<? super T, ? extends R> elementSelector,
@@ -84,6 +90,16 @@ public class OperatorGroupBy<T, K, R> implements Operator<GroupedObservable<K, R
             this.keySelector = keySelector;
             this.elementSelector = elementSelector;
             this.child = child;
+            child.add(Subscriptions.create(new Action0() {
+
+                @Override
+                public void call() {
+                    if (WIP_FOR_UNSUBSCRIBE_UPDATER.decrementAndGet(self) == 0) {
+                        self.unsubscribe();
+                    }
+                }
+
+            }));
         }
 
         private static class GroupState<K, T> {
@@ -138,7 +154,7 @@ public class OperatorGroupBy<T, K, R> implements Operator<GroupedObservable<K, R
                 }
 
                 // special case (no groups emitted ... or all unsubscribed)
-                if (groups.size() == 0) {
+                if (groups.isEmpty()) {
                     // we must track 'completionEmitted' seperately from 'completed' since `completeInner` can result in childObserver.onCompleted() being emitted
                     if (COMPLETION_EMITTED_UPDATER.compareAndSet(this, 0, 1)) {
                         child.onCompleted();
@@ -150,8 +166,13 @@ public class OperatorGroupBy<T, K, R> implements Operator<GroupedObservable<K, R
         @Override
         public void onError(Throwable e) {
             if (TERMINATED_UPDATER.compareAndSet(this, 0, 1)) {
-                // we immediately tear everything down if we receive an error
-                child.onError(e);
+                try {
+                    // we immediately tear everything down if we receive an error
+                    child.onError(e);
+                } finally {
+                    // We have not chained the subscribers, so need to call it explicitly.
+                    unsubscribe();
+                }
             }
         }
 
@@ -187,7 +208,9 @@ public class OperatorGroupBy<T, K, R> implements Operator<GroupedObservable<K, R
                     }
                     group = createNewGroup(key);
                 }
-                emitItem(group, nl.next(t));
+                if (group != null) {
+                    emitItem(group, nl.next(t));
+                }
             } catch (Throwable e) {
                 onError(OnErrorThrowable.addValueAsLastCause(e, t));
             }
@@ -250,7 +273,17 @@ public class OperatorGroupBy<T, K, R> implements Operator<GroupedObservable<K, R
                 }
             });
 
-            GroupState<K, T> putIfAbsent = groups.putIfAbsent(key, groupState);
+            GroupState<K, T> putIfAbsent;
+            for (;;) {
+                int wip = wipForUnsubscribe;
+                if (wip <= 0) {
+                    return null;
+                }
+                if (WIP_FOR_UNSUBSCRIBE_UPDATER.compareAndSet(this, wip, wip + 1)) {
+                    putIfAbsent = groups.putIfAbsent(key, groupState);
+                    break;
+                }
+            }
             if (putIfAbsent != null) {
                 // this shouldn't happen (because we receive onNext sequentially) and would mean we have a bug
                 throw new IllegalStateException("Group already existed while creating a new one");
@@ -264,7 +297,7 @@ public class OperatorGroupBy<T, K, R> implements Operator<GroupedObservable<K, R
             GroupState<K, T> removed;
             removed = groups.remove(key);
             if (removed != null) {
-                if (removed.buffer.size() > 0) {
+                if (!removed.buffer.isEmpty()) {
                     BUFFERED_COUNT.addAndGet(self, -removed.buffer.size());
                 }
                 completeInner();
@@ -342,16 +375,20 @@ public class OperatorGroupBy<T, K, R> implements Operator<GroupedObservable<K, R
         }
 
         private void completeInner() {
+            if (WIP_FOR_UNSUBSCRIBE_UPDATER.decrementAndGet(this) == 0) {
+                unsubscribe();
+            }
             // if we have no outstanding groups (all completed or unsubscribe) and terminated/unsubscribed on outer
-            if (groups.size() == 0 && (terminated == 1 || child.isUnsubscribed())) {
+            if (groups.isEmpty() && (terminated == 1 || child.isUnsubscribed())) {
                 // completionEmitted ensures we only emit onCompleted once
                 if (COMPLETION_EMITTED_UPDATER.compareAndSet(this, 0, 1)) {
 
                     if (child.isUnsubscribed()) {
                         // if the entire groupBy has been unsubscribed and children are completed we will propagate the unsubscribe up.
                         unsubscribe();
+                    } else {
+                        child.onCompleted();
                     }
-                    child.onCompleted();
                 }
             }
         }
