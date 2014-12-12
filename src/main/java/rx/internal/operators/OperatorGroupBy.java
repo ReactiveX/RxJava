@@ -116,7 +116,7 @@ public class OperatorGroupBy<T, K, R> implements Operator<GroupedObservable<K, R
 
         }
 
-        private final ConcurrentHashMap<K, GroupState<K, T>> groups = new ConcurrentHashMap<K, GroupState<K, T>>();
+        private final ConcurrentHashMap<Object, GroupState<K, T>> groups = new ConcurrentHashMap<Object, GroupState<K, T>>();
 
         private static final NotificationLite<Object> nl = NotificationLite.instance();
 
@@ -180,10 +180,18 @@ public class OperatorGroupBy<T, K, R> implements Operator<GroupedObservable<K, R
             }
         }
 
+        private Object groupedKey(K key) {
+            return key == null ? NULL_KEY : key;
+        }
+
+        private K getKey(Object groupedKey) {
+            return groupedKey == NULL_KEY ? null : (K) groupedKey;
+        }
+
         @Override
         public void onNext(T t) {
             try {
-                final K key = keySelector.call(t);
+                final Object key = groupedKey(keySelector.call(t));
                 GroupState<K, T> group = groups.get(key);
                 if (group == null) {
                     // this group doesn't exist
@@ -199,10 +207,10 @@ public class OperatorGroupBy<T, K, R> implements Operator<GroupedObservable<K, R
             }
         }
 
-        private GroupState<K, T> createNewGroup(final K key) {
+        private GroupState<K, T> createNewGroup(final Object key) {
             final GroupState<K, T> groupState = new GroupState<K, T>();
 
-            GroupedObservable<K, R> go = GroupedObservable.create(key, new OnSubscribe<R>() {
+            GroupedObservable<K, R> go = GroupedObservable.create(getKey(key), new OnSubscribe<R>() {
 
                 @Override
                 public void call(final Subscriber<? super R> o) {
@@ -266,7 +274,7 @@ public class OperatorGroupBy<T, K, R> implements Operator<GroupedObservable<K, R
             return groupState;
         }
 
-        private void cleanupGroup(K key) {
+        private void cleanupGroup(Object key) {
             GroupState<K, T> removed;
             removed = groups.remove(key);
             if (removed != null) {
@@ -372,4 +380,5 @@ public class OperatorGroupBy<T, K, R> implements Operator<GroupedObservable<K, R
         }
     };
 
+    private static final Object NULL_KEY = new Object();
 }
