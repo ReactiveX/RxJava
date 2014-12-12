@@ -46,6 +46,7 @@ import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Observer;
 import rx.Subscriber;
+import rx.Subscription;
 import rx.exceptions.TestException;
 import rx.functions.Action0;
 import rx.functions.Action1;
@@ -1357,4 +1358,24 @@ public class OperatorGroupByTest {
 
     };
 
+    @Test
+    public void testGroupByUnsubscribe() {
+        final Subscription s = mock(Subscription.class);
+        Observable<Integer> o = Observable.create(
+                new OnSubscribe<Integer>() {
+                    @Override
+                    public void call(Subscriber<? super Integer> subscriber) {
+                        subscriber.add(s);
+                    }
+                }
+        );
+        o.groupBy(new Func1<Integer, Integer>() {
+
+            @Override
+            public Integer call(Integer integer) {
+                return null;
+            }
+        }).subscribe().unsubscribe();
+        verify(s).unsubscribe();
+    }
 }

@@ -29,11 +29,13 @@ import rx.Observable.Operator;
 import rx.Observer;
 import rx.Producer;
 import rx.Subscriber;
+import rx.Subscription;
 import rx.exceptions.OnErrorThrowable;
 import rx.functions.Action0;
 import rx.functions.Func1;
 import rx.observables.GroupedObservable;
 import rx.subjects.Subject;
+import rx.subscriptions.Subscriptions;
 
 /**
  * Groups the items emitted by an Observable according to a specified criterion, and emits these
@@ -75,6 +77,7 @@ public class OperatorGroupBy<T, K, R> implements Operator<GroupedObservable<K, R
         final Func1<? super T, ? extends K> keySelector;
         final Func1<? super T, ? extends R> elementSelector;
         final Subscriber<? super GroupedObservable<K, R>> child;
+        final Subscription parentSubscription = this;
 
         public GroupBySubscriber(
                 Func1<? super T, ? extends K> keySelector,
@@ -84,6 +87,17 @@ public class OperatorGroupBy<T, K, R> implements Operator<GroupedObservable<K, R
             this.keySelector = keySelector;
             this.elementSelector = elementSelector;
             this.child = child;
+            child.add(Subscriptions.create(new Action0() {
+
+                @Override
+                public void call() {
+                    // if no group we unsubscribe up otherwise wait until group ends
+                    if (groups.isEmpty()) {
+                        parentSubscription.unsubscribe();
+                    }
+                }
+
+            }));
         }
 
         private static class GroupState<K, T> {
@@ -342,8 +356,9 @@ public class OperatorGroupBy<T, K, R> implements Operator<GroupedObservable<K, R
                     if (child.isUnsubscribed()) {
                         // if the entire groupBy has been unsubscribed and children are completed we will propagate the unsubscribe up.
                         unsubscribe();
+                    } else {
+                        child.onCompleted();
                     }
-                    child.onCompleted();
                 }
             }
         }
