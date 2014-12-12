@@ -30,6 +30,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -40,9 +41,14 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import rx.*;
+import rx.Notification;
+import rx.Observable;
 import rx.Observable.OnSubscribe;
+import rx.Observer;
+import rx.Scheduler;
 import rx.Scheduler.Worker;
+import rx.Subscriber;
+import rx.Subscription;
 import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Func1;
@@ -1104,5 +1110,89 @@ public class OperatorMergeTest {
         subscriber.requestMore(2);
         subscriber.assertReceivedOnNext(asList(1, 2, 3, 4));
         assertEquals(asList(exception), subscriber.getOnErrorEvents());
+    }
+    
+    @Test
+    public void testMergeKeepsRequesting() throws InterruptedException {
+        //for (int i = 0; i < 5000; i++) {
+            //System.out.println(i + ".......................................................................");
+            final CountDownLatch latch = new CountDownLatch(1);
+            final ConcurrentLinkedQueue<String> messages = new ConcurrentLinkedQueue<String>();
+
+            Observable.range(1, 2)
+                    // produce many integers per second
+                    .flatMap(new Func1<Integer, Observable<Integer>>() {
+                        @Override
+                        public Observable<Integer> call(final Integer number) {
+                            return Observable.range(1, Integer.MAX_VALUE)
+                                    .doOnRequest(new Action1<Long>() {
+
+                                        @Override
+                                        public void call(Long n) {
+                                            messages.add(">>>>>>>> A requested[" + number + "]: " + n);
+                                        }
+
+                                    })
+                                    // pause a bit
+                                    .doOnNext(pauseForMs(3))
+                                    // buffer on backpressure
+                                    .onBackpressureBuffer()
+                                    // do in parallel
+                                    .subscribeOn(Schedulers.computation())
+                                    .doOnRequest(new Action1<Long>() {
+
+                                        @Override
+                                        public void call(Long n) {
+                                            messages.add(">>>>>>>> B requested[" + number + "]: " + n);
+                                        }
+
+                                    });
+                        }
+
+                    })
+                    // take a number bigger than 2* RxRingBuffer.SIZE (used by OperatorMerge)
+                    .take(RxRingBuffer.SIZE * 2 + 1)
+                    // log count
+                    .doOnNext(printCount())
+                    // release latch
+                    .doOnCompleted(new Action0() {
+                        @Override
+                        public void call() {
+                            latch.countDown();
+                        }
+                    }).subscribe();
+            boolean a = latch.await(2, TimeUnit.SECONDS);
+            if (!a) {
+                for (String s : messages) {
+                    System.out.println("DEBUG => " + s);
+                }
+            }
+            assertTrue(a);
+        //}
+    }
+
+    private static Action1<Integer> printCount() {
+        return new Action1<Integer>() {
+            long count;
+
+            @Override
+            public void call(Integer t1) {
+                count++;
+                System.out.println("count=" + count);
+            }
+        };
+    }
+
+    private static Action1<Integer> pauseForMs(final long time) {
+        return new Action1<Integer>() {
+            @Override
+            public void call(Integer s) {
+                try {
+                    Thread.sleep(time);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        };
     }
 }
