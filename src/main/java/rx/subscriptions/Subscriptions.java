@@ -46,38 +46,8 @@ public final class Subscriptions {
      * @return {@link Subscription}
      */
     public static Subscription create(final Action0 unsubscribe) {
-        return new ActionSubscription(unsubscribe);
+        return BooleanSubscription.create(unsubscribe);
     }
-    /**
-     * Subscription that delegates the unsubscription action to an Action0 instance
-     */
-    private static final class ActionSubscription implements Subscription {
-        volatile Action0 actual;
-        static final AtomicReferenceFieldUpdater<ActionSubscription, Action0> ACTUAL_UPDATER
-                = AtomicReferenceFieldUpdater.newUpdater(ActionSubscription.class, Action0.class, "actual");
-        public ActionSubscription(Action0 action) {
-            this.actual = action != null ? action : Actions.empty();
-        }
-        @Override
-        public boolean isUnsubscribed() {
-            return actual == UNSUBSCRIBED_ACTION;
-        }
-        @Override
-        public void unsubscribe() {
-            Action0 a = ACTUAL_UPDATER.getAndSet(this, UNSUBSCRIBED_ACTION);
-            a.call();
-        }
-        /** The no-op unique action indicating an unsubscribed state. */
-        private static final Unsubscribed UNSUBSCRIBED_ACTION = new Unsubscribed();
-        /** Naming classes helps with debugging. */
-        private static final class Unsubscribed implements Action0 {
-            @Override
-            public void call() {
-
-            }
-        }
-    }
-    
 
     /**
      * Converts a {@link Future} into a {@link Subscription} and cancels it when unsubscribed.
