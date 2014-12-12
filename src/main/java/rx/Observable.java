@@ -4159,6 +4159,22 @@ public class Observable<T> {
 
         return lift(new OperatorDoOnEach<T>(observer));
     }
+    
+    /**
+     * Modifies the source {@code Observable} so that it invokes the given action when it receives a request for more items. 
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code doOnRequest} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param onRequest
+     *            the action that gets called when an observer requests items from this {@code Observable}
+     * @return the source {@code Observable} modified so as to call this Action when appropriate
+     */
+    @Beta
+    public final Observable<T> doOnRequest(final Action1<Long> onRequest) {
+        return lift(new OperatorDoOnRequest<T>(onRequest));
+    }
 
     /**
      * Modifies the source {@code Observable} so that it invokes the given action when it is subscribed from
