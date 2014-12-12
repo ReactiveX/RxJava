@@ -25,9 +25,8 @@ import rx.Subscription;
  * if unsubscribed.
  */
 public final class MultipleAssignmentSubscription implements Subscription {
-    /** The shared empty state. */
-    static final State EMPTY_STATE = new State(false, Subscriptions.unsubscribed());
-    volatile State state = EMPTY_STATE;
+
+    volatile State state = new State(false, Subscriptions.empty());
     static final AtomicReferenceFieldUpdater<MultipleAssignmentSubscription, State> STATE_UPDATER
             = AtomicReferenceFieldUpdater.newUpdater(MultipleAssignmentSubscription.class, State.class, "state");
     
