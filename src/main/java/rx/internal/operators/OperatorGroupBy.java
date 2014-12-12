@@ -19,6 +19,7 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicLongFieldUpdater;
@@ -29,7 +30,6 @@ import rx.Observable.Operator;
 import rx.Observer;
 import rx.Producer;
 import rx.Subscriber;
-import rx.Subscription;
 import rx.exceptions.OnErrorThrowable;
 import rx.functions.Action0;
 import rx.functions.Func1;
@@ -78,8 +78,9 @@ public class OperatorGroupBy<T, K, R> implements Operator<GroupedObservable<K, R
         final Func1<? super T, ? extends R> elementSelector;
         final Subscriber<? super GroupedObservable<K, R>> child;
 
-        final Object lock = new Object();
-        // Guarded by "lock"
+        @SuppressWarnings("rawtypes")
+        static final AtomicIntegerFieldUpdater<GroupBySubscriber> WIP_FOR_UNSUBSCRIBE_UPDATER = AtomicIntegerFieldUpdater.newUpdater(GroupBySubscriber.class, "wipForUnsubscribe");
+        volatile int wipForUnsubscribe = 0;
         boolean isUnsubscribed = false;
 
         public GroupBySubscriber(
@@ -94,11 +95,14 @@ public class OperatorGroupBy<T, K, R> implements Operator<GroupedObservable<K, R
 
                 @Override
                 public void call() {
-                    synchronized (lock) {
+                    if (WIP_FOR_UNSUBSCRIBE_UPDATER.getAndIncrement(self) == 0) {
                         if (groups.isEmpty()) {
                             isUnsubscribed = true;
                         }
+                    } else {
+                        // someone is putting, so groups is not empty
                     }
+                    WIP_FOR_UNSUBSCRIBE_UPDATER.decrementAndGet(self);
                     if (isUnsubscribed) {
                         self.unsubscribe();
                     }
@@ -208,7 +212,9 @@ public class OperatorGroupBy<T, K, R> implements Operator<GroupedObservable<K, R
                     }
                     group = createNewGroup(key);
                 }
-                emitItem(group, nl.next(t));
+                if (group != null) {
+                    emitItem(group, nl.next(t));
+                }
             } catch (Throwable e) {
                 onError(OnErrorThrowable.addValueAsLastCause(e, t));
             }
@@ -272,11 +278,17 @@ public class OperatorGroupBy<T, K, R> implements Operator<GroupedObservable<K, R
             });
 
             GroupState<K, T> putIfAbsent;
-            synchronized (lock) {
-                if (isUnsubscribed) {
-                    return null;
+            while (true) {
+                if (WIP_FOR_UNSUBSCRIBE_UPDATER.getAndIncrement(this) == 0) {
+                    if (isUnsubscribed) {
+                        WIP_FOR_UNSUBSCRIBE_UPDATER.decrementAndGet(this);
+                        return null;
+                    }
+                    putIfAbsent = groups.putIfAbsent(key, groupState);
+                    WIP_FOR_UNSUBSCRIBE_UPDATER.decrementAndGet(this);
+                    break;
                 }
-                putIfAbsent = groups.putIfAbsent(key, groupState);
+                WIP_FOR_UNSUBSCRIBE_UPDATER.decrementAndGet(this);
             }
             if (putIfAbsent != null) {
                 // this shouldn't happen (because we receive onNext sequentially) and would mean we have a bug
