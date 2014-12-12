@@ -28,6 +28,7 @@ import static org.mockito.Mockito.verify;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -46,6 +47,7 @@ import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Observer;
 import rx.Subscriber;
+import rx.Subscription;
 import rx.exceptions.TestException;
 import rx.functions.Action0;
 import rx.functions.Action1;
@@ -1357,4 +1359,52 @@ public class OperatorGroupByTest {
 
     };
 
+    @Test
+    public void testGroupByUnsubscribe() {
+        final Subscription s = mock(Subscription.class);
+        Observable<Integer> o = Observable.create(
+                new OnSubscribe<Integer>() {
+                    @Override
+                    public void call(Subscriber<? super Integer> subscriber) {
+                        subscriber.add(s);
+                    }
+                }
+        );
+        o.groupBy(new Func1<Integer, Integer>() {
+
+            @Override
+            public Integer call(Integer integer) {
+                return null;
+            }
+        }).subscribe().unsubscribe();
+        verify(s).unsubscribe();
+    }
+
+    @Test
+    public void testGroupWithNullKey() {
+        final String[] key = new String[]{"uninitialized"};
+        final List<String> values = new ArrayList<String>();
+        Observable.just("a", "b", "c").groupBy(new Func1<String, String>() {
+
+            @Override
+            public String call(String value) {
+                return null;
+            }
+        }).subscribe(new Action1<GroupedObservable<String, String>>() {
+
+            @Override
+            public void call(GroupedObservable<String, String> groupedObservable) {
+                key[0] = groupedObservable.getKey();
+                groupedObservable.subscribe(new Action1<String>() {
+
+                    @Override
+                    public void call(String s) {
+                        values.add(s);
+                    }
+                });
+            }
+        });
+        assertEquals(null, key[0]);
+        assertEquals(Arrays.asList("a", "b", "c"), values);
+    }
 }
