@@ -102,6 +102,42 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                 o.index(lastIndex);
             }
         };
+        ssm.onAdded = new Action1<SubjectObserver<T>>() {
+            @Override
+            public void call(SubjectObserver<T> o) {
+                synchronized (o) {
+                    if (!o.first || o.emitting) {
+                        return;
+                    }
+                    o.first = false;
+                    o.emitting = true;
+                }
+                boolean skipFinal = false;
+                try {
+                    for (;;) {
+                        int idx = o.index();
+                        int sidx = state.index;
+                        if (idx != sidx) {
+                            Integer j = state.replayObserverFromIndex(idx, o);
+                            o.index(j);
+                        }
+                        synchronized (o) {
+                            if (sidx == state.index) {
+                                o.emitting = false;
+                                skipFinal = true;
+                                break;
+                            }
+                        }
+                    }
+                } finally {
+                    if (!skipFinal) {
+                        synchronized (o) {
+                            o.emitting = false;
+                        }
+                    }
+                }
+            }
+        };
         ssm.onTerminated = new Action1<SubjectObserver<T>>() {
             @Override
             public void call(SubjectObserver<T> o) {
@@ -264,6 +300,42 @@ public final class ReplaySubject<T> extends Subject<T, T> {
             Action1<SubjectObserver<T>> onStart) {
         SubjectSubscriptionManager<T> ssm = new SubjectSubscriptionManager<T>();
         ssm.onStart = onStart;
+        ssm.onAdded = new Action1<SubjectObserver<T>>() {
+            @Override
+            public void call(SubjectObserver<T> o) {
+                synchronized (o) {
+                    if (!o.first || o.emitting) {
+                        return;
+                    }
+                    o.first = false;
+                    o.emitting = true;
+                }
+                boolean skipFinal = false;
+                try {
+                    for (;;) {
+                        NodeList.Node<Object> idx = o.index();
+                        NodeList.Node<Object> sidx = state.tail();
+                        if (idx != sidx) {
+                            NodeList.Node<Object> j = state.replayObserverFromIndex(idx, o);
+                            o.index(j);
+                        }
+                        synchronized (o) {
+                            if (sidx == state.tail()) {
+                                o.emitting = false;
+                                skipFinal = true;
+                                break;
+                            }
+                        }
+                    }
+                } finally {
+                    if (!skipFinal) {
+                        synchronized (o) {
+                            o.emitting = false;
+                        }
+                    }
+                }
+            }
+        };
         ssm.onTerminated = new Action1<SubjectObserver<T>>() {
 
             @Override
@@ -355,9 +427,10 @@ public final class ReplaySubject<T> extends Subject<T, T> {
 
     private boolean caughtUp(SubjectObserver<? super T> o) {
         if (!o.caughtUp) {
-            o.caughtUp = true;
-            state.replayObserver(o);
-            o.index(null); // once caught up, no need for the index anymore
+            if (state.replayObserver(o)) {
+                o.caughtUp = true;
+                o.index(null); // once caught up, no need for the index anymore
+            }
             return false;
         } else {
             // it was caught up so proceed the "raw route"
@@ -423,11 +496,20 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         }
 
         @Override
-        public void replayObserver(SubjectObserver<? super T> observer) {
+        public boolean replayObserver(SubjectObserver<? super T> observer) {
+            
+            synchronized (observer) {
+                observer.first = false;
+                if (observer.emitting) {
+                    return false;
+                }
+            }
+            
             Integer lastEmittedLink = observer.index();
             if (lastEmittedLink != null) {
                 int l = replayObserverFromIndex(lastEmittedLink, observer);
                 observer.index(l);
+                return true;
             } else {
                 throw new IllegalStateException("failed to find lastEmittedLink for: " + observer);
             }
@@ -525,10 +607,18 @@ public final class ReplaySubject<T> extends Subject<T, T> {
             return tail;
         }
         @Override
-        public void replayObserver(SubjectObserver<? super T> observer) {
+        public boolean replayObserver(SubjectObserver<? super T> observer) {
+            synchronized (observer) {
+                observer.first = false;
+                if (observer.emitting) {
+                    return false;
+                }
+            }
+            
             NodeList.Node<Object> lastEmittedLink = observer.index();
             NodeList.Node<Object> l = replayObserverFromIndex(lastEmittedLink, observer);
             observer.index(l);
+            return true;
         }
 
         @Override
@@ -571,8 +661,9 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         /**
          * Replay contents to the given observer.
          * @param observer the receiver of events
+         * @return true if the subject has caught up
          */
-        void replayObserver(SubjectObserver<? super T> observer);
+        boolean replayObserver(SubjectObserver<? super T> observer);
         /**
          * Replay the buffered values from an index position and return a new index
          * @param idx the current index position

@@ -25,17 +25,19 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import org.junit.Test;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicReference;
+
+import org.junit.*;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 
-import rx.Observable;
-import rx.Observer;
-import rx.Subscription;
+import rx.*;
 import rx.exceptions.CompositeException;
 import rx.exceptions.OnErrorNotImplementedException;
-import rx.functions.Func1;
+import rx.functions.*;
 import rx.observers.TestSubscriber;
+import rx.schedulers.Schedulers;
 
 public class BehaviorSubjectTest {
 
@@ -416,5 +418,68 @@ public class BehaviorSubjectTest {
         }
         // even though the onError above throws we should still receive it on the other subscriber 
         assertEquals(1, ts.getOnErrorEvents().size());
+    }
+    @Test
+    public void testEmissionSubscriptionRace() throws Exception {
+        Scheduler s = Schedulers.io();
+        Scheduler.Worker worker = Schedulers.io().createWorker();
+        for (int i = 0; i < 50000; i++) {
+            if (i % 1000 == 0) {
+                System.out.println(i);
+            }
+            final BehaviorSubject<Object> rs = BehaviorSubject.create();
+            
+            final CountDownLatch finish = new CountDownLatch(1); 
+            final CountDownLatch start = new CountDownLatch(1); 
+            
+            worker.schedule(new Action0() {
+                @Override
+                public void call() {
+                    try {
+                        start.await();
+                    } catch (Exception e1) {
+                        e1.printStackTrace();
+                    }
+                    rs.onNext(1);
+                }
+            });
+            
+            final AtomicReference<Object> o = new AtomicReference<Object>();
+            
+            rs.subscribeOn(s).observeOn(Schedulers.io())
+            .subscribe(new Observer<Object>() {
+
+                @Override
+                public void onCompleted() {
+                    o.set(-1);
+                    finish.countDown();
+                }
+
+                @Override
+                public void onError(Throwable e) {
+                    o.set(e);
+                    finish.countDown();
+                }
+
+                @Override
+                public void onNext(Object t) {
+                    o.set(t);
+                    finish.countDown();
+                }
+                
+            });
+            start.countDown();
+            
+            if (!finish.await(5, TimeUnit.SECONDS)) {
+                System.out.println(o.get());
+                System.out.println(rs.hasObservers());
+                rs.onCompleted();
+                Assert.fail("Timeout @ " + i);
+                break;
+            } else {
+                Assert.assertEquals(1, o.get());
+                rs.onCompleted();
+            }
+        }
     }
 }

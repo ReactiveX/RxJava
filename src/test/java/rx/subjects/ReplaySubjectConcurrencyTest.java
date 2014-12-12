@@ -17,20 +17,17 @@ package rx.subjects;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
+import java.util.*;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
-import org.junit.Test;
+import org.junit.*;
 
-import rx.Observable;
+import rx.*;
 import rx.Observable.OnSubscribe;
-import rx.Subscriber;
-import rx.functions.Action1;
+import rx.Observable;
+import rx.Observer;
+import rx.functions.*;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 
@@ -334,6 +331,69 @@ public class ReplaySubjectConcurrencyTest {
                 value.set(v);
             } catch (Exception e) {
                 e.printStackTrace();
+            }
+        }
+    }
+    @Test
+    public void testReplaySubjectEmissionSubscriptionRace() throws Exception {
+        Scheduler s = Schedulers.io();
+        Scheduler.Worker worker = Schedulers.io().createWorker();
+        for (int i = 0; i < 50000; i++) {
+            if (i % 1000 == 0) {
+                System.out.println(i);
+            }
+            final ReplaySubject<Object> rs = ReplaySubject.create();
+            
+            final CountDownLatch finish = new CountDownLatch(1); 
+            final CountDownLatch start = new CountDownLatch(1); 
+            
+            worker.schedule(new Action0() {
+                @Override
+                public void call() {
+                    try {
+                        start.await();
+                    } catch (Exception e1) {
+                        e1.printStackTrace();
+                    }
+                    rs.onNext(1);
+                }
+            });
+            
+            final AtomicReference<Object> o = new AtomicReference<Object>();
+            
+            rs.subscribeOn(s).observeOn(Schedulers.io())
+            .subscribe(new Observer<Object>() {
+
+                @Override
+                public void onCompleted() {
+                    o.set(-1);
+                    finish.countDown();
+                }
+
+                @Override
+                public void onError(Throwable e) {
+                    o.set(e);
+                    finish.countDown();
+                }
+
+                @Override
+                public void onNext(Object t) {
+                    o.set(t);
+                    finish.countDown();
+                }
+                
+            });
+            start.countDown();
+            
+            if (!finish.await(5, TimeUnit.SECONDS)) {
+                System.out.println(o.get());
+                System.out.println(rs.hasObservers());
+                rs.onCompleted();
+                Assert.fail("Timeout @ " + i);
+                break;
+            } else {
+                Assert.assertEquals(1, o.get());
+                rs.onCompleted();
             }
         }
     }
