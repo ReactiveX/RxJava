@@ -4161,7 +4161,8 @@ public class Observable<T> {
     }
     
     /**
-     * Modifies the source {@code Observable} so that it invokes the given action when it receives a request for more items. 
+     * Modifies the source {@code Observable} so that it invokes the given action when it receives a request for
+     * more items. 
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code doOnRequest} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -4170,6 +4171,7 @@ public class Observable<T> {
      * @param onRequest
      *            the action that gets called when an observer requests items from this {@code Observable}
      * @return the source {@code Observable} modified so as to call this Action when appropriate
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
     @Beta
     public final Observable<T> doOnRequest(final Action1<Long> onRequest) {
@@ -5066,7 +5068,6 @@ public class Observable<T> {
      *
      * @return the source Observable modified to buffer items up to the given capacity
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Backpressure">RxJava wiki: Backpressure</a>
-     * @Beta
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
     @Beta
@@ -5089,7 +5090,6 @@ public class Observable<T> {
      * @return the source Observable modified to buffer items up to the given capacity
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Backpressure">RxJava wiki: Backpressure</a>
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
-     * @Beta
      */
     @Beta
     public final Observable<T> onBackpressureBuffer(long capacity, Action0 onOverflow) {
