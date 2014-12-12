@@ -166,8 +166,13 @@ public class OperatorGroupBy<T, K, R> implements Operator<GroupedObservable<K, R
         @Override
         public void onError(Throwable e) {
             if (TERMINATED_UPDATER.compareAndSet(this, 0, 1)) {
-                // we immediately tear everything down if we receive an error
-                child.onError(e);
+                try {
+                    // we immediately tear everything down if we receive an error
+                    child.onError(e);
+                } finally {
+                    // We have not chained the subscribers, so need to call it explicitly.
+                    unsubscribe();
+                }
             }
         }
 
