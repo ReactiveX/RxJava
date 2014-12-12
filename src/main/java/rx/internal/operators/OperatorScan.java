@@ -147,19 +147,17 @@ public final class OperatorScan<R, T> implements Operator<R, T> {
                         if (once.compareAndSet(false, true)) {
                             if (initialValue == NO_INITIAL_VALUE || n == Long.MAX_VALUE) {
                                 producer.request(n);
+                            } else if (n == 1) {
+                                excessive.set(true);
+                                producer.request(1); // request at least 1
                             } else {
-                                if (n == Long.MAX_VALUE) {
-                                    producer.request(Long.MAX_VALUE);
-                                } else if (n == 1) {
-                                    excessive.set(true);
-                                    producer.request(1); // request at least 1
-                                } else {
-                                    producer.request(n - 1);
-                                }
+                                // n != Long.MAX_VALUE && n != 1
+                                producer.request(n - 1);
                             }
                         } else {
                             // pass-thru after first time
-                            if (excessive.compareAndSet(true, false) && n != Long.MAX_VALUE) {
+                            if (n > 1 // avoid to request 0
+                                    && excessive.compareAndSet(true, false) && n != Long.MAX_VALUE) {
                                 producer.request(n - 1);
                             } else {
                                 producer.request(n);
