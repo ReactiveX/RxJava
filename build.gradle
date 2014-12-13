@@ -6,6 +6,7 @@ buildscript {
 description = 'RxJava: Reactive Extensions for the JVM – a library for composing asynchronous and event-based programs using observable sequences for the Java VM.'
 
 apply plugin: 'rxjava-project'
+apply plugin: 'java'
 
 dependencies {
     testCompile 'junit:junit-dep:4.10'
