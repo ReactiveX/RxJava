@@ -141,7 +141,7 @@ import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
         public Subscription schedule(Action0 action, long delayTime, TimeUnit unit) {
             if (innerSubscription.isUnsubscribed()) {
                 // don't schedule, we are unsubscribed
-                return Subscriptions.empty();
+                return Subscriptions.unsubscribed();
             }
 
             ScheduledAction s = threadWorker.scheduleActual(action, delayTime, unit);

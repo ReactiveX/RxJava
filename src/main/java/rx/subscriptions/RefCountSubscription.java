@@ -80,7 +80,7 @@ public final class RefCountSubscription implements Subscription {
         do {
             oldState = state;
             if (oldState.isUnsubscribed) {
-                return Subscriptions.empty();
+                return Subscriptions.unsubscribed();
             } else {
                 newState = oldState.addChild();
             }
