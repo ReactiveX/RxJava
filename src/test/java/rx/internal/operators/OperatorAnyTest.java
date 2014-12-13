@@ -15,20 +15,16 @@
  */
 package rx.internal.operators;
 
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 
-import rx.Observable;
-import rx.Observer;
+import rx.*;
 import rx.functions.Func1;
-import rx.functions.Functions;
 import rx.internal.util.UtilityFunctions;
 
 public class OperatorAnyTest {
@@ -212,5 +208,16 @@ public class OperatorAnyTest {
             }
         });
         assertTrue(anyEven.toBlocking().first());
+    }
+    @Test(timeout = 5000)
+    public void testIssue1935NoUnsubscribeDownstream() {
+        Observable<Integer> source = Observable.just(1).isEmpty()
+            .flatMap(new Func1<Boolean, Observable<Integer>>() {
+                @Override
+                public Observable<Integer> call(Boolean t1) {
+                    return Observable.just(2).delay(500, TimeUnit.MILLISECONDS);
+                }
+        });
+        assertEquals((Object)2, source.toBlocking().first());
     }
 }

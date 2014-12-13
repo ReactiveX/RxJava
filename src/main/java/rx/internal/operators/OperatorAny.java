@@ -36,7 +36,7 @@ public final class OperatorAny<T> implements Operator<Boolean, T> {
 
     @Override
     public Subscriber<? super T> call(final Subscriber<? super Boolean> child) {
-        return new Subscriber<T>(child) {
+        Subscriber<T> s = new Subscriber<T>() {
             boolean hasElements;
             boolean done;
 
@@ -74,5 +74,7 @@ public final class OperatorAny<T> implements Operator<Boolean, T> {
             }
 
         };
+        child.add(s);
+        return s;
     }
 }
