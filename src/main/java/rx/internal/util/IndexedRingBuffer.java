@@ -48,17 +48,8 @@ import rx.functions.Func1;
  */
 public final class IndexedRingBuffer<E> implements Subscription {
 
-    private static final ObjectPool<IndexedRingBuffer> POOL = new ObjectPool<IndexedRingBuffer>() {
-
-        @Override
-        protected IndexedRingBuffer createObject() {
-            return new IndexedRingBuffer();
-        }
-
-    };
-
     public final static IndexedRingBuffer getInstance() {
-        return POOL.borrowObject();
+        return new IndexedRingBuffer();
     }
 
     private final ElementSection<E> elements = new ElementSection<E>();
@@ -257,36 +248,8 @@ public final class IndexedRingBuffer<E> implements Subscription {
     
     /* package for unit testing */static final int SIZE = _size;
 
-    /**
-     * This resets the arrays, nulls out references and returns it to the pool.
-     * This extra CPU cost is far smaller than the object allocation cost of not pooling.
-     */
-    public void releaseToPool() {
-        // need to clear all elements so we don't leak memory
-        int maxIndex = index.get();
-        int realIndex = 0;
-        ElementSection<E> section = elements;
-        outer: while (section != null) {
-            for (int i = 0; i < SIZE; i++, realIndex++) {
-                if (realIndex >= maxIndex) {
-                    section = null;
-                    break outer;
-                }
-                // we can use lazySet here because we are nulling things out and not accessing them again
-                // (relative on Mac Intel i7) lazySet gets us ~30m vs ~26m ops/second in the JMH test (100 adds per release)
-                section.array.set(i, null);
-            }
-            section = section.next.get();
-        }
-
-        index.set(0);
-        removedIndex.set(0);
-        POOL.returnObject(this);
-    }
-
     @Override
     public void unsubscribe() {
-        releaseToPool();
     }
 
     private IndexedRingBuffer() {
