@@ -20,15 +20,14 @@ import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -36,6 +35,7 @@ import org.mockito.MockitoAnnotations;
 
 import rx.Observable;
 import rx.Observer;
+import rx.Producer;
 import rx.Subscriber;
 import rx.functions.Action2;
 import rx.functions.Func0;
@@ -311,5 +311,53 @@ public class OperatorScanTest {
         subscriber.assertReceivedOnNext(Arrays.asList(0));
         subscriber.assertTerminalEvent();
         subscriber.assertNoErrors();
+    }
+
+    @Test
+    public void testScanShouldNotRequestZero() {
+        final AtomicReference<Producer> producer = new AtomicReference<Producer>();
+        Observable<Integer> o = Observable.create(new Observable.OnSubscribe<Integer>() {
+            @Override
+            public void call(final Subscriber subscriber) {
+                Producer p = spy(new Producer() {
+
+                    private AtomicBoolean requested = new AtomicBoolean(false);
+
+                    @Override
+                    public void request(long n) {
+                        if (requested.compareAndSet(false, true)) {
+                            subscriber.onNext(1);
+                        } else {
+                            subscriber.onCompleted();
+                        }
+                    }
+                });
+                producer.set(p);
+                subscriber.setProducer(p);
+            }
+        }).scan(100, new Func2<Integer, Integer, Integer>() {
+
+            @Override
+            public Integer call(Integer t1, Integer t2) {
+                return t1 + t2;
+            }
+
+        });
+
+        o.subscribe(new TestSubscriber<Integer>() {
+
+            @Override
+            public void onStart() {
+                request(1);
+            }
+
+            @Override
+            public void onNext(Integer integer) {
+                request(1);
+            }
+        });
+
+        verify(producer.get(), never()).request(0);
+        verify(producer.get(), times(2)).request(1);
     }
 }
