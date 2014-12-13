@@ -186,8 +186,9 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
             InnerSubscriber<T> i = new InnerSubscriber<T>(this, producerIfNeeded);
             i.sindex = childrenSubscribers.add(i);
             t.unsafeSubscribe(i);
-            if (!isUnsubscribed())
+            if (!isUnsubscribed()) {
                 request(1);
+            }
         }
 
         private void handleScalarSynchronousObservable(ScalarSynchronousObservable<? extends T> t) {
@@ -382,19 +383,8 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
             public Boolean call(InnerSubscriber<T> s) {
                 if (s.q != null) {
                     long r = mergeProducer.requested;
-                    int emitted = 0;
-                    emitted += s.drainQueue();
+                    int emitted = s.drainQueue();
                     if (emitted > 0) {
-                        /*
-                         * `s.emitted` is not volatile (because of performance impact of making it so shown by JMH tests)
-                         * but `emitted` can ONLY be touched by the thread holding the `emitLock` which we're currently inside.
-                         * 
-                         * Entering and leaving the emitLock flushes all values so this is visible to us.
-                         */
-                        emitted += s.emitted;
-                        // TODO we may want to store this in s.emitted and only request if above batch
-                        // reset this since we have requested them all
-                        s.emitted = 0;
                         s.requestMore(emitted);
                     }
                     if (emitted == r) {
@@ -542,9 +532,6 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
         static final AtomicIntegerFieldUpdater<InnerSubscriber> ONCE_TERMINATED = AtomicIntegerFieldUpdater.newUpdater(InnerSubscriber.class, "terminated");
 
         private final RxRingBuffer q = RxRingBuffer.getSpmcInstance();
-        /* protected by emitLock */
-        int emitted = 0;
-        final int THRESHOLD = (int) (q.capacity() * 0.7);
 
         public InnerSubscriber(MergeSubscriber<T> parent, MergeProducer<T> producer) {
             this.parentSubscriber = parent;
@@ -618,6 +605,7 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
              * putting in the queue, it attempts to get the lock. We are optimizing for the non-contended case.
              */
             if (parentSubscriber.getEmitLock()) {
+                long emitted = 0;
                 enqueue = false;
                 try {
                     // drain the queue if there is anything in it before emitting the current value
@@ -660,30 +648,9 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
                 } finally {
                     drain = parentSubscriber.releaseEmitLock();
                 }
-                if (emitted > THRESHOLD) {
-                    // this is for batching requests when we're in a use case that isn't queueing, always fast-pathing the onNext
-                    /**
-                     * <pre> {@code
-                     * Without this batching:
-                     * 
-                     * Benchmark                                          (size)   Mode   Samples        Score  Score error    Units
-                     * r.o.OperatorMergePerf.merge1SyncStreamOfN               1  thrpt         5  5060743.715   100445.513    ops/s
-                     * r.o.OperatorMergePerf.merge1SyncStreamOfN            1000  thrpt         5    36606.582     1610.582    ops/s
-                     * r.o.OperatorMergePerf.merge1SyncStreamOfN         1000000  thrpt         5       38.476        0.973    ops/s
-                     * 
-                     * With this batching:
-                     * 
-                     * Benchmark                                          (size)   Mode   Samples        Score  Score error    Units
-                     * r.o.OperatorMergePerf.merge1SyncStreamOfN               1  thrpt         5  5367945.738   262740.137    ops/s
-                     * r.o.OperatorMergePerf.merge1SyncStreamOfN            1000  thrpt         5    62703.930     8496.036    ops/s
-                     * r.o.OperatorMergePerf.merge1SyncStreamOfN         1000000  thrpt         5       72.711        3.746    ops/s
-                     *} </pre>
-                     */
+                // request upstream what we just emitted
+                if(emitted > 0) {
                     request(emitted);
-                    // we are modifying this outside of the emit lock ... but this can be considered a "lazySet"
-                    // and it will be flushed before anything else touches it because the emitLock will be obtained
-                    // before any other usage of it
-                    emitted = 0;
                 }
             }
             if (enqueue) {
