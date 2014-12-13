@@ -144,6 +144,12 @@ public final class OperatorBufferWithSize<T> implements Operator<List<T>, T> {
 
                     @Override
                     public void request(long n) {
+                        if (n == 0) {
+                            return;
+                        }
+                        if (n < 0) {
+                            throw new IllegalArgumentException("request a negative number: " + n);
+                        }
                         if (infinite) {
                             return;
                         }
