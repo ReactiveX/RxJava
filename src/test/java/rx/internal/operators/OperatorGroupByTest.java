@@ -1407,4 +1407,51 @@ public class OperatorGroupByTest {
         }).subscribe().unsubscribe();
         verify(s).unsubscribe();
     }
+
+    @Test
+    public void testGroupByShouldPropagateError() {
+        final Throwable e = new RuntimeException("Oops");
+        final TestSubscriber<Integer> inner1 = new TestSubscriber<Integer>();
+        final TestSubscriber<Integer> inner2 = new TestSubscriber<Integer>();
+
+        final TestSubscriber<GroupedObservable<Integer, Integer>> outer
+                = new TestSubscriber<GroupedObservable<Integer, Integer>>(new Subscriber<GroupedObservable<Integer, Integer>>() {
+
+            @Override
+            public void onCompleted() {
+            }
+
+            @Override
+            public void onError(Throwable e) {
+            }
+
+            @Override
+            public void onNext(GroupedObservable<Integer, Integer> o) {
+                if (o.getKey() == 0) {
+                    o.subscribe(inner1);
+                } else {
+                    o.subscribe(inner2);
+                }
+            }
+        });
+        Observable.create(
+                new OnSubscribe<Integer>() {
+                    @Override
+                    public void call(Subscriber<? super Integer> subscriber) {
+                        subscriber.onNext(0);
+                        subscriber.onNext(1);
+                        subscriber.onError(e);
+                    }
+                }
+        ).groupBy(new Func1<Integer, Integer>() {
+
+            @Override
+            public Integer call(Integer i) {
+                return i % 2;
+            }
+        }).subscribe(outer);
+        assertEquals(Arrays.asList(e), outer.getOnErrorEvents());
+        assertEquals(Arrays.asList(e), inner1.getOnErrorEvents());
+        assertEquals(Arrays.asList(e), inner2.getOnErrorEvents());
+    }
 }

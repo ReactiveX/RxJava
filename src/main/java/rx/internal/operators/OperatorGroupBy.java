@@ -15,6 +15,7 @@
  */
 package rx.internal.operators;
 
+import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -138,6 +139,8 @@ public class OperatorGroupBy<T, K, R> implements Operator<GroupedObservable<K, R
         @SuppressWarnings("rawtypes")
         static final AtomicLongFieldUpdater<GroupBySubscriber> BUFFERED_COUNT = AtomicLongFieldUpdater.newUpdater(GroupBySubscriber.class, "bufferedCount");
 
+        volatile boolean errorEmitted = false;
+
         @Override
         public void onStart() {
             REQUESTED.set(this, MAX_QUEUE_SIZE);
@@ -166,6 +169,13 @@ public class OperatorGroupBy<T, K, R> implements Operator<GroupedObservable<K, R
         @Override
         public void onError(Throwable e) {
             if (TERMINATED_UPDATER.compareAndSet(this, 0, 1)) {
+                errorEmitted = true;
+
+                // It's safe to access all groups and emit the error.
+                // onNext and onError are in sequence so no group will be created in the loop.
+                for (GroupState<K, T> group : groups.values()) {
+                    emitItem(group, nl.error(e));
+                }
                 try {
                     // we immediately tear everything down if we receive an error
                     child.onError(e);
@@ -259,6 +269,11 @@ public class OperatorGroupBy<T, K, R> implements Operator<GroupedObservable<K, R
                         @Override
                         public void onError(Throwable e) {
                             o.onError(e);
+                            // eagerly cleanup instead of waiting for unsubscribe
+                            if (once.compareAndSet(false, true)) {
+                                // done once per instance, either onComplete or onUnSubscribe
+                                cleanupGroup(key);
+                            }
                         }
 
                         @Override
@@ -386,7 +401,7 @@ public class OperatorGroupBy<T, K, R> implements Operator<GroupedObservable<K, R
                     if (child.isUnsubscribed()) {
                         // if the entire groupBy has been unsubscribed and children are completed we will propagate the unsubscribe up.
                         unsubscribe();
-                    } else {
+                    } else if (!errorEmitted) {
                         child.onCompleted();
                     }
                 }
