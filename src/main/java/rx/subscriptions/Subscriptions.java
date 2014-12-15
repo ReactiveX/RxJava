@@ -31,9 +31,9 @@ public final class Subscriptions {
         throw new IllegalStateException("No instances!");
     }
     /**
-     * Returns a {@link Subscription} that <code>unsubscribe</code> does nothing except changing
-     * <code>isUnsubscribed</code> to true. It's stateful and <code>isUnsubscribed</code>
-     * indicates if <code>unsubscribe</code> is called, which is different from {@link #unsubscribed()}.
+     * Returns a {@link Subscription} to which {@code unsubscribe} does nothing except to change
+     * {@code isUnsubscribed} to {@code true}. It's stateful and {@code isUnsubscribed} indicates if
+     * {@code unsubscribe} is called, which is different from {@link #unsubscribed()}.
      *
      * <pre><code>
      * Subscription empty = Subscriptions.empty();
@@ -42,23 +42,24 @@ public final class Subscriptions {
      * System.out.println(empty.isUnsubscribed()); // true
      * </code></pre>
      *
-     * @return a {@link Subscription} that <code>unsubscribe</code> does nothing except changing
-     *         <code>isUnsubscribed</code> to true.
+     * @return a {@link Subscription} to which {@code unsubscribe} does nothing except to change
+     *         {@code isUnsubscribed} to {@code true}
      */
     public static Subscription empty() {
         return BooleanSubscription.create();
     }
 
     /**
-     * Returns a {@link Subscription} that <code>unsubscribe</code> does nothing but is already unsubscribed.
-     * Its <code>isUnsubscribed</code> always return true, which is different from {@link #empty()}.
+     * Returns a {@link Subscription} to which {@code unsubscribe} does nothing, as it is already unsubscribed.
+     * Its {@code isUnsubscribed} always returns {@code true}, which is different from {@link #empty()}.
      *
      * <pre><code>
      * Subscription unsubscribed = Subscriptions.unsubscribed();
      * System.out.println(unsubscribed.isUnsubscribed()); // true
      * </code></pre>
      *
-     * @return a {@link Subscription} that <code>unsubscribe</code> does nothing but is already unsubscribed.
+     * @return a {@link Subscription} to which {@code unsubscribe} does nothing, as it is already unsubscribed
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
     @Experimental
     public static Subscription unsubscribed() {
