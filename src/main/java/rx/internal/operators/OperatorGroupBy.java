@@ -79,6 +79,9 @@ public class OperatorGroupBy<T, K, R> implements Operator<GroupedObservable<K, R
         final Func1<? super T, ? extends R> elementSelector;
         final Subscriber<? super GroupedObservable<K, R>> child;
 
+        // We should not call `unsubscribe()` until `groups.isEmpty() && child.isUnsubscribed()` is true.
+        // Use `WIP_FOR_UNSUBSCRIBE_UPDATER` to monitor these statuses and call `unsubscribe()` properly.
+        // Should check both when `child.unsubscribe` is called and any group is removed.
         @SuppressWarnings("rawtypes")
         static final AtomicIntegerFieldUpdater<GroupBySubscriber> WIP_FOR_UNSUBSCRIBE_UPDATER = AtomicIntegerFieldUpdater.newUpdater(GroupBySubscriber.class, "wipForUnsubscribe");
         volatile int wipForUnsubscribe = 1;
@@ -124,7 +127,13 @@ public class OperatorGroupBy<T, K, R> implements Operator<GroupedObservable<K, R
         private static final NotificationLite<Object> nl = NotificationLite.instance();
 
         volatile int completionEmitted;
-        volatile int terminated;
+
+        private static final int UNTERMINATED = 0;
+        private static final int TERMINATED_WITH_COMPLETED = 1;
+        private static final int TERMINATED_WITH_ERROR = 2;
+
+        // Must be one of `UNTERMINATED`, `TERMINATED_WITH_COMPLETED`, `TERMINATED_WITH_ERROR`
+        volatile int terminated = UNTERMINATED;
 
         @SuppressWarnings("rawtypes")
         static final AtomicIntegerFieldUpdater<GroupBySubscriber> COMPLETION_EMITTED_UPDATER = AtomicIntegerFieldUpdater.newUpdater(GroupBySubscriber.class, "completionEmitted");
@@ -139,8 +148,6 @@ public class OperatorGroupBy<T, K, R> implements Operator<GroupedObservable<K, R
         @SuppressWarnings("rawtypes")
         static final AtomicLongFieldUpdater<GroupBySubscriber> BUFFERED_COUNT = AtomicLongFieldUpdater.newUpdater(GroupBySubscriber.class, "bufferedCount");
 
-        volatile boolean errorEmitted = false;
-
         @Override
         public void onStart() {
             REQUESTED.set(this, MAX_QUEUE_SIZE);
@@ -149,7 +156,7 @@ public class OperatorGroupBy<T, K, R> implements Operator<GroupedObservable<K, R
 
         @Override
         public void onCompleted() {
-            if (TERMINATED_UPDATER.compareAndSet(this, 0, 1)) {
+            if (TERMINATED_UPDATER.compareAndSet(this, UNTERMINATED, TERMINATED_WITH_COMPLETED)) {
                 // if we receive onCompleted from our parent we onComplete children
                 // for each group check if it is ready to accept more events if so pass the oncomplete through else buffer it.
                 for (GroupState<K, T> group : groups.values()) {
@@ -168,9 +175,7 @@ public class OperatorGroupBy<T, K, R> implements Operator<GroupedObservable<K, R
 
         @Override
         public void onError(Throwable e) {
-            if (TERMINATED_UPDATER.compareAndSet(this, 0, 1)) {
-                errorEmitted = true;
-
+            if (TERMINATED_UPDATER.compareAndSet(this, UNTERMINATED, TERMINATED_WITH_ERROR)) {
                 // It's safe to access all groups and emit the error.
                 // onNext and onError are in sequence so no group will be created in the loop.
                 for (GroupState<K, T> group : groups.values()) {
@@ -390,18 +395,16 @@ public class OperatorGroupBy<T, K, R> implements Operator<GroupedObservable<K, R
         }
 
         private void completeInner() {
+            // A group is removed, so check if we need to call `unsubscribe`
             if (WIP_FOR_UNSUBSCRIBE_UPDATER.decrementAndGet(this) == 0) {
+                // It means `groups.isEmpty() && child.isUnsubscribed()` is true
                 unsubscribe();
             }
-            // if we have no outstanding groups (all completed or unsubscribe) and terminated/unsubscribed on outer
-            if (groups.isEmpty() && (terminated == 1 || child.isUnsubscribed())) {
+            // if we have no outstanding groups (all completed or unsubscribe) and terminated on outer
+            if (groups.isEmpty() && terminated == TERMINATED_WITH_COMPLETED) {
                 // completionEmitted ensures we only emit onCompleted once
                 if (COMPLETION_EMITTED_UPDATER.compareAndSet(this, 0, 1)) {
-
-                    if (child.isUnsubscribed()) {
-                        // if the entire groupBy has been unsubscribed and children are completed we will propagate the unsubscribe up.
-                        unsubscribe();
-                    } else if (!errorEmitted) {
+                    if (!child.isUnsubscribed()) {
                         child.onCompleted();
                     }
                 }
