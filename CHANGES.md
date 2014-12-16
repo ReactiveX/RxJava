@@ -1,5 +1,27 @@
 # RxJava Releases #
 
+### Version 1.0.3 – December 15th 2014 ([Maven Central](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.0.3%7C)) ###
+
+* [Pull 1928] (https://github.com/ReactiveX/RxJava/pull/1928) Experimental: Add onBackpressureBuffer with capacity
+* [Pull 1946] (https://github.com/ReactiveX/RxJava/pull/1946) Experimental: AbstractOnSubscribe to help build Observables one onNext at a time. 
+* [Pull 1960] (https://github.com/ReactiveX/RxJava/pull/1960) Beta: doOnRequest
+* [Pull 1965] (https://github.com/ReactiveX/RxJava/pull/1965) Fix the issue that Sample doesn't call 'unsubscribe' 
+* [Pull 1966] (https://github.com/ReactiveX/RxJava/pull/1966) Fix NPE when the key is null in GroupBy
+* [Pull 1964] (https://github.com/ReactiveX/RxJava/pull/1964) Handle 0 or negative request in Buffer
+* [Pull 1957] (https://github.com/ReactiveX/RxJava/pull/1957) Fix 'request(0)' issue in Scan
+* [Pull 1950] (https://github.com/ReactiveX/RxJava/pull/1950) Add "Subscriptions.unsubscribed" to fix the 'isUnsubscribed' issue
+* [Pull 1938] (https://github.com/ReactiveX/RxJava/pull/1938) Any/All should not unsubscribe downstream.
+* [Pull 1968] (https://github.com/ReactiveX/RxJava/pull/1968) Upgrade to Gradle 2.2
+* [Pull 1961] (https://github.com/ReactiveX/RxJava/pull/1961) Remove Request Batching in Merge
+
+* [Pull 1953] (https://github.com/ReactiveX/RxJava/pull/1953) Fixed timer cast-to-int crash causing incorrect benchmark.
+* [Pull 1952] (https://github.com/ReactiveX/RxJava/pull/1952) Remove ActionSubscription
+* [Pull 1951] (https://github.com/ReactiveX/RxJava/pull/1951) Remove extraneous request(n) and onCompleted() calls when unsubscribed.
+* [Pull 1947] (https://github.com/ReactiveX/RxJava/pull/1947) Fixed first emission racing with pre and post subscription.
+* [Pull 1937] (https://github.com/ReactiveX/RxJava/pull/1937) Scheduler.Worker to be finally unsubscribed to avoid interference
+* [Pull 1926] (https://github.com/ReactiveX/RxJava/pull/1926) Move the codes out of the finally block
+* [Pull 1922] (https://github.com/ReactiveX/RxJava/pull/1922) Set removeOnCancelPolicy on the threadpool if supported
+
 ### Version 1.0.2 – December 1st 2014 ([Maven Central](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.0.2%7C)) ###
 
 This release adds `@Beta` and `@Experimental` annotations to mark APIs that are not yet stable. 
