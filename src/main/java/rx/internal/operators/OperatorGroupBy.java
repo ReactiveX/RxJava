@@ -399,14 +399,11 @@ public class OperatorGroupBy<T, K, R> implements Operator<GroupedObservable<K, R
             if (WIP_FOR_UNSUBSCRIBE_UPDATER.decrementAndGet(this) == 0) {
                 // It means `groups.isEmpty() && child.isUnsubscribed()` is true
                 unsubscribe();
-            }
-            // if we have no outstanding groups (all completed or unsubscribe) and terminated on outer
-            if (groups.isEmpty() && terminated == TERMINATED_WITH_COMPLETED) {
+            } else if (groups.isEmpty() && terminated == TERMINATED_WITH_COMPLETED) {
+                // if we have no outstanding groups (all completed or unsubscribe) and terminated on outer
                 // completionEmitted ensures we only emit onCompleted once
                 if (COMPLETION_EMITTED_UPDATER.compareAndSet(this, 0, 1)) {
-                    if (!child.isUnsubscribed()) {
-                        child.onCompleted();
-                    }
+                    child.onCompleted();
                 }
             }
         }
