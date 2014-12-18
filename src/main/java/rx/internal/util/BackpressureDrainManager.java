@@ -142,14 +142,17 @@ public final class BackpressureDrainManager implements Producer {
             r = requestedCount;
             mayDrain = r == 0;
             if (r == Long.MAX_VALUE) {
-                mayDrain = true;
                 break;
             }
             if (n == Long.MAX_VALUE) {
                 u = n;
                 mayDrain = true;
             } else {
-                u = r + n;
+                if (r > Long.MAX_VALUE - n) {
+                    u = Long.MAX_VALUE;
+                } else {
+                    u = r + n;
+                }
             }
         } while (!REQUESTED_COUNT.compareAndSet(this, r, u));
         // since we implement producer, we have to call drain
