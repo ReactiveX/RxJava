@@ -396,7 +396,12 @@ public class ReplaySubjectBoundedConcurrencyTest {
                 break;
             } else {
                 Assert.assertEquals(1, o.get());
-                rs.onCompleted();
+                worker.schedule(new Action0() {
+                    @Override
+                    public void call() {
+                        rs.onCompleted();
+                    }
+                });
             }
         }
     }
