@@ -3737,6 +3737,24 @@ public class Observable<T> {
     }
 
     /**
+     * Returns an Observable that emits the items emitted by the source Observable or the items of an alternate Observable if the source Observable
+     * is empty.
+     * <p>
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code switchIfEmpty} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param alternate
+     *              the alternate Observable to subscribe to if the source does not emit any items
+     * @return  an Observable that emits the items emitted by the source Observable or the items of an alternate Observable if the source Observable
+     *          is empty.
+     */
+    public final Observable<T> switchIfEmpty(Observable<T> alternate) {
+        return lift(new OperatorSwitchIfEmpty<T>(alternate));
+    }
+
+    /**
      * Returns an Observable that delays the subscription to and emissions from the souce Observable via another
      * Observable on a per-item basis.
      * <p>
