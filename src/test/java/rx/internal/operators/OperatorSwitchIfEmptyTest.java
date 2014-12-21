@@ -21,8 +21,6 @@ import rx.Producer;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Action0;
-import rx.functions.Action1;
-import rx.schedulers.Schedulers;
 import rx.subscriptions.Subscriptions;
 
 import java.util.Arrays;
@@ -114,5 +112,19 @@ public class OperatorSwitchIfEmptyTest {
 
         assertTrue(empty.isUnsubscribed());
         assertTrue(sub.isUnsubscribed());
+    }
+
+    @Test
+    public void testSwitchShouldTriggerUnsubscribe() {
+        final Subscription s = Subscriptions.empty();
+
+        Observable.create(new Observable.OnSubscribe<Long>() {
+            @Override
+            public void call(final Subscriber<? super Long> subscriber) {
+                subscriber.add(s);
+                subscriber.onCompleted();
+            }
+        }).switchIfEmpty(Observable.<Long>never()).subscribe();
+        assertTrue(s.isUnsubscribed());
     }
 }

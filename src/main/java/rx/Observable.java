@@ -3739,10 +3739,12 @@ public class Observable<T> {
     /**
      * Returns an Observable that emits the items emitted by the source Observable or the items of an alternate Observable if the source Observable
      * is empty.
-     * <p>
+     * <p/>
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code switchIfEmpty} does not operate by default on a particular {@link Scheduler}.</dd>
+     *  <dt><b>Beta:</b></dt>
+     *  <dd>{@code switchIfEmpty} is currently in {@link rx.annotations.Beta} and subject to change.</dd>
      * </dl>
      *
      * @param alternate
@@ -3750,6 +3752,7 @@ public class Observable<T> {
      * @return  an Observable that emits the items emitted by the source Observable or the items of an alternate Observable if the source Observable
      *          is empty.
      */
+    @Beta
     public final Observable<T> switchIfEmpty(Observable<T> alternate) {
         return lift(new OperatorSwitchIfEmpty<T>(alternate));
     }

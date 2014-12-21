@@ -35,7 +35,9 @@ public class OperatorSwitchIfEmpty<T> implements Observable.Operator<T, T> {
 
     @Override
     public Subscriber<? super T> call(Subscriber<? super T> child) {
-        return new SwitchIfEmptySubscriber(child);
+        final SwitchIfEmptySubscriber parent = new SwitchIfEmptySubscriber(child);
+        child.add(parent);
+        return parent;
     }
 
     private class SwitchIfEmptySubscriber extends Subscriber<T> {
@@ -46,8 +48,6 @@ public class OperatorSwitchIfEmpty<T> implements Observable.Operator<T, T> {
         private final Subscriber<? super T> child;
 
         public SwitchIfEmptySubscriber(Subscriber<? super T> child) {
-            super(child);
-
             this.child = child;
         }
 
@@ -69,12 +69,13 @@ public class OperatorSwitchIfEmpty<T> implements Observable.Operator<T, T> {
             if (!empty) {
                 child.onCompleted();
             } else if (!child.isUnsubscribed()) {
+                unsubscribe();
                 subscribeToAlternate();
             }
         }
 
         private void subscribeToAlternate() {
-            add(alternate.unsafeSubscribe(new Subscriber<T>() {
+            child.add(alternate.unsafeSubscribe(new Subscriber<T>() {
                 @Override
                 public void onStart() {
                     final long capacity = consumerCapacity.get();
