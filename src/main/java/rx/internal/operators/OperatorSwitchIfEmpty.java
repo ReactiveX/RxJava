@@ -76,6 +76,17 @@ public class OperatorSwitchIfEmpty<T> implements Observable.Operator<T, T> {
 
         private void subscribeToAlternate() {
             child.add(alternate.unsafeSubscribe(new Subscriber<T>() {
+
+                @Override
+                public void setProducer(final Producer producer) {
+                    child.setProducer(new Producer() {
+                        @Override
+                        public void request(long n) {
+                            producer.request(n);
+                        }
+                    });
+                }
+
                 @Override
                 public void onStart() {
                     final long capacity = consumerCapacity.get();

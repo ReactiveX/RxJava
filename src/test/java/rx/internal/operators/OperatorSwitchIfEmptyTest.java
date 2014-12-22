@@ -23,7 +23,9 @@ import rx.Subscription;
 import rx.functions.Action0;
 import rx.subscriptions.Subscriptions;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.Assert.assertEquals;
@@ -56,13 +58,15 @@ public class OperatorSwitchIfEmptyTest {
 
     @Test
     public void testSwitchWithProducer() throws Exception {
+        final AtomicBoolean emitted = new AtomicBoolean(false);
         Observable<Long> withProducer = Observable.create(new Observable.OnSubscribe<Long>() {
             @Override
             public void call(final Subscriber<? super Long> subscriber) {
                 subscriber.setProducer(new Producer() {
                     @Override
                     public void request(long n) {
-                        if (n > 0) {
+                        if (n > 0 && !emitted.get()) {
+                            emitted.set(true);
                             subscriber.onNext(42L);
                             subscriber.onCompleted();
                         }
@@ -126,5 +130,34 @@ public class OperatorSwitchIfEmptyTest {
             }
         }).switchIfEmpty(Observable.<Long>never()).subscribe();
         assertTrue(s.isUnsubscribed());
+    }
+
+    @Test
+    public void testSwitchRequestAlternativeObservableWithBackpressure() {
+        final List<Integer> items = new ArrayList<Integer>();
+
+        Observable.<Integer>empty().switchIfEmpty(Observable.just(1, 2, 3)).subscribe(new Subscriber<Integer>() {
+
+            @Override
+            public void onStart() {
+                request(1);
+            }
+
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(Integer integer) {
+                items.add(integer);
+            }
+        });
+        assertEquals(Arrays.asList(1), items);
     }
 }
