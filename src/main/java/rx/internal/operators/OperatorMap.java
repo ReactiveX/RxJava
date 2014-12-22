@@ -17,6 +17,7 @@ package rx.internal.operators;
 
 import rx.Observable.Operator;
 import rx.Subscriber;
+import rx.exceptions.Exceptions;
 import rx.exceptions.OnErrorThrowable;
 import rx.functions.Func1;
 
@@ -53,6 +54,7 @@ public final class OperatorMap<T, R> implements Operator<R, T> {
                 try {
                     o.onNext(transformer.call(t));
                 } catch (Throwable e) {
+                    Exceptions.throwIfFatal(e);
                     onError(OnErrorThrowable.addValueAsLastCause(e, t));
                 }
             }
