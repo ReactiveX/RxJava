@@ -99,7 +99,7 @@ public class OperatorPublish<T> extends ConnectableObservable<T> {
     public void connect(Action1<? super Subscription> connection) {
         // each time we connect we create a new Subscription
         boolean shouldSubscribe = false;
-
+        
         // subscription is the state of whether we are connected or not
         OriginSubscriber<T> origin = requestHandler.state.getOrigin();
         if (origin == null) {
@@ -113,7 +113,7 @@ public class OperatorPublish<T> extends ConnectableObservable<T> {
             connection.call(Subscriptions.create(new Action0() {
                 @Override
                 public void call() {
-                    Subscription s = requestHandler.state.getOrigin();
+                    OriginSubscriber<T> s = requestHandler.state.getOrigin();
                     requestHandler.state.setOrigin(null);
                     if (s != null) {
                         s.unsubscribe();
@@ -135,9 +135,11 @@ public class OperatorPublish<T> extends ConnectableObservable<T> {
         private final RequestHandler<T> requestHandler;
         private final AtomicLong originOutstanding = new AtomicLong();
         private final long THRESHOLD = RxRingBuffer.SIZE / 4;
+        private final RxRingBuffer buffer = RxRingBuffer.getSpmcInstance();
 
         OriginSubscriber(RequestHandler<T> requestHandler) {
             this.requestHandler = requestHandler;
+            add(buffer);
         }
 
         @Override
@@ -198,6 +200,8 @@ public class OperatorPublish<T> extends ConnectableObservable<T> {
      * benjchristensen => I have not figured out a non-blocking approach to this that doesn't involve massive object allocation overhead
      * with a complicated state machine so I'm sticking with mutex locks and just trying to make sure the work done while holding the
      * lock is small (such as never emitting data).
+     * 
+     * This does however mean we can't rely on a reference to State being consistent. For example, it can end up with a null OriginSubscriber. 
      * 
      * @param <T>
      */
@@ -288,7 +292,7 @@ public class OperatorPublish<T> extends ConnectableObservable<T> {
 
     private static class RequestHandler<T> {
         private final NotificationLite<T> notifier = NotificationLite.instance();
-        private final RxRingBuffer buffer = RxRingBuffer.getSpmcInstance();
+        
         private final State<T> state = new State<T>();
         @SuppressWarnings("unused")
         volatile long wip;
@@ -297,16 +301,24 @@ public class OperatorPublish<T> extends ConnectableObservable<T> {
 
         public void requestFromChildSubscriber(Subscriber<? super T> subscriber, Long request) {
             state.requestFromSubscriber(subscriber, request);
-            drainQueue();
+            OriginSubscriber<T> originSubscriber = state.getOrigin();
+            if(originSubscriber != null) {
+                drainQueue(originSubscriber);
+            }
         }
 
         public void emit(Object t) throws MissingBackpressureException {
-            if (notifier.isCompleted(t)) {
-                buffer.onCompleted();
-            } else {
-                buffer.onNext(notifier.getValue(t));
+            OriginSubscriber<T> originSubscriber = state.getOrigin();
+            if(originSubscriber == null) {
+                // unsubscribed so break ... we are done
+                return;
             }
-            drainQueue();
+            if (notifier.isCompleted(t)) {
+                originSubscriber.buffer.onCompleted();
+            } else {
+                originSubscriber.buffer.onNext(notifier.getValue(t));
+            }
+            drainQueue(originSubscriber);
         }
 
         private void requestMoreAfterEmission(int emitted) {
@@ -319,7 +331,7 @@ public class OperatorPublish<T> extends ConnectableObservable<T> {
             }
         }
 
-        public void drainQueue() {
+        public void drainQueue(OriginSubscriber<T> originSubscriber) {
             if (WIP.getAndIncrement(this) == 0) {
                 int emitted = 0;
                 do {
@@ -338,7 +350,7 @@ public class OperatorPublish<T> extends ConnectableObservable<T> {
                         if (!shouldEmit) {
                             break;
                         }
-                        Object o = buffer.poll();
+                        Object o = originSubscriber.buffer.poll();
                         if (o == null) {
                             // nothing in buffer so increment outstanding back again
                             state.incrementOutstandingAfterFailedEmit();
