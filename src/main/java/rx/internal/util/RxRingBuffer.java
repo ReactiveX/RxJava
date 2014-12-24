@@ -293,7 +293,10 @@ public class RxRingBuffer implements Subscription {
         }
 
     };
-    
+
+    private final WriterReaderPhaser emittingPhaser = new WriterReaderPhaser();
+    private volatile boolean released = false;
+
     private RxRingBuffer(Queue<Object> queue, int size) {
         this.queue = queue;
         this.pool = null;
@@ -306,12 +309,26 @@ public class RxRingBuffer implements Subscription {
         this.size = size;
     }
 
-    public void release() {
-        if (pool != null) {
-            Queue<Object> q = queue;
-            q.clear();
-            queue = null;
-            pool.returnObject(q);
+    public synchronized void release() {
+        try {
+            emittingPhaser.readerLock();
+            released = true;
+
+            emittingPhaser.flipPhase();
+            /*
+             * once we have flipped, this means all emissions in flight at time of release
+             * have finished so we can now complete the release.
+             * 
+             * Any new emissions will see "released == true" and will not emit.
+             */
+            if (pool != null) {
+                Queue<Object> q = queue;
+                q.clear();
+                queue = null;
+                pool.returnObject(q);
+            }
+        } finally {
+            emittingPhaser.readerUnlock();
         }
     }
 
@@ -331,25 +348,46 @@ public class RxRingBuffer implements Subscription {
      *             if more onNext are sent than have been requested
      */
     public void onNext(Object o) throws MissingBackpressureException {
-        if (queue == null) {
-            throw new IllegalStateException("This instance has been unsubscribed and the queue is no longer usable.");
-        }
-        if (!queue.offer(on.next(o))) {
-            throw new MissingBackpressureException();
+        long criticalValueAtEnter = emittingPhaser.writerCriticalSectionEnter();
+        try {
+            if (released || queue == null) {
+                throw new IllegalStateException("This instance has been unsubscribed and the queue is no longer usable.");
+            }
+            if (!queue.offer(on.next(o))) {
+                throw new MissingBackpressureException();
+            }
+        } finally {
+            emittingPhaser.writerCriticalSectionExit(criticalValueAtEnter);
         }
     }
 
     public void onCompleted() {
-        // we ignore terminal events if we already have one
-        if (terminalState == null) {
-            terminalState = on.completed();
+        long criticalValueAtEnter = emittingPhaser.writerCriticalSectionEnter();
+        try {
+            if (released || queue == null) {
+                throw new IllegalStateException("This instance has been unsubscribed and the queue is no longer usable.");
+            }
+            // we ignore terminal events if we already have one
+            if (terminalState == null) {
+                terminalState = on.completed();
+            }
+        } finally {
+            emittingPhaser.writerCriticalSectionExit(criticalValueAtEnter);
         }
     }
 
     public void onError(Throwable t) {
-        // we ignore terminal events if we already have one
-        if (terminalState == null) {
-            terminalState = on.error(t);
+        long criticalValueAtEnter = emittingPhaser.writerCriticalSectionEnter();
+        try {
+            if (released || queue == null) {
+                throw new IllegalStateException("This instance has been unsubscribed and the queue is no longer usable.");
+            }
+            // we ignore terminal events if we already have one
+            if (terminalState == null) {
+                terminalState = on.error(t);
+            }
+        } finally {
+            emittingPhaser.writerCriticalSectionExit(criticalValueAtEnter);
         }
     }
 
@@ -376,63 +414,73 @@ public class RxRingBuffer implements Subscription {
     }
 
     public Object poll() {
-        if (queue == null) {
-            // we are unsubscribed and have released the undelrying queue
-            return null;
+        long criticalValueAtEnter = emittingPhaser.writerCriticalSectionEnter();
+        try {
+            if (released || queue == null) {
+                // we are unsubscribed and have released the undelrying queue
+                return null;
+            }
+            Object o;
+            o = queue.poll();
+            /*
+             * benjchristensen July 10 2014 => The check for 'queue.isEmpty()' came from a very rare concurrency bug where poll()
+             * is invoked, then an "onNext + onCompleted/onError" arrives before hitting the if check below. In that case,
+             * "o == null" and there is a terminal state, but now "queue.isEmpty()" and we should NOT return the terminalState.
+             * 
+             * The queue.size() check is a double-check that works to handle this, without needing to synchronize poll with on*
+             * or needing to enqueue terminalState.
+             * 
+             * This did make me consider eliminating the 'terminalState' ref and enqueuing it ... but then that requires
+             * a +1 of the size, or -1 of how many onNext can be sent. See comment on 'terminalState' above for why it
+             * is currently the way it is.
+             */
+            if (o == null && terminalState != null && queue.isEmpty()) {
+                o = terminalState;
+                // once emitted we clear so a poll loop will finish
+                terminalState = null;
+            }
+            return o;
+        } finally {
+            emittingPhaser.writerCriticalSectionExit(criticalValueAtEnter);
         }
-        Object o;
-        o = queue.poll();
-        /*
-         * benjchristensen July 10 2014 => The check for 'queue.isEmpty()' came from a very rare concurrency bug where poll()
-         * is invoked, then an "onNext + onCompleted/onError" arrives before hitting the if check below. In that case,
-         * "o == null" and there is a terminal state, but now "queue.isEmpty()" and we should NOT return the terminalState.
-         * 
-         * The queue.size() check is a double-check that works to handle this, without needing to synchronize poll with on*
-         * or needing to enqueue terminalState.
-         * 
-         * This did make me consider eliminating the 'terminalState' ref and enqueuing it ... but then that requires
-         * a +1 of the size, or -1 of how many onNext can be sent. See comment on 'terminalState' above for why it
-         * is currently the way it is.
-         */
-        if (o == null && terminalState != null && queue.isEmpty()) {
-            o = terminalState;
-            // once emitted we clear so a poll loop will finish
-            terminalState = null;
-        }
-        return o;
     }
 
     public Object peek() {
-        if (queue == null) {
-            // we are unsubscribed and have released the undelrying queue
-            return null;
+        long criticalValueAtEnter = emittingPhaser.writerCriticalSectionEnter();
+        try {
+            if (released || queue == null) {
+                // we are unsubscribed and have released the undelrying queue
+                return null;
+            }
+            Object o;
+            o = queue.peek();
+            if (o == null && terminalState != null && queue.isEmpty()) {
+                o = terminalState;
+            }
+            return o;
+        } finally {
+            emittingPhaser.writerCriticalSectionExit(criticalValueAtEnter);
         }
-        Object o;
-        o = queue.peek();
-        if (o == null && terminalState != null && queue.isEmpty()) {
-            o = terminalState;
-        }
-        return o;
     }
 
-    public boolean isCompleted(Object o) {
+    public static boolean isCompleted(Object o) {
         return on.isCompleted(o);
     }
 
-    public boolean isError(Object o) {
+    public static boolean isError(Object o) {
         return on.isError(o);
     }
 
-    public Object getValue(Object o) {
+    public static Object getValue(Object o) {
         return on.getValue(o);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public boolean accept(Object o, Observer child) {
+    public static boolean accept(Object o, Observer child) {
         return on.accept(child, o);
     }
 
-    public Throwable asError(Object o) {
+    public static Throwable asError(Object o) {
         return on.getError(o);
     }
 
