@@ -114,6 +114,14 @@ public class WriterReaderPhaser {
        readerLock.unlock();
    }
 
+   public boolean isPhaseOdd() {
+       return startEpoch < 0;
+   }
+   
+   public boolean isPhaseEven() {
+       return !isPhaseOdd();
+   }
+   
    /**
     * Flip a phase in the WriterReaderPhaser instance, flipPhase() can only be called while
     * holding the readerLock(). flipPhase() will return only after all writer critical

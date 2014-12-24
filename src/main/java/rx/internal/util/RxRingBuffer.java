@@ -295,7 +295,6 @@ public class RxRingBuffer implements Subscription {
     };
 
     private final WriterReaderPhaser emittingPhaser = new WriterReaderPhaser();
-    private volatile boolean released = false;
 
     private RxRingBuffer(Queue<Object> queue, int size) {
         this.queue = queue;
@@ -312,8 +311,6 @@ public class RxRingBuffer implements Subscription {
     public synchronized void release() {
         try {
             emittingPhaser.readerLock();
-            released = true;
-
             emittingPhaser.flipPhase();
             /*
              * once we have flipped, this means all emissions in flight at time of release
@@ -350,7 +347,7 @@ public class RxRingBuffer implements Subscription {
     public void onNext(Object o) throws MissingBackpressureException {
         long criticalValueAtEnter = emittingPhaser.writerCriticalSectionEnter();
         try {
-            if (released || queue == null) {
+            if (emittingPhaser.isPhaseOdd() || queue == null) {
                 throw new IllegalStateException("This instance has been unsubscribed and the queue is no longer usable.");
             }
             if (!queue.offer(on.next(o))) {
@@ -364,7 +361,7 @@ public class RxRingBuffer implements Subscription {
     public void onCompleted() {
         long criticalValueAtEnter = emittingPhaser.writerCriticalSectionEnter();
         try {
-            if (released || queue == null) {
+            if (emittingPhaser.isPhaseOdd() || queue == null) {
                 throw new IllegalStateException("This instance has been unsubscribed and the queue is no longer usable.");
             }
             // we ignore terminal events if we already have one
@@ -379,7 +376,7 @@ public class RxRingBuffer implements Subscription {
     public void onError(Throwable t) {
         long criticalValueAtEnter = emittingPhaser.writerCriticalSectionEnter();
         try {
-            if (released || queue == null) {
+            if (emittingPhaser.isPhaseOdd() || queue == null) {
                 throw new IllegalStateException("This instance has been unsubscribed and the queue is no longer usable.");
             }
             // we ignore terminal events if we already have one
@@ -416,7 +413,7 @@ public class RxRingBuffer implements Subscription {
     public Object poll() {
         long criticalValueAtEnter = emittingPhaser.writerCriticalSectionEnter();
         try {
-            if (released || queue == null) {
+            if (emittingPhaser.isPhaseOdd() || queue == null) {
                 // we are unsubscribed and have released the undelrying queue
                 return null;
             }
@@ -448,7 +445,7 @@ public class RxRingBuffer implements Subscription {
     public Object peek() {
         long criticalValueAtEnter = emittingPhaser.writerCriticalSectionEnter();
         try {
-            if (released || queue == null) {
+            if (emittingPhaser.isPhaseOdd() || queue == null) {
                 // we are unsubscribed and have released the undelrying queue
                 return null;
             }
