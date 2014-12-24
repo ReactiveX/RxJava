@@ -70,6 +70,8 @@ final class TakeLastQueueProducer<T> implements Producer {
             if (previousRequested == 0) {
                 try {
                     for (Object value : deque) {
+                        if (subscriber.isUnsubscribed())
+                            return;
                         notification.accept(subscriber, value);
                     }
                 } catch (Throwable e) {
