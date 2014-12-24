@@ -154,7 +154,7 @@ public class OnSubscribeRefCountTest {
         s2.unsubscribe(); // unsubscribe s2 first as we're counting in 1 and there can be a race between unsubscribe and one subscriber getting a value but not the other
         s1.unsubscribe();
 
-        System.out.println("onNext: " + nextCount.get());
+        System.out.println("onNext Count: " + nextCount.get());
 
         // it will emit twice because it is synchronous
         assertEquals(nextCount.get(), receivedCount.get() * 2);
