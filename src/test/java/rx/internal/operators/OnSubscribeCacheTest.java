@@ -17,6 +17,9 @@ package rx.internal.operators;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
@@ -27,10 +30,10 @@ import org.junit.Test;
 
 import rx.Observable;
 import rx.Subscriber;
+import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.functions.Func2;
-import rx.internal.operators.OnSubscribeCache;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 import rx.subjects.AsyncSubject;
@@ -147,5 +150,15 @@ public class OnSubscribeCacheTest {
     @Test
     public void testWithReplaySubjectAndRepeat() {
         testWithCustomSubjectAndRepeat(ReplaySubject.<Integer> create(), 1, 2, 3, 1, 2, 3, 1, 2, 3, 1, 2, 3);
+    }
+
+    @Test
+    public void testUnsubscribeSource() {
+        Action0 unsubscribe = mock(Action0.class);
+        Observable<Integer> o = Observable.just(1).doOnUnsubscribe(unsubscribe).cache();
+        o.subscribe();
+        o.subscribe();
+        o.subscribe();
+        verify(unsubscribe, times(1)).call();
     }
 }
