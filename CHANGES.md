@@ -1,5 +1,13 @@
 # RxJava Releases #
 
+### Version 1.0.4 – December 29th 2014 ([Maven Central](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.0.4%7C)) ###
+
+* [Pull 2156] (https://github.com/ReactiveX/RxJava/pull/2156) Fix the issue that map may swallow fatal exceptions
+* [Pull 1967] (https://github.com/ReactiveX/RxJava/pull/1967) Fix the issue that GroupBy may not call 'unsubscribe'
+* [Pull 2052] (https://github.com/ReactiveX/RxJava/pull/2052) OperatorDoOnRequest.ParentSubscriber should be static class
+* [Pull 2237] (https://github.com/ReactiveX/RxJava/pull/2237) Make Publish Operator Release RingBuffer
+* [Pull 2053] (https://github.com/ReactiveX/RxJava/pull/2053) Fixed wrong bounded ReplaySubject use in test
+
 ### Version 1.0.3 – December 15th 2014 ([Maven Central](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.0.3%7C)) ###
 
 * [Pull 1928] (https://github.com/ReactiveX/RxJava/pull/1928) Experimental: Add onBackpressureBuffer with capacity
