@@ -19,7 +19,6 @@ import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
-import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
@@ -28,8 +27,6 @@ import org.mockito.*;
 
 import rx.*;
 import rx.Observable.OnSubscribe;
-import rx.Observable;
-import rx.Observer;
 import rx.functions.*;
 import rx.internal.util.RxRingBuffer;
 import rx.observables.GroupedObservable;
@@ -677,7 +674,7 @@ public class OperatorRetryTest {
         assertEquals("Start 6 threads, retry 5 then fail on 6", 6, so.efforts.get());
     }
     
-    @Test(timeout = 20000)
+    @Test(timeout = 10000)
     public void testRetryWithBackpressure() {
         for (int i = 0; i < 200; i++) {
             @SuppressWarnings("unchecked")
@@ -685,7 +682,7 @@ public class OperatorRetryTest {
             int NUM_RETRIES = RxRingBuffer.SIZE * 2;
             Observable<String> origin = Observable.create(new FuncWithErrors(NUM_RETRIES));
             TestSubscriber<String> ts = new TestSubscriber<String>(observer);
-            origin.retry().observeOn(Schedulers.io()).unsafeSubscribe(ts);
+            origin.retry().observeOn(Schedulers.computation()).unsafeSubscribe(ts);
             ts.awaitTerminalEvent();
             
             InOrder inOrder = inOrder(observer);
