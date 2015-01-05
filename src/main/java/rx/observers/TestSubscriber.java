@@ -227,9 +227,9 @@ public class TestSubscriber<T> extends Subscriber<T> {
      * @throws RuntimeException
      *          if the Subscriber is interrupted before the Observable is able to complete
      */
-    public void awaitTerminalEvent(long timeout, TimeUnit unit) {
+    public boolean awaitTerminalEvent(long timeout, TimeUnit unit) {
         try {
-            latch.await(timeout, unit);
+            return latch.await(timeout, unit);
         } catch (InterruptedException e) {
             throw new RuntimeException("Interrupted", e);
         }
