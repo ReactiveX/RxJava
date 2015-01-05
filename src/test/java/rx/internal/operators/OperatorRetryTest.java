@@ -418,7 +418,7 @@ public class OperatorRetryTest {
                         }
                         return;
                     }
-                    if (n > 0 && req.getAndAdd(1) == 0) {
+                    if (n > 0 && req.getAndAdd(n) == 0) {
                         int i = count.getAndIncrement();
                         if (i < numFailures) {
                             o.onNext("beginningEveryTime");
@@ -722,7 +722,8 @@ public class OperatorRetryTest {
         int ncpu = Runtime.getRuntime().availableProcessors();
         ExecutorService exec = Executors.newFixedThreadPool(Math.max(ncpu / 2, 1));
         final AtomicInteger timeouts = new AtomicInteger();
-        int m = 300;
+        final AtomicInteger data = new AtomicInteger();
+        int m = 2000;
         final CountDownLatch cdl = new CountDownLatch(m);
         for (int i = 0; i < m; i++) {
             final int j = i;
@@ -730,12 +731,22 @@ public class OperatorRetryTest {
                 @Override
                 public void run() {
                     try {
+                        final AtomicInteger nexts = new AtomicInteger();
                         Observable<String> origin = Observable.create(new FuncWithErrors(NUM_RETRIES));
                         TestSubscriber<String> ts = new TestSubscriber<String>();
                         origin.retry().observeOn(Schedulers.computation()).unsafeSubscribe(ts);
-                        if (!ts.awaitTerminalEvent(10, TimeUnit.SECONDS)) {
+                        if (!ts.awaitTerminalEvent(2, TimeUnit.SECONDS)) {
                             timeouts.incrementAndGet();
-                            System.out.println(j + " | " + cdl.getCount() + " !!!");
+                            System.out.println(j + " | " + cdl.getCount() + " !!! " + nexts.get());
+                        } 
+                        if (ts.getOnNextEvents().size() != NUM_RETRIES + 2) {
+                            data.incrementAndGet();
+                        }
+                        if (ts.getOnErrorEvents().size() != 0) {
+                            data.incrementAndGet();
+                        }
+                        if (ts.getOnCompletedEvents().size() != 1) {
+                            data.incrementAndGet();
                         }
                     } catch (Throwable t) {
                         timeouts.incrementAndGet();
@@ -747,6 +758,7 @@ public class OperatorRetryTest {
         exec.shutdown();
         cdl.await();
         assertEquals(0, timeouts.get());
+        assertEquals(0, data.get());
 
     }
     @Test(timeout = 3000)
