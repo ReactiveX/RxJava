@@ -176,4 +176,8 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
     public boolean hasObservers() {
         return state.observers().length > 0;
     }
+
+    public boolean isInitialised() {
+        return state.get() != null;
+    }
 }
