@@ -19,6 +19,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
@@ -27,6 +28,8 @@ import org.mockito.*;
 
 import rx.*;
 import rx.Observable.OnSubscribe;
+import rx.Observable;
+import rx.Observer;
 import rx.functions.*;
 import rx.internal.util.RxRingBuffer;
 import rx.observables.GroupedObservable;
@@ -682,7 +685,7 @@ public class OperatorRetryTest {
             int NUM_RETRIES = RxRingBuffer.SIZE * 2;
             Observable<String> origin = Observable.create(new FuncWithErrors(NUM_RETRIES));
             TestSubscriber<String> ts = new TestSubscriber<String>(observer);
-            origin.retry().observeOn(Schedulers.computation()).unsafeSubscribe(ts);
+            origin.retry().observeOn(Schedulers.io()).unsafeSubscribe(ts);
             ts.awaitTerminalEvent();
             
             InOrder inOrder = inOrder(observer);
