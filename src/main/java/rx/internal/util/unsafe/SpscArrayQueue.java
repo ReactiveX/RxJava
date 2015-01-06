@@ -2,22 +2,21 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
- * Original License: https://github.com/JCTools/JCTools/blob/master/LICENSE
- * Original location: https://github.com/JCTools/JCTools/blob/master/jctools-core/src/main/java/org/jctools/queues/SpscArrayQueue.java
  */
 package rx.internal.util.unsafe;
 
+import static rx.internal.util.unsafe.UnsafeAccess.UNSAFE;
+
 abstract class SpscArrayQueueColdField<E> extends ConcurrentCircularArrayQueue<E> {
-    private static final Integer MAX_LOOK_AHEAD_STEP = Integer.getInteger("jctoolts.spsc.max.lookahead.step", 4096);
+    private static final Integer MAX_LOOK_AHEAD_STEP = Integer.getInteger("jctools.spsc.max.lookahead.step", 4096);
     protected final int lookAheadStep;
     public SpscArrayQueueColdField(int capacity) {
         super(capacity);
@@ -38,7 +37,7 @@ abstract class SpscArrayQueueProducerFields<E> extends SpscArrayQueueL1Pad<E> {
     static {
         try {
             P_INDEX_OFFSET =
-                UnsafeAccess.UNSAFE.objectFieldOffset(SpscArrayQueueProducerFields.class.getDeclaredField("producerIndex"));
+                UNSAFE.objectFieldOffset(SpscArrayQueueProducerFields.class.getDeclaredField("producerIndex"));
         } catch (NoSuchFieldException e) {
             throw new RuntimeException(e);
         }
@@ -50,7 +49,7 @@ abstract class SpscArrayQueueProducerFields<E> extends SpscArrayQueueL1Pad<E> {
         super(capacity);
     }
     protected final long lvProducerIndex() {
-        return UnsafeAccess.UNSAFE.getLongVolatile(this, P_INDEX_OFFSET);
+        return UNSAFE.getLongVolatile(this, P_INDEX_OFFSET);
     }
 }
 
@@ -69,7 +68,7 @@ abstract class SpscArrayQueueConsumerField<E> extends SpscArrayQueueL2Pad<E> {
     static {
         try {
             C_INDEX_OFFSET =
-                UnsafeAccess.UNSAFE.objectFieldOffset(SpscArrayQueueConsumerField.class.getDeclaredField("consumerIndex"));
+                UNSAFE.objectFieldOffset(SpscArrayQueueConsumerField.class.getDeclaredField("consumerIndex"));
         } catch (NoSuchFieldException e) {
             throw new RuntimeException(e);
         }
@@ -78,7 +77,7 @@ abstract class SpscArrayQueueConsumerField<E> extends SpscArrayQueueL2Pad<E> {
         super(capacity);
     }
     protected final long lvConsumerIndex() {
-        return UnsafeAccess.UNSAFE.getLongVolatile(this, C_INDEX_OFFSET);
+        return UNSAFE.getLongVolatile(this, C_INDEX_OFFSET);
     }
 }
 
@@ -92,14 +91,16 @@ abstract class SpscArrayQueueL3Pad<E> extends SpscArrayQueueConsumerField<E> {
 }
 
 /**
- * A Single-Producer-Single-Consumer queue backed by a pre-allocated buffer.</br> This implementation is a mashup of the
- * <a href="http://sourceforge.net/projects/mc-fastflow/">Fast Flow</a> algorithm with an optimization of the offer
- * method taken from the <a href="http://staff.ustc.edu.cn/~bhua/publications/IJPP_draft.pdf">BQueue</a> algorithm (a
- * variation on Fast Flow).<br>
- * For convenience the relevant papers are available in the resources folder:</br>
- * <i>2010 - Pisa - SPSC Queues on Shared Cache Multi-Core Systems.pdf</br>
- * 2012 - Junchang- BQueue- Efficient and Practical Queuing.pdf </br></i>
- * This implementation is wait free.
+ * A Single-Producer-Single-Consumer queue backed by a pre-allocated buffer.
+ * <p>
+ * This implementation is a mashup of the <a href="http://sourceforge.net/projects/mc-fastflow/">Fast Flow</a>
+ * algorithm with an optimization of the offer method taken from the <a
+ * href="http://staff.ustc.edu.cn/~bhua/publications/IJPP_draft.pdf">BQueue</a> algorithm (a variation on Fast
+ * Flow), and adjusted to comply with Queue.offer semantics with regards to capacity.<br>
+ * For convenience the relevant papers are available in the resources folder:<br>
+ * <i>2010 - Pisa - SPSC Queues on Shared Cache Multi-Core Systems.pdf<br>
+ * 2012 - Junchang- BQueue- Efficient and Practical Queuing.pdf <br>
+ * </i> This implementation is wait free.
  * 
  * @author nitsanw
  * 
@@ -123,13 +124,15 @@ public final class SpscArrayQueue<E> extends SpscArrayQueueL3Pad<E> {
         }
         // local load of field to avoid repeated loads after volatile reads
         final E[] lElementBuffer = buffer;
+        final long offset = calcElementOffset(producerIndex);
         if (producerIndex >= producerLookAhead) {
-            if (null != lvElement(lElementBuffer, calcElementOffset(producerIndex + lookAheadStep))) {// LoadLoad
+            if (null == lvElement(lElementBuffer, calcElementOffset(producerIndex + lookAheadStep))) {// LoadLoad
+                producerLookAhead = producerIndex + lookAheadStep;
+            }
+            else if (null != lvElement(lElementBuffer, offset)){
                 return false;
             }
-            producerLookAhead = producerIndex + lookAheadStep;
         }
-        long offset = calcElementOffset(producerIndex);
         producerIndex++; // do increment here so the ordered store give both a barrier 
         soElement(lElementBuffer, offset, e);// StoreStore
         return true;

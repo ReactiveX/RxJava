@@ -21,20 +21,17 @@ import rx.Observer;
 import rx.Subscription;
 import rx.exceptions.MissingBackpressureException;
 import rx.internal.operators.NotificationLite;
-import rx.internal.util.unsafe.SpmcArrayQueue;
-import rx.internal.util.unsafe.SpscArrayQueue;
-import rx.internal.util.unsafe.UnsafeAccess;
+import rx.internal.util.unsafe.*;
 
 /**
  * This assumes Spsc or Spmc usage. This means only a single producer calling the on* methods. This is the Rx contract of an Observer.
  * Concurrent invocations of on* methods will not be thread-safe.
  */
-public class RxRingBuffer implements Subscription {
+public final class RxRingBuffer implements Subscription {
 
     public static RxRingBuffer getSpscInstance() {
         if (UnsafeAccess.isUnsafeAvailable()) {
-            // TODO the SpscArrayQueue isn't ready yet so using SpmcArrayQueue for now
-            return new RxRingBuffer(SPMC_POOL, SIZE);
+            return new RxRingBuffer(SPSC_POOL, SIZE);
         } else {
             return new RxRingBuffer();
         }
@@ -288,12 +285,15 @@ public class RxRingBuffer implements Subscription {
     private static ObjectPool<Queue<Object>> SPMC_POOL = new ObjectPool<Queue<Object>>() {
 
         @Override
-        protected SpmcArrayQueue<Object> createObject() {
+        protected Queue<Object> createObject() {
             return new SpmcArrayQueue<Object>(SIZE);
         }
 
     };
-    
+
+    private final SWSRPhaser writerPhaser = new SWSRPhaser();
+    private final SWSRPhaser readerPhaser = new SWSRPhaser();
+
     private RxRingBuffer(Queue<Object> queue, int size) {
         this.queue = queue;
         this.pool = null;
@@ -306,7 +306,14 @@ public class RxRingBuffer implements Subscription {
         this.size = size;
     }
 
-    public void release() {
+    public synchronized void release() {
+        SWSRPhaser rp = readerPhaser;
+        if (rp.isOddPhase()) {
+            return;
+        }
+        rp.flipPhase(-1);
+        SWSRPhaser wp = writerPhaser;
+        wp.flipPhase(-1);
         if (pool != null) {
             Queue<Object> q = queue;
             q.clear();
@@ -331,41 +338,55 @@ public class RxRingBuffer implements Subscription {
      *             if more onNext are sent than have been requested
      */
     public void onNext(Object o) throws MissingBackpressureException {
-        if (queue == null) {
-            throw new IllegalStateException("This instance has been unsubscribed and the queue is no longer usable.");
-        }
-        if (!queue.offer(on.next(o))) {
-            throw new MissingBackpressureException();
+        Queue<Object> q = queue;
+        SWSRPhaser phaser = writerPhaser;
+        long criticalValueAtEnter = phaser.writerCriticalSectionEnter();
+        try {
+            if (criticalValueAtEnter < 0) {
+                throw new IllegalStateException("This instance has been unsubscribed and the queue is no longer usable.");
+            }
+            if (!q.offer(on.next(o))) {
+                throw new MissingBackpressureException();
+            }
+        } finally {
+            phaser.writerCriticalSectionExit(criticalValueAtEnter);
         }
     }
 
     public void onCompleted() {
-        // we ignore terminal events if we already have one
-        if (terminalState == null) {
-            terminalState = on.completed();
+        SWSRPhaser phaser = writerPhaser;
+        long criticalValueAtEnter = phaser.writerCriticalSectionEnter();
+        try {
+            if (criticalValueAtEnter < 0) {
+                throw new IllegalStateException("This instance has been unsubscribed and the queue is no longer usable.");
+            }
+            // we ignore terminal events if we already have one
+            if (terminalState == null) {
+                terminalState = on.completed();
+            }
+        } finally {
+            phaser.writerCriticalSectionExit(criticalValueAtEnter);
         }
     }
 
     public void onError(Throwable t) {
-        // we ignore terminal events if we already have one
-        if (terminalState == null) {
-            terminalState = on.error(t);
+        SWSRPhaser phaser = writerPhaser;
+        long criticalValueAtEnter = phaser.writerCriticalSectionEnter();
+        try {
+            if (criticalValueAtEnter < 0) {
+                throw new IllegalStateException("This instance has been unsubscribed and the queue is no longer usable.");
+            }
+            // we ignore terminal events if we already have one
+            if (terminalState == null) {
+                terminalState = on.error(t);
+            }
+        } finally {
+            phaser.writerCriticalSectionExit(criticalValueAtEnter);
         }
-    }
-
-    public int available() {
-        return size - count();
     }
 
     public int capacity() {
         return size;
-    }
-
-    public int count() {
-        if (queue == null) {
-            return 0;
-        }
-        return queue.size();
     }
 
     public boolean isEmpty() {
@@ -376,69 +397,83 @@ public class RxRingBuffer implements Subscription {
     }
 
     public Object poll() {
-        if (queue == null) {
-            // we are unsubscribed and have released the undelrying queue
-            return null;
+        Queue<Object> q = queue;
+        SWSRPhaser phaser = readerPhaser;
+        long criticalValueAtEnter = phaser.writerCriticalSectionEnter();
+        try {
+            if (criticalValueAtEnter < 0) {
+                // we are unsubscribed and have released the undelrying queue
+                return null;
+            }
+            Object o;
+            o = q.poll();
+            /*
+             * benjchristensen July 10 2014 => The check for 'queue.isEmpty()' came from a very rare concurrency bug where poll()
+             * is invoked, then an "onNext + onCompleted/onError" arrives before hitting the if check below. In that case,
+             * "o == null" and there is a terminal state, but now "queue.isEmpty()" and we should NOT return the terminalState.
+             * 
+             * The queue.size() check is a double-check that works to handle this, without needing to synchronize poll with on*
+             * or needing to enqueue terminalState.
+             * 
+             * This did make me consider eliminating the 'terminalState' ref and enqueuing it ... but then that requires
+             * a +1 of the size, or -1 of how many onNext can be sent. See comment on 'terminalState' above for why it
+             * is currently the way it is.
+             */
+            if (o == null && terminalState != null && q.isEmpty()) {
+                o = terminalState;
+                // once emitted we clear so a poll loop will finish
+                terminalState = null;
+            }
+            return o;
+        } finally {
+            phaser.writerCriticalSectionExit(criticalValueAtEnter);
         }
-        Object o;
-        o = queue.poll();
-        /*
-         * benjchristensen July 10 2014 => The check for 'queue.isEmpty()' came from a very rare concurrency bug where poll()
-         * is invoked, then an "onNext + onCompleted/onError" arrives before hitting the if check below. In that case,
-         * "o == null" and there is a terminal state, but now "queue.isEmpty()" and we should NOT return the terminalState.
-         * 
-         * The queue.size() check is a double-check that works to handle this, without needing to synchronize poll with on*
-         * or needing to enqueue terminalState.
-         * 
-         * This did make me consider eliminating the 'terminalState' ref and enqueuing it ... but then that requires
-         * a +1 of the size, or -1 of how many onNext can be sent. See comment on 'terminalState' above for why it
-         * is currently the way it is.
-         */
-        if (o == null && terminalState != null && queue.isEmpty()) {
-            o = terminalState;
-            // once emitted we clear so a poll loop will finish
-            terminalState = null;
-        }
-        return o;
     }
 
     public Object peek() {
-        if (queue == null) {
-            // we are unsubscribed and have released the undelrying queue
-            return null;
+        Queue<Object> q = queue;
+        SWSRPhaser phaser = readerPhaser;
+        long criticalValueAtEnter = phaser.writerCriticalSectionEnter();
+        try {
+            if (criticalValueAtEnter < 0) {
+                // we are unsubscribed and have released the undelrying queue
+                return null;
+            }
+            Object o;
+            o = q.peek();
+            if (o == null && terminalState != null && q.isEmpty()) {
+                o = terminalState;
+            }
+            return o;
+        } finally {
+            phaser.writerCriticalSectionExit(criticalValueAtEnter);
         }
-        Object o;
-        o = queue.peek();
-        if (o == null && terminalState != null && queue.isEmpty()) {
-            o = terminalState;
-        }
-        return o;
     }
 
-    public boolean isCompleted(Object o) {
+    public static boolean isCompleted(Object o) {
         return on.isCompleted(o);
     }
 
-    public boolean isError(Object o) {
+    public static boolean isError(Object o) {
         return on.isError(o);
     }
 
-    public Object getValue(Object o) {
+    public static Object getValue(Object o) {
         return on.getValue(o);
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public boolean accept(Object o, Observer child) {
+    public static boolean accept(Object o, Observer child) {
         return on.accept(child, o);
     }
 
-    public Throwable asError(Object o) {
+    public static Throwable asError(Object o) {
         return on.getError(o);
     }
 
     @Override
     public boolean isUnsubscribed() {
-        return queue == null;
+        return writerPhaser.isOddPhase();
     }
 
 }

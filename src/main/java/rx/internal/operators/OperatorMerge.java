@@ -282,7 +282,7 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
 
         private void initScalarValueQueueIfNeeded() {
             if (scalarValueQueue == null) {
-                scalarValueQueue = RxRingBuffer.getSpmcInstance();
+                scalarValueQueue = RxRingBuffer.getSpscInstance();
                 add(scalarValueQueue);
             }
         }
@@ -531,7 +531,7 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
         @SuppressWarnings("rawtypes")
         static final AtomicIntegerFieldUpdater<InnerSubscriber> ONCE_TERMINATED = AtomicIntegerFieldUpdater.newUpdater(InnerSubscriber.class, "terminated");
 
-        private final RxRingBuffer q = RxRingBuffer.getSpmcInstance();
+        private final RxRingBuffer q = RxRingBuffer.getSpscInstance();
 
         public InnerSubscriber(MergeSubscriber<T> parent, MergeProducer<T> producer) {
             this.parentSubscriber = parent;
@@ -627,7 +627,7 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
                     } else {
                         // this needs to check q.count() as draining above may not have drained the full queue
                         // perf tests show this to be okay, though different queue implementations could perform poorly with this
-                        if (producer.requested > 0 && q.count() == 0) {
+                        if (producer.requested > 0 && q.isEmpty()) {
                             if (complete) {
                                 parentSubscriber.completeInner(this);
                             } else {
