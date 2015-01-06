@@ -758,7 +758,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Mathematical-and-Aggregate-Operators#concat">RxJava wiki: concat</a>
      */
     public final static <T> Observable<T> concat(Observable<? extends Observable<? extends T>> observables) {
-        return observables.lift(new OperatorConcat<T>());
+        return observables.lift(OperatorConcat.<T>instance());
     }
 
     /**
@@ -1619,7 +1619,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Combining-Observables#merge">RxJava wiki: merge</a>
      */
     public final static <T> Observable<T> merge(Observable<? extends Observable<? extends T>> source) {
-        return source.lift(new OperatorMerge<T>());
+        return source.lift(OperatorMerge.<T>instance(false));
     }
 
     /**
@@ -1944,7 +1944,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Combining-Observables#mergedelayerror">RxJava wiki: mergeDelayError</a>
      */
     public final static <T> Observable<T> mergeDelayError(Observable<? extends Observable<? extends T>> source) {
-        return source.lift(new OperatorMergeDelayError<T>());
+        return source.lift(OperatorMerge.<T>instance(true));
     }
 
     /**
@@ -3002,7 +3002,7 @@ public class Observable<T> {
      * @return an Observable that hides the identity of this Observable
      */
     public final Observable<T> asObservable() {
-        return lift(new OperatorAsObservable<T>());
+        return lift(OperatorAsObservable.<T>instance());
     }
 
     /**
@@ -3923,9 +3923,9 @@ public class Observable<T> {
      *             if the source Observable is not of type {@code Observable<Notification<T>>}
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Observable-Utility-Operators#dematerialize">RxJava wiki: dematerialize</a>
      */
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({"unchecked"})
     public final <T2> Observable<T2> dematerialize() {
-        return lift(new OperatorDematerialize());
+        return lift(OperatorDematerialize.instance());
     }
 
     /**
@@ -4968,7 +4968,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Observable-Utility-Operators#materialize">RxJava wiki: materialize</a>
      */
     public final Observable<Notification<T>> materialize() {
-        return lift(new OperatorMaterialize<T>());
+        return lift(OperatorMaterialize.<T>instance());
     }
 
     /**

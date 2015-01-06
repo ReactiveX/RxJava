@@ -30,7 +30,18 @@ import rx.Subscriber;
  * @param <T> the wrapped value type
  */
 public final class OperatorDematerialize<T> implements Operator<T, Notification<T>> {
-
+    /** Lazy initialization via inner-class holder. */
+    private static final class Holder {
+        /** A singleton instance. */
+        static final OperatorDematerialize<Object> INSTANCE = new OperatorDematerialize<Object>();
+    }
+    /**
+     * @return an singleton instance of this stateless operator.
+     */
+    @SuppressWarnings({ "rawtypes" })
+    public static OperatorDematerialize instance() {
+        return Holder.INSTANCE; // using raw types because the type inference is not good enough
+    }
     @Override
     public Subscriber<? super Notification<T>> call(final Subscriber<? super T> child) {
         return new Subscriber<Notification<T>>(child) {

@@ -29,7 +29,18 @@ import rx.plugins.RxJavaPlugins;
  * See <a href="http://msdn.microsoft.com/en-us/library/hh229453.aspx">here</a> for the Microsoft Rx equivalent.
  */
 public final class OperatorMaterialize<T> implements Operator<Notification<T>, T> {
-
+    /** Lazy initialization via inner-class holder. */
+    private static final class Holder {
+        /** A singleton instance. */
+        static final OperatorMaterialize<Object> INSTANCE = new OperatorMaterialize<Object>();
+    }
+    /**
+     * @return an singleton instance of this stateless operator.
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> OperatorMaterialize<T> instance() {
+        return (OperatorMaterialize<T>)Holder.INSTANCE;
+    }
     @Override
     public Subscriber<? super T> call(final Subscriber<? super Notification<T>> child) {
         return new Subscriber<T>(child) {

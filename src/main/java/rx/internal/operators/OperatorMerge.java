@@ -38,12 +38,46 @@ import rx.internal.util.SubscriptionIndexedRingBuffer;
  * <img width="640" height="380" src="https://raw.githubusercontent.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.png" alt="">
  * <p>
  * You can combine the items emitted by multiple {@code Observable}s so that they act like a single {@code Observable}, by using the merge operation.
- * 
+ * <p>
+ * The {@code instance(true)} call behaves like {@link OperatorMerge} except that if any of the merged Observables notify of
+ * an error via {@code onError}, {@code mergeDelayError} will refrain from propagating that error
+ * notification until all of the merged Observables have finished emitting items.
+ * <p>
+ * <img width="640" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/mergeDelayError.png" alt="">
+ * <p>
+ * Even if multiple merged Observables send {@code onError} notifications, {@code mergeDelayError} will
+ * only invoke the {@code onError} method of its Observers once.
+ * <p>
+ * This operation allows an Observer to receive all successfully emitted items from all of the
+ * source Observables without being interrupted by an error notification from one of them.
+ * <p>
+ * <em>Note:</em> If this is used on an Observable that never completes, it will never call {@code onError} and will effectively swallow errors.
+
  * @param <T>
  *            the type of the items emitted by both the source and merged {@code Observable}s
  */
 public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
-
+    /** Lazy initialization via inner-class holder. */
+    private static final class HolderNoDelay {
+        /** A singleton instance. */
+        static final OperatorMerge<Object> INSTANCE = new OperatorMerge<Object>(false);
+    }
+    /** Lazy initialization via inner-class holder. */
+    private static final class HolderDelayErrors {
+        /** A singleton instance. */
+        static final OperatorMerge<Object> INSTANCE = new OperatorMerge<Object>(true);
+    }
+    /**
+     * @param delayErrors should the merge delay errors?
+     * @return an singleton instance of this stateless operator.
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> OperatorMerge<T> instance(boolean delayErrors) {
+        if (delayErrors) {
+            return (OperatorMerge<T>)HolderDelayErrors.INSTANCE;
+        }
+        return (OperatorMerge<T>)HolderNoDelay.INSTANCE;
+    }
     /*
      * benjchristensen => This class is complex and I'm not a fan of it despite writing it. I want to give some background
      * as to why for anyone who wants to try and help improve it.
@@ -74,11 +108,11 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
      * to track object allocation.
      */
 
-    public OperatorMerge() {
+    private OperatorMerge() {
         this.delayErrors = false;
     }
 
-    public OperatorMerge(boolean delayErrors) {
+    private OperatorMerge(boolean delayErrors) {
         this.delayErrors = delayErrors;
     }
 
