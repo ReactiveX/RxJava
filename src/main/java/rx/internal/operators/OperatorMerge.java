@@ -69,7 +69,7 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
     }
     /**
      * @param delayErrors should the merge delay errors?
-     * @return an singleton instance of this stateless operator.
+     * @return a singleton instance of this stateless operator.
      */
     @SuppressWarnings("unchecked")
     public static <T> OperatorMerge<T> instance(boolean delayErrors) {

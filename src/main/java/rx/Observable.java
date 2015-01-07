@@ -2419,7 +2419,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Combining-Observables#switchonnext">RxJava wiki: switchOnNext</a>
      */
     public final static <T> Observable<T> switchOnNext(Observable<? extends Observable<? extends T>> sequenceOfSequences) {
-        return sequenceOfSequences.lift(new OperatorSwitch<T>());
+        return sequenceOfSequences.lift(OperatorSwitch.<T>instance());
     }
 
     /**
@@ -5113,7 +5113,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Backpressure">RxJava wiki: Backpressure</a>
      */
     public final Observable<T> onBackpressureDrop() {
-        return lift(new OperatorOnBackpressureDrop<T>());
+        return lift(OperatorOnBackpressureDrop.<T>instance());
     }
     
     /**
@@ -6463,7 +6463,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Observable-Utility-Operators#serialize">RxJava wiki: serialize</a>
      */
     public final Observable<T> serialize() {
-        return lift(new OperatorSerialize<T>());
+        return lift(OperatorSerialize.<T>instance());
     }
 
     /**
@@ -8370,7 +8370,7 @@ public class Observable<T> {
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Mathematical-and-Aggregate-Operators#tolist">RxJava wiki: toList</a>
      */
     public final Observable<List<T>> toList() {
-        return lift(new OperatorToObservableList<T>());
+        return lift(OperatorToObservableList.<T>instance());
     }
 
     /**

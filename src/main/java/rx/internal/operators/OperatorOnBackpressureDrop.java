@@ -22,7 +22,19 @@ import rx.Producer;
 import rx.Subscriber;
 
 public class OperatorOnBackpressureDrop<T> implements Operator<T, T> {
-
+    /** Lazy initialization via inner-class holder. */
+    private static final class Holder {
+        /** A singleton instance. */
+        static final OperatorOnBackpressureDrop<Object> INSTANCE = new OperatorOnBackpressureDrop<Object>();
+    }
+    /**
+     * @return a singleton instance of this stateless operator.
+     */
+    @SuppressWarnings({ "unchecked" })
+    public static <T> OperatorOnBackpressureDrop<T> instance() {
+        return (OperatorOnBackpressureDrop<T>)Holder.INSTANCE;
+    }
+    private OperatorOnBackpressureDrop() { }
     @Override
     public Subscriber<? super T> call(final Subscriber<? super T> child) {
         final AtomicLong requested = new AtomicLong();

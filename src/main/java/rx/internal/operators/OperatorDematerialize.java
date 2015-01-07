@@ -36,12 +36,13 @@ public final class OperatorDematerialize<T> implements Operator<T, Notification<
         static final OperatorDematerialize<Object> INSTANCE = new OperatorDematerialize<Object>();
     }
     /**
-     * @return an singleton instance of this stateless operator.
+     * @return a singleton instance of this stateless operator.
      */
     @SuppressWarnings({ "rawtypes" })
     public static OperatorDematerialize instance() {
         return Holder.INSTANCE; // using raw types because the type inference is not good enough
     }
+    private OperatorDematerialize() { }
     @Override
     public Subscriber<? super Notification<T>> call(final Subscriber<? super T> child) {
         return new Subscriber<Notification<T>>(child) {

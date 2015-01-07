@@ -29,14 +29,13 @@ import org.mockito.Mockito;
 
 import rx.Observable;
 import rx.Observer;
-import rx.internal.operators.OperatorToObservableList;
 
 public class OperatorToObservableListTest {
 
     @Test
     public void testList() {
         Observable<String> w = Observable.from(Arrays.asList("one", "two", "three"));
-        Observable<List<String>> observable = w.lift(new OperatorToObservableList<String>());
+        Observable<List<String>> observable = w.toList();
 
         @SuppressWarnings("unchecked")
         Observer<List<String>> observer = mock(Observer.class);
@@ -62,7 +61,7 @@ public class OperatorToObservableListTest {
     @Test
     public void testListMultipleObservers() {
         Observable<String> w = Observable.from(Arrays.asList("one", "two", "three"));
-        Observable<List<String>> observable = w.lift(new OperatorToObservableList<String>());
+        Observable<List<String>> observable = w.toList();
 
         @SuppressWarnings("unchecked")
         Observer<List<String>> o1 = mock(Observer.class);
@@ -86,7 +85,7 @@ public class OperatorToObservableListTest {
     @Test
     public void testListWithNullValue() {
         Observable<String> w = Observable.from(Arrays.asList("one", null, "three"));
-        Observable<List<String>> observable = w.lift(new OperatorToObservableList<String>());
+        Observable<List<String>> observable = w.toList();
 
         @SuppressWarnings("unchecked")
         Observer<List<String>> observer = mock(Observer.class);

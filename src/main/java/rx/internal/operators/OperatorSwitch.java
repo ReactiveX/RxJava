@@ -17,6 +17,7 @@ package rx.internal.operators;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import rx.Observable;
 import rx.Observable.Operator;
 import rx.Producer;
@@ -33,7 +34,19 @@ import rx.subscriptions.SerialSubscription;
  * @param <T> the value type
  */
 public final class OperatorSwitch<T> implements Operator<T, Observable<? extends T>> {
-
+    /** Lazy initialization via inner-class holder. */
+    private static final class Holder {
+        /** A singleton instance. */
+        static final OperatorSwitch<Object> INSTANCE = new OperatorSwitch<Object>();
+    }
+    /**
+     * @return a singleton instance of this stateless operator.
+     */
+    @SuppressWarnings({ "unchecked" })
+    public static <T> OperatorSwitch<T> instance() {
+        return (OperatorSwitch<T>)Holder.INSTANCE;
+    }
+    private OperatorSwitch() { }
     @Override
     public Subscriber<? super Observable<? extends T>> call(final Subscriber<? super T> child) {
         return new SwitchSubscriber<T>(child);

@@ -35,12 +35,13 @@ public final class OperatorMaterialize<T> implements Operator<Notification<T>, T
         static final OperatorMaterialize<Object> INSTANCE = new OperatorMaterialize<Object>();
     }
     /**
-     * @return an singleton instance of this stateless operator.
+     * @return a singleton instance of this stateless operator.
      */
     @SuppressWarnings("unchecked")
     public static <T> OperatorMaterialize<T> instance() {
         return (OperatorMaterialize<T>)Holder.INSTANCE;
     }
+    private OperatorMaterialize() { }
     @Override
     public Subscriber<? super T> call(final Subscriber<? super Notification<T>> child) {
         return new Subscriber<T>(child) {
