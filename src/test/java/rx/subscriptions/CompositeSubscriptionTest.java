@@ -340,8 +340,8 @@ public class CompositeSubscriptionTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testAddingNullSubscriptionIllegal() {
-      CompositeSubscription csub = new CompositeSubscription();
-      csub.add(null);
+        CompositeSubscription csub = new CompositeSubscription();
+        csub.add(null);
     }
 
 }
