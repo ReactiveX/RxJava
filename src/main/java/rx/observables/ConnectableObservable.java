@@ -47,6 +47,7 @@ public abstract class ConnectableObservable<T> extends Observable<T> {
      * To disconnect from a synchronous source, use the {@link #connect(rx.functions.Action1)} method.
      *
      * @return the subscription representing the connection
+     * @see <a href="http://reactivex.io/documentation/operators/connect.html">ReactiveX documentation: Connect</a>
      */
     public final Subscription connect() {
         final Subscription[] out = new Subscription[1];
@@ -65,6 +66,7 @@ public abstract class ConnectableObservable<T> extends Observable<T> {
      * @param connection
      *          the action that receives the connection subscription before the subscription to source happens
      *          allowing the caller to synchronously disconnect a synchronous source
+     * @see <a href="http://reactivex.io/documentation/operators/connect.html">ReactiveX documentation: Connect</a>
      */
     public abstract void connect(Action1<? super Subscription> connection);
 
@@ -73,6 +75,7 @@ public abstract class ConnectableObservable<T> extends Observable<T> {
      * is at least one subscription to this {@code ConnectableObservable}.
      * 
      * @return a {@link Observable}
+     * @see <a href="http://reactivex.io/documentation/operators/refcount.html">ReactiveX documentation: RefCount</a>
      */
     public Observable<T> refCount() {
         return create(new OnSubscribeRefCount<T>(this));

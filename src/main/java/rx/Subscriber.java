@@ -26,7 +26,7 @@ import rx.internal.util.SubscriptionList;
  * {@link Observable} will call a Subscriber's {@link #onCompleted} method exactly once or the Subscriber's
  * {@link #onError} method exactly once.
  * 
- * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Observable">RxJava Wiki: Observable</a>
+ * @see <a href="http://reactivex.io/documentation/observable.html">ReactiveX documentation: Observable</a>
  * @param <T>
  *          the type of items the Subscriber expects to observe
  */
