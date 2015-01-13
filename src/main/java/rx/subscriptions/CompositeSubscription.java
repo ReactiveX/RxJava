@@ -56,7 +56,7 @@ public final class CompositeSubscription implements Subscription {
      */
     public void add(final Subscription s) {
         if (s == null) {
-            throw new IllegalArgumentException("Added Subscription cannot be null.");
+            throw new NullPointerException("Added Subscription cannot be null.");
         }
         Subscription unsubscribe = null;
         synchronized (this) {

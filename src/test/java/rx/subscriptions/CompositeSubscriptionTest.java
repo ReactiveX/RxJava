@@ -338,7 +338,7 @@ public class CompositeSubscriptionTest {
         csub.remove(csub1); // try removing agian
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = NullPointerException.class)
     public void testAddingNullSubscriptionIllegal() {
         CompositeSubscription csub = new CompositeSubscription();
         csub.add(null);
