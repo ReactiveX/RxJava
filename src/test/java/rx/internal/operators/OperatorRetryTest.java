@@ -730,15 +730,12 @@ public class OperatorRetryTest {
             exec.execute(new Runnable() {
                 @Override
                 public void run() {
+                    final AtomicInteger nexts = new AtomicInteger();
                     try {
-                        final AtomicInteger nexts = new AtomicInteger();
                         Observable<String> origin = Observable.create(new FuncWithErrors(NUM_RETRIES));
                         TestSubscriber<String> ts = new TestSubscriber<String>();
                         origin.retry().observeOn(Schedulers.computation()).unsafeSubscribe(ts);
-                        if (!ts.awaitTerminalEvent(2, TimeUnit.SECONDS)) {
-                            timeouts.incrementAndGet();
-                            System.out.println(j + " | " + cdl.getCount() + " !!! " + nexts.get());
-                        } 
+                        ts.awaitTerminalEvent(2, TimeUnit.SECONDS);
                         if (ts.getOnNextEvents().size() != NUM_RETRIES + 2) {
                             data.incrementAndGet();
                         }
@@ -750,6 +747,7 @@ public class OperatorRetryTest {
                         }
                     } catch (Throwable t) {
                         timeouts.incrementAndGet();
+                        System.out.println(j + " | " + cdl.getCount() + " !!! " + nexts.get());
                     }
                     cdl.countDown();
                 }
