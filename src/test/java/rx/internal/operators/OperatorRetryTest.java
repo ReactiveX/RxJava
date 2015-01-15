@@ -674,7 +674,7 @@ public class OperatorRetryTest {
         assertEquals("Start 6 threads, retry 5 then fail on 6", 6, so.efforts.get());
     }
     
-    @Test(timeout = 10000)
+    @Test(timeout = 30000)
     public void testRetryWithBackpressure() {
         for (int i = 0; i < 200; i++) {
             @SuppressWarnings("unchecked")
