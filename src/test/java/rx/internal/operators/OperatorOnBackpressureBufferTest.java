@@ -47,7 +47,7 @@ public class OperatorOnBackpressureBufferTest {
         ts.assertNoErrors();
     }
 
-    @Test(timeout = 500)
+    @Test(timeout = 5000)
     public void testFixBackpressureWithBuffer() throws InterruptedException {
         final CountDownLatch l1 = new CountDownLatch(100);
         final CountDownLatch l2 = new CountDownLatch(150);

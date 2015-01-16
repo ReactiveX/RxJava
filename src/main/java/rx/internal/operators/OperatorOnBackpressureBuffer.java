@@ -15,8 +15,8 @@
  */
 package rx.internal.operators;
 
+import java.util.LinkedList;
 import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -53,18 +53,19 @@ public class OperatorOnBackpressureBuffer<T> implements Operator<T, T> {
     @Override
     public Subscriber<? super T> call(final Subscriber<? super T> child) {
         // TODO get a different queue implementation
-        final ConcurrentLinkedQueue<Object> queue = new ConcurrentLinkedQueue<Object>();
-        final AtomicLong capacity = (this.capacity == null) ? null : new AtomicLong(this.capacity);
+        final Object lock = new Object();
+        // `queue`, `wip` and `requested` are guarded by `lock`
+        final Queue<Object> queue = new LinkedList<Object>();
         final AtomicLong wip = new AtomicLong();
         final AtomicLong requested = new AtomicLong();
+
+        final AtomicLong capacity = (this.capacity == null) ? null : new AtomicLong(this.capacity);
 
         child.setProducer(new Producer() {
 
             @Override
             public void request(long n) {
-                if (requested.getAndAdd(n) == 0) {
-                    pollQueue(wip, requested, capacity, queue, child);
-                }
+                pollQueue(null, n, lock, wip, requested, capacity, queue, child);
             }
 
         });
@@ -82,16 +83,14 @@ public class OperatorOnBackpressureBuffer<T> implements Operator<T, T> {
             @Override
             public void onCompleted() {
                 if (!saturated.get()) {
-                    queue.offer(on.completed());
-                    pollQueue(wip, requested, capacity, queue, child);
+                    pollQueue(on.completed(), 0, lock, wip, requested, capacity, queue, child);
                 }
             }
 
             @Override
             public void onError(Throwable e) {
                 if (!saturated.get()) {
-                    queue.offer(on.error(e));
-                    pollQueue(wip, requested, capacity, queue, child);
+                    pollQueue(on.error(e), 0, lock, wip, requested, capacity, queue, child);
                 }
             }
 
@@ -100,8 +99,7 @@ public class OperatorOnBackpressureBuffer<T> implements Operator<T, T> {
                 if (!assertCapacity()) {
                     return;
                 }
-                queue.offer(on.next(t));
-                pollQueue(wip, requested, capacity, queue, child);
+                pollQueue(on.next(t), 0, lock, wip, requested, capacity, queue, child);
             }
 
             private boolean assertCapacity() {
@@ -136,37 +134,38 @@ public class OperatorOnBackpressureBuffer<T> implements Operator<T, T> {
         return parent;
     }
 
-    private void pollQueue(AtomicLong wip, AtomicLong requested, AtomicLong capacity, Queue<Object> queue, Subscriber<? super T> child) {
+    private void pollQueue(Object newElem, long newRequest, Object lock, AtomicLong wip, AtomicLong requested, AtomicLong capacity, Queue<Object> queue, Subscriber<? super T> child) {
         // TODO can we do this without putting everything in the queue first so we can fast-path the case when we don't need to queue?
-        if (requested.get() > 0) {
-            // only one draining at a time
-            try {
-                /*
-                 * This needs to protect against concurrent execution because `request` and `on*` events can come concurrently.
-                 */
-                if (wip.getAndIncrement() == 0) {
-                    while (true) {
-                        if (requested.getAndDecrement() != 0) {
-                            Object o = queue.poll();
-                            if (o == null) {
-                                // nothing in queue
-                                requested.incrementAndGet();
-                                return;
-                            }
-                            if (capacity != null) { // it's bounded
-                                capacity.incrementAndGet();
-                            }
-                            on.accept(child, o);
-                        } else {
-                            // we hit the end ... so increment back to 0 again
-                            requested.incrementAndGet();
+        boolean win;
+        synchronized (lock) {
+            requested.addAndGet(newRequest);
+            if (newElem != null) {
+                queue.offer(newElem);
+            }
+            win = wip.getAndIncrement() == 0;
+        }
+
+        if (win) {
+            while (true) {
+                Object o;
+                synchronized (lock) {
+                    if (requested.get() > 0) {
+                        o = queue.poll();
+                        if (o == null) {
+                            // nothing in queue
+                            wip.decrementAndGet();
                             return;
                         }
+                        requested.decrementAndGet();
+                    } else {
+                        wip.decrementAndGet();
+                        return;
                     }
                 }
-
-            } finally {
-                wip.decrementAndGet();
+                if (capacity != null) { // it's bounded
+                    capacity.incrementAndGet();
+                }
+                on.accept(child, o);
             }
         }
     }
