@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,13 +20,10 @@ import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.*;
 
 import org.junit.Test;
 import org.mockito.InOrder;
@@ -44,6 +41,7 @@ import rx.functions.Func1;
 import rx.functions.Func2;
 import rx.internal.util.RxRingBuffer;
 import rx.observables.GroupedObservable;
+import rx.observers.Observers;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
@@ -68,10 +66,10 @@ public class OperatorRetryTest {
                     t1.onNext("hello");
                     t1.onCompleted();
                 }
-                else 
+                else
                     t1.onError(new RuntimeException());
             }
-            
+
         });
         TestSubscriber<String> ts = new TestSubscriber<String>(consumer);
         producer.retryWhen(new Func1<Observable<? extends Throwable>, Observable<?>>() {
@@ -94,7 +92,7 @@ public class OperatorRetryTest {
                         @Override
                         public Observable<Long> call(Tuple t) {
                             System.out.println("Retry # "+t.count);
-                            return t.count > 20 ? 
+                            return t.count > 20 ?
                                 Observable.<Long>error(t.n) :
                                 Observable.timer(t.count *1L, TimeUnit.MILLISECONDS);
                     }});
@@ -692,72 +690,29 @@ public class OperatorRetryTest {
 
         assertEquals("Start 6 threads, retry 5 then fail on 6", 6, so.efforts.get());
     }
-    
+
     @Test(timeout = 10000)
     public void testRetryWithBackpressure() throws InterruptedException {
         final int NUM_RETRIES = RxRingBuffer.SIZE * 2;
+        final List<String> expectedOnNextEvents = new ArrayList<String>();
+        for (int i = 0; i <= NUM_RETRIES; i++) {
+            expectedOnNextEvents.add("beginningEveryTime");
+        }
+        expectedOnNextEvents.add("onSuccessOnly");
+
         for (int i = 0; i < 400; i++) {
-            @SuppressWarnings("unchecked")
-            Observer<String> observer = mock(Observer.class);
+            Observer<String> observer = Observers.empty();
             Observable<String> origin = Observable.create(new FuncWithErrors(NUM_RETRIES));
             TestSubscriber<String> ts = new TestSubscriber<String>(observer);
-            origin.retry().observeOn(Schedulers.computation()).unsafeSubscribe(ts);
-            ts.awaitTerminalEvent(5, TimeUnit.SECONDS);
-            
-            InOrder inOrder = inOrder(observer);
-            // should have no errors
-            verify(observer, never()).onError(any(Throwable.class));
-            // should show NUM_RETRIES attempts
-            inOrder.verify(observer, times(NUM_RETRIES + 1)).onNext("beginningEveryTime");
-            // should have a single success
-            inOrder.verify(observer, times(1)).onNext("onSuccessOnly");
-            // should have a single successful onCompleted
-            inOrder.verify(observer, times(1)).onCompleted();
-            inOrder.verifyNoMoreInteractions();
-        }
-    }
-    @Test(timeout = 10000)
-    public void testRetryWithBackpressureParallel() throws InterruptedException {
-        final int NUM_RETRIES = RxRingBuffer.SIZE * 2;
-        int ncpu = Runtime.getRuntime().availableProcessors();
-        ExecutorService exec = Executors.newFixedThreadPool(Math.max(ncpu / 2, 1));
-        final AtomicInteger timeouts = new AtomicInteger();
-        final AtomicInteger data = new AtomicInteger();
-        int m = 2000;
-        final CountDownLatch cdl = new CountDownLatch(m);
-        for (int i = 0; i < m; i++) {
-            final int j = i;
-            exec.execute(new Runnable() {
-                @Override
-                public void run() {
-                    final AtomicInteger nexts = new AtomicInteger();
-                    try {
-                        Observable<String> origin = Observable.create(new FuncWithErrors(NUM_RETRIES));
-                        TestSubscriber<String> ts = new TestSubscriber<String>();
-                        origin.retry().observeOn(Schedulers.computation()).unsafeSubscribe(ts);
-                        ts.awaitTerminalEvent(2, TimeUnit.SECONDS);
-                        if (ts.getOnNextEvents().size() != NUM_RETRIES + 2) {
-                            data.incrementAndGet();
-                        }
-                        if (ts.getOnErrorEvents().size() != 0) {
-                            data.incrementAndGet();
-                        }
-                        if (ts.getOnCompletedEvents().size() != 1) {
-                            data.incrementAndGet();
-                        }
-                    } catch (Throwable t) {
-                        timeouts.incrementAndGet();
-                        System.out.println(j + " | " + cdl.getCount() + " !!! " + nexts.get());
-                    }
-                    cdl.countDown();
-                }
-            });
-        }
-        exec.shutdown();
-        cdl.await();
-        assertEquals(0, timeouts.get());
-        assertEquals(0, data.get());
+            origin.retry()
+                    .subscribeOn(Schedulers.computation())
+                    .observeOn(Schedulers.immediate())
+                    .unsafeSubscribe(ts);
+            ts.awaitTerminalEvent();
 
+            ts.assertNoErrors();
+            ts.assertReceivedOnNext(expectedOnNextEvents);
+        }
     }
     @Test(timeout = 3000)
     public void testIssue1900() throws InterruptedException {
@@ -773,7 +728,7 @@ public class OperatorRetryTest {
                         return "msg: " + count.incrementAndGet();
                     }
                 });
-        
+
         origin.retry()
         .groupBy(new Func1<String, String>() {
             @Override
@@ -788,7 +743,7 @@ public class OperatorRetryTest {
             }
         })
         .unsafeSubscribe(new TestSubscriber<String>(observer));
-        
+
         InOrder inOrder = inOrder(observer);
         // should show 3 attempts
         inOrder.verify(observer, times(NUM_MSG)).onNext(any(java.lang.String.class));
@@ -813,11 +768,11 @@ public class OperatorRetryTest {
             public void call(Subscriber<? super String> o) {
                 for(int i=0; i<NUM_MSG; i++) {
                     o.onNext("msg:" + count.incrementAndGet());
-                }   
+                }
                 o.onCompleted();
             }
         });
-        
+
         origin.retry()
         .groupBy(new Func1<String, String>() {
             @Override
@@ -832,7 +787,7 @@ public class OperatorRetryTest {
             }
         })
         .unsafeSubscribe(new TestSubscriber<String>(observer));
-        
+
         InOrder inOrder = inOrder(observer);
         // should show 3 attempts
         inOrder.verify(observer, times(NUM_MSG)).onNext(any(java.lang.String.class));
