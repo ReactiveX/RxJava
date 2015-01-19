@@ -1,12 +1,12 @@
 /**
  * Copyright 2014 Netflix, Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -71,14 +71,18 @@ public final class TrampolineScheduler extends Scheduler {
                 return Subscriptions.unsubscribed();
             }
             final TimedAction timedAction = new TimedAction(action, execTime, COUNTER_UPDATER.incrementAndGet(TrampolineScheduler.this));
-            queue.add(timedAction);
+            synchronized (queue) {
+                queue.add(timedAction);
+            }
 
             if (wip.getAndIncrement() == 0) {
                 do {
-                    TimedAction polled = queue.poll();
-                    // check for null as it could have been unsubscribed and removed
+                    TimedAction polled;
+                    synchronized (queue) {
+                        polled = queue.poll();
+                    }
                     if (polled != null) {
-                        polled.action.call();
+                      polled.action.call();
                     }
                 } while (wip.decrementAndGet() > 0);
                 return Subscriptions.unsubscribed();
@@ -88,9 +92,8 @@ public final class TrampolineScheduler extends Scheduler {
 
                     @Override
                     public void call() {
-                        PriorityQueue<TimedAction> _q = queue;
-                        if (_q != null) {
-                            _q.remove(timedAction);
+                        synchronized (queue) {
+                            queue.remove(timedAction);
                         }
                     }
 
@@ -130,7 +133,7 @@ public final class TrampolineScheduler extends Scheduler {
             return result;
         }
     }
-    
+
     // because I can't use Integer.compare from Java 7
     private static int compare(int x, int y) {
         return (x < y) ? -1 : ((x == y) ? 0 : 1);
