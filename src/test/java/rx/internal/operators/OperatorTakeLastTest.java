@@ -24,6 +24,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 import org.mockito.InOrder;
@@ -263,5 +264,33 @@ public class OperatorTakeLastTest {
                 request(1);
             }
         });
+    }
+    
+    @Test
+    public void testUnsubscribeTakesEffectEarlyOnFastPath() {
+        final AtomicInteger count = new AtomicInteger();
+        Observable.range(0, 100000).takeLast(100000).subscribe(new Subscriber<Integer>() {
+
+            @Override
+            public void onStart() {
+                request(Long.MAX_VALUE);
+            }
+
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+            }
+
+            @Override
+            public void onNext(Integer integer) {
+                count.incrementAndGet();
+                unsubscribe();
+            }
+        });
+        assertEquals(1,count.get());
     }
 }
