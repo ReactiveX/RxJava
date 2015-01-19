@@ -123,18 +123,19 @@ public final class SpscArrayQueue<E> extends SpscArrayQueueL3Pad<E> {
         }
         // local load of field to avoid repeated loads after volatile reads
         final E[] lElementBuffer = buffer;
+        final long offset = calcElementOffset(producerIndex);
         if (producerIndex >= producerLookAhead) {
-            if (null != lvElement(lElementBuffer, calcElementOffset(producerIndex + lookAheadStep))) {// LoadLoad
+            if (null == lvElement(lElementBuffer, calcElementOffset(producerIndex + lookAheadStep))) {// LoadLoad
+                producerLookAhead = producerIndex + lookAheadStep;
+            }
+            else if (null != lvElement(lElementBuffer, offset)){
                 return false;
             }
-            producerLookAhead = producerIndex + lookAheadStep;
         }
-        long offset = calcElementOffset(producerIndex);
         producerIndex++; // do increment here so the ordered store give both a barrier 
         soElement(lElementBuffer, offset, e);// StoreStore
         return true;
-    }
-    
+    }    
     /**
      * {@inheritDoc}
      * <p>

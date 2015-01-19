@@ -16,12 +16,9 @@
 package rx.observers;
 
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
-import rx.Notification;
-import rx.Observer;
-import rx.Subscriber;
+import rx.*;
 
 /**
  * A {@code TestSubscriber} is a variety of {@link Subscriber} that you can use for unit testing, to perform
@@ -229,7 +226,9 @@ public class TestSubscriber<T> extends Subscriber<T> {
      */
     public void awaitTerminalEvent(long timeout, TimeUnit unit) {
         try {
-            latch.await(timeout, unit);
+            if (!latch.await(timeout, unit)) {
+                throw new RuntimeException(new TimeoutException());
+            }
         } catch (InterruptedException e) {
             throw new RuntimeException("Interrupted", e);
         }

@@ -15,19 +15,33 @@
  */
 package rx.internal.operators;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Test;
-import org.mockito.*;
+import org.mockito.InOrder;
+import org.mockito.Mockito;
 
-import rx.*;
+import rx.Observable;
 import rx.Observable.OnSubscribe;
-import rx.functions.*;
+import rx.Observer;
+import rx.Producer;
+import rx.Subscriber;
+import rx.Subscription;
+import rx.functions.Action0;
+import rx.functions.Action1;
+import rx.functions.Func1;
+import rx.functions.Func2;
 import rx.internal.util.RxRingBuffer;
 import rx.observables.GroupedObservable;
 import rx.observers.TestSubscriber;
@@ -404,20 +418,25 @@ public class OperatorRetryTest {
                         }
                         return;
                     }
-                    if (n > 0 && req.getAndAdd(1) == 0) {
+                    if (n > 0 && req.getAndAdd(n) == 0) {
                         int i = count.getAndIncrement();
                         if (i < numFailures) {
                             o.onNext("beginningEveryTime");
                             o.onError(new RuntimeException("forced failure: " + count.get()));
-                        } else
-                        if (i == numFailures) {
-                            o.onNext("beginningEveryTime");
-                        } else
-                        if (i > numFailures) {
-                            o.onNext("onSuccessOnly");
-                            o.onCompleted();
+                            req.decrementAndGet();
+                        } else {
+                            do {
+                                if (i == numFailures) {
+                                    o.onNext("beginningEveryTime");
+                                } else
+                                if (i > numFailures) {
+                                    o.onNext("onSuccessOnly");
+                                    o.onCompleted();
+                                    break;
+                                }
+                                i = count.getAndIncrement();
+                            } while (req.decrementAndGet() > 0);
                         }
-                        req.decrementAndGet();
                     }
                 }
             });
@@ -675,15 +694,15 @@ public class OperatorRetryTest {
     }
     
     @Test(timeout = 10000)
-    public void testRetryWithBackpressure() {
-        for (int i = 0; i < 200; i++) {
+    public void testRetryWithBackpressure() throws InterruptedException {
+        final int NUM_RETRIES = RxRingBuffer.SIZE * 2;
+        for (int i = 0; i < 400; i++) {
             @SuppressWarnings("unchecked")
             Observer<String> observer = mock(Observer.class);
-            int NUM_RETRIES = RxRingBuffer.SIZE * 2;
             Observable<String> origin = Observable.create(new FuncWithErrors(NUM_RETRIES));
             TestSubscriber<String> ts = new TestSubscriber<String>(observer);
             origin.retry().observeOn(Schedulers.computation()).unsafeSubscribe(ts);
-            ts.awaitTerminalEvent();
+            ts.awaitTerminalEvent(5, TimeUnit.SECONDS);
             
             InOrder inOrder = inOrder(observer);
             // should have no errors
@@ -696,6 +715,49 @@ public class OperatorRetryTest {
             inOrder.verify(observer, times(1)).onCompleted();
             inOrder.verifyNoMoreInteractions();
         }
+    }
+    @Test(timeout = 10000)
+    public void testRetryWithBackpressureParallel() throws InterruptedException {
+        final int NUM_RETRIES = RxRingBuffer.SIZE * 2;
+        int ncpu = Runtime.getRuntime().availableProcessors();
+        ExecutorService exec = Executors.newFixedThreadPool(Math.max(ncpu / 2, 1));
+        final AtomicInteger timeouts = new AtomicInteger();
+        final AtomicInteger data = new AtomicInteger();
+        int m = 2000;
+        final CountDownLatch cdl = new CountDownLatch(m);
+        for (int i = 0; i < m; i++) {
+            final int j = i;
+            exec.execute(new Runnable() {
+                @Override
+                public void run() {
+                    final AtomicInteger nexts = new AtomicInteger();
+                    try {
+                        Observable<String> origin = Observable.create(new FuncWithErrors(NUM_RETRIES));
+                        TestSubscriber<String> ts = new TestSubscriber<String>();
+                        origin.retry().observeOn(Schedulers.computation()).unsafeSubscribe(ts);
+                        ts.awaitTerminalEvent(2, TimeUnit.SECONDS);
+                        if (ts.getOnNextEvents().size() != NUM_RETRIES + 2) {
+                            data.incrementAndGet();
+                        }
+                        if (ts.getOnErrorEvents().size() != 0) {
+                            data.incrementAndGet();
+                        }
+                        if (ts.getOnCompletedEvents().size() != 1) {
+                            data.incrementAndGet();
+                        }
+                    } catch (Throwable t) {
+                        timeouts.incrementAndGet();
+                        System.out.println(j + " | " + cdl.getCount() + " !!! " + nexts.get());
+                    }
+                    cdl.countDown();
+                }
+            });
+        }
+        exec.shutdown();
+        cdl.await();
+        assertEquals(0, timeouts.get());
+        assertEquals(0, data.get());
+
     }
     @Test(timeout = 3000)
     public void testIssue1900() throws InterruptedException {
