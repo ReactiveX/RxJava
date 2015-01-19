@@ -71,14 +71,17 @@ public final class TrampolineScheduler extends Scheduler {
                 return Subscriptions.unsubscribed();
             }
             final TimedAction timedAction = new TimedAction(action, execTime, COUNTER_UPDATER.incrementAndGet(TrampolineScheduler.this));
-            queue.add(timedAction);
+            synchronized (queue) {
+                queue.add(timedAction);
+            }
 
             if (wip.getAndIncrement() == 0) {
                 do {
-                    TimedAction polled = queue.poll();
-                    // check for null as it could have been unsubscribed and removed
-                    if (polled != null) {
-                        polled.action.call();
+                    synchronized (queue) {
+                        if (!queue.isEmpty()) {
+                            TimedAction polled = queue.poll();
+                            polled.action.call();
+                        }
                     }
                 } while (wip.decrementAndGet() > 0);
                 return Subscriptions.unsubscribed();
@@ -88,9 +91,8 @@ public final class TrampolineScheduler extends Scheduler {
 
                     @Override
                     public void call() {
-                        PriorityQueue<TimedAction> _q = queue;
-                        if (_q != null) {
-                            _q.remove(timedAction);
+                        synchronized (queue) {
+                            queue.remove(timedAction);
                         }
                     }
 
