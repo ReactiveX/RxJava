@@ -177,6 +177,23 @@ public final class NotificationLite<T> {
     }
 
     /**
+     * Indicates whether or not the lite notification represents a wrapped {@code null} {@code onNext} event.
+     * @param n the lite notification
+     * @return {@code true} if {@code n} represents a wrapped {@code null} {@code onNext} event, {@code false} otherwise
+     */
+    public boolean isNull(Object n) {
+        return n == ON_NEXT_NULL_SENTINEL;
+    }
+
+    /**
+     * Indicates whether or not the lite notification represents an {@code onNext} event.
+     * @param n the lite notification
+     * @return {@code true} if {@code n} represents an {@code onNext} event, {@code false} otherwise
+     */
+    public boolean isNext(Object n) {
+        return n != null && !isError(n) && !isCompleted(n);
+    }
+    /**
      * Indicates which variety a particular lite notification is. If you need something more complex than
      * simply calling the right method on an {@link Observer} then you can use this method to get the
      * {@link rx.Notification.Kind}.

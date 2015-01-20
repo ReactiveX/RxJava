@@ -126,4 +126,33 @@ public final class PublishSubject<T> extends Subject<T, T> {
     public boolean hasObservers() {
         return state.observers().length > 0;
     }
+    
+    /**
+     * Check if the Subject has terminated with an exception.
+     * @return true if the subject has received a throwable through {@code onError}.
+     */
+    public boolean hasThrowable() {
+        Object o = state.get();
+        return nl.isError(o);
+    }
+    /**
+     * Check if the Subject has terminated normally.
+     * @return true if the subject completed normally via {@code onCompleted}
+     */
+    public boolean hasCompleted() {
+        Object o = state.get();
+        return o != null && !nl.isError(o);
+    }
+    /**
+     * Returns the Throwable that terminated the Subject.
+     * @return the Throwable that terminated the Subject or {@code null} if the
+     * subject hasn't terminated yet or it terminated normally.
+     */
+    public Throwable getThrowable() {
+        Object o = state.get();
+        if (nl.isError(o)) {
+            return nl.getError(o);
+        }
+        return null;
+    }
 }

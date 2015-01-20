@@ -15,7 +15,11 @@
  */
 package rx.subjects;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.inOrder;
@@ -25,6 +29,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
+import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
@@ -39,6 +44,7 @@ import rx.Subscriber;
 import rx.Subscription;
 import rx.exceptions.CompositeException;
 import rx.exceptions.OnErrorNotImplementedException;
+import rx.exceptions.TestException;
 import rx.functions.Func1;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
@@ -636,5 +642,251 @@ public class ReplaySubjectTest {
         }
         // even though the onError above throws we should still receive it on the other subscriber 
         assertEquals(1, ts.getOnErrorEvents().size());
+    }
+    
+    @Test
+    public void testCurrentStateMethodsNormal() {
+        ReplaySubject<Object> as = ReplaySubject.create();
+        
+        assertFalse(as.hasThrowable());
+        assertFalse(as.hasCompleted());
+        assertNull(as.getThrowable());
+        
+        as.onNext(1);
+        
+        assertFalse(as.hasThrowable());
+        assertFalse(as.hasCompleted());
+        assertNull(as.getThrowable());
+        
+        as.onCompleted();
+        
+        assertFalse(as.hasThrowable());
+        assertTrue(as.hasCompleted());
+        assertNull(as.getThrowable());
+    }
+    
+    @Test
+    public void testCurrentStateMethodsEmpty() {
+        ReplaySubject<Object> as = ReplaySubject.create();
+        
+        assertFalse(as.hasThrowable());
+        assertFalse(as.hasCompleted());
+        assertNull(as.getThrowable());
+        
+        as.onCompleted();
+        
+        assertFalse(as.hasThrowable());
+        assertTrue(as.hasCompleted());
+        assertNull(as.getThrowable());
+    }
+    @Test
+    public void testCurrentStateMethodsError() {
+        ReplaySubject<Object> as = ReplaySubject.create();
+        
+        assertFalse(as.hasThrowable());
+        assertFalse(as.hasCompleted());
+        assertNull(as.getThrowable());
+        
+        as.onError(new TestException());
+        
+        assertTrue(as.hasThrowable());
+        assertFalse(as.hasCompleted());
+        assertTrue(as.getThrowable() instanceof TestException);
+    }
+    @Test
+    public void testSizeAndHasAnyValueUnbounded() {
+        ReplaySubject<Object> rs = ReplaySubject.create();
+        
+        assertEquals(0, rs.size());
+        assertFalse(rs.hasAnyValue());
+        
+        rs.onNext(1);
+        
+        assertEquals(1, rs.size());
+        assertTrue(rs.hasAnyValue());
+        
+        rs.onNext(1);
+
+        assertEquals(2, rs.size());
+        assertTrue(rs.hasAnyValue());
+        
+        rs.onCompleted();
+
+        assertEquals(2, rs.size());
+        assertTrue(rs.hasAnyValue());
+    }
+    @Test
+    public void testSizeAndHasAnyValueEffectivelyUnbounded() {
+        ReplaySubject<Object> rs = ReplaySubject.createUnbounded();
+        
+        assertEquals(0, rs.size());
+        assertFalse(rs.hasAnyValue());
+        
+        rs.onNext(1);
+        
+        assertEquals(1, rs.size());
+        assertTrue(rs.hasAnyValue());
+        
+        rs.onNext(1);
+
+        assertEquals(2, rs.size());
+        assertTrue(rs.hasAnyValue());
+        
+        rs.onCompleted();
+
+        assertEquals(2, rs.size());
+        assertTrue(rs.hasAnyValue());
+    }
+    
+    @Test
+    public void testSizeAndHasAnyValueUnboundedError() {
+        ReplaySubject<Object> rs = ReplaySubject.create();
+        
+        assertEquals(0, rs.size());
+        assertFalse(rs.hasAnyValue());
+        
+        rs.onNext(1);
+        
+        assertEquals(1, rs.size());
+        assertTrue(rs.hasAnyValue());
+        
+        rs.onNext(1);
+
+        assertEquals(2, rs.size());
+        assertTrue(rs.hasAnyValue());
+        
+        rs.onError(new TestException());
+
+        assertEquals(2, rs.size());
+        assertTrue(rs.hasAnyValue());
+    }
+    @Test
+    public void testSizeAndHasAnyValueEffectivelyUnboundedError() {
+        ReplaySubject<Object> rs = ReplaySubject.createUnbounded();
+        
+        assertEquals(0, rs.size());
+        assertFalse(rs.hasAnyValue());
+        
+        rs.onNext(1);
+        
+        assertEquals(1, rs.size());
+        assertTrue(rs.hasAnyValue());
+        
+        rs.onNext(1);
+
+        assertEquals(2, rs.size());
+        assertTrue(rs.hasAnyValue());
+        
+        rs.onError(new TestException());
+
+        assertEquals(2, rs.size());
+        assertTrue(rs.hasAnyValue());
+    }
+    
+    @Test
+    public void testSizeAndHasAnyValueUnboundedEmptyError() {
+        ReplaySubject<Object> rs = ReplaySubject.create();
+        
+        rs.onError(new TestException());
+
+        assertEquals(0, rs.size());
+        assertFalse(rs.hasAnyValue());
+    }
+    @Test
+    public void testSizeAndHasAnyValueEffectivelyUnboundedEmptyError() {
+        ReplaySubject<Object> rs = ReplaySubject.createUnbounded();
+        
+        rs.onError(new TestException());
+
+        assertEquals(0, rs.size());
+        assertFalse(rs.hasAnyValue());
+    }
+    
+    @Test
+    public void testSizeAndHasAnyValueUnboundedEmptyCompleted() {
+        ReplaySubject<Object> rs = ReplaySubject.create();
+        
+        rs.onCompleted();
+
+        assertEquals(0, rs.size());
+        assertFalse(rs.hasAnyValue());
+    }
+    @Test
+    public void testSizeAndHasAnyValueEffectivelyUnboundedEmptyCompleted() {
+        ReplaySubject<Object> rs = ReplaySubject.createUnbounded();
+        
+        rs.onCompleted();
+
+        assertEquals(0, rs.size());
+        assertFalse(rs.hasAnyValue());
+    }
+    
+    @Test
+    public void testSizeAndHasAnyValueSizeBounded() {
+        ReplaySubject<Object> rs = ReplaySubject.createWithSize(1);
+        
+        assertEquals(0, rs.size());
+        assertFalse(rs.hasAnyValue());
+        
+        for (int i = 0; i < 1000; i++) {
+            rs.onNext(i);
+
+            assertEquals(1, rs.size());
+            assertTrue(rs.hasAnyValue());
+        }
+        
+        rs.onCompleted();
+
+        assertEquals(1, rs.size());
+        assertTrue(rs.hasAnyValue());
+    }
+    
+    @Test
+    public void testSizeAndHasAnyValueTimeBounded() {
+        TestScheduler ts = new TestScheduler();
+        ReplaySubject<Object> rs = ReplaySubject.createWithTime(1, TimeUnit.SECONDS, ts);
+        
+        assertEquals(0, rs.size());
+        assertFalse(rs.hasAnyValue());
+        
+        for (int i = 0; i < 1000; i++) {
+            rs.onNext(i);
+            ts.advanceTimeBy(2, TimeUnit.SECONDS);
+            assertEquals(1, rs.size());
+            assertTrue(rs.hasAnyValue());
+        }
+        
+        rs.onCompleted();
+
+        assertEquals(0, rs.size());
+        assertFalse(rs.hasAnyValue());
+    }
+    @Test
+    public void testGetValues() {
+        ReplaySubject<Object> rs = ReplaySubject.create();
+        Object[] expected = new Object[10];
+        for (int i = 0; i < expected.length; i++) {
+            expected[i] = i;
+            rs.onNext(i);
+            assertArrayEquals(Arrays.copyOf(expected, i + 1), rs.getValues());
+        }
+        rs.onCompleted();
+        
+        assertArrayEquals(expected, rs.getValues());
+        
+    }
+    @Test
+    public void testGetValuesUnbounded() {
+        ReplaySubject<Object> rs = ReplaySubject.createUnbounded();
+        Object[] expected = new Object[10];
+        for (int i = 0; i < expected.length; i++) {
+            expected[i] = i;
+            rs.onNext(i);
+            assertArrayEquals(Arrays.copyOf(expected, i + 1), rs.getValues());
+        }
+        rs.onCompleted();
+        
+        assertArrayEquals(expected, rs.getValues());
+        
     }
 }

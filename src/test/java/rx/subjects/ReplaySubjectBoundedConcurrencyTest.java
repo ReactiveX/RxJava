@@ -21,7 +21,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -29,7 +31,6 @@ import org.junit.*;
 
 import rx.*;
 import rx.Observable.OnSubscribe;
-import rx.Subscriber;
 import rx.functions.*;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
@@ -404,5 +405,152 @@ public class ReplaySubjectBoundedConcurrencyTest {
                 });
             }
         }
+    }
+    @Test(timeout = 5000)
+    public void testConcurrentSizeAndHasAnyValue() throws InterruptedException {
+        final ReplaySubject<Object> rs = ReplaySubject.createUnbounded();
+        final CyclicBarrier cb = new CyclicBarrier(2);
+        
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    cb.await();
+                } catch (InterruptedException e) {
+                    return;
+                } catch (BrokenBarrierException e) {
+                    return;
+                }
+                for (int i = 0; i < 1000000; i++) {
+                    rs.onNext(i);
+                }
+                rs.onCompleted();
+                System.out.println("Replay fill Thread finished!");
+            }
+        });
+        t.start();
+        try {
+            cb.await();
+        } catch (InterruptedException e) {
+            return;
+        } catch (BrokenBarrierException e) {
+            return;
+        }
+        int lastSize = 0;
+        for (; !rs.hasThrowable() && !rs.hasCompleted();) {
+            int size = rs.size();
+            boolean hasAny = rs.hasAnyValue();
+            Object[] values = rs.getValues();
+            if (size < lastSize) {
+                Assert.fail("Size decreased! " + lastSize + " -> " + size);
+            }
+            if ((size > 0) && !hasAny) {
+                Assert.fail("hasAnyValue reports emptyness but size doesn't");
+            }
+            if (size > values.length) {
+                Assert.fail("Got fewer values than size! " + size + " -> " + values.length);
+            }
+            for (int i = 0; i < values.length - 1; i++) {
+                Integer v1 = (Integer)values[i];
+                Integer v2 = (Integer)values[i + 1];
+                assertEquals(1, v2 - v1);
+            }
+            lastSize = size;
+        }
+        
+        t.join();
+    }
+    @Test(timeout = 5000)
+    public void testConcurrentSizeAndHasAnyValueBounded() throws InterruptedException {
+        final ReplaySubject<Object> rs = ReplaySubject.createWithSize(3);
+        final CyclicBarrier cb = new CyclicBarrier(2);
+        
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    cb.await();
+                } catch (InterruptedException e) {
+                    return;
+                } catch (BrokenBarrierException e) {
+                    return;
+                }
+                for (int i = 0; i < 1000000; i++) {
+                    rs.onNext(i);
+                }
+                rs.onCompleted();
+                System.out.println("Replay fill Thread finished!");
+            }
+        });
+        t.start();
+        try {
+            cb.await();
+        } catch (InterruptedException e) {
+            return;
+        } catch (BrokenBarrierException e) {
+            return;
+        }
+        for (; !rs.hasThrowable() && !rs.hasCompleted();) {
+            rs.size(); // can't use value so just call to detect hangs
+            rs.hasAnyValue(); // can't use value so just call to detect hangs
+            Object[] values = rs.getValues();
+            for (int i = 0; i < values.length - 1; i++) {
+                Integer v1 = (Integer)values[i];
+                Integer v2 = (Integer)values[i + 1];
+                assertEquals(1, v2 - v1);
+            }
+        }
+        
+        t.join();
+    }
+    @Test(timeout = 5000)
+    public void testConcurrentSizeAndHasAnyValueTimeBounded() throws InterruptedException {
+        final ReplaySubject<Object> rs = ReplaySubject.createWithTime(1, TimeUnit.MILLISECONDS, Schedulers.computation());
+        final CyclicBarrier cb = new CyclicBarrier(2);
+        
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    cb.await();
+                } catch (InterruptedException e) {
+                    return;
+                } catch (BrokenBarrierException e) {
+                    return;
+                }
+                for (int i = 0; i < 1000000; i++) {
+                    rs.onNext(i);
+                    if (i % 10000 == 0) {
+                        try {
+                            Thread.sleep(1);
+                        } catch (InterruptedException e) {
+                            return;
+                        }
+                    }
+                }
+                rs.onCompleted();
+                System.out.println("Replay fill Thread finished!");
+            }
+        });
+        t.start();
+        try {
+            cb.await();
+        } catch (InterruptedException e) {
+            return;
+        } catch (BrokenBarrierException e) {
+            return;
+        }
+        for (; !rs.hasThrowable() && !rs.hasCompleted();) {
+            rs.size(); // can't use value so just call to detect hangs
+            rs.hasAnyValue(); // can't use value so just call to detect hangs
+            Object[] values = rs.getValues();
+            for (int i = 0; i < values.length - 1; i++) {
+                Integer v1 = (Integer)values[i];
+                Integer v2 = (Integer)values[i + 1];
+                assertEquals(1, v2 - v1);
+            }
+        }
+        
+        t.join();
     }
 }

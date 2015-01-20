@@ -17,6 +17,8 @@ package rx.subjects;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.inOrder;
@@ -35,6 +37,7 @@ import org.mockito.Mockito;
 import rx.*;
 import rx.exceptions.CompositeException;
 import rx.exceptions.OnErrorNotImplementedException;
+import rx.exceptions.TestException;
 import rx.functions.*;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
@@ -481,5 +484,95 @@ public class BehaviorSubjectTest {
                 rs.onCompleted();
             }
         }
+    }
+    
+    @Test
+    public void testCurrentStateMethodsNormalEmptyStart() {
+        BehaviorSubject<Object> as = BehaviorSubject.create();
+        
+        assertFalse(as.hasValue());
+        assertFalse(as.hasThrowable());
+        assertFalse(as.hasCompleted());
+        assertNull(as.getValue());
+        assertNull(as.getThrowable());
+        
+        as.onNext(1);
+        
+        assertTrue(as.hasValue());
+        assertFalse(as.hasThrowable());
+        assertFalse(as.hasCompleted());
+        assertEquals(1, as.getValue());
+        assertNull(as.getThrowable());
+        
+        as.onCompleted();
+        
+        assertFalse(as.hasValue());
+        assertFalse(as.hasThrowable());
+        assertTrue(as.hasCompleted());
+        assertNull(as.getValue());
+        assertNull(as.getThrowable());
+    }
+    
+    @Test
+    public void testCurrentStateMethodsNormalSomeStart() {
+        BehaviorSubject<Object> as = BehaviorSubject.create((Object)1);
+        
+        assertTrue(as.hasValue());
+        assertFalse(as.hasThrowable());
+        assertFalse(as.hasCompleted());
+        assertEquals(1, as.getValue());
+        assertNull(as.getThrowable());
+        
+        as.onNext(2);
+        
+        assertTrue(as.hasValue());
+        assertFalse(as.hasThrowable());
+        assertFalse(as.hasCompleted());
+        assertEquals(2, as.getValue());
+        assertNull(as.getThrowable());
+        
+        as.onCompleted();
+        assertFalse(as.hasValue());
+        assertFalse(as.hasThrowable());
+        assertTrue(as.hasCompleted());
+        assertNull(as.getValue());
+        assertNull(as.getThrowable());
+    }
+    
+    @Test
+    public void testCurrentStateMethodsEmpty() {
+        BehaviorSubject<Object> as = BehaviorSubject.create();
+        
+        assertFalse(as.hasValue());
+        assertFalse(as.hasThrowable());
+        assertFalse(as.hasCompleted());
+        assertNull(as.getValue());
+        assertNull(as.getThrowable());
+        
+        as.onCompleted();
+        
+        assertFalse(as.hasValue());
+        assertFalse(as.hasThrowable());
+        assertTrue(as.hasCompleted());
+        assertNull(as.getValue());
+        assertNull(as.getThrowable());
+    }
+    @Test
+    public void testCurrentStateMethodsError() {
+        BehaviorSubject<Object> as = BehaviorSubject.create();
+        
+        assertFalse(as.hasValue());
+        assertFalse(as.hasThrowable());
+        assertFalse(as.hasCompleted());
+        assertNull(as.getValue());
+        assertNull(as.getThrowable());
+        
+        as.onError(new TestException());
+        
+        assertFalse(as.hasValue());
+        assertTrue(as.hasThrowable());
+        assertFalse(as.hasCompleted());
+        assertNull(as.getValue());
+        assertTrue(as.getThrowable() instanceof TestException);
     }
 }

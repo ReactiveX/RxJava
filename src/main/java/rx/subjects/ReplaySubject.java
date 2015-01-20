@@ -15,6 +15,7 @@
  */
 package rx.subjects;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -465,7 +466,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         public void next(T n) {
             if (!terminated) {
                 list.add(nl.next(n));
-                INDEX_UPDATER.getAndIncrement(this);
+                INDEX_UPDATER.getAndIncrement(this); // release index
             }
         }
 
@@ -478,7 +479,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
             if (!terminated) {
                 terminated = true;
                 list.add(nl.completed());
-                INDEX_UPDATER.getAndIncrement(this);
+                INDEX_UPDATER.getAndIncrement(this); // release index
             }
         }
         @Override
@@ -486,7 +487,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
             if (!terminated) {
                 terminated = true;
                 list.add(nl.error(e));
-                INDEX_UPDATER.getAndIncrement(this);
+                INDEX_UPDATER.getAndIncrement(this); // release index
             }
         }
 
@@ -530,6 +531,39 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         public Integer replayObserverFromIndexTest(Integer idx, SubjectObserver<? super T> observer, long now) {
             return replayObserverFromIndex(idx, observer);
         }
+        
+        @Override
+        public int size() {
+            int idx = index; // aquire
+            if (idx > 0) {
+                Object o = list.get(idx - 1);
+                if (nl.isCompleted(o) || nl.isError(o)) {
+                    return idx - 1; // do not report a terminal event as part of size
+                }
+            }
+            return idx;
+        }
+        @Override
+        public boolean isEmpty() {
+            return size() == 0;
+        }
+        @Override
+        @SuppressWarnings("unchecked")
+        public T[] toArray(T[] a) {
+            int s = size();
+            if (s > 0) {
+                if (s > a.length) {
+                    a = (T[])Array.newInstance(a.getClass().getComponentType(), s);
+                }
+                for (int i = 0; i < s; i++) {
+                    a[i] = (T)list.get(i);
+                }
+                if (s < a.length - 1) {
+                    a[s] = null;
+                }
+            }
+            return a;
+        }
     }
     
     
@@ -566,10 +600,8 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         public void complete() {
             if (!terminated) {
                 terminated = true;
-                // don't evict the terminal value
-                evictionPolicy.evict(list);
-                // so add it later
                 list.addLast(enterTransform.call(nl.completed()));
+                evictionPolicy.evictFinal(list);
                 tail = list.tail;
             }
             
@@ -578,10 +610,9 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         public void error(Throwable e) {
             if (!terminated) {
                 terminated = true;
-                // don't evict the terminal value
-                evictionPolicy.evict(list);
-                // so add it later
                 list.addLast(enterTransform.call(nl.error(e)));
+                // don't evict the terminal value
+                evictionPolicy.evictFinal(list);
                 tail = list.tail;
             }
         }
@@ -644,6 +675,54 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         public boolean terminated() {
             return terminated;
         }
+        
+        @Override
+        public int size() {
+            int size = 0;
+            NodeList.Node<Object> l = head();
+            NodeList.Node<Object> next = l.next;
+            while (next != null) {
+                size++;
+                l = next;
+                next = next.next;
+            }
+            if (l.value != null) {
+                Object value = leaveTransform.call(l.value);
+                if (value != null && (nl.isError(value) || nl.isCompleted(value))) {
+                    return size - 1;
+                }
+            }
+            return size;
+        }
+        @Override
+        public boolean isEmpty() {
+            NodeList.Node<Object> l = head();
+            NodeList.Node<Object> next = l.next;
+            if (next == null) {
+                return true;
+            }
+            Object value = leaveTransform.call(next.value);
+            return nl.isError(value) || nl.isCompleted(value);
+        }
+        @Override
+        @SuppressWarnings("unchecked")
+        public T[] toArray(T[] a) {
+            List<T> list = new ArrayList<T>();
+            NodeList.Node<Object> l = head();
+            NodeList.Node<Object> next = l.next;
+            while (next != null) {
+                Object o = leaveTransform.call(next.value);
+
+                if (next.next == null && (nl.isError(o) || nl.isCompleted(o))) {
+                    break;
+                } else {
+                    list.add((T)o);
+                }
+                l = next;
+                next = next.next;
+            }
+            return list.toArray(a);
+        }
     }
     
     // **************
@@ -694,6 +773,22 @@ public final class ReplaySubject<T> extends Subject<T, T> {
          * Add an OnCompleted exception and terminate the subject
          */
         void complete();
+        /**
+         * @return the number of non-terminal values in the replay buffer.
+         */
+        int size();
+        /**
+         * @return true if the replay buffer is empty of non-terminal values
+         */
+        boolean isEmpty();
+        
+        /**
+         * Copy the current values (minus any terminal value) from the buffer into the array
+         * or create a new array if there isn't enough room.
+         * @param a the array to fill in
+         * @return the array or a new array containing the current values
+         */
+        T[] toArray(T[] a);
     }
     
     /** Interface to manage eviction checking. */
@@ -706,10 +801,16 @@ public final class ReplaySubject<T> extends Subject<T, T> {
          */
         boolean test(Object value, long now);
         /**
-         * Evict values from the list
-         * @param list 
+         * Evict values from the list.
+         * @param list the node list
          */
         void evict(NodeList<Object> list);
+        /**
+         * Evict values from the list except the very last which is considered
+         * a terminal event
+         * @param list the node list
+         */
+        void evictFinal(NodeList<Object> list);
     }
 
     
@@ -738,6 +839,13 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         public boolean test(Object value, long now) {
             return true; // size gets never stale
         }
+        
+        @Override
+        public void evictFinal(NodeList<Object> t1) {
+            while (t1.size() > maxSize + 1) {
+                t1.removeFirst();
+            }
+        }
     }
     /**
      * Remove elements from the beginning of the list if the Timestamped value is older than
@@ -756,6 +864,19 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         public void evict(NodeList<Object> t1) {
             long now = scheduler.now();
             while (!t1.isEmpty()) {
+                NodeList.Node<Object> n = t1.head.next;
+                if (test(n.value, now)) {
+                    t1.removeFirst();
+                } else {
+                    break;
+                }
+            }
+        }
+        
+        @Override
+        public void evictFinal(NodeList<Object> t1) {
+            long now = scheduler.now();
+            while (t1.size > 1) {
                 NodeList.Node<Object> n = t1.head.next;
                 if (test(n.value, now)) {
                     t1.removeFirst();
@@ -788,6 +909,12 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         public void evict(NodeList<Object> t1) {
             first.evict(t1);
             second.evict(t1);
+        }
+        
+        @Override
+        public void evictFinal(NodeList<Object> t1) {
+            first.evictFinal(t1);
+            second.evictFinal(t1);
         }
 
         @Override
@@ -926,6 +1053,70 @@ public final class ReplaySubject<T> extends Subject<T, T> {
         @Override
         public void evict(NodeList<Object> list) {
         }
-        
+        @Override
+        public void evictFinal(NodeList<Object> list) {
+        }
     }    
+    /**
+     * Check if the Subject has terminated with an exception.
+     * @return true if the subject has received a throwable through {@code onError}.
+     */
+    public boolean hasThrowable() {
+        NotificationLite<T> nl = ssm.nl;
+        Object o = ssm.get();
+        return nl.isError(o);
+    }
+    /**
+     * Check if the Subject has terminated normally.
+     * @return true if the subject completed normally via {@code onCompleted}
+     */
+    public boolean hasCompleted() {
+        NotificationLite<T> nl = ssm.nl;
+        Object o = ssm.get();
+        return o != null && !nl.isError(o);
+    }
+    /**
+     * Returns the Throwable that terminated the Subject.
+     * @return the Throwable that terminated the Subject or {@code null} if the
+     * subject hasn't terminated yet or it terminated normally.
+     */
+    public Throwable getThrowable() {
+        NotificationLite<T> nl = ssm.nl;
+        Object o = ssm.get();
+        if (nl.isError(o)) {
+            return nl.getError(o);
+        }
+        return null;
+    }
+    /**
+     * Returns the current number of items (non-terminal events) available for replay.
+     * @return the number of items available
+     */
+    public int size() {
+        return state.size();
+    }
+    /**
+     * @return true if the Subject holds at least one non-terminal event available for replay
+     */
+    public boolean hasAnyValue() {
+        return !state.isEmpty();
+    }
+    /** An empty array to trigger getValues() to return a new array. */
+    private static final Object[] EMPTY_ARRAY = new Object[0];
+    /**
+     * @return returns a snapshot of the currently buffered non-terminal events.
+     */
+    @SuppressWarnings("unchecked")
+    public Object[] getValues() {
+        return state.toArray((T[])EMPTY_ARRAY);
+    }
+    /**
+     * Returns a snapshot of the currently buffered non-terminal events into 
+     * the provided {@code a} array or creates a new array if it has not enough capacity.
+     * @param a the array to fill in
+     * @return the array {@code a} if it had enough capacity or a new array containing the available values 
+     */
+    public T[] getValues(T[] a) {
+        return state.toArray(a);
+    }
 }
