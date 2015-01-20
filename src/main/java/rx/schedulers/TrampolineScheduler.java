@@ -79,11 +79,9 @@ public final class TrampolineScheduler extends Scheduler {
                 do {
                     TimedAction polled;
                     synchronized (queue) {
-                        if (!queue.isEmpty()) {
-                            TimedAction polled = queue.poll();
-                            polled.action.call();
-                        }
+                        polled = queue.poll();
                     }
+                    polled.action.call();
                 } while (wip.decrementAndGet() > 0);
                 return Subscriptions.unsubscribed();
             } else {
