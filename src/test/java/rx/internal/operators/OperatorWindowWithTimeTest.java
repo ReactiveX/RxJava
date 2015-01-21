@@ -15,22 +15,17 @@
  */
 package rx.internal.operators;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 
+import rx.*;
 import rx.Observable;
 import rx.Observer;
-import rx.Scheduler;
-import rx.Subscriber;
-import rx.functions.Action0;
-import rx.functions.Action1;
+import rx.functions.*;
 import rx.schedulers.TestScheduler;
 
 public class OperatorWindowWithTimeTest {
@@ -132,14 +127,14 @@ public class OperatorWindowWithTimeTest {
         }, delay, TimeUnit.MILLISECONDS);
     }
 
-    private Action1<Observable<String>> observeWindow(final List<String> list, final List<List<String>> lists) {
-        return new Action1<Observable<String>>() {
+    private <T> Action1<Observable<T>> observeWindow(final List<T> list, final List<List<T>> lists) {
+        return new Action1<Observable<T>>() {
             @Override
-            public void call(Observable<String> stringObservable) {
-                stringObservable.subscribe(new Observer<String>() {
+            public void call(Observable<T> stringObservable) {
+                stringObservable.subscribe(new Observer<T>() {
                     @Override
                     public void onCompleted() {
-                        lists.add(new ArrayList<String>(list));
+                        lists.add(new ArrayList<T>(list));
                         list.clear();
                     }
 
@@ -149,11 +144,31 @@ public class OperatorWindowWithTimeTest {
                     }
 
                     @Override
-                    public void onNext(String args) {
+                    public void onNext(T args) {
                         list.add(args);
                     }
                 });
             }
         };
     }
+    @Test
+    public void testExactWindowSize() {
+        Observable<Observable<Integer>> source = Observable.range(1, 10).window(1, TimeUnit.MINUTES, 3, scheduler);
+        
+        final List<Integer> list = new ArrayList<Integer>();
+        final List<List<Integer>> lists = new ArrayList<List<Integer>>();
+        
+        source.subscribe(observeWindow(list, lists));
+        
+        assertEquals(4, lists.size());
+        assertEquals(3, lists.get(0).size());
+        assertEquals(Arrays.asList(1, 2, 3), lists.get(0));
+        assertEquals(3, lists.get(1).size());
+        assertEquals(Arrays.asList(4, 5, 6), lists.get(1));
+        assertEquals(3, lists.get(2).size());
+        assertEquals(Arrays.asList(7, 8, 9), lists.get(2));
+        assertEquals(1, lists.get(3).size());
+        assertEquals(Arrays.asList(10), lists.get(3));
+    }
+    
 }
