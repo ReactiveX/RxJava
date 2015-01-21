@@ -23,6 +23,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Observable;
 import rx.Subscriber;
+import rx.Subscription;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.functions.Functions;
@@ -98,7 +99,7 @@ public final class BlockingObservable<T> {
          * Use 'subscribe' instead of 'unsafeSubscribe' for Rx contract behavior
          * as this is the final subscribe in the chain.
          */
-        o.subscribe(new Subscriber<T>() {
+        Subscription subscription = o.subscribe(new Subscriber<T>() {
             @Override
             public void onCompleted() {
                 latch.countDown();
@@ -127,6 +128,7 @@ public final class BlockingObservable<T> {
         try {
             latch.await();
         } catch (InterruptedException e) {
+            subscription.unsubscribe();
             // set the interrupted flag again so callers can still get it
             // for more information see https://github.com/ReactiveX/RxJava/pull/147#issuecomment-13624780
             Thread.currentThread().interrupt();
@@ -438,7 +440,7 @@ public final class BlockingObservable<T> {
         final AtomicReference<Throwable> returnException = new AtomicReference<Throwable>();
         final CountDownLatch latch = new CountDownLatch(1);
 
-        observable.subscribe(new Subscriber<T>() {
+        Subscription subscription = observable.subscribe(new Subscriber<T>() {
             @Override
             public void onCompleted() {
                 latch.countDown();
@@ -459,6 +461,7 @@ public final class BlockingObservable<T> {
         try {
             latch.await();
         } catch (InterruptedException e) {
+            subscription.unsubscribe();
             Thread.currentThread().interrupt();
             throw new RuntimeException("Interrupted while waiting for subscription to complete.", e);
         }

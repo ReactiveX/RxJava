@@ -23,6 +23,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import rx.Notification;
 import rx.Observable;
 import rx.Subscriber;
+import rx.Subscription;
 import rx.exceptions.Exceptions;
 
 /**
@@ -49,7 +50,7 @@ public final class BlockingOperatorToIterator {
         final BlockingQueue<Notification<? extends T>> notifications = new LinkedBlockingQueue<Notification<? extends T>>();
 
         // using subscribe instead of unsafeSubscribe since this is a BlockingObservable "final subscribe"
-        source.materialize().subscribe(new Subscriber<Notification<? extends T>>() {
+        final Subscription subscription = source.materialize().subscribe(new Subscriber<Notification<? extends T>>() {
             @Override
             public void onCompleted() {
                 // ignore
@@ -94,6 +95,7 @@ public final class BlockingOperatorToIterator {
                 try {
                     return notifications.take();
                 } catch (InterruptedException e) {
+                    subscription.unsubscribe();
                     throw Exceptions.propagate(e);
                 }
             }

@@ -117,6 +117,7 @@ public final class BlockingOperatorNext {
                 }
                 throw new IllegalStateException("Should not reach here");
             } catch (InterruptedException e) {
+                observer.unsubscribe();
                 Thread.currentThread().interrupt();
                 error = e;
                 throw Exceptions.propagate(error);
