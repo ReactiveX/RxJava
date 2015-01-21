@@ -17,6 +17,7 @@ package rx.subjects;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.inOrder;
@@ -482,4 +483,28 @@ public class BehaviorSubjectTest {
             }
         }
     }
+
+    @Test
+    public void testThatDefaultValueIsInitialised() {
+        BehaviorSubject<String> subject = BehaviorSubject.create("default");
+
+        assertTrue(subject.isInitialised());
+    }
+
+    @Test
+    public void testThatNoDefaultValueIsNotInitialised() {
+        BehaviorSubject<String> subject = BehaviorSubject.create();
+
+        assertFalse(subject.isInitialised());
+    }
+
+    @Test
+    public void testThatSubsequentValuesInitialise() {
+        BehaviorSubject<String> subject = BehaviorSubject.create();
+
+        subject.onNext("one");
+
+        assertTrue(subject.isInitialised());
+    }
+
 }
