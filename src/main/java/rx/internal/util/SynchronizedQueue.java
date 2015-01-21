@@ -138,7 +138,9 @@ public class SynchronizedQueue<T> implements Queue<T> {
 
     @Override
     public synchronized Object clone() {
-        return list.clone();
+        SynchronizedQueue<T> q = new SynchronizedQueue<T>(size);
+        q.addAll(list);
+        return q;
     }
 
     @Override
