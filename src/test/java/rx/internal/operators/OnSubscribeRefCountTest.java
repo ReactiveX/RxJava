@@ -62,7 +62,7 @@ public class OnSubscribeRefCountTest {
     public void testRefCountAsync() {
         final AtomicInteger subscribeCount = new AtomicInteger();
         final AtomicInteger nextCount = new AtomicInteger();
-        Observable<Long> r = Observable.timer(0, 1, TimeUnit.MILLISECONDS)
+        Observable<Long> r = Observable.timer(0, 5, TimeUnit.MILLISECONDS)
                 .doOnSubscribe(new Action0() {
 
                     @Override
@@ -94,7 +94,7 @@ public class OnSubscribeRefCountTest {
 
         // give time to emit
         try {
-            Thread.sleep(50);
+            Thread.sleep(52);
         } catch (InterruptedException e) {
         }
 
