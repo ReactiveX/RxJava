@@ -33,8 +33,8 @@ import rx.observers.SerializedSubscriber;
 
 /**
  * Creates windows of values into the source sequence with timed window creation, length and size bounds.
- * If timespan == timeshift, windows are non-overlapping but may not be continuous if size number of items were already
- * emitted. If more items arrive after the window has reached its size bound, those items are dropped.
+ * If timespan == timeshift, windows are non-overlapping but always continuous, i.e., when the size bound is reached, a new
+ * window is opened.
  *
  * <p>Note that this conforms the Rx.NET behavior, but does not match former RxJava
  * behavior, which operated as a regular buffer and mapped its lists to Observables.</p>
@@ -205,17 +205,17 @@ public final class OperatorWindowWithTime<T> implements Operator<Observable<T>, 
         }
         void emitValue(T t) {
             State<T> s = state;
-            
-            if (s.consumer != null) {
-                s.consumer.onNext(t);
-                if (s.count == size) {
-                    s.consumer.onCompleted();
-                    s = s.clear();
-                } else {
-                    s = s.next();
-                }
+            if (s.consumer == null) {
+                replaceSubject();
+                s = state;
             }
-            
+            s.consumer.onNext(t);
+            if (s.count == size - 1) {
+                s.consumer.onCompleted();
+                s = s.clear();
+            } else {
+                s = s.next();
+            }
             state = s;
         }
         
