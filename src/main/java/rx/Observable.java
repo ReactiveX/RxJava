@@ -759,7 +759,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/concat.html">ReactiveX operators documentation: Concat</a>
      */
     public final static <T> Observable<T> concat(Observable<? extends Observable<? extends T>> observables) {
-        return observables.lift(new OperatorConcat<T>());
+        return observables.lift(OperatorConcat.<T>instance());
     }
 
     /**
@@ -1620,7 +1620,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      */
     public final static <T> Observable<T> merge(Observable<? extends Observable<? extends T>> source) {
-        return source.lift(new OperatorMerge<T>());
+        return source.lift(OperatorMerge.<T>instance(false));
     }
 
     /**
@@ -1945,7 +1945,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      */
     public final static <T> Observable<T> mergeDelayError(Observable<? extends Observable<? extends T>> source) {
-        return source.lift(new OperatorMergeDelayError<T>());
+        return source.lift(OperatorMerge.<T>instance(true));
     }
 
     /**
@@ -2421,7 +2421,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/switch.html">ReactiveX operators documentation: Switch</a>
      */
     public final static <T> Observable<T> switchOnNext(Observable<? extends Observable<? extends T>> sequenceOfSequences) {
-        return sequenceOfSequences.lift(new OperatorSwitch<T>());
+        return sequenceOfSequences.lift(OperatorSwitch.<T>instance());
     }
 
     /**
@@ -3004,7 +3004,7 @@ public class Observable<T> {
      * @return an Observable that hides the identity of this Observable
      */
     public final Observable<T> asObservable() {
-        return lift(new OperatorAsObservable<T>());
+        return lift(OperatorAsObservable.<T>instance());
     }
 
     /**
@@ -3925,9 +3925,9 @@ public class Observable<T> {
      *             if the source Observable is not of type {@code Observable<Notification<T>>}
      * @see <a href="http://reactivex.io/documentation/operators/materialize-dematerialize.html">ReactiveX operators documentation: Dematerialize</a>
      */
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({"unchecked"})
     public final <T2> Observable<T2> dematerialize() {
-        return lift(new OperatorDematerialize());
+        return lift(OperatorDematerialize.instance());
     }
 
     /**
@@ -4963,7 +4963,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/materialize-dematerialize.html">ReactiveX operators documentation: Materialize</a>
      */
     public final Observable<Notification<T>> materialize() {
-        return lift(new OperatorMaterialize<T>());
+        return lift(OperatorMaterialize.<T>instance());
     }
 
     /**
@@ -5108,7 +5108,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/backpressure.html">ReactiveX operators documentation: backpressure operators</a>
      */
     public final Observable<T> onBackpressureDrop() {
-        return lift(new OperatorOnBackpressureDrop<T>());
+        return lift(OperatorOnBackpressureDrop.<T>instance());
     }
     
     /**
@@ -6458,7 +6458,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/serialize.html">ReactiveX operators documentation: Serialize</a>
      */
     public final Observable<T> serialize() {
-        return lift(new OperatorSerialize<T>());
+        return lift(OperatorSerialize.<T>instance());
     }
 
     /**
@@ -8362,7 +8362,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
      */
     public final Observable<List<T>> toList() {
-        return lift(new OperatorToObservableList<T>());
+        return lift(OperatorToObservableList.<T>instance());
     }
 
     /**

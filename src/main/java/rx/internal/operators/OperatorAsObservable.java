@@ -25,7 +25,19 @@ import rx.Subscriber;
  *            the return value type of the wrapped observable.
  */
 public final class OperatorAsObservable<T> implements Operator<T, T> {
-
+    /** Lazy initialization via inner-class holder. */
+    private static final class Holder {
+        /** A singleton instance. */
+        static final OperatorAsObservable<Object> INSTANCE = new OperatorAsObservable<Object>();
+    }
+    /**
+     * @return a singleton instance of this stateless operator.
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> OperatorAsObservable<T> instance() {
+        return (OperatorAsObservable<T>)Holder.INSTANCE;
+    }
+    private OperatorAsObservable() { }
     @Override
     public Subscriber<? super T> call(Subscriber<? super T> s) {
         return s;

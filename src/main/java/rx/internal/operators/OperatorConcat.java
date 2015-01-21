@@ -37,6 +37,19 @@ import rx.subscriptions.Subscriptions;
  *            the source and result value type
  */
 public final class OperatorConcat<T> implements Operator<T, Observable<? extends T>> {
+    /** Lazy initialization via inner-class holder. */
+    private static final class Holder {
+        /** A singleton instance. */
+        static final OperatorConcat<Object> INSTANCE = new OperatorConcat<Object>();
+    }
+    /**
+     * @return a singleton instance of this stateless operator.
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> OperatorConcat<T> instance() {
+        return (OperatorConcat<T>)Holder.INSTANCE;
+    }
+    private OperatorConcat() { }
     @Override
     public Subscriber<? super Observable<? extends T>> call(final Subscriber<? super T> child) {
         final SerializedSubscriber<T> s = new SerializedSubscriber<T>(child);

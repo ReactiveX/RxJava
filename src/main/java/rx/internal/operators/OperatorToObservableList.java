@@ -37,7 +37,19 @@ import java.util.List;
  * as you do not have the option to unsubscribe.
  */
 public final class OperatorToObservableList<T> implements Operator<List<T>, T> {
-
+    /** Lazy initialization via inner-class holder. */
+    private static final class Holder {
+        /** A singleton instance. */
+        static final OperatorToObservableList<Object> INSTANCE = new OperatorToObservableList<Object>();
+    }
+    /**
+     * @return a singleton instance of this stateless operator.
+     */
+    @SuppressWarnings({ "unchecked" })
+    public static <T> OperatorToObservableList<T> instance() {
+        return (OperatorToObservableList<T>)Holder.INSTANCE;
+    }
+    private OperatorToObservableList() { }
     @Override
     public Subscriber<? super T> call(final Subscriber<? super List<T>> o) {
         return new Subscriber<T>(o) {
