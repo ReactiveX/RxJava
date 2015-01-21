@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import rx.Observer;
+import rx.annotations.Experimental;
 import rx.exceptions.CompositeException;
 import rx.exceptions.Exceptions;
 import rx.functions.Action1;
@@ -183,6 +184,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
      * retrieved by {@code getValue()} may get outdated.
      * @return true if and only if the subject has some value and hasn't terminated yet.
      */
+    @Experimental
     public boolean hasValue() {
         Object o = state.get();
         return nl.isNext(o);
@@ -191,6 +193,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
      * Check if the Subject has terminated with an exception.
      * @return true if the subject has received a throwable through {@code onError}.
      */
+    @Experimental
     public boolean hasThrowable() {
         Object o = state.get();
         return nl.isError(o);
@@ -199,6 +202,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
      * Check if the Subject has terminated normally.
      * @return true if the subject completed normally via {@code onCompleted()}
      */
+    @Experimental
     public boolean hasCompleted() {
         Object o = state.get();
         return nl.isCompleted(o);
@@ -212,6 +216,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
      * @return the current value or {@code null} if the Subject doesn't have a value,
      * has terminated or has an actual {@code null} as a valid value.
      */
+    @Experimental
     public T getValue() {
         Object o = state.get();
         if (nl.isNext(o)) {
@@ -224,6 +229,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
      * @return the Throwable that terminated the Subject or {@code null} if the
      * subject hasn't terminated yet or it terminated normally.
      */
+    @Experimental
     public Throwable getThrowable() {
         Object o = state.get();
         if (nl.isError(o)) {

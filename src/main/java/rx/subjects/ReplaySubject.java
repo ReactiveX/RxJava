@@ -23,6 +23,7 @@ import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 import rx.Observer;
 import rx.Scheduler;
+import rx.annotations.Experimental;
 import rx.exceptions.CompositeException;
 import rx.exceptions.Exceptions;
 import rx.functions.Action1;
@@ -1061,6 +1062,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
      * Check if the Subject has terminated with an exception.
      * @return true if the subject has received a throwable through {@code onError}.
      */
+    @Experimental
     public boolean hasThrowable() {
         NotificationLite<T> nl = ssm.nl;
         Object o = ssm.get();
@@ -1070,6 +1072,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
      * Check if the Subject has terminated normally.
      * @return true if the subject completed normally via {@code onCompleted}
      */
+    @Experimental
     public boolean hasCompleted() {
         NotificationLite<T> nl = ssm.nl;
         Object o = ssm.get();
@@ -1080,6 +1083,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
      * @return the Throwable that terminated the Subject or {@code null} if the
      * subject hasn't terminated yet or it terminated normally.
      */
+    @Experimental
     public Throwable getThrowable() {
         NotificationLite<T> nl = ssm.nl;
         Object o = ssm.get();
@@ -1092,12 +1096,14 @@ public final class ReplaySubject<T> extends Subject<T, T> {
      * Returns the current number of items (non-terminal events) available for replay.
      * @return the number of items available
      */
+    @Experimental
     public int size() {
         return state.size();
     }
     /**
      * @return true if the Subject holds at least one non-terminal event available for replay
      */
+    @Experimental
     public boolean hasAnyValue() {
         return !state.isEmpty();
     }
@@ -1107,6 +1113,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
      * @return returns a snapshot of the currently buffered non-terminal events.
      */
     @SuppressWarnings("unchecked")
+    @Experimental
     public Object[] getValues() {
         return state.toArray((T[])EMPTY_ARRAY);
     }
@@ -1116,6 +1123,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
      * @param a the array to fill in
      * @return the array {@code a} if it had enough capacity or a new array containing the available values 
      */
+    @Experimental
     public T[] getValues(T[] a) {
         return state.toArray(a);
     }
