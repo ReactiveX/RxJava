@@ -64,9 +64,10 @@ public final class OnSubscribeCache<T> implements OnSubscribe<T> {
     @Override
     public void call(Subscriber<? super T> s) {
         if (SRC_SUBSCRIBED_UPDATER.compareAndSet(this, 0, 1)) {
-            source.unsafeSubscribe(Subscribers.from(cache));
+            source.subscribe(cache);
             /*
-             * Note that we will never unsubscribe from 'source' as we want to receive and cache all of its values.
+             * Note that we will never unsubscribe from 'source' unless we receive `onCompleted` or `onError`,
+             * as we want to receive and cache all of its values.
              * 
              * This means this should never be used on an infinite or very large sequence, similar to toList().
              */
