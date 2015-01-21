@@ -494,7 +494,7 @@ public class OperatorMergeTest {
         });
     }
 
-    @Test
+    @Test(timeout = 10000)
     public void testConcurrency() {
         Observable<Integer> o = Observable.range(1, 10000).subscribeOn(Schedulers.newThread());
 
