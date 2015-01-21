@@ -15,7 +15,7 @@
  */
 package rx.schedulers;
 
-import java.util.PriorityQueue;
+import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
@@ -45,14 +45,12 @@ public final class TrampolineScheduler extends Scheduler {
     /* package accessible for unit tests */TrampolineScheduler() {
     }
 
-    volatile int counter;
-    static final AtomicIntegerFieldUpdater<TrampolineScheduler> COUNTER_UPDATER = AtomicIntegerFieldUpdater.newUpdater(TrampolineScheduler.class, "counter");
-
     private class InnerCurrentThreadScheduler extends Scheduler.Worker implements Subscription {
 
-        final PriorityQueue<TimedAction> queue = new PriorityQueue<TimedAction>();
+        private final PriorityBlockingQueue<TimedAction> queue = new PriorityBlockingQueue<TimedAction>();
         private final BooleanSubscription innerSubscription = new BooleanSubscription();
         private final AtomicInteger wip = new AtomicInteger();
+        private final AtomicInteger counter = new AtomicInteger();
 
         @Override
         public Subscription schedule(Action0 action) {
@@ -70,18 +68,15 @@ public final class TrampolineScheduler extends Scheduler {
             if (innerSubscription.isUnsubscribed()) {
                 return Subscriptions.unsubscribed();
             }
-            final TimedAction timedAction = new TimedAction(action, execTime, COUNTER_UPDATER.incrementAndGet(TrampolineScheduler.this));
-            synchronized (queue) {
-                queue.add(timedAction);
-            }
+            final TimedAction timedAction = new TimedAction(action, execTime, counter.incrementAndGet());
+            queue.add(timedAction);
 
             if (wip.getAndIncrement() == 0) {
                 do {
-                    TimedAction polled;
-                    synchronized (queue) {
-                        polled = queue.poll();
+                    final TimedAction polled = queue.poll();
+                    if (polled != null) {
+                      polled.action.call();
                     }
-                    polled.action.call();
                 } while (wip.decrementAndGet() > 0);
                 return Subscriptions.unsubscribed();
             } else {
@@ -90,9 +85,7 @@ public final class TrampolineScheduler extends Scheduler {
 
                     @Override
                     public void call() {
-                        synchronized (queue) {
-                            queue.remove(timedAction);
-                        }
+                        queue.remove(timedAction);
                     }
 
                 });
