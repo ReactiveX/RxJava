@@ -549,14 +549,16 @@ public class BackpressureTests {
     }
 
     final static Func1<Integer, Integer> SLOW_PASS_THRU = new Func1<Integer, Integer>() {
-
+        volatile int sink;
         @Override
         public Integer call(Integer t1) {
             // be slow ... but faster than Thread.sleep(1)
             String t = "";
+            int s = sink;
             for (int i = 1000; i >= 0; i--) {
-                t = String.valueOf(i + t.hashCode());
+                t = String.valueOf(i + t.hashCode() + s);
             }
+            sink = t.hashCode();
             return t1;
         }
 
