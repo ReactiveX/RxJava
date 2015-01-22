@@ -629,6 +629,16 @@ public class OperatorMergeTest {
     }
 
     @Test
+    public void testBackpressureUpstream2InLoop() throws InterruptedException {
+        for (int i = 0; i < 1000; i++) {
+            System.err.flush();
+            System.out.println("---");
+            System.out.flush();
+            testBackpressureUpstream2();
+        }
+    }
+    
+    @Test
     public void testBackpressureUpstream2() throws InterruptedException {
         final AtomicInteger generated1 = new AtomicInteger();
         Observable<Integer> o1 = createInfiniteObservable(generated1).subscribeOn(Schedulers.computation());
@@ -636,21 +646,24 @@ public class OperatorMergeTest {
         TestSubscriber<Integer> testSubscriber = new TestSubscriber<Integer>() {
             @Override
             public void onNext(Integer t) {
-                System.err.println("testSubscriber received => " + t + "  on thread " + Thread.currentThread());
                 super.onNext(t);
             }
         };
 
         Observable.merge(o1.take(RxRingBuffer.SIZE * 2), Observable.just(-99)).subscribe(testSubscriber);
         testSubscriber.awaitTerminalEvent();
+        
+        List<Integer> onNextEvents = testSubscriber.getOnNextEvents();
+        
+        System.out.println("Generated 1: " + generated1.get() + " / received: " + onNextEvents.size());
+        System.out.println(onNextEvents);
+
         if (testSubscriber.getOnErrorEvents().size() > 0) {
             testSubscriber.getOnErrorEvents().get(0).printStackTrace();
         }
         testSubscriber.assertNoErrors();
-        System.err.println(testSubscriber.getOnNextEvents());
-        assertEquals(RxRingBuffer.SIZE * 2 + 1, testSubscriber.getOnNextEvents().size());
+        assertEquals(RxRingBuffer.SIZE * 2 + 1, onNextEvents.size());
         // it should be between the take num and requested batch size across the async boundary
-        System.out.println("Generated 1: " + generated1.get());
         assertTrue(generated1.get() >= RxRingBuffer.SIZE * 2 && generated1.get() <= RxRingBuffer.SIZE * 3);
     }
 
