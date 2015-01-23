@@ -1,0 +1,117 @@
+/**
+ * Copyright 2014 Netflix, Inc.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package rx.internal.operators;
+
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.*;
+
+import org.junit.Test;
+
+import rx.*;
+import rx.exceptions.TestException;
+import rx.functions.Func1;
+import rx.internal.util.UtilityFunctions;
+;
+
+public class OperatorDoTakeWhileTest {
+    @Test
+    public void takeEmpty() {
+        @SuppressWarnings("unchecked")
+        Observer<Object> o = mock(Observer.class);
+        
+        Observable.empty().doTakeWhile(UtilityFunctions.alwaysTrue()).subscribe(o);
+        
+        verify(o, never()).onNext(any());
+        verify(o, never()).onError(any(Throwable.class));
+        verify(o).onCompleted();
+    }
+    @Test
+    public void takeAll() {
+        @SuppressWarnings("unchecked")
+        Observer<Object> o = mock(Observer.class);
+        
+        Observable.just(1, 2).doTakeWhile(UtilityFunctions.alwaysTrue()).subscribe(o);
+        
+        verify(o).onNext(1);
+        verify(o).onNext(2);
+        verify(o, never()).onError(any(Throwable.class));
+        verify(o).onCompleted();
+    }
+    @Test
+    public void takeFirst() {
+        @SuppressWarnings("unchecked")
+        Observer<Object> o = mock(Observer.class);
+        
+        Observable.just(1, 2).doTakeWhile(UtilityFunctions.alwaysFalse()).subscribe(o);
+        
+        verify(o).onNext(1);
+        verify(o, never()).onNext(2);
+        verify(o, never()).onError(any(Throwable.class));
+        verify(o).onCompleted();
+    }
+    @Test
+    public void takeSome() {
+        @SuppressWarnings("unchecked")
+        Observer<Object> o = mock(Observer.class);
+        
+        Observable.just(1, 2, 3).doTakeWhile(new Func1<Integer, Boolean>() {
+            @Override
+            public Boolean call(Integer t1) {
+                return t1 < 2;
+            }
+        }).subscribe(o);
+        
+        verify(o).onNext(1);
+        verify(o).onNext(2);
+        verify(o, never()).onNext(3);
+        verify(o, never()).onError(any(Throwable.class));
+        verify(o).onCompleted();
+    }
+    @Test
+    public void functionThrows() {
+        @SuppressWarnings("unchecked")
+        Observer<Object> o = mock(Observer.class);
+        
+        Observable.just(1, 2, 3).doTakeWhile(new Func1<Integer, Boolean>() {
+            @Override
+            public Boolean call(Integer t1) {
+                throw new TestException("Forced failure");
+            }
+        }).subscribe(o);
+        
+        verify(o).onNext(1);
+        verify(o, never()).onNext(2);
+        verify(o, never()).onNext(3);
+        verify(o).onError(any(TestException.class));
+        verify(o, never()).onCompleted();
+    }
+    @Test
+    public void sourceThrows() {
+        @SuppressWarnings("unchecked")
+        Observer<Object> o = mock(Observer.class);
+        
+        Observable.just(1)
+        .concatWith(Observable.<Integer>error(new TestException()))
+        .concatWith(Observable.just(2))
+        .doTakeWhile(UtilityFunctions.alwaysTrue()).subscribe(o);
+        
+        verify(o).onNext(1);
+        verify(o, never()).onNext(2);
+        verify(o).onError(any(TestException.class));
+        verify(o, never()).onCompleted();
+    }
+}
