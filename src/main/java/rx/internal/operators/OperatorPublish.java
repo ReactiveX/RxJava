@@ -135,7 +135,7 @@ public class OperatorPublish<T> extends ConnectableObservable<T> {
         private final RequestHandler<T> requestHandler;
         private final AtomicLong originOutstanding = new AtomicLong();
         private final long THRESHOLD = RxRingBuffer.SIZE / 4;
-        private final RxRingBuffer buffer = RxRingBuffer.getSpmcInstance();
+        private final RxRingBuffer buffer = RxRingBuffer.getSpscInstance();
 
         OriginSubscriber(RequestHandler<T> requestHandler) {
             this.requestHandler = requestHandler;

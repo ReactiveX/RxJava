@@ -83,7 +83,7 @@ public final class OnSubscribeCombineLatest<T, R> implements OnSubscribe<R> {
         private final MultiSourceRequestableSubscriber<T, R>[] subscribers;
 
         /* following are guarded by WIP */
-        private final RxRingBuffer buffer = RxRingBuffer.getSpmcInstance();
+        private final RxRingBuffer buffer = RxRingBuffer.getSpscInstance();
         private final Object[] collectedValues;
         private final BitSet haveValues;
         private volatile int haveValuesCount; // does this need to be volatile or is WIP sufficient?

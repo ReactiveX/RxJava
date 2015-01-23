@@ -293,7 +293,7 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
         @SuppressWarnings("rawtypes")
         final class InnerSubscriber extends Subscriber {
             // Concurrent* since we need to read it from across threads
-            final RxRingBuffer items = RxRingBuffer.getSpmcInstance();
+            final RxRingBuffer items = RxRingBuffer.getSpscInstance();
 
             @Override
             public void onStart() {
