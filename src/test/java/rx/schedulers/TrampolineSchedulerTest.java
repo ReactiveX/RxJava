@@ -18,13 +18,17 @@ package rx.schedulers;
 import static org.junit.Assert.*;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 
 import rx.*;
+import rx.Observer;
 import rx.Scheduler.Worker;
 import rx.Observable;
 import rx.functions.*;
+import rx.observers.Observers;
+import rx.observers.TestSubscriber;
 import rx.subscriptions.CompositeSubscription;
 
 public class TrampolineSchedulerTest extends AbstractSchedulerTests {
@@ -93,6 +97,47 @@ public class TrampolineSchedulerTest extends AbstractSchedulerTests {
         } finally {
             workers.unsubscribe();
         }
+    }
+
+    /**
+     * This is a regression test for #1702. Concurrent work scheduling that is improperly synchronized can cause an
+     * action to be added or removed onto the priority queue during a poll, which can result in NPEs during queue
+     * sifting. While it is difficult to isolate the issue directly, we can easily trigger the behavior by spamming the
+     * trampoline with enqueue requests from multiple threads concurrently.
+     */
+    @Test
+    public void testTrampolineWorkerHandlesConcurrentScheduling() {
+        final Worker trampolineWorker = Schedulers.trampoline().createWorker();
+        final Observer<Subscription> observer = Observers.empty();
+        final TestSubscriber<Subscription> ts = new TestSubscriber<Subscription>(observer);
+
+        // Spam the trampoline with actions.
+        Observable.range(0, 50)
+                .flatMap(new Func1<Integer, Observable<Subscription>>() {
+
+                    @Override
+                    public Observable<Subscription> call(Integer count) {
+                        return Observable.interval(1, TimeUnit.MICROSECONDS).map(
+                                new Func1<Long, Subscription>() {
+
+                                     @Override
+                                     public Subscription call(Long count) {
+                                         return trampolineWorker.schedule(new Action0() {
+
+                                             @Override
+                                             public void call() {}
+
+                                         });
+                                     }
+
+                                }).limit(100);
+                    }
+
+                })
+                .subscribeOn(Schedulers.computation())
+                .subscribe(ts);
+        ts.awaitTerminalEvent();
+        ts.assertNoErrors();
     }
 
     private static Worker doWorkOnNewTrampoline(final String key, final ArrayList<String> workDone) {
