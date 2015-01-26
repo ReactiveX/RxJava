@@ -126,7 +126,7 @@ public class OperatorOnBackpressureBuffer<T> implements Operator<T, T> {
         @Override
         public Object poll() {
             Object value = queue.poll();
-            if (capacity != null) {
+            if (capacity != null && value != null) {
                 capacity.incrementAndGet();
             }
             return value;
