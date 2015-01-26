@@ -60,12 +60,12 @@ public final class BackpressureDrainManager implements Producer {
          */
         void complete(Throwable exception);
     }
-    
+
     /** The request counter, updated via REQUESTED_COUNTER. */
     protected volatile long requestedCount;
     /** Atomically updates the the requestedCount field. */ 
     protected static final AtomicLongFieldUpdater<BackpressureDrainManager> REQUESTED_COUNT
-        = AtomicLongFieldUpdater.newUpdater(BackpressureDrainManager.class, "requestedCount");
+    = AtomicLongFieldUpdater.newUpdater(BackpressureDrainManager.class, "requestedCount");
     /** Indicates if one is in emitting phase, guarded by this. */
     protected boolean emitting;
     /** Indicates a terminal state. */
@@ -235,6 +235,6 @@ public final class BackpressureDrainManager implements Producer {
                 }
             }
         }
-    
+
     }
 }
