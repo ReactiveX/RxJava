@@ -125,7 +125,11 @@ public class OperatorOnBackpressureBuffer<T> implements Operator<T, T> {
         }
         @Override
         public Object poll() {
-            return queue.poll();
+            Object value = queue.poll();
+            if (capacity != null) {
+                capacity.incrementAndGet();
+            }
+            return value;
         }
         
         private boolean assertCapacity() {
