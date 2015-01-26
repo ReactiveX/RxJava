@@ -18,7 +18,7 @@ package rx.internal.operators;
 import static org.junit.Assert.*;
 
 import java.util.*;
-import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.*;
@@ -191,14 +191,14 @@ public class OperatorMergeMaxConcurrentTest {
         }
     }
     @Test(timeout = 10000)
-    public void testSympleAsyncLoop() {
+    public void testSimpleAsyncLoop() {
         for (int i = 0; i < 200; i++) {
             testSimpleAsync();
         }
     }
     @Test(timeout = 10000)
     public void testSimpleAsync() {
-        for (int i = 1; i < 100; i++) {
+        for (int i = 1; i < 50; i++) {
             TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
             List<Observable<Integer>> sourceList = new ArrayList<Observable<Integer>>(i);
             Set<Integer> expected = new HashSet<Integer>(i);
@@ -209,7 +209,7 @@ public class OperatorMergeMaxConcurrentTest {
             
             Observable.merge(sourceList, i).subscribe(ts);
         
-            ts.awaitTerminalEvent();
+            ts.awaitTerminalEvent(1, TimeUnit.SECONDS);
             ts.assertNoErrors();
             Set<Integer> actual = new HashSet<Integer>(ts.getOnNextEvents());
             
@@ -224,7 +224,7 @@ public class OperatorMergeMaxConcurrentTest {
     }
     @Test(timeout = 10000)
     public void testSimpleOneLessAsync() {
-        for (int i = 2; i < 100; i++) {
+        for (int i = 2; i < 50; i++) {
             TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
             List<Observable<Integer>> sourceList = new ArrayList<Observable<Integer>>(i);
             Set<Integer> expected = new HashSet<Integer>(i);
@@ -235,7 +235,7 @@ public class OperatorMergeMaxConcurrentTest {
             
             Observable.merge(sourceList, i - 1).subscribe(ts);
         
-            ts.awaitTerminalEvent();
+            ts.awaitTerminalEvent(1, TimeUnit.SECONDS);
             ts.assertNoErrors();
             Set<Integer> actual = new HashSet<Integer>(ts.getOnNextEvents());
             
