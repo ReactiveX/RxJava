@@ -7840,8 +7840,8 @@ public class Observable<T> {
      * @see Observable#takeWhile(Func1)
      */
     @Experimental
-    public final Observable<T> doTakeWhile(final Func1<? super T, Boolean> predicate) {
-        return lift(new OperatorDoTakeWhile<T>(predicate));
+    public final Observable<T> takeUntil(final Func1<? super T, Boolean> predicate) {
+        return lift(new OperatorTakeUntilPredicate<T>(predicate));
     }
     
     /**

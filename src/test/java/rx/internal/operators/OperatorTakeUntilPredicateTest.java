@@ -19,21 +19,24 @@ package rx.internal.operators;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
-import org.junit.Test;
+import java.util.Arrays;
+
+import org.junit.*;
 
 import rx.*;
 import rx.exceptions.TestException;
 import rx.functions.Func1;
 import rx.internal.util.UtilityFunctions;
+import rx.observers.TestSubscriber;
 ;
 
-public class OperatorDoTakeWhileTest {
+public class OperatorTakeUntilPredicateTest {
     @Test
     public void takeEmpty() {
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
         
-        Observable.empty().doTakeWhile(UtilityFunctions.alwaysTrue()).subscribe(o);
+        Observable.empty().takeUntil(UtilityFunctions.alwaysTrue()).subscribe(o);
         
         verify(o, never()).onNext(any());
         verify(o, never()).onError(any(Throwable.class));
@@ -44,7 +47,7 @@ public class OperatorDoTakeWhileTest {
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
         
-        Observable.just(1, 2).doTakeWhile(UtilityFunctions.alwaysTrue()).subscribe(o);
+        Observable.just(1, 2).takeUntil(UtilityFunctions.alwaysTrue()).subscribe(o);
         
         verify(o).onNext(1);
         verify(o).onNext(2);
@@ -56,7 +59,7 @@ public class OperatorDoTakeWhileTest {
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
         
-        Observable.just(1, 2).doTakeWhile(UtilityFunctions.alwaysFalse()).subscribe(o);
+        Observable.just(1, 2).takeUntil(UtilityFunctions.alwaysFalse()).subscribe(o);
         
         verify(o).onNext(1);
         verify(o, never()).onNext(2);
@@ -68,7 +71,7 @@ public class OperatorDoTakeWhileTest {
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
         
-        Observable.just(1, 2, 3).doTakeWhile(new Func1<Integer, Boolean>() {
+        Observable.just(1, 2, 3).takeUntil(new Func1<Integer, Boolean>() {
             @Override
             public Boolean call(Integer t1) {
                 return t1 < 2;
@@ -86,7 +89,7 @@ public class OperatorDoTakeWhileTest {
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
         
-        Observable.just(1, 2, 3).doTakeWhile(new Func1<Integer, Boolean>() {
+        Observable.just(1, 2, 3).takeUntil(new Func1<Integer, Boolean>() {
             @Override
             public Boolean call(Integer t1) {
                 throw new TestException("Forced failure");
@@ -107,11 +110,26 @@ public class OperatorDoTakeWhileTest {
         Observable.just(1)
         .concatWith(Observable.<Integer>error(new TestException()))
         .concatWith(Observable.just(2))
-        .doTakeWhile(UtilityFunctions.alwaysTrue()).subscribe(o);
+        .takeUntil(UtilityFunctions.alwaysTrue()).subscribe(o);
         
         verify(o).onNext(1);
         verify(o, never()).onNext(2);
         verify(o).onError(any(TestException.class));
         verify(o, never()).onCompleted();
+    }
+    @Test
+    public void backpressure() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
+            @Override
+            public void onStart() {
+                request(5);
+            }
+        };
+        
+        Observable.range(1, 1000).takeUntil(UtilityFunctions.alwaysTrue()).subscribe(ts);
+        
+        ts.assertNoErrors();
+        ts.assertReceivedOnNext(Arrays.asList(1, 2, 3, 4, 5));
+        Assert.assertEquals(0, ts.getOnCompletedEvents().size());
     }
 }
