@@ -413,7 +413,7 @@ public class RxRingBuffer implements Subscription {
         synchronized (this) {
             Queue<Object> q = queue;
             if (q == null) {
-                // we are unsubscribed and have released the undelrying queue
+                // we are unsubscribed and have released the underlying queue
                 return null;
             }
             o = q.peek();
