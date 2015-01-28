@@ -33,7 +33,6 @@ public class RxRingBuffer implements Subscription {
 
     public static RxRingBuffer getSpscInstance() {
         if (UnsafeAccess.isUnsafeAvailable()) {
-            // TODO the SpscArrayQueue isn't ready yet so using SpmcArrayQueue for now
             return new RxRingBuffer(SPSC_POOL, SIZE);
         } else {
             return new RxRingBuffer();
@@ -394,23 +393,11 @@ public class RxRingBuffer implements Subscription {
         synchronized (this) {
             Queue<Object> q = queue;
             if (q == null) {
-                // we are unsubscribed and have released the undelrying queue
+                // we are unsubscribed and have released the underlying queue
                 return null;
             }
             o = q.poll();
             
-            /*
-             * benjchristensen July 10 2014 => The check for 'queue.isEmpty()' came from a very rare concurrency bug where poll()
-             * is invoked, then an "onNext + onCompleted/onError" arrives before hitting the if check below. In that case,
-             * "o == null" and there is a terminal state, but now "queue.isEmpty()" and we should NOT return the terminalState.
-             * 
-             * The queue.size() check is a double-check that works to handle this, without needing to synchronize poll with on*
-             * or needing to enqueue terminalState.
-             * 
-             * This did make me consider eliminating the 'terminalState' ref and enqueuing it ... but then that requires
-             * a +1 of the size, or -1 of how many onNext can be sent. See comment on 'terminalState' above for why it
-             * is currently the way it is.
-             */
             Object ts = terminalState;
             if (o == null && ts != null && q.peek() == null) {
                 o = ts;
