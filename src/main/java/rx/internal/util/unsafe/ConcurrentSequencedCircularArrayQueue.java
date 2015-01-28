@@ -35,9 +35,10 @@ public abstract class ConcurrentSequencedCircularArrayQueue<E> extends Concurren
 
     public ConcurrentSequencedCircularArrayQueue(int capacity) {
         super(capacity);
+        int actualCapacity = (int) (this.mask + 1);
         // pad data on either end with some empty slots.
-        sequenceBuffer = new long[(this.capacity << SPARSE_SHIFT) + BUFFER_PAD * 2];
-        for (long i = 0; i < this.capacity; i++) {
+        sequenceBuffer = new long[(actualCapacity << SPARSE_SHIFT) + BUFFER_PAD * 2];
+        for (long i = 0; i < actualCapacity; i++) {
             soSequence(sequenceBuffer, calcSequenceOffset(i), i);
         }
     }

@@ -16,6 +16,8 @@
  */
 package rx.internal.util.unsafe;
 
+import static rx.internal.util.unsafe.UnsafeAccess.UNSAFE;
+
 abstract class SpmcArrayQueueL1Pad<E> extends ConcurrentCircularArrayQueue<E> {
     long p10, p11, p12, p13, p14, p15, p16;
     long p30, p31, p32, p33, p34, p35, p36, p37;
@@ -30,7 +32,7 @@ abstract class SpmcArrayQueueProducerField<E> extends SpmcArrayQueueL1Pad<E> {
     static {
         try {
             P_INDEX_OFFSET =
-                    UnsafeAccess.UNSAFE.objectFieldOffset(SpmcArrayQueueProducerField.class.getDeclaredField("producerIndex"));
+                    UNSAFE.objectFieldOffset(SpmcArrayQueueProducerField.class.getDeclaredField("producerIndex"));
         } catch (NoSuchFieldException e) {
             throw new RuntimeException(e);
         }
@@ -42,7 +44,7 @@ abstract class SpmcArrayQueueProducerField<E> extends SpmcArrayQueueL1Pad<E> {
     }
 
     protected final void soTail(long v) {
-        UnsafeAccess.UNSAFE.putOrderedLong(this, P_INDEX_OFFSET, v);
+        UNSAFE.putOrderedLong(this, P_INDEX_OFFSET, v);
     }
 
     public SpmcArrayQueueProducerField(int capacity) {
@@ -64,7 +66,7 @@ abstract class SpmcArrayQueueConsumerField<E> extends SpmcArrayQueueL2Pad<E> {
     static {
         try {
             C_INDEX_OFFSET =
-                    UnsafeAccess.UNSAFE.objectFieldOffset(SpmcArrayQueueConsumerField.class.getDeclaredField("consumerIndex"));
+                    UNSAFE.objectFieldOffset(SpmcArrayQueueConsumerField.class.getDeclaredField("consumerIndex"));
         } catch (NoSuchFieldException e) {
             throw new RuntimeException(e);
         }
@@ -80,7 +82,7 @@ abstract class SpmcArrayQueueConsumerField<E> extends SpmcArrayQueueL2Pad<E> {
     }
 
     protected final boolean casHead(long expect, long newValue) {
-        return UnsafeAccess.UNSAFE.compareAndSwapLong(this, C_INDEX_OFFSET, expect, newValue);
+        return UNSAFE.compareAndSwapLong(this, C_INDEX_OFFSET, expect, newValue);
     }
 }
 
@@ -132,17 +134,18 @@ public final class SpmcArrayQueue<E> extends SpmcArrayQueueL3Pad<E> {
             throw new NullPointerException("Null is not a valid element");
         }
         final E[] lb = buffer;
+        final long lMask = mask;
         final long currProducerIndex = lvProducerIndex();
         final long offset = calcElementOffset(currProducerIndex);
         if (null != lvElement(lb, offset)) {
-            // strict check as per https://github.com/JCTools/JCTools/issues/21#issuecomment-50204120
-            int size = (int) (currProducerIndex - lvConsumerIndex());
-            if (size == capacity) {
+            long size = currProducerIndex - lvConsumerIndex();
+            
+            if(size > lMask) {
                 return false;
             }
             else {
                 // spin wait for slot to clear, buggers wait freedom
-                while (null != lvElement(lb, offset));
+                while(null != lvElement(lb, offset));
             }
         }
         spElement(lb, offset, e);
@@ -152,14 +155,6 @@ public final class SpmcArrayQueue<E> extends SpmcArrayQueueL3Pad<E> {
         return true;
     }
 
-    /**
-     * {@inheritDoc}
-     * <p>
-     * Note that we are not doing the the whole poll/tryPoll thing here like we do in MPMC/MPSC, that is because the
-     * problem we try to solve there is caused by having multiple producers making progress concurrently which can
-     * create 'bubbles' of claimed but not fully visible elements in the queue. For a single producer the problem
-     * doesn't exist.
-     */
     @Override
     public E poll() {
         long currentConsumerIndex;
@@ -188,7 +183,21 @@ public final class SpmcArrayQueue<E> extends SpmcArrayQueueL3Pad<E> {
 
     @Override
     public E peek() {
-        return lvElement(calcElementOffset(lvConsumerIndex()));
+        long currentConsumerIndex;
+        final long currProducerIndexCache = lvProducerIndexCache();
+        E e;
+        do {
+            currentConsumerIndex = lvConsumerIndex();
+            if (currentConsumerIndex >= currProducerIndexCache) {
+                long currProducerIndex = lvProducerIndex();
+                if (currentConsumerIndex >= currProducerIndex) {
+                    return null;
+                } else {
+                    svProducerIndexCache(currProducerIndex);
+                }
+            }
+        } while (null == (e = lvElement(calcElementOffset(currentConsumerIndex))));
+        return e;
     }
 
     @Override
