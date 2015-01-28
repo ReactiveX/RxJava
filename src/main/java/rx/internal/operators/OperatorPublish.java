@@ -206,7 +206,6 @@ public class OperatorPublish<T> extends ConnectableObservable<T> {
      */
     private static class State<T> {
         private long outstandingRequests = -1;
-        private long emittedSinceRequest = 0;
         private OriginSubscriber<T> origin;
         // using AtomicLong to simplify mutating it, not for thread-safety since we're synchronizing access to this class
         // using LinkedHashMap so the order of Subscribers having onNext invoked is deterministic (same each time the code is run)
@@ -225,7 +224,6 @@ public class OperatorPublish<T> extends ConnectableObservable<T> {
         public synchronized boolean canEmitWithDecrement() {
             if (outstandingRequests > 0) {
                 outstandingRequests--;
-                emittedSinceRequest++;
                 return true;
             }
             return false;
@@ -233,7 +231,6 @@ public class OperatorPublish<T> extends ConnectableObservable<T> {
 
         public synchronized void incrementOutstandingAfterFailedEmit() {
             outstandingRequests++;
-            emittedSinceRequest--;
         }
 
         public synchronized Subscriber<? super T>[] getSubscribers() {
@@ -243,50 +240,55 @@ public class OperatorPublish<T> extends ConnectableObservable<T> {
         /**
          * @return long outstandingRequests
          */
-        public synchronized long requestFromSubscriber(Subscriber<? super T> subscriber, Long request) {
-            AtomicLong r = ss.get(subscriber);
+        public synchronized long requestFromSubscriber(Subscriber<? super T> subscriber, long request) {
+            Map<Subscriber<? super T>, AtomicLong> subs = ss;
+            AtomicLong r = subs.get(subscriber);
             if (r == null) {
-                ss.put(subscriber, new AtomicLong(request));
+                subs.put(subscriber, new AtomicLong(request));
             } else {
-                if (r.get() != Long.MAX_VALUE) {
-                    if (request == Long.MAX_VALUE) {
-                        r.set(Long.MAX_VALUE);
-                    } else {
-                        r.addAndGet(request.longValue());
+                do {
+                    long current = r.get();
+                    if (current == Long.MAX_VALUE) {
+                        break;
                     }
-                }
+                    long u = current + request;
+                    if (u < 0) {
+                        u = Long.MAX_VALUE;
+                    }
+                    if (r.compareAndSet(current, u)) {
+                        break;
+                    }
+                } while (true);
             }
 
-            return resetAfterSubscriberUpdate();
+            return resetAfterSubscriberUpdate(subs);
         }
 
         public synchronized void removeSubscriber(Subscriber<? super T> subscriber) {
-            ss.remove(subscriber);
-            resetAfterSubscriberUpdate();
+            Map<Subscriber<? super T>, AtomicLong> subs = ss;
+            subs.remove(subscriber);
+            resetAfterSubscriberUpdate(subs);
         }
 
         @SuppressWarnings("unchecked")
-        private long resetAfterSubscriberUpdate() {
-            subscribers = new Subscriber[ss.size()];
+        private long resetAfterSubscriberUpdate(Map<Subscriber<? super T>, AtomicLong> subs) {
+            Subscriber<? super T>[] subscriberArray = new Subscriber[subs.size()];
             int i = 0;
-            for (Subscriber<? super T> s : ss.keySet()) {
-                subscribers[i++] = s;
-            }
-
             long lowest = -1;
-            for (AtomicLong l : ss.values()) {
-                // decrement all we have emitted since last request
-                long c = l.addAndGet(-emittedSinceRequest);
+            for (Map.Entry<Subscriber<? super T>, AtomicLong> e : subs.entrySet()) {
+                subscriberArray[i++] = e.getKey();
+                AtomicLong l = e.getValue();
+                long c = l.get();
                 if (lowest == -1 || c < lowest) {
                     lowest = c;
                 }
             }
+            this.subscribers = subscriberArray;
             /*
              * when receiving a request from a subscriber we reset 'outstanding' to the lowest of all subscribers
              */
             outstandingRequests = lowest;
-            emittedSinceRequest = 0;
-            return outstandingRequests;
+            return lowest;
         }
     }
 
@@ -299,7 +301,7 @@ public class OperatorPublish<T> extends ConnectableObservable<T> {
         @SuppressWarnings("rawtypes")
         static final AtomicLongFieldUpdater<RequestHandler> WIP = AtomicLongFieldUpdater.newUpdater(RequestHandler.class, "wip");
 
-        public void requestFromChildSubscriber(Subscriber<? super T> subscriber, Long request) {
+        public void requestFromChildSubscriber(Subscriber<? super T> subscriber, long request) {
             state.requestFromSubscriber(subscriber, request);
             OriginSubscriber<T> originSubscriber = state.getOrigin();
             if(originSubscriber != null) {
@@ -333,6 +335,11 @@ public class OperatorPublish<T> extends ConnectableObservable<T> {
 
         public void drainQueue(OriginSubscriber<T> originSubscriber) {
             if (WIP.getAndIncrement(this) == 0) {
+                State<T> localState = state;
+                Map<Subscriber<? super T>, AtomicLong> localMap = localState.ss;
+                RxRingBuffer localBuffer = originSubscriber.buffer;
+                NotificationLite<T> nl = notifier;
+                
                 int emitted = 0;
                 do {
                     /*
@@ -345,27 +352,23 @@ public class OperatorPublish<T> extends ConnectableObservable<T> {
                      * If we want to batch this then we need to account for new subscribers arriving with a lower request count
                      * concurrently while iterating the batch ... or accept that they won't
                      */
+                    
                     while (true) {
-                        boolean shouldEmit = state.canEmitWithDecrement();
+                        boolean shouldEmit = localState.canEmitWithDecrement();
                         if (!shouldEmit) {
                             break;
                         }
-                        Object o = originSubscriber.buffer.poll();
+                        Object o = localBuffer.poll();
                         if (o == null) {
                             // nothing in buffer so increment outstanding back again
-                            state.incrementOutstandingAfterFailedEmit();
+                            localState.incrementOutstandingAfterFailedEmit();
                             break;
                         }
 
-                        if (notifier.isCompleted(o)) {
-                            for (Subscriber<? super T> s : state.getSubscribers()) {
-                                notifier.accept(s, o);
-                            }
-
-                        } else {
-                            for (Subscriber<? super T> s : state.getSubscribers()) {
-                                notifier.accept(s, o);
-                            }
+                        for (Subscriber<? super T> s : localState.getSubscribers()) {
+                            AtomicLong req = localMap.get(s);
+                            nl.accept(s, o);
+                            req.decrementAndGet();
                         }
                         emitted++;
                     }
