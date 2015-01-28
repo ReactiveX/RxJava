@@ -19,6 +19,8 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+import rx.exceptions.TestException;
+
 
 public class NotificationLiteTest {
 
@@ -34,5 +36,20 @@ public class NotificationLiteTest {
         assertEquals("Hello", on.getValue(n));
     }
     
-    
+    @Test
+    public void testValueKind() {
+        NotificationLite<Object> on = NotificationLite.instance();
+        
+        assertTrue(on.isNull(on.next(null)));
+        assertFalse(on.isNull(on.next(1)));
+        assertFalse(on.isNull(on.error(new TestException())));
+        assertFalse(on.isNull(on.completed()));
+        assertFalse(on.isNull(null));
+        
+        assertTrue(on.isNext(on.next(null)));
+        assertTrue(on.isNext(on.next(1)));
+        assertFalse(on.isNext(on.completed()));
+        assertFalse(on.isNext(null));
+        assertFalse(on.isNext(on.error(new TestException())));
+    }
 }

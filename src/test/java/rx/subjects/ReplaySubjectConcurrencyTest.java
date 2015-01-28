@@ -407,4 +407,53 @@ public class ReplaySubjectConcurrencyTest {
             worker.unsubscribe();
         }
     }
+    @Test(timeout = 5000)
+    public void testConcurrentSizeAndHasAnyValue() throws InterruptedException {
+        final ReplaySubject<Object> rs = ReplaySubject.create();
+        final CyclicBarrier cb = new CyclicBarrier(2);
+        
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    cb.await();
+                } catch (InterruptedException e) {
+                    return;
+                } catch (BrokenBarrierException e) {
+                    return;
+                }
+                for (int i = 0; i < 1000000; i++) {
+                    rs.onNext(i);
+                }
+                rs.onCompleted();
+                System.out.println("Replay fill Thread finished!");
+            }
+        });
+        t.start();
+        try {
+            cb.await();
+        } catch (InterruptedException e) {
+            return;
+        } catch (BrokenBarrierException e) {
+            return;
+        }
+        int lastSize = 0;
+        for (; !rs.hasThrowable() && !rs.hasCompleted();) {
+            int size = rs.size();
+            boolean hasAny = rs.hasAnyValue();
+            Object[] values = rs.getValues();
+            if (size < lastSize) {
+                Assert.fail("Size decreased! " + lastSize + " -> " + size);
+            }
+            if ((size > 0) && !hasAny) {
+                Assert.fail("hasAnyValue reports emptyness but size doesn't");
+            }
+            if (size > values.length) {
+                Assert.fail("Got fewer values than size! " + size + " -> " + values.length);
+            }
+            lastSize = size;
+        }
+        
+        t.join();
+    }
 }

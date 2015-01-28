@@ -16,6 +16,9 @@
 package rx.subjects;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.inOrder;
@@ -36,6 +39,7 @@ import rx.Observer;
 import rx.Subscription;
 import rx.exceptions.CompositeException;
 import rx.exceptions.OnErrorNotImplementedException;
+import rx.exceptions.TestException;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.observers.TestSubscriber;
@@ -394,5 +398,54 @@ public class PublishSubjectTest {
         }
         // even though the onError above throws we should still receive it on the other subscriber 
         assertEquals(1, ts.getOnErrorEvents().size());
+    }
+    @Test
+    public void testCurrentStateMethodsNormal() {
+        PublishSubject<Object> as = PublishSubject.create();
+        
+        assertFalse(as.hasThrowable());
+        assertFalse(as.hasCompleted());
+        assertNull(as.getThrowable());
+        
+        as.onNext(1);
+        
+        assertFalse(as.hasThrowable());
+        assertFalse(as.hasCompleted());
+        assertNull(as.getThrowable());
+        
+        as.onCompleted();
+        
+        assertFalse(as.hasThrowable());
+        assertTrue(as.hasCompleted());
+        assertNull(as.getThrowable());
+    }
+    
+    @Test
+    public void testCurrentStateMethodsEmpty() {
+        PublishSubject<Object> as = PublishSubject.create();
+        
+        assertFalse(as.hasThrowable());
+        assertFalse(as.hasCompleted());
+        assertNull(as.getThrowable());
+        
+        as.onCompleted();
+        
+        assertFalse(as.hasThrowable());
+        assertTrue(as.hasCompleted());
+        assertNull(as.getThrowable());
+    }
+    @Test
+    public void testCurrentStateMethodsError() {
+        PublishSubject<Object> as = PublishSubject.create();
+        
+        assertFalse(as.hasThrowable());
+        assertFalse(as.hasCompleted());
+        assertNull(as.getThrowable());
+        
+        as.onError(new TestException());
+        
+        assertTrue(as.hasThrowable());
+        assertFalse(as.hasCompleted());
+        assertTrue(as.getThrowable() instanceof TestException);
     }
 }
