@@ -17,20 +17,13 @@ package rx.internal.operators;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
-import java.util.concurrent.atomic.AtomicLongFieldUpdater;
+import java.util.concurrent.atomic.*;
 
-import rx.Observable;
+import rx.*;
 import rx.Observable.Operator;
-import rx.Producer;
-import rx.Subscriber;
-import rx.exceptions.CompositeException;
-import rx.exceptions.MissingBackpressureException;
-import rx.exceptions.OnErrorThrowable;
+import rx.exceptions.*;
 import rx.functions.Func1;
-import rx.internal.util.RxRingBuffer;
-import rx.internal.util.ScalarSynchronousObservable;
-import rx.internal.util.SubscriptionIndexedRingBuffer;
+import rx.internal.util.*;
 
 /**
  * Flattens a list of {@link Observable}s into one {@code Observable}, without any transformation.
@@ -135,7 +128,7 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
 
         private volatile SubscriptionIndexedRingBuffer<InnerSubscriber<T>> childrenSubscribers;
 
-        private RxRingBuffer scalarValueQueue = null;
+        private volatile RxRingBuffer scalarValueQueue = null;
 
         /* protected by lock on MergeSubscriber instance */
         private int missedEmitting = 0;
@@ -266,9 +259,8 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
                 request(1);
                 return;
             } else {
-                initScalarValueQueueIfNeeded();
                 try {
-                    scalarValueQueue.onNext(value);
+                    getOrCreateScalarValueQueue().onNext(value);
                 } catch (MissingBackpressureException e) {
                     onError(e);
                 }
@@ -306,19 +298,20 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
 
             // if we didn't return above we need to enqueue
             // enqueue the values for later delivery
-            initScalarValueQueueIfNeeded();
             try {
-                scalarValueQueue.onNext(t.get());
+                getOrCreateScalarValueQueue().onNext(t.get());
             } catch (MissingBackpressureException e) {
                 onError(e);
             }
         }
 
-        private void initScalarValueQueueIfNeeded() {
-            if (scalarValueQueue == null) {
-                scalarValueQueue = RxRingBuffer.getSpmcInstance();
-                add(scalarValueQueue);
+        private RxRingBuffer getOrCreateScalarValueQueue() {
+            RxRingBuffer svq = scalarValueQueue;
+            if (svq == null) {
+                svq = RxRingBuffer.getSpmcInstance();
+                scalarValueQueue = svq;
             }
+            return svq;
         }
 
         private synchronized boolean releaseEmitLock() {
@@ -381,13 +374,14 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
          * ONLY call when holding the EmitLock.
          */
         private int drainScalarValueQueue() {
-            if (scalarValueQueue != null) {
+            RxRingBuffer svq = scalarValueQueue;
+            if (svq != null) {
                 long r = mergeProducer.requested;
                 int emittedWhileDraining = 0;
                 if (r < 0) {
                     // drain it all
                     Object o = null;
-                    while ((o = scalarValueQueue.poll()) != null) {
+                    while ((o = svq.poll()) != null) {
                         on.accept(actual, o);
                         emittedWhileDraining++;
                     }
@@ -395,7 +389,7 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
                     // drain what was requested
                     long toEmit = r;
                     for (int i = 0; i < toEmit; i++) {
-                        Object o = scalarValueQueue.poll();
+                        Object o = svq.poll();
                         if (o == null) {
                             break;
                         } else {
@@ -469,7 +463,7 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
             boolean c = false;
             synchronized (this) {
                 completed = true;
-                if (wip == 0 && (scalarValueQueue == null || scalarValueQueue.isEmpty())) {
+                if (wip == 0) {
                     c = true;
                 }
             }
@@ -494,25 +488,38 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
         }
 
         private void drainAndComplete() {
-            drainQueuesIfNeeded(); // TODO need to confirm whether this is needed or not
-            if (delayErrors) {
-                Queue<Throwable> es = null;
+            boolean moreToDrain = true;
+            while (moreToDrain) {
                 synchronized (this) {
-                    es = exceptions;
+                    missedEmitting = 0;
                 }
-                if (es != null) {
-                    if (es.isEmpty()) {
-                        actual.onCompleted();
-                    } else if (es.size() == 1) {
-                        actual.onError(es.poll());
+                drainScalarValueQueue();
+                drainChildrenQueues();
+                synchronized (this) {
+                    moreToDrain = missedEmitting > 0;
+                }
+            }
+            RxRingBuffer svq = scalarValueQueue;
+            if (svq == null || svq.isEmpty()) {
+                if (delayErrors) {
+                    Queue<Throwable> es = null;
+                    synchronized (this) {
+                        es = exceptions;
+                    }
+                    if (es != null) {
+                        if (es.isEmpty()) {
+                            actual.onCompleted();
+                        } else if (es.size() == 1) {
+                            actual.onError(es.poll());
+                        } else {
+                            actual.onError(new CompositeException(es));
+                        }
                     } else {
-                        actual.onError(new CompositeException(es));
+                        actual.onCompleted();
                     }
                 } else {
                     actual.onCompleted();
                 }
-            } else {
-                actual.onCompleted();
             }
         }
 
