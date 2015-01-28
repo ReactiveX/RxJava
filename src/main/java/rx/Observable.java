@@ -9020,6 +9020,36 @@ public class Observable<T> {
     }
 
     /**
+     * Subscribes to an Observable and provides an Observer that implements functions to print the items the
+     * Observable emits and any error or completion notification it issues. This is mainly for debug purpose.
+     *
+     * @param observed
+     *             a description of the Observable subscribed to
+     * @return a {@link Subscription} reference with which the {@link Observer} can stop receiving items before
+     *         the Observable has completed
+     */
+    public final Subscription dump(final String observed) {
+        Observer<T> observer = new Observer<T>() {
+
+            @Override
+            public void onCompleted() {
+                System.out.println(observed + " Completed");
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                System.out.println(observed + "Errored with: " + e.getMessage());
+            }
+
+            @Override
+            public void onNext(T t) {
+                System.out.println(observed + "-->" + t);
+            }
+        };
+        return subscribe(observer);
+    }
+
+    /**
      * An Observable that never sends any information to an {@link Observer}.
      * This Observable is useful primarily for testing purposes.
      * 
