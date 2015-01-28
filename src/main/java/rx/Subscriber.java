@@ -92,8 +92,13 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
      *
      * @param n the maximum number of items you want the Observable to emit to the Subscriber at this time, or
      *           {@code Long.MAX_VALUE} if you want the Observable to emit items at its own pace
+     * @throws IllegalArgumentException
+     *             if {@code n} is negative
      */
     protected final void request(long n) {
+        if (n < 0) {
+            throw new IllegalArgumentException("number requested cannot be negative: " + n);
+        } 
         Producer shouldRequest = null;
         synchronized (this) {
             if (p != null) {

@@ -16,9 +16,13 @@
 package rx;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
 
@@ -418,5 +422,36 @@ public class SubscriberTest {
         }).subscribe();
 
         assertEquals(1, c.get());
+    }
+    
+    @Test
+    public void testNegativeRequestThrowsIllegalArgumentException() throws InterruptedException {
+        final CountDownLatch latch = new CountDownLatch(1);
+        final AtomicReference<Throwable> exception = new AtomicReference<Throwable>();
+        Observable.just(1,2,3,4).subscribe(new Subscriber<Integer>() {
+
+            @Override
+            public void onStart() {
+                request(1);
+            }
+            
+            @Override
+            public void onCompleted() {
+                
+            }
+
+            @Override
+            public void onError(Throwable e) {
+               exception.set(e);
+               latch.countDown();
+            }
+
+            @Override
+            public void onNext(Integer t) {
+                request(-1);
+                request(1);
+            }});
+        assertTrue(latch.await(10, TimeUnit.SECONDS));
+        assertTrue(exception.get() instanceof IllegalArgumentException);
     }
 }
