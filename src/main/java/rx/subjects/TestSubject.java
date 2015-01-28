@@ -17,7 +17,6 @@ package rx.subjects;
 
 import java.util.concurrent.TimeUnit;
 
-import rx.Observable;
 import rx.Observer;
 import rx.Scheduler;
 import rx.functions.Action0;

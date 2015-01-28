@@ -16,12 +16,10 @@
 package rx.subscriptions;
 
 import java.util.concurrent.Future;
-import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 
 import rx.Subscription;
 import rx.annotations.Experimental;
 import rx.functions.Action0;
-import rx.functions.Actions;
 
 /**
  * Helper methods and utilities for creating and working with {@link Subscription} objects

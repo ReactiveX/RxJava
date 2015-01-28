@@ -147,6 +147,7 @@ public final class BlockingOperatorNext {
 
     private static class NextObserver<T> extends Subscriber<Notification<? extends T>> {
         private final BlockingQueue<Notification<? extends T>> buf = new ArrayBlockingQueue<Notification<? extends T>>(1);
+        @SuppressWarnings("unused")
         volatile int waiting;
         @SuppressWarnings("rawtypes")
         static final AtomicIntegerFieldUpdater<NextObserver> WAITING_UPDATER

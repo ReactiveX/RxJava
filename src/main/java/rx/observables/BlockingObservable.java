@@ -26,7 +26,6 @@ import rx.Subscriber;
 import rx.Subscription;
 import rx.functions.Action1;
 import rx.functions.Func1;
-import rx.functions.Functions;
 import rx.internal.operators.BlockingOperatorLatest;
 import rx.internal.operators.BlockingOperatorMostRecent;
 import rx.internal.operators.BlockingOperatorNext;
