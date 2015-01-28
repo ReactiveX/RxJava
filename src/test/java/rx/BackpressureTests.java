@@ -164,7 +164,7 @@ public class BackpressureTests {
 
     @Test(timeout = 15000)
     public void testFlatMapAsync() {
-        int loop = 1000;
+        int loop = 250;
         int maxFailures = 30;
         int failures = 0;
         
