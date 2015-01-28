@@ -23,7 +23,6 @@ import rx.Subscriber;
 import rx.exceptions.OnErrorThrowable;
 import rx.functions.Func0;
 import rx.functions.Func2;
-import rx.internal.util.UtilityFunctions;
 
 /**
  * Returns an Observable that applies a function to the first item emitted by a source Observable, then feeds

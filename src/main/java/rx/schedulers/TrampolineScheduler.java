@@ -47,7 +47,8 @@ public final class TrampolineScheduler extends Scheduler {
 
     private static class InnerCurrentThreadScheduler extends Scheduler.Worker implements Subscription {
 
-        private static final AtomicIntegerFieldUpdater COUNTER_UPDATER = AtomicIntegerFieldUpdater.newUpdater(InnerCurrentThreadScheduler.class, "counter");
+        private static final AtomicIntegerFieldUpdater<InnerCurrentThreadScheduler> COUNTER_UPDATER = AtomicIntegerFieldUpdater.newUpdater(InnerCurrentThreadScheduler.class, "counter");
+        @SuppressWarnings("unused")
         volatile int counter;
         private final PriorityBlockingQueue<TimedAction> queue = new PriorityBlockingQueue<TimedAction>();
         private final BooleanSubscription innerSubscription = new BooleanSubscription();

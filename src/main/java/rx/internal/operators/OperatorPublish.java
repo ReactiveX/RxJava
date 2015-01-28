@@ -16,7 +16,6 @@
 package rx.internal.operators;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -266,6 +265,7 @@ public class OperatorPublish<T> extends ConnectableObservable<T> {
             resetAfterSubscriberUpdate();
         }
 
+        @SuppressWarnings("unchecked")
         private long resetAfterSubscriberUpdate() {
             subscribers = new Subscriber[ss.size()];
             int i = 0;

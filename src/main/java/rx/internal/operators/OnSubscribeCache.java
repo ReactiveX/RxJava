@@ -20,7 +20,6 @@ import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Subscriber;
-import rx.observers.Subscribers;
 import rx.subjects.ReplaySubject;
 import rx.subjects.Subject;
 

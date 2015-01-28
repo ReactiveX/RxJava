@@ -15,8 +15,6 @@
  */
 package rx.functions;
 
-import rx.Observer;
-
 /**
  * Utility class for the Action interfaces.
  */

@@ -15,12 +15,10 @@
  */
 package rx.internal.operators;
 
-import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicLongFieldUpdater;
@@ -206,6 +204,7 @@ public class OperatorGroupBy<T, K, R> implements Operator<GroupedObservable<K, R
             return key == null ? NULL_KEY : key;
         }
 
+        @SuppressWarnings("unchecked")
         private K getKey(Object groupedKey) {
             return groupedKey == NULL_KEY ? null : (K) groupedKey;
         }

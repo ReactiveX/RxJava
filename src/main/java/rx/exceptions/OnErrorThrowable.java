@@ -148,7 +148,7 @@ public final class OnErrorThrowable extends RuntimeException {
                 return (String) value;
             }
             if (value instanceof Enum) {
-                return ((Enum) value).name();
+                return ((Enum<?>) value).name();
             }
             return value.getClass().getName() + ".class";
         }
