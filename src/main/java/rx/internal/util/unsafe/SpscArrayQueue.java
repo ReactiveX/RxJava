@@ -118,20 +118,9 @@ public final class SpscArrayQueue<E> extends SpscArrayQueueL3Pad<E> {
      */
     @Override
     public boolean offer(final E e) {
-//        if (null == e) {
-//            throw new NullPointerException("Null is not a valid element");
-//        }
         // local load of field to avoid repeated loads after volatile reads
         final E[] lElementBuffer = buffer;
         final long offset = calcElementOffset(producerIndex);
-//        if (producerIndex >= producerLookAhead) {
-//            if (null == lvElement(lElementBuffer, calcElementOffset(producerIndex + lookAheadStep))) {// LoadLoad
-//                producerLookAhead = producerIndex + lookAheadStep;
-//            }
-//            else if (null != lvElement(lElementBuffer, offset)){
-//                return false;
-//            }
-//        }
         if (null != lvElement(lElementBuffer, offset)){
             return false;
         }
