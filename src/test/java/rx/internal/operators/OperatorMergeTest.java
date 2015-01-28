@@ -1183,6 +1183,38 @@ public class OperatorMergeTest {
             assertTrue(a);
         //}
     }
+    
+    @Test
+    public void testMergeRequestOverflow() throws InterruptedException {
+        //do a non-trivial merge so that future optimisations with EMPTY don't invalidate this test
+        Observable<Integer> o = Observable.from(Arrays.asList(1,2)).mergeWith(Observable.from(Arrays.asList(3,4)));
+        final int expectedCount = 4;
+        final CountDownLatch latch = new CountDownLatch(expectedCount);
+        o.subscribeOn(Schedulers.computation()).subscribe(new Subscriber<Integer>() {
+            
+            @Override
+            public void onStart() {
+                request(1);
+            }
+
+            @Override
+            public void onCompleted() {
+                //ignore
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                throw new RuntimeException(e);
+            }
+
+            @Override
+            public void onNext(Integer t) {
+                latch.countDown();
+                request(2);
+                request(Long.MAX_VALUE-1);
+            }});
+        assertTrue(latch.await(10, TimeUnit.SECONDS));
+    }
 
     private static Action1<Integer> printCount() {
         return new Action1<Integer>() {
