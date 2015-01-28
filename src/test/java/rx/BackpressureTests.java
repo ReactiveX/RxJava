@@ -163,9 +163,9 @@ public class BackpressureTests {
     }
 
     @Test(timeout = 15000)
-    public void testFlatMapAsync() {
+    public void testFlatMapAsync() throws InterruptedException {
         int loop = 250;
-        int maxFailures = 30;
+        int maxFailures = 80;
         int failures = 0;
         
         final AtomicInteger unused = new AtomicInteger();
@@ -194,6 +194,7 @@ public class BackpressureTests {
             if (c.get() > RxRingBuffer.SIZE * 2) {
                 failures++;
             }
+            Thread.sleep(1);
         }
         System.out.println("testFlatMapAsync => Failures: " + failures + " of " + loop + " (max: " + maxFailures + ")");
         assertTrue("Too many failures: " + failures, failures <= maxFailures);
