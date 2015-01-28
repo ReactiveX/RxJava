@@ -205,7 +205,8 @@ public class Observable<T> {
      */
 
     /**
-     * Mirrors the one Observable in an Iterable of several Observables that first emits an item.
+     * Mirrors the one Observable in an Iterable of several Observables that first either emits an item or sends
+     * a termination notification.
      * <p>
      * <img width="640" height="385" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/amb.png" alt="">
      * <dl>
@@ -215,8 +216,8 @@ public class Observable<T> {
      * 
      * @param sources
      *            an Iterable of Observable sources competing to react first
-     * @return an Observable that emits the same sequence of items as whichever of the source Observables first
-     *         emitted an item
+     * @return an Observable that emits the same sequence as whichever of the source Observables first
+     *         emitted an item or sent a termination notification
      * @see <a href="http://reactivex.io/documentation/operators/amb.html">ReactiveX operators documentation: Amb</a>
      */
     public final static <T> Observable<T> amb(Iterable<? extends Observable<? extends T>> sources) {
@@ -224,7 +225,8 @@ public class Observable<T> {
     }
 
     /**
-     * Given two Observables, mirrors the one that first emits an item.
+     * Given two Observables, mirrors the one that first either emits an item or sends a termination
+     * notification.
      * <p>
      * <img width="640" height="385" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/amb.png" alt="">
      * <dl>
@@ -236,8 +238,8 @@ public class Observable<T> {
      *            an Observable competing to react first
      * @param o2
      *            an Observable competing to react first
-     * @return an Observable that emits the same sequence of items as whichever of the source Observables first
-     *         emitted an item
+     * @return an Observable that emits the same sequence as whichever of the source Observables first
+     *         emitted an item or sent a termination notification
      * @see <a href="http://reactivex.io/documentation/operators/amb.html">ReactiveX operators documentation: Amb</a>
      */
     public final static <T> Observable<T> amb(Observable<? extends T> o1, Observable<? extends T> o2) {
@@ -245,7 +247,8 @@ public class Observable<T> {
     }
 
     /**
-     * Given three Observables, mirrors the one that first emits an item.
+     * Given three Observables, mirrors the one that first either emits an item or sends a termination
+     * notification.
      * <p>
      * <img width="640" height="385" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/amb.png" alt="">
      * <dl>
@@ -259,8 +262,8 @@ public class Observable<T> {
      *            an Observable competing to react first
      * @param o3
      *            an Observable competing to react first
-     * @return an Observable that emits the same sequence of items as whichever of the source Observables first
-     *         emitted an item
+     * @return an Observable that emits the same sequence as whichever of the source Observables first
+     *         emitted an item or sent a termination notification
      * @see <a href="http://reactivex.io/documentation/operators/amb.html">ReactiveX operators documentation: Amb</a>
      */
     public final static <T> Observable<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3) {
@@ -268,7 +271,8 @@ public class Observable<T> {
     }
 
     /**
-     * Given four Observables, mirrors the one that first emits an item.
+     * Given four Observables, mirrors the one that first either emits an item or sends a termination
+     * notification.
      * <p>
      * <img width="640" height="385" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/amb.png" alt="">
      * <dl>
@@ -284,8 +288,8 @@ public class Observable<T> {
      *            an Observable competing to react first
      * @param o4
      *            an Observable competing to react first
-     * @return an Observable that emits the same sequence of items as whichever of the source Observables first
-     *         emitted an item
+     * @return an Observable that emits the same sequence as whichever of the source Observables first
+     *         emitted an item or sent a termination notification
      * @see <a href="http://reactivex.io/documentation/operators/amb.html">ReactiveX operators documentation: Amb</a>
      */
     public final static <T> Observable<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4) {
@@ -293,7 +297,8 @@ public class Observable<T> {
     }
 
     /**
-     * Given five Observables, mirrors the one that first emits an item.
+     * Given five Observables, mirrors the one that first either emits an item or sends a termination
+     * notification.
      * <p>
      * <img width="640" height="385" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/amb.png" alt="">
      * <dl>
@@ -311,8 +316,8 @@ public class Observable<T> {
      *            an Observable competing to react first
      * @param o5
      *            an Observable competing to react first
-     * @return an Observable that emits the same sequence of items as whichever of the source Observables first
-     *         emitted an item
+     * @return an Observable that emits the same sequence as whichever of the source Observables first
+     *         emitted an item or sent a termination notification
      * @see <a href="http://reactivex.io/documentation/operators/amb.html">ReactiveX operators documentation: Amb</a>
      */
     public final static <T> Observable<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4, Observable<? extends T> o5) {
@@ -320,7 +325,8 @@ public class Observable<T> {
     }
 
     /**
-     * Given six Observables, mirrors the one that first emits an item.
+     * Given six Observables, mirrors the one that first either emits an item or sends a termination
+     * notification.
      * <p>
      * <img width="640" height="385" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/amb.png" alt="">
      * <dl>
@@ -340,8 +346,8 @@ public class Observable<T> {
      *            an Observable competing to react first
      * @param o6
      *            an Observable competing to react first
-     * @return an Observable that emits the same sequence of items as whichever of the source Observables first
-     *         emitted an item
+     * @return an Observable that emits the same sequence as whichever of the source Observables first
+     *         emitted an item or sent a termination notification
      * @see <a href="http://reactivex.io/documentation/operators/amb.html">ReactiveX operators documentation: Amb</a>
      */
     public final static <T> Observable<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4, Observable<? extends T> o5, Observable<? extends T> o6) {
@@ -349,7 +355,8 @@ public class Observable<T> {
     }
 
     /**
-     * Given seven Observables, mirrors the one that first emits an item.
+     * Given seven Observables, mirrors the one that first either emits an item or sends a termination
+     * notification.
      * <p>
      * <img width="640" height="385" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/amb.png" alt="">
      * <dl>
@@ -371,8 +378,8 @@ public class Observable<T> {
      *            an Observable competing to react first
      * @param o7
      *            an Observable competing to react first
-     * @return an Observable that emits the same sequence of items as whichever of the source Observables first
-     *         emitted an item
+     * @return an Observable that emits the same sequence as whichever of the source Observables first
+     *         emitted an item or sent a termination notification
      * @see <a href="http://reactivex.io/documentation/operators/amb.html">ReactiveX operators documentation: Amb</a>
      */
     public final static <T> Observable<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4, Observable<? extends T> o5, Observable<? extends T> o6, Observable<? extends T> o7) {
@@ -380,7 +387,8 @@ public class Observable<T> {
     }
 
     /**
-     * Given eight Observables, mirrors the one that first emits an item.
+     * Given eight Observables, mirrors the one that first either emits an item or sends a termination
+     * notification.
      * <p>
      * <img width="640" height="385" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/amb.png" alt="">
      * <dl>
@@ -404,8 +412,8 @@ public class Observable<T> {
      *            an Observable competing to react first
      * @param o8
      *            an observable competing to react first
-     * @return an Observable that emits the same sequence of items as whichever of the source Observables first
-     *         emitted an item
+     * @return an Observable that emits the same sequence as whichever of the source Observables first
+     *         emitted an item or sent a termination notification
      * @see <a href="http://reactivex.io/documentation/operators/amb.html">ReactiveX operators documentation: Amb</a>
      */
     public final static <T> Observable<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4, Observable<? extends T> o5, Observable<? extends T> o6, Observable<? extends T> o7, Observable<? extends T> o8) {
@@ -413,7 +421,8 @@ public class Observable<T> {
     }
 
     /**
-     * Given nine Observables, mirrors the one that first emits an item.
+     * Given nine Observables, mirrors the one that first either emits an item or sends a termination
+     * notification.
      * <p>
      * <img width="640" height="385" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/amb.png" alt="">
      * <dl>
@@ -439,8 +448,8 @@ public class Observable<T> {
      *            an Observable competing to react first
      * @param o9
      *            an Observable competing to react first
-     * @return an Observable that emits the same sequence of items as whichever of the source Observables first
-     *         emitted an item
+     * @return an Observable that emits the same sequence as whichever of the source Observables first
+     *         emitted an item or sent a termination notification
      * @see <a href="http://reactivex.io/documentation/operators/amb.html">ReactiveX operators documentation: Amb</a>
      */
     public final static <T> Observable<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3, Observable<? extends T> o4, Observable<? extends T> o5, Observable<? extends T> o6, Observable<? extends T> o7, Observable<? extends T> o8, Observable<? extends T> o9) {
@@ -2974,7 +2983,8 @@ public class Observable<T> {
     }
     
     /**
-     * Mirrors the first Observable (current or provided) that emits an item.
+     * Mirrors the Observable (current or provided) that first either emits an item or sends a termination
+     * notification.
      * <p>
      * <img width="640" height="385" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/amb.png" alt="">
      * <dl>
@@ -2984,8 +2994,8 @@ public class Observable<T> {
      * 
      * @param t1
      *            an Observable competing to react first
-     * @return an Observable that emits the same sequence of items as whichever of the source Observables first
-     *         emitted an item
+     * @return an Observable that emits the same sequence as whichever of the source Observables first
+     *         emitted an item or sent a termination notification
      * @see <a href="http://reactivex.io/documentation/operators/amb.html">ReactiveX operators documentation: Amb</a>
      */
     public final Observable<T> ambWith(Observable<? extends T> t1) {
