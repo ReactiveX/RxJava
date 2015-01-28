@@ -16,12 +16,10 @@
 package rx.schedulers;
 
 import rx.Scheduler;
+import rx.internal.schedulers.NewThreadWorker;
 import rx.internal.util.RxThreadFactory;
 
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.*;
 
 /**
  * A default {@link ScheduledExecutorService} that can be used for scheduling actions when a {@link Scheduler} implementation doesn't have that ability.
@@ -49,7 +47,13 @@ import java.util.concurrent.ScheduledExecutorService;
         if (count > 8) {
             count = 8;
         }
-        executor = Executors.newScheduledThreadPool(count, THREAD_FACTORY);
+        ScheduledExecutorService exec = Executors.newScheduledThreadPool(count, THREAD_FACTORY);
+        if (!NewThreadWorker.tryEnableCancelPolicy(exec)) {
+            if (exec instanceof ScheduledThreadPoolExecutor) {
+                NewThreadWorker.registerExecutor((ScheduledThreadPoolExecutor)exec);
+            }
+        }
+        executor = exec;
     }
 
     /**
