@@ -33,8 +33,7 @@ public class RxRingBuffer implements Subscription {
 
     public static RxRingBuffer getSpscInstance() {
         if (UnsafeAccess.isUnsafeAvailable()) {
-            // TODO the SpscArrayQueue isn't ready yet so using SpmcArrayQueue for now
-            return new RxRingBuffer(SPMC_POOL, SIZE);
+            return new RxRingBuffer(SPSC_POOL, SIZE);
         } else {
             return new RxRingBuffer();
         }
@@ -306,12 +305,13 @@ public class RxRingBuffer implements Subscription {
         this.size = size;
     }
 
-    public void release() {
-        if (pool != null) {
-            Queue<Object> q = queue;
+    public synchronized void release() {
+        Queue<Object> q = queue;
+        ObjectPool<Queue<Object>> p = pool;
+        if (p != null && q != null) {
             q.clear();
             queue = null;
-            pool.returnObject(q);
+            p.returnObject(q);
         }
     }
 
@@ -331,10 +331,21 @@ public class RxRingBuffer implements Subscription {
      *             if more onNext are sent than have been requested
      */
     public void onNext(Object o) throws MissingBackpressureException {
-        if (queue == null) {
+        boolean iae = false;
+        boolean mbe = false;
+        synchronized (this) {
+            Queue<Object> q = queue;
+            if (q != null) {
+                mbe = !q.offer(on.next(o));
+            } else {
+                iae = true;
+            }
+        }
+        
+        if (iae) {
             throw new IllegalStateException("This instance has been unsubscribed and the queue is no longer usable.");
         }
-        if (!queue.offer(on.next(o))) {
+        if (mbe) {
             throw new MissingBackpressureException();
         }
     }
@@ -362,55 +373,54 @@ public class RxRingBuffer implements Subscription {
     }
 
     public int count() {
-        if (queue == null) {
+        Queue<Object> q = queue;
+        if (q == null) {
             return 0;
         }
-        return queue.size();
+        return q.size();
     }
 
     public boolean isEmpty() {
-        if (queue == null) {
+        Queue<Object> q = queue;
+        if (q == null) {
             return true;
         }
-        return queue.isEmpty();
+        return q.isEmpty();
     }
 
     public Object poll() {
-        if (queue == null) {
-            // we are unsubscribed and have released the undelrying queue
-            return null;
-        }
         Object o;
-        o = queue.poll();
-        /*
-         * benjchristensen July 10 2014 => The check for 'queue.isEmpty()' came from a very rare concurrency bug where poll()
-         * is invoked, then an "onNext + onCompleted/onError" arrives before hitting the if check below. In that case,
-         * "o == null" and there is a terminal state, but now "queue.isEmpty()" and we should NOT return the terminalState.
-         * 
-         * The queue.size() check is a double-check that works to handle this, without needing to synchronize poll with on*
-         * or needing to enqueue terminalState.
-         * 
-         * This did make me consider eliminating the 'terminalState' ref and enqueuing it ... but then that requires
-         * a +1 of the size, or -1 of how many onNext can be sent. See comment on 'terminalState' above for why it
-         * is currently the way it is.
-         */
-        if (o == null && terminalState != null && queue.isEmpty()) {
-            o = terminalState;
-            // once emitted we clear so a poll loop will finish
-            terminalState = null;
+        synchronized (this) {
+            Queue<Object> q = queue;
+            if (q == null) {
+                // we are unsubscribed and have released the underlying queue
+                return null;
+            }
+            o = q.poll();
+            
+            Object ts = terminalState;
+            if (o == null && ts != null && q.peek() == null) {
+                o = ts;
+                // once emitted we clear so a poll loop will finish
+                terminalState = null;
+            }
         }
         return o;
     }
 
     public Object peek() {
-        if (queue == null) {
-            // we are unsubscribed and have released the undelrying queue
-            return null;
-        }
         Object o;
-        o = queue.peek();
-        if (o == null && terminalState != null && queue.isEmpty()) {
-            o = terminalState;
+        synchronized (this) {
+            Queue<Object> q = queue;
+            if (q == null) {
+                // we are unsubscribed and have released the underlying queue
+                return null;
+            }
+            o = q.peek();
+            Object ts = terminalState;
+            if (o == null && ts != null && q.peek() == null) {
+                o = ts;
+            }
         }
         return o;
     }

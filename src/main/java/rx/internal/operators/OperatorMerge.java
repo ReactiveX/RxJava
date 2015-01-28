@@ -308,7 +308,7 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
         private RxRingBuffer getOrCreateScalarValueQueue() {
             RxRingBuffer svq = scalarValueQueue;
             if (svq == null) {
-                svq = RxRingBuffer.getSpmcInstance();
+                svq = RxRingBuffer.getSpscInstance();
                 scalarValueQueue = svq;
             }
             return svq;
@@ -581,7 +581,7 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
         @SuppressWarnings("rawtypes")
         static final AtomicIntegerFieldUpdater<InnerSubscriber> ONCE_TERMINATED = AtomicIntegerFieldUpdater.newUpdater(InnerSubscriber.class, "terminated");
 
-        private final RxRingBuffer q = RxRingBuffer.getSpmcInstance();
+        private final RxRingBuffer q = RxRingBuffer.getSpscInstance();
 
         public InnerSubscriber(MergeSubscriber<T> parent, MergeProducer<T> producer) {
             this.parentSubscriber = parent;
