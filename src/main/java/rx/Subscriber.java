@@ -103,8 +103,16 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
         synchronized (this) {
             if (p != null) {
                 shouldRequest = p;
-            } else {
+            } else if (requested == Long.MIN_VALUE) {
                 requested = n;
+            } else { 
+                final long total = requested + n;
+                // check if overflow occurred
+                if (total < 0) {
+                    requested = Long.MAX_VALUE;
+                } else {
+                    requested = total;
+                }
             }
         }
         // after releasing lock
