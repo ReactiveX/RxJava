@@ -367,8 +367,10 @@ public class OperatorPublish<T> extends ConnectableObservable<T> {
 
                         for (Subscriber<? super T> s : localState.getSubscribers()) {
                             AtomicLong req = localMap.get(s);
-                            nl.accept(s, o);
-                            req.decrementAndGet();
+                            if (req != null) { // null req indicates a concurrent unsubscription happened
+                                nl.accept(s, o);
+                                req.decrementAndGet();
+                            }
                         }
                         emitted++;
                     }
