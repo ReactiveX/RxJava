@@ -33,26 +33,26 @@ interface MessagePassingQueue<M> {
     
     /**
      * Called from a producer thread subject to the restrictions appropriate to the implementation and according to the
-     * {@link Queue#offer(Object)} interface (but failure to offer doesn't necessitate queue is full).
+     * {@link Queue#offer(Object)} interface.
      * 
      * @param message
-     * @return true if element was inserted into the queue, false if cannot enqueue
+     * @return true if element was inserted into the queue, false iff full
      */
     boolean offer(M message);
 
     /**
      * Called from the consumer thread subject to the restrictions appropriate to the implementation and according to
-     * the {@link Queue#poll()} interface (barring the hard requirement on null returns).
+     * the {@link Queue#poll()} interface.
      * 
-     * @return a message from the queue if one is available, null otherwise(not necessarily empty)
+     * @return a message from the queue if one is available, null iff empty
      */
     M poll();
 
     /**
      * Called from the consumer thread subject to the restrictions appropriate to the implementation and according to
-     * the {@link Queue#peek()} interface (barring the hard requirement on null returns).
+     * the {@link Queue#peek()} interface.
      * 
-     * @return a message from the queue if one is available, null otherwise(not necessarily empty)
+     * @return a message from the queue if one is available, null iff empty
      */
     M peek();
 
