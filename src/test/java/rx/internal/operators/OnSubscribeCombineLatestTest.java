@@ -790,6 +790,13 @@ public class OnSubscribeCombineLatestTest {
     }
 
     @Test
+    public void testBackpressureLoop() {
+        for (int i = 0; i < 5000; i++) {
+            testBackpressure();
+        }
+    }
+    
+    @Test
     public void testBackpressure() {
         Func2<String, Integer, String> combineLatestFunction = getConcatStringIntegerCombineLatestFunction();
 
