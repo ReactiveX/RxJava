@@ -15,39 +15,24 @@
  */
 package rx.internal.operators;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
+import java.util.*;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.InOrder;
-import org.mockito.MockitoAnnotations;
+import org.junit.*;
+import org.mockito.*;
 
-import rx.Observable;
+import rx.*;
 import rx.Observable.OnSubscribe;
+import rx.Observable;
 import rx.Observer;
-import rx.Subscriber;
-import rx.Subscription;
-import rx.functions.Action0;
-import rx.functions.Action1;
-import rx.functions.Func2;
-import rx.observers.Subscribers;
-import rx.observers.TestSubscriber;
-import rx.schedulers.Schedulers;
-import rx.schedulers.TestScheduler;
+import rx.functions.*;
+import rx.observers.*;
+import rx.schedulers.*;
 import rx.subjects.ReplaySubject;
 import rx.subscriptions.Subscriptions;
 
@@ -532,4 +517,72 @@ public class OnSubscribeRefCountTest {
         ts2.assertReceivedOnNext(Arrays.asList(30));
     }
 
+    @Test(timeout = 10000)
+    public void testUpstreamErrorAllowsRetry() throws InterruptedException {
+        final AtomicInteger intervalSubscribed = new AtomicInteger();
+        Observable<String> interval =
+                Observable.interval(200,TimeUnit.MILLISECONDS)
+                        .doOnSubscribe(
+                                new Action0() {
+                                    @Override
+                                    public void call() {
+                                        System.out.println("Subscribing to interval " + intervalSubscribed.incrementAndGet());
+                                    }
+                                }
+                         )
+                        .flatMap(new Func1<Long, Observable<String>>() {
+                            @Override
+                            public Observable<String> call(Long t1) {
+                                return Observable.defer(new Func0<Observable<String>>() {
+                                    @Override
+                                    public Observable<String> call() {
+                                        return Observable.<String>error(new Exception("Some exception"));
+                                    }
+                                });
+                            }
+                        })
+                        .onErrorResumeNext(new Func1<Throwable, Observable<String>>() {
+                            @Override
+                            public Observable<String> call(Throwable t1) {
+                                return Observable.error(t1);
+                            }
+                        })
+                        .publish()
+                        .refCount();
+
+        interval
+                .doOnError(new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable t1) {
+                        System.out.println("Subscriber 1 onError: " + t1);
+                    }
+                })
+                .retry(5)
+                .subscribe(new Action1<String>() {
+                    @Override
+                    public void call(String t1) {
+                        System.out.println("Subscriber 1: " + t1);
+                    }
+                });
+        Thread.sleep(100);
+        interval
+        .doOnError(new Action1<Throwable>() {
+            @Override
+            public void call(Throwable t1) {
+                System.out.println("Subscriber 2 onError: " + t1);
+            }
+        })
+        .retry(5)
+                .subscribe(new Action1<String>() {
+                    @Override
+                    public void call(String t1) {
+                        System.out.println("Subscriber 2: " + t1);
+                    }
+                });
+        
+        Thread.sleep(1300);
+        
+        System.out.println(intervalSubscribed.get());
+        assertEquals(6, intervalSubscribed.get());
+    }
 }
