@@ -15,23 +15,19 @@
  */
 package rx.internal.operators;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.junit.*;
+import org.mockito.*;
 
+import rx.*;
 import rx.Observable;
 import rx.Observer;
-import rx.Subscriber;
+import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 
 public class OperatorMergeMaxConcurrentTest {
@@ -156,5 +152,144 @@ public class OperatorMergeMaxConcurrentTest {
             j++;
         }
         assertEquals(j, n / 2);
+    }
+    
+    @Test
+    public void testSimple() {
+        for (int i = 1; i < 100; i++) {
+            TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+            List<Observable<Integer>> sourceList = new ArrayList<Observable<Integer>>(i);
+            List<Integer> result = new ArrayList<Integer>(i);
+            for (int j = 1; j <= i; j++) {
+                sourceList.add(Observable.just(j));
+                result.add(j);
+            }
+            
+            Observable.merge(sourceList, i).subscribe(ts);
+        
+            ts.assertNoErrors();
+            ts.assertTerminalEvent();
+            ts.assertReceivedOnNext(result);
+        }
+    }
+    @Test
+    public void testSimpleOneLess() {
+        for (int i = 2; i < 100; i++) {
+            TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+            List<Observable<Integer>> sourceList = new ArrayList<Observable<Integer>>(i);
+            List<Integer> result = new ArrayList<Integer>(i);
+            for (int j = 1; j <= i; j++) {
+                sourceList.add(Observable.just(j));
+                result.add(j);
+            }
+            
+            Observable.merge(sourceList, i - 1).subscribe(ts);
+        
+            ts.assertNoErrors();
+            ts.assertTerminalEvent();
+            ts.assertReceivedOnNext(result);
+        }
+    }
+    @Test(timeout = 10000)
+    public void testSimpleAsyncLoop() {
+        for (int i = 0; i < 200; i++) {
+            testSimpleAsync();
+        }
+    }
+    @Test(timeout = 10000)
+    public void testSimpleAsync() {
+        for (int i = 1; i < 50; i++) {
+            TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+            List<Observable<Integer>> sourceList = new ArrayList<Observable<Integer>>(i);
+            Set<Integer> expected = new HashSet<Integer>(i);
+            for (int j = 1; j <= i; j++) {
+                sourceList.add(Observable.just(j).subscribeOn(Schedulers.io()));
+                expected.add(j);
+            }
+            
+            Observable.merge(sourceList, i).subscribe(ts);
+        
+            ts.awaitTerminalEvent(1, TimeUnit.SECONDS);
+            ts.assertNoErrors();
+            Set<Integer> actual = new HashSet<Integer>(ts.getOnNextEvents());
+            
+            assertEquals(expected, actual);
+        }
+    }
+    @Test(timeout = 10000)
+    public void testSimpleOneLessAsyncLoop() {
+        for (int i = 0; i < 200; i++) {
+            testSimpleOneLessAsync();
+        }
+    }
+    @Test(timeout = 10000)
+    public void testSimpleOneLessAsync() {
+        for (int i = 2; i < 50; i++) {
+            TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+            List<Observable<Integer>> sourceList = new ArrayList<Observable<Integer>>(i);
+            Set<Integer> expected = new HashSet<Integer>(i);
+            for (int j = 1; j <= i; j++) {
+                sourceList.add(Observable.just(j).subscribeOn(Schedulers.io()));
+                expected.add(j);
+            }
+            
+            Observable.merge(sourceList, i - 1).subscribe(ts);
+        
+            ts.awaitTerminalEvent(1, TimeUnit.SECONDS);
+            ts.assertNoErrors();
+            Set<Integer> actual = new HashSet<Integer>(ts.getOnNextEvents());
+            
+            assertEquals(expected, actual);
+        }
+    }
+    @Test(timeout = 5000)
+    public void testBackpressureHonored() throws Exception {
+        List<Observable<Integer>> sourceList = new ArrayList<Observable<Integer>>(3);
+        
+        sourceList.add(Observable.range(0, 100000).subscribeOn(Schedulers.io()));
+        sourceList.add(Observable.range(0, 100000).subscribeOn(Schedulers.io()));
+        sourceList.add(Observable.range(0, 100000).subscribeOn(Schedulers.io()));
+        
+        final CountDownLatch cdl = new CountDownLatch(5);
+        
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
+            @Override
+            public void onStart() {
+                request(0);
+            }
+            @Override
+            public void onNext(Integer t) {
+                super.onNext(t);
+                cdl.countDown();
+            }
+        };
+        
+        Observable.merge(sourceList, 2).subscribe(ts);
+        
+        ts.requestMore(5);
+        
+        cdl.await();
+        
+        ts.assertNoErrors();
+        assertEquals(5, ts.getOnNextEvents().size());
+        assertEquals(0, ts.getOnCompletedEvents().size());
+        
+        ts.unsubscribe();
+    }
+    @Test(timeout = 5000)
+    public void testTake() throws Exception {
+        List<Observable<Integer>> sourceList = new ArrayList<Observable<Integer>>(3);
+        
+        sourceList.add(Observable.range(0, 100000).subscribeOn(Schedulers.io()));
+        sourceList.add(Observable.range(0, 100000).subscribeOn(Schedulers.io()));
+        sourceList.add(Observable.range(0, 100000).subscribeOn(Schedulers.io()));
+        
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        
+        Observable.merge(sourceList, 2).take(5).subscribe(ts);
+        
+        ts.awaitTerminalEvent();
+        ts.assertNoErrors();
+        assertEquals(5, ts.getOnNextEvents().size());
     }
 }
