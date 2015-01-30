@@ -15,6 +15,8 @@
  */
 package rx.plugins;
 
+import java.util.Iterator;
+import java.util.ServiceLoader;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -72,6 +74,10 @@ public class RxJavaPlugins {
             // check for an implementation from System.getProperty first
             Object impl = getPluginImplementationViaProperty(RxJavaErrorHandler.class);
             if (impl == null) {
+                //Try with serviceLoader
+                impl=getPluginImplementationViaServiceLoader(RxJavaErrorHandler.class);
+            }
+            if (impl == null) {
                 // nothing set via properties so initialize with default 
                 errorHandler.compareAndSet(null, DEFAULT_ERROR_HANDLER);
                 // we don't return from here but call get() again in case of thread-race so the winner will always get returned
@@ -113,6 +119,10 @@ public class RxJavaPlugins {
         if (observableExecutionHook.get() == null) {
             // check for an implementation from System.getProperty first
             Object impl = getPluginImplementationViaProperty(RxJavaObservableExecutionHook.class);
+            if (impl == null) {
+                //Try with serviceLoader
+                impl=getPluginImplementationViaServiceLoader(RxJavaObservableExecutionHook.class);
+            }
             if (impl == null) {
                 // nothing set via properties so initialize with default 
                 observableExecutionHook.compareAndSet(null, RxJavaObservableExecutionHookDefault.getInstance());
@@ -169,6 +179,22 @@ public class RxJavaPlugins {
             return null;
         }
     }
+    
+     private static <T> T getPluginImplementationViaServiceLoader(Class<T> pluginClass) {
+         ServiceLoader<T> loader=ServiceLoader.load(pluginClass);
+         Iterator<T> iter=loader.iterator();
+         if (iter.hasNext()){
+             T implementationInstance=iter.next();
+             if (iter.hasNext()){
+                  String classSimpleName = pluginClass.getSimpleName();
+                  throw new RuntimeException("There are multiple implmementations for "+classSimpleName + " registered via ServiceLoader ");
+             }else{
+                 return implementationInstance;
+             }
+         }else{
+             return null;
+         }
+    }
 
     /**
      * Retrieves the instance of {@link RxJavaSchedulersHook} to use based on order of precedence as defined
@@ -184,6 +210,10 @@ public class RxJavaPlugins {
         if (schedulersHook.get() == null) {
             // check for an implementation from System.getProperty first
             Object impl = getPluginImplementationViaProperty(RxJavaSchedulersHook.class);
+            if (impl == null) {
+                //Try with serviceLoader
+                impl=getPluginImplementationViaServiceLoader(RxJavaSchedulersHook.class);
+            }
             if (impl == null) {
                 // nothing set via properties so initialize with default
                 schedulersHook.compareAndSet(null, RxJavaSchedulersHook.getDefaultInstance());
