@@ -503,7 +503,7 @@ public class ReplaySubjectBoundedConcurrencyTest {
         
         t.join();
     }
-    @Test(timeout = 5000)
+    @Test(timeout = 10000)
     public void testConcurrentSizeAndHasAnyValueTimeBounded() throws InterruptedException {
         final ReplaySubject<Object> rs = ReplaySubject.createWithTime(1, TimeUnit.MILLISECONDS, Schedulers.computation());
         final CyclicBarrier cb = new CyclicBarrier(2);

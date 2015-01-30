@@ -682,7 +682,7 @@ public class OperatorRetryTest {
         assertEquals("Start 6 threads, retry 5 then fail on 6", 6, so.efforts.get());
     }
     
-    @Test(timeout = 10000)
+    @Test(timeout = 15000)
     public void testRetryWithBackpressure() throws InterruptedException {
         final int NUM_RETRIES = RxRingBuffer.SIZE * 2;
         for (int i = 0; i < 400; i++) {
@@ -705,7 +705,7 @@ public class OperatorRetryTest {
             inOrder.verifyNoMoreInteractions();
         }
     }
-    @Test(timeout = 10000)
+    @Test(timeout = 15000)
     public void testRetryWithBackpressureParallel() throws InterruptedException {
         final int NUM_RETRIES = RxRingBuffer.SIZE * 2;
         int ncpu = Runtime.getRuntime().availableProcessors();

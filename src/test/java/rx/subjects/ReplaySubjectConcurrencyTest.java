@@ -407,7 +407,7 @@ public class ReplaySubjectConcurrencyTest {
             worker.unsubscribe();
         }
     }
-    @Test(timeout = 5000)
+    @Test(timeout = 10000)
     public void testConcurrentSizeAndHasAnyValue() throws InterruptedException {
         final ReplaySubject<Object> rs = ReplaySubject.create();
         final CyclicBarrier cb = new CyclicBarrier(2);
