@@ -89,7 +89,17 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
      * Request a certain maximum number of emitted items from the Observable this Subscriber is subscribed to.
      * This is a way of requesting backpressure. To disable backpressure, pass {@code Long.MAX_VALUE} to this
      * method.
-     *
+     * <p>
+     * Requests are additive but if a sequence of requests totals more than {@code Long.MAX_VALUE} then 
+     * {@code Long.MAX_VALUE} requests will be actioned and the extras <i>may</i> be ignored. Arriving at 
+     * {@code Long.MAX_VALUE} by addition of requests cannot be assumed to disable backpressure. For example, 
+     * the code below may result in {@code Long.MAX_VALUE} requests being actioned only.
+     * 
+     * <pre>
+     * request(100);
+     * request(Long.MAX_VALUE-1);
+     * </pre>
+     * 
      * @param n the maximum number of items you want the Observable to emit to the Subscriber at this time, or
      *           {@code Long.MAX_VALUE} if you want the Observable to emit items at its own pace
      * @throws IllegalArgumentException

@@ -15,6 +15,7 @@
  */
 package rx.internal.operators;
 
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -24,14 +25,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 import org.mockito.Mockito;
 
 import rx.Observable;
 import rx.Observer;
+import rx.Subscriber;
 import rx.internal.util.RxRingBuffer;
 import rx.observers.TestSubscriber;
+import rx.schedulers.Schedulers;
 
 public class OnSubscribeFromIterableTest {
 
@@ -157,5 +162,36 @@ public class OnSubscribeFromIterableTest {
         o.call(ts);
         ts.assertReceivedOnNext(Arrays.asList(1, 2, 3));
     }
+    
+    @Test
+    public void testFromIterableRequestOverflow() throws InterruptedException {
+        Observable<Integer> o = Observable.from(Arrays.asList(1,2,3,4));
+        final int expectedCount = 4;
+        final CountDownLatch latch = new CountDownLatch(expectedCount);
+        o.subscribeOn(Schedulers.computation()).subscribe(new Subscriber<Integer>() {
+            
+            @Override
+            public void onStart() {
+                request(2);
+            }
+
+            @Override
+            public void onCompleted() {
+                //ignore
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                throw new RuntimeException(e);
+            }
+
+            @Override
+            public void onNext(Integer t) {
+                latch.countDown();
+                request(Long.MAX_VALUE-1);
+            }});
+        assertTrue(latch.await(10, TimeUnit.SECONDS));
+    }
+
 
 }

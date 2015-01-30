@@ -545,16 +545,7 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
             if (n == Long.MAX_VALUE) {
                 requested = Long.MAX_VALUE;
             } else {
-                // add n to requested but check for overflow
-                while (true) {
-                    long current = REQUESTED.get(this);
-                    long next = current + n;
-                    //check for overflow
-                    if (next < 0)
-                        next = Long.MAX_VALUE;
-                    if (REQUESTED.compareAndSet(this, current, next))
-                        break;
-                }
+                BackpressureUtils.getAndAddRequest(REQUESTED, this, n);
                 if (ms.drainQueuesIfNeeded()) {
                     boolean sendComplete = false;
                     synchronized (ms) {

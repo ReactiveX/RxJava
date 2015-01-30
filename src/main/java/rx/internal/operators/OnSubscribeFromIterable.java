@@ -80,7 +80,7 @@ public final class OnSubscribeFromIterable<T> implements OnSubscribe<T> {
                 }
             } else if(n > 0) {
                 // backpressure is requested
-                long _c = REQUESTED_UPDATER.getAndAdd(this, n);
+                long _c = BackpressureUtils.getAndAddRequest(REQUESTED_UPDATER, this, n);
                 if (_c == 0) {
                     while (true) {
                         /*
