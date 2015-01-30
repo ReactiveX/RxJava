@@ -15,28 +15,29 @@
  */
 package rx;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.util.List;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.*;
 
-import org.junit.Test;
+import org.junit.*;
 
 import rx.Observable.OnSubscribe;
 import rx.exceptions.MissingBackpressureException;
-import rx.functions.Func1;
-import rx.functions.Func2;
+import rx.functions.*;
 import rx.internal.util.RxRingBuffer;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
+import rx.test.TestObstructionDetection;
 
 public class BackpressureTests {
 
+    @After
+    public void doAfterTest() {
+        TestObstructionDetection.checkObstruction();
+    }
+    
     @Test
     public void testObserveOn() {
         int NUM = (int) (RxRingBuffer.SIZE * 2.1);
@@ -163,6 +164,7 @@ public class BackpressureTests {
     }
 
     @Test
+    @Ignore // the test is non-deterministic and can't be made deterministic
     public void testFlatMapAsync() {
         int NUM = (int) (RxRingBuffer.SIZE * 2.1);
         AtomicInteger c = new AtomicInteger();
