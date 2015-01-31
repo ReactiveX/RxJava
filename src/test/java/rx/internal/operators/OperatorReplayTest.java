@@ -609,6 +609,7 @@ public class OperatorReplayTest {
 
         verify(spiedWorker, times(1)).unsubscribe();
         verify(sourceUnsubscribed, times(1)).call();
+        verify(mockSubscription, times(1)).unsubscribe();
 
         verifyNoMoreInteractions(sourceNext);
         verifyNoMoreInteractions(sourceCompleted);
@@ -668,6 +669,7 @@ public class OperatorReplayTest {
 
         verify(spiedWorker, times(1)).unsubscribe();
         verify(sourceUnsubscribed, times(1)).call();
+        verify(mockSubscription, times(1)).unsubscribe();
 
         verifyNoMoreInteractions(sourceNext);
         verifyNoMoreInteractions(sourceCompleted);
