@@ -54,7 +54,7 @@ public class OperatorSubscribeOn<T> implements Operator<T, Observable<T>> {
 
             @Override
             public void onNext(final Observable<T> o) {
-                subscriber.add(inner.schedule(new Action0() {
+                inner.schedule(new Action0() {
 
                     @Override
                     public void call() {
@@ -102,7 +102,7 @@ public class OperatorSubscribeOn<T> implements Operator<T, Observable<T>> {
 
                         });
                     }
-                }));
+                });
             }
 
         };
