@@ -15,23 +15,17 @@
  */
 package rx.internal.operators;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.util.Arrays;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.*;
 
 import org.junit.Test;
 
-import rx.Observable;
+import rx.*;
 import rx.Observable.OnSubscribe;
-import rx.Subscriber;
-import rx.Subscription;
-import rx.functions.Action0;
-import rx.functions.Action1;
-import rx.functions.Func1;
+import rx.functions.*;
 import rx.internal.util.RxRingBuffer;
 import rx.observables.ConnectableObservable;
 import rx.observers.TestSubscriber;
@@ -187,4 +181,65 @@ public class OperatorPublishTest {
         System.out.println(ts.getOnNextEvents());
     }
 
+    @Test(timeout = 10000)
+    public void testBackpressureTwoConsumers() {
+        final AtomicInteger sourceEmission = new AtomicInteger();
+        final AtomicBoolean sourceUnsubscribed = new AtomicBoolean();
+        final Observable<Integer> source = Observable.range(1, 100)
+                .doOnNext(new Action1<Integer>() {
+                    @Override
+                    public void call(Integer t1) {
+                        sourceEmission.incrementAndGet();
+                    }
+                })
+                .doOnUnsubscribe(new Action0() {
+                    @Override
+                    public void call() {
+                        sourceUnsubscribed.set(true);
+                    }
+                }).share();
+        ;
+        
+        final AtomicBoolean child1Unsubscribed = new AtomicBoolean();
+        final AtomicBoolean child2Unsubscribed = new AtomicBoolean();
+
+        final TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>();
+
+        final TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                if (getOnNextEvents().size() == 2) {
+                    source.doOnUnsubscribe(new Action0() {
+                        @Override
+                        public void call() {
+                            child2Unsubscribed.set(true);
+                        }
+                    }).take(5).subscribe(ts2);
+                }
+                super.onNext(t);
+            }
+        };
+        
+        source.doOnUnsubscribe(new Action0() {
+            @Override
+            public void call() {
+                child1Unsubscribed.set(true);
+            }
+        }).take(5).subscribe(ts1);
+        
+        ts1.awaitTerminalEvent();
+        ts2.awaitTerminalEvent();
+        
+        ts1.assertNoErrors();
+        ts2.assertNoErrors();
+        
+        assertTrue(sourceUnsubscribed.get());
+        assertTrue(child1Unsubscribed.get());
+        assertTrue(child2Unsubscribed.get());
+        
+        ts1.assertReceivedOnNext(Arrays.asList(1, 2, 3, 4, 5));
+        ts2.assertReceivedOnNext(Arrays.asList(4, 5, 6, 7, 8));
+        
+        assertEquals(8, sourceEmission.get());
+    }
 }
