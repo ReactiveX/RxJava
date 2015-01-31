@@ -52,6 +52,7 @@ public final class OperatorDelay<T> implements Operator<T, T> {
 
             @Override
             public void onCompleted() {
+                // FIXME should subscription returned be added to the child composite
                 worker.schedule(new Action0() {
 
                     @Override
@@ -69,6 +70,7 @@ public final class OperatorDelay<T> implements Operator<T, T> {
 
             @Override
             public void onNext(final T t) {
+                // FIXME should subscription returned be added to the child composite
                 worker.schedule(new Action0() {
 
                     @Override

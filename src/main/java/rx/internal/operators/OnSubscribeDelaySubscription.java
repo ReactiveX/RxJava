@@ -46,6 +46,7 @@ public final class OnSubscribeDelaySubscription<T> implements OnSubscribe<T> {
         final Worker worker = scheduler.createWorker();
         s.add(worker);
 
+        // FIXME should subscription returned be added to the s composite
         worker.schedule(new Action0() {
             @Override
             public void call() {

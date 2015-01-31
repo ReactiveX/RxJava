@@ -55,6 +55,7 @@ public abstract class ObjectPool<T> {
         initialize(min);
 
         schedulerWorker = Schedulers.computation().createWorker();
+        // FIXME should subscription returned be added to some composite
         schedulerWorker.schedulePeriodically(new Action0() {
 
             @Override

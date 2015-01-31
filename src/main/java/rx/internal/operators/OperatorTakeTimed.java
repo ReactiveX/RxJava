@@ -46,6 +46,7 @@ public final class OperatorTakeTimed<T> implements Operator<T, T> {
         child.add(worker);
         
         TakeSubscriber<T> ts = new TakeSubscriber<T>(new SerializedSubscriber<T>(child));
+        // FIXME should subscription returned be added to the child composite
         worker.schedule(ts, time, unit);
         return ts;
     }

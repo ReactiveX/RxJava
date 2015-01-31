@@ -51,6 +51,7 @@ public final class OperatorSampleWithTime<T> implements Operator<T, T> {
         
         SamplerSubscriber<T> sampler = new SamplerSubscriber<T>(s);
         child.add(sampler);
+        // FIXME should subscription returned be added to the child composite
         worker.schedulePeriodically(sampler, time, time, unit);
 
         return sampler;

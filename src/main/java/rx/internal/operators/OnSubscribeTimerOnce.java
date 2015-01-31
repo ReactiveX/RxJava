@@ -41,6 +41,7 @@ public final class OnSubscribeTimerOnce implements OnSubscribe<Long> {
     public void call(final Subscriber<? super Long> child) {
         Worker worker = scheduler.createWorker();
         child.add(worker);
+        // FIXME should subscription returned be added to the child composite
         worker.schedule(new Action0() {
             @Override
             public void call() {

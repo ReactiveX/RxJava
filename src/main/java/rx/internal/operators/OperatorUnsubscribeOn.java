@@ -59,6 +59,7 @@ public class OperatorUnsubscribeOn<T> implements Operator<T, T> {
             @Override
             public void call() {
                 final Scheduler.Worker inner = scheduler.createWorker();
+                // FIXME should subscription returned be added to the subscriber composite
                 inner.schedule(new Action0() {
 
                     @Override

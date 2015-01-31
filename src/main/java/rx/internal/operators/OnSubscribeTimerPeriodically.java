@@ -43,6 +43,7 @@ public final class OnSubscribeTimerPeriodically implements OnSubscribe<Long> {
     public void call(final Subscriber<? super Long> child) {
         final Worker worker = scheduler.createWorker();
         child.add(worker);
+        // FIXME should subscription returned be added to the child composite
         worker.schedulePeriodically(new Action0() {
             long counter;
             @Override

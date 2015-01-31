@@ -148,6 +148,7 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
 
         protected void schedule() {
             if (COUNTER_UPDATER.getAndIncrement(this) == 0) {
+                // FIXME should subscription returned be added to the child composite
                 recursiveScheduler.schedule(new Action0() {
 
                     @Override
@@ -229,6 +230,7 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
         @Override
         public void unsubscribe() {
             if (ONCE_UPDATER.getAndSet(this, 1) == 0) {
+                // FIXME should subscription returned be added to something
                 worker.schedule(new Action0() {
                     @Override
                     public void call() {

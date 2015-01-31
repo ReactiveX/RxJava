@@ -275,6 +275,7 @@ public final class OperatorWindowWithTime<T> implements Operator<Observable<T>, 
         }
         
         void scheduleExact() {
+            // FIXME should subscription returned be added to the child composite
             worker.schedulePeriodically(new Action0() {
                 
                 @Override
@@ -420,6 +421,7 @@ public final class OperatorWindowWithTime<T> implements Operator<Observable<T>, 
             child.onCompleted();
         }
         void scheduleChunk() {
+            // FIXME should subscription returned be added to the child composite
             worker.schedulePeriodically(new Action0() {
 
                 @Override
@@ -444,6 +446,7 @@ public final class OperatorWindowWithTime<T> implements Operator<Observable<T>, 
                 return;
             }
             
+            // FIXME should subscription returned be added to the child composite
             worker.schedule(new Action0() {
 
                 @Override

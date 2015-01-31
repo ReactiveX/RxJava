@@ -166,6 +166,7 @@ public final class OperatorBufferWithTime<T> implements Operator<List<T>, T> {
             unsubscribe();
         }
         void scheduleChunk() {
+            // FIXME should subscription returned be added to the child composite
             inner.schedulePeriodically(new Action0() {
                 @Override
                 public void call() {
@@ -181,6 +182,7 @@ public final class OperatorBufferWithTime<T> implements Operator<List<T>, T> {
                 }
                 chunks.add(chunk);
             }
+            // FIXME should subscription returned be added to the child composite
             inner.schedule(new Action0() {
                 @Override
                 public void call() {
@@ -280,6 +282,7 @@ public final class OperatorBufferWithTime<T> implements Operator<List<T>, T> {
             unsubscribe();
         }
         void scheduleExact() {
+            // FIXME should subscription returned be added to the child composite
             inner.schedulePeriodically(new Action0() {
                 @Override
                 public void call() {

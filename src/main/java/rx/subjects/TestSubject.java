@@ -90,6 +90,7 @@ public final class TestSubject<T> extends Subject<T, T> {
      *         the number of milliseconds in the future relative to "now()" at which to call {@code onCompleted}
      */
     public void onCompleted(long timeInMilliseconds) {
+        // FIXME should subscription returned be added to some composite
         innerScheduler.schedule(new Action0() {
 
             @Override
@@ -125,6 +126,7 @@ public final class TestSubject<T> extends Subject<T, T> {
      *         the number of milliseconds in the future relative to "now()" at which to call {@code onError}
      */
     public void onError(final Throwable e, long timeInMilliseconds) {
+        // FIXME should subscription returned be added to some composite
         innerScheduler.schedule(new Action0() {
 
             @Override
@@ -158,6 +160,7 @@ public final class TestSubject<T> extends Subject<T, T> {
      *         the number of milliseconds in the future relative to "now()" at which to call {@code onNext}
      */
     public void onNext(final T v, long timeInMilliseconds) {
+        // FIXME should subscription returned be added to some composite
         innerScheduler.schedule(new Action0() {
 
             @Override

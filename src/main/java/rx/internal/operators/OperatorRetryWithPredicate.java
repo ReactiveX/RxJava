@@ -74,6 +74,7 @@ public final class OperatorRetryWithPredicate<T> implements Observable.Operator<
 
             @Override
             public void onNext(final Observable<T> o) {
+                // FIXME should subscription returned be added to the child composite
                 inner.schedule(new Action0() {
 
                     @Override
@@ -94,6 +95,7 @@ public final class OperatorRetryWithPredicate<T> implements Observable.Operator<
                             public void onError(Throwable e) {
                                 if (predicate.call(attempts, e) && !inner.isUnsubscribed()) {
                                     // retry again
+                                    // FIXME should subscription returned be added to the child composite
                                     inner.schedule(_self);
                                 } else {
                                     // give up and pass the failure

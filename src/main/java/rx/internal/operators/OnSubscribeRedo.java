@@ -286,6 +286,7 @@ public final class OnSubscribeRedo<T> implements OnSubscribe<T> {
                 }));
 
         // subscribe to the restarts observable to know when to schedule the next redo.
+        // FIXME should subscription returned be added to the child composite
         worker.schedule(new Action0() {
             @Override
             public void call() {
@@ -304,6 +305,7 @@ public final class OnSubscribeRedo<T> implements OnSubscribe<T> {
                     public void onNext(Object t) {
                         if (!isLocked.get() && !child.isUnsubscribed()) {
                             if (consumerCapacity.get() > 0) {
+                                // FIXME should subscription returned be added to the child composite
                                 worker.schedule(subscribeToSource);
                             } else {
                                 resumeBoundary.compareAndSet(false, true);
@@ -329,6 +331,7 @@ public final class OnSubscribeRedo<T> implements OnSubscribe<T> {
                     producer.request(n);
                 } else
                 if (c == 0 && resumeBoundary.compareAndSet(true, false)) {
+                    // FIXME should subscription returned be added to the child composite
                     worker.schedule(subscribeToSource);
                 }
             }

@@ -87,6 +87,7 @@ public class OperatorSubscribeOn<T> implements Operator<T, Observable<T>> {
                                             // see unit test 'testSetProducerSynchronousRequest' for more context on this
                                             producer.request(n);
                                         } else {
+                                            // FIXME should subscription returned be added to the subscriber composite
                                             inner.schedule(new Action0() {
 
                                                 @Override

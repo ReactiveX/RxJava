@@ -43,6 +43,7 @@ public final class OperatorSkipTimed<T> implements Operator<T, T> {
         final Worker worker = scheduler.createWorker();
         child.add(worker);
         final AtomicBoolean gate = new AtomicBoolean();
+        // FIXME should subscription returned be added to the child composite
         worker.schedule(new Action0() {
             @Override
             public void call() {
