@@ -88,6 +88,58 @@ public class OperatorReplayTest {
     }
 
     @Test
+    public void testBufferedWindowReplay() {
+        PublishSubject<Integer> source = PublishSubject.create();
+        TestScheduler scheduler = new TestScheduler();
+        ConnectableObservable<Integer> co = source.replay(3, 100, TimeUnit.MILLISECONDS, scheduler);
+        co.connect();
+
+        {
+            @SuppressWarnings("unchecked")
+            Observer<Object> observer1 = mock(Observer.class);
+            InOrder inOrder = inOrder(observer1);
+
+            co.subscribe(observer1);
+
+            source.onNext(1);
+            scheduler.advanceTimeBy(10, TimeUnit.MILLISECONDS);
+            source.onNext(2);
+            scheduler.advanceTimeBy(10, TimeUnit.MILLISECONDS);
+            source.onNext(3);
+            scheduler.advanceTimeBy(10, TimeUnit.MILLISECONDS);
+
+            inOrder.verify(observer1, times(1)).onNext(1);
+            inOrder.verify(observer1, times(1)).onNext(2);
+            inOrder.verify(observer1, times(1)).onNext(3);
+
+            source.onNext(4);
+            source.onNext(5);
+            scheduler.advanceTimeBy(90, TimeUnit.MILLISECONDS);
+
+            inOrder.verify(observer1, times(1)).onNext(4);
+
+            inOrder.verify(observer1, times(1)).onNext(5);
+
+            inOrder.verifyNoMoreInteractions();
+            verify(observer1, never()).onError(any(Throwable.class));
+
+        }
+
+        {
+            @SuppressWarnings("unchecked")
+            Observer<Object> observer1 = mock(Observer.class);
+            InOrder inOrder = inOrder(observer1);
+
+            co.subscribe(observer1);
+
+            inOrder.verify(observer1, times(1)).onNext(4);
+            inOrder.verify(observer1, times(1)).onNext(5);
+            inOrder.verifyNoMoreInteractions();
+            verify(observer1, never()).onError(any(Throwable.class));
+        }
+    }
+
+    @Test
     public void testWindowedReplay() {
         TestScheduler scheduler = new TestScheduler();
 

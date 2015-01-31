@@ -838,7 +838,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
 
         @Override
         public boolean test(Object value, long now) {
-            return true; // size gets never stale
+            return false; // size gets never stale
         }
         
         @Override
