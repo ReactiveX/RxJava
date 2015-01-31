@@ -60,17 +60,16 @@ public abstract class ConcurrentCircularArrayQueue<E> extends ConcurrentCircular
         REF_ARRAY_BASE = UnsafeAccess.UNSAFE.arrayBaseOffset(Object[].class)
                 + (BUFFER_PAD << (REF_ELEMENT_SHIFT - SPARSE_SHIFT));
     }
-    protected final int capacity;
     protected final long mask;
     // @Stable :(
     protected final E[] buffer;
 
     @SuppressWarnings("unchecked")
     public ConcurrentCircularArrayQueue(int capacity) {
-        this.capacity = Pow2.roundToPowerOfTwo(capacity);
-        mask = this.capacity - 1;
+        int actualCapacity = Pow2.roundToPowerOfTwo(capacity);
+        mask = actualCapacity - 1;
         // pad data on either end with some empty slots.
-        buffer = (E[]) new Object[(this.capacity << SPARSE_SHIFT) + BUFFER_PAD * 2];
+        buffer = (E[]) new Object[(actualCapacity << SPARSE_SHIFT) + BUFFER_PAD * 2];
     }
 
     /**
@@ -78,9 +77,16 @@ public abstract class ConcurrentCircularArrayQueue<E> extends ConcurrentCircular
      * @return the offset in bytes within the array for a given index.
      */
     protected final long calcElementOffset(long index) {
+        return calcElementOffset(index, mask);
+    }
+    /**
+     * @param index desirable element index
+     * @param mask 
+     * @return the offset in bytes within the array for a given index.
+     */
+    protected final long calcElementOffset(long index, long mask) {
         return REF_ARRAY_BASE + ((index & mask) << REF_ELEMENT_SHIFT);
     }
-
     /**
      * A plain store (no ordering/fences) of an element to a given offset
      * 
@@ -170,5 +176,11 @@ public abstract class ConcurrentCircularArrayQueue<E> extends ConcurrentCircular
     @Override
     public Iterator<E> iterator() {
         throw new UnsupportedOperationException();
+    }
+    @Override
+    public void clear() {
+        // we have to test isEmpty because of the weaker poll() guarantee
+        while (poll() != null || !isEmpty())
+            ;
     }
 }
