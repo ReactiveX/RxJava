@@ -41,9 +41,9 @@ import rx.Subscription;
 public class CompositeSubscriptionPerf {
     @State(Scope.Thread)
     public static class TheState {
-        @Param({ "1", "1000", "1000000" })
+        @Param({ "1", "1000", "100000" })
         public int loop;
-        @Param({ "1", "5", "10" })
+        @Param({ "1", "5", "10", "100" })
         public int count;
         
         public final CompositeSubscription csub = new CompositeSubscription();
@@ -67,8 +67,22 @@ public class CompositeSubscriptionPerf {
         }
     }
     @Benchmark
-    public void simpleAddRemoveOne(TheState state) {
+    public void addRemove(TheState state) {
         CompositeSubscription csub = state.csub;
+        Subscription[] values = state.values;
+        
+        for (int i = state.loop; i > 0; i--) {
+            for (int j = values.length - 1; j >= 0; j--) {
+                csub.add(state.values[j]);
+            }
+            for (int j = values.length - 1; j >= 0; j--) {
+                csub.remove(state.values[j]);
+            }
+        }
+    }
+    @Benchmark
+    public void addRemoveLocal(TheState state) {
+        CompositeSubscription csub = new CompositeSubscription();
         Subscription[] values = state.values;
         
         for (int i = state.loop; i > 0; i--) {

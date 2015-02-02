@@ -44,18 +44,18 @@ import rx.Subscription;
 @Threads(2)
 @State(Scope.Group)
 public class CompositeSubscriptionConcurrentPerf {
-    @Param({ "1", "1000", "1000000" })
+    @Param({ "1", "1000", "100000" })
     public int loop;
     
     public final CompositeSubscription csub = new CompositeSubscription();
-    @Param({ "1", "5", "10" })
+    @Param({ "1", "5", "10", "20" })
     public int count;
     
     public Subscription[] values;
     @Setup
     public void setup() {
-        values = new Subscription[count];
-        for (int i = 0; i < count; i++) {
+        values = new Subscription[count * 2];
+        for (int i = 0; i < count * 2; i++) {
             values[i] = new Subscription() {
                 @Override
                 public boolean isUnsubscribed() {
@@ -79,10 +79,10 @@ public class CompositeSubscriptionConcurrentPerf {
             
         }
     };
-    @Group("tpt")
+    @Group("g1")
     @GroupThreads(1)
     @Benchmark
-    public void simpleAddRemoveOne() {
+    public void addRemoveT1() {
         CompositeSubscription csub = this.csub;
         Subscription[] values = this.values;
         
@@ -95,10 +95,10 @@ public class CompositeSubscriptionConcurrentPerf {
             }
         }
     }
-    @Group("tpt")
+    @Group("g1")
     @GroupThreads(1)
     @Benchmark
-    public void simpleAddRemoveOne2() {
+    public void addRemoveT2() {
         CompositeSubscription csub = this.csub;
         Subscription[] values = this.values;
         
@@ -107,6 +107,40 @@ public class CompositeSubscriptionConcurrentPerf {
                 csub.add(values[j]);
             }
             for (int j = values.length - 1; j >= 0; j--) {
+                csub.remove(values[j]);
+            }
+        }
+    }
+    @Group("g2")
+    @GroupThreads(1)
+    @Benchmark
+    public void addRemoveHalfT1() {
+        CompositeSubscription csub = this.csub;
+        Subscription[] values = this.values;
+        int n = values.length;
+        
+        for (int i = loop; i > 0; i--) {
+            for (int j = n / 2 - 1; j >= 0; j--) {
+                csub.add(values[j]);
+            }
+            for (int j = n / 2 - 1; j >= 0; j--) {
+                csub.remove(values[j]);
+            }
+        }
+    }
+    @Group("g2")
+    @GroupThreads(1)
+    @Benchmark
+    public void addRemoveHalfT2() {
+        CompositeSubscription csub = this.csub;
+        Subscription[] values = this.values;
+        int n = values.length;
+        
+        for (int i = loop; i > 0; i--) {
+            for (int j = n - 1; j >= n / 2; j--) {
+                csub.add(values[j]);
+            }
+            for (int j = n - 1; j >= n / 2; j--) {
                 csub.remove(values[j]);
             }
         }
