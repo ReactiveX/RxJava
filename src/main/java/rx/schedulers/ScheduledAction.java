@@ -16,7 +16,9 @@
 package rx.schedulers;
 
 import java.util.concurrent.Future;
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
+import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 
 import rx.Subscription;
 import rx.exceptions.OnErrorNotImplementedException;
@@ -28,7 +30,7 @@ import rx.subscriptions.CompositeSubscription;
  * A {@code Runnable} that executes an {@code Action0}, allows associating resources with it and can be unsubscribed.
  * <p><b>System-wide properties:</b>
  * <ul>
- * <li>{@code io.reactivex.scheduler.interrupt-on-unsubscribe}
+ * <li>{@code io.reactivex.rxjava.scheduler.interrupt-on-unsubscribe}
  * <dd>Use {@code Future.cancel(true)} to interrupt a running action? {@code "true"} (default) or {@code "false"}.</br>
  * </li>
  * </ul>
@@ -131,7 +133,7 @@ public final class ScheduledAction implements Runnable, Subscription {
     /** Indicates if the ScheduledActions should be interrupted if cancelled from another thread. */
     static final boolean INTERRUPT_ON_UNSUBSCRIBE;
     /** Key to the INTERRUPT_ON_UNSUBSCRIBE flag. */
-    static final String KEY_INTERRUPT_ON_UNSUBSCRIBE = "io.reactivex.scheduler.interrupt-on-unsubscribe";
+    static final String KEY_INTERRUPT_ON_UNSUBSCRIBE = "io.reactivex.rxjava.scheduler.interrupt-on-unsubscribe";
     static {
         String value = System.getProperty(KEY_INTERRUPT_ON_UNSUBSCRIBE);
         INTERRUPT_ON_UNSUBSCRIBE = value == null || "true".equalsIgnoreCase(value);
@@ -141,12 +143,15 @@ public final class ScheduledAction implements Runnable, Subscription {
     /** The actual action to call. */
     final Action0 action;
     /** Holds the thread executing the action. Using the highest order bit to indicate if unsubscribe should interrupt or not. */
-    volatile long thread;
+    volatile Thread thread;
     /** Updater to the {@link #thread} field. */
-    static final AtomicLongFieldUpdater<ScheduledAction> THREAD
-        = AtomicLongFieldUpdater.newUpdater(ScheduledAction.class, "thread");
-    /** Flag to allow interrupts. */
-    static final long ALLOW_CANCEL_INTERRUPT = Long.MIN_VALUE;
+    static final AtomicReferenceFieldUpdater<ScheduledAction, Thread> THREAD
+        = AtomicReferenceFieldUpdater.newUpdater(ScheduledAction.class, Thread.class, "thread");
+    /** The interruptible flag (0, 1). */
+    volatile int interruptible;
+    /** Updater to the {@link #interruptible} field. */
+    static final AtomicIntegerFieldUpdater<ScheduledAction> INTERRUPTIBLE
+        = AtomicIntegerFieldUpdater.newUpdater(ScheduledAction.class, "interruptible");
     /**
      * Creates a new instance of ScheduledAction by wrapping an existing Action0 instance
      * and allows interruption on unsubscription.
@@ -165,7 +170,7 @@ public final class ScheduledAction implements Runnable, Subscription {
     public ScheduledAction(Action0 action, boolean interruptOnUnsubscribe) {
         this.action = action;
         this.cancel = new CompositeSubscription();
-        THREAD.lazySet(this, interruptOnUnsubscribe ? ALLOW_CANCEL_INTERRUPT : 0);
+        INTERRUPTIBLE.lazySet(this, interruptOnUnsubscribe ? 1 : 0);
     }
 
     @Override
@@ -237,13 +242,7 @@ public final class ScheduledAction implements Runnable, Subscription {
      * interrupt the thread the action is running on. 
      */
     public void setInterruptOnUnsubscribe(boolean allow) {
-        for (;;) {
-            long t = thread;
-            long u = allow ? (t | ALLOW_CANCEL_INTERRUPT) : (t & ~ALLOW_CANCEL_INTERRUPT);
-            if (THREAD.compareAndSet(this, t, u)) {
-                break;
-            }
-        }
+        INTERRUPTIBLE.lazySet(this, allow ? 1 : 0);
     }
     /**
      * Returns the current state of the interrupt-on-unsubscribe policy.
@@ -251,19 +250,12 @@ public final class ScheduledAction implements Runnable, Subscription {
      * interrupt the thread the action is running on
      */
     public boolean getInterruptOnUnsubscribe() {
-        return (thread & ALLOW_CANCEL_INTERRUPT) != 0;
+        return interruptible != 0;
     }
     
     /** Atomically sets the current thread identifier and preserves the interruption allowed flag. */
     private void saveCurrentThread() {
-        long current = Thread.currentThread().getId();
-        for (;;) {
-            long t = thread;
-            long u = current | (t & ALLOW_CANCEL_INTERRUPT);
-            if (THREAD.compareAndSet(this, t, u)) {
-                break;
-            }
-        }
+        THREAD.lazySet(this, Thread.currentThread());
     }
 
     /**
@@ -281,10 +273,8 @@ public final class ScheduledAction implements Runnable, Subscription {
 
         @Override
         public void unsubscribe() {
-            long t = thread;
-            long current = Thread.currentThread().getId();
-            if ((t & (~ALLOW_CANCEL_INTERRUPT)) != current) {
-                f.cancel((t & ALLOW_CANCEL_INTERRUPT) != 0L);
+            if (thread != Thread.currentThread()) {
+                f.cancel(interruptible != 0);
             } else {
                 f.cancel(false);
             }
