@@ -153,7 +153,7 @@ public final class ScheduledAction implements Runnable, Subscription {
      * @param action the action to wrap
      */
     public ScheduledAction(Action0 action) {
-        this(action, true);
+        this(action, INTERRUPT_ON_UNSUBSCRIBE);
     }
     /**
      * Creates a new instance of ScheduledAction by wrapping an existing Action0 instance
@@ -283,8 +283,8 @@ public final class ScheduledAction implements Runnable, Subscription {
         public void unsubscribe() {
             long t = thread;
             long current = Thread.currentThread().getId();
-            if ((t & (ALLOW_CANCEL_INTERRUPT - 1L)) != current) {
-                f.cancel(INTERRUPT_ON_UNSUBSCRIBE && (t & ALLOW_CANCEL_INTERRUPT) != 0L);
+            if ((t & (~ALLOW_CANCEL_INTERRUPT)) != current) {
+                f.cancel((t & ALLOW_CANCEL_INTERRUPT) != 0L);
             } else {
                 f.cancel(false);
             }
