@@ -45,7 +45,7 @@ import java.util.concurrent.TimeUnit;
         if (maxThreads <= 0 || maxThreads > ncpu) {
             max = ncpu;
         } else {
-            max =maxThreads;
+            max = maxThreads;
         }
         MAX_THREADS = max;
     }
