@@ -271,6 +271,13 @@ public class OnSubscribeRefCountTest {
     }
 
     @Test
+    public void testConnectUnsubscribeRaceConditionLoop() throws InterruptedException {
+        for (int i = 0; i < 1000; i++) {
+            testConnectUnsubscribeRaceCondition();
+        }
+    }
+    
+    @Test
     public void testConnectUnsubscribeRaceCondition() throws InterruptedException {
         final AtomicInteger subUnsubCount = new AtomicInteger();
         Observable<Long> o = synchronousInterval()
@@ -295,12 +302,14 @@ public class OnSubscribeRefCountTest {
                 });
 
         TestSubscriber<Long> s = new TestSubscriber<Long>();
-        o.publish().refCount().subscribeOn(Schedulers.newThread()).subscribe(s);
+        
+        o.publish().refCount().subscribeOn(Schedulers.computation()).subscribe(s);
         System.out.println("send unsubscribe");
         // now immediately unsubscribe while subscribeOn is racing to subscribe
         s.unsubscribe();
         // this generally will mean it won't even subscribe as it is already unsubscribed by the time connect() gets scheduled
-
+        // give time to the counter to update
+        Thread.sleep(1);
         // either we subscribed and then unsubscribed, or we didn't ever even subscribe
         assertEquals(0, subUnsubCount.get());
 
