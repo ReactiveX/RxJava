@@ -31,7 +31,24 @@ import java.util.concurrent.TimeUnit;
     /** Manages a fixed number of workers. */
     private static final String THREAD_NAME_PREFIX = "RxComputationThreadPool-";
     private static final RxThreadFactory THREAD_FACTORY = new RxThreadFactory(THREAD_NAME_PREFIX);
-    
+    /** 
+     * Key to setting the maximum number of computation scheduler threads.
+     * Zero or less is interpreted as use available. Capped by available.
+     */
+    static final String KEY_MAX_THREADS = "io.reactivex.rxjava.scheduler.max-computation-threads";
+    /** The maximum number of computation scheduler threads. */
+    static final int MAX_THREADS;
+    static {
+        int maxThreads = Integer.getInteger(KEY_MAX_THREADS, 0);
+        int ncpu = Runtime.getRuntime().availableProcessors();
+        int max;
+        if (maxThreads <= 0 || maxThreads > ncpu) {
+            max = ncpu;
+        } else {
+            max =maxThreads;
+        }
+        MAX_THREADS = max;
+    }
     static final class FixedSchedulerPool {
         final int cores;
 
@@ -40,7 +57,7 @@ import java.util.concurrent.TimeUnit;
 
         FixedSchedulerPool() {
             // initialize event loops
-            this.cores = Runtime.getRuntime().availableProcessors();
+            this.cores = MAX_THREADS;
             this.eventLoops = new PoolWorker[cores];
             for (int i = 0; i < cores; i++) {
                 this.eventLoops[i] = new PoolWorker(THREAD_FACTORY);
