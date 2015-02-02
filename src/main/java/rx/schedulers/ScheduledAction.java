@@ -140,25 +140,38 @@ public final class ScheduledAction implements Runnable, Subscription {
     final CompositeSubscription cancel;
     /** The actual action to call. */
     final Action0 action;
-    /** Holds the thread executing the action. */
-    volatile Thread thread;
+    /** Holds the thread executing the action. Using the highest order bit to indicate if unsubscribe should interrupt or not. */
+    volatile long thread;
     /** Updater to the {@link #thread} field. */
-    static final AtomicReferenceFieldUpdater<ScheduledAction, Thread> THREAD
-        = AtomicReferenceFieldUpdater.newUpdater(ScheduledAction.class, Thread.class, "thread");
-
+    static final AtomicLongFieldUpdater<ScheduledAction> THREAD
+        = AtomicLongFieldUpdater.newUpdater(ScheduledAction.class, "thread");
+    /** Flag to allow interrupts. */
+    static final long ALLOW_CANCEL_INTERRUPT = Long.MIN_VALUE;
     /**
-     * Creates a new instance of ScheduledAction by wrapping an existing Action0 instance.
+     * Creates a new instance of ScheduledAction by wrapping an existing Action0 instance
+     * and allows interruption on unsubscription.
      * @param action the action to wrap
      */
     public ScheduledAction(Action0 action) {
+        this(action, true);
+    }
+    /**
+     * Creates a new instance of ScheduledAction by wrapping an existing Action0 instance
+     * and with the interrupt policy.
+     * @param action the action to wrap
+     * @param interruptOnUnsubscribe allows interrupting the action when unsubscribe happens
+     * from a different thread the action is running on
+     */
+    public ScheduledAction(Action0 action, boolean interruptOnUnsubscribe) {
         this.action = action;
         this.cancel = new CompositeSubscription();
+        THREAD.lazySet(this, interruptOnUnsubscribe ? ALLOW_CANCEL_INTERRUPT : 0);
     }
 
     @Override
     public void run() {
         try {
-            THREAD.lazySet(this, Thread.currentThread());
+            saveCurrentThread();
             action.call();
         } catch (Throwable e) {
             // nothing to do but print a System error as this is fatal and there is nowhere else to throw this
@@ -218,6 +231,40 @@ public final class ScheduledAction implements Runnable, Subscription {
         cancel.add(new Remover(this, parent));
     }
     
+    /**
+     * Sets the interrupt-on-unsubscribe policy for this ScheduledAction.
+     * @param allow {@code true} if unsubscribing this action from another thread should
+     * interrupt the thread the action is running on. 
+     */
+    public void setInterruptOnUnsubscribe(boolean allow) {
+        for (;;) {
+            long t = thread;
+            long u = allow ? (t | ALLOW_CANCEL_INTERRUPT) : (t & ~ALLOW_CANCEL_INTERRUPT);
+            if (THREAD.compareAndSet(this, t, u)) {
+                break;
+            }
+        }
+    }
+    /**
+     * Returns the current state of the interrupt-on-unsubscribe policy.
+     * @return {@code true} if unsubscribing this action from another thread will
+     * interrupt the thread the action is running on
+     */
+    public boolean getInterruptOnUnsubscribe() {
+        return (thread & ALLOW_CANCEL_INTERRUPT) != 0;
+    }
+    
+    /** Atomically sets the current thread identifier and preserves the interruption allowed flag. */
+    private void saveCurrentThread() {
+        long current = Thread.currentThread().getId();
+        for (;;) {
+            long t = thread;
+            long u = current | (t & ALLOW_CANCEL_INTERRUPT);
+            if (THREAD.compareAndSet(this, t, u)) {
+                break;
+            }
+        }
+    }
 
     /**
      * Cancels the captured future if the caller of the call method
@@ -234,8 +281,10 @@ public final class ScheduledAction implements Runnable, Subscription {
 
         @Override
         public void unsubscribe() {
-            if (thread != Thread.currentThread()) {
-                f.cancel(INTERRUPT_ON_UNSUBSCRIBE);
+            long t = thread;
+            long current = Thread.currentThread().getId();
+            if ((t & (ALLOW_CANCEL_INTERRUPT - 1L)) != current) {
+                f.cancel(INTERRUPT_ON_UNSUBSCRIBE && (t & ALLOW_CANCEL_INTERRUPT) != 0L);
             } else {
                 f.cancel(false);
             }
