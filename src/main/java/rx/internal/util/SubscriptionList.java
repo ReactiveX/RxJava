@@ -119,4 +119,14 @@ public final class SubscriptionList implements Subscription {
             }
         }
     }
+    
+    /* perf support */
+    public void clear() {
+        List<Subscription> list;
+        synchronized (this) {
+            list = subscriptions;
+            subscriptions = null;
+        }
+        unsubscribeFromAll(list);
+    }
 }
