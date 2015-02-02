@@ -28,7 +28,10 @@ import rx.subscriptions.CompositeSubscription;
 /**
  * A {@code Runnable} that executes an {@code Action0} and can be cancelled. The analog is the
  * {@code Subscriber} in respect of an {@code Observer}.
+ * 
+ * @deprecated use {@link rx.schedulers.ScheduledAction} instead.
  */
+@Deprecated
 public final class ScheduledAction extends AtomicReference<Thread> implements Runnable, Subscription {
     /** */
     private static final long serialVersionUID = -3962399486978279857L;

@@ -26,7 +26,7 @@ import org.junit.Test;
 
 import rx.Scheduler;
 import rx.functions.Action0;
-import rx.internal.schedulers.ScheduledAction;
+import rx.schedulers.ScheduledAction;
 import rx.subscriptions.Subscriptions;
 
 public class NewThreadSchedulerTest extends AbstractSchedulerConcurrencyTests {
