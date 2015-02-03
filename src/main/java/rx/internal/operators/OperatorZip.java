@@ -117,6 +117,7 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
         return subscriber;
     }
 
+    @SuppressWarnings("rawtypes")
     private final class ZipSubscriber extends Subscriber<Observable[]> {
 
         final Subscriber<? super R> child;
@@ -158,7 +159,8 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
     }
 
     private static final class ZipProducer<R> extends AtomicLong implements Producer {
-
+        /** */
+        private static final long serialVersionUID = -1216676403723546796L;
         private Zip<R> zipper;
 
         public ZipProducer(Zip<R> zipper) {
@@ -167,7 +169,7 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
 
         @Override
         public void request(long n) {
-            addAndGet(n);
+            BackpressureUtils.getAndAddRequest(this, n);
             // try and claim emission if no other threads are doing so
             zipper.tick();
         }
@@ -179,6 +181,7 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
         private final FuncN<? extends R> zipFunction;
         private final CompositeSubscription childSubscription = new CompositeSubscription();
 
+        @SuppressWarnings("unused")
         volatile long counter;
         @SuppressWarnings("rawtypes")
         static final AtomicLongFieldUpdater<Zip> COUNTER_UPDATER = AtomicLongFieldUpdater.newUpdater(Zip.class, "counter");

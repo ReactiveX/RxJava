@@ -1243,4 +1243,27 @@ public class OperatorZipTest {
         }
         assertEquals(expected, zip2.toList().toBlocking().single());
     }
+    @Test
+    public void testUnboundedDownstreamOverrequesting() {
+        Observable<Integer> source = Observable.range(1, 2).zipWith(Observable.range(1, 2), new Func2<Integer, Integer, Integer>() {
+            @Override
+            public Integer call(Integer t1, Integer t2) {
+                return t1 + 10 * t2;
+            }
+        });
+        
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                super.onNext(t);
+                requestMore(5);
+            }
+        };
+        
+        source.subscribe(ts);
+        
+        ts.assertNoErrors();
+        ts.assertTerminalEvent();
+        ts.assertReceivedOnNext(Arrays.asList(11, 22));
+    }
 }
