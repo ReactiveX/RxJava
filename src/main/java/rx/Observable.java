@@ -3749,20 +3749,19 @@ public class Observable<T> {
     }
 
     /**
-     * Returns an Observable that emits the items emitted by the source Observable or the items of an alternate Observable if the source Observable
-     * is empty.
+     * Returns an Observable that emits the items emitted by the source Observable or the items of an alternate
+     * Observable if the source Observable is empty.
      * <p/>
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code switchIfEmpty} does not operate by default on a particular {@link Scheduler}.</dd>
-     *  <dt><b>Beta:</b></dt>
-     *  <dd>{@code switchIfEmpty} is currently in {@link rx.annotations.Beta} and subject to change.</dd>
      * </dl>
      *
      * @param alternate
      *              the alternate Observable to subscribe to if the source does not emit any items
-     * @return  an Observable that emits the items emitted by the source Observable or the items of an alternate Observable if the source Observable
-     *          is empty.
+     * @return  an Observable that emits the items emitted by the source Observable or the items of an
+     *          alternate Observable if the source Observable is empty.
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
     @Experimental
     public final Observable<T> switchIfEmpty(Observable<? extends T> alternate) {
