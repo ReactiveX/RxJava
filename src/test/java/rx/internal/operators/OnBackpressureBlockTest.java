@@ -16,11 +16,13 @@
 
 package rx.internal.operators;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
-
-import static org.junit.Assert.*;
+import java.util.Collections;
 
 import org.junit.Test;
 
@@ -34,6 +36,7 @@ import rx.internal.util.RxRingBuffer;
 import rx.observers.TestObserver;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
+import rx.subjects.PublishSubject;
 
 /**
  * Test the onBackpressureBlock() behavior.
@@ -161,13 +164,15 @@ public class OnBackpressureBlockTest {
         Thread.sleep(WAIT);
 
         o.assertReceivedOnNext(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
-        o.assertNoErrors();
-        assertTrue(o.getOnCompletedEvents().isEmpty());
+        o.assertTerminalEvent();
+        assertEquals(1, o.getOnErrorEvents().size());
+        assertTrue(o.getOnErrorEvents().get(0) instanceof TestException);
 
         o.requestMore(10);
         
         Thread.sleep(WAIT);
         
+        o.assertReceivedOnNext(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
         o.assertTerminalEvent();
         assertEquals(1, o.getOnErrorEvents().size());
         assertTrue(o.getOnErrorEvents().get(0) instanceof TestException);
@@ -258,5 +263,85 @@ public class OnBackpressureBlockTest {
         o.assertReceivedOnNext(Arrays.asList(1, 2, 3, 4, 5, 6, 7));
         o.assertNoErrors();
         o.assertTerminalEvent();
+    }
+    @Test(timeout = 10000)
+    public void testOnCompletedDoesntWaitIfNoEvents() {
+        
+        TestSubscriber<Integer> o = new TestSubscriber<Integer>() {
+            @Override
+            public void onStart() {
+                request(0); // make sure it doesn't start in unlimited mode
+            }
+        };
+        Observable.<Integer>empty().onBackpressureBlock(2).subscribe(o);
+        
+        o.assertNoErrors();
+        o.assertTerminalEvent();
+        o.assertReceivedOnNext(Collections.<Integer>emptyList());
+    }
+    @Test(timeout = 10000)
+    public void testOnCompletedDoesWaitIfEvents() {
+        
+        TestSubscriber<Integer> o = new TestSubscriber<Integer>() {
+            @Override
+            public void onStart() {
+                request(0); // make sure it doesn't start in unlimited mode
+            }
+        };
+        Observable.just(1).onBackpressureBlock(2).subscribe(o);
+        
+        o.assertReceivedOnNext(Collections.<Integer>emptyList());
+        assertTrue(o.getOnErrorEvents().isEmpty());
+        assertTrue(o.getOnCompletedEvents().isEmpty());
+    }
+    @Test(timeout = 10000)
+    public void testOnCompletedDoesntWaitIfNoEvents2() {
+        final PublishSubject<Integer> ps = PublishSubject.create();
+        TestSubscriber<Integer> o = new TestSubscriber<Integer>() {
+            @Override
+            public void onStart() {
+                request(0); // make sure it doesn't start in unlimited mode
+            }
+            @Override
+            public void onNext(Integer t) {
+                super.onNext(t);
+                ps.onCompleted(); // as if an async completion arrived while in the loop
+            }
+        };
+        ps.onBackpressureBlock(2).unsafeSubscribe(o);
+        ps.onNext(1);
+        o.requestMore(1);
+        
+        o.assertNoErrors();
+        o.assertTerminalEvent();
+        o.assertReceivedOnNext(Arrays.asList(1));
+    }
+    @Test(timeout = 10000)
+    public void testOnCompletedDoesntWaitIfNoEvents3() {
+        final PublishSubject<Integer> ps = PublishSubject.create();
+        TestSubscriber<Integer> o = new TestSubscriber<Integer>() {
+            boolean once = true;
+            @Override
+            public void onStart() {
+                request(0); // make sure it doesn't start in unlimited mode
+            }
+            @Override
+            public void onNext(Integer t) {
+                super.onNext(t);
+                if (once) {
+                    once = false;
+                    ps.onNext(2);
+                    ps.onCompleted(); // as if an async completion arrived while in the loop
+                    requestMore(1);
+                }
+            }
+        };
+        ps.onBackpressureBlock(3).unsafeSubscribe(o);
+        ps.onNext(1);
+        o.requestMore(1);
+        
+        o.assertNoErrors();
+        o.assertTerminalEvent();
+        o.assertReceivedOnNext(Arrays.asList(1, 2));
     }
 }

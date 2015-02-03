@@ -20,8 +20,8 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 import rx.Observable.Operator;
-import rx.Producer;
 import rx.Subscriber;
+import rx.internal.util.BackpressureDrainManager;
 
 /**
  * Operator that blocks the producer thread in case a backpressure is needed.
@@ -38,42 +38,25 @@ public class OperatorOnBackpressureBlock<T> implements Operator<T, T> {
         return s;
     }
     
-    static final class BlockingSubscriber<T> extends Subscriber<T> {
+    static final class BlockingSubscriber<T> extends Subscriber<T> implements BackpressureDrainManager.BackpressureQueueCallback {
         final NotificationLite<T> nl = NotificationLite.instance();
         final BlockingQueue<Object> queue;
         final Subscriber<? super T> child;
-        /** Guarded by this. */
-        long requestedCount;
-        /** Guarded by this. */
-        boolean emitting;
-        volatile boolean terminated;
-        /** Set before terminated, read after terminated. */
-        Throwable exception;
+        final BackpressureDrainManager manager;
         public BlockingSubscriber(int max, Subscriber<? super T> child) {
             this.queue = new ArrayBlockingQueue<Object>(max);
             this.child = child;
+            this.manager = new BackpressureDrainManager(this);
         }
         void init() {
             child.add(this);
-            child.setProducer(new Producer() {
-                @Override
-                public void request(long n) {
-                    synchronized (BlockingSubscriber.this) {
-                        if (n == Long.MAX_VALUE || requestedCount == Long.MAX_VALUE) {
-                            requestedCount = Long.MAX_VALUE;
-                        } else {
-                            requestedCount += n;
-                        }
-                    }
-                    drain();
-                }
-            });
+            child.setProducer(manager);
         }
         @Override
         public void onNext(T t) {
             try {
                 queue.put(nl.next(t));
-                drain();
+                manager.drain();
             } catch (InterruptedException ex) {
                 if (!isUnsubscribed()) {
                     onError(ex);
@@ -82,76 +65,31 @@ public class OperatorOnBackpressureBlock<T> implements Operator<T, T> {
         }
         @Override
         public void onError(Throwable e) {
-            if (!terminated) {
-                exception = e;
-                terminated = true;
-                drain();
-            }
+            manager.terminateAndDrain(e);
         }
         @Override
         public void onCompleted() {
-            terminated = true;
-            drain();
+            manager.terminateAndDrain();
         }
-        void drain() {
-            long n;
-            synchronized (this) {
-                if (emitting) {
-                    return;
-                }
-                emitting = true;
-                n = requestedCount;
+        @Override
+        public boolean accept(Object value) {
+            return nl.accept(child, value);
+        }
+        @Override
+        public void complete(Throwable exception) {
+            if (exception != null) {
+                child.onError(exception);
+            } else {
+                child.onCompleted();
             }
-            boolean skipFinal = false;
-            try {
-                while (true) {
-                    int emitted = 0;
-                    while (n > 0) {
-                        Object o = queue.poll();
-                        if (o == null) {
-                            if (terminated) {
-                                if (exception != null) {
-                                    child.onError(exception);
-                                } else {
-                                    child.onCompleted();
-                                }
-                                return;
-                            }
-                            break;
-                        } else {
-                            child.onNext(nl.getValue(o));
-                            n--;
-                            emitted++;
-                        }
-                    }
-                    synchronized (this) {
-                        // if no backpressure below
-                        if (requestedCount == Long.MAX_VALUE) {
-                            // no new data arrived since the last poll
-                            if (queue.peek() == null) {
-                                skipFinal = true;
-                                emitting = false;
-                                return;
-                            }
-                            n = Long.MAX_VALUE;
-                        } else {
-                            if (emitted == 0) {
-                                skipFinal = true;
-                                emitting = false;
-                                return;
-                            }
-                            requestedCount -= emitted;
-                            n = requestedCount;
-                        }
-                    }
-                }
-            } finally {
-                if (!skipFinal) {
-                    synchronized (this) {
-                        emitting = false;
-                    }
-                }
-            }
+        }
+        @Override
+        public Object peek() {
+            return queue.peek();
+        }
+        @Override
+        public Object poll() {
+            return queue.poll();
         }
     }
 }
