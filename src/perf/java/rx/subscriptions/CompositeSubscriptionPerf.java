@@ -18,14 +18,8 @@ package rx.subscriptions;
 
 import java.util.concurrent.TimeUnit;
 
-import org.openjdk.jmh.annotations.Benchmark;
-import org.openjdk.jmh.annotations.BenchmarkMode;
-import org.openjdk.jmh.annotations.Mode;
-import org.openjdk.jmh.annotations.OutputTimeUnit;
-import org.openjdk.jmh.annotations.Param;
-import org.openjdk.jmh.annotations.Scope;
-import org.openjdk.jmh.annotations.Setup;
-import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.annotations.*;
+import org.openjdk.jmh.infra.Blackhole;
 
 import rx.Subscription;
 
@@ -73,26 +67,28 @@ public class CompositeSubscriptionPerf {
         
         for (int i = state.loop; i > 0; i--) {
             for (int j = values.length - 1; j >= 0; j--) {
-                csub.add(state.values[j]);
+                csub.add(values[j]);
             }
             for (int j = values.length - 1; j >= 0; j--) {
-                csub.remove(state.values[j]);
+                csub.remove(values[j]);
             }
         }
     }
     @Benchmark
-    public void addRemoveLocal(TheState state) {
+    public void addRemoveLocal(TheState state, Blackhole bh) {
         CompositeSubscription csub = new CompositeSubscription();
         Subscription[] values = state.values;
         
         for (int i = state.loop; i > 0; i--) {
             for (int j = values.length - 1; j >= 0; j--) {
-                csub.add(state.values[j]);
+                csub.add(values[j]);
             }
             for (int j = values.length - 1; j >= 0; j--) {
-                csub.remove(state.values[j]);
+                csub.remove(values[j]);
             }
         }
+        
+        bh.consume(csub);
     }
     @Benchmark
     public void addClear(TheState state) {
@@ -101,21 +97,22 @@ public class CompositeSubscriptionPerf {
         
         for (int i = state.loop; i > 0; i--) {
             for (int j = values.length - 1; j >= 0; j--) {
-                csub.add(state.values[j]);
+                csub.add(values[j]);
             }
             csub.clear();
         }
     }
     @Benchmark
-    public void addClearLocal(TheState state) {
+    public void addClearLocal(TheState state, Blackhole bh) {
         CompositeSubscription csub = new CompositeSubscription();
         Subscription[] values = state.values;
         
         for (int i = state.loop; i > 0; i--) {
             for (int j = values.length - 1; j >= 0; j--) {
-                csub.add(state.values[j]);
+                csub.add(values[j]);
             }
             csub.clear();
         }
+        bh.consume(csub);
     }
 }

@@ -18,14 +18,8 @@ package rx.subscriptions;
 
 import java.util.concurrent.TimeUnit;
 
-import org.openjdk.jmh.annotations.Benchmark;
-import org.openjdk.jmh.annotations.BenchmarkMode;
-import org.openjdk.jmh.annotations.Mode;
-import org.openjdk.jmh.annotations.OutputTimeUnit;
-import org.openjdk.jmh.annotations.Param;
-import org.openjdk.jmh.annotations.Scope;
-import org.openjdk.jmh.annotations.Setup;
-import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.annotations.*;
+import org.openjdk.jmh.infra.Blackhole;
 
 import rx.Subscription;
 import rx.internal.util.SubscriptionList;
@@ -74,21 +68,22 @@ public class SubscriptionListPerf {
         
         for (int i = state.loop; i > 0; i--) {
             for (int j = values.length - 1; j >= 0; j--) {
-                csub.add(state.values[j]);
+                csub.add(values[j]);
             }
             csub.clear();
         }
     }
     @Benchmark
-    public void addClearLocal(TheState state) {
+    public void addClearLocal(TheState state, Blackhole bh) {
         SubscriptionList csub = new SubscriptionList();
         Subscription[] values = state.values;
         
         for (int i = state.loop; i > 0; i--) {
             for (int j = values.length - 1; j >= 0; j--) {
-                csub.add(state.values[j]);
+                csub.add(values[j]);
             }
             csub.clear();
         }
+        bh.consume(csub);
     }
 }

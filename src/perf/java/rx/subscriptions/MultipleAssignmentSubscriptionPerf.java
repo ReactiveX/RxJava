@@ -18,14 +18,8 @@ package rx.subscriptions;
 
 import java.util.concurrent.TimeUnit;
 
-import org.openjdk.jmh.annotations.Benchmark;
-import org.openjdk.jmh.annotations.BenchmarkMode;
-import org.openjdk.jmh.annotations.Mode;
-import org.openjdk.jmh.annotations.OutputTimeUnit;
-import org.openjdk.jmh.annotations.Param;
-import org.openjdk.jmh.annotations.Scope;
-import org.openjdk.jmh.annotations.Setup;
-import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.annotations.*;
+import org.openjdk.jmh.infra.Blackhole;
 
 import rx.Subscription;
 
@@ -73,19 +67,20 @@ public class MultipleAssignmentSubscriptionPerf {
         
         for (int i = state.loop; i > 0; i--) {
             for (int j = values.length - 1; j >= 0; j--) {
-                csub.set(state.values[j]);
+                csub.set(values[j]);
             }
         }
     }
     @Benchmark
-    public void addLocal(TheState state) {
+    public void addLocal(TheState state, Blackhole bh) {
         MultipleAssignmentSubscription csub = new MultipleAssignmentSubscription();
         Subscription[] values = state.values;
         
         for (int i = state.loop; i > 0; i--) {
             for (int j = values.length - 1; j >= 0; j--) {
-                csub.set(state.values[j]);
+                csub.set(values[j]);
             }
         }
+        bh.consume(csub);
     }
 }
