@@ -19,7 +19,7 @@ import rx.Scheduler;
 import rx.Subscription;
 import rx.functions.Action0;
 import rx.internal.schedulers.NewThreadWorker;
-import rx.internal.schedulers.ScheduledAction;
+import rx.schedulers.ScheduledAction;
 import rx.internal.util.RxThreadFactory;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.Subscriptions;
