@@ -323,7 +323,7 @@ public final class OnSubscribeRedo<T> implements OnSubscribe<T> {
 
             @Override
             public void request(final long n) {
-                long c = consumerCapacity.getAndAdd(n);
+                long c = BackpressureUtils.getAndAddRequest(consumerCapacity, n);
                 Producer producer = currentProducer.get();
                 if (producer != null) {
                     producer.request(n);
