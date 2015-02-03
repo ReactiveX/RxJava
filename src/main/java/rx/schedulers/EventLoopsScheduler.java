@@ -35,7 +35,7 @@ import java.util.concurrent.TimeUnit;
      * Key to setting the maximum number of computation scheduler threads.
      * Zero or less is interpreted as use available. Capped by available.
      */
-    static final String KEY_MAX_THREADS = "io.reactivex.rxjava.scheduler.max-computation-threads";
+    static final String KEY_MAX_THREADS = "rx.scheduler.max-computation-threads";
     /** The maximum number of computation scheduler threads. */
     static final int MAX_THREADS;
     static {
