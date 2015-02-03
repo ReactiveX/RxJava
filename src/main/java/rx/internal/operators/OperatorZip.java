@@ -223,17 +223,21 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
          */
         @SuppressWarnings("unchecked")
         void tick() {
+            final Object[] observers = this.observers;
             if (observers == null) {
                 // nothing yet to do (initial request from Producer)
                 return;
             }
             if (COUNTER_UPDATER.getAndIncrement(this) == 0) {
+                final int length = observers.length;
+                final Observer<? super R> child = this.child;
+                final AtomicLong requested = this.requested;
                 do {
-                    // we only emit if requested > 0
-                    while (requested.get() > 0) {
-                        final Object[] vs = new Object[observers.length];
+                    while (true) {
+                        // peek for a potential onCompleted event
+                        final Object[] vs = new Object[length];
                         boolean allHaveValues = true;
-                        for (int i = 0; i < observers.length; i++) {
+                        for (int i = 0; i < length; i++) {
                             RxRingBuffer buffer = ((InnerSubscriber) observers[i]).items;
                             Object n = buffer.peek();
 
@@ -252,7 +256,8 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
                                 vs[i] = buffer.getValue(n);
                             }
                         }
-                        if (allHaveValues) {
+                        // we only emit if requested > 0 and have all values available
+                        if (requested.get() > 0 && allHaveValues) {
                             try {
                                 // all have something so emit
                                 child.onNext(zipFunction.call(vs));
