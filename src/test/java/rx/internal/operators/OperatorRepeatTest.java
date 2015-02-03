@@ -18,11 +18,9 @@ package rx.internal.operators;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
@@ -33,6 +31,7 @@ import rx.Observer;
 import rx.Subscriber;
 import rx.exceptions.TestException;
 import rx.functions.Func1;
+import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 
 public class OperatorRepeatTest {
@@ -157,5 +156,22 @@ public class OperatorRepeatTest {
         verify(o).onCompleted();
         verify(o, times(1)).onNext(any());
         verify(o, never()).onError(any(Throwable.class));
+    }
+    
+    /** Issue #2587. */
+    @Test
+    public void testRepeatAndDistinctUnbounded() {
+        Observable<Integer> src = Observable.from(Arrays.asList(1, 2, 3, 4, 5))
+                .take(3)
+                .repeat(3)
+                .distinct();
+        
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        
+        src.subscribe(ts);
+        
+        ts.assertNoErrors();
+        ts.assertTerminalEvent();
+        ts.assertReceivedOnNext(Arrays.asList(1, 2, 3));
     }
 }
