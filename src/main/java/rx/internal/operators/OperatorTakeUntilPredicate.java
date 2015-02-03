@@ -40,16 +40,16 @@ public final class OperatorTakeUntilPredicate<T> implements Operator<T, T> {
         public void onNext(T args) {
             child.onNext(args);
             
-            boolean doContinue = false;
+            boolean stop = false;
             try {
-                doContinue = predicate.call(args);
+                stop = stopPredicate.call(args);
             } catch (Throwable e) {
                 done = true;
                 child.onError(e);
                 unsubscribe();
                 return;
             }
-            if (!doContinue) {
+            if (stop) {
                 done = true;
                 child.onCompleted();
                 unsubscribe();
@@ -74,10 +74,10 @@ public final class OperatorTakeUntilPredicate<T> implements Operator<T, T> {
         }
     }
 
-    private final Func1<? super T, Boolean> predicate;
+    private final Func1<? super T, Boolean> stopPredicate;
 
-    public OperatorTakeUntilPredicate(final Func1<? super T, Boolean> predicate) {
-        this.predicate = predicate;
+    public OperatorTakeUntilPredicate(final Func1<? super T, Boolean> stopPredicate) {
+        this.stopPredicate = stopPredicate;
     }
 
     @Override

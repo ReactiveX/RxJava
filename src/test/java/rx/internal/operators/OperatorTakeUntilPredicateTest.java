@@ -47,7 +47,7 @@ public class OperatorTakeUntilPredicateTest {
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
         
-        Observable.just(1, 2).takeUntil(UtilityFunctions.alwaysTrue()).subscribe(o);
+        Observable.just(1, 2).takeUntil(UtilityFunctions.alwaysFalse()).subscribe(o);
         
         verify(o).onNext(1);
         verify(o).onNext(2);
@@ -59,7 +59,7 @@ public class OperatorTakeUntilPredicateTest {
         @SuppressWarnings("unchecked")
         Observer<Object> o = mock(Observer.class);
         
-        Observable.just(1, 2).takeUntil(UtilityFunctions.alwaysFalse()).subscribe(o);
+        Observable.just(1, 2).takeUntil(UtilityFunctions.alwaysTrue()).subscribe(o);
         
         verify(o).onNext(1);
         verify(o, never()).onNext(2);
@@ -74,7 +74,7 @@ public class OperatorTakeUntilPredicateTest {
         Observable.just(1, 2, 3).takeUntil(new Func1<Integer, Boolean>() {
             @Override
             public Boolean call(Integer t1) {
-                return t1 < 2;
+                return t1 == 2;
             }
         }).subscribe(o);
         
@@ -110,7 +110,7 @@ public class OperatorTakeUntilPredicateTest {
         Observable.just(1)
         .concatWith(Observable.<Integer>error(new TestException()))
         .concatWith(Observable.just(2))
-        .takeUntil(UtilityFunctions.alwaysTrue()).subscribe(o);
+        .takeUntil(UtilityFunctions.alwaysFalse()).subscribe(o);
         
         verify(o).onNext(1);
         verify(o, never()).onNext(2);
@@ -126,7 +126,7 @@ public class OperatorTakeUntilPredicateTest {
             }
         };
         
-        Observable.range(1, 1000).takeUntil(UtilityFunctions.alwaysTrue()).subscribe(ts);
+        Observable.range(1, 1000).takeUntil(UtilityFunctions.alwaysFalse()).subscribe(ts);
         
         ts.assertNoErrors();
         ts.assertReceivedOnNext(Arrays.asList(1, 2, 3, 4, 5));
