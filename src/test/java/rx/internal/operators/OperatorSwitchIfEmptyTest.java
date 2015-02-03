@@ -15,22 +15,18 @@
  */
 package rx.internal.operators;
 
-import org.junit.Test;
-import rx.Observable;
-import rx.Producer;
-import rx.Subscriber;
-import rx.Subscription;
-import rx.functions.Action0;
-import rx.subscriptions.Subscriptions;
+import static org.junit.Assert.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import org.junit.Test;
+
+import rx.*;
+import rx.Observable;
+import rx.functions.Action0;
+import rx.observers.TestSubscriber;
+import rx.subscriptions.Subscriptions;
 
 public class OperatorSwitchIfEmptyTest {
 
@@ -134,30 +130,31 @@ public class OperatorSwitchIfEmptyTest {
 
     @Test
     public void testSwitchRequestAlternativeObservableWithBackpressure() {
-        final List<Integer> items = new ArrayList<Integer>();
 
-        Observable.<Integer>empty().switchIfEmpty(Observable.just(1, 2, 3)).subscribe(new Subscriber<Integer>() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
 
             @Override
             public void onStart() {
                 request(1);
             }
+        };
+        Observable.<Integer>empty().switchIfEmpty(Observable.just(1, 2, 3)).subscribe(ts);
+        
+        assertEquals(Arrays.asList(1), ts.getOnNextEvents());
+        ts.assertNoErrors();
+    }
+    @Test
+    public void testBackpressureNoRequest() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
 
             @Override
-            public void onCompleted() {
-
+            public void onStart() {
+                request(0);
             }
-
-            @Override
-            public void onError(Throwable e) {
-
-            }
-
-            @Override
-            public void onNext(Integer integer) {
-                items.add(integer);
-            }
-        });
-        assertEquals(Arrays.asList(1), items);
+        };
+        Observable.<Integer>empty().switchIfEmpty(Observable.just(1, 2, 3)).subscribe(ts);
+        
+        assertTrue(ts.getOnNextEvents().isEmpty());
+        ts.assertNoErrors();
     }
 }

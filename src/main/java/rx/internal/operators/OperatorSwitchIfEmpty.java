@@ -15,11 +15,10 @@
  */
 package rx.internal.operators;
 
-import rx.Observable;
-import rx.Producer;
-import rx.Subscriber;
-
 import java.util.concurrent.atomic.AtomicLong;
+
+import rx.*;
+import rx.subscriptions.SerialSubscription;
 
 /**
  * If the Observable completes without emitting any items, subscribe to an alternate Observable. Allows for similar
@@ -35,8 +34,10 @@ public class OperatorSwitchIfEmpty<T> implements Observable.Operator<T, T> {
 
     @Override
     public Subscriber<? super T> call(Subscriber<? super T> child) {
-        final SwitchIfEmptySubscriber parent = new SwitchIfEmptySubscriber(child);
-        child.add(parent);
+        final SerialSubscription ssub = new SerialSubscription();
+        final SwitchIfEmptySubscriber parent = new SwitchIfEmptySubscriber(child, ssub);
+        ssub.set(parent);
+        child.add(ssub);
         return parent;
     }
 
@@ -46,9 +47,11 @@ public class OperatorSwitchIfEmpty<T> implements Observable.Operator<T, T> {
         final AtomicLong consumerCapacity = new AtomicLong(0l);
 
         private final Subscriber<? super T> child;
+        final SerialSubscription ssub;
 
-        public SwitchIfEmptySubscriber(Subscriber<? super T> child) {
+        public SwitchIfEmptySubscriber(Subscriber<? super T> child, final SerialSubscription ssub) {
             this.child = child;
+            this.ssub = ssub;
         }
 
         @Override
@@ -69,13 +72,12 @@ public class OperatorSwitchIfEmpty<T> implements Observable.Operator<T, T> {
             if (!empty) {
                 child.onCompleted();
             } else if (!child.isUnsubscribed()) {
-                unsubscribe();
                 subscribeToAlternate();
             }
         }
 
         private void subscribeToAlternate() {
-            child.add(alternate.unsafeSubscribe(new Subscriber<T>() {
+            ssub.set(alternate.unsafeSubscribe(new Subscriber<T>() {
 
                 @Override
                 public void setProducer(final Producer producer) {
