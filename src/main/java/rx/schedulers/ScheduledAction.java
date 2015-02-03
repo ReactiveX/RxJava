@@ -30,7 +30,7 @@ import rx.subscriptions.CompositeSubscription;
  * A {@code Runnable} that executes an {@code Action0}, allows associating resources with it and can be unsubscribed.
  * <p><b>System-wide properties:</b>
  * <ul>
- * <li>{@code io.reactivex.rxjava.scheduler.interrupt-on-unsubscribe}
+ * <li>{@code rx.scheduler.interrupt-on-unsubscribe}
  * <dd>Use {@code Future.cancel(true)} to interrupt a running action? {@code "true"} (default) or {@code "false"}.</br>
  * </li>
  * </ul>
@@ -133,7 +133,7 @@ public final class ScheduledAction implements Runnable, Subscription {
     /** Indicates if the ScheduledActions should be interrupted if cancelled from another thread. */
     static final boolean INTERRUPT_ON_UNSUBSCRIBE;
     /** Key to the INTERRUPT_ON_UNSUBSCRIBE flag. */
-    static final String KEY_INTERRUPT_ON_UNSUBSCRIBE = "io.reactivex.rxjava.scheduler.interrupt-on-unsubscribe";
+    static final String KEY_INTERRUPT_ON_UNSUBSCRIBE = "rx.scheduler.interrupt-on-unsubscribe";
     static {
         String value = System.getProperty(KEY_INTERRUPT_ON_UNSUBSCRIBE);
         INTERRUPT_ON_UNSUBSCRIBE = value == null || "true".equalsIgnoreCase(value);

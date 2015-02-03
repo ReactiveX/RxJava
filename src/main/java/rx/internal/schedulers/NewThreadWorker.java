@@ -42,10 +42,10 @@ import rx.schedulers.ScheduledAction;
  * directly. See {@code ScheduledAction} for further details on the usage of the class.
  * <p><b>System-wide properties:</b>
  * <ul>
- * <li>{@code io.reactivex.rxjava.scheduler.jdk6.purge-frequency-millis}
+ * <li>{@code rx.scheduler.jdk6.purge-frequency-millis}
  * <dd>Specifies the purge frequency (in milliseconds) to remove cancelled tasks on a JDK 6 {@code ScheduledExecutorService}. 
  * Default is 1000 milliseconds. The purge Thread name is prefixed by {@code "RxSchedulerPurge-"}.</br>
- * <li>{@code io.reactivex.rxjava.scheduler.jdk6.purge-force}
+ * <li>{@code rx.scheduler.jdk6.purge-force}
  * <dd>Forces the use of {@code purge()} on JDK 7+ instead of the O(log n) {@code remove()} when a task is cancelled. {@code "true"} or {@code "false"} (default).</br>
  * </li>
  * </ul>
