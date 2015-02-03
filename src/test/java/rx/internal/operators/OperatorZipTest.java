@@ -1271,7 +1271,7 @@ public class OperatorZipTest {
     @Test(timeout = 10000)
     public void testZipRace() {
         Observable<Integer> src = Observable.just(1).subscribeOn(Schedulers.computation());
-        for (int i = 0; i < 500000; i++) {
+        for (int i = 0; i < 100000; i++) {
             int value = Observable.zip(src, src, new Func2<Integer, Integer, Integer>() {
                 @Override
                 public Integer call(Integer t1, Integer t2) {
