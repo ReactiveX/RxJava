@@ -3752,8 +3752,8 @@ public class Observable<T> {
      * @return  an Observable that emits the items emitted by the source Observable or the items of an alternate Observable if the source Observable
      *          is empty.
      */
-    @Beta
-    public final Observable<T> switchIfEmpty(Observable<T> alternate) {
+    @Experimental
+    public final Observable<T> switchIfEmpty(Observable<? extends T> alternate) {
         return lift(new OperatorSwitchIfEmpty<T>(alternate));
     }
 

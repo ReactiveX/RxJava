@@ -25,10 +25,10 @@ import rx.subscriptions.SerialSubscription;
  * functionality to {@link rx.internal.operators.OperatorDefaultIfEmpty} except instead of one item being emitted when
  * empty, the results of the given Observable will be emitted.
  */
-public class OperatorSwitchIfEmpty<T> implements Observable.Operator<T, T> {
-    private final Observable<T> alternate;
+public final class OperatorSwitchIfEmpty<T> implements Observable.Operator<T, T> {
+    private final Observable<? extends T> alternate;
 
-    public OperatorSwitchIfEmpty(Observable<T> alternate) {
+    public OperatorSwitchIfEmpty(Observable<? extends T> alternate) {
         this.alternate = alternate;
     }
 
