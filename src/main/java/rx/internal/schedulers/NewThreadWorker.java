@@ -35,9 +35,9 @@ public class NewThreadWorker extends Scheduler.Worker implements Subscription {
     private final RxJavaSchedulersHook schedulersHook;
     volatile boolean isUnsubscribed;
     /** The purge frequency in milliseconds. */
-    private static final String FREQUENCY_KEY = "io.reactivex.rxjava.scheduler.jdk6.purge-frequency-millis";
+    private static final String FREQUENCY_KEY = "rx.scheduler.jdk6.purge-frequency-millis";
     /** Force the use of purge (true/false). */
-    private static final String PURGE_FORCE_KEY = "io.reactivex.rxjava.scheduler.jdk6.purge-force";
+    private static final String PURGE_FORCE_KEY = "rx.scheduler.jdk6.purge-force";
     private static final String PURGE_THREAD_PREFIX = "RxSchedulerPurge-";
     /** Forces the use of purge even if setRemoveOnCancelPolicy is available. */
     private static final boolean PURGE_FORCE;
