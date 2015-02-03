@@ -78,15 +78,17 @@ public final class SubscriptionList implements Subscription {
      */
     @Override
     public void unsubscribe() {
+        List<Subscription> list;
         synchronized (this) {
             if (unsubscribed) {
                 return;
             }
             unsubscribed = true;
+            list = subscriptions;
+            subscriptions = null;
         }
         // we will only get here once
-        unsubscribeFromAll(subscriptions);
-        subscriptions = null;
+        unsubscribeFromAll(list);
     }
 
     private static void unsubscribeFromAll(Collection<Subscription> subscriptions) {
@@ -118,5 +120,14 @@ public final class SubscriptionList implements Subscription {
                         "Failed to unsubscribe to 2 or more subscriptions.", es);
             }
         }
+    }
+    /* perf support */
+    public void clear() {
+        List<Subscription> list;
+        synchronized (this) {
+            list = subscriptions;
+            subscriptions = null;
+        }
+        unsubscribeFromAll(list);
     }
 }
