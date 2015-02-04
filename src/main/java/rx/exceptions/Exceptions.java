@@ -15,8 +15,8 @@
  */
 package rx.exceptions;
 
-import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import rx.annotations.Experimental;
@@ -37,19 +37,6 @@ public final class Exceptions {
      *         value; {@code propagate} does not actually return anything
      */
     public static RuntimeException propagate(Throwable t) {
-        return propagate(t, null);
-    }
-    /**
-     * Convenience method to throw a {@code RuntimeException} and {@code Error} directly
-     * or wrap any other exception type into a {@code RuntimeException} with an optional custom message.
-     * @param t the exception to throw directly or wrapped
-     * @param message the optional custom message to set up the RuntimeException thrown
-     * in case {@code t} is a checked exception.
-     * @return because {@code propagate} itself throws an exception or error, this is a sort of phantom return
-     *         value; {@code propagate} does not actually return anything
-     */
-    @Experimental
-    public static RuntimeException propagate(Throwable t, String message) {
         /*
          * The return type of RuntimeException is a trick for code to be like this:
          * 
@@ -63,10 +50,9 @@ public final class Exceptions {
         } else if (t instanceof Error) {
             throw (Error) t;
         } else {
-            throw new RuntimeException(message, t);
+            throw new RuntimeException(t);
         }
     }
-
     /**
      * Throws a particular {@code Throwable} only if it belongs to a set of "fatal" error varieties. These
      * varieties are as follows:
@@ -172,19 +158,24 @@ public final class Exceptions {
      * @param exceptions the collection of exceptions. If null or empty, no exception is thrown.
      * If the collection contains a single exception, that exception is either thrown as-is or wrapped into a
      * CompositeException. Multiple exceptions are wrapped into a CompositeException.
-     * @param whileText the circumstance string to be appended to the thrown CompositeException, inserted after
-     * the sentences "Exception" and "Multiple exceptions".
      */
     @Experimental
-    public static void throwIfAny(Collection<? extends Throwable> exceptions, String whileText) {
+    public static void throwIfAny(List<? extends Throwable> exceptions) {
         if (exceptions != null && !exceptions.isEmpty()) {
             if (exceptions.size() == 1) {
-                Throwable t = exceptions.iterator().next();
-                throw propagate(t, "Exception" + whileText);
-            } else {
-                throw new CompositeException(
-                        "Multiple exceptions" + whileText, exceptions);
+                Throwable t = exceptions.get(0);
+                // had to manually inline propagate because some tests attempt StackOverflowError 
+                // and can't handle it with the stack space remaining
+                if (t instanceof RuntimeException) {
+                    throw (RuntimeException) t;
+                } else if (t instanceof Error) {
+                    throw (Error) t;
+                } else {
+                    throw new RuntimeException(t);
+                }
             }
+            throw new CompositeException(
+                    "Multiple exceptions", exceptions);
         }
     }
 }

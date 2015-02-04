@@ -155,6 +155,6 @@ public final class SubscriptionRandomList<T extends Subscription> implements Sub
                 es.add(e);
             }
         }
-        Exceptions.throwIfAny(es, " while unsubscribing.");
+        Exceptions.throwIfAny(es);
     }
 }

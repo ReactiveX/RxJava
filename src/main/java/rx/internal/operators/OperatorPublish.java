@@ -163,7 +163,7 @@ public class OperatorPublish<T> extends ConnectableObservable<T> {
                     errors.add(e2);
                 }
             }
-            Exceptions.throwIfAny(errors, " while emitting onError");
+            Exceptions.throwIfAny(errors);
         }
 
         @Override

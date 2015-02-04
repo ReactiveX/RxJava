@@ -106,7 +106,7 @@ public final class SubscriptionList implements Subscription {
                 es.add(e);
             }
         }
-        Exceptions.throwIfAny(es, " while unsubscribing.");
+        Exceptions.throwIfAny(es);
     }
     /* perf support */
     public void clear() {

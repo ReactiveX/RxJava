@@ -141,6 +141,6 @@ public final class CompositeSubscription implements Subscription {
                 es.add(e);
             }
         }
-        Exceptions.throwIfAny(es, " while unsubscribing.");
+        Exceptions.throwIfAny(es);
     }
 }
