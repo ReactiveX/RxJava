@@ -16,7 +16,11 @@
 package rx.internal.util;
 
 import rx.Observable;
+import rx.Scheduler;
 import rx.Subscriber;
+import rx.Scheduler.Worker;
+import rx.functions.Action0;
+import rx.schedulers.EventLoopsScheduler;
 
 public final class ScalarSynchronousObservable<T> extends Observable<T> {
 
@@ -49,5 +53,81 @@ public final class ScalarSynchronousObservable<T> extends Observable<T> {
     public T get() {
         return t;
     }
+    
+//    @Override
+//    public Observable<T> subscribeOn(Scheduler scheduler) {
+//        return scalarScheduleOn(scheduler);
+//    }
+//    
+//    @Override
+//    public Observable<T> observeOn(Scheduler scheduler) {
+//        return scalarScheduleOn(scheduler);
+//    }
+    
+    /**
+     * Customized observeOn/subscribeOn implementation which emits the scalar
+     * value directly or with less overhead on the specified scheduler.
+     * @param scheduler the target scheduler
+     * @return the new observable
+     */
+    public Observable<T> scalarScheduleOn(Scheduler scheduler) {
+        if (scheduler instanceof EventLoopsScheduler) {
+            EventLoopsScheduler es = (EventLoopsScheduler) scheduler;
+            return create(new DirectScheduledEmission<T>(es, t));
+        }
+        return create(new NormalScheduledEmission<T>(scheduler, t));
+    }
+    
+    /** Optimized observeOn for scalar value observed on the EventLoopsScheduler. */
+    static final class DirectScheduledEmission<T> implements OnSubscribe<T> {
+        private final EventLoopsScheduler es;
+        private final T value;
+        DirectScheduledEmission(EventLoopsScheduler es, T value) {
+            this.es = es;
+            this.value = value;
+        }
+        @Override
+        public void call(final Subscriber<? super T> child) {
+            child.add(es.scheduleDirect(new ScalarSynchronousAction<T>(child, value)));
+        }
+    }
+    /** Emits a scalar value on a general scheduler. */
+    static final class NormalScheduledEmission<T> implements OnSubscribe<T> {
+        private final Scheduler scheduler;
+        private final T value;
 
+        NormalScheduledEmission(Scheduler scheduler, T value) {
+            this.scheduler = scheduler;
+            this.value = value;
+        }
+        
+        @Override
+        public void call(final Subscriber<? super T> subscriber) {
+            Worker worker = scheduler.createWorker();
+            subscriber.add(worker);
+            worker.schedule(new ScalarSynchronousAction<T>(subscriber, value));
+        }
+    }
+    /** Action that emits a single value when called. */
+    private static final class ScalarSynchronousAction<T> implements Action0 {
+        private final Subscriber<? super T> subscriber;
+        private final T value;
+
+        private ScalarSynchronousAction(Subscriber<? super T> subscriber,
+                T value) {
+            this.subscriber = subscriber;
+            this.value = value;
+        }
+
+        @Override
+        public void call() {
+            try {
+                subscriber.onNext(value);
+            } catch (Throwable t) {
+                subscriber.onError(t);
+                return;
+            }
+            subscriber.onCompleted();
+        }
+    }
 }
