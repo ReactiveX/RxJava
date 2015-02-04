@@ -120,7 +120,7 @@ public final class AsyncSubject<T> extends Subject<T, T> {
                 }
             }
 
-            Exceptions.throwIfAny(errors, " while propagating an exception.");
+            Exceptions.throwIfAny(errors, " while emitting AsyncSubject.onError");
         }
     }
 

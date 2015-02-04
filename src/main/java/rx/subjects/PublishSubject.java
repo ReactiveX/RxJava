@@ -104,7 +104,7 @@ public final class PublishSubject<T> extends Subject<T, T> {
                     errors.add(e2);
                 }
             }
-            Exceptions.throwIfAny(errors, " while propagating an exception.");
+            Exceptions.throwIfAny(errors, " while emitting PublishSubject.onError");
         }
     }
 

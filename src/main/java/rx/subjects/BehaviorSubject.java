@@ -146,7 +146,7 @@ public final class BehaviorSubject<T> extends Subject<T, T> {
                 }
             }
 
-            Exceptions.throwIfAny(errors, " while propagating an exception.");
+            Exceptions.throwIfAny(errors, " while emitting BehaviorSubject.onError");
         }
     }
 

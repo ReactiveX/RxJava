@@ -391,7 +391,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                 }
             }
 
-            Exceptions.throwIfAny(errors, " while propagating an exception.");
+            Exceptions.throwIfAny(errors, " while emitting ReplaySubject.onError");
         }
     }
     
