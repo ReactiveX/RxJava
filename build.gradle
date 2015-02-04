@@ -17,10 +17,14 @@ javadoc {
     exclude "**/rx/internal/**"
 }
 
+# support for snapshot/final releases with the various branches RxJava uses
 nebulaRelease {
     addReleaseBranchPattern(/\d+\.\d+\.\d+/)
     addReleaseBranchPattern('HEAD')
 }
+
+# the snapshot versioning should increment the path number
+release.scope=patch
 
 if (project.hasProperty('release.useLastTag')) {
     tasks.prepare.enabled = false
