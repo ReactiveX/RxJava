@@ -15,8 +15,7 @@
  */
 package rx.exceptions;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @warn javadoc class description missing
@@ -148,5 +147,32 @@ public final class Exceptions {
         }
         return e;
     }
-
+    /**
+     * Throws a single or multiple exceptions contained in the collection, wrapping it into
+     * {@code CompositeException} if necessary.
+     * @param exceptions the collection of exceptions. If null or empty, no exception is thrown.
+     * If the collection contains a single exception, that exception is either thrown as-is or wrapped into a
+     * CompositeException. Multiple exceptions are wrapped into a CompositeException.
+     * @param whileText the circumstance string to be appended to the thrown CompositeException, inserted after
+     * the sentences "Exception" and "Multiple exceptions".
+     */
+    public static void throwIfAny(Collection<? extends Throwable> exceptions, String whileText) {
+        if (exceptions != null && !exceptions.isEmpty()) {
+            if (exceptions.size() == 1) {
+                Throwable t = exceptions.iterator().next();
+                if (t instanceof RuntimeException) {
+                    throw (RuntimeException) t;
+                } else
+                if (t instanceof Error) {
+                    throw (Error) t;
+                } else {
+                    throw new CompositeException(
+                            "Exception" + whileText, exceptions);
+                }
+            } else {
+                throw new CompositeException(
+                        "Multiple exceptions" + whileText, exceptions);
+            }
+        }
+    }
 }

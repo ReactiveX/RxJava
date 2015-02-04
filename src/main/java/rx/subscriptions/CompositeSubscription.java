@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Set;
 
 import rx.Subscription;
-import rx.exceptions.CompositeException;
+import rx.exceptions.*;
 
 /**
  * Subscription that represents a group of Subscriptions that are unsubscribed together.
@@ -141,19 +141,6 @@ public final class CompositeSubscription implements Subscription {
                 es.add(e);
             }
         }
-        if (es != null) {
-            if (es.size() == 1) {
-                Throwable t = es.get(0);
-                if (t instanceof RuntimeException) {
-                    throw (RuntimeException) t;
-                } else {
-                    throw new CompositeException(
-                            "Failed to unsubscribe to 1 or more subscriptions.", es);
-                }
-            } else {
-                throw new CompositeException(
-                        "Failed to unsubscribe to 2 or more subscriptions.", es);
-            }
-        }
+        Exceptions.throwIfAny(es, " while unsubscribing.");
     }
 }
