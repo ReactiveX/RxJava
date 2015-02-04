@@ -80,11 +80,8 @@ public final class OnSubscribeRefCount<T> implements OnSubscribe<T> {
             }
         } else {
             try {
-                // handle unsubscribing from the base subscription
-                subscriber.add(disconnect());
-
                 // ready to subscribe to source so do it
-                source.unsafeSubscribe(subscriber);
+                doSubscribe(subscriber, baseSubscription);
             } finally {
                 // release the read lock
                 lock.unlock();
@@ -101,12 +98,8 @@ public final class OnSubscribeRefCount<T> implements OnSubscribe<T> {
 
                 try {
                     baseSubscription.add(subscription);
-
-                    // handle unsubscribing from the base subscription
-                    subscriber.add(disconnect());
-
                     // ready to subscribe to source so do it
-                    source.unsafeSubscribe(subscriber);
+                    doSubscribe(subscriber, baseSubscription);
                 } finally {
                     // release the write lock
                     lock.unlock();
@@ -115,18 +108,54 @@ public final class OnSubscribeRefCount<T> implements OnSubscribe<T> {
             }
         };
     }
+    
+    void doSubscribe(final Subscriber<? super T> subscriber, final CompositeSubscription currentBase) {
+        // handle unsubscribing from the base subscription
+        subscriber.add(disconnect(currentBase));
+        
+        source.unsafeSubscribe(new Subscriber<T>(subscriber) {
+            @Override
+            public void onError(Throwable e) {
+                cleanup();
+                subscriber.onError(e);
+            }
+            @Override
+            public void onNext(T t) {
+                subscriber.onNext(t);
+            }
+            @Override
+            public void onCompleted() {
+                cleanup();
+                subscriber.onCompleted();
+            }
+            void cleanup() {
+                lock.lock();
+                try {
+                    if (baseSubscription == currentBase) {
+                        baseSubscription.unsubscribe();
+                        baseSubscription = new CompositeSubscription();
+                        subscriptionCount.set(0);
+                    }
+                } finally {
+                    lock.unlock();
+                }
+            }
+        });
+    }
 
-    private Subscription disconnect() {
+    private Subscription disconnect(final CompositeSubscription current) {
         return Subscriptions.create(new Action0() {
             @Override
             public void call() {
                 lock.lock();
                 try {
-                    if (subscriptionCount.decrementAndGet() == 0) {
-                        baseSubscription.unsubscribe();
-                        // need a new baseSubscription because once
-                        // unsubscribed stays that way
-                        baseSubscription = new CompositeSubscription();
+                    if (baseSubscription == current) {
+                        if (subscriptionCount.decrementAndGet() == 0) {
+                            baseSubscription.unsubscribe();
+                            // need a new baseSubscription because once
+                            // unsubscribed stays that way
+                            baseSubscription = new CompositeSubscription();
+                        }
                     }
                 } finally {
                     lock.unlock();
