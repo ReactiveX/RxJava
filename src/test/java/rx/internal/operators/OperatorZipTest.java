@@ -36,6 +36,8 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import junit.framework.Assert;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InOrder;
@@ -1265,5 +1267,44 @@ public class OperatorZipTest {
         ts.assertNoErrors();
         ts.assertTerminalEvent();
         ts.assertReceivedOnNext(Arrays.asList(11, 22));
+    }
+    @Test(timeout = 10000)
+    public void testZipRace() {
+        Observable<Integer> src = Observable.just(1).subscribeOn(Schedulers.computation());
+        for (int i = 0; i < 100000; i++) {
+            int value = Observable.zip(src, src, new Func2<Integer, Integer, Integer>() {
+                @Override
+                public Integer call(Integer t1, Integer t2) {
+                    return t1 + t2 * 10;
+                }
+            }).toBlocking().singleOrDefault(0);
+            
+            Assert.assertEquals(11, value);
+        }
+    }
+    /** 
+     * Request only a single value and don't wait for another request just
+     * to emit an onCompleted.
+     */
+    @Test
+    public void testZipRequest1() {
+        Observable<Integer> src = Observable.just(1).subscribeOn(Schedulers.computation());
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
+            @Override
+            public void onStart() {
+                requestMore(1);
+            }
+        };
+        
+        Observable.zip(src, src, new Func2<Integer, Integer, Integer>() {
+            @Override
+            public Integer call(Integer t1, Integer t2) {
+                return t1 + t2 * 10;
+            }
+        }).subscribe(ts);
+        
+        ts.awaitTerminalEvent(1, TimeUnit.SECONDS);
+        ts.assertNoErrors();
+        ts.assertReceivedOnNext(Arrays.asList(11));
     }
 }
