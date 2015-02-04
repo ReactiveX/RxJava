@@ -1116,4 +1116,12 @@ public class ObservableTests {
         System.out.println("Done");
     }
 
+    @Test // cf. https://github.com/ReactiveX/RxJava/issues/2599
+    public void testSubscribingSubscriberAsObserverMaintainsSubscriptionChain() {
+        TestSubscriber subscriber = new TestSubscriber();
+        Subscription subscription = Observable.just("event").subscribe((Observer) subscriber);
+        subscription.unsubscribe();
+
+        subscriber.assertUnsubscribed();
+    }
 }

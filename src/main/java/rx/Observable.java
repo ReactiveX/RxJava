@@ -7282,24 +7282,30 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
      */
     public final Subscription subscribe(final Observer<? super T> observer) {
-        return subscribe(new Subscriber<T>() {
+        if (observer instanceof Subscriber) {
+            // this will ensure that we don't drop the Subscriber's subscription from the chain,
+            // as it would otherwise be hidden by the wrapping Subscriber
+            return subscribe((Subscriber) observer);
+        } else {
+            return subscribe(new Subscriber<T>() {
 
-            @Override
-            public void onCompleted() {
-                observer.onCompleted();
-            }
+                @Override
+                public void onCompleted() {
+                    observer.onCompleted();
+                }
 
-            @Override
-            public void onError(Throwable e) {
-                observer.onError(e);
-            }
+                @Override
+                public void onError(Throwable e) {
+                    observer.onError(e);
+                }
 
-            @Override
-            public void onNext(T t) {
-                observer.onNext(t);
-            }
+                @Override
+                public void onNext(T t) {
+                    observer.onNext(t);
+                }
 
-        });
+            });
+        }
     }
 
     /**
