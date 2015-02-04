@@ -7855,6 +7855,26 @@ public class Observable<T> {
     }
 
     /**
+     * Returns an Observable that first emits items emitted by the source Observable, 
+     * checks the specified condition after each item, and
+     * then completes if the condition is satisfied.
+     * <p>
+     * The difference between this operator and {@link #takeWhile(Func1)} is that here, the condition is evaluated <b>after</b>
+     * the item was emitted.
+     * 
+     * @param stopPredicate 
+     *            a function that evaluates an item emitted by the source Observable and returns a Boolean
+     * @return an Observable that first emits items emitted by the source Observable, 
+     *         checks the specified condition after each item, and
+     *         then completes if the condition is satisfied.
+     * @see Observable#takeWhile(Func1)
+     */
+    @Experimental
+    public final Observable<T> takeUntil(final Func1<? super T, Boolean> stopPredicate) {
+        return lift(new OperatorTakeUntilPredicate<T>(stopPredicate));
+    }
+    
+    /**
      * Returns an Observable that emits only the first item emitted by the source Observable during sequential
      * time windows of a specified duration.
      * <p>
