@@ -226,9 +226,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
      */
     public void awaitTerminalEvent(long timeout, TimeUnit unit) {
         try {
-            if (!latch.await(timeout, unit)) {
-                throw new RuntimeException(new TimeoutException());
-            }
+            latch.await(timeout, unit);
         } catch (InterruptedException e) {
             throw new RuntimeException("Interrupted", e);
         }
