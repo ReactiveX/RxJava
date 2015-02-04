@@ -16,11 +16,10 @@
 package rx.schedulers;
 
 import java.util.concurrent.Future;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
-import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
+import java.util.concurrent.atomic.*;
 
 import rx.Subscription;
+import rx.annotations.Experimental;
 import rx.exceptions.OnErrorNotImplementedException;
 import rx.functions.Action0;
 import rx.plugins.RxJavaPlugins;
@@ -129,6 +128,7 @@ import rx.subscriptions.CompositeSubscription;
  * Note, however, if the {@code actualWorker} above didn't return a ScheduledAction, there is no
  * good way of untracking the returned {@code Subscription} (i.e., when to call {@code outerParent.remove(s)}).
  */
+@Experimental
 public final class ScheduledAction implements Runnable, Subscription {
     /** Indicates if the ScheduledActions should be interrupted if cancelled from another thread. */
     static final boolean INTERRUPT_ON_UNSUBSCRIBE;
