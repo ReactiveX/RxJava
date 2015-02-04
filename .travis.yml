@@ -5,3 +5,10 @@ jdk:
   
 sudo: false
 # as per http://blog.travis-ci.com/2014-12-17-faster-builds-with-container-based-infrastructure/
+
+script: gradle/buildViaTravis.sh
+after_success:
+- gradle/publishViaTravis.sh
+
+secure: "HzRt91B6CLkBCxRXlo7V+F5L8SSHSW8dgkO8nAlTnOIK73k3QelDeBlcm1wnuNa3x+54YS9WBv6QrTNZr9lVi/8IPfKpd+jtjIbCWRvh6aNhqLIXWTL7oTvUd4E8DDUAKB6UMae6SiBSy2wsFELGHXeNwg7EiPfxsd5sKRiS7H4="
+secure: "MSZLPasqNKAC+8qhKQD3xO+ZbuOy65HpUN+1+KnoOLMkHCu/f4x60W1tpTAzn1DFEVpokHR0n3I4z4HpWybURDQfDHD1bB4IsznjCUBYA9Uo9Sb0U4TS17dQr8s7SORIjHDLGNSWETJjrA9TfuUV6HTVhRO1ECx3H+wuTwCVDN0="
