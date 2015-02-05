@@ -7849,6 +7849,7 @@ public class Observable<T> {
      * @return an Observable that emits the items from the source Observable so long as each item satisfies the
      *         condition defined by {@code predicate}, then completes
      * @see <a href="http://reactivex.io/documentation/operators/takewhile.html">ReactiveX operators documentation: TakeWhile</a>
+     * @see Observable#takeUntil(Func1)
      */
     public final Observable<T> takeWhile(final Func1<? super T, Boolean> predicate) {
         return lift(new OperatorTakeWhile<T>(predicate));
@@ -7858,13 +7859,17 @@ public class Observable<T> {
      * Returns an Observable that emits items emitted by the source Observable, checks the specified predicate
      * for each item, and then completes if the condition is satisfied.
      * <p>
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeUntil.p.png" alt="">
+     * <p>
      * The difference between this operator and {@link #takeWhile(Func1)} is that here, the condition is
      * evaluated <em>after</em> the item is emitted.
      * 
+     * @warn "Scheduler" and "Backpressure Support" sections missing from javadocs
      * @param stopPredicate 
      *            a function that evaluates an item emitted by the source Observable and returns a Boolean
      * @return an Observable that first emits items emitted by the source Observable, checks the specified
      *         condition after each item, and then completes if the condition is satisfied.
+     * @see <a href="http://reactivex.io/documentation/operators/takeuntil.html">ReactiveX operators documentation: TakeUntil</a>
      * @see Observable#takeWhile(Func1)
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */

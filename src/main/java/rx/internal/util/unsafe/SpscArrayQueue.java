@@ -96,7 +96,7 @@ abstract class SpscArrayQueueL3Pad<E> extends SpscArrayQueueConsumerField<E> {
  * Flow), and adjusted to comply with Queue.offer semantics with regards to capacity.<br>
  * For convenience the relevant papers are available in the resources folder:<br>
  * <i>2010 - Pisa - SPSC Queues on Shared Cache Multi-Core Systems.pdf<br>
- * 2012 - Junchang- BQueue- Efﬁcient and Practical Queuing.pdf <br>
+ * 2012 - Junchang- BQueue- Efficient and Practical Queuing.pdf <br>
  * </i> This implementation is wait free.
  * 
  * @author nitsanw
