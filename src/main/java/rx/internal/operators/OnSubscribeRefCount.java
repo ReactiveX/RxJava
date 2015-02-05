@@ -71,10 +71,10 @@ public final class OnSubscribeRefCount<T> implements OnSubscribe<T> {
                 source.connect(onSubscribe(subscriber, writeLocked));
             } finally {
                 // need to cover the case where the source is subscribed to
-                // outside of this class thus preventing the above Action1
-                // being called
+                // outside of this class thus preventing the Action1 passed
+                // to source.connect above being called
                 if (writeLocked.get()) {
-                    // Action1 was not called
+                    // Action1 passed to source.connect was not called
                     lock.unlock();
                 }
             }
@@ -129,6 +129,8 @@ public final class OnSubscribeRefCount<T> implements OnSubscribe<T> {
                 subscriber.onCompleted();
             }
             void cleanup() {
+                // on error or completion we need to unsubscribe the base subscription
+                // and set the subscriptionCount to 0 
                 lock.lock();
                 try {
                     if (baseSubscription == currentBase) {
