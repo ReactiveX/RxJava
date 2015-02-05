@@ -31,7 +31,7 @@ import rx.exceptions.CompositeException;
 public final class CompositeSubscription implements Subscription {
 
     private Set<Subscription> subscriptions;
-    private boolean unsubscribed = false;
+    private volatile boolean unsubscribed = false;
 
     public CompositeSubscription() {
     }
@@ -41,7 +41,7 @@ public final class CompositeSubscription implements Subscription {
     }
 
     @Override
-    public synchronized boolean isUnsubscribed() {
+    public boolean isUnsubscribed() {
         return unsubscribed;
     }
 
@@ -55,24 +55,23 @@ public final class CompositeSubscription implements Subscription {
      *          the {@link Subscription} to add
      */
     public void add(final Subscription s) {
-        if (s.isUnsubscribed()) {
-            return;
-        }
-        Subscription unsubscribe = null;
-        synchronized (this) {
-            if (unsubscribed) {
-                unsubscribe = s;
-            } else {
-                if (subscriptions == null) {
-                    subscriptions = new HashSet<Subscription>(4);
+        if (!unsubscribed) {
+            if (s.isUnsubscribed()) {
+                return;
+            }
+            synchronized (this) {
+                if (!unsubscribed) {
+                    Set<Subscription> subs = subscriptions;
+                    if (subs == null) {
+                        subs = new HashSet<Subscription>(4);
+                        subscriptions = subs;
+                    }
+                    subs.add(s);
+                    return;
                 }
-                subscriptions.add(s);
             }
         }
-        if (unsubscribe != null) {
-            // call after leaving the synchronized block so we're not holding a lock while executing this
-            unsubscribe.unsubscribe();
-        }
+        s.unsubscribe();
     }
 
     /**
@@ -83,15 +82,13 @@ public final class CompositeSubscription implements Subscription {
      *          the {@link Subscription} to remove
      */
     public void remove(final Subscription s) {
-        boolean unsubscribe = false;
-        synchronized (this) {
-            if (unsubscribed || subscriptions == null) {
-                return;
+        if (!unsubscribed) {
+            synchronized (this) {
+                Set<Subscription> subs = subscriptions;
+                if (unsubscribed || subs == null || !subs.remove(s)) {
+                    return;
+                }
             }
-            unsubscribe = subscriptions.remove(s);
-        }
-        if (unsubscribe) {
-            // if we removed successfully we then need to call unsubscribe on it (outside of the lock)
             s.unsubscribe();
         }
     }
@@ -102,28 +99,35 @@ public final class CompositeSubscription implements Subscription {
      * an unoperative state.
      */
     public void clear() {
-        Collection<Subscription> unsubscribe = null;
-        synchronized (this) {
-            if (unsubscribed || subscriptions == null) {
-                return;
-            } else {
-                unsubscribe = subscriptions;
-                subscriptions = null;
+        if (!unsubscribed) {
+            Collection<Subscription> subs = null;
+            synchronized (this) {
+                subs = subscriptions;
+                if (unsubscribed || subs == null) {
+                    return;
+                } else {
+                    subscriptions = null;
+                }
             }
+            unsubscribeFromAll(subs);
         }
-        unsubscribeFromAll(unsubscribe);
     }
 
     @Override
     public void unsubscribe() {
-        synchronized (this) {
-            if (unsubscribed) {
-                return;
+        if (!unsubscribed) {
+            Collection<Subscription> subs = null;
+            synchronized (this) {
+                if (unsubscribed) {
+                    return;
+                }
+                unsubscribed = true;
+                subs = subscriptions;
+                subscriptions = null;
             }
-            unsubscribed = true;
+            // we will only get here once
+            unsubscribeFromAll(subs);
         }
-        // we will only get here once
-        unsubscribeFromAll(subscriptions);
     }
 
     private static void unsubscribeFromAll(Collection<Subscription> subscriptions) {

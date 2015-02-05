@@ -76,7 +76,7 @@ public class EventLoopsScheduler extends Scheduler {
      */
     public Subscription scheduleDirect(Action0 action) {
        PoolWorker pw = pool.getEventLoop();
-       return pw.schedule(action);
+       return pw.scheduleActual(action, -1, TimeUnit.NANOSECONDS);
     }
 
     private static class EventLoopWorker extends Scheduler.Worker {

@@ -63,6 +63,13 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
 
     /** Observe through individual queue per observer. */
     private static final class ObserveOnSubscriber<T> extends Subscriber<T> {
+        private final class PollQueueAction implements Action0 {
+            @Override
+            public void call() {
+                pollQueue();
+            }
+        }
+
         final Subscriber<? super T> child;
         private final Scheduler.Worker recursiveScheduler;
         private final ScheduledUnsubscribe scheduledUnsubscribe;
@@ -81,6 +88,7 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
         volatile long counter;
         @SuppressWarnings("rawtypes")
         static final AtomicLongFieldUpdater<ObserveOnSubscriber> COUNTER_UPDATER = AtomicLongFieldUpdater.newUpdater(ObserveOnSubscriber.class, "counter");
+        private Action0 pollQueueAction;
 
         // do NOT pass the Subscriber through to couple the subscription chain ... unsubscribing on the parent should
         // not prevent anything downstream from consuming, which will happen if the Subscription is chained
@@ -148,31 +156,39 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
 
         protected void schedule() {
             if (COUNTER_UPDATER.getAndIncrement(this) == 0) {
-                recursiveScheduler.schedule(new Action0() {
-
-                    @Override
-                    public void call() {
-                        pollQueue();
-                    }
-
-                });
+                Action0 a = pollQueueAction;
+                if (a == null) {
+                    a = new PollQueueAction();
+                    pollQueueAction = a;
+                }
+                recursiveScheduler.schedule(a);
             }
         }
 
         // only execute this from schedule()
         private void pollQueue() {
             int emitted = 0;
+
+            final ScheduledUnsubscribe u = scheduledUnsubscribe;
+            final RxRingBuffer q = queue;
+            final Subscriber<? super T> child = this.child;
+            final NotificationLite<T> on = this.on;
+            @SuppressWarnings("rawtypes")
+            final AtomicLongFieldUpdater<ObserveOnSubscriber> counter = COUNTER_UPDATER;
+            @SuppressWarnings("rawtypes")
+            final AtomicLongFieldUpdater<ObserveOnSubscriber> req = REQUESTED;
+            
             do {
                 /*
                  * Set to 1 otherwise it could have grown very large while in the last poll loop
                  * and then we can end up looping all those times again here before exiting even once we've drained
                  */
-                COUNTER_UPDATER.set(this, 1);
+                counter.lazySet(this, 1);
 
-                while (!scheduledUnsubscribe.isUnsubscribed()) {
+                while (!u.isUnsubscribed()) {
                     if (failure) {
                         // special handling to short-circuit an error propagation
-                        Object o = queue.poll();
+                        Object o = q.poll();
                         // completed so we will skip onNext if they exist and only emit terminal events
                         if (on.isError(o)) {
                             // only emit error
@@ -181,11 +197,11 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
                             return;
                         }
                     } else {
-                        if (REQUESTED.getAndDecrement(this) != 0) {
-                            Object o = queue.poll();
+                        if (req.getAndDecrement(this) != 0) {
+                            Object o = q.poll();
                             if (o == null) {
                                 // nothing in queue
-                                REQUESTED.incrementAndGet(this);
+                                req.incrementAndGet(this);
                                 break;
                             } else {
                                 if (!on.accept(child, o)) {
@@ -195,12 +211,12 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
                             }
                         } else {
                             // we hit the end ... so increment back to 0 again
-                            REQUESTED.incrementAndGet(this);
+                            req.incrementAndGet(this);
                             break;
                         }
                     }
                 }
-            } while (COUNTER_UPDATER.decrementAndGet(this) > 0);
+            } while (counter.decrementAndGet(this) > 0);
 
             // request the number of items that we emitted in this poll loop
             if (emitted > 0) {
