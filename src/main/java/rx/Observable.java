@@ -4509,7 +4509,34 @@ public class Observable<T> {
     public final <R> Observable<R> flatMap(Func1<? super T, ? extends Observable<? extends R>> func) {
         return merge(map(func));
     }
-    
+
+    /**
+     * Returns an Observable that emits items based on applying a function that you supply to each item emitted
+     * by the source Observable, where that function returns an Observable, and then merging those resulting
+     * Observables and emitting the results of this merger, while limiting the maximum number of concurrent
+     * subscriptions to these Observables.
+     * <p>
+     * <!-- <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flatMap.png" alt=""> -->
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @param func
+     *            a function that, when applied to an item emitted by the source Observable, returns an
+     *            Observable
+     * @param maxConcurrent
+     *         the maximum number of Observables that may be subscribed to concurrently
+     * @return an Observable that emits the result of applying the transformation function to each item emitted
+     *         by the source Observable and merging the results of the Observables obtained from this
+     *         transformation
+     * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
+     */
+    @Beta
+    public final <R> Observable<R> flatMap(Func1<? super T, ? extends Observable<? extends R>> func, int maxConcurrent) {
+        return merge(map(func), maxConcurrent);
+    }
+
     /**
      * Returns an Observable that applies a function to each item emitted or notification raised by the source
      * Observable and then flattens the Observables returned from these functions and emits the resulting items.
@@ -4540,6 +4567,40 @@ public class Observable<T> {
             Func0<? extends Observable<? extends R>> onCompleted) {
         return merge(mapNotification(onNext, onError, onCompleted));
     }
+    /**
+     * Returns an Observable that applies a function to each item emitted or notification raised by the source
+     * Observable and then flattens the Observables returned from these functions and emits the resulting items, 
+     * while limiting the maximum number of concurrent subscriptions to these Observables.
+     * <p>
+     * <!-- <img width="640" height="410" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeMap.nce.png" alt=""> -->
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @param <R>
+     *            the result type
+     * @param onNext
+     *            a function that returns an Observable to merge for each item emitted by the source Observable
+     * @param onError
+     *            a function that returns an Observable to merge for an onError notification from the source
+     *            Observable
+     * @param onCompleted
+     *            a function that returns an Observable to merge for an onCompleted notification from the source
+     *            Observable
+     * @param maxConcurrent
+     *         the maximum number of Observables that may be subscribed to concurrently
+     * @return an Observable that emits the results of merging the Observables returned from applying the
+     *         specified functions to the emissions and notifications of the source Observable
+     * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
+     */
+    @Beta
+    public final <R> Observable<R> flatMap(
+            Func1<? super T, ? extends Observable<? extends R>> onNext,
+            Func1<? super Throwable, ? extends Observable<? extends R>> onError,
+            Func0<? extends Observable<? extends R>> onCompleted, int maxConcurrent) {
+        return merge(mapNotification(onNext, onError, onCompleted), maxConcurrent);
+    }
 
     /**
      * Returns an Observable that emits the results of a specified function to the pair of values emitted by the
@@ -4567,6 +4628,37 @@ public class Observable<T> {
     public final <U, R> Observable<R> flatMap(final Func1<? super T, ? extends Observable<? extends U>> collectionSelector,
             final Func2<? super T, ? super U, ? extends R> resultSelector) {
         return merge(lift(new OperatorMapPair<T, U, R>(collectionSelector, resultSelector)));
+    }
+    /**
+     * Returns an Observable that emits the results of a specified function to the pair of values emitted by the
+     * source Observable and a specified collection Observable, while limiting the maximum number of concurrent
+     * subscriptions to these Observables.
+     * <p>
+     * <!-- <img width="640" height="390" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeMap.r.png" alt=""> -->
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @param <U>
+     *            the type of items emitted by the collection Observable
+     * @param <R>
+     *            the type of items emitted by the resulting Observable
+     * @param collectionSelector
+     *            a function that returns an Observable for each item emitted by the source Observable
+     * @param resultSelector
+     *            a function that combines one item emitted by each of the source and collection Observables and
+     *            returns an item to be emitted by the resulting Observable
+     * @param maxConcurrent
+     *         the maximum number of Observables that may be subscribed to concurrently
+     * @return an Observable that emits the results of applying a function to a pair of values emitted by the
+     *         source Observable and the collection Observable
+     * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
+     */
+    @Beta
+    public final <U, R> Observable<R> flatMap(final Func1<? super T, ? extends Observable<? extends U>> collectionSelector,
+            final Func2<? super T, ? super U, ? extends R> resultSelector, int maxConcurrent) {
+        return merge(lift(new OperatorMapPair<T, U, R>(collectionSelector, resultSelector)), maxConcurrent);
     }
 
     /**
