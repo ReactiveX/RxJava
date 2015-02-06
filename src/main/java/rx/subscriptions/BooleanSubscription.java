@@ -27,7 +27,7 @@ import rx.functions.Action0;
  */
 public final class BooleanSubscription implements Subscription {
 
-    private final Action0 action;
+    final Action0 action;
     volatile int unsubscribed;
     static final AtomicIntegerFieldUpdater<BooleanSubscription> UNSUBSCRIBED_UPDATER
             = AtomicIntegerFieldUpdater.newUpdater(BooleanSubscription.class, "unsubscribed");
@@ -73,5 +73,8 @@ public final class BooleanSubscription implements Subscription {
             }
         }
     }
-
+    @Override
+    public String toString() {
+        return Subscriptions.dump(this);
+    }
 }
