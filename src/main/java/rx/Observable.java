@@ -15,13 +15,11 @@ package rx;
 import java.util.*;
 import java.util.concurrent.*;
 
-import rx.annotations.Beta;
-import rx.annotations.Experimental;
+import rx.annotations.*;
 import rx.exceptions.*;
 import rx.functions.*;
 import rx.internal.operators.*;
-import rx.internal.util.ScalarSynchronousObservable;
-import rx.internal.util.UtilityFunctions;
+import rx.internal.util.*;
 import rx.observables.*;
 import rx.observers.SafeSubscriber;
 import rx.plugins.*;
@@ -1031,6 +1029,14 @@ public class Observable<T> {
         return create(new OnSubscribeDefer<T>(observableFactory));
     }
 
+    /** An empty observable which just emits onCompleted to any subscriber. */
+    private static final Observable<Object> EMPTY = create(new OnSubscribe<Object>() {
+        @Override
+        public void call(Subscriber<? super Object> t1) {
+            t1.onCompleted();
+        }
+    });
+    
     /**
      * Returns an Observable that emits no items to the {@link Observer} and immediately invokes its
      * {@link Observer#onCompleted onCompleted} method.
@@ -1047,8 +1053,9 @@ public class Observable<T> {
      *         {@link Observer}'s {@link Observer#onCompleted() onCompleted} method
      * @see <a href="http://reactivex.io/documentation/operators/empty-never-throw.html">ReactiveX operators documentation: Empty</a>
      */
+    @SuppressWarnings("unchecked")
     public final static <T> Observable<T> empty() {
-        return from(Collections.<T>emptyList());
+        return (Observable<T>)EMPTY;
     }
 
     /**
