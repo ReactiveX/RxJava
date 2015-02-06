@@ -16,9 +16,16 @@
 package rx.plugins;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.After;
 import org.junit.Before;
@@ -26,6 +33,8 @@ import org.junit.Test;
 
 import rx.Observable;
 import rx.Subscriber;
+import rx.exceptions.OnErrorThrowable;
+import rx.functions.Func1;
 
 public class RxJavaPluginsTest {
 
@@ -78,7 +87,18 @@ public class RxJavaPluginsTest {
             this.e = e;
             count++;
         }
+    }
 
+    public static class RxJavaErrorHandlerTestImplWithRender extends RxJavaErrorHandler {
+        @Override
+        protected String render(Object item) {
+            if (item instanceof Calendar) {
+                throw new IllegalArgumentException("calendar");
+            } else if (item instanceof Date) {
+                return String.valueOf(((Date) item).getTime());
+            }
+            return null;
+        }
     }
 
     @Test
@@ -149,12 +169,86 @@ public class RxJavaPluginsTest {
         assertEquals(1, errorHandler.count);
     }
 
+    @Test
+    public void testOnNextValueRenderingWhenNotImplemented() {
+        RxJavaErrorHandlerTestImpl errorHandler = new RxJavaErrorHandlerTestImpl();
+        RxJavaPlugins.getInstance().registerErrorHandler(errorHandler);
+
+        String rendering = RxJavaPlugins.getInstance().getErrorHandler().handleOnNextValueRendering(new Date());
+
+        assertNull(rendering);
+    }
+
+    @Test
+    public void testOnNextValueRenderingWhenImplementedAndNotManaged() {
+        RxJavaErrorHandlerTestImplWithRender errorHandler = new RxJavaErrorHandlerTestImplWithRender();
+        RxJavaPlugins.getInstance().registerErrorHandler(errorHandler);
+
+        String rendering = RxJavaPlugins.getInstance().getErrorHandler().handleOnNextValueRendering(
+                Collections.emptyList());
+
+        assertNull(rendering);
+    }
+
+    @Test
+    public void testOnNextValueRenderingWhenImplementedAndManaged() {
+        RxJavaErrorHandlerTestImplWithRender errorHandler = new RxJavaErrorHandlerTestImplWithRender();
+        RxJavaPlugins.getInstance().registerErrorHandler(errorHandler);
+        long time = 1234L;
+        Date date = new Date(time);
+
+        String rendering = RxJavaPlugins.getInstance().getErrorHandler().handleOnNextValueRendering(date);
+
+        assertNotNull(rendering);
+        assertEquals(String.valueOf(time), rendering);
+    }
+
+    @Test
+    public void testOnNextValueRenderingWhenImplementedAndThrows() {
+        RxJavaErrorHandlerTestImplWithRender errorHandler = new RxJavaErrorHandlerTestImplWithRender();
+        RxJavaPlugins.getInstance().registerErrorHandler(errorHandler);
+        Calendar cal = Calendar.getInstance();
+
+        String rendering = RxJavaPlugins.getInstance().getErrorHandler().handleOnNextValueRendering(cal);
+
+        assertNotNull(rendering);
+        assertEquals(cal.getClass().getName() + RxJavaErrorHandler.ERROR_IN_RENDERING_SUFFIX, rendering);
+    }
+
+    @Test
+    public void testOnNextValueCallsPlugin() {
+        RxJavaErrorHandlerTestImplWithRender errorHandler = new RxJavaErrorHandlerTestImplWithRender();
+        RxJavaPlugins.getInstance().registerErrorHandler(errorHandler);
+        long time = 456L;
+        Date date = new Date(time);
+
+        try {
+            Date notExpected = Observable.just(date)
+                                         .map(new Func1<Date, Date>() {
+                                             @Override
+                                             public Date call(Date date) {
+                                                 throw new IllegalStateException("Trigger OnNextValue");
+                                             }
+                                         })
+                                         .timeout(500, TimeUnit.MILLISECONDS)
+                                         .toBlocking().first();
+            fail("Did not expect onNext/onCompleted, got " + notExpected);
+        } catch (IllegalStateException e) {
+            assertEquals("Trigger OnNextValue", e.getMessage());
+            assertNotNull(e.getCause());
+            assertTrue(e.getCause() instanceof OnErrorThrowable.OnNextValue);
+            assertEquals("OnError while emitting onNext value: " + time, e.getCause().getMessage());
+        }
+
+    }
+
     // inside test so it is stripped from Javadocs
     public static class RxJavaObservableExecutionHookTestImpl extends RxJavaObservableExecutionHook {
         // just use defaults
     }
 
     private static String getFullClassNameForTestClass(Class<?> cls) {
-        return RxJavaPlugins.class.getPackage().getName() + "." + RxJavaPluginsTest.class.getSimpleName() + "$" + cls.getSimpleName();
+        return RxJavaPlugins.class.getPackage()
+                                  .getName() + "." + RxJavaPluginsTest.class.getSimpleName() + "$" + cls.getSimpleName();
     }
 }
