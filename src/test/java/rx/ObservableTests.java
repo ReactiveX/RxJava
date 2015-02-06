@@ -1129,4 +1129,13 @@ public class ObservableTests {
         verify(w, never()).onNext(any(Integer.class));
         verify(w, never()).onError(any(Throwable.class));
     }
+    
+    @Test // cf. https://github.com/ReactiveX/RxJava/issues/2599
+    public void testSubscribingSubscriberAsObserverMaintainsSubscriptionChain() {
+        TestSubscriber<Object> subscriber = new TestSubscriber<Object>();
+        Subscription subscription = Observable.just("event").subscribe((Observer<Object>) subscriber);
+        subscription.unsubscribe();
+
+        subscriber.assertUnsubscribed();
+    }
 }

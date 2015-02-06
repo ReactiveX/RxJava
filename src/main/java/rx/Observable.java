@@ -7289,6 +7289,9 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
      */
     public final Subscription subscribe(final Observer<? super T> observer) {
+        if (observer instanceof Subscriber) {
+            return subscribe((Subscriber<? super T>)observer);
+        }
         return subscribe(new Subscriber<T>() {
 
             @Override
