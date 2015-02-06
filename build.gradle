@@ -23,9 +23,6 @@ nebulaRelease {
     addReleaseBranchPattern('HEAD')
 }
 
-// the snapshot versioning should increment the path number
-// project.setProperty('release.scope', 'patch')
-
 if (project.hasProperty('release.useLastTag')) {
     tasks.prepare.enabled = false
 }
