@@ -24,7 +24,7 @@ nebulaRelease {
 }
 
 // the snapshot versioning should increment the path number
-release.scope=patch
+// release.scope=patch // this isn't working yet
 
 if (project.hasProperty('release.useLastTag')) {
     tasks.prepare.enabled = false
