@@ -120,10 +120,7 @@ public abstract class Scheduler {
                     if (!mas.isUnsubscribed()) {
                         action.call();
                         long nextTick = startInNanos + (++count * periodInNanos);
-                        SerialSubscription s = new SerialSubscription();
-                        // Should call `mas.set` before `schedule`, or the new Subscription may replace the old one.
-                        mas.set(s);
-                        s.set(schedule(this, nextTick - TimeUnit.MILLISECONDS.toNanos(now()), TimeUnit.NANOSECONDS));
+                        mas.set(schedule(this, nextTick - TimeUnit.MILLISECONDS.toNanos(now()), TimeUnit.NANOSECONDS));
                     }
                 }
             };
