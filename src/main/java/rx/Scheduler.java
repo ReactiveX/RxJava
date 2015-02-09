@@ -20,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 import rx.functions.Action0;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.MultipleAssignmentSubscription;
+import rx.subscriptions.SerialSubscription;
 
 /**
  * A {@code Scheduler} is an object that schedules units of work. You can find common implementations of this
@@ -119,11 +120,17 @@ public abstract class Scheduler {
                     if (!mas.isUnsubscribed()) {
                         action.call();
                         long nextTick = startInNanos + (++count * periodInNanos);
-                        mas.set(schedule(this, nextTick - TimeUnit.MILLISECONDS.toNanos(now()), TimeUnit.NANOSECONDS));
+                        SerialSubscription s = new SerialSubscription();
+                        // Should call `mas.set` before `schedule`, or the new Subscription may replace the old one.
+                        mas.set(s);
+                        s.set(schedule(this, nextTick - TimeUnit.MILLISECONDS.toNanos(now()), TimeUnit.NANOSECONDS));
                     }
                 }
             };
-            mas.set(schedule(recursiveAction, initialDelay, unit));
+            SerialSubscription s = new SerialSubscription();
+            // Should call `mas.set` before `schedule`, or the new Subscription may replace the old one.
+            mas.set(s);
+            s.set(schedule(recursiveAction, initialDelay, unit));
             return mas;
         }
 
