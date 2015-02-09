@@ -20,7 +20,6 @@ import java.util.concurrent.TimeUnit;
 import rx.functions.Action0;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.MultipleAssignmentSubscription;
-import rx.subscriptions.SerialSubscription;
 
 /**
  * A {@code Scheduler} is an object that schedules units of work. You can find common implementations of this
@@ -124,7 +123,7 @@ public abstract class Scheduler {
                     }
                 }
             };
-            SerialSubscription s = new SerialSubscription();
+            MultipleAssignmentSubscription s = new MultipleAssignmentSubscription();
             // Should call `mas.set` before `schedule`, or the new Subscription may replace the old one.
             mas.set(s);
             s.set(schedule(recursiveAction, initialDelay, unit));
