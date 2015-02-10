@@ -123,7 +123,10 @@ public abstract class Scheduler {
                     }
                 }
             };
-            mas.set(schedule(recursiveAction, initialDelay, unit));
+            MultipleAssignmentSubscription s = new MultipleAssignmentSubscription();
+            // Should call `mas.set` before `schedule`, or the new Subscription may replace the old one.
+            mas.set(s);
+            s.set(schedule(recursiveAction, initialDelay, unit));
             return mas;
         }
 
