@@ -1,5 +1,52 @@
 # RxJava Releases #
 
+### Version 1.0.6 – Feburary 11th 2015 ([Maven Central](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.0.6%7C)) ###
+
+This release adds an experimental operator and fixes several bugs. 
+
+##### flatMap(maxConcurrent)
+
+> Note that this API [may still change or be removed altogether](https://github.com/ReactiveX/RxJava#beta) since it is marked as `@Beta`. 
+
+A `flatMap` overload was added that allows limiting concurrency, or the number of `Observable`s being merged .
+
+This now means that these are the same, one using `merge` directly, the other using `flatMap` and passing in `10` as the `maxConcurrent`:
+
+```java
+Observable<Observable<Integer>> asyncWork = range(1, 1000000)
+        .doOnNext(i -> System.out.println("Emitted Value: " + i))
+        .map(item -> {
+            return just(item)
+                    .doOnNext(MergeMaxConcurrent::sleep)
+                    .subscribeOn(Schedulers.io());
+        });
+merge(asyncWork, 10).toBlocking().forEach(v -> System.out.println("Received: " + v));
+```
+
+```java
+range(1, 1000000)
+        .doOnNext(i -> System.out.println("Emitted Value: " + i))
+        .flatMap(item -> {
+            return just(item)
+                    .doOnNext(MergeMaxConcurrent::sleep)
+                    .subscribeOn(Schedulers.io());
+        }, 10)
+        .toBlocking().forEach(v -> System.out.println("Received: " + v));
+```
+
+#### Changes
+
+* [Pull 2627] (https://github.com/ReactiveX/RxJava/pull/2627) FlatMap overloads with maximum concurrency parameter
+* [Pull 2648] (https://github.com/ReactiveX/RxJava/pull/2648) TakeWhile: don't unsubscribe downstream.
+* [Pull 2580] (https://github.com/ReactiveX/RxJava/pull/2580) Allow configuring the maximum number of computation scheduler threads
+* [Pull 2601] (https://github.com/ReactiveX/RxJava/pull/2601) Added common Exceptions.throwIfAny to throw a collection of exceptions 
+* [Pull 2644] (https://github.com/ReactiveX/RxJava/pull/2644) Missing Unsafe class yields NoClassDefFoundError 
+* [Pull 2642] (https://github.com/ReactiveX/RxJava/pull/2642) Fix a potential memory leak in schedulePeriodically 
+* [Pull 2630] (https://github.com/ReactiveX/RxJava/pull/2630) Cast back Observer to Subscriber if passed to subscribe(Observer)
+* [Pull 2622] (https://github.com/ReactiveX/RxJava/pull/2622) Changed Observable.empty() into a stateless constant observable.
+* [Pull 2607] (https://github.com/ReactiveX/RxJava/pull/2607) OnSubscribeRefCount - improve comments
+
+
 ### Version 1.0.5 – Feburary 3rd 2015 ([Maven Central](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.0.5%7C)) ###
 
 This release includes many bug fixes along with a few new operators and enhancements.
