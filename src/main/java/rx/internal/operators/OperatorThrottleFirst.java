@@ -27,6 +27,7 @@ public final class OperatorThrottleFirst<T> implements Operator<T, T> {
 
     private final long timeInMilliseconds;
     private final Scheduler scheduler;
+    private long lastOnNext = 0;
 
     public OperatorThrottleFirst(long windowDuration, TimeUnit unit, Scheduler scheduler) {
         this.timeInMilliseconds = unit.toMillis(windowDuration);
@@ -36,8 +37,6 @@ public final class OperatorThrottleFirst<T> implements Operator<T, T> {
     @Override
     public Subscriber<? super T> call(final Subscriber<? super T> subscriber) {
         return new Subscriber<T>(subscriber) {
-
-            private long lastOnNext = 0;
 
             @Override
             public void onStart() {
