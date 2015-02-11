@@ -15,23 +15,13 @@
  */
 package rx.internal.operators;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.atomic.AtomicLongFieldUpdater;
+import java.util.*;
+import java.util.concurrent.atomic.*;
 
+import rx.*;
 import rx.Observable;
-import rx.Producer;
-import rx.Subscriber;
-import rx.Subscription;
-import rx.exceptions.CompositeException;
-import rx.exceptions.Exceptions;
-import rx.exceptions.MissingBackpressureException;
-import rx.functions.Action0;
-import rx.functions.Action1;
-import rx.functions.Func1;
+import rx.exceptions.*;
+import rx.functions.*;
 import rx.internal.util.RxRingBuffer;
 import rx.observables.ConnectableObservable;
 import rx.subscriptions.Subscriptions;
@@ -173,13 +163,7 @@ public class OperatorPublish<T> extends ConnectableObservable<T> {
                     errors.add(e2);
                 }
             }
-            if (errors != null) {
-                if (errors.size() == 1) {
-                    Exceptions.propagate(errors.get(0));
-                } else {
-                    throw new CompositeException("Errors while emitting onError", errors);
-                }
-            }
+            Exceptions.throwIfAny(errors);
         }
 
         @Override

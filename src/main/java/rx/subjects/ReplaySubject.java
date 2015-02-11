@@ -16,18 +16,15 @@
 package rx.subjects;
 
 import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
+import rx.*;
 import rx.Observer;
-import rx.Scheduler;
 import rx.annotations.Experimental;
-import rx.exceptions.CompositeException;
 import rx.exceptions.Exceptions;
-import rx.functions.Action1;
-import rx.functions.Func1;
+import rx.functions.*;
 import rx.internal.operators.NotificationLite;
 import rx.internal.util.UtilityFunctions;
 import rx.schedulers.Timestamped;
@@ -394,13 +391,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                 }
             }
 
-            if (errors != null) {
-                if (errors.size() == 1) {
-                    Exceptions.propagate(errors.get(0));
-                } else {
-                    throw new CompositeException("Errors while emitting ReplaySubject.onError", errors);
-                }
-            }
+            Exceptions.throwIfAny(errors);
         }
     }
     

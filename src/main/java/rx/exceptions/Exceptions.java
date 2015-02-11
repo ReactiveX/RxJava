@@ -16,7 +16,10 @@
 package rx.exceptions;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+
+import rx.annotations.Experimental;
 
 /**
  * @warn javadoc class description missing
@@ -27,7 +30,9 @@ public final class Exceptions {
     }
 
     /**
-     * @warn javadoc missing
+     * Convenience method to throw a {@code RuntimeException} and {@code Error} directly
+     * or wrap any other exception type into a {@code RuntimeException}.
+     * @param t the exception to throw directly or wrapped
      * @return because {@code propagate} itself throws an exception or error, this is a sort of phantom return
      *         value; {@code propagate} does not actually return anything
      */
@@ -48,7 +53,6 @@ public final class Exceptions {
             throw new RuntimeException(t);
         }
     }
-
     /**
      * Throws a particular {@code Throwable} only if it belongs to a set of "fatal" error varieties. These
      * varieties are as follows:
@@ -148,5 +152,30 @@ public final class Exceptions {
         }
         return e;
     }
-
+    /**
+     * Throws a single or multiple exceptions contained in the collection, wrapping it into
+     * {@code CompositeException} if necessary.
+     * @param exceptions the collection of exceptions. If null or empty, no exception is thrown.
+     * If the collection contains a single exception, that exception is either thrown as-is or wrapped into a
+     * CompositeException. Multiple exceptions are wrapped into a CompositeException.
+     */
+    @Experimental
+    public static void throwIfAny(List<? extends Throwable> exceptions) {
+        if (exceptions != null && !exceptions.isEmpty()) {
+            if (exceptions.size() == 1) {
+                Throwable t = exceptions.get(0);
+                // had to manually inline propagate because some tests attempt StackOverflowError 
+                // and can't handle it with the stack space remaining
+                if (t instanceof RuntimeException) {
+                    throw (RuntimeException) t;
+                } else if (t instanceof Error) {
+                    throw (Error) t;
+                } else {
+                    throw new RuntimeException(t);
+                }
+            }
+            throw new CompositeException(
+                    "Multiple exceptions", exceptions);
+        }
+    }
 }

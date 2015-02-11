@@ -15,12 +15,10 @@
  */
 package rx.subjects;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import rx.Observer;
 import rx.annotations.Experimental;
-import rx.exceptions.CompositeException;
 import rx.exceptions.Exceptions;
 import rx.functions.Action1;
 import rx.internal.operators.NotificationLite;
@@ -106,13 +104,7 @@ public final class PublishSubject<T> extends Subject<T, T> {
                     errors.add(e2);
                 }
             }
-            if (errors != null) {
-                if (errors.size() == 1) {
-                    Exceptions.propagate(errors.get(0));
-                } else {
-                    throw new CompositeException("Errors while emitting PublishSubject.onError", errors);
-                }
-            }
+            Exceptions.throwIfAny(errors);
         }
     }
 

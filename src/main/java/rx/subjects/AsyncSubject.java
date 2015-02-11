@@ -15,12 +15,10 @@
  */
 package rx.subjects;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import rx.Observer;
 import rx.annotations.Experimental;
-import rx.exceptions.CompositeException;
 import rx.exceptions.Exceptions;
 import rx.functions.Action1;
 import rx.internal.operators.NotificationLite;
@@ -122,13 +120,7 @@ public final class AsyncSubject<T> extends Subject<T, T> {
                 }
             }
 
-            if (errors != null) {
-                if (errors.size() == 1) {
-                    Exceptions.propagate(errors.get(0));
-                } else {
-                    throw new CompositeException("Errors while emitting AsyncSubject.onError", errors);
-                }
-            }
+            Exceptions.throwIfAny(errors);
         }
     }
 
