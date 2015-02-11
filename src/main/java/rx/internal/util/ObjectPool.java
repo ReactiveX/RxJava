@@ -18,15 +18,20 @@
 package rx.internal.util;
 
 import java.util.Queue;
-import java.util.concurrent.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.TimeUnit;
 
-import rx.internal.util.unsafe.*;
+import rx.Scheduler;
+import rx.functions.Action0;
+import rx.internal.util.unsafe.MpmcArrayQueue;
+import rx.internal.util.unsafe.UnsafeAccess;
+import rx.schedulers.Schedulers;
 
 public abstract class ObjectPool<T> {
     private Queue<T> pool;
     private final int maxSize;
 
-    private final ScheduledExecutorService schedulerWorker;
+    private Scheduler.Worker schedulerWorker;
 
     public ObjectPool() {
         this(0, 0, 67);
@@ -49,11 +54,11 @@ public abstract class ObjectPool<T> {
         // initialize pool
         initialize(min);
 
-        schedulerWorker = Executors.newScheduledThreadPool(1, new RxThreadFactory("RxObjectPool"));
-        schedulerWorker.scheduleAtFixedRate(new Runnable() {
+        schedulerWorker = Schedulers.computation().createWorker();
+        schedulerWorker.schedulePeriodically(new Action0() {
 
             @Override
-            public void run() {
+            public void call() {
                 int size = pool.size();
                 if (size < min) {
                     int sizeToBeAdded = max - size;
@@ -105,7 +110,7 @@ public abstract class ObjectPool<T> {
      * Shutdown this pool.
      */
     public void shutdown() {
-        schedulerWorker.shutdownNow();
+        schedulerWorker.unsubscribe();
     }
 
     /**
