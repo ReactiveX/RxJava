@@ -45,7 +45,7 @@ public final class OperatorTakeWhile<T> implements Operator<T, T> {
 
     @Override
     public Subscriber<? super T> call(final Subscriber<? super T> subscriber) {
-        return new Subscriber<T>(subscriber) {
+        Subscriber<T> s = new Subscriber<T>(subscriber, false) {
 
             private int counter = 0;
 
@@ -86,6 +86,8 @@ public final class OperatorTakeWhile<T> implements Operator<T, T> {
             }
 
         };
+        subscriber.add(s);
+        return s;
     }
 
 }
