@@ -30,7 +30,7 @@ import rx.exceptions.CompositeException;
  */
 public final class CompositeSubscription implements Subscription {
 
-    private Set<Subscription> subscriptions;
+    /* debug */ Set<Subscription> subscriptions;
     private boolean unsubscribed = false;
 
     public CompositeSubscription() {
@@ -126,6 +126,17 @@ public final class CompositeSubscription implements Subscription {
         unsubscribeFromAll(subscriptions);
     }
 
+    /**
+     * @return the number of subscriptions int this composite
+     */
+    synchronized int size() {
+        return subscriptions != null ? subscriptions.size() : 0;
+    }
+    
+    synchronized Set<Subscription> getSubscriptions() {
+        return new HashSet<Subscription>(subscriptions);
+    }
+    
     private static void unsubscribeFromAll(Collection<Subscription> subscriptions) {
         if (subscriptions == null) {
             return;
@@ -155,5 +166,9 @@ public final class CompositeSubscription implements Subscription {
                         "Failed to unsubscribe to 2 or more subscriptions.", es);
             }
         }
+    }
+    @Override
+    public String toString() {
+        return Subscriptions.dump(this);
     }
 }

@@ -25,7 +25,7 @@ import rx.Subscription;
  * have unsubscribed.
  */
 public final class RefCountSubscription implements Subscription {
-    private final Subscription actual;
+    /* debug */  final Subscription actual;
     static final State EMPTY_STATE = new State(false, 0);
     volatile State state = EMPTY_STATE;
     static final AtomicReferenceFieldUpdater<RefCountSubscription, State> STATE_UPDATER
@@ -143,5 +143,17 @@ public final class RefCountSubscription implements Subscription {
         public boolean isUnsubscribed() {
             return innerDone != 0;
         }
-    };
+        @Override
+        public String toString() {
+            return Subscriptions.dump(this);
+        }
+    }
+    /** @return the number of refcounted children. */
+    int size() {
+        return state.children;
+    }
+    @Override
+    public String toString() {
+        return Subscriptions.dump(this);
+    }
 }

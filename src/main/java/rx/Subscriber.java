@@ -16,6 +16,7 @@
 package rx;
 
 import rx.internal.util.SubscriptionList;
+import rx.subscriptions.Subscriptions;
 
 /**
  * Provides a mechanism for receiving push-based notifications from Observables, and permits manual
@@ -162,5 +163,9 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
                 p.request(toRequest);
             }
         }
+    }
+    @Override
+    public String toString() {
+        return Subscriptions.dump(this);
     }
 }

@@ -23,7 +23,7 @@ import rx.Subscription;
 import rx.exceptions.OnErrorNotImplementedException;
 import rx.functions.Action0;
 import rx.plugins.RxJavaPlugins;
-import rx.subscriptions.CompositeSubscription;
+import rx.subscriptions.*;
 
 /**
  * A {@code Runnable} that executes an {@code Action0} and can be cancelled. The analog is the
@@ -128,6 +128,10 @@ public final class ScheduledAction extends AtomicReference<Thread> implements Ru
         public boolean isUnsubscribed() {
             return f.isCancelled();
         }
+        @Override
+        public String toString() {
+            return Subscriptions.dump(this);
+        }
     }
 
     /** Remove a child subscription from a composite when unsubscribing. */
@@ -153,6 +157,13 @@ public final class ScheduledAction extends AtomicReference<Thread> implements Ru
                 parent.remove(s);
             }
         }
-
+        @Override
+        public String toString() {
+            return Subscriptions.dump(this);
+        }
+    }
+    @Override
+    public String toString() {
+        return Subscriptions.dump(this);
     }
 }

@@ -15,14 +15,11 @@
  */
 package rx.internal.util;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import rx.Subscription;
 import rx.exceptions.CompositeException;
+import rx.subscriptions.Subscriptions;
 
 /**
  * Subscription that represents a group of Subscriptions that are unsubscribed together.
@@ -129,5 +126,21 @@ public final class SubscriptionList implements Subscription {
             subscriptions = null;
         }
         unsubscribeFromAll(list);
+    }
+    /**
+     * @return the number of subscriptions int this composite
+     */
+    public synchronized int size() {
+        return subscriptions != null ? subscriptions.size() : 0;
+    }
+    /**
+     * @return a copy of the subscriptions in this composite
+     */
+    public synchronized Set<Subscription> getSubscriptions() {
+        return new HashSet<Subscription>(subscriptions);
+    }
+    @Override
+    public String toString() {
+        return Subscriptions.dump(this);
     }
 }

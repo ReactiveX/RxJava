@@ -100,5 +100,9 @@ public final class MultipleAssignmentSubscription implements Subscription {
     public Subscription get() {
         return state.subscription;
     }
+    @Override
+    public String toString() {
+        return Subscriptions.dump(this);
+    }
 
 }
