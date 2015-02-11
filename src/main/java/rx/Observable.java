@@ -4538,6 +4538,7 @@ public class Observable<T> {
      *         by the source Observable and merging the results of the Observables obtained from this
      *         transformation
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
+     * @since 1.0.6
      */
     @Beta
     public final <R> Observable<R> flatMap(Func1<? super T, ? extends Observable<? extends R>> func, int maxConcurrent) {

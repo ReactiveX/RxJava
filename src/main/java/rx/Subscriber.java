@@ -46,14 +46,18 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
     protected Subscriber(Subscriber<?> op) {
         this(op, true);
     }
+
     /**
-     * Construct a subscriber by using the other subscriber for backpressure
-     * and optionally sharing the underlying subscriptions list.
-     * <p>To retain the chaining of subscribers, the caller should add the
-     * created instance to the op via {@code add()}.
+     * Construct a Subscriber by using another Subscriber for backpressure and optionally sharing the
+     * underlying subscriptions list.
+     * <p>
+     * To retain the chaining of subscribers, add the created instance to {@code op} via {@link #add}.
      * 
-     * @param op the other subscriber
-     * @param shareSubscriptions should the subscription list in op shared with this instance?
+     * @param op
+     *            the other Subscriber
+     * @param shareSubscriptions
+     *            {@code true} to share the subscription list in {@code op} with this instance
+     * @since 1.0.6
      */
     protected Subscriber(Subscriber<?> op, boolean shareSubscriptions) {
         this.op = op;
