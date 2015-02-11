@@ -53,17 +53,7 @@ public final class ScalarSynchronousObservable<T> extends Observable<T> {
     public T get() {
         return t;
     }
-    
-//    @Override
-//    public Observable<T> subscribeOn(Scheduler scheduler) {
-//        return scalarScheduleOn(scheduler);
-//    }
-//    
-//    @Override
-//    public Observable<T> observeOn(Scheduler scheduler) {
-//        return scalarScheduleOn(scheduler);
-//    }
-    
+
     /**
      * Customized observeOn/subscribeOn implementation which emits the scalar
      * value directly or with less overhead on the specified scheduler.
