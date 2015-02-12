@@ -4538,7 +4538,7 @@ public class Observable<T> {
      *         by the source Observable and merging the results of the Observables obtained from this
      *         transformation
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
-     * @since 1.0.6
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
     @Beta
     public final <R> Observable<R> flatMap(Func1<? super T, ? extends Observable<? extends R>> func, int maxConcurrent) {
@@ -4601,6 +4601,7 @@ public class Observable<T> {
      * @return an Observable that emits the results of merging the Observables returned from applying the
      *         specified functions to the emissions and notifications of the source Observable
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
     @Beta
     public final <R> Observable<R> flatMap(
@@ -4662,6 +4663,7 @@ public class Observable<T> {
      * @return an Observable that emits the results of applying a function to a pair of values emitted by the
      *         source Observable and the collection Observable
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
     @Beta
     public final <U, R> Observable<R> flatMap(final Func1<? super T, ? extends Observable<? extends U>> collectionSelector,
