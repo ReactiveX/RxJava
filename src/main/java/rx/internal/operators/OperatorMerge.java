@@ -194,7 +194,7 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
             }
             MergeProducer<T> producerIfNeeded = null;
             // if we have received a request then we need to respect it, otherwise we fast-path
-            if (mergeProducer.requested != Long.MAX_VALUE) {
+            if (mergeProducer.requested() != Long.MAX_VALUE) {
                 /**
                  * <pre> {@code
                  * With this optimization:
@@ -237,7 +237,7 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
              * } </pre>
              * 
              */
-            if (mergeProducer.requested == Long.MAX_VALUE) {
+            if (mergeProducer.requested() == Long.MAX_VALUE) {
                 handleScalarSynchronousObservableWithoutRequestLimits(t);
             } else {
                 handleScalarSynchronousObservableWithRequestLimits(t);
@@ -274,11 +274,11 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
                 boolean moreToDrain;
                 boolean isReturn = false;
                 try {
-                    long r = mergeProducer.requested;
+                    long r = mergeProducer.requested();
                     if (r > 0) {
                         emitted = true;
                         actual.onNext(t.get());
-                        MergeProducer.REQUESTED.decrementAndGet(mergeProducer);
+                        mergeProducer.getAndAdd(-1);
                         // we handle this Observable without ever incrementing the wip or touching other machinery so just return here
                         isReturn = true;
                     }
@@ -376,7 +376,7 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
         private int drainScalarValueQueue() {
             RxRingBuffer svq = scalarValueQueue;
             if (svq != null) {
-                long r = mergeProducer.requested;
+                long r = mergeProducer.requested();
                 int emittedWhileDraining = 0;
                 if (r < 0) {
                     // drain it all
@@ -398,7 +398,7 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
                         }
                     }
                     // decrement the number we emitted from outstanding requests
-                    MergeProducer.REQUESTED.getAndAdd(mergeProducer, -emittedWhileDraining);
+                    mergeProducer.getAndAdd(-emittedWhileDraining);
                 }
                 return emittedWhileDraining;
             }
@@ -410,7 +410,7 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
             @Override
             public Boolean call(InnerSubscriber<T> s) {
                 if (s.q != null) {
-                    long r = mergeProducer.requested;
+                    long r = mergeProducer.requested();
                     int emitted = s.drainQueue();
                     if (emitted > 0) {
                         s.requestMore(emitted);
@@ -533,19 +533,26 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
             this.ms = ms;
         }
 
-        private volatile long requested = 0;
+        private volatile long rq = 0;
         @SuppressWarnings("rawtypes")
-        static final AtomicLongFieldUpdater<MergeProducer> REQUESTED = AtomicLongFieldUpdater.newUpdater(MergeProducer.class, "requested");
+        static final AtomicLongFieldUpdater<MergeProducer> RQ = AtomicLongFieldUpdater.newUpdater(MergeProducer.class, "rq");
 
+        public long requested() {
+            return rq;
+        }
+        public long getAndAdd(long n) {
+            return RQ.getAndAdd(this, n);
+        }
+        
         @Override
         public void request(long n) {
-            if (requested == Long.MAX_VALUE) {
+            if (rq == Long.MAX_VALUE) {
                 return;
             }
             if (n == Long.MAX_VALUE) {
-                requested = Long.MAX_VALUE;
+                rq = Long.MAX_VALUE;
             } else {
-                BackpressureUtils.getAndAddRequest(REQUESTED, this, n);
+                BackpressureUtils.getAndAddRequest(RQ, this, n);
                 if (ms.drainQueuesIfNeeded()) {
                     boolean sendComplete = false;
                     synchronized (ms) {
@@ -668,7 +675,7 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
                     } else {
                         // this needs to check q.count() as draining above may not have drained the full queue
                         // perf tests show this to be okay, though different queue implementations could perform poorly with this
-                        if (producer.requested > 0 && q.count() == 0) {
+                        if (producer.requested() > 0 && q.count() == 0) {
                             if (complete) {
                                 parentSubscriber.completeInner(this);
                             } else {
@@ -679,7 +686,7 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
                                     onError(OnErrorThrowable.addValueAsLastCause(e, t));
                                 }
                                 emitted++;
-                                MergeProducer.REQUESTED.decrementAndGet(producer);
+                                producer.getAndAdd(-1);
                             }
                         } else {
                             // no requests available, so enqueue it
@@ -728,7 +735,7 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
         private int drainRequested() {
             int emitted = 0;
             // drain what was requested
-            long toEmit = producer.requested;
+            long toEmit = producer.requested();
             Object o;
             for (int i = 0; i < toEmit; i++) {
                 o = q.poll();
@@ -750,7 +757,7 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
             }
 
             // decrement the number we emitted from outstanding requests
-            MergeProducer.REQUESTED.getAndAdd(producer, -emitted);
+            producer.getAndAdd(-emitted);
             return emitted;
         }
 

@@ -18,23 +18,25 @@ package rx.internal.operators;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InOrder;
 
-import rx.*;
+import rx.Observable;
+import rx.Observer;
+import rx.Producer;
+import rx.Scheduler;
+import rx.Subscriber;
 import rx.exceptions.TestException;
 import rx.functions.Action0;
+import rx.functions.Func1;
 import rx.observers.TestSubscriber;
 import rx.schedulers.TestScheduler;
 
@@ -529,5 +531,47 @@ public class OperatorSwitchTest {
                 })
         ).take(1).subscribe();
         assertTrue("Switch doesn't propagate 'unsubscribe'", isUnsubscribed.get());
+    }
+    /** The upstream producer hijacked the switch producer stopping the requests aimed at the inner observables. */
+    @Test
+    public void testIssue2654() {
+        Observable<String> oneItem = Observable.just("Hello").mergeWith(Observable.<String>never());
+        
+        Observable<String> src = oneItem.switchMap(new Func1<String, Observable<String>>() {
+            @Override
+            public Observable<String> call(final String s) {
+                return Observable.just(s)
+                        .mergeWith(Observable.interval(10, TimeUnit.MILLISECONDS)
+                        .map(new Func1<Long, String>() {
+                            @Override
+                            public String call(Long i) {
+                                return s + " " + i;
+                            }
+                        })).take(250);
+            }
+        })
+        .share()
+        ;
+        
+        TestSubscriber<String> ts = new TestSubscriber<String>() {
+            @Override
+            public void onNext(String t) {
+                super.onNext(t);
+                if (getOnNextEvents().size() == 250) {
+                    onCompleted();
+                    unsubscribe();
+                }
+            }
+        };
+        src.subscribe(ts);
+        
+        ts.awaitTerminalEvent(10, TimeUnit.SECONDS);
+        
+        System.out.println("> testIssue2654: " + ts.getOnNextEvents().size());
+        
+        ts.assertTerminalEvent();
+        ts.assertNoErrors();
+        
+        Assert.assertEquals(250, ts.getOnNextEvents().size());
     }
 }
