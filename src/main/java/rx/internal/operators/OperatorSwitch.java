@@ -49,7 +49,9 @@ public final class OperatorSwitch<T> implements Operator<T, Observable<? extends
     private OperatorSwitch() { }
     @Override
     public Subscriber<? super Observable<? extends T>> call(final Subscriber<? super T> child) {
-        return new SwitchSubscriber<T>(child);
+        SwitchSubscriber<T> sws = new SwitchSubscriber<T>(child);
+        child.add(sws);
+        return sws;
     }
 
     private static final class SwitchSubscriber<T> extends Subscriber<Observable<? extends T>> {
@@ -75,7 +77,6 @@ public final class OperatorSwitch<T> implements Operator<T, Observable<? extends
         volatile boolean infinite = false;
 
         public SwitchSubscriber(Subscriber<? super T> child) {
-            super(child);
             s = new SerializedSubscriber<T>(child);
             ssub = new SerialSubscription();
             child.add(ssub);
