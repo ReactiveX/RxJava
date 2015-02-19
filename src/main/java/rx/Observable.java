@@ -8770,6 +8770,30 @@ public class Observable<T> {
     }
 
     /**
+     * Merges the specified observable sequence into this Observable sequence by using the resultSelector 
+     * function only when the source observable sequence (this instance) produces an element.
+     * <code><pre>
+     * ----A-------B------C----->  o1
+     *
+     * --0----1-2----3-4-------->  o2
+     *
+     *     |       |      |
+     *     V       V      V
+     *
+     *   (A,0)   (B,2)  (C,4)
+     * </pre></code>
+     * @param other the other observable sequence
+     * @param resultSelector the function to call when this Observable emits an element and the other
+     *            observable sequence has already emitted a value.
+     * @return an Observable that merges the specified observable sequence into this Observable sequence 
+     *            by using the resultSelector function only when the source observable sequence 
+     *            (this instance) produces an element
+     */
+    public final <U, R> Observable<R> withLatestFrom(Observable<? extends U> other, Func2<? super T, ? super U, ? extends R> resultSelector) {
+        return lift(new OperatorWithLatestFrom<T, U, R>(other, resultSelector));
+    }
+    
+    /**
      * Returns an Observable that emits windows of items it collects from the source Observable. The resulting
      * Observable emits connected, non-overlapping windows. It emits the current window and opens a new one
      * whenever the Observable produced by the specified {@code closingSelector} emits an item.
