@@ -8789,6 +8789,7 @@ public class Observable<T> {
      *            by using the resultSelector function only when the source observable sequence 
      *            (this instance) produces an element
      */
+    @Experimental
     public final <U, R> Observable<R> withLatestFrom(Observable<? extends U> other, Func2<? super T, ? super U, ? extends R> resultSelector) {
         return lift(new OperatorWithLatestFrom<T, U, R>(other, resultSelector));
     }
