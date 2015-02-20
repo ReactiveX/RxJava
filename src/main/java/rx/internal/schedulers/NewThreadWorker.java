@@ -26,24 +26,51 @@ import rx.functions.Action0;
 import rx.internal.util.RxThreadFactory;
 import rx.plugins.*;
 import rx.subscriptions.Subscriptions;
+import rx.schedulers.ScheduledAction;
 
 /**
- * @warn class description missing
+ * Represents a {@code Scheduler.Worker} which creates a new, single threaded {@code ScheduledExecutorService} with each instance.
+ * Calling {@code unsubscribe()} on the returned {@code Scheduler.Worker}
+ * shuts down the underlying {@code ScheduledExecutorService} with its {@code shutdownNow}, cancelling
+ * any pending or running tasks.
+ * <p>
+ * This class can be embedded/extended to build various kinds of {@code Scheduler}s, but doesn't
+ * track submitted tasks directly because the termination of the underlying {@code ScheduledExecutorService} 
+ * via {@code shutdownNow()} ensures all pending or running tasks are cancelled. However, since
+ * uses of this class may require additional task tracking, the {@code NewThreadWorker} exposes the
+ * {@link #scheduleActual(Action0, long, TimeUnit)} method which returns a {@link rx.schedulers.ScheduledAction}
+ * directly. See {@code ScheduledAction} for further details on the usage of the class.
+ * <p><b>System-wide properties:</b>
+ * <ul>
+ * <li>{@code rx.scheduler.jdk6.purge-frequency-millis}
+ * <dd>Specifies the purge frequency (in milliseconds) to remove cancelled tasks on a JDK 6 {@code ScheduledExecutorService}. 
+ * Default is 1000 milliseconds. The purge Thread name is prefixed by {@code "RxSchedulerPurge-"}.</br>
+ * <li>{@code rx.scheduler.jdk6.purge-force}
+ * <dd>Forces the use of {@code purge()} on JDK 7+ instead of the O(log n) {@code remove()} when a task is cancelled. {@code "true"} or {@code "false"} (default).</br>
+ * </li>
+ * </ul>
+ * @see rx.schedulers.ScheduledAction
  */
 public class NewThreadWorker extends Scheduler.Worker implements Subscription {
+    /** The underlying executor service. */
     private final ScheduledExecutorService executor;
+    /** The hook to decorate each submitted task. */
     private final RxJavaSchedulersHook schedulersHook;
+    /** Indicates the unsubscribed state of the worker. */
     volatile boolean isUnsubscribed;
     /** The purge frequency in milliseconds. */
     private static final String FREQUENCY_KEY = "rx.scheduler.jdk6.purge-frequency-millis";
     /** Force the use of purge (true/false). */
     private static final String PURGE_FORCE_KEY = "rx.scheduler.jdk6.purge-force";
+    /** The thread name prefix for the purge thread. */
     private static final String PURGE_THREAD_PREFIX = "RxSchedulerPurge-";
     /** Forces the use of purge even if setRemoveOnCancelPolicy is available. */
     private static final boolean PURGE_FORCE;
     /** The purge frequency in milliseconds. */
     public static final int PURGE_FREQUENCY;
+    /** Tracks the instantiated executors for periodic purging. */
     private static final ConcurrentHashMap<ScheduledThreadPoolExecutor, ScheduledThreadPoolExecutor> EXECUTORS;
+    /** References the executor service which purges the registered executors periodically. */
     private static final AtomicReference<ScheduledExecutorService> PURGE;
     static {
         EXECUTORS = new ConcurrentHashMap<ScheduledThreadPoolExecutor, ScheduledThreadPoolExecutor>();
@@ -129,7 +156,11 @@ public class NewThreadWorker extends Scheduler.Worker implements Subscription {
         return false;
     }
     
-    /* package */
+    /**
+     * Constructs a new {@code NewThreadWorker} and uses the given {@code ThreadFactory} for
+     * the underlying {@code ScheduledExecutorService}.
+     * @param threadFactory the thread factory to use
+     */
     public NewThreadWorker(ThreadFactory threadFactory) {
         ScheduledExecutorService exec = Executors.newScheduledThreadPool(1, threadFactory);
         // Java 7+: cancelled future tasks can be removed from the executor thus avoiding memory leak
@@ -155,11 +186,15 @@ public class NewThreadWorker extends Scheduler.Worker implements Subscription {
     }
 
     /**
-     * @warn javadoc missing
-     * @param action
-     * @param delayTime
-     * @param unit
-     * @return
+     * Schedules the given action on the underlying executor and returns a {@code ScheduledAction}
+     * instance that allows tracking the task.
+     * <p>The aim of this method to allow direct access to the created ScheduledAction from
+     * other {@code Scheduler} implementations building upon a {@code NewThreadWorker}. Note that the method
+     * doesn't check if the worker instance has been unsubscribed or not for performance reasons.
+     * @param action the action to schedule
+     * @param delayTime the delay time in scheduling the action, negative value indicates an immediate scheduling
+     * @param unit the time unit for the {@code delayTime} parameter
+     * @return a new {@code ScheduledAction} instance
      */
     public ScheduledAction scheduleActual(final Action0 action, long delayTime, TimeUnit unit) {
         Action0 decoratedAction = schedulersHook.onSchedule(action);

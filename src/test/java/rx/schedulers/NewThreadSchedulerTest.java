@@ -26,7 +26,7 @@ import org.junit.Test;
 
 import rx.Scheduler;
 import rx.functions.Action0;
-import rx.internal.schedulers.ScheduledAction;
+import rx.schedulers.ScheduledAction;
 import rx.subscriptions.Subscriptions;
 
 public class NewThreadSchedulerTest extends AbstractSchedulerConcurrencyTests {
@@ -60,6 +60,7 @@ public class NewThreadSchedulerTest extends AbstractSchedulerConcurrencyTests {
                     try {
                         run.await();
                     } catch (InterruptedException ex) {
+                        Thread.currentThread().interrupt();
                         exception.set(ex);
                     }
                 }
@@ -79,6 +80,88 @@ public class NewThreadSchedulerTest extends AbstractSchedulerConcurrencyTests {
             
             Assert.assertEquals(null, exception.get());
             Assert.assertFalse("Interrupted?!", interruptFlag.get());
+        } finally {
+            worker.unsubscribe();
+        }
+    }
+    @Test(timeout = 3000)
+    public void testDisableInterrupt() throws InterruptedException {
+        Scheduler.Worker worker = Schedulers.newThread().createWorker();
+        try {
+            final CountDownLatch run = new CountDownLatch(1);
+            final CountDownLatch wait = new CountDownLatch(1);
+            final CountDownLatch done = new CountDownLatch(1);
+            final AtomicReference<Throwable> exception = new AtomicReference<Throwable>();
+            final AtomicBoolean interruptFlag = new AtomicBoolean();
+            
+            ScheduledAction sa = (ScheduledAction)worker.schedule(new Action0() {
+                @Override
+                public void call() {
+                    try {
+                        run.countDown();
+                        wait.await();
+                    } catch (InterruptedException ex) {
+                        Thread.currentThread().interrupt();
+                        exception.set(ex);
+                        interruptFlag.set(true);
+                    }
+                    done.countDown();
+                }
+            });
+            
+            sa.setInterruptOnUnsubscribe(false);
+            
+            run.await();
+            
+            sa.unsubscribe();
+            
+            wait.countDown();
+            
+            done.await();
+            
+            Assert.assertEquals(null, exception.get());
+            Assert.assertFalse("Interrupted?!", interruptFlag.get());
+        } finally {
+            worker.unsubscribe();
+        }
+    }
+    @Test(timeout = 3000)
+    public void testEnableInterrupt() throws InterruptedException {
+        Scheduler.Worker worker = Schedulers.newThread().createWorker();
+        try {
+            final CountDownLatch run = new CountDownLatch(1);
+            final CountDownLatch wait = new CountDownLatch(1);
+            final CountDownLatch done = new CountDownLatch(1);
+            final AtomicReference<Throwable> exception = new AtomicReference<Throwable>();
+            final AtomicBoolean interruptFlag = new AtomicBoolean();
+            
+            ScheduledAction sa = (ScheduledAction)worker.schedule(new Action0() {
+                @Override
+                public void call() {
+                    try {
+                        run.countDown();
+                        wait.await();
+                    } catch (InterruptedException ex) {
+                        Thread.currentThread().interrupt();
+                        exception.set(ex);
+                        interruptFlag.set(true);
+                    }
+                    done.countDown();
+                }
+            });
+            
+            sa.setInterruptOnUnsubscribe(true);
+            
+            run.await();
+            
+            sa.unsubscribe();
+            
+            wait.countDown();
+            
+            done.await();
+            
+            Assert.assertNotSame(null, exception.get());
+            Assert.assertTrue("Not Interrupted?!", interruptFlag.get());
         } finally {
             worker.unsubscribe();
         }
