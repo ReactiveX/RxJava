@@ -16,6 +16,7 @@
 package rx;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -507,5 +508,53 @@ public class SubscriberTest {
                 list.add(t);
             }});
         assertEquals(Arrays.asList(1,2,3,4,5), list);
+    }
+
+    @Test
+    public void testIsSubscribedWithoutCallToUnsubscribe() {
+        Subscriber subscriber = new Subscriber() {
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(Object o) {
+
+            }
+        };
+
+        assertTrue(subscriber.isSubscribed());
+        assertFalse(subscriber.isUnsubscribed());
+    }
+
+    @Test
+    public void testIsNotSubscribedAfterUnsubscribe() {
+        Subscriber subscriber = new Subscriber() {
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(Object o) {
+
+            }
+        };
+
+        subscriber.unsubscribe();
+
+        assertFalse(subscriber.isSubscribed());
+        assertTrue(subscriber.isUnsubscribed());
     }
 }
