@@ -27,7 +27,7 @@ import rx.subscriptions.Subscriptions;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
-/* package */class EventLoopsScheduler extends Scheduler {
+public class EventLoopsScheduler extends Scheduler {
     /** Manages a fixed number of workers. */
     private static final String THREAD_NAME_PREFIX = "RxComputationThreadPool-";
     private static final RxThreadFactory THREAD_FACTORY = new RxThreadFactory(THREAD_NAME_PREFIX);
@@ -83,6 +83,17 @@ import java.util.concurrent.TimeUnit;
     @Override
     public Worker createWorker() {
         return new EventLoopWorker(pool.getEventLoop());
+    }
+
+    /**
+     * Schedules the action directly on one of the event loop workers
+     * without the additional infrastructure and checking.
+     * @param action the action to schedule
+     * @return the subscription
+     */
+    public Subscription scheduleDirect(Action0 action) {
+       PoolWorker pw = pool.getEventLoop();
+       return pw.scheduleActual(action, -1, TimeUnit.NANOSECONDS);
     }
 
     private static class EventLoopWorker extends Scheduler.Worker {

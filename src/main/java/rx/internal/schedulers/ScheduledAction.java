@@ -16,12 +16,12 @@
 package rx.internal.schedulers;
 
 import java.util.concurrent.Future;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.*;
 
 import rx.Subscription;
 import rx.exceptions.OnErrorNotImplementedException;
 import rx.functions.Action0;
+import rx.internal.util.SubscriptionList;
 import rx.plugins.RxJavaPlugins;
 import rx.subscriptions.CompositeSubscription;
 
@@ -32,12 +32,12 @@ import rx.subscriptions.CompositeSubscription;
 public final class ScheduledAction extends AtomicReference<Thread> implements Runnable, Subscription {
     /** */
     private static final long serialVersionUID = -3962399486978279857L;
-    final CompositeSubscription cancel;
+    final SubscriptionList cancel;
     final Action0 action;
 
     public ScheduledAction(Action0 action) {
         this.action = action;
-        this.cancel = new CompositeSubscription();
+        this.cancel = new SubscriptionList();
     }
 
     @Override
