@@ -213,7 +213,7 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
             InnerSubscriber<T> i = new InnerSubscriber<T>(this, producerIfNeeded);
             i.sindex = childrenSubscribers.add(i);
             t.unsafeSubscribe(i);
-            if (!isUnsubscribed()) {
+            if ((producerIfNeeded == null || producerIfNeeded.requested > 0) && !isUnsubscribed()) {
                 request(1);
             }
         }
@@ -523,6 +523,9 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
             }
         }
 
+        public void requestMore(long n) {
+            request(n);
+        }
     }
 
     private static final class MergeProducer<T> implements Producer {
@@ -545,16 +548,23 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
             if (n == Long.MAX_VALUE) {
                 requested = Long.MAX_VALUE;
             } else {
-                BackpressureUtils.getAndAddRequest(REQUESTED, this, n);
+                final long count = BackpressureUtils.getAndAddRequest(REQUESTED, this, n);
                 if (ms.drainQueuesIfNeeded()) {
                     boolean sendComplete = false;
+                    boolean requestMore = false;
                     synchronized (ms) {
                         if (ms.wip == 0 && ms.scalarValueQueue != null && ms.scalarValueQueue.isEmpty()) {
                             sendComplete = true;
                         }
+
+                        if (count > 0 && ms.wip == 0 && ms.scalarValueQueue == null) {
+                            requestMore = true;
+                        }
                     }
                     if (sendComplete) {
                         ms.drainAndComplete();
+                    } else if (requestMore) {
+                        ms.requestMore(n);
                     }
                 }
             }

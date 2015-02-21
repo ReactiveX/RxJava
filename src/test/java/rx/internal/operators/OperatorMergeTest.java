@@ -21,9 +21,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -665,6 +663,60 @@ public class OperatorMergeTest {
         assertEquals(RxRingBuffer.SIZE * 2 + 1, onNextEvents.size());
         // it should be between the take num and requested batch size across the async boundary
         assertTrue(generated1.get() >= RxRingBuffer.SIZE * 2 && generated1.get() <= RxRingBuffer.SIZE * 3);
+    }
+
+    @Test
+    public void testWhenRequestCalledAndNotingPendingThenEmitsMore() throws InterruptedException {
+        final AtomicInteger generated1 = new AtomicInteger();
+        final TestScheduler scheduler = new TestScheduler();
+        TestSubscriber<Integer> nonScalartestSubscriber = spy(new TestSubscriber<Integer>() {
+            @Override
+            public void onStart() {
+                request(10);
+            }
+        });
+        Observable<Integer> o1 = createInfiniteObservable(generated1)
+            .flatMap(new Func1<Integer, Observable<Integer>>() {
+                @Override
+                public Observable<Integer> call(final Integer integer) {
+                    return Observable.create(new OnSubscribe<Integer>() {
+                        @Override
+                        public void call(Subscriber<? super Integer> subscriber) {
+                            subscriber.onNext(-integer);
+                            subscriber.onCompleted();
+                        }
+                    });
+                }
+            })
+            .subscribeOn(scheduler);
+        o1.subscribe(nonScalartestSubscriber);
+
+        TestSubscriber<Integer> scalartestSubscriber = spy(new TestSubscriber<Integer>() {
+            @Override
+            public void onStart() {
+                request(10);
+            }
+        });
+        Observable<Integer> o2 = createInfiniteObservable(generated1)
+            .flatMap(new Func1<Integer, Observable<Integer>>() {
+                @Override
+                public Observable<Integer> call(final Integer integer) {
+                    return Observable.just(-integer);
+                }
+            })
+            .subscribeOn(scheduler);
+        o2.subscribe(scalartestSubscriber);
+
+        scheduler.triggerActions();
+        verify(nonScalartestSubscriber, times(10)).onNext(anyInt());
+        verify(scalartestSubscriber, times(10)).onNext(anyInt());
+
+        nonScalartestSubscriber.requestMore(100);
+        scalartestSubscriber.requestMore(100);
+        scheduler.triggerActions();
+
+        verify(nonScalartestSubscriber, times(110)).onNext(anyInt());
+        verify(scalartestSubscriber, times(110)).onNext(anyInt());
     }
 
     /**
