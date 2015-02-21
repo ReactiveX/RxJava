@@ -1,5 +1,49 @@
 # RxJava Releases #
 
+### Version 1.0.7 – Feburary 21st 2015 ([Maven Central](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.0.7%7C)) ###
+
+This release includes some bug fixes along with a new operator and performance enhancements.
+
+#### Experimental Operator
+
+Note that these APIs [may still change or be removed altogether](https://github.com/ReactiveX/RxJava#experimental) since they are marked as `@Experimental`. 
+
+##### withLatestFrom(Observable, Selector)
+
+This allows combining all values from one `Observable` with the latest value from a second `Observable` at each `onNext`.
+
+For example:
+
+```java
+Observable<Long> a = Observable.interval(1, TimeUnit.SECONDS);
+Observable<Long> b = Observable.interval(250, TimeUnit.MILLISECONDS);
+
+
+a.withLatestFrom(b, (x, y) -> new long[] { x, y })
+        .toBlocking()
+        .forEach(pair -> System.out.println("a: " + pair[0] + " b: " + pair[1]));
+```
+
+This outputs:
+
+```
+a: 0 b: 3
+a: 1 b: 6
+a: 2 b: 11
+a: 3 b: 15
+a: 4 b: 19
+a: 5 b: 23
+a: 6 b: 27
+```
+
+
+#### Changes
+
+https://github.com/ReactiveX/RxJava/pull/2760 Operator: WithLatestFrom
+https://github.com/ReactiveX/RxJava/pull/2762 Optimized isUnsubscribed check
+https://github.com/ReactiveX/RxJava/pull/2759 Observable.using should use unsafeSubscribe and enable eager disposal
+https://github.com/ReactiveX/RxJava/pull/2655 SwitchOnNext: fix upstream producer replacing the ops own producer
+
 ### Version 1.0.6 – Feburary 11th 2015 ([Maven Central](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.0.6%7C)) ###
 
 This release adds an experimental operator and fixes several bugs. 
