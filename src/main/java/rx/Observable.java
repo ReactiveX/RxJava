@@ -2547,7 +2547,7 @@ public class Observable<T> {
     }
 
     /**
-     * Constructs an Observable that creates a dependent resource object.
+     * Constructs an Observable that creates a dependent resource object which is disposed of on unsubscription.
      * <p>
      * <img width="640" height="400" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/using.png" alt="">
      * <dl>
@@ -2568,7 +2568,42 @@ public class Observable<T> {
             final Func0<Resource> resourceFactory,
             final Func1<? super Resource, ? extends Observable<? extends T>> observableFactory,
             final Action1<? super Resource> disposeAction) {
-        return create(new OnSubscribeUsing<T, Resource>(resourceFactory, observableFactory, disposeAction));
+        return using(resourceFactory, observableFactory, disposeAction, false);
+    }
+    
+    /**
+     * Constructs an Observable that creates a dependent resource object which is disposed of just before 
+     * termination if <code>disposeEagerly</code> is set to true and unsubscription does not occur before termination. Otherwise
+     * resource disposal will occur on unsubscription.  Eager disposal is particularly appropriate for a synchronous observable
+     * that resuses resources. <code>disposeAction</code> will only be called once per subscription.
+     * <p>
+     * <img width="640" height="400" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/using.png" alt="">
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code using} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @param resourceFactory
+     *            the factory function to create a resource object that depends on the Observable
+     * @param observableFactory
+     *            the factory function to create an Observable
+     * @param disposeAction
+     *            the function that will dispose of the resource
+     * @param disposeEagerly
+     *            if true then disposal will happen either on unsubscription or just before emission of 
+     *            a terminal event (onComplete or onError).
+     * @return the Observable whose lifetime controls the lifetime of the dependent resource object
+     * @see <a href="http://reactivex.io/documentation/operators/using.html">ReactiveX operators documentation: Using</a>
+     * @Experimental The behavior of this can change at any time.
+     * @since (if this graduates from Experimental/Beta to supported, replace
+     *        this parenthetical with the release number)
+     */
+    @Experimental
+    public final static <T, Resource> Observable<T> using(
+            final Func0<Resource> resourceFactory,
+            final Func1<? super Resource, ? extends Observable<? extends T>> observableFactory,
+            final Action1<? super Resource> disposeAction, boolean disposeEagerly) {
+        return create(new OnSubscribeUsing<T, Resource>(resourceFactory, observableFactory, disposeAction, disposeEagerly));
     }
 
     /**
