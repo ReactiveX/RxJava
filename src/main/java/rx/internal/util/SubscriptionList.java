@@ -32,7 +32,7 @@ import rx.exceptions.*;
 public final class SubscriptionList implements Subscription {
 
     private List<Subscription> subscriptions;
-    private boolean unsubscribed = false;
+    private volatile boolean unsubscribed;
 
     public SubscriptionList() {
     }
@@ -42,7 +42,7 @@ public final class SubscriptionList implements Subscription {
     }
 
     @Override
-    public synchronized boolean isUnsubscribed() {
+    public boolean isUnsubscribed() {
         return unsubscribed;
     }
 
@@ -55,21 +55,19 @@ public final class SubscriptionList implements Subscription {
      *          the {@link Subscription} to add
      */
     public void add(final Subscription s) {
-        Subscription unsubscribe = null;
-        synchronized (this) {
-            if (unsubscribed) {
-                unsubscribe = s;
-            } else {
-                if (subscriptions == null) {
-                    subscriptions = new LinkedList<Subscription>();
+        if (!unsubscribed) {
+            synchronized (this) {
+                if (!unsubscribed) {
+                    if (subscriptions == null) {
+                        subscriptions = new LinkedList<Subscription>();
+                    }
+                    subscriptions.add(s);
+                    return;
                 }
-                subscriptions.add(s);
             }
         }
-        if (unsubscribe != null) {
-            // call after leaving the synchronized block so we're not holding a lock while executing this
-            unsubscribe.unsubscribe();
-        }
+        // call after leaving the synchronized block so we're not holding a lock while executing this
+        s.unsubscribe();
     }
 
     /**
@@ -78,17 +76,19 @@ public final class SubscriptionList implements Subscription {
      */
     @Override
     public void unsubscribe() {
-        List<Subscription> list;
-        synchronized (this) {
-            if (unsubscribed) {
-                return;
+        if (!unsubscribed) {
+            List<Subscription> list;
+            synchronized (this) {
+                if (unsubscribed) {
+                    return;
+                }
+                unsubscribed = true;
+                list = subscriptions;
+                subscriptions = null;
             }
-            unsubscribed = true;
-            list = subscriptions;
-            subscriptions = null;
+            // we will only get here once
+            unsubscribeFromAll(list);
         }
-        // we will only get here once
-        unsubscribeFromAll(list);
     }
 
     private static void unsubscribeFromAll(Collection<Subscription> subscriptions) {
@@ -110,11 +110,25 @@ public final class SubscriptionList implements Subscription {
     }
     /* perf support */
     public void clear() {
-        List<Subscription> list;
-        synchronized (this) {
-            list = subscriptions;
-            subscriptions = null;
+        if (!unsubscribed) {
+            List<Subscription> list;
+            synchronized (this) {
+                list = subscriptions;
+                subscriptions = null;
+            }
+            unsubscribeFromAll(list);
         }
-        unsubscribeFromAll(list);
+    }
+    /**
+     * Returns true if this composite is not unsubscribed and contains subscriptions.
+     * @return {@code true} if this composite is not unsubscribed and contains subscriptions.
+     */
+    public boolean hasSubscriptions() {
+        if (!unsubscribed) {
+            synchronized (this) {
+                return !unsubscribed && subscriptions != null && !subscriptions.isEmpty();
+            }
+        }
+        return false;
     }
 }
