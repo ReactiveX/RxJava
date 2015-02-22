@@ -39,12 +39,16 @@ public class SerializedSubscriber<T> extends Subscriber<T> {
     public SerializedSubscriber(Subscriber<? super T> s) {
         this(s, true);
     }
+
     /**
      * Constructor for wrapping and serializing a subscriber optionally sharing the same underlying subscription
      * list.
-     * @param s the subscriber to wrap and serialize
-     * @param shareSubscriptions if {@code true}, the same subscription list is shared between this
-     * subscriber and {@code s}.
+     *
+     * @param s
+     *          the subscriber to wrap and serialize
+     * @param shareSubscriptions
+     *          if {@code true}, the same subscription list is shared between this subscriber and {@code s}.
+     * @since 1.0.7
      */
     public SerializedSubscriber(Subscriber<? super T> s, boolean shareSubscriptions) {
         super(s, shareSubscriptions);

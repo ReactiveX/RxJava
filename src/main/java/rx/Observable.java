@@ -2573,9 +2573,10 @@ public class Observable<T> {
     
     /**
      * Constructs an Observable that creates a dependent resource object which is disposed of just before 
-     * termination if <code>disposeEagerly</code> is set to true and unsubscription does not occur before termination. Otherwise
-     * resource disposal will occur on unsubscription.  Eager disposal is particularly appropriate for a synchronous observable
-     * that resuses resources. <code>disposeAction</code> will only be called once per subscription.
+     * termination if you have set {@code disposeEagerly} to {@code true} and unsubscription does not occur
+     * before termination. Otherwise resource disposal will occur on unsubscription.  Eager disposal is
+     * particularly appropriate for a synchronous Observable that resuses resources. {@code disposeAction} will
+     * only be called once per subscription.
      * <p>
      * <img width="640" height="400" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/using.png" alt="">
      * <dl>
@@ -2583,6 +2584,7 @@ public class Observable<T> {
      *  <dd>{@code using} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
+     * @warn "Backpressure Support" section missing from javadoc
      * @param resourceFactory
      *            the factory function to create a resource object that depends on the Observable
      * @param observableFactory
@@ -2590,8 +2592,8 @@ public class Observable<T> {
      * @param disposeAction
      *            the function that will dispose of the resource
      * @param disposeEagerly
-     *            if true then disposal will happen either on unsubscription or just before emission of 
-     *            a terminal event (onComplete or onError).
+     *            if {@code true} then disposal will happen either on unsubscription or just before emission of 
+     *            a terminal event ({@code onComplete} or {@code onError}).
      * @return the Observable whose lifetime controls the lifetime of the dependent resource object
      * @see <a href="http://reactivex.io/documentation/operators/using.html">ReactiveX operators documentation: Using</a>
      * @Experimental The behavior of this can change at any time.
@@ -8805,24 +8807,24 @@ public class Observable<T> {
     }
 
     /**
-     * Merges the specified observable sequence into this Observable sequence by using the resultSelector 
-     * function only when the source observable sequence (this instance) produces an element.
-     * <code><pre>
-     * ----A-------B------C----->  o1
+     * Merges the specified Observable into this Observable sequence by using the {@code resultSelector}
+     * function only when the source Observable (this instance) emits an item.
+     * <p>
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/withLatestFrom.png" alt="">
      *
-     * --0----1-2----3-4-------->  o2
-     *
-     *     |       |      |
-     *     V       V      V
-     *
-     *   (A,0)   (B,2)  (C,4)
-     * </pre></code>
-     * @param other the other observable sequence
-     * @param resultSelector the function to call when this Observable emits an element and the other
-     *            observable sequence has already emitted a value.
-     * @return an Observable that merges the specified observable sequence into this Observable sequence 
-     *            by using the resultSelector function only when the source observable sequence 
-     *            (this instance) produces an element
+     * @warn "Backpressure Support" section missing from javadoc
+     * @warn "Scheduler" section missing from javadoc
+     * @param other
+     *            the other Observable
+     * @param resultSelector
+     *            the function to call when this Observable emits an item and the other Observable has already
+     *            emitted an item, to generate the item to be emitted by the resulting Observable
+     * @return an Observable that merges the specified Observable into this Observable by using the
+     *         {@code resultSelector} function only when the source Observable sequence (this instance) emits an
+     *         item
+     * @Experimental The behavior of this can change at any time.
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     * @see <a href="http://reactivex.io/documentation/operators/combinelatest.html">ReactiveX operators documentation: CombineLatest</a>
      */
     @Experimental
     public final <U, R> Observable<R> withLatestFrom(Observable<? extends U> other, Func2<? super T, ? super U, ? extends R> resultSelector) {

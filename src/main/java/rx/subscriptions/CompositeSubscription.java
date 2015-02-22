@@ -150,9 +150,12 @@ public final class CompositeSubscription implements Subscription {
         }
         Exceptions.throwIfAny(es);
     }
+
     /**
      * Returns true if this composite is not unsubscribed and contains subscriptions.
+     *
      * @return {@code true} if this composite is not unsubscribed and contains subscriptions.
+     * @since 1.0.7
      */
     public boolean hasSubscriptions() {
         if (!unsubscribed) {
