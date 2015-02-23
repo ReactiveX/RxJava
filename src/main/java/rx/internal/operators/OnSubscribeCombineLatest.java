@@ -110,7 +110,7 @@ public final class OnSubscribeCombineLatest<T, R> implements OnSubscribe<R> {
 
         @Override
         public void request(long n) {
-            requested.getAndAdd(n);
+            BackpressureUtils.getAndAddRequest(requested, n);
             if (!started.get() && started.compareAndSet(false, true)) {
                 /*
                  * NOTE: this logic will ONLY work if we don't have more sources than the size of the buffer.
