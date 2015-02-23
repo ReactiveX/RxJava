@@ -84,7 +84,7 @@ import rx.functions.*;
  * instance into an {@code Observable} fluently.
  * 
  * <h1>Examples</h1>
- * Note: these examples use the lambda-helper factories to avoid boilerplane.
+ * Note: these examples use the lambda-helper factories to avoid boilerplate.
  * 
  * <h3>Implement: just</h3>
  * <pre><code>
