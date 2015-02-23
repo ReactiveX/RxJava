@@ -5175,6 +5175,9 @@ public class Observable<T> {
      * @see #subscribeOn
      */
     public final Observable<T> observeOn(Scheduler scheduler) {
+        if (this instanceof ScalarSynchronousObservable) {
+            return ((ScalarSynchronousObservable<T>)this).scalarScheduleOn(scheduler);
+        }
         return lift(new OperatorObserveOn<T>(scheduler));
     }
 
@@ -7597,6 +7600,9 @@ public class Observable<T> {
      * @see #observeOn
      */
     public final Observable<T> subscribeOn(Scheduler scheduler) {
+        if (this instanceof ScalarSynchronousObservable) {
+            return ((ScalarSynchronousObservable<T>)this).scalarScheduleOn(scheduler);
+        }
         return nest().lift(new OperatorSubscribeOn<T>(scheduler));
     }
 
