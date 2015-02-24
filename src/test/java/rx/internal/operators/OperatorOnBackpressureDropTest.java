@@ -17,6 +17,9 @@ package rx.internal.operators;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.junit.Test;
 
 import rx.Observable;
@@ -26,8 +29,6 @@ import rx.Subscriber;
 import rx.internal.util.RxRingBuffer;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
-
-import java.util.concurrent.CountDownLatch;
 
 public class OperatorOnBackpressureDropTest {
 
@@ -87,6 +88,35 @@ public class OperatorOnBackpressureDropTest {
         ts.assertNoErrors();
         assertEquals(0, ts.getOnNextEvents().get(0).intValue());
     }
+    
+    @Test
+    public void testRequestOverflow() throws InterruptedException {
+        final AtomicInteger count = new AtomicInteger();
+        int n = 10;
+        range(n).onBackpressureDrop().subscribe(new Subscriber<Long>() {
+
+            @Override
+            public void onStart() {
+                request(10);
+            }
+            
+            @Override
+            public void onCompleted() {
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                throw new RuntimeException(e);
+            }
+
+            @Override
+            public void onNext(Long t) {
+                count.incrementAndGet();
+                //cause overflow of requested if not handled properly in onBackpressureDrop operator
+                request(Long.MAX_VALUE-1);
+            }});
+        assertEquals(n, count.get());
+    }
 
     static final Observable<Long> infinite = Observable.create(new OnSubscribe<Long>() {
 
@@ -99,4 +129,22 @@ public class OperatorOnBackpressureDropTest {
         }
 
     });
+    
+    private static final Observable<Long> range(final long n) {
+        return Observable.create(new OnSubscribe<Long>() {
+
+            @Override
+            public void call(Subscriber<? super Long> s) {
+                for (long i=0;i < n;i++) {
+                    if (s.isUnsubscribed()) {
+                        break;
+                    }
+                    s.onNext(i);
+                }
+                s.onCompleted();
+            }
+    
+        });
+    }
+    
 }
