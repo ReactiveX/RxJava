@@ -43,7 +43,7 @@ public class OperatorOnBackpressureDrop<T> implements Operator<T, T> {
 
             @Override
             public void request(long n) {
-                requested.getAndAdd(n);
+                BackpressureUtils.getAndAddRequest(requested, n);
             }
 
         });
