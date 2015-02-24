@@ -73,7 +73,7 @@ public final class OnSubscribeRange implements OnSubscribe<Integer> {
                 }
             } else if (n > 0) {
                 // backpressure is requested
-                long _c = REQUESTED_UPDATER.getAndAdd(this, n);
+                long _c = BackpressureUtils.getAndAddRequest(REQUESTED_UPDATER,this, n);
                 if (_c == 0) {
                     while (true) {
                         /*

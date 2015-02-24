@@ -32,6 +32,7 @@ import org.junit.Test;
 
 import rx.Observable;
 import rx.Observer;
+import rx.Subscriber;
 import rx.functions.Action1;
 import rx.internal.util.RxRingBuffer;
 import rx.observers.TestSubscriber;
@@ -189,5 +190,34 @@ public class OnSubscribeRangeTest {
         
         ts.assertReceivedOnNext(list);
         ts.assertTerminalEvent();
+    }
+    
+    @Test
+    public void testRequestOverflow() {
+        final AtomicInteger count = new AtomicInteger();
+        int n = 10;
+        Observable.range(1, n).subscribe(new Subscriber<Integer>() {
+
+            @Override
+            public void onStart() {
+                request(2);
+            }
+            
+            @Override
+            public void onCompleted() {
+                //do nothing
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                throw new RuntimeException(e);
+            }
+
+            @Override
+            public void onNext(Integer t) {
+                count.incrementAndGet();
+                request(Long.MAX_VALUE - 1);
+            }});
+        assertEquals(n, count.get());
     }
 }
