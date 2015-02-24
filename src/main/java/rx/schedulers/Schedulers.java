@@ -16,6 +16,7 @@
 package rx.schedulers;
 
 import rx.Scheduler;
+import rx.internal.schedulers.EventLoopsScheduler;
 import rx.plugins.RxJavaPlugins;
 
 import java.util.concurrent.Executor;

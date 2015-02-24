@@ -13,13 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rx.schedulers;
+package rx.internal.schedulers;
 
 import rx.Scheduler;
 import rx.Subscription;
 import rx.functions.Action0;
-import rx.internal.schedulers.NewThreadWorker;
-import rx.internal.schedulers.ScheduledAction;
 import rx.internal.util.RxThreadFactory;
 import rx.subscriptions.CompositeSubscription;
 import rx.subscriptions.Subscriptions;
@@ -27,7 +25,7 @@ import rx.subscriptions.Subscriptions;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
-/* package */class EventLoopsScheduler extends Scheduler {
+public class EventLoopsScheduler extends Scheduler {
     /** Manages a fixed number of workers. */
     private static final String THREAD_NAME_PREFIX = "RxComputationThreadPool-";
     private static final RxThreadFactory THREAD_FACTORY = new RxThreadFactory(THREAD_NAME_PREFIX);
@@ -76,13 +74,24 @@ import java.util.concurrent.TimeUnit;
      * Create a scheduler with pool size equal to the available processor
      * count and using least-recent worker selection policy.
      */
-    EventLoopsScheduler() {
+    public EventLoopsScheduler() {
         pool = new FixedSchedulerPool();
     }
     
     @Override
     public Worker createWorker() {
         return new EventLoopWorker(pool.getEventLoop());
+    }
+    
+    /**
+     * Schedules the action directly on one of the event loop workers
+     * without the additional infrastructure and checking.
+     * @param action the action to schedule
+     * @return the subscription
+     */
+    public Subscription scheduleDirect(Action0 action) {
+       PoolWorker pw = pool.getEventLoop();
+       return pw.scheduleActual(action, -1, TimeUnit.NANOSECONDS);
     }
 
     private static class EventLoopWorker extends Scheduler.Worker {
