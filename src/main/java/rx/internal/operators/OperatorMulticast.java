@@ -38,11 +38,11 @@ import rx.subscriptions.Subscriptions;
  *            the result value type
  */
 public final class OperatorMulticast<T, R> extends ConnectableObservable<R> {
-    private final Observable<? extends T> source;
-    private final Object guard;
-    private final Func0<? extends Subject<? super T, ? extends R>> subjectFactory;
-    private final AtomicReference<Subject<? super T, ? extends R>> connectedSubject;
-    private final List<Subscriber<? super R>> waitingForConnect;
+    final Observable<? extends T> source;
+    final Object guard;
+    final Func0<? extends Subject<? super T, ? extends R>> subjectFactory;
+    final AtomicReference<Subject<? super T, ? extends R>> connectedSubject;
+    final List<Subscriber<? super R>> waitingForConnect;
 
     /** Guarded by guard. */
     private Subscriber<T> subscription;
@@ -109,21 +109,26 @@ public final class OperatorMulticast<T, R> extends ConnectableObservable<R> {
                         subject.onNext(args);
                     }
                 };
-                guardedSubscription = Subscriptions.create(new Action0() {
+                final AtomicReference<Subscription> gs = new AtomicReference<Subscription>();
+                gs.set(Subscriptions.create(new Action0() {
                     @Override
                     public void call() {
                         Subscription s;
                         synchronized (guard) {
-                            s = subscription;
-                            subscription = null;
-                            guardedSubscription = null;
-                            connectedSubject.set(null);
+                            if ( guardedSubscription == gs.get()) {
+                                s = subscription;
+                                subscription = null;
+                                guardedSubscription = null;
+                                connectedSubject.set(null);
+                            } else 
+                                return;
                         }
                         if (s != null) {
                             s.unsubscribe();
                         }
                     }
-                });
+                }));
+                guardedSubscription = gs.get();
                 
                 // register any subscribers that are waiting with this new subject
                 for(Subscriber<? super R> s : waitingForConnect) {
