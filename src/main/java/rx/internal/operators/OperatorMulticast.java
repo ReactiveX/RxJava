@@ -46,7 +46,7 @@ public final class OperatorMulticast<T, R> extends ConnectableObservable<R> {
 
     /** Guarded by guard. */
     private Subscriber<T> subscription;
-    // wraps subscription above with for unsubscription using guard
+    // wraps subscription above for unsubscription using guard
     private Subscription guardedSubscription;
 
     public OperatorMulticast(Observable<? extends T> source, final Func0<? extends Subject<? super T, ? extends R>> subjectFactory) {
