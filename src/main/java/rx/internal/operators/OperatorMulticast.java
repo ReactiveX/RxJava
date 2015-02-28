@@ -38,14 +38,16 @@ import rx.subscriptions.Subscriptions;
  *            the result value type
  */
 public final class OperatorMulticast<T, R> extends ConnectableObservable<R> {
-    final Observable<? extends T> source;
-    final Object guard;
-    final Func0<? extends Subject<? super T, ? extends R>> subjectFactory;
+    private final Observable<? extends T> source;
+    private final Object guard;
+    private final Func0<? extends Subject<? super T, ? extends R>> subjectFactory;
     private final AtomicReference<Subject<? super T, ? extends R>> connectedSubject;
     private final List<Subscriber<? super R>> waitingForConnect;
 
     /** Guarded by guard. */
-    Subscriber<T> subscription;
+    private Subscriber<T> subscription;
+    // wraps subscription above with for unsubscription using guard
+    private Subscription guardedSubscription;
 
     public OperatorMulticast(Observable<? extends T> source, final Func0<? extends Subject<? super T, ? extends R>> subjectFactory) {
         this(new Object(), new AtomicReference<Subject<? super T, ? extends R>>(), new ArrayList<Subscriber<? super R>>(), source, subjectFactory);
@@ -82,7 +84,8 @@ public final class OperatorMulticast<T, R> extends ConnectableObservable<R> {
         // subscription is the state of whether we are connected or not
         synchronized (guard) {
             if (subscription != null) {
-                // already connected, return as there is nothing to do
+                // already connected
+                connection.call(guardedSubscription);
                 return;
             } else {
                 shouldSubscribe = true;
@@ -106,6 +109,21 @@ public final class OperatorMulticast<T, R> extends ConnectableObservable<R> {
                         subject.onNext(args);
                     }
                 };
+                guardedSubscription = Subscriptions.create(new Action0() {
+                    @Override
+                    public void call() {
+                        Subscription s;
+                        synchronized (guard) {
+                            s = subscription;
+                            subscription = null;
+                            guardedSubscription = null;
+                            connectedSubject.set(null);
+                        }
+                        if (s != null) {
+                            s.unsubscribe();
+                        }
+                    }
+                });
                 
                 // register any subscribers that are waiting with this new subject
                 for(Subscriber<? super R> s : waitingForConnect) {
@@ -116,34 +134,22 @@ public final class OperatorMulticast<T, R> extends ConnectableObservable<R> {
                 // record the Subject so OnSubscribe can see it
                 connectedSubject.set(subject);
             }
+            
         }
 
         // in the lock above we determined we should subscribe, do it now outside the lock
         if (shouldSubscribe) {
             // register a subscription that will shut this down
-            connection.call(Subscriptions.create(new Action0() {
-                @Override
-                public void call() {
-                    Subscription s;
-                    synchronized (guard) {
-                        s = subscription;
-                        subscription = null;
-                        connectedSubject.set(null);
-                    }
-                    if (s != null) {
-                        s.unsubscribe();
-                    }
-                }
-            }));
+            connection.call(guardedSubscription);
 
             // now that everything is hooked up let's subscribe
             // as long as the subscription is not null (which can happen if already unsubscribed)
-            boolean subscriptionIsNull;
-            synchronized(guard) {
-                subscriptionIsNull = subscription == null;
+            Subscriber<T> sub; 
+            synchronized (guard) {
+                sub = subscription;
             }
-            if (!subscriptionIsNull)
-                source.subscribe(subscription);
+            if (sub != null)
+                source.subscribe(sub);
         }
     }
 }
