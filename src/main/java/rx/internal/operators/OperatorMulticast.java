@@ -79,8 +79,6 @@ public final class OperatorMulticast<T, R> extends ConnectableObservable<R> {
     public void connect(Action1<? super Subscription> connection) {
         // each time we connect we create a new Subject and Subscription
 
-        boolean shouldSubscribe = false;
-
         // subscription is the state of whether we are connected or not
         synchronized (guard) {
             if (subscription != null) {
@@ -88,7 +86,6 @@ public final class OperatorMulticast<T, R> extends ConnectableObservable<R> {
                 connection.call(guardedSubscription);
                 return;
             } else {
-                shouldSubscribe = true;
                 // we aren't connected, so let's create a new Subject and connect
                 final Subject<? super T, ? extends R> subject = subjectFactory.call();
                 // create new Subscriber that will pass-thru to the subject we just created
@@ -143,18 +140,16 @@ public final class OperatorMulticast<T, R> extends ConnectableObservable<R> {
         }
 
         // in the lock above we determined we should subscribe, do it now outside the lock
-        if (shouldSubscribe) {
-            // register a subscription that will shut this down
-            connection.call(guardedSubscription);
+        // register a subscription that will shut this down
+        connection.call(guardedSubscription);
 
-            // now that everything is hooked up let's subscribe
-            // as long as the subscription is not null (which can happen if already unsubscribed)
-            Subscriber<T> sub; 
-            synchronized (guard) {
-                sub = subscription;
-            }
-            if (sub != null)
-                source.subscribe(sub);
+        // now that everything is hooked up let's subscribe
+        // as long as the subscription is not null (which can happen if already unsubscribed)
+        Subscriber<T> sub; 
+        synchronized (guard) {
+            sub = subscription;
         }
+        if (sub != null)
+            source.subscribe(sub);
     }
 }
