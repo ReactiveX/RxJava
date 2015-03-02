@@ -15,11 +15,13 @@
  */
 package rx.internal.operators;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import rx.Observer;
@@ -29,7 +31,7 @@ import rx.observables.ConnectableObservable;
 import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
 
-public class OnSubscribeMulticastTest {
+public class OperatorMulticastTest {
 
     @Test
     public void testMulticast() {
@@ -70,15 +72,17 @@ public class OnSubscribeMulticastTest {
 
         source.onNext("one");
 
-        multicasted.connect();
-        multicasted.connect();
-
+        Subscription sub = multicasted.connect();
+        Subscription sub2 = multicasted.connect();
+        
         source.onNext("two");
         source.onCompleted();
 
         verify(observer, never()).onNext("one");
         verify(observer, times(1)).onNext("two");
         verify(observer, times(1)).onCompleted();
+        
+        assertEquals(sub, sub2);
 
     }
 
