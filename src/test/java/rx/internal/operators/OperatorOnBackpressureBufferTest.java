@@ -93,7 +93,7 @@ public class OperatorOnBackpressureBufferTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testFixBackpressureBufferZeroCapacity() throws InterruptedException {
-        Observable.empty().onBackpressureBuffer(-1);
+        Observable.empty().onBackpressureBuffer(0);
     }
 
     @Test
