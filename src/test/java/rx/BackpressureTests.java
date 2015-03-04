@@ -23,6 +23,7 @@ import java.util.concurrent.atomic.*;
 
 import org.junit.*;
 
+import org.junit.rules.TestName;
 import rx.Observable.OnSubscribe;
 import rx.exceptions.MissingBackpressureException;
 import rx.functions.*;
@@ -32,6 +33,9 @@ import rx.schedulers.Schedulers;
 import rx.test.TestObstructionDetection;
 
 public class BackpressureTests {
+
+    @Rule
+    public TestName testName = new TestName();
 
     @After
     public void doAfterTest() {
@@ -424,18 +428,56 @@ public class BackpressureTests {
             .map(SLOW_PASS_THRU).take(NUM).subscribe(ts);
             ts.awaitTerminalEvent();
             ts.assertNoErrors();
-            
-            
+
             List<Integer> onNextEvents = ts.getOnNextEvents();
             assertEquals(NUM, onNextEvents.size());
 
             Integer lastEvent = onNextEvents.get(NUM - 1);
-            
+
             System.out.println("testOnBackpressureDrop => Received: " + onNextEvents.size() + "  Emitted: " + c.get() + " Last value: " + lastEvent);
             // it drop, so we should get some number far higher than what would have sequentially incremented
             assertTrue(NUM - 1 <= lastEvent.intValue());
         }
     }
+
+    @Test(timeout = 10000)
+    public void testOnBackpressureDropWithAction() {
+        for (int i = 0; i < 100; i++) {
+            final AtomicInteger emitCount = new AtomicInteger();
+            final AtomicInteger dropCount = new AtomicInteger();
+            final AtomicInteger passCount = new AtomicInteger();
+            final int NUM = (int) (RxRingBuffer.SIZE * 1.5); // > 1 so that take doesn't prevent buffer overflow
+            TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+            firehose(emitCount).onBackpressureDrop(new Action1<Integer>() {
+                @Override
+                public void call(Integer i) {
+                    dropCount.incrementAndGet();
+                }
+            })
+            .doOnNext(new Action1<Integer>() {
+                @Override
+                public void call(Integer integer) {
+                    passCount.incrementAndGet();
+                }
+            })
+            .observeOn(Schedulers.computation())
+            .map(SLOW_PASS_THRU).take(NUM).subscribe(ts);
+            ts.awaitTerminalEvent();
+            ts.assertNoErrors();
+            
+            List<Integer> onNextEvents = ts.getOnNextEvents();
+            Integer lastEvent = onNextEvents.get(NUM - 1);
+            System.out.println(testName.getMethodName() + " => Received: " + onNextEvents.size() + " Passed: " + passCount.get() + " Dropped: " + dropCount.get() + "  Emitted: " + emitCount.get() + " Last value: " + lastEvent);
+            assertEquals(NUM, onNextEvents.size());
+            // in reality, NUM < passCount
+            assertTrue(NUM <= passCount.get());
+            // it drop, so we should get some number far higher than what would have sequentially incremented
+            assertTrue(NUM - 1 <= lastEvent.intValue());
+            assertTrue(0 < dropCount.get());
+            assertEquals(emitCount.get(), passCount.get() + dropCount.get());
+        }
+    }
+
     @Test(timeout = 10000)
     public void testOnBackpressureDropSynchronous() {
         for (int i = 0; i < 100; i++) {
@@ -446,15 +488,46 @@ public class BackpressureTests {
             .map(SLOW_PASS_THRU).take(NUM).subscribe(ts);
             ts.awaitTerminalEvent();
             ts.assertNoErrors();
-            
+
             List<Integer> onNextEvents = ts.getOnNextEvents();
             assertEquals(NUM, onNextEvents.size());
 
             Integer lastEvent = onNextEvents.get(NUM - 1);
-            
+
             System.out.println("testOnBackpressureDrop => Received: " + onNextEvents.size() + "  Emitted: " + c.get() + " Last value: " + lastEvent);
             // it drop, so we should get some number far higher than what would have sequentially incremented
             assertTrue(NUM - 1 <= lastEvent.intValue());
+        }
+    }
+
+    @Test(timeout = 10000)
+    public void testOnBackpressureDropSynchronousWithAction() {
+        for (int i = 0; i < 100; i++) {
+            final AtomicInteger dropCount = new AtomicInteger();
+            int NUM = (int) (RxRingBuffer.SIZE * 1.1); // > 1 so that take doesn't prevent buffer overflow
+            AtomicInteger c = new AtomicInteger();
+            TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+            firehose(c).onBackpressureDrop(new Action1<Integer>() {
+                @Override
+                public void call(Integer i) {
+                    dropCount.incrementAndGet();
+                }
+            })
+                    .map(SLOW_PASS_THRU).take(NUM).subscribe(ts);
+            ts.awaitTerminalEvent();
+            ts.assertNoErrors();
+
+            List<Integer> onNextEvents = ts.getOnNextEvents();
+            assertEquals(NUM, onNextEvents.size());
+
+            Integer lastEvent = onNextEvents.get(NUM - 1);
+
+            System.out.println("testOnBackpressureDrop => Received: " + onNextEvents.size() + " Dropped: " + dropCount.get() + "  Emitted: " + c.get() + " Last value: " + lastEvent);
+            // it drop, so we should get some number far higher than what would have sequentially incremented
+            assertTrue(NUM - 1 <= lastEvent.intValue());
+            // no drop in synchronous mode
+            assertEquals(0, dropCount.get());
+            assertEquals(c.get(), onNextEvents.size());
         }
     }
 

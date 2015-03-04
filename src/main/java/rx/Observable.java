@@ -5275,6 +5275,27 @@ public class Observable<T> {
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code onBackpressureDrop} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
+     *
+     * @param onDrop the action to invoke for each item dropped. onDrop action should be fast and should never block.
+     * @return the source Observable modified to drop {@code onNext} notifications on overflow
+     * @see <a href="http://reactivex.io/documentation/operators/backpressure.html">ReactiveX operators documentation: backpressure operators</a>
+     */
+    public final Observable<T> onBackpressureDrop(Action1<? super T> onDrop) {
+        return lift(new OperatorOnBackpressureDrop<T>(onDrop));
+    }
+
+    /**
+     * Instructs an Observable that is emitting items faster than its observer can consume them to discard,
+     * rather than emit, those items that its observer is not prepared to observe.
+     * <p>
+     * <img width="640" height="245" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/bp.obp.drop.png" alt="">
+     * <p>
+     * If the downstream request count hits 0 then the Observable will refrain from calling {@code onNext} until
+     * the observer invokes {@code request(n)} again to increase the request count.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code onBackpressureDrop} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
      * 
      * @return the source Observable modified to drop {@code onNext} notifications on overflow
      * @see <a href="http://reactivex.io/documentation/operators/backpressure.html">ReactiveX operators documentation: backpressure operators</a>
