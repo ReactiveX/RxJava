@@ -30,6 +30,7 @@ import rx.internal.util.RxRingBuffer;
 import rx.observables.ConnectableObservable;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
+import rx.schedulers.TestScheduler;
 
 public class OperatorPublishTest {
 
@@ -241,5 +242,21 @@ public class OperatorPublishTest {
         ts2.assertReceivedOnNext(Arrays.asList(4, 5, 6, 7, 8));
         
         assertEquals(8, sourceEmission.get());
+    }
+
+    @Test
+    public void testConnectWithNoSubscriber() {
+        TestScheduler scheduler = new TestScheduler();
+        ConnectableObservable<Long> co = Observable.timer(10, 10, TimeUnit.MILLISECONDS, scheduler).take(3).publish();
+        co.connect();
+        // Emit 0
+        scheduler.advanceTimeBy(15, TimeUnit.MILLISECONDS);
+        TestSubscriber subscriber = new TestSubscriber<Long>();
+        co.subscribe(subscriber);
+        // Emit 1 and 2
+        scheduler.advanceTimeBy(50, TimeUnit.MILLISECONDS);
+        subscriber.assertReceivedOnNext(Arrays.asList(1L, 2L));
+        subscriber.assertNoErrors();
+        subscriber.assertTerminalEvent();
     }
 }

@@ -213,6 +213,10 @@ public class OperatorPublish<T> extends ConnectableObservable<T> {
             return false;
         }
 
+        public synchronized boolean hasNoSubscriber() {
+            return subscribers.length == 0;
+        }
+
         public synchronized void incrementOutstandingAfterFailedEmit() {
             outstandingRequests++;
         }
@@ -308,11 +312,13 @@ public class OperatorPublish<T> extends ConnectableObservable<T> {
         }
 
         private void requestMoreAfterEmission(int emitted) {
-            OriginSubscriber<T> origin = state.getOrigin();
-            if (emitted > 0 && origin != null) {
-                long r = origin.originOutstanding.addAndGet(-emitted);
-                if (r <= origin.THRESHOLD) {
-                    origin.requestMore(RxRingBuffer.SIZE - origin.THRESHOLD);
+            if (emitted > 0) {
+                OriginSubscriber<T> origin = state.getOrigin();
+                if (origin != null) {
+                    long r = origin.originOutstanding.addAndGet(-emitted);
+                    if (r <= origin.THRESHOLD) {
+                        origin.requestMore(RxRingBuffer.SIZE - origin.THRESHOLD);
+                    }
                 }
             }
         }
@@ -336,8 +342,18 @@ public class OperatorPublish<T> extends ConnectableObservable<T> {
                      * If we want to batch this then we need to account for new subscribers arriving with a lower request count
                      * concurrently while iterating the batch ... or accept that they won't
                      */
-                    
                     while (true) {
+                        if (localState.hasNoSubscriber()) {
+                            // Drop items due to no subscriber
+                            if (localBuffer.poll() == null) {
+                                // Exit due to no more item
+                                break;
+                            } else {
+                                // Keep dropping cached items.
+                                continue;
+                            }
+                        }
+
                         boolean shouldEmit = localState.canEmitWithDecrement();
                         if (!shouldEmit) {
                             break;
