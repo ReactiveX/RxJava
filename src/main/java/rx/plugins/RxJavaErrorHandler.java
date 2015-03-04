@@ -17,6 +17,7 @@ package rx.plugins;
 
 import rx.Observable;
 import rx.Subscriber;
+import rx.annotations.Experimental;
 import rx.exceptions.OnErrorThrowable;
 
 /**
@@ -62,6 +63,7 @@ public abstract class RxJavaErrorHandler {
      * @param item the last emitted item, that caused the exception wrapped in {@link OnErrorThrowable.OnNextValue}.
      * @return a short {@link String} representation of the item if one is known for its type, or null for default.
      */
+    @Experimental
     public final String handleOnNextValueRendering(Object item) {
         try {
             return render(item);
@@ -83,6 +85,7 @@ public abstract class RxJavaErrorHandler {
      * @param item the last emitted item, that caused the exception wrapped in {@link OnErrorThrowable.OnNextValue}.
      * @return a short {@link String} representation of the item if one is known for its type, or null for default.
      */
+    @Experimental
     protected String render (Object item) {
         //do nothing by default
         return null;
