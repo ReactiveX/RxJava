@@ -36,28 +36,62 @@ public final class OperatorTakeUntil<T, E> implements Operator<T, T> {
 
     @Override
     public Subscriber<? super T> call(final Subscriber<? super T> child) {
-        final Subscriber<T> parent = new SerializedSubscriber<T>(child);
-
-        other.unsafeSubscribe(new Subscriber<E>(child) {
-
+        final Subscriber<T> serial = new SerializedSubscriber<T>(child, false);
+        
+        final Subscriber<T> main = new Subscriber<T>(serial, false) {
+            @Override
+            public void onNext(T t) {
+                serial.onNext(t);
+            }
+            @Override
+            public void onError(Throwable e) {
+                try {
+                    serial.onError(e);
+                } finally {
+                    serial.unsubscribe();
+                }
+            }
             @Override
             public void onCompleted() {
-                parent.onCompleted();
+                try {
+                    serial.onCompleted();
+                } finally {
+                    serial.unsubscribe();
+                }
+            }
+        };
+        
+        final Subscriber<E> so = new Subscriber<E>() {
+            @Override
+            public void onStart() {
+                request(Long.MAX_VALUE);
+            }
+            
+            @Override
+            public void onCompleted() {
+                main.onCompleted();
             }
 
             @Override
             public void onError(Throwable e) {
-                parent.onError(e);
+                main.onError(e);
             }
 
             @Override
             public void onNext(E t) {
-                parent.onCompleted();
+                onCompleted();
             }
 
-        });
+        };
 
-        return parent;
+        serial.add(main);
+        serial.add(so);
+        
+        child.add(serial);
+        
+        other.unsafeSubscribe(so);
+
+        return main;
     }
 
 }
