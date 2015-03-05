@@ -15,38 +15,22 @@
  */
 package rx.internal.operators;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
+import java.util.*;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.InOrder;
-import org.mockito.Mockito;
+import org.junit.*;
+import org.mockito.*;
 
+import rx.*;
 import rx.Observable;
 import rx.Observer;
-import rx.Producer;
-import rx.Scheduler;
-import rx.Subscriber;
-import rx.Subscription;
 import rx.exceptions.TestException;
-import rx.functions.Action0;
-import rx.functions.Action1;
-import rx.functions.Func0;
-import rx.functions.Func1;
+import rx.functions.*;
 import rx.observers.TestSubscriber;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
@@ -691,6 +675,7 @@ public class OperatorBufferTest {
         verify(o, never()).onCompleted();
                 
     }
+    
     @Test
     public void bufferWithTimeAndSize() {
         Observable<Long> source = Observable.timer(30, 30, TimeUnit.MILLISECONDS, scheduler);
