@@ -23,9 +23,9 @@ import java.util.concurrent.atomic.AtomicReference;
 import rx.*;
 import rx.exceptions.Exceptions;
 import rx.functions.Action0;
-import rx.internal.util.RxThreadFactory;
+import rx.internal.util.*;
 import rx.plugins.*;
-import rx.subscriptions.Subscriptions;
+import rx.subscriptions.*;
 
 /**
  * @warn class description missing
@@ -164,6 +164,37 @@ public class NewThreadWorker extends Scheduler.Worker implements Subscription {
     public ScheduledAction scheduleActual(final Action0 action, long delayTime, TimeUnit unit) {
         Action0 decoratedAction = schedulersHook.onSchedule(action);
         ScheduledAction run = new ScheduledAction(decoratedAction);
+        Future<?> f;
+        if (delayTime <= 0) {
+            f = executor.submit(run);
+        } else {
+            f = executor.schedule(run, delayTime, unit);
+        }
+        run.add(f);
+
+        return run;
+    }
+    public ScheduledAction scheduleActual(final Action0 action, long delayTime, TimeUnit unit, CompositeSubscription parent) {
+        Action0 decoratedAction = schedulersHook.onSchedule(action);
+        ScheduledAction run = new ScheduledAction(decoratedAction, parent);
+        parent.add(run);
+
+        Future<?> f;
+        if (delayTime <= 0) {
+            f = executor.submit(run);
+        } else {
+            f = executor.schedule(run, delayTime, unit);
+        }
+        run.add(f);
+
+        return run;
+    }
+    
+    public ScheduledAction scheduleActual(final Action0 action, long delayTime, TimeUnit unit, SubscriptionList parent) {
+        Action0 decoratedAction = schedulersHook.onSchedule(action);
+        ScheduledAction run = new ScheduledAction(decoratedAction, parent);
+        parent.add(run);
+        
         Future<?> f;
         if (delayTime <= 0) {
             f = executor.submit(run);
