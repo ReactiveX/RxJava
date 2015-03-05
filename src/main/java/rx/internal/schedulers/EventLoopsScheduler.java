@@ -91,7 +91,7 @@ public class EventLoopsScheduler extends Scheduler {
      */
     public Subscription scheduleDirect(Action0 action) {
        PoolWorker pw = pool.getEventLoop();
-       return pw.scheduleActual(action, -1, TimeUnit.NANOSECONDS);
+       return pw.scheduleActual(action, -1, TimeUnit.NANOSECONDS, false);
     }
 
     private static class EventLoopWorker extends Scheduler.Worker {
@@ -124,7 +124,7 @@ public class EventLoopsScheduler extends Scheduler {
                 return Subscriptions.unsubscribed();
             }
             
-            ScheduledAction s = poolWorker.scheduleActual(action, delayTime, unit);
+            ScheduledAction s = poolWorker.scheduleActual(action, delayTime, unit, false);
             innerSubscription.add(s);
             s.addParent(innerSubscription);
             return s;

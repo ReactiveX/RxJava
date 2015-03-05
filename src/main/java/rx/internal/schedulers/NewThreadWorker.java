@@ -151,19 +151,20 @@ public class NewThreadWorker extends Scheduler.Worker implements Subscription {
         if (isUnsubscribed) {
             return Subscriptions.unsubscribed();
         }
-        return scheduleActual(action, delayTime, unit);
+        return scheduleActual(action, delayTime, unit, true);
     }
 
     /**
-     * @warn javadoc missing
-     * @param action
-     * @param delayTime
-     * @param unit
-     * @return
+     * Performs the actual scheduling of a potentially delayed task and assigns the
+     * future to the ScheduledAction it returs.
+     * @param action the action to schedule
+     * @param delayTime the scheduling delay if positive
+     * @param unit the scheduling delay's time unit
+     * @return the ScheduledAction representing the task
      */
-    public ScheduledAction scheduleActual(final Action0 action, long delayTime, TimeUnit unit) {
+    public ScheduledAction scheduleActual(final Action0 action, long delayTime, TimeUnit unit, boolean interruptOnUnsubscribe) {
         Action0 decoratedAction = schedulersHook.onSchedule(action);
-        ScheduledAction run = new ScheduledAction(decoratedAction);
+        ScheduledAction run = new ScheduledAction(decoratedAction, interruptOnUnsubscribe);
         Future<?> f;
         if (delayTime <= 0) {
             f = executor.submit(run);

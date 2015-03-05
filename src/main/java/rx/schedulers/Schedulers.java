@@ -15,11 +15,14 @@
  */
 package rx.schedulers;
 
-import rx.Scheduler;
-import rx.internal.schedulers.EventLoopsScheduler;
-import rx.plugins.RxJavaPlugins;
+import java.util.concurrent.*;
 
-import java.util.concurrent.Executor;
+import rx.*;
+import rx.annotations.Experimental;
+import rx.functions.Action0;
+import rx.internal.schedulers.*;
+import rx.plugins.RxJavaPlugins;
+import rx.subscriptions.CompositeSubscription;
 
 /**
  * Static factory methods for creating Schedulers.
@@ -137,4 +140,53 @@ public final class Schedulers {
     public static Scheduler from(Executor executor) {
         return new ExecutorScheduler(executor);
     }
-}
+    /**
+     * Submit an Action0 to the specified executor service with the option to interrupt the task
+     * on unsubscription and add it to a parent composite subscription.
+     * @param executor the target executor service
+     * @param action the action to execute
+     * @param parent if not {@code null} the subscription representing the action is added to this composite with logic to remove it
+     *            once the action completes or is unsubscribed.
+     * @param interruptOnUnsubscribe if {@code false}, unsubscribing the task will not interrupt the task if it is running
+     * @return the Subscription representing the scheduled action which is also added to the {@code parent} composite
+     */
+    @Experimental
+    public static Subscription submitTo(ExecutorService executor, Action0 action, CompositeSubscription parent, boolean interruptOnUnsubscribe) {
+        ScheduledAction sa = new ScheduledAction(action, interruptOnUnsubscribe);
+        
+        if (parent != null) {
+            parent.add(sa);
+            sa.addParent(parent);
+        }
+        
+        Future<?> f = executor.submit(sa);
+        sa.add(f);
+        
+        return sa;
+    }
+    /**
+     * Submit an Action0 to the specified executor service with the given delay and the option to interrupt the task
+     * on unsubscription and add it to a parent composite subscription.
+     * @param executor the target executor service
+     * @param action the action to execute
+     * @param delay the delay value
+     * @param unit the time unit of the delay value
+     * @param parent if not {@code null} the subscription representing the action is added to this composite with logic to remove it
+     *            once the action completes or is unsubscribed.
+     * @param interruptOnUnsubscribe if {@code false}, unsubscribing the task will not interrupt the task if it is running
+     * @return the Subscription representing the scheduled action which is also added to the {@code parent} composite
+     */
+    @Experimental
+    public static Subscription submitTo(ScheduledExecutorService executor, Action0 action, long delay, TimeUnit unit, CompositeSubscription parent, boolean interruptOnUnsubscribe) {
+        ScheduledAction sa = new ScheduledAction(action, interruptOnUnsubscribe);
+        
+        if (parent != null) {
+            parent.add(sa);
+            sa.addParent(parent);
+        }
+        
+        Future<?> f = executor.schedule(sa, delay, unit);
+        sa.add(f);
+        
+        return sa;
+    }}

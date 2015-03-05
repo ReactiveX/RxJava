@@ -145,7 +145,7 @@ import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
                 return Subscriptions.unsubscribed();
             }
 
-            ScheduledAction s = threadWorker.scheduleActual(action, delayTime, unit);
+            ScheduledAction s = threadWorker.scheduleActual(action, delayTime, unit, true);
             innerSubscription.add(s);
             s.addParent(innerSubscription);
             return s;

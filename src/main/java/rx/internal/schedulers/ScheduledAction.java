@@ -16,12 +16,12 @@
 package rx.internal.schedulers;
 
 import java.util.concurrent.Future;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.*;
 
 import rx.Subscription;
 import rx.exceptions.OnErrorNotImplementedException;
 import rx.functions.Action0;
+import rx.internal.util.SubscriptionList;
 import rx.plugins.RxJavaPlugins;
 import rx.subscriptions.CompositeSubscription;
 
@@ -32,12 +32,20 @@ import rx.subscriptions.CompositeSubscription;
 public final class ScheduledAction extends AtomicReference<Thread> implements Runnable, Subscription {
     /** */
     private static final long serialVersionUID = -3962399486978279857L;
-    final CompositeSubscription cancel;
+    final SubscriptionList cancel;
     final Action0 action;
+    volatile int interruptOnUnsubscribe;
+    static final AtomicIntegerFieldUpdater<ScheduledAction> INTERRUPT_ON_UNSUBSCRIBE
+        = AtomicIntegerFieldUpdater.newUpdater(ScheduledAction.class, "interruptOnUnsubscribe");
 
     public ScheduledAction(Action0 action) {
+        this(action, true);
+    }
+    
+    public ScheduledAction(Action0 action, boolean interruptOnUnsubscribe) {
         this.action = action;
-        this.cancel = new CompositeSubscription();
+        this.cancel = new SubscriptionList();
+        this.interruptOnUnsubscribe = interruptOnUnsubscribe ? 1 : 0;
     }
 
     @Override
@@ -61,6 +69,21 @@ public final class ScheduledAction extends AtomicReference<Thread> implements Ru
         }
     }
 
+    /**
+     * Sets the flag to indicate the underlying Future task should be interrupted on unsubscription or not.
+     * @param interrupt the new interruptible status
+     */
+    public void setInterruptOnUnsubscribe(boolean interrupt) {
+        INTERRUPT_ON_UNSUBSCRIBE.lazySet(this, interrupt ? 1 : 0);
+    }
+    /**
+     * Returns {@code true} if the underlying Future task will be interrupted on unsubscription.
+     * @return the current interruptible status
+     */
+    public boolean isInterruptOnUnsubscribe() {
+        return interruptOnUnsubscribe != 0;
+    }
+    
     @Override
     public boolean isUnsubscribed() {
         return cancel.isUnsubscribed();
@@ -68,9 +91,7 @@ public final class ScheduledAction extends AtomicReference<Thread> implements Ru
 
     @Override
     public void unsubscribe() {
-        if (!cancel.isUnsubscribed()) {
-            cancel.unsubscribe();
-        }
+        cancel.unsubscribe();
     }
 
     /**
@@ -89,7 +110,7 @@ public final class ScheduledAction extends AtomicReference<Thread> implements Ru
      * @param f the future to add
      */
     public void add(final Future<?> f) {
-        cancel.add(new FutureCompleter(f));
+        add(new FutureCompleter(f));
     }
     
     /**
@@ -100,7 +121,7 @@ public final class ScheduledAction extends AtomicReference<Thread> implements Ru
      *            the parent {@code CompositeSubscription} to add
      */
     public void addParent(CompositeSubscription parent) {
-        cancel.add(new Remover(this, parent));
+        add(new Remover(this, parent));
     }
 
     /**
@@ -119,7 +140,7 @@ public final class ScheduledAction extends AtomicReference<Thread> implements Ru
         @Override
         public void unsubscribe() {
             if (ScheduledAction.this.get() != Thread.currentThread()) {
-                f.cancel(true);
+                f.cancel(interruptOnUnsubscribe != 0);
             } else {
                 f.cancel(false);
             }
