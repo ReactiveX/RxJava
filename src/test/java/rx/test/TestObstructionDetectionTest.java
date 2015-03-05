@@ -15,6 +15,8 @@
  */
 package rx.test;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 import org.junit.*;
 
 import rx.*;
@@ -25,10 +27,6 @@ import rx.test.TestObstructionDetection.ObstructionException;
 
 public class TestObstructionDetectionTest {
     private static Scheduler.Worker w;
-    @org.junit.After
-    public void doAfterTest() {
-        rx.test.TestObstructionDetection.checkObstruction();
-    }
     @AfterClass
     public static void afterClass() {
         Worker w2 = w;
@@ -36,14 +34,20 @@ public class TestObstructionDetectionTest {
             w2.unsubscribe();
         }
     }
+    @After
+    public void after() {
+        TestObstructionDetection.checkObstruction();
+    }
     @Test(timeout = 10000, expected = ObstructionException.class)
     public void testObstruction() {
         Scheduler.Worker w = Schedulers.computation().createWorker();
         
+        final AtomicReference<Thread> t = new AtomicReference<Thread>();
         try {
             w.schedule(new Action0() {
                 @Override
                 public void call() {
+                    t.set(Thread.currentThread());
                     try {
                         Thread.sleep(5000);
                     } catch (InterruptedException ex) {
@@ -53,6 +57,10 @@ public class TestObstructionDetectionTest {
             });
             TestObstructionDetection.checkObstruction();
         } finally {
+            Thread t0 = t.get();
+            if (t0 != null) {
+                t0.interrupt();
+            }
             w.unsubscribe();
         }
     }
@@ -70,5 +78,6 @@ public class TestObstructionDetectionTest {
                 }
             }
         });
+        rx.test.TestObstructionDetection.checkObstruction();
     }
 }
