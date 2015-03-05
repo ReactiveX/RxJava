@@ -37,6 +37,6 @@ public interface Producer {
      * @param n the maximum number of items you want this Producer to produce, or {@code Long.MAX_VALUE} if you
      *          want the Producer to produce items at its own pace
      */
-    public void request(long n);
+    void request(long n);
 
 }
