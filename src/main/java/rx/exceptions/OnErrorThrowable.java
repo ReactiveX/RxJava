@@ -110,8 +110,6 @@ public final class OnErrorThrowable extends RuntimeException {
 
         private static final long serialVersionUID = -3454462756050397899L;
 
-        private static final RxJavaErrorHandler ERROR_HANDLER = RxJavaPlugins.getInstance().getErrorHandler();
-
         private final Object value;
 
         /**
@@ -164,7 +162,7 @@ public final class OnErrorThrowable extends RuntimeException {
                 return ((Enum<?>) value).name();
             }
 
-            String pluggedRendering = ERROR_HANDLER.handleOnNextValueRendering(value);
+            String pluggedRendering = RxJavaPlugins.getInstance().getErrorHandler().handleOnNextValueRendering(value);
             if (pluggedRendering != null) {
                 return pluggedRendering;
             }

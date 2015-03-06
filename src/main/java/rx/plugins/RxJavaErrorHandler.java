@@ -18,6 +18,7 @@ package rx.plugins;
 import rx.Observable;
 import rx.Subscriber;
 import rx.annotations.Experimental;
+import rx.exceptions.Exceptions;
 import rx.exceptions.OnErrorThrowable;
 
 /**
@@ -65,11 +66,15 @@ public abstract class RxJavaErrorHandler {
      */
     @Experimental
     public final String handleOnNextValueRendering(Object item) {
+
         try {
             return render(item);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         } catch (Throwable t) {
-            return item.getClass().getName() + ERROR_IN_RENDERING_SUFFIX;
+            Exceptions.throwIfFatal(t);
         }
+        return item.getClass().getName() + ERROR_IN_RENDERING_SUFFIX;
     }
 
     /**
@@ -84,9 +89,10 @@ public abstract class RxJavaErrorHandler {
      *
      * @param item the last emitted item, that caused the exception wrapped in {@link OnErrorThrowable.OnNextValue}.
      * @return a short {@link String} representation of the item if one is known for its type, or null for default.
+     * @throws InterruptedException if the rendering thread is interrupted
      */
     @Experimental
-    protected String render (Object item) {
+    protected String render (Object item) throws InterruptedException {
         //do nothing by default
         return null;
     }
