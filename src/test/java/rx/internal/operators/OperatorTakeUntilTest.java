@@ -15,9 +15,11 @@
  */
 package rx.internal.operators;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.*;
+
+import java.util.Arrays;
 
 import org.junit.Test;
 
@@ -25,6 +27,8 @@ import rx.Observable;
 import rx.Observer;
 import rx.Subscriber;
 import rx.Subscription;
+import rx.observers.TestSubscriber;
+import rx.subjects.PublishSubject;
 
 public class OperatorTakeUntilTest {
 
@@ -187,5 +191,99 @@ public class OperatorTakeUntilTest {
             this.observer = observer;
             observer.add(s);
         }
+    }
+    
+    @Test
+    public void testUntilFires() {
+        PublishSubject<Integer> source = PublishSubject.create();
+        PublishSubject<Integer> until = PublishSubject.create();
+        
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        
+        source.takeUntil(until).unsafeSubscribe(ts);
+
+        assertTrue(source.hasObservers());
+        assertTrue(until.hasObservers());
+
+        source.onNext(1);
+        
+        ts.assertReceivedOnNext(Arrays.asList(1));
+        until.onNext(1);
+        
+        ts.assertReceivedOnNext(Arrays.asList(1));
+        ts.assertNoErrors();
+        ts.assertTerminalEvent();
+        
+        assertFalse("Source still has observers", source.hasObservers());
+        assertFalse("Until still has observers", until.hasObservers());
+        assertFalse("TestSubscriber is unsubscribed", ts.isUnsubscribed());
+    }
+    @Test
+    public void testMainCompletes() {
+        PublishSubject<Integer> source = PublishSubject.create();
+        PublishSubject<Integer> until = PublishSubject.create();
+        
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        
+        source.takeUntil(until).unsafeSubscribe(ts);
+
+        assertTrue(source.hasObservers());
+        assertTrue(until.hasObservers());
+
+        source.onNext(1);
+        source.onCompleted();
+        
+        ts.assertReceivedOnNext(Arrays.asList(1));
+        ts.assertNoErrors();
+        ts.assertTerminalEvent();
+        
+        assertFalse("Source still has observers", source.hasObservers());
+        assertFalse("Until still has observers", until.hasObservers());
+        assertFalse("TestSubscriber is unsubscribed", ts.isUnsubscribed());
+    }
+    @Test
+    public void testDownstreamUnsubscribes() {
+        PublishSubject<Integer> source = PublishSubject.create();
+        PublishSubject<Integer> until = PublishSubject.create();
+        
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        
+        source.takeUntil(until).take(1).unsafeSubscribe(ts);
+
+        assertTrue(source.hasObservers());
+        assertTrue(until.hasObservers());
+
+        source.onNext(1);
+        
+        ts.assertReceivedOnNext(Arrays.asList(1));
+        ts.assertNoErrors();
+        ts.assertTerminalEvent();
+        
+        assertFalse("Source still has observers", source.hasObservers());
+        assertFalse("Until still has observers", until.hasObservers());
+        assertFalse("TestSubscriber is unsubscribed", ts.isUnsubscribed());
+    }
+    public void testBackpressure() {
+        PublishSubject<Integer> until = PublishSubject.create();
+        
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
+            @Override
+            public void onStart() {
+                requestMore(0);
+            }
+        };
+        
+        Observable.range(1, 10).takeUntil(until).unsafeSubscribe(ts);
+
+        assertTrue(until.hasObservers());
+
+        ts.requestMore(1);
+        
+        ts.assertReceivedOnNext(Arrays.asList(1));
+        ts.assertNoErrors();
+        assertTrue("TestSubscriber completed", ts.getOnCompletedEvents().isEmpty());
+        
+        assertFalse("Until still has observers", until.hasObservers());
+        assertFalse("TestSubscriber is unsubscribed", ts.isUnsubscribed());
     }
 }
