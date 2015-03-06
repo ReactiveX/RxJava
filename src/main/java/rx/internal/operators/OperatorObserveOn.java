@@ -15,19 +15,16 @@
  */
 package rx.internal.operators;
 
-import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
-import java.util.concurrent.atomic.AtomicLongFieldUpdater;
+import java.util.Queue;
+import java.util.concurrent.atomic.*;
 
 import rx.Observable.Operator;
-import rx.Producer;
-import rx.Scheduler;
-import rx.Subscriber;
-import rx.Subscription;
+import rx.*;
 import rx.exceptions.MissingBackpressureException;
 import rx.functions.Action0;
-import rx.internal.util.RxRingBuffer;
-import rx.schedulers.ImmediateScheduler;
-import rx.schedulers.TrampolineScheduler;
+import rx.internal.util.*;
+import rx.internal.util.unsafe.*;
+import rx.schedulers.*;
 
 /**
  * Delivers events on the specified {@code Scheduler} asynchronously via an unbounded buffer.
@@ -64,16 +61,15 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
     /** Observe through individual queue per observer. */
     private static final class ObserveOnSubscriber<T> extends Subscriber<T> {
         final Subscriber<? super T> child;
-        private final Scheduler.Worker recursiveScheduler;
-        private final ScheduledUnsubscribe scheduledUnsubscribe;
+        final Scheduler.Worker recursiveScheduler;
+        final ScheduledUnsubscribe scheduledUnsubscribe;
         final NotificationLite<T> on = NotificationLite.instance();
 
-        private final RxRingBuffer queue = RxRingBuffer.getSpscInstance();
-        private boolean completed = false;
-        private boolean failure = false;
+        final Queue<Object> queue;
+        volatile boolean completed = false;
+        volatile boolean failure = false;
 
-        @SuppressWarnings("unused")
-        private volatile long requested = 0;
+        volatile long requested = 0;
         @SuppressWarnings("rawtypes")
         static final AtomicLongFieldUpdater<ObserveOnSubscriber> REQUESTED = AtomicLongFieldUpdater.newUpdater(ObserveOnSubscriber.class, "requested");
 
@@ -82,12 +78,19 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
         @SuppressWarnings("rawtypes")
         static final AtomicLongFieldUpdater<ObserveOnSubscriber> COUNTER_UPDATER = AtomicLongFieldUpdater.newUpdater(ObserveOnSubscriber.class, "counter");
 
+        volatile Throwable error;
+
         // do NOT pass the Subscriber through to couple the subscription chain ... unsubscribing on the parent should
         // not prevent anything downstream from consuming, which will happen if the Subscription is chained
         public ObserveOnSubscriber(Scheduler scheduler, Subscriber<? super T> child) {
             this.child = child;
             this.recursiveScheduler = scheduler.createWorker();
-            this.scheduledUnsubscribe = new ScheduledUnsubscribe(recursiveScheduler, queue);
+            if (UnsafeAccess.isUnsafeAvailable()) {
+                queue = new SpscArrayQueue<Object>(RxRingBuffer.SIZE);
+            } else {
+                queue = new SynchronizedQueue<Object>(RxRingBuffer.SIZE);
+            }
+            this.scheduledUnsubscribe = new ScheduledUnsubscribe(recursiveScheduler);
             child.add(scheduledUnsubscribe);
             child.setProducer(new Producer() {
 
@@ -113,10 +116,8 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
             if (isUnsubscribed() || completed) {
                 return;
             }
-            try {
-                queue.onNext(t);
-            } catch (MissingBackpressureException e) {
-                onError(e);
+            if (!queue.offer(on.next(t))) {
+                onError(new MissingBackpressureException());
                 return;
             }
             schedule();
@@ -127,8 +128,10 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
             if (isUnsubscribed() || completed) {
                 return;
             }
+            if (error != null) {
+                return;
+            }
             completed = true;
-            queue.onCompleted();
             schedule();
         }
 
@@ -137,53 +140,64 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
             if (isUnsubscribed() || completed) {
                 return;
             }
+            if (error != null) {
+                return;
+            }
+            error = e;
             // unsubscribe eagerly since time will pass before the scheduled onError results in an unsubscribe event
             unsubscribe();
-            completed = true;
             // mark failure so the polling thread will skip onNext still in the queue
+            completed = true;
             failure = true;
-            queue.onError(e);
             schedule();
         }
 
+        final Action0 action = new Action0() {
+
+            @Override
+            public void call() {
+                pollQueue();
+            }
+
+        };
+
         protected void schedule() {
             if (COUNTER_UPDATER.getAndIncrement(this) == 0) {
-                recursiveScheduler.schedule(new Action0() {
-
-                    @Override
-                    public void call() {
-                        pollQueue();
-                    }
-
-                });
+                recursiveScheduler.schedule(action);
             }
         }
 
         // only execute this from schedule()
-        private void pollQueue() {
+        void pollQueue() {
             int emitted = 0;
             do {
                 /*
                  * Set to 1 otherwise it could have grown very large while in the last poll loop
                  * and then we can end up looping all those times again here before exiting even once we've drained
                  */
-                COUNTER_UPDATER.set(this, 1);
+                counter = 1;
 
+//                middle:
                 while (!scheduledUnsubscribe.isUnsubscribed()) {
                     if (failure) {
-                        // special handling to short-circuit an error propagation
-                        Object o = queue.poll();
-                        // completed so we will skip onNext if they exist and only emit terminal events
-                        if (on.isError(o)) {
-                            // only emit error
-                            on.accept(child, o);
-                            // we have emitted a terminal event so return (exit the loop we're in)
+                        child.onError(error);
+                        return;
+                    } else {
+                        if (requested == 0 && completed && queue.isEmpty()) {
+                            child.onCompleted();
                             return;
                         }
-                    } else {
                         if (REQUESTED.getAndDecrement(this) != 0) {
                             Object o = queue.poll();
                             if (o == null) {
+                                if (completed) {
+                                    if (failure) {
+                                        child.onError(error);
+                                    } else {
+                                        child.onCompleted();
+                                    }
+                                    return;
+                                }
                                 // nothing in queue
                                 REQUESTED.incrementAndGet(this);
                                 break;
@@ -213,12 +227,10 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
         final Scheduler.Worker worker;
         volatile int once;
         static final AtomicIntegerFieldUpdater<ScheduledUnsubscribe> ONCE_UPDATER = AtomicIntegerFieldUpdater.newUpdater(ScheduledUnsubscribe.class, "once");
-        final RxRingBuffer queue;
         volatile boolean unsubscribed = false;
 
-        public ScheduledUnsubscribe(Scheduler.Worker worker, RxRingBuffer queue) {
+        public ScheduledUnsubscribe(Scheduler.Worker worker) {
             this.worker = worker;
-            this.queue = queue;
         }
 
         @Override

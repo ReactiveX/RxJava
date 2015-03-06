@@ -20,9 +20,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.locks.ReentrantLock;
 
 import rx.Subscription;
-import rx.exceptions.*;
+import rx.exceptions.Exceptions;
 
 /**
  * Subscription that represents a group of Subscriptions that are unsubscribed together.
@@ -31,14 +32,20 @@ import rx.exceptions.*;
  */
 public final class SubscriptionList implements Subscription {
 
-    private List<Subscription> subscriptions;
+    private LinkedList<Subscription> subscriptions;
     private volatile boolean unsubscribed;
+    private final ReentrantLock lock = new ReentrantLock();
 
     public SubscriptionList() {
     }
 
     public SubscriptionList(final Subscription... subscriptions) {
         this.subscriptions = new LinkedList<Subscription>(Arrays.asList(subscriptions));
+    }
+
+    public SubscriptionList(Subscription s) {
+        this.subscriptions = new LinkedList<Subscription>();
+        this.subscriptions.add(s);
     }
 
     @Override
@@ -55,19 +62,47 @@ public final class SubscriptionList implements Subscription {
      *          the {@link Subscription} to add
      */
     public void add(final Subscription s) {
+        if (s.isUnsubscribed()) {
+            return;
+        }
         if (!unsubscribed) {
-            synchronized (this) {
+            lock.lock();
+            try {
                 if (!unsubscribed) {
-                    if (subscriptions == null) {
-                        subscriptions = new LinkedList<Subscription>();
+                    LinkedList<Subscription> subs = subscriptions;
+                    if (subs == null) {
+                        subs = new LinkedList<Subscription>();
+                        subscriptions = subs;
                     }
-                    subscriptions.add(s);
+                    subs.add(s);
                     return;
                 }
+            } finally {
+                lock.unlock();
             }
         }
         // call after leaving the synchronized block so we're not holding a lock while executing this
         s.unsubscribe();
+    }
+
+    public void remove(final Subscription s) {
+        if (!unsubscribed) {
+            boolean unsubscribe = false;
+            lock.lock();
+            try {
+                LinkedList<Subscription> subs = subscriptions;
+                if (unsubscribed || subs == null) {
+                    return;
+                }
+                unsubscribe = subs.remove(s);
+            } finally {
+                lock.unlock();
+            }
+            if (unsubscribe) {
+                // if we removed successfully we then need to call unsubscribe on it (outside of the lock)
+                s.unsubscribe();
+            }
+        }
     }
 
     /**
@@ -78,13 +113,16 @@ public final class SubscriptionList implements Subscription {
     public void unsubscribe() {
         if (!unsubscribed) {
             List<Subscription> list;
-            synchronized (this) {
+            lock.lock();
+            try {
                 if (unsubscribed) {
                     return;
                 }
                 unsubscribed = true;
                 list = subscriptions;
                 subscriptions = null;
+            } finally {
+                lock.unlock();
             }
             // we will only get here once
             unsubscribeFromAll(list);
@@ -112,9 +150,12 @@ public final class SubscriptionList implements Subscription {
     public void clear() {
         if (!unsubscribed) {
             List<Subscription> list;
-            synchronized (this) {
+            lock.lock();
+            try {
                 list = subscriptions;
                 subscriptions = null;
+            } finally {
+                lock.unlock();
             }
             unsubscribeFromAll(list);
         }
@@ -125,8 +166,11 @@ public final class SubscriptionList implements Subscription {
      */
     public boolean hasSubscriptions() {
         if (!unsubscribed) {
-            synchronized (this) {
+            lock.lock();
+            try {
                 return !unsubscribed && subscriptions != null && !subscriptions.isEmpty();
+            } finally {
+                lock.unlock();
             }
         }
         return false;

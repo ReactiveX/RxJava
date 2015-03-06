@@ -471,7 +471,7 @@ public class OperatorConcatTest {
 
             @Override
             public boolean isUnsubscribed() {
-                return subscribed;
+                return !subscribed;
             }
 
         };

@@ -15,15 +15,12 @@
  */
 package rx.internal.schedulers;
 
-import rx.Scheduler;
-import rx.Subscription;
-import rx.functions.Action0;
-import rx.internal.util.RxThreadFactory;
-import rx.subscriptions.CompositeSubscription;
-import rx.subscriptions.Subscriptions;
+import java.util.concurrent.*;
 
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
+import rx.*;
+import rx.functions.Action0;
+import rx.internal.util.*;
+import rx.subscriptions.*;
 
 public class EventLoopsScheduler extends Scheduler {
     /** Manages a fixed number of workers. */
@@ -95,7 +92,9 @@ public class EventLoopsScheduler extends Scheduler {
     }
 
     private static class EventLoopWorker extends Scheduler.Worker {
-        private final CompositeSubscription innerSubscription = new CompositeSubscription();
+        private final SubscriptionList serial = new SubscriptionList();
+        private final CompositeSubscription timed = new CompositeSubscription();
+        private final SubscriptionList both = new SubscriptionList(serial, timed);
         private final PoolWorker poolWorker;
 
         EventLoopWorker(PoolWorker poolWorker) {
@@ -105,28 +104,33 @@ public class EventLoopsScheduler extends Scheduler {
 
         @Override
         public void unsubscribe() {
-            innerSubscription.unsubscribe();
+            both.unsubscribe();
         }
 
         @Override
         public boolean isUnsubscribed() {
-            return innerSubscription.isUnsubscribed();
+            return both.isUnsubscribed();
         }
 
         @Override
         public Subscription schedule(Action0 action) {
-            return schedule(action, 0, null);
+            if (isUnsubscribed()) {
+                return Subscriptions.unsubscribed();
+            }
+            ScheduledAction s = poolWorker.scheduleActual(action, 0, null);
+            
+            serial.add(s);
+            s.addParent(serial);
+            
+            return s;
         }
         @Override
         public Subscription schedule(Action0 action, long delayTime, TimeUnit unit) {
-            if (innerSubscription.isUnsubscribed()) {
-                // don't schedule, we are unsubscribed
+            if (isUnsubscribed()) {
                 return Subscriptions.unsubscribed();
             }
+            ScheduledAction s = poolWorker.scheduleActual(action, delayTime, unit, timed);
             
-            ScheduledAction s = poolWorker.scheduleActual(action, delayTime, unit);
-            innerSubscription.add(s);
-            s.addParent(innerSubscription);
             return s;
         }
     }
