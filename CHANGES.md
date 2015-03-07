@@ -1,6 +1,18 @@
 # RxJava Releases #
 
-### Version 1.0.7 – Feburary 21st 2015 ([Maven Central](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.0.7%7C)) ###
+### Version 1.0.8 – March 7th 2015 ([Maven Central](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.0.8%7C)) ###
+
+* [Pull 2809] (https://github.com/ReactiveX/RxJava/pull/2809) Fixed takeUntil not unsubscribing from either of the observables in case of a terminal condition.
+* [Pull 2804] (https://github.com/ReactiveX/RxJava/pull/2804) ObserveOn throughput enhancements
+* [Pull 2767] (https://github.com/ReactiveX/RxJava/pull/2767) Optimized scalar observeOn/subscribeOn
+* [Pull 2776] (https://github.com/ReactiveX/RxJava/pull/2776) Experimental: add new operator onBackpressureDrop(Action1 onDrop)
+* [Pull 2788] (https://github.com/ReactiveX/RxJava/pull/2788) Fix the bug that 'publish' will cache items when no subscriber
+* [Pull 2779] (https://github.com/ReactiveX/RxJava/pull/2779) OperatorMulticast.connect(connection) should not return null
+* [Pull 2771] (https://github.com/ReactiveX/RxJava/pull/2771) OnSubscribeRange request overflow check
+* [Pull 2770] (https://github.com/ReactiveX/RxJava/pull/2770) OperatorOnBackpressureDrop request overflow check
+* [Pull 2769] (https://github.com/ReactiveX/RxJava/pull/2769) OperatorCombineLatest request overflow check
+
+### Version 1.0.7 – February 21st 2015 ([Maven Central](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.0.7%7C)) ###
 
 This release includes some bug fixes along with a new operator and performance enhancements.
 
@@ -44,7 +56,7 @@ https://github.com/ReactiveX/RxJava/pull/2762 Optimized isUnsubscribed check
 https://github.com/ReactiveX/RxJava/pull/2759 Observable.using should use unsafeSubscribe and enable eager disposal
 https://github.com/ReactiveX/RxJava/pull/2655 SwitchOnNext: fix upstream producer replacing the ops own producer
 
-### Version 1.0.6 – Feburary 11th 2015 ([Maven Central](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.0.6%7C)) ###
+### Version 1.0.6 – February 11th 2015 ([Maven Central](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.0.6%7C)) ###
 
 This release adds an experimental operator and fixes several bugs. 
 
@@ -91,7 +103,7 @@ range(1, 1000000)
 * [Pull 2607] (https://github.com/ReactiveX/RxJava/pull/2607) OnSubscribeRefCount - improve comments
 
 
-### Version 1.0.5 – Feburary 3rd 2015 ([Maven Central](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.0.5%7C)) ###
+### Version 1.0.5 – February 3rd 2015 ([Maven Central](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.0.5%7C)) ###
 
 This release includes many bug fixes along with a few new operators and enhancements.
 
