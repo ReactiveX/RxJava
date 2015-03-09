@@ -14,6 +14,7 @@ package rx;
 
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.*;
 
 import rx.annotations.*;
 import rx.exceptions.*;
@@ -9305,5 +9306,263 @@ public class Observable<T> {
             });
         }
     }
+    
+    /**
+     * @warn javadoc
+     */
+    @Experimental
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public static <T, S> Observable<T> create(Action1<ProducerState<T, S>> onRequest) {
+        return create(onRequest, (Func1)UtilityFunctions.returnNull(), Actions.empty()); // type inference shortcomings
+    }
 
+    /**
+     * @warn javadoc
+     */
+    @Experimental
+    public static <T, S> Observable<T> create(Action1<ProducerState<T, S>> onRequest, Func1<Subscriber<? super T>, ? extends S> createState) {
+        return create(onRequest, createState, Actions.empty());
+    }
+
+    /**
+     * @warn javadoc
+     */
+    @Experimental
+    public static <T, S> Observable<T> create(final Action1<ProducerState<T, S>> onRequest, final Func1<Subscriber<? super T>, ? extends S> createState, final Action1<? super S> destroyState) {
+        return create(new OnSubscribe<T>() {
+            @Override
+            public void call(Subscriber<? super T> child) {
+                CallbackProducer<T, S> cp = new CallbackProducer<T, S>(onRequest, createState, destroyState);
+                cp.init(child);
+            }
+        });
+    }
+
+    @Experimental
+    public static <T, S> Observable<T> create(final Func0<AbstractProducer<T, S>> createProducer) {
+        return create(new OnSubscribe<T>() {
+            @Override
+            public void call(Subscriber<? super T> child) {
+                AbstractProducer<T, S> ap = createProducer.call();
+                ap.init(child);
+            }
+        });
+    }
+    
+    /**
+     * Represents the state of the producer.
+     *
+     * @param <T> the emitted value type
+     * @param <S> the user-specified state's type
+     */
+    @Experimental
+    public interface ProducerState<T, S> extends Subscription {
+        /**
+         * Returns the user-created state (may be null).
+         * @return the user-created state (may be null)
+         */
+        S state();
+        /**
+         * Returns the target subscriber.
+         * @return the target subscriber
+         */
+        Subscriber<? super T> subscriber();
+        /**
+         * Returns the current requested amount, Long.MAX_VALUE for essentially unbounded or a negative value if the producer is unsubscribed.
+         * @return the current requested amount
+         */
+        long requested();
+        /**
+         * Indicate the number of items produced and adjust the requested count accordingly.
+         * @param n the number of items produced
+         * @return the new requested amount, negative if the producer is unsubscribed
+         * @throws IllegalArgumentException if n is zero or negative
+         * @throws IllegalStateException if n is greater than the current requested amount
+         */
+        long produced(long n);
+    }
+    
+    /**
+     * Abstract base class to help implement a producer.
+     *
+     * @param <T> the type of the values emitted
+     * @param <S> the associated custom resource type
+     */
+    @Experimental
+    public static abstract class AbstractProducer<T, S> implements Producer, ProducerState<T, S> {
+        private final AtomicLong requested = new AtomicLong();
+        private final AtomicInteger resourceUse = new AtomicInteger(1);
+        private S state;
+        private Subscriber<? super T> subscriber;
+        /**
+         * Override this method to create a custom state for a given subscriber.
+         * The state will be available to the onRequest method through state.state().
+         * @param subscriber
+         * @return
+         */
+        protected S onSubscribe(Subscriber<? super T> subscriber) {
+            return null;
+        }
+        /**
+         * Override this method to cleanup a custom-created state if this producer was unsubscribed
+         * and is no longer running.
+         * @param state the custom-created state to release/destroy
+         */
+        protected void onRelease(S state) {
+            
+        }
+        /**
+         * Creates a per-subscriber state and associates this producer-subscription with the subscriber.
+         * @param subscriber the target subscriber
+         */
+        protected final void init(Subscriber<? super T> subscriber) {
+            this.subscriber = subscriber;
+            this.state = onSubscribe(subscriber);
+            subscriber.add(this);
+            subscriber.setProducer(this);
+        }
+        
+        /**
+         * Implement this method to react to requests from downstream.
+         * @param state the current producer state
+         */
+        protected abstract void onRequest(ProducerState<T, S> state);
+        
+        @Override
+        public final void request(long n) {
+            if (n < 0) {
+                throw new IllegalArgumentException("Can't request negative value.");
+            }
+            if (n > 0) {
+                for (;;) {
+                    long r = requested.get();
+                    if (r < 0) {
+                        return;
+                    }
+                    long u = r + n;
+                    if (u < 0) {
+                        u = Long.MAX_VALUE;
+                    }
+                    if (requested.compareAndSet(r, u)) {
+                        if (r == 0 && acquire()) {
+                            try {
+                                onRequest(this);
+                            } finally {
+                                release();
+                            }
+                        }
+                        return;
+                    }
+                }
+            }
+        }
+        @Override
+        public final boolean isUnsubscribed() {
+            return requested.get() < 0;
+        }
+        @Override
+        public final void unsubscribe() {
+            long n = requested.get();
+            if (n >= 0) {
+                n = requested.getAndSet(Long.MIN_VALUE);
+                if (n >= 0) {
+                    release();
+                }
+            }
+        }
+        /**
+         * Try acquiring an use of the custom resource.
+         * @return
+         */
+        private final boolean acquire() {
+             for (;;) {
+                 int r = resourceUse.get();
+                 if (r == 0) {
+                     return false;
+                 }
+                 int u = r + 1;
+                 if (resourceUse.compareAndSet(r, u)) {
+                     return true;
+                 }
+             }
+        }
+        /**
+         * Released an use of the custom resource and if it reaches zero, the resource is released.
+         */
+        private final void release() {
+            for (;;) {
+                int r = resourceUse.get();
+                if (r == 0) {
+                    return;
+                }
+                int u = r - 1;
+                if (resourceUse.compareAndSet(r, u)) {
+                    if (u == 0) {
+                        S s = state;
+                        state = null;
+                        onRelease(s);
+                    }
+                    return;
+                }
+            }
+        }
+        
+        @Override
+        public long requested() {
+            return requested.get();
+        }
+        @Override
+        public long produced(long n) {
+            if (n <= 0) {
+                throw new IllegalArgumentException("Can't produce zero or less: " + n);
+            }
+            for (;;) {
+                long r = requested.get();
+                if (r < 0) {
+                    return r;
+                }
+                long u = r - n;
+                if (u < 0) {
+                    throw new IllegalStateException("More produced (" + n + ") than requested (" + r + ")");
+                }
+                if (requested.compareAndSet(r, u)) {
+                    return u;
+                }
+            }
+        }
+        @Override
+        public S state() {
+            return state;
+        }
+        @Override
+        public Subscriber<? super T> subscriber() {
+            return subscriber;
+        }
+    }
+    /** AbstractProducer implementation that delegates main methods to callbacks. */
+    private static final class CallbackProducer<T, S> extends AbstractProducer<T, S> {
+        final Action1<ProducerState<T, S>> onRequest;
+        final Func1<Subscriber<? super T>, ? extends S> createState;
+        final Action1<? super S> destroyState;
+        
+        public CallbackProducer(Action1<ProducerState<T, S>> onRequest,
+                Func1<Subscriber<? super T>, ? extends S> createState,
+                Action1<? super S> destroyState) {
+            this.onRequest = onRequest;
+            this.createState = createState;
+            this.destroyState = destroyState;
+        }
+        @Override
+        protected void onRequest(ProducerState<T, S> state) {
+            onRequest.call(state);
+        }
+        @Override
+        protected S onSubscribe(Subscriber<? super T> subscriber) {
+            return createState.call(subscriber);
+        }
+        @Override
+        protected void onRelease(S state) {
+            destroyState.call(state);
+        }
+    }
 }
