@@ -5,7 +5,7 @@ RxJava is a Java VM implementation of [Reactive Extensions](http://reactivex.io)
 It extends the [observer pattern](http://en.wikipedia.org/wiki/Observer_pattern) to support sequences of data/events and adds operators that allow you to compose sequences together declaratively while abstracting away concerns about things like low-level threading, synchronization, thread-safety and concurrent data structures.
 
 - Zero Dependencies
-- < 700KB Jar
+- < 800KB Jar
 - Java 6+ & [Android](https://github.com/ReactiveX/RxAndroid) 2.3+
 - Java 8 lambda support
 - Polyglot ([Scala](https://github.com/ReactiveX/RxScala), [Groovy](https://github.com/ReactiveX/RxGroovy), [Clojure](https://github.com/ReactiveX/RxClojure) and [Kotlin](https://github.com/ReactiveX/RxKotlin))
