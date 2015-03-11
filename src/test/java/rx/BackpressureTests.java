@@ -446,7 +446,7 @@ public class BackpressureTests {
             final AtomicInteger emitCount = new AtomicInteger();
             final AtomicInteger dropCount = new AtomicInteger();
             final AtomicInteger passCount = new AtomicInteger();
-            final int NUM = (int) (RxRingBuffer.SIZE * 1.5); // > 1 so that take doesn't prevent buffer overflow
+            final int NUM = RxRingBuffer.SIZE * 3; // > 1 so that take doesn't prevent buffer overflow
             TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
             firehose(emitCount).onBackpressureDrop(new Action1<Integer>() {
                 @Override
