@@ -9307,9 +9307,7 @@ public class Observable<T> {
     }
 
     /**
-     * Filters items emitted by an Observable by only emitting those that satisfy a specified predicate.
-     *
-     * Match emits a MatchBuilder that lets you chain a series of matches a series of matches together. To finish the chain
+     * Returns a MatchBuilder that lets you chain a series of matches together. To finish the chain
      * matchDefault is called which emits an Observable.
      *
      * @param predicate
