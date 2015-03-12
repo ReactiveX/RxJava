@@ -167,7 +167,7 @@ public final class AsyncSubject<T> extends Subject<T, T> {
     /**
      * Returns the current value of the Subject if there is such a value and
      * the subject hasn't terminated with an exception.
-     * <p>The can return {@code null} for various reasons. Use {@link #hasValue()}, {@link #hasThrowable()}
+     * <p>The method can return {@code null} for various reasons. Use {@link #hasValue()}, {@link #hasThrowable()}
      * and {@link #hasCompleted()} to determine if such {@code null} is a valid value, there was an
      * exception or the Subject terminated without receiving any value. 
      * @return the current value or {@code null} if the Subject doesn't have a value,
