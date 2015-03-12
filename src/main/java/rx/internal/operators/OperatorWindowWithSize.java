@@ -15,18 +15,14 @@
  */
 package rx.internal.operators;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
-import rx.Observable;
+import rx.*;
 import rx.Observable.Operator;
-import rx.Subscription;
+import rx.Observable;
+import rx.Observer;
 import rx.functions.Action0;
 import rx.subscriptions.Subscriptions;
-import rx.Observer;
-import rx.Subscriber;
 
 /**
  * Creates windows of values into the source sequence with skip frequency and size bounds.
@@ -78,26 +74,36 @@ public final class OperatorWindowWithSize<T> implements Operator<Observable<T>, 
                 @Override
                 public void call() {
                     // if no window we unsubscribe up otherwise wait until window ends
-                    if(noWindow) {
+                    if (noWindow) {
                         parentSubscription.unsubscribe();
                     }
                 }
                 
             }));
-        }
-
-        @Override
-        public void onStart() {
-            // no backpressure as we are controlling data flow by window size
-            request(Long.MAX_VALUE);
+            child.setProducer(new Producer() {
+                @Override
+                public void request(long n) {
+                    if (n > 0) {
+                        long u = n * size;
+                        if (((u >>> 31) != 0) && (u / n != size)) {
+                            u = Long.MAX_VALUE;
+                        }
+                        requestMore(u);
+                    }
+                }
+            });
         }
         
+        void requestMore(long n) {
+            request(n);
+        }
+
         @Override
         public void onNext(T t) {
             if (window == null) {
                 noWindow = false;
                 window = BufferUntilSubscriber.create();
-                child.onNext(window);                
+                child.onNext(window);
             }
             window.onNext(t);
             if (++count % size == 0) {

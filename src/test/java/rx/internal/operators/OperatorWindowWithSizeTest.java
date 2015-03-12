@@ -15,20 +15,19 @@
  */
 package rx.internal.operators;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
+import static org.mockito.Mockito.*;
+import rx.*;
 import rx.Observable;
-import rx.functions.Action1;
-import rx.functions.Func1;
+import rx.Observer;
+import rx.functions.*;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 
@@ -197,6 +196,53 @@ public class OperatorWindowWithSizeTest {
             list.add(arg);
         }
         return list;
+    }
+    
+    @Test
+    public void testBackpressureOuter() {
+        Observable<Observable<Integer>> source = Observable.range(1, 10).window(3);
+        
+        final List<Integer> list = new ArrayList<Integer>();
+        
+        @SuppressWarnings("unchecked")
+        final Observer<Integer> o = mock(Observer.class);
+        
+        source.subscribe(new Subscriber<Observable<Integer>>() {
+            @Override
+            public void onStart() {
+                request(1);
+            }
+            @Override
+            public void onNext(Observable<Integer> t) {
+                t.subscribe(new Observer<Integer>() {
+                    @Override
+                    public void onNext(Integer t) {
+                        list.add(t);
+                    }
+                    @Override
+                    public void onError(Throwable e) {
+                        o.onError(e);
+                    }
+                    @Override
+                    public void onCompleted() {
+                        o.onCompleted();
+                    }
+                });
+            }
+            @Override
+            public void onError(Throwable e) {
+                o.onError(e);
+            }
+            @Override
+            public void onCompleted() {
+                o.onCompleted();
+            }
+        });
+        
+        assertEquals(Arrays.asList(1, 2, 3), list);
+        
+        verify(o, never()).onError(any(Throwable.class));
+        verify(o, times(1)).onCompleted(); // 1 inner
     }
 
 }
