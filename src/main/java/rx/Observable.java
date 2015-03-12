@@ -9306,4 +9306,120 @@ public class Observable<T> {
         }
     }
 
+    /**
+     * Returns a MatchBuilder that lets you chain a series of matches together. To finish the chain
+     * matchDefault is called which emits an Observable.
+     *
+     * @param predicate
+     *            a function that evaluates each item emitted by the source Observable, returning {@code true}
+     * @param mapping
+     *            a function that gets applied if the predicate associated with the function is true
+     * @return a MatchBuilder
+     */
+    @Experimental
+    public final <R> MatchBuilder<R,R> match(Func1<T, Boolean> predicate, Func1<? super T, R> mapping) {
+        MatchBuilder<R,R> matchBuilder = new MatchBuilder<R,R>(this, new Func1<Observable<R>, Observable<R>>() {
+            @Override
+            public Observable<R> call(Observable<R> o) {
+                return o;
+            }
+        });
+        matchBuilder.match(predicate, mapping);
+
+        return matchBuilder;
+    }
+
+    @Experimental
+    public final <R> MatchBuilder<R, ? super Observable<? extends R>> flatMatch(Func1<T, Boolean> predicate, Func1<? super T, ? extends Observable<? extends R>> mapping) {
+        MatchBuilder matchBuilder
+            = new MatchBuilder<R, Observable<? extends R>>(this, new Func1<Observable<Observable<? extends R>>, Observable<R>>() {
+            @Override
+            public Observable<R> call(Observable<Observable<? extends R>> o) {
+                return merge(o);
+            }
+        });
+        matchBuilder.match(predicate, mapping);
+
+        return matchBuilder;
+    }
+
+    @Experimental
+    public final <R> MatchBuilder<R, ? super Observable<? extends R>> flatMatch(Func1<T, Boolean> predicate, Func1<? super T, ? extends Observable<? extends R>> mapping, final int concurrentMerges) {
+        MatchBuilder matchBuilder
+            = new MatchBuilder<R, Observable<? extends R>>(this, new Func1<Observable<Observable<? extends R>>, Observable<R>>() {
+            @Override
+            public Observable<R> call(Observable<Observable<? extends R>> o) {
+                return merge(o, concurrentMerges);
+            }
+        });
+        matchBuilder.match(predicate, mapping);
+
+        return matchBuilder;
+    }
+
+    public class MatchBuilder<R,S> {
+        Func1<Observable<S>, Observable<R>> out;
+
+        Observable<T> observable;
+
+        MatchChain<T,S> head;
+
+        MatchChain<T,S> tail;
+
+        private MatchBuilder(Observable<T> tObservable, Func1<Observable<S>, Observable<R>> out) {
+            this.observable = tObservable;
+            this.out = out;
+        }
+
+        public MatchBuilder<R,S> match(Func1<T, Boolean> predicate, Func1<? super T, ? extends S> mapping) {
+            addMatchMapping(new MatchChain<T, S>(predicate, mapping));
+            return this;
+        }
+
+        public Observable<R> matchDefault(Func1<? super T, ? extends S> defaultMapping) {
+            addMatchMapping(new MatchChain<T, S>(new Func1<T, Boolean>() {
+                @Override
+                public Boolean call(T t) {
+                    return true;
+                }
+            }, defaultMapping));
+            Observable<S> result = observable.lift(new OperatorMatch<T, S>(head));
+            return out.call(result);
+        }
+
+        private void addMatchMapping(MatchChain<T,S> matchChain) {
+            if (head == null) {
+                head = matchChain;
+                tail = matchChain;
+            } else {
+                tail.setNext(matchChain);
+                tail = matchChain;
+            }
+        }
+
+        class MatchChain<T,R> implements Func1<T, Func1<? super T, ? extends R>> {
+
+            final Func1<T, Boolean> predicate;
+            final Func1<? super T, ? extends R> mapping;
+            MatchChain<T,R> next;
+
+            public MatchChain(Func1<T, Boolean> predicate, Func1<? super T, ? extends R> mapping) {
+                this.predicate = predicate;
+                this.mapping = mapping;
+            }
+            public void setNext(MatchChain<T,R> next) {
+                this.next = next;
+            }
+
+            @Override
+            public  Func1<? super T, ? extends R> call(T t) {
+                if (predicate.call(t)) {
+                    return mapping;
+                } else {
+                    return next.call(t);
+                }
+            }
+        }
+    }
+
 }
