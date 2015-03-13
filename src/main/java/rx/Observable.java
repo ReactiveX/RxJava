@@ -8896,7 +8896,8 @@ public class Observable<T> {
      * <img width="640" height="400" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure Support:</b></dt>
-     *  <dd>This operator does not support backpressure as it uses {@code count} to control data flow.</dd>
+     *  <dd>The operator honors backpressure on its outer subscriber, ignores backpressure in its inner Observables 
+     *  but each of them will emit at most {@code count} elements.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code window} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -8920,7 +8921,8 @@ public class Observable<T> {
      * <img width="640" height="365" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window4.png" alt="">
      * <dl>
      *  <dt><b>Backpressure Support:</b></dt>
-     *  <dd>This operator does not support backpressure as it uses {@code count} to control data flow.</dd>
+     *  <dd>The operator has limited backpressure support. If {@code count} == {@code skip}, the operator honors backpressure on its outer subscriber, ignores backpressure in its inner Observables 
+     *  but each of them will emit at most {@code count} elements.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code window} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
