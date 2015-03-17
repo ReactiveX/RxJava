@@ -36,7 +36,7 @@ class OperatorTimeoutBase<T> implements Operator<T, T> {
      * 
      * @param <T>
      */
-    /* package-private */static interface FirstTimeoutStub<T> extends
+    /* package-private */interface FirstTimeoutStub<T> extends
             Func3<TimeoutSubscriber<T>, Long, Scheduler.Worker, Subscription> {
     }
 
@@ -45,7 +45,7 @@ class OperatorTimeoutBase<T> implements Operator<T, T> {
      * 
      * @param <T>
      */
-    /* package-private */static interface TimeoutStub<T> extends
+    /* package-private */interface TimeoutStub<T> extends
             Func4<TimeoutSubscriber<T>, Long, T, Scheduler.Worker, Subscription> {
     }
 

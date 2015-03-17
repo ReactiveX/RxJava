@@ -19,5 +19,5 @@ package rx.functions;
  * A one-argument action.
  */
 public interface Action1<T1> extends Action {
-    public void call(T1 t1);
+    void call(T1 t1);
 }

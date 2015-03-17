@@ -98,7 +98,7 @@ public class Observable<T> {
     /**
      * Invoked when Obserable.subscribe is called.
      */
-    public static interface OnSubscribe<T> extends Action1<Subscriber<? super T>> {
+    public interface OnSubscribe<T> extends Action1<Subscriber<? super T>> {
         // cover for generics insanity
     }
 
@@ -191,7 +191,7 @@ public class Observable<T> {
      * Transformer function used by {@link #compose}.
      * @warn more complete description needed
      */
-    public static interface Transformer<T, R> extends Func1<Observable<T>, Observable<R>> {
+    public interface Transformer<T, R> extends Func1<Observable<T>, Observable<R>> {
         // cover for generics insanity
     }
     
