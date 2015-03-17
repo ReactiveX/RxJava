@@ -28,7 +28,7 @@ import rx.exceptions.OnErrorThrowable;
  * For example, all {@code Exception}s can be logged using this handler even if
  * {@link Subscriber#onError(Throwable)} is ignored or not provided when an {@link Observable} is subscribed to.
  * <p>
- * This plugin is also responsible for augmenting rendering of {@link OnErrorThrowable.OnNextValue}.
+ * This plugin is also responsible for augmenting rendering of {@code OnErrorThrowable.OnNextValue}.
  * <p>
  * See {@link RxJavaPlugins} or the RxJava GitHub Wiki for information on configuring plugins: <a
  * href="https://github.com/ReactiveX/RxJava/wiki/Plugins">https://github.com/ReactiveX/RxJava/wiki/Plugins</a>.
@@ -52,17 +52,21 @@ public abstract class RxJavaErrorHandler {
     protected static final String ERROR_IN_RENDERING_SUFFIX = ".errorRendering";
 
     /**
-     * Receives items causing {@link OnErrorThrowable.OnNextValue} and gives a chance to choose the String
-     * representation of the item in the OnNextValue stacktrace rendering. Returns null if this type of item
-     * is not managed and should use default rendering.
+     * Receives items causing {@code OnErrorThrowable.OnNextValue} and gives a chance to choose the String
+     * representation of the item in the {@code OnNextValue} stacktrace rendering. Returns {@code null} if this
+     * type of item is not managed and should use default rendering.
      * <p>
-     * Note that primitive types are always rendered as their toString() value.
+     * Note that primitive types are always rendered as their {@code toString()} value.
      * <p>
      * If a {@code Throwable} is caught when rendering, this will fallback to the item's classname suffixed by
      * {@value #ERROR_IN_RENDERING_SUFFIX}.
      *
-     * @param item the last emitted item, that caused the exception wrapped in {@link OnErrorThrowable.OnNextValue}.
-     * @return a short {@link String} representation of the item if one is known for its type, or null for default.
+     * @param item the last emitted item, that caused the exception wrapped in
+     *             {@code OnErrorThrowable.OnNextValue}
+     * @return a short {@link String} representation of the item if one is known for its type, or null for
+     *         default
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the
+     *        release number)
      */
     @Experimental
     public final String handleOnNextValueRendering(Object item) {
@@ -80,16 +84,20 @@ public abstract class RxJavaErrorHandler {
     /**
      * Override this method to provide rendering for specific types other than primitive types and null.
      * <p>
-     * For performance and overhead reasons, this should should limit to a safe production of a short {@code String}
-     * (as large renderings will bloat up the stacktrace). Prefer to try/catch({@code Throwable}) all code
-     * inside this method implementation.
+     * For performance and overhead reasons, this should should limit to a safe production of a short
+     * {@code String} (as large renderings will bloat up the stacktrace). Prefer to try/catch({@code Throwable})
+     * all code inside this method implementation.
      * <p>
      * If a {@code Throwable} is caught when rendering, this will fallback to the item's classname suffixed by
      * {@value #ERROR_IN_RENDERING_SUFFIX}.
      *
-     * @param item the last emitted item, that caused the exception wrapped in {@link OnErrorThrowable.OnNextValue}.
-     * @return a short {@link String} representation of the item if one is known for its type, or null for default.
+     * @param item the last emitted item, that caused the exception wrapped in
+     *             {@code OnErrorThrowable.OnNextValue}
+     * @return a short {@link String} representation of the item if one is known for its type, or null for
+     *         default
      * @throws InterruptedException if the rendering thread is interrupted
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the
+     *        release number)
      */
     @Experimental
     protected String render (Object item) throws InterruptedException {
