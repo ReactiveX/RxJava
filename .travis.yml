@@ -12,7 +12,7 @@ before_install:
   # - sudo service mysql stop
   # - sudo service postgresql stop
   
-sudo: false
+# sudo: false
 # as per http://blog.travis-ci.com/2014-12-17-faster-builds-with-container-based-infrastructure/
 
 # script for build and release via Travis to Bintray
