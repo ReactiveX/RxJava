@@ -15,6 +15,9 @@
  */
 package rx.exceptions;
 
+import rx.plugins.RxJavaErrorHandler;
+import rx.plugins.RxJavaPlugins;
+
 /**
  * Represents a {@code Throwable} that an {@code Observable} might notify its subscribers of, but that then can
  * be handled by an operator that is designed to recover from or react appropriately to such an error. You can
@@ -106,6 +109,7 @@ public final class OnErrorThrowable extends RuntimeException {
     public static class OnNextValue extends RuntimeException {
 
         private static final long serialVersionUID = -3454462756050397899L;
+
         private final Object value;
 
         /**
@@ -131,11 +135,18 @@ public final class OnErrorThrowable extends RuntimeException {
 
         /**
          * Render the object if it is a basic type. This avoids the library making potentially expensive
-         * or calls to toString() which may throw exceptions. See PR #1401 for details.
+         * or calls to toString() which may throw exceptions.
+         *
+         * If a specific behavior has been defined in the {@link RxJavaErrorHandler} plugin, some types
+         * may also have a specific rendering. Non-primitive types not managed by the plugin are rendered
+         * as the classname of the object.
+         * <p>
+         * See PR #1401 and Issue #2468 for details.
          *
          * @param value
          *        the item that the Observable was trying to emit at the time of the exception
-         * @return a string version of the object if primitive, otherwise the classname of the object
+         * @return a string version of the object if primitive or managed through error plugin,
+         *        otherwise the classname of the object
          */
         private static String renderValue(Object value){
             if (value == null) {
@@ -150,6 +161,12 @@ public final class OnErrorThrowable extends RuntimeException {
             if (value instanceof Enum) {
                 return ((Enum<?>) value).name();
             }
+
+            String pluggedRendering = RxJavaPlugins.getInstance().getErrorHandler().handleOnNextValueRendering(value);
+            if (pluggedRendering != null) {
+                return pluggedRendering;
+            }
+
             return value.getClass().getName() + ".class";
         }
     }

@@ -17,6 +17,9 @@ package rx.plugins;
 
 import rx.Observable;
 import rx.Subscriber;
+import rx.annotations.Experimental;
+import rx.exceptions.Exceptions;
+import rx.exceptions.OnErrorThrowable;
 
 /**
  * Abstract class for defining error handling logic in addition to the normal
@@ -24,6 +27,8 @@ import rx.Subscriber;
  * <p>
  * For example, all {@code Exception}s can be logged using this handler even if
  * {@link Subscriber#onError(Throwable)} is ignored or not provided when an {@link Observable} is subscribed to.
+ * <p>
+ * This plugin is also responsible for augmenting rendering of {@link OnErrorThrowable.OnNextValue}.
  * <p>
  * See {@link RxJavaPlugins} or the RxJava GitHub Wiki for information on configuring plugins: <a
  * href="https://github.com/ReactiveX/RxJava/wiki/Plugins">https://github.com/ReactiveX/RxJava/wiki/Plugins</a>.
@@ -42,6 +47,54 @@ public abstract class RxJavaErrorHandler {
      */
     public void handleError(Throwable e) {
         // do nothing by default
+    }
+
+    protected static final String ERROR_IN_RENDERING_SUFFIX = ".errorRendering";
+
+    /**
+     * Receives items causing {@link OnErrorThrowable.OnNextValue} and gives a chance to choose the String
+     * representation of the item in the OnNextValue stacktrace rendering. Returns null if this type of item
+     * is not managed and should use default rendering.
+     * <p>
+     * Note that primitive types are always rendered as their toString() value.
+     * <p>
+     * If a {@code Throwable} is caught when rendering, this will fallback to the item's classname suffixed by
+     * {@value #ERROR_IN_RENDERING_SUFFIX}.
+     *
+     * @param item the last emitted item, that caused the exception wrapped in {@link OnErrorThrowable.OnNextValue}.
+     * @return a short {@link String} representation of the item if one is known for its type, or null for default.
+     */
+    @Experimental
+    public final String handleOnNextValueRendering(Object item) {
+
+        try {
+            return render(item);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } catch (Throwable t) {
+            Exceptions.throwIfFatal(t);
+        }
+        return item.getClass().getName() + ERROR_IN_RENDERING_SUFFIX;
+    }
+
+    /**
+     * Override this method to provide rendering for specific types other than primitive types and null.
+     * <p>
+     * For performance and overhead reasons, this should should limit to a safe production of a short {@code String}
+     * (as large renderings will bloat up the stacktrace). Prefer to try/catch({@code Throwable}) all code
+     * inside this method implementation.
+     * <p>
+     * If a {@code Throwable} is caught when rendering, this will fallback to the item's classname suffixed by
+     * {@value #ERROR_IN_RENDERING_SUFFIX}.
+     *
+     * @param item the last emitted item, that caused the exception wrapped in {@link OnErrorThrowable.OnNextValue}.
+     * @return a short {@link String} representation of the item if one is known for its type, or null for default.
+     * @throws InterruptedException if the rendering thread is interrupted
+     */
+    @Experimental
+    protected String render (Object item) throws InterruptedException {
+        //do nothing by default
+        return null;
     }
 
 }
