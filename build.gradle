@@ -27,3 +27,6 @@ if (project.hasProperty('release.useLastTag')) {
     tasks.prepare.enabled = false
 }
 
+test{
+     maxHeapSize = "1g"
+}
