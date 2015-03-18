@@ -24,12 +24,11 @@ import static org.mockito.Mockito.verify;
 
 import org.junit.Test;
 
-import rx.Observable;
-import rx.Observer;
+import rx.*;
 import rx.exceptions.TestException;
 import rx.subjects.PublishSubject;
 
-public class OperatorAsObservableTest {
+public class OperatorAsObservableTest extends BaseTest {
     @Test
     public void testHiding() {
         PublishSubject<Integer> src = PublishSubject.create();

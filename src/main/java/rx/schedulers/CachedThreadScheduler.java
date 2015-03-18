@@ -15,17 +15,14 @@
  */
 package rx.schedulers;
 
-import rx.Scheduler;
-import rx.Subscription;
-import rx.functions.Action0;
-import rx.internal.schedulers.NewThreadWorker;
-import rx.internal.schedulers.ScheduledAction;
-import rx.internal.util.RxThreadFactory;
-import rx.subscriptions.CompositeSubscription;
-import rx.subscriptions.Subscriptions;
-
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
+import java.util.concurrent.atomic.*;
+
+import rx.*;
+import rx.functions.Action0;
+import rx.internal.schedulers.*;
+import rx.internal.util.RxThreadFactory;
+import rx.subscriptions.*;
 
 /* package */final class CachedThreadScheduler extends Scheduler {
     private static final String WORKER_THREAD_NAME_PREFIX = "RxCachedThreadScheduler-";
@@ -40,6 +37,7 @@ import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
         private final long keepAliveTime;
         private final ConcurrentLinkedQueue<ThreadWorker> expiringWorkerQueue;
         private final ScheduledExecutorService evictExpiredWorkerExecutor;
+        private final AtomicLong activeWorkers = new AtomicLong();
 
         CachedWorkerPool(long keepAliveTime, TimeUnit unit) {
             this.keepAliveTime = unit.toNanos(keepAliveTime);
@@ -61,6 +59,7 @@ import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
         );
 
         ThreadWorker get() {
+            activeWorkers.getAndIncrement();
             while (!expiringWorkerQueue.isEmpty()) {
                 ThreadWorker threadWorker = expiringWorkerQueue.poll();
                 if (threadWorker != null) {
@@ -73,6 +72,7 @@ import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
         }
 
         void release(ThreadWorker threadWorker) {
+            activeWorkers.decrementAndGet();
             // Refresh expire time before putting worker back in pool
             threadWorker.setExpirationTime(now() + keepAliveTime);
 
@@ -100,6 +100,10 @@ import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
         long now() {
             return System.nanoTime();
         }
+    }
+    
+    public long getActiveIOWorkers() {
+        return CachedWorkerPool.INSTANCE.activeWorkers.get();
     }
 
     @Override

@@ -60,7 +60,7 @@ import rx.subjects.ReplaySubject;
 import rx.subjects.Subject;
 import rx.subscriptions.BooleanSubscription;
 
-public class ObservableTests {
+public class ObservableTests extends BaseTest {
 
     @Mock
     Observer<Integer> w;

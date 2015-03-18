@@ -23,17 +23,15 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 
-import rx.Observable;
-import rx.Observer;
+import rx.*;
 import rx.functions.Func1;
 
-public class OperatorDistinctTest {
+public class OperatorDistinctTest extends BaseTest {
 
     @Mock
     Observer<String> w;

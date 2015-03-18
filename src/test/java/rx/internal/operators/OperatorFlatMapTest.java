@@ -24,6 +24,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.*;
 
+import rx.*;
 import rx.Observable;
 import rx.Observer;
 import rx.exceptions.TestException;
@@ -31,7 +32,7 @@ import rx.functions.*;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 
-public class OperatorFlatMapTest {
+public class OperatorFlatMapTest extends BaseTest {
     @Test
     public void testNormal() {
         @SuppressWarnings("unchecked")

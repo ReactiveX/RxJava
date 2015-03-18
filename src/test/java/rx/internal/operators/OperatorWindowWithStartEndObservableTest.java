@@ -25,17 +25,14 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Before;
 import org.junit.Test;
 
-import rx.Observable;
-import rx.Observer;
-import rx.Scheduler;
-import rx.Subscriber;
+import rx.*;
 import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Func0;
 import rx.functions.Func1;
 import rx.schedulers.TestScheduler;
 
-public class OperatorWindowWithStartEndObservableTest {
+public class OperatorWindowWithStartEndObservableTest extends BaseTest {
 
     private TestScheduler scheduler;
     private Scheduler.Worker innerScheduler;

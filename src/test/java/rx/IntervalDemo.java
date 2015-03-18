@@ -27,7 +27,7 @@ import rx.functions.Action1;
 
 @Ignore
 // since this doesn't do any automatic testing
-public class IntervalDemo {
+public class IntervalDemo extends BaseTest {
 
     @Test
     public void demoInterval() throws Exception {

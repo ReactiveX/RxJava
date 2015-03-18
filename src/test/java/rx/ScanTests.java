@@ -24,7 +24,7 @@ import rx.EventStream.Event;
 import rx.functions.Action1;
 import rx.functions.Func2;
 
-public class ScanTests {
+public class ScanTests extends BaseTest {
 
     @Test
     public void testUnsubscribeScan() {

@@ -19,6 +19,7 @@ import static org.mockito.Matchers.any;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.notNull;
 import static org.mockito.Mockito.*;
@@ -26,10 +27,7 @@ import static org.mockito.Mockito.*;
 import org.junit.Test;
 import org.mockito.InOrder;
 
-
-import rx.Observable;
-import rx.Observer;
-import rx.Scheduler;
+import rx.*;
 import rx.Scheduler.Worker;
 import rx.Subscription;
 import rx.functions.Action0;
@@ -39,7 +37,7 @@ import rx.observables.ConnectableObservable;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
 
-public class OperatorReplayTest {
+public class OperatorReplayTest extends BaseTest {
     @Test
     public void testBufferedReplay() {
         PublishSubject<Integer> source = PublishSubject.create();

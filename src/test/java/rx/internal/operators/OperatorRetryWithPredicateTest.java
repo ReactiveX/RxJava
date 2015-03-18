@@ -18,21 +18,22 @@ package rx.internal.operators;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+
 import static org.junit.Assert.assertEquals;
+
 import org.junit.Test;
 import org.mockito.InOrder;
+
 import static org.mockito.Mockito.*;
 import rx.Observable;
 import rx.Observable.OnSubscribe;
-import rx.Observer;
-import rx.Subscriber;
-import rx.Subscription;
+import rx.*;
 import rx.exceptions.TestException;
 import rx.functions.Action1;
 import rx.functions.Func2;
 import rx.subjects.PublishSubject;
 
-public class OperatorRetryWithPredicateTest {
+public class OperatorRetryWithPredicateTest extends BaseTest {
     Func2<Integer, Throwable, Boolean> retryTwice = new Func2<Integer, Throwable, Boolean>() {
         @Override
         public Boolean call(Integer t1, Throwable t2) {

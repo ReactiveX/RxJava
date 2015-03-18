@@ -22,7 +22,7 @@ import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.observables.GroupedObservable;
 
-public class GroupByTests {
+public class GroupByTests extends BaseTest {
 
     @Test
     public void testTakeUnsubscribesOnGroupBy() {

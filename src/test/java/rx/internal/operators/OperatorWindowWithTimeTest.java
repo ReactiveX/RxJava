@@ -28,7 +28,7 @@ import rx.Observer;
 import rx.functions.*;
 import rx.schedulers.TestScheduler;
 
-public class OperatorWindowWithTimeTest {
+public class OperatorWindowWithTimeTest extends BaseTest {
 
     private TestScheduler scheduler;
     private Scheduler.Worker innerScheduler;

@@ -27,7 +27,7 @@ import rx.CovarianceTest.Media;
 import rx.CovarianceTest.Movie;
 import rx.Observable.OnSubscribe;
 
-public class MergeTests {
+public class MergeTests extends BaseTest {
 
     /**
      * This won't compile if super/extends isn't done correctly on generics

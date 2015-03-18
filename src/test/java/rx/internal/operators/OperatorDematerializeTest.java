@@ -23,14 +23,12 @@ import static org.mockito.Mockito.verify;
 
 import org.junit.Test;
 
-import rx.Notification;
-import rx.Observable;
-import rx.Observer;
+import rx.*;
 import rx.exceptions.TestException;
 import rx.observers.Subscribers;
 import rx.observers.TestSubscriber;
 
-public class OperatorDematerializeTest {
+public class OperatorDematerializeTest extends BaseTest {
 
     @Test
     @SuppressWarnings("unchecked")

@@ -45,9 +45,7 @@ import org.mockito.MockitoAnnotations;
 import rx.Notification;
 import rx.Observable;
 import rx.Observable.OnSubscribe;
-import rx.Observer;
-import rx.Subscriber;
-import rx.Subscription;
+import rx.*;
 import rx.exceptions.TestException;
 import rx.functions.Action0;
 import rx.functions.Action1;
@@ -57,7 +55,7 @@ import rx.observables.GroupedObservable;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 
-public class OperatorGroupByTest {
+public class OperatorGroupByTest extends BaseTest {
 
     final Func1<String, Integer> length = new Func1<String, Integer>() {
         @Override

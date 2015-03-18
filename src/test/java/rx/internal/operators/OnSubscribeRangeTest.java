@@ -30,14 +30,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
-import rx.Observable;
-import rx.Observer;
-import rx.Subscriber;
+import rx.*;
 import rx.functions.Action1;
 import rx.internal.util.RxRingBuffer;
 import rx.observers.TestSubscriber;
 
-public class OnSubscribeRangeTest {
+public class OnSubscribeRangeTest extends BaseTest {
 
     @Test
     public void testRangeStartAt2Count3() {

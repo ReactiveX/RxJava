@@ -28,7 +28,7 @@ import org.junit.Test;
 import rx.functions.Action0;
 import rx.functions.Action1;
 
-public class ObservableDoOnTest {
+public class ObservableDoOnTest extends BaseTest {
 
     @Test
     public void testDoOnEach() {

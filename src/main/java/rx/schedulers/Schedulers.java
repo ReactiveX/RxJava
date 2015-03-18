@@ -137,4 +137,7 @@ public final class Schedulers {
     public static Scheduler from(Executor executor) {
         return new ExecutorScheduler(executor);
     }
+    public static long activeIOWorkers() {
+        return ((CachedThreadScheduler)io()).getActiveIOWorkers();
+    }
 }

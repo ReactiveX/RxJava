@@ -40,7 +40,7 @@ import rx.functions.Func2;
 import rx.functions.FuncN;
 import rx.observables.GroupedObservable;
 
-public class ZipTests {
+public class ZipTests extends BaseTest {
 
     @Test
     public void testZipObservableOfObservables() {

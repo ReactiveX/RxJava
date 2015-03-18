@@ -25,13 +25,12 @@ import static org.mockito.Mockito.when;
 
 import org.junit.Test;
 
-import rx.Observable;
-import rx.Observer;
+import rx.*;
 import rx.exceptions.TestException;
 import rx.functions.Func0;
 
 @SuppressWarnings("unchecked")
-public class OnSubscribeDeferTest {
+public class OnSubscribeDeferTest extends BaseTest {
 
     @Test
     public void testDefer() throws Throwable {

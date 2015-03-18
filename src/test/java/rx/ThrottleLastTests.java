@@ -26,7 +26,7 @@ import org.mockito.InOrder;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
 
-public class ThrottleLastTests {
+public class ThrottleLastTests extends BaseTest {
 
     @Test
     public void testThrottle() {

@@ -29,7 +29,7 @@ import rx.functions.Func1;
 import rx.observers.TestSubscriber;
 import rx.subjects.*;
 
-public class OperatorTakeWhileTest {
+public class OperatorTakeWhileTest extends BaseTest {
 
     @Test
     public void testTakeWhile1() {

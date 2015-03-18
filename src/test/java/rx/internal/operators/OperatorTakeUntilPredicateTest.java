@@ -30,7 +30,7 @@ import rx.internal.util.UtilityFunctions;
 import rx.observers.TestSubscriber;
 ;
 
-public class OperatorTakeUntilPredicateTest {
+public class OperatorTakeUntilPredicateTest extends BaseTest {
     @Test
     public void takeEmpty() {
         @SuppressWarnings("unchecked")

@@ -19,9 +19,10 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
+import rx.BaseTest;
 import rx.observers.TestSubscriber;
 
-public class SerializedSubjectTest {
+public class SerializedSubjectTest extends BaseTest {
 
     @Test
     public void testBasic() {

@@ -26,11 +26,10 @@ import java.util.NoSuchElementException;
 import org.junit.Test;
 import org.mockito.InOrder;
 
-import rx.Observable;
-import rx.Observer;
+import rx.*;
 import rx.functions.Func1;
 
-public class OperatorLastTest {
+public class OperatorLastTest extends BaseTest {
 
     @Test
     public void testLastWithElements() {

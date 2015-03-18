@@ -26,12 +26,11 @@ import static org.mockito.Mockito.verify;
 import org.junit.Test;
 import org.mockito.InOrder;
 
-import rx.Observable;
-import rx.Observer;
+import rx.*;
 import rx.functions.Func1;
 import rx.functions.Func2;
 
-public class OperatorSkipWhileTest {
+public class OperatorSkipWhileTest extends BaseTest {
 
     @SuppressWarnings("unchecked")
     Observer<Integer> w = mock(Observer.class);

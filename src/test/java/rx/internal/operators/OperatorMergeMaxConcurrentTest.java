@@ -30,7 +30,7 @@ import rx.Observer;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 
-public class OperatorMergeMaxConcurrentTest {
+public class OperatorMergeMaxConcurrentTest extends BaseTest {
 
     @Mock
     Observer<String> stringObserver;

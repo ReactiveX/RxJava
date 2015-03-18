@@ -23,8 +23,7 @@ import org.mockito.MockitoAnnotations;
 
 import rx.Observable;
 import rx.Observable.OnSubscribe;
-import rx.Observer;
-import rx.Subscriber;
+import rx.*;
 import rx.exceptions.CompositeException;
 import rx.exceptions.TestException;
 import rx.observers.TestSubscriber;
@@ -40,7 +39,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.*;
 
-public class OperatorMergeDelayErrorTest {
+public class OperatorMergeDelayErrorTest extends BaseTest {
 
     @Mock
     Observer<String> stringObserver;

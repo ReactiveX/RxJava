@@ -26,13 +26,12 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import rx.Observable;
-import rx.Observer;
+import rx.*;
 import rx.schedulers.TestScheduler;
 import rx.schedulers.TimeInterval;
 import rx.subjects.PublishSubject;
 
-public class OperatorTimeIntervalTest {
+public class OperatorTimeIntervalTest extends BaseTest {
 
     private static final TimeUnit TIME_UNIT = TimeUnit.MILLISECONDS;
 

@@ -36,10 +36,7 @@ import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 
-import rx.Notification;
-import rx.Observable;
-import rx.Observer;
-import rx.Subscription;
+import rx.*;
 import rx.exceptions.TestException;
 import rx.functions.Action1;
 import rx.functions.Func0;
@@ -51,7 +48,7 @@ import rx.schedulers.Schedulers;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
 
-public class OperatorDelayTest {
+public class OperatorDelayTest extends BaseTest {
     @Mock
     private Observer<Long> observer;
     @Mock

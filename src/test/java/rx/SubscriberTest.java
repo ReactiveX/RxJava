@@ -34,7 +34,7 @@ import rx.Observable.Operator;
 import rx.functions.Func1;
 import rx.observers.TestSubscriber;
 
-public class SubscriberTest {
+public class SubscriberTest extends BaseTest {
 
     /**
      * Should request n for whatever the final Subscriber asks for

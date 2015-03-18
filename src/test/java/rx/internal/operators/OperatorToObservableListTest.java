@@ -27,10 +27,9 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import rx.Observable;
-import rx.Observer;
+import rx.*;
 
-public class OperatorToObservableListTest {
+public class OperatorToObservableListTest extends BaseTest {
 
     @Test
     public void testList() {

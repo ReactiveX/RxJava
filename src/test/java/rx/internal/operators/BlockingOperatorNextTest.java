@@ -31,8 +31,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Assert;
 import org.junit.Test;
 
-import rx.Observable;
-import rx.Subscriber;
+import rx.*;
 import rx.exceptions.TestException;
 import rx.internal.operators.BlockingOperatorNext;
 import rx.observables.BlockingObservable;
@@ -41,7 +40,7 @@ import rx.subjects.BehaviorSubject;
 import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
 
-public class BlockingOperatorNextTest {
+public class BlockingOperatorNextTest extends BaseTest {
 
     private void fireOnNextInNewThread(final Subject<String, String> o, final String value) {
         new Thread() {

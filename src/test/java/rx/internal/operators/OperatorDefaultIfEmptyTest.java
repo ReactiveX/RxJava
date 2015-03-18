@@ -22,12 +22,10 @@ import static org.mockito.Mockito.verify;
 
 import org.junit.Test;
 
-import rx.Observable;
-import rx.Observer;
-import rx.Subscriber;
+import rx.*;
 import rx.exceptions.TestException;
 
-public class OperatorDefaultIfEmptyTest {
+public class OperatorDefaultIfEmptyTest extends BaseTest {
 
     @Test
     public void testDefaultIfEmpty() {

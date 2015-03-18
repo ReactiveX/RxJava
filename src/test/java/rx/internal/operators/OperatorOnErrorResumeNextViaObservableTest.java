@@ -28,14 +28,12 @@ import org.mockito.Mockito;
 
 import rx.Observable;
 import rx.Observable.OnSubscribe;
-import rx.Observer;
-import rx.Subscriber;
-import rx.Subscription;
+import rx.*;
 import rx.functions.Func1;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 
-public class OperatorOnErrorResumeNextViaObservableTest {
+public class OperatorOnErrorResumeNextViaObservableTest extends BaseTest {
 
     @Test
     public void testResumeNext() {

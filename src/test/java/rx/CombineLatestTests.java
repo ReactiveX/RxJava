@@ -27,11 +27,10 @@ import rx.CovarianceTest.Result;
 import rx.functions.Action1;
 import rx.functions.Func2;
 import rx.subjects.BehaviorSubject;
-
 import static org.junit.Assert.assertNull;
 import static rx.Observable.combineLatest;
 
-public class CombineLatestTests {
+public class CombineLatestTests extends BaseTest {
     /**
      * This won't compile if super/extends isn't done correctly on generics
      */

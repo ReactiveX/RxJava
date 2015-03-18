@@ -35,15 +35,14 @@ import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 
-import rx.Observer;
-import rx.Subscription;
+import rx.*;
 import rx.exceptions.CompositeException;
 import rx.exceptions.OnErrorNotImplementedException;
 import rx.exceptions.TestException;
 import rx.functions.Action1;
 import rx.observers.TestSubscriber;
 
-public class AsyncSubjectTest {
+public class AsyncSubjectTest extends BaseTest {
 
     private final Throwable testException = new Throwable();
 

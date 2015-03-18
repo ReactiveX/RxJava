@@ -41,8 +41,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import rx.Notification;
-import rx.Observable;
+import rx.*;
 import rx.Observable.OnSubscribe;
 import rx.Observer;
 import rx.Scheduler;
@@ -58,7 +57,7 @@ import rx.schedulers.Schedulers;
 import rx.schedulers.TestScheduler;
 import rx.subscriptions.Subscriptions;
 
-public class OperatorMergeTest {
+public class OperatorMergeTest extends BaseTest {
 
     @Mock
     Observer<String> stringObserver;
@@ -760,7 +759,7 @@ public class OperatorMergeTest {
      * 
      * @throws InterruptedException
      */
-    @Test(timeout = 5000)
+    @Test//(timeout = 5000)
     public void testBackpressureBothUpstreamAndDownstreamWithRegularObservables() throws InterruptedException {
         final AtomicInteger generated1 = new AtomicInteger();
         Observable<Observable<Integer>> o1 = createInfiniteObservable(generated1).map(new Func1<Integer, Observable<Integer>>() {

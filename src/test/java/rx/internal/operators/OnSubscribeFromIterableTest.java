@@ -31,14 +31,12 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import rx.Observable;
-import rx.Observer;
-import rx.Subscriber;
+import rx.*;
 import rx.internal.util.RxRingBuffer;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 
-public class OnSubscribeFromIterableTest {
+public class OnSubscribeFromIterableTest extends BaseTest {
 
     @Test(expected = NullPointerException.class)
     public void testNull() {

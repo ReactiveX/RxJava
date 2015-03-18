@@ -38,7 +38,7 @@ import rx.schedulers.Schedulers;
 /**
  * Test if AbstractOnSubscribe adheres to the usual unsubscription and backpressure contracts.
  */
-public class AbstractOnSubscribeTest {
+public class AbstractOnSubscribeTest extends BaseTest {
     @Test
     public void testJust() {
         AbstractOnSubscribe<Integer, Void> aos = new AbstractOnSubscribe<Integer, Void>() {

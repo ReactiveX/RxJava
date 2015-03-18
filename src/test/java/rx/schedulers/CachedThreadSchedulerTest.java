@@ -16,18 +16,18 @@
 
 package rx.schedulers;
 
+import static org.junit.Assert.*;
+
 import java.lang.management.*;
-import java.util.concurrent.*;
+import java.util.concurrent.TimeUnit;
 
 import junit.framework.Assert;
 
-import org.junit.Test;
+import org.junit.*;
 
-import rx.Observable;
-import rx.Scheduler;
+import rx.*;
 import rx.functions.*;
 import rx.internal.schedulers.NewThreadWorker;
-import static org.junit.Assert.assertTrue;
 
 public class CachedThreadSchedulerTest extends AbstractSchedulerConcurrencyTests {
 

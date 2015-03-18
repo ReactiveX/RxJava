@@ -32,11 +32,10 @@ import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 
-import rx.Observable;
-import rx.Observer;
+import rx.*;
 import rx.functions.Func1;
 
-public class OperatorFirstTest {
+public class OperatorFirstTest extends BaseTest {
 
     @Mock
     Observer<String> w;

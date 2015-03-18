@@ -38,10 +38,7 @@ import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 
-import rx.Observable;
-import rx.Observer;
-import rx.Subscriber;
-import rx.Subscription;
+import rx.*;
 import rx.exceptions.CompositeException;
 import rx.exceptions.OnErrorNotImplementedException;
 import rx.exceptions.TestException;
@@ -50,7 +47,7 @@ import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 import rx.schedulers.TestScheduler;
 
-public class ReplaySubjectTest {
+public class ReplaySubjectTest extends BaseTest {
 
     private final Throwable testException = new Throwable();
 

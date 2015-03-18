@@ -36,12 +36,7 @@ import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 
-import rx.Observable;
-import rx.Observer;
-import rx.Producer;
-import rx.Scheduler;
-import rx.Subscriber;
-import rx.Subscription;
+import rx.*;
 import rx.exceptions.TestException;
 import rx.functions.Action0;
 import rx.functions.Action1;
@@ -51,7 +46,7 @@ import rx.observers.TestSubscriber;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
 
-public class OperatorBufferTest {
+public class OperatorBufferTest extends BaseTest {
 
     private Observer<List<String>> observer;
     private TestScheduler scheduler;

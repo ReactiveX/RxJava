@@ -34,11 +34,9 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import rx.Observable;
-import rx.Observer;
-import rx.Subscriber;
+import rx.*;
 
-public class OperatorSerializeTest {
+public class OperatorSerializeTest extends BaseTest {
 
     @Mock
     Observer<String> observer;

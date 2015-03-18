@@ -31,10 +31,7 @@ import org.mockito.InOrder;
 
 import rx.Observable;
 import rx.Observable.OnSubscribe;
-import rx.Observer;
-import rx.Producer;
-import rx.Scheduler;
-import rx.Subscriber;
+import rx.*;
 import rx.functions.Action0;
 import rx.internal.util.RxRingBuffer;
 import rx.observers.TestSubscriber;
@@ -42,7 +39,7 @@ import rx.schedulers.Schedulers;
 import rx.schedulers.TestScheduler;
 import rx.subscriptions.CompositeSubscription;
 
-public class OnSubscribeAmbTest {
+public class OnSubscribeAmbTest extends BaseTest {
 
     private TestScheduler scheduler;
     private Scheduler.Worker innerScheduler;

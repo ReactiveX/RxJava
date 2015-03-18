@@ -23,11 +23,10 @@ import static org.mockito.Mockito.verify;
 
 import org.junit.Test;
 
-import rx.Observable;
-import rx.Observer;
+import rx.*;
 import rx.internal.operators.OperatorSkip;
 
-public class OperatorSkipTest {
+public class OperatorSkipTest extends BaseTest {
 
     @Test
     public void testSkipNegativeElements() {

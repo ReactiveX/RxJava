@@ -24,13 +24,12 @@ import org.junit.Test;
 
 import rx.Observable;
 import rx.Observable.OnSubscribe;
-import rx.Observer;
-import rx.Subscriber;
+import rx.*;
 import rx.internal.util.RxRingBuffer;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 
-public class OperatorOnBackpressureDropTest {
+public class OperatorOnBackpressureDropTest extends BaseTest {
 
     @Test
     public void testNoBackpressureSupport() {

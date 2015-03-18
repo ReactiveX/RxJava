@@ -35,7 +35,7 @@ import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.Subscriptions;
 
-public class OperatorSampleTest {
+public class OperatorSampleTest extends BaseTest {
     private TestScheduler scheduler;
     private Scheduler.Worker innerScheduler;
     private Observer<Long> observer;

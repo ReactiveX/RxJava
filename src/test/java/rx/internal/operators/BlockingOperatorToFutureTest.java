@@ -29,12 +29,12 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 
-import rx.Observable;
+import rx.*;
 import rx.Observable.OnSubscribe;
 import rx.Subscriber;
 import rx.exceptions.TestException;
 
-public class BlockingOperatorToFutureTest {
+public class BlockingOperatorToFutureTest extends BaseTest {
 
     @Test
     public void testToFuture() throws InterruptedException, ExecutionException {

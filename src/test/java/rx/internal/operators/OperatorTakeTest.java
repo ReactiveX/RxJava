@@ -37,17 +37,14 @@ import org.mockito.InOrder;
 
 import rx.Observable;
 import rx.Observable.OnSubscribe;
-import rx.Observer;
-import rx.Producer;
-import rx.Subscriber;
-import rx.Subscription;
+import rx.*;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.observers.Subscribers;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 
-public class OperatorTakeTest {
+public class OperatorTakeTest extends BaseTest {
 
     @Test
     public void testTake1() {

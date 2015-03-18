@@ -33,17 +33,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.MockitoAnnotations;
 
-import rx.Observable;
-import rx.Observer;
-import rx.Producer;
-import rx.Subscriber;
+import rx.*;
 import rx.functions.Action2;
 import rx.functions.Func0;
 import rx.functions.Func1;
 import rx.functions.Func2;
 import rx.observers.TestSubscriber;
 
-public class OperatorScanTest {
+public class OperatorScanTest extends BaseTest {
 
     @Before
     public void before() {

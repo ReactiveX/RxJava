@@ -25,13 +25,12 @@ import java.util.concurrent.CountDownLatch;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import rx.Observable;
-import rx.Observer;
+import rx.*;
 import rx.functions.Func1;
 import rx.internal.util.RxRingBuffer;
 import rx.observers.TestSubscriber;
 
-public class OperatorFilterTest {
+public class OperatorFilterTest extends BaseTest {
 
     @Test
     public void testFilter() {

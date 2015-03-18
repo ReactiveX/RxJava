@@ -35,13 +35,11 @@ import org.mockito.MockitoAnnotations;
 
 import rx.Observable;
 import rx.Observable.OnSubscribe;
-import rx.Observer;
-import rx.Subscriber;
-import rx.Subscription;
+import rx.*;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
 
-public class OperatorTimeoutTests {
+public class OperatorTimeoutTests extends BaseTest {
     private PublishSubject<String> underlyingSubject;
     private TestScheduler testScheduler;
     private Observable<String> withTimeout;

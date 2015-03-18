@@ -27,15 +27,13 @@ import org.junit.Test;
 
 import rx.Observable;
 import rx.Observable.OnSubscribe;
-import rx.Scheduler;
-import rx.Subscriber;
-import rx.Subscription;
+import rx.*;
 import rx.functions.Action0;
 import rx.observers.TestObserver;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.Subscriptions;
 
-public class OperatorUnsubscribeOnTest {
+public class OperatorUnsubscribeOnTest extends BaseTest {
 
     @Test
     public void testUnsubscribeWhenSubscribeOnAndUnsubscribeOnAreOnSameThread() throws InterruptedException {

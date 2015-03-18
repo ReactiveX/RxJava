@@ -30,7 +30,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import rx.Observable;
+import rx.*;
 import rx.Observable.OnSubscribe;
 import rx.Subscriber;
 import rx.exceptions.TestException;
@@ -40,7 +40,7 @@ import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.Subscriptions;
 
-public class BlockingObservableTest {
+public class BlockingObservableTest extends BaseTest {
 
     @Mock
     Subscriber<Integer> w;

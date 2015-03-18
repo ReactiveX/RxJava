@@ -28,7 +28,7 @@ import rx.functions.Action0;
 import rx.observers.TestSubscriber;
 import rx.subscriptions.Subscriptions;
 
-public class OperatorSwitchIfEmptyTest {
+public class OperatorSwitchIfEmptyTest extends BaseTest {
 
     @Test
     public void testSwitchWhenNotEmpty() throws Exception {

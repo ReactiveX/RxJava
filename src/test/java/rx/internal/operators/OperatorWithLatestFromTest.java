@@ -24,6 +24,7 @@ import java.util.*;
 import org.junit.Test;
 import org.mockito.InOrder;
 
+import rx.*;
 import rx.Observable;
 import rx.Observer;
 import rx.exceptions.TestException;
@@ -31,7 +32,7 @@ import rx.functions.Func2;
 import rx.observers.TestSubscriber;
 import rx.subjects.PublishSubject;
 
-public class OperatorWithLatestFromTest {
+public class OperatorWithLatestFromTest extends BaseTest {
     static final Func2<Integer, Integer, Integer> COMBINER = new Func2<Integer, Integer, Integer>() {
         @Override
         public Integer call(Integer t1, Integer t2) {

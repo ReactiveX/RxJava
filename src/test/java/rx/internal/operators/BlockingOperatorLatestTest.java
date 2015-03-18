@@ -23,12 +23,12 @@ import junit.framework.Assert;
 
 import org.junit.Test;
 
-import rx.Observable;
+import rx.*;
 import rx.observables.BlockingObservable;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
 
-public class BlockingOperatorLatestTest {
+public class BlockingOperatorLatestTest extends BaseTest {
     @Test(timeout = 1000)
     public void testSimple() {
         TestScheduler scheduler = new TestScheduler();
