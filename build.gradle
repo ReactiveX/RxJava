@@ -28,5 +28,5 @@ if (project.hasProperty('release.useLastTag')) {
 }
 
 test{
-     maxHeapSize = "1g"
+     maxHeapSize = "2g"
 }
