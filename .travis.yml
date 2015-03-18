@@ -13,6 +13,7 @@ script: gradle/buildViaTravis.sh
 cache:
   directories:
   - $HOME/.m2
+  - $HOME/.gradle
 
 # secure environment variables for release to Bintray
 env:
