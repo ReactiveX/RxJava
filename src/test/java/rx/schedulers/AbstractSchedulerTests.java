@@ -154,43 +154,45 @@ public abstract class AbstractSchedulerTests {
     public final void testSequenceOfActions() throws InterruptedException {
         final Scheduler scheduler = getScheduler();
         final Scheduler.Worker inner = scheduler.createWorker();
-        
-        final CountDownLatch latch = new CountDownLatch(2);
-        final Action0 first = mock(Action0.class);
-        final Action0 second = mock(Action0.class);
-
-        // make it wait until both the first and second are called
-        doAnswer(new Answer() {
-
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                try {
-                    return invocation.getMock();
-                } finally {
-                    latch.countDown();
+        try {
+            final CountDownLatch latch = new CountDownLatch(2);
+            final Action0 first = mock(Action0.class);
+            final Action0 second = mock(Action0.class);
+    
+            // make it wait until both the first and second are called
+            doAnswer(new Answer() {
+    
+                @Override
+                public Object answer(InvocationOnMock invocation) throws Throwable {
+                    try {
+                        return invocation.getMock();
+                    } finally {
+                        latch.countDown();
+                    }
                 }
-            }
-        }).when(first).call();
-        doAnswer(new Answer() {
-
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                try {
-                    return invocation.getMock();
-                } finally {
-                    latch.countDown();
+            }).when(first).call();
+            doAnswer(new Answer() {
+    
+                @Override
+                public Object answer(InvocationOnMock invocation) throws Throwable {
+                    try {
+                        return invocation.getMock();
+                    } finally {
+                        latch.countDown();
+                    }
                 }
-            }
-        }).when(second).call();
-
-        inner.schedule(first);
-        inner.schedule(second);
-
-        latch.await();
-
-        verify(first, times(1)).call();
-        verify(second, times(1)).call();
-
+            }).when(second).call();
+    
+            inner.schedule(first);
+            inner.schedule(second);
+    
+            latch.await();
+    
+            verify(first, times(1)).call();
+            verify(second, times(1)).call();
+        } finally {
+            inner.unsubscribe();
+        }
     }
 
     @Test

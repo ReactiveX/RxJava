@@ -342,68 +342,72 @@ public class ReplaySubjectBoundedConcurrencyTest {
     public void testReplaySubjectEmissionSubscriptionRace() throws Exception {
         Scheduler s = Schedulers.io();
         Scheduler.Worker worker = Schedulers.io().createWorker();
-        for (int i = 0; i < 50000; i++) {
-            if (i % 1000 == 0) {
-                System.out.println(i);
-            }
-            final ReplaySubject<Object> rs = ReplaySubject.createWithSize(2);
-            
-            final CountDownLatch finish = new CountDownLatch(1); 
-            final CountDownLatch start = new CountDownLatch(1); 
-            
-            worker.schedule(new Action0() {
-                @Override
-                public void call() {
-                    try {
-                        start.await();
-                    } catch (Exception e1) {
-                        e1.printStackTrace();
-                    }
-                    rs.onNext(1);
+        try {
+            for (int i = 0; i < 50000; i++) {
+                if (i % 1000 == 0) {
+                    System.out.println(i);
                 }
-            });
-            
-            final AtomicReference<Object> o = new AtomicReference<Object>();
-            
-            rs.subscribeOn(s).observeOn(Schedulers.io())
-            .subscribe(new Observer<Object>() {
-
-                @Override
-                public void onCompleted() {
-                    o.set(-1);
-                    finish.countDown();
-                }
-
-                @Override
-                public void onError(Throwable e) {
-                    o.set(e);
-                    finish.countDown();
-                }
-
-                @Override
-                public void onNext(Object t) {
-                    o.set(t);
-                    finish.countDown();
-                }
+                final ReplaySubject<Object> rs = ReplaySubject.createWithSize(2);
                 
-            });
-            start.countDown();
-            
-            if (!finish.await(5, TimeUnit.SECONDS)) {
-                System.out.println(o.get());
-                System.out.println(rs.hasObservers());
-                rs.onCompleted();
-                Assert.fail("Timeout @ " + i);
-                break;
-            } else {
-                Assert.assertEquals(1, o.get());
+                final CountDownLatch finish = new CountDownLatch(1); 
+                final CountDownLatch start = new CountDownLatch(1); 
+                
                 worker.schedule(new Action0() {
                     @Override
                     public void call() {
-                        rs.onCompleted();
+                        try {
+                            start.await();
+                        } catch (Exception e1) {
+                            e1.printStackTrace();
+                        }
+                        rs.onNext(1);
                     }
                 });
+                
+                final AtomicReference<Object> o = new AtomicReference<Object>();
+                
+                rs.subscribeOn(s).observeOn(Schedulers.io())
+                .subscribe(new Observer<Object>() {
+    
+                    @Override
+                    public void onCompleted() {
+                        o.set(-1);
+                        finish.countDown();
+                    }
+    
+                    @Override
+                    public void onError(Throwable e) {
+                        o.set(e);
+                        finish.countDown();
+                    }
+    
+                    @Override
+                    public void onNext(Object t) {
+                        o.set(t);
+                        finish.countDown();
+                    }
+                    
+                });
+                start.countDown();
+                
+                if (!finish.await(5, TimeUnit.SECONDS)) {
+                    System.out.println(o.get());
+                    System.out.println(rs.hasObservers());
+                    rs.onCompleted();
+                    Assert.fail("Timeout @ " + i);
+                    break;
+                } else {
+                    Assert.assertEquals(1, o.get());
+                    worker.schedule(new Action0() {
+                        @Override
+                        public void call() {
+                            rs.onCompleted();
+                        }
+                    });
+                }
             }
+        } finally {
+            worker.unsubscribe();
         }
     }
     @Test(timeout = 5000)
