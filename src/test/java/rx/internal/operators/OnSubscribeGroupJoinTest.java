@@ -27,15 +27,13 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import rx.Observable;
-import rx.Observer;
-import rx.Subscriber;
+import rx.*;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.functions.Func2;
 import rx.subjects.PublishSubject;
 
-public class OnSubscribeGroupJoinTest {
+public class OnSubscribeGroupJoinTest extends BaseTest {
     @Mock
     Observer<Object> observer;
 

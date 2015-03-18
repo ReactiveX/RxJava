@@ -36,7 +36,7 @@ import rx.observers.TestSubscriber;
  * 
  * See https://github.com/Netflix/RxJava/pull/331
  */
-public class CovarianceTest {
+public class CovarianceTest extends BaseTest {
 
     /**
      * This won't compile if super/extends isn't done correctly on generics

@@ -22,7 +22,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-public class StartWithTests {
+public class StartWithTests extends BaseTest {
 
     @Test
     public void startWith1() {

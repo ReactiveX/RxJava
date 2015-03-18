@@ -29,9 +29,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import rx.Observable;
-import rx.Observer;
-import rx.Subscriber;
+import rx.*;
 import rx.exceptions.OnErrorNotImplementedException;
 import rx.functions.Action1;
 import rx.functions.Func1;
@@ -39,7 +37,7 @@ import rx.functions.Func2;
 import rx.internal.operators.OperatorMap;
 import rx.schedulers.Schedulers;
 
-public class OperatorMapTest {
+public class OperatorMapTest extends BaseTest {
 
     @Mock
     Observer<String> stringObserver;

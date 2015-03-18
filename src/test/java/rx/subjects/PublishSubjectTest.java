@@ -34,9 +34,7 @@ import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Mockito;
 
-import rx.Observable;
-import rx.Observer;
-import rx.Subscription;
+import rx.*;
 import rx.exceptions.CompositeException;
 import rx.exceptions.OnErrorNotImplementedException;
 import rx.exceptions.TestException;
@@ -44,7 +42,7 @@ import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.observers.TestSubscriber;
 
-public class PublishSubjectTest {
+public class PublishSubjectTest extends BaseTest {
 
     @Test
     public void testCompleted() {

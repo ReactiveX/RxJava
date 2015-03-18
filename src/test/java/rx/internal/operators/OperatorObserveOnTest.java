@@ -15,48 +15,30 @@
  */
 package rx.internal.operators;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.*;
+import static org.mockito.Mockito.*;
 
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.*;
 
-import org.junit.Test;
+import org.junit.*;
 import org.mockito.InOrder;
 
-import rx.Notification;
-import rx.Observable;
+import rx.*;
 import rx.Observable.OnSubscribe;
+import rx.*;
+import rx.Observable;
 import rx.Observer;
-import rx.Scheduler;
-import rx.Subscriber;
-import rx.Subscription;
-import rx.exceptions.MissingBackpressureException;
-import rx.exceptions.TestException;
-import rx.functions.Action0;
-import rx.functions.Action1;
-import rx.functions.Func1;
-import rx.functions.Func2;
+import rx.exceptions.*;
+import rx.functions.*;
 import rx.internal.util.RxRingBuffer;
 import rx.observers.TestSubscriber;
-import rx.schedulers.Schedulers;
-import rx.schedulers.TestScheduler;
+import rx.schedulers.*;
 import rx.subjects.PublishSubject;
 
-public class OperatorObserveOnTest {
+public class OperatorObserveOnTest extends BaseTest {
 
     /**
      * This is testing a no-op path since it uses Schedulers.immediate() which will not do scheduling.

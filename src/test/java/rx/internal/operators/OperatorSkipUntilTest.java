@@ -25,11 +25,10 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import rx.Observable;
-import rx.Observer;
+import rx.*;
 import rx.subjects.PublishSubject;
 
-public class OperatorSkipUntilTest {
+public class OperatorSkipUntilTest extends BaseTest {
     @Mock
     Observer<Object> observer;
 

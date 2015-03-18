@@ -25,13 +25,14 @@ import org.junit.*;
 
 import rx.*;
 import rx.Observable.OnSubscribe;
+import rx.*;
 import rx.Observable;
 import rx.Observer;
 import rx.functions.*;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 
-public class ReplaySubjectConcurrencyTest {
+public class ReplaySubjectConcurrencyTest extends BaseTest {
 
     public static void main(String args[]) {
         try {

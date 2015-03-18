@@ -28,8 +28,7 @@ import org.junit.Test;
 
 import rx.Observable;
 import rx.Observable.OnSubscribe;
-import rx.Observer;
-import rx.Subscriber;
+import rx.*;
 import rx.exceptions.MissingBackpressureException;
 import rx.exceptions.TestException;
 import rx.internal.util.RxRingBuffer;
@@ -41,7 +40,7 @@ import rx.subjects.PublishSubject;
 /**
  * Test the onBackpressureBlock() behavior.
  */
-public class OnBackpressureBlockTest {
+public class OnBackpressureBlockTest extends BaseTest {
     static final int WAIT = 200;
     
     @Test(timeout = 1000)

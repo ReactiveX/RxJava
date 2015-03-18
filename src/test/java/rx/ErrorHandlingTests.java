@@ -25,7 +25,7 @@ import org.junit.Test;
 
 import rx.schedulers.Schedulers;
 
-public class ErrorHandlingTests {
+public class ErrorHandlingTests extends BaseTest {
 
     /**
      * Test that an error from a user provided Observer.onNext is handled and emitted to the onError

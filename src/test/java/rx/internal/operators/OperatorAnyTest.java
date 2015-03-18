@@ -27,7 +27,7 @@ import rx.*;
 import rx.functions.Func1;
 import rx.internal.util.UtilityFunctions;
 
-public class OperatorAnyTest {
+public class OperatorAnyTest extends BaseTest {
 
     @Test
     public void testAnyWithTwoItems() {

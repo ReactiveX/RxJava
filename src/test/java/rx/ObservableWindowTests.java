@@ -26,7 +26,7 @@ import org.junit.Test;
 import rx.functions.Action1;
 import rx.functions.Func1;
 
-public class ObservableWindowTests {
+public class ObservableWindowTests extends BaseTest {
 
     @Test
     public void testWindow() {

@@ -26,7 +26,7 @@ import org.junit.Test;
 import rx.*;
 import rx.functions.Func1;
 
-public class OperatorAllTest {
+public class OperatorAllTest extends BaseTest {
 
     @Test
     @SuppressWarnings("unchecked")

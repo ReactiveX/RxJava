@@ -24,14 +24,14 @@ import static org.mockito.Mockito.verify;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicInteger;
+
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InOrder;
 
-import rx.Observable;
-import rx.Observer;
+import rx.*;
 import rx.exceptions.TestException;
 import rx.functions.Action1;
 import rx.functions.Func1;
@@ -39,7 +39,7 @@ import rx.functions.Func2;
 import rx.functions.Func3;
 import rx.subjects.PublishSubject;
 
-public class OperatorZipIterableTest {
+public class OperatorZipIterableTest extends BaseTest {
     Func2<String, String, String> concat2Strings;
     PublishSubject<String> s1;
     PublishSubject<String> s2;

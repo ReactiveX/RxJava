@@ -26,14 +26,14 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Assert;
 import org.junit.Test;
 
-import rx.Observable;
+import rx.*;
 import rx.exceptions.TestException;
 import rx.observables.BlockingObservable;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
 
-public class BlockingOperatorMostRecentTest {
+public class BlockingOperatorMostRecentTest extends BaseTest {
     @Test
     public void testMostRecentNull() {
         assertEquals(null, Observable.<Void>never().toBlocking().mostRecent(null).iterator().next());

@@ -28,6 +28,7 @@ import org.mockito.*;
 
 import rx.*;
 import rx.Observable.OnSubscribe;
+import rx.*;
 import rx.Observable;
 import rx.Observer;
 import rx.functions.*;
@@ -36,7 +37,7 @@ import rx.schedulers.*;
 import rx.subjects.ReplaySubject;
 import rx.subscriptions.Subscriptions;
 
-public class OnSubscribeRefCountTest {
+public class OnSubscribeRefCountTest extends BaseTest {
 
     @Before
     public void setUp() {

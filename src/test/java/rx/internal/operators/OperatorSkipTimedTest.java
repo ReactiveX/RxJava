@@ -26,13 +26,12 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 import org.mockito.InOrder;
 
-import rx.Observable;
-import rx.Observer;
+import rx.*;
 import rx.exceptions.TestException;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
 
-public class OperatorSkipTimedTest {
+public class OperatorSkipTimedTest extends BaseTest {
 
     @Test
     public void testSkipTimed() {

@@ -27,14 +27,13 @@ import org.junit.Test;
 
 import rx.Observable;
 import rx.Observable.OnSubscribe;
-import rx.Observer;
-import rx.Subscriber;
+import rx.*;
 import rx.exceptions.TestException;
 import rx.functions.Func1;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 
-public class OperatorRepeatTest {
+public class OperatorRepeatTest extends BaseTest {
 
     @Test(timeout = 2000)
     public void testRepetition() {

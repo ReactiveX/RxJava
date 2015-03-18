@@ -32,9 +32,7 @@ import org.mockito.InOrder;
 
 import rx.Observable;
 import rx.Observable.OnSubscribe;
-import rx.Observer;
-import rx.Subscriber;
-import rx.Subscription;
+import rx.*;
 import rx.exceptions.TestException;
 import rx.functions.Action0;
 import rx.functions.Action1;
@@ -42,7 +40,7 @@ import rx.functions.Func0;
 import rx.functions.Func1;
 import rx.subscriptions.Subscriptions;
 
-public class OnSubscribeUsingTest {
+public class OnSubscribeUsingTest extends BaseTest {
 
     private interface Resource {
         public String getTextFromWeb();

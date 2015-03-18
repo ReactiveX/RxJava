@@ -22,12 +22,12 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
 
-import rx.Observable;
+import rx.*;
 import rx.Observable.OnSubscribe;
 import rx.Subscriber;
 import rx.functions.Action0;
 
-public class OperatorDoOnSubscribeTest {
+public class OperatorDoOnSubscribeTest extends BaseTest {
 
     @Test
     public void testDoOnSubscribe() throws Exception {

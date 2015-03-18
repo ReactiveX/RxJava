@@ -32,14 +32,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.Test;
 
-import rx.Observable;
-import rx.Observer;
-import rx.Subscription;
+import rx.*;
 import rx.observers.TestObserver;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 
-public class OnSubscribeToObservableFutureTest {
+public class OnSubscribeToObservableFutureTest extends BaseTest {
 
     @Test
     public void testSuccess() throws Exception {

@@ -31,15 +31,12 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import rx.Observable;
-import rx.Observer;
-import rx.Subscriber;
-import rx.Subscription;
+import rx.*;
 import rx.exceptions.TestException;
 import rx.observables.ConnectableObservable;
 import rx.schedulers.TestScheduler;
 
-public class OnSubscribeTimerTest {
+public class OnSubscribeTimerTest extends BaseTest {
     @Mock
     Observer<Object> observer;
     @Mock

@@ -24,14 +24,13 @@ import static org.mockito.Mockito.verify;
 import org.junit.Assert;
 import org.junit.Test;
 
-import rx.Observer;
-import rx.Subscription;
+import rx.*;
 import rx.functions.Func0;
 import rx.observables.ConnectableObservable;
 import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
 
-public class OperatorMulticastTest {
+public class OperatorMulticastTest extends BaseTest {
 
     @Test
     public void testMulticast() {

@@ -29,13 +29,12 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import rx.Observable;
-import rx.Observer;
+import rx.*;
 import rx.schedulers.TestScheduler;
 import rx.schedulers.Timestamped;
 import rx.subjects.PublishSubject;
 
-public class OperatorTimestampTest {
+public class OperatorTimestampTest extends BaseTest {
     @Mock
     Observer<Object> observer;
 

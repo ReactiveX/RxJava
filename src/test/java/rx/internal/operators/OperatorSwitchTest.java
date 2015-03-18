@@ -29,18 +29,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InOrder;
 
-import rx.Observable;
-import rx.Observer;
-import rx.Producer;
-import rx.Scheduler;
-import rx.Subscriber;
+import rx.*;
 import rx.exceptions.TestException;
 import rx.functions.Action0;
 import rx.functions.Func1;
 import rx.observers.TestSubscriber;
 import rx.schedulers.TestScheduler;
 
-public class OperatorSwitchTest {
+public class OperatorSwitchTest extends BaseTest {
 
     private TestScheduler scheduler;
     private Scheduler.Worker innerScheduler;

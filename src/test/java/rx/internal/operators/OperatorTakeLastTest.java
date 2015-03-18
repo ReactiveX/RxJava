@@ -29,16 +29,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 import org.mockito.InOrder;
 
-import rx.Observable;
-import rx.Observer;
-import rx.Subscriber;
+import rx.*;
 import rx.functions.Func1;
 import rx.internal.util.RxRingBuffer;
 import rx.internal.util.UtilityFunctions;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 
-public class OperatorTakeLastTest {
+public class OperatorTakeLastTest extends BaseTest {
 
     @Test
     public void testTakeLastEmpty() {

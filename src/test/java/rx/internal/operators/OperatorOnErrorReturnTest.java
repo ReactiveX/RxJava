@@ -27,14 +27,12 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import rx.Observable;
-import rx.Observer;
-import rx.Subscriber;
+import rx.*;
 import rx.functions.Func1;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 
-public class OperatorOnErrorReturnTest {
+public class OperatorOnErrorReturnTest extends BaseTest {
 
     @Test
     public void testResumeNext() {

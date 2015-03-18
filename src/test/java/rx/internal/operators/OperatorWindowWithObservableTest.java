@@ -26,12 +26,11 @@ import java.util.List;
 
 import org.junit.Test;
 
-import rx.Observable;
-import rx.Observer;
+import rx.*;
 import rx.exceptions.TestException;
 import rx.subjects.PublishSubject;
 
-public class OperatorWindowWithObservableTest {
+public class OperatorWindowWithObservableTest extends BaseTest {
 
     @Test
     public void testWindowViaObservableNormal1() {

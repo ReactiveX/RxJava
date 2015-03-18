@@ -37,16 +37,14 @@ import org.mockito.InOrder;
 
 import rx.Observable;
 import rx.Observable.OnSubscribe;
-import rx.Observer;
-import rx.Subscriber;
-import rx.Subscription;
+import rx.*;
 import rx.internal.util.RxRingBuffer;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 import rx.schedulers.TestScheduler;
 import rx.subscriptions.BooleanSubscription;
 
-public class OperatorConcatTest {
+public class OperatorConcatTest extends BaseTest {
 
     @Test
     public void testConcat() {

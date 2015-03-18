@@ -37,8 +37,7 @@ import org.mockito.stubbing.Answer;
 
 import rx.Observable;
 import rx.Observable.OnSubscribe;
-import rx.Observer;
-import rx.Subscriber;
+import rx.*;
 import rx.exceptions.TestException;
 import rx.functions.Func0;
 import rx.functions.Func1;
@@ -46,7 +45,7 @@ import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 
-public class OperatorTimeoutWithSelectorTest {
+public class OperatorTimeoutWithSelectorTest extends BaseTest {
     @Test(timeout = 2000)
     public void testTimeoutSelectorNormal1() {
         PublishSubject<Integer> source = PublishSubject.create();

@@ -27,14 +27,13 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import rx.Observable;
-import rx.Observer;
+import rx.*;
 import rx.exceptions.TestException;
 import rx.functions.Func1;
 import rx.functions.Func2;
 import rx.internal.util.UtilityFunctions;
 
-public class OperatorReduceTest {
+public class OperatorReduceTest extends BaseTest {
     @Mock
     Observer<Object> observer;
 

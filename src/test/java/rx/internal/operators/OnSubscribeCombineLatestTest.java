@@ -36,10 +36,7 @@ import org.junit.Test;
 import org.mockito.InOrder;
 import org.mockito.Matchers;
 
-import rx.Notification;
-import rx.Observable;
-import rx.Observer;
-import rx.Subscriber;
+import rx.*;
 import rx.functions.Action1;
 import rx.functions.Func2;
 import rx.functions.Func3;
@@ -55,7 +52,7 @@ import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 
-public class OnSubscribeCombineLatestTest {
+public class OnSubscribeCombineLatestTest extends BaseTest {
 
     @Test
     public void testCombineLatestWithFunctionThatThrowsAnException() {

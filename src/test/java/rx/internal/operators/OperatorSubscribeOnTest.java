@@ -29,17 +29,13 @@ import org.junit.Test;
 import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Observable.Operator;
-import rx.Observer;
-import rx.Producer;
-import rx.Scheduler;
-import rx.Subscriber;
-import rx.Subscription;
+import rx.*;
 import rx.functions.Action0;
 import rx.observers.TestObserver;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 
-public class OperatorSubscribeOnTest {
+public class OperatorSubscribeOnTest extends BaseTest {
 
     @Test(timeout = 2000)
     public void testIssue813() throws InterruptedException {

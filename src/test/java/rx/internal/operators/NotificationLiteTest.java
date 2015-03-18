@@ -19,10 +19,11 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+import rx.BaseTest;
 import rx.exceptions.TestException;
 
 
-public class NotificationLiteTest {
+public class NotificationLiteTest extends BaseTest {
 
     @Test
     public void testComplete() {

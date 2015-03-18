@@ -23,14 +23,11 @@ import static org.mockito.Mockito.verify;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import rx.Observable;
-import rx.Observer;
-import rx.Subscriber;
-import rx.Subscription;
+import rx.*;
 import rx.observers.SafeSubscriber;
 import rx.observers.TestSubscriber;
 
-public class SafeSubscriberTest {
+public class SafeSubscriberTest extends BaseTest {
 
     /**
      * Ensure onNext can not be called after onError

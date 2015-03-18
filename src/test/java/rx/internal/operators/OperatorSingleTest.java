@@ -24,13 +24,11 @@ import java.util.NoSuchElementException;
 import org.junit.Test;
 import org.mockito.InOrder;
 
-import rx.Observable;
-import rx.Observer;
-import rx.Subscriber;
+import rx.*;
 import rx.functions.Func1;
 import rx.functions.Func2;
 
-public class OperatorSingleTest {
+public class OperatorSingleTest extends BaseTest {
 
     @Test
     public void testSingle() {

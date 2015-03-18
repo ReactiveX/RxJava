@@ -21,9 +21,9 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
-import rx.Observable;
+import rx.*;
 
-public class OperatorElementAtTest {
+public class OperatorElementAtTest extends BaseTest {
 
     @Test
     public void testElementAt() {

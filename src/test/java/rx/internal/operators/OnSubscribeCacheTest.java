@@ -28,8 +28,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
-import rx.Observable;
-import rx.Subscriber;
+import rx.*;
 import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Func1;
@@ -42,7 +41,7 @@ import rx.subjects.PublishSubject;
 import rx.subjects.ReplaySubject;
 import rx.subjects.Subject;
 
-public class OnSubscribeCacheTest {
+public class OnSubscribeCacheTest extends BaseTest {
 
     @Test
     public void testCache() throws InterruptedException {

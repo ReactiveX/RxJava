@@ -32,7 +32,7 @@ import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 import rx.schedulers.TestScheduler;
 
-public class OperatorPublishTest {
+public class OperatorPublishTest extends BaseTest {
 
     @Test
     public void testPublish() throws InterruptedException {

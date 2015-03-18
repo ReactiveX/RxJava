@@ -34,15 +34,14 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import rx.Observable;
-import rx.Observer;
+import rx.*;
 import rx.functions.Func0;
 import rx.functions.Func1;
 import rx.internal.operators.OperatorToMultimap.DefaultMultimapCollectionFactory;
 import rx.internal.operators.OperatorToMultimap.DefaultToMultimapFactory;
 import rx.internal.util.UtilityFunctions;
 
-public class OperatorToMultimapTest {
+public class OperatorToMultimapTest extends BaseTest {
     @Mock
     Observer<Object> objectObserver;
 

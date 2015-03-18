@@ -29,17 +29,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InOrder;
 
-import rx.Observable;
-import rx.Observer;
-import rx.Scheduler;
-import rx.Subscriber;
+import rx.*;
 import rx.exceptions.TestException;
 import rx.functions.Action0;
 import rx.functions.Func1;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
 
-public class OperatorDebounceTest {
+public class OperatorDebounceTest extends BaseTest {
 
     private TestScheduler scheduler;
     private Observer<String> observer;

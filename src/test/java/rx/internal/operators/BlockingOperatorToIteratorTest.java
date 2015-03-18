@@ -22,12 +22,12 @@ import java.util.Iterator;
 
 import org.junit.Test;
 
-import rx.Observable;
+import rx.*;
 import rx.Observable.OnSubscribe;
 import rx.Subscriber;
 import rx.exceptions.TestException;
 
-public class BlockingOperatorToIteratorTest {
+public class BlockingOperatorToIteratorTest extends BaseTest {
 
     @Test
     public void testToIterator() {

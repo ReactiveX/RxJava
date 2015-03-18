@@ -25,13 +25,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
-import rx.Observable;
-import rx.Subscription;
+import rx.*;
 import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.observers.TestSubscriber;
 
-public class OperatorDoOnUnsubscribeTest {
+public class OperatorDoOnUnsubscribeTest extends BaseTest {
     
     @Test
     public void testDoOnUnsubscribe() throws Exception {

@@ -17,7 +17,8 @@ package rx.internal.operators;
 
 import org.junit.Assert;
 import org.junit.Test;
-import rx.Observable;
+
+import rx.*;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
@@ -29,7 +30,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class BufferUntilSubscriberTest {
+public class BufferUntilSubscriberTest extends BaseTest {
 
     @Test
     public void testIssue1677() throws InterruptedException {

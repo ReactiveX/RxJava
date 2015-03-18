@@ -31,13 +31,11 @@ import org.mockito.Mockito;
 
 import rx.Observable;
 import rx.Observable.OnSubscribe;
-import rx.Scheduler;
-import rx.Subscriber;
-import rx.Subscription;
+import rx.*;
 import rx.functions.Action0;
 import rx.functions.Func1;
 
-public class TestSchedulerTest {
+public class TestSchedulerTest extends BaseTest {
 
     @SuppressWarnings("unchecked")
     // mocking is unchecked, unfortunately

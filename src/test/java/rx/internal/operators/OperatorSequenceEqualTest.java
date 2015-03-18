@@ -23,12 +23,11 @@ import static org.mockito.Mockito.times;
 import org.junit.Test;
 import org.mockito.InOrder;
 
-import rx.Observable;
-import rx.Observer;
+import rx.*;
 import rx.exceptions.TestException;
 import rx.functions.Func2;
 
-public class OperatorSequenceEqualTest {
+public class OperatorSequenceEqualTest extends BaseTest {
 
     @Test
     public void test1() {

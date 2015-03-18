@@ -28,13 +28,12 @@ import java.util.Arrays;
 import org.junit.Test;
 import org.mockito.InOrder;
 
-import rx.Observable;
-import rx.Observer;
+import rx.*;
 import rx.internal.util.RxRingBuffer;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 
-public class OperatorSkipLastTest {
+public class OperatorSkipLastTest extends BaseTest {
 
     @Test
     public void testSkipLastEmpty() {

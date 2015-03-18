@@ -26,13 +26,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
-import rx.Observable;
+import rx.*;
 import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 
-public class OperatorWindowWithSizeTest {
+public class OperatorWindowWithSizeTest extends BaseTest {
 
     private static <T> List<List<T>> toLists(Observable<Observable<T>> observables) {
 

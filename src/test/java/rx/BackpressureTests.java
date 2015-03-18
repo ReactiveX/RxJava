@@ -32,7 +32,7 @@ import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 import rx.test.TestObstructionDetection;
 
-public class BackpressureTests {
+public class BackpressureTests extends BaseTest {
 
     @Rule
     public TestName testName = new TestName();

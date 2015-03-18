@@ -28,15 +28,13 @@ import org.mockito.InOrder;
 
 import rx.Observable;
 import rx.Observable.OnSubscribe;
-import rx.Observer;
-import rx.Scheduler;
-import rx.Subscriber;
+import rx.*;
 import rx.exceptions.TestException;
 import rx.functions.Action0;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
 
-public class OperatorThrottleFirstTest {
+public class OperatorThrottleFirstTest extends BaseTest {
 
     private TestScheduler scheduler;
     private Scheduler.Worker innerScheduler;

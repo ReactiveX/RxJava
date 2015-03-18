@@ -22,18 +22,15 @@ import org.junit.Test;
 
 import rx.Observable;
 import rx.Observable.OnSubscribe;
-import rx.Observer;
-import rx.Subscriber;
-import rx.Subscription;
+import rx.*;
 import rx.exceptions.MissingBackpressureException;
 import rx.functions.Action0;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class OperatorOnBackpressureBufferTest {
+public class OperatorOnBackpressureBufferTest extends BaseTest {
 
     @Test
     public void testNoBackpressureSupport() {

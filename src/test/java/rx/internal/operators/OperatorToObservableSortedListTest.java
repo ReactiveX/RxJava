@@ -27,12 +27,11 @@ import java.util.List;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import rx.Observable;
-import rx.Observer;
+import rx.*;
 import rx.functions.Func2;
 import rx.internal.operators.OperatorToObservableSortedList;
 
-public class OperatorToObservableSortedListTest {
+public class OperatorToObservableSortedListTest extends BaseTest {
 
     @Test
     public void testSortedList() {

@@ -23,7 +23,7 @@ import rx.CovarianceTest.HorrorMovie;
 import rx.CovarianceTest.Movie;
 import rx.functions.Func2;
 
-public class ReduceTests {
+public class ReduceTests extends BaseTest {
 
     @Test
     public void reduceInts() {

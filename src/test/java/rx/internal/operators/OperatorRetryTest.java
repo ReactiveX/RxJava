@@ -16,18 +16,19 @@
 package rx.internal.operators;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
-import org.junit.Test;
+import org.junit.*;
 import org.mockito.*;
 
 import rx.*;
 import rx.Observable.OnSubscribe;
+import rx.*;
 import rx.Observable;
 import rx.Observer;
 import rx.functions.*;
@@ -38,7 +39,7 @@ import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 import rx.subscriptions.Subscriptions;
 
-public class OperatorRetryTest {
+public class OperatorRetryTest extends BaseTest {
 
     @Test
     public void iterativeBackoff() {

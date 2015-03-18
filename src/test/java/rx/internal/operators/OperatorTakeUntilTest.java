@@ -23,14 +23,11 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
-import rx.Observable;
-import rx.Observer;
-import rx.Subscriber;
-import rx.Subscription;
+import rx.*;
 import rx.observers.TestSubscriber;
 import rx.subjects.PublishSubject;
 
-public class OperatorTakeUntilTest {
+public class OperatorTakeUntilTest extends BaseTest {
 
     @Test
     @SuppressWarnings("unchecked")

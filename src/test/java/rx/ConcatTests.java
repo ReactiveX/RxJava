@@ -27,7 +27,7 @@ import rx.CovarianceTest.Media;
 import rx.CovarianceTest.Movie;
 import rx.Observable.OnSubscribe;
 
-public class ConcatTests {
+public class ConcatTests extends BaseTest {
 
     @Test
     public void testConcatSimple() {

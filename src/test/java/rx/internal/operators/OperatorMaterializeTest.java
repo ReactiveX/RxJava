@@ -25,11 +25,9 @@ import java.util.concurrent.ExecutionException;
 
 import org.junit.Test;
 
-import rx.Notification;
-import rx.Observable;
-import rx.Subscriber;
+import rx.*;
 
-public class OperatorMaterializeTest {
+public class OperatorMaterializeTest extends BaseTest {
 
     @Test
     public void testMaterialize1() {

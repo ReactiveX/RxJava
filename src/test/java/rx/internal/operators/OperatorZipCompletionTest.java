@@ -23,8 +23,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InOrder;
 
-import rx.Observable;
-import rx.Observer;
+import rx.*;
 import rx.functions.Func2;
 import rx.subjects.PublishSubject;
 
@@ -33,7 +32,7 @@ import rx.subjects.PublishSubject;
  * the resulting Observable is finite.
  * 
  */
-public class OperatorZipCompletionTest {
+public class OperatorZipCompletionTest extends BaseTest {
     Func2<String, String, String> concat2Strings;
 
     PublishSubject<String> s1;

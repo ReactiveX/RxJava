@@ -26,9 +26,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import rx.Observable;
-import rx.Observer;
-import rx.Subscriber;
+import rx.*;
 import rx.exceptions.OnErrorNotImplementedException;
 import rx.functions.Action1;
 import rx.functions.Func1;
@@ -36,7 +34,7 @@ import rx.functions.Func1;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class OperatorDoOnEachTest {
+public class OperatorDoOnEachTest extends BaseTest {
 
     @Mock
     Observer<String> subscribedObserver;

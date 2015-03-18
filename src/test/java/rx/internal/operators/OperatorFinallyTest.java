@@ -22,11 +22,10 @@ import static org.mockito.Mockito.verify;
 import org.junit.Before;
 import org.junit.Test;
 
-import rx.Observable;
-import rx.Observer;
+import rx.*;
 import rx.functions.Action0;
 
-public class OperatorFinallyTest {
+public class OperatorFinallyTest extends BaseTest {
 
     private Action0 aAction0;
     private Observer<String> observer;
