@@ -96,7 +96,7 @@ public class Observable<T> {
     }
 
     /**
-     * Invoked when Obserable.subscribe is called.
+     * Invoked when Observable.subscribe is called.
      */
     public interface OnSubscribe<T> extends Action1<Subscriber<? super T>> {
         // cover for generics insanity
