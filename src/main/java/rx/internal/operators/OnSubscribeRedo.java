@@ -213,12 +213,14 @@ public final class OnSubscribeRedo<T> implements OnSubscribe<T> {
                 Subscriber<T> terminalDelegatingSubscriber = new Subscriber<T>() {
                     @Override
                     public void onCompleted() {
+                        currentProducer.set(null);
                         unsubscribe();
                         terminals.onNext(Notification.createOnCompleted());
                     }
 
                     @Override
                     public void onError(Throwable e) {
+                        currentProducer.set(null);
                         unsubscribe();
                         terminals.onNext(Notification.createOnError(e));
                     }
