@@ -20,7 +20,8 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
-import java.util.Arrays;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
@@ -173,5 +174,29 @@ public class OperatorRepeatTest {
         ts.assertNoErrors();
         ts.assertTerminalEvent();
         ts.assertReceivedOnNext(Arrays.asList(1, 2, 3));
+    }
+    /** Issue #2844: wrong target of request. */
+    @Test(timeout = 3000)
+    public void testRepeatRetarget() {
+        final List<Integer> concatBase = new ArrayList<Integer>();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        Observable.just(1, 2)
+        .repeat(5)
+        .concatMap(new Func1<Integer, Observable<Integer>>() {
+            @Override
+            public Observable<Integer> call(Integer x) {
+                System.out.println("testRepeatRetarget -> " + x);
+                concatBase.add(x);
+                return Observable.<Integer>empty()
+                        .delay(200, TimeUnit.MILLISECONDS);
+            }
+        })
+        .subscribe(ts);
+
+        ts.awaitTerminalEvent();
+        ts.assertNoErrors();
+        ts.assertReceivedOnNext(Collections.<Integer>emptyList());
+        
+        assertEquals(Arrays.asList(1, 2, 1, 2, 1, 2, 1, 2, 1, 2), concatBase);
     }
 }
