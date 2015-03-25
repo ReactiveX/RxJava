@@ -16,11 +16,15 @@
 package rx.internal.operators;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+
 import static org.junit.Assert.assertEquals;
+
 import org.junit.Test;
 import org.mockito.InOrder;
+
 import static org.mockito.Mockito.*;
 import rx.Observable;
 import rx.Observable.OnSubscribe;
@@ -29,7 +33,9 @@ import rx.Subscriber;
 import rx.Subscription;
 import rx.exceptions.TestException;
 import rx.functions.Action1;
+import rx.functions.Func1;
 import rx.functions.Func2;
+import rx.observers.TestSubscriber;
 import rx.subjects.PublishSubject;
 
 public class OperatorRetryWithPredicateTest {
@@ -67,6 +73,23 @@ public class OperatorRetryWithPredicateTest {
         inOrder.verify(o).onCompleted();
         verify(o, never()).onError(any(Throwable.class));
     }
+    @Test
+    public void testIssue2826() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        final RuntimeException e = new RuntimeException("You shall not pass");
+        final AtomicInteger c = new AtomicInteger();
+        Observable.just(1).map(new Func1<Integer, Integer>() {
+            public Integer call(Integer t1) {
+                c.incrementAndGet();
+                throw e;
+            }
+        }).retry(retry5).subscribe(ts);
+
+        ts.assertTerminalEvent();
+        assertEquals(6, c.get());
+        assertEquals(Collections.singletonList(e), ts.getOnErrorEvents());
+    }
+
     @Test
     public void testRetryTwice() {
         Observable<Integer> source = Observable.create(new OnSubscribe<Integer>() {

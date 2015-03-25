@@ -109,7 +109,7 @@ public final class OperatorRetryWithPredicate<T> implements Observable.Operator<
                         };
                         // register this Subscription (and unsubscribe previous if exists) 
                         serialSubscription.set(subscriber);
-                        o.unsafeSubscribe(subscriber);
+                        o.subscribe(subscriber);
                     }
                 });
             }
