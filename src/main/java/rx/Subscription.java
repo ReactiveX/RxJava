@@ -33,13 +33,13 @@ public interface Subscription {
      * This allows unregistering an {@link Subscriber} before it has finished receiving all events (i.e. before
      * onCompleted is called).
      */
-    void unsubscribe();
+    public void unsubscribe();
 
     /**
      * Indicates whether this {@code Subscription} is currently unsubscribed.
      *
      * @return {@code true} if this {@code Subscription} is currently unsubscribed, {@code false} otherwise
      */
-    boolean isUnsubscribed();
+    public boolean isUnsubscribed();
 
 }

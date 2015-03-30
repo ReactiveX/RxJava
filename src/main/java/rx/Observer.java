@@ -34,7 +34,7 @@ public interface Observer<T> {
      * <p>
      * The {@link Observable} will not call this method if it calls {@link #onError}.
      */
-    void onCompleted();
+    public abstract void onCompleted();
 
     /**
      * Notifies the Observer that the {@link Observable} has experienced an error condition.
@@ -45,7 +45,7 @@ public interface Observer<T> {
      * @param e
      *          the exception encountered by the Observable
      */
-    void onError(Throwable e);
+    public abstract void onError(Throwable e);
 
     /**
      * Provides the Observer with a new item to observe.
@@ -58,6 +58,6 @@ public interface Observer<T> {
      * @param t
      *          the item emitted by the Observable
      */
-    void onNext(T t);
+    public abstract void onNext(T t);
 
 }
