@@ -44,7 +44,7 @@ import rx.subscriptions.Subscriptions;
 
 public class OnSubscribeUsingTest {
 
-    private interface Resource {
+    private static interface Resource {
         public String getTextFromWeb();
 
         public void dispose();
