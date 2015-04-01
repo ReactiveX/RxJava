@@ -23,6 +23,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Before;
@@ -36,6 +37,7 @@ import rx.Subscriber;
 import rx.exceptions.TestException;
 import rx.functions.Action0;
 import rx.functions.Func1;
+import rx.observers.TestSubscriber;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
 
@@ -286,5 +288,21 @@ public class OperatorDebounceTest {
         verify(o).onNext(1);
         verify(o).onCompleted();
         verify(o, never()).onError(any(Throwable.class));
+    }
+
+    @Test
+    public void debounceWithTimeBackpressure() throws InterruptedException {
+        TestScheduler scheduler = new TestScheduler();
+        TestSubscriber<Integer> subscriber = new TestSubscriber<Integer>();
+        Observable.merge(
+                Observable.just(1),
+                Observable.just(2).delay(10, TimeUnit.MILLISECONDS, scheduler)
+        ).debounce(20, TimeUnit.MILLISECONDS, scheduler).take(1).subscribe(subscriber);
+
+        scheduler.advanceTimeBy(30, TimeUnit.MILLISECONDS);
+
+        subscriber.assertReceivedOnNext(Arrays.asList(2));
+        subscriber.assertTerminalEvent();
+        subscriber.assertNoErrors();
     }
 }
