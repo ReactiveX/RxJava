@@ -62,6 +62,12 @@ public final class OperatorDebounceWithTime<T> implements Operator<T, T> {
         return new Subscriber<T>(child) {
             final DebounceState<T> state = new DebounceState<T>();
             final Subscriber<?> self = this;
+
+            @Override
+            public void onStart() {
+                request(Long.MAX_VALUE);
+            }
+
             @Override
             public void onNext(final T t) {
                 
