@@ -211,26 +211,35 @@ public final class OnSubscribeRedo<T> implements OnSubscribe<T> {
                 }
 
                 Subscriber<T> terminalDelegatingSubscriber = new Subscriber<T>() {
+                    boolean done;
                     @Override
                     public void onCompleted() {
-                        currentProducer.set(null);
-                        unsubscribe();
-                        terminals.onNext(Notification.createOnCompleted());
+                        if (!done) {
+                            done = true;
+                            currentProducer.set(null);
+                            unsubscribe();
+                            terminals.onNext(Notification.createOnCompleted());
+                        }
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        currentProducer.set(null);
-                        unsubscribe();
-                        terminals.onNext(Notification.createOnError(e));
+                        if (!done) {
+                            done = true;
+                            currentProducer.set(null);
+                            unsubscribe();
+                            terminals.onNext(Notification.createOnError(e));
+                        }
                     }
 
                     @Override
                     public void onNext(T v) {
-                        if (consumerCapacity.get() != Long.MAX_VALUE) {
-                            consumerCapacity.decrementAndGet();
+                        if (!done) {
+                            if (consumerCapacity.get() != Long.MAX_VALUE) {
+                                consumerCapacity.decrementAndGet();
+                            }
+                            child.onNext(v);
                         }
-                        child.onNext(v);
                     }
 
                     @Override

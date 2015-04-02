@@ -84,26 +84,34 @@ public final class OperatorRetryWithPredicate<T> implements Observable.Operator<
                         // new subscription each time so if it unsubscribes itself it does not prevent retries
                         // by unsubscribing the child subscription
                         Subscriber<T> subscriber = new Subscriber<T>() {
-
+                            boolean done;
                             @Override
                             public void onCompleted() {
-                                child.onCompleted();
+                                if (!done) {
+                                    done = true;
+                                    child.onCompleted();
+                                }
                             }
 
                             @Override
                             public void onError(Throwable e) {
-                                if (predicate.call(attempts, e) && !inner.isUnsubscribed()) {
-                                    // retry again
-                                    inner.schedule(_self);
-                                } else {
-                                    // give up and pass the failure
-                                    child.onError(e);
+                                if (!done) {
+                                    done = true;
+                                    if (predicate.call(attempts, e) && !inner.isUnsubscribed()) {
+                                        // retry again
+                                        inner.schedule(_self);
+                                    } else {
+                                        // give up and pass the failure
+                                        child.onError(e);
+                                    }
                                 }
                             }
 
                             @Override
                             public void onNext(T v) {
-                                child.onNext(v);
+                                if (!done) {
+                                    child.onNext(v);
+                                }
                             }
 
                         };
