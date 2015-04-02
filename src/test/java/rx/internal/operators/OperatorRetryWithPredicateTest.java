@@ -15,21 +15,23 @@
  */
 package rx.internal.operators;
 
-import java.io.IOException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.*;
+
+import java.io.IOException;
+import java.util.Collections;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.*;
+
 import org.junit.Test;
 import org.mockito.InOrder;
-import static org.mockito.Mockito.*;
-import rx.Observable;
+
+import rx.*;
 import rx.Observable.OnSubscribe;
-import rx.Observer;
-import rx.Subscriber;
-import rx.Subscription;
 import rx.exceptions.TestException;
-import rx.functions.Action1;
-import rx.functions.Func2;
+import rx.functions.*;
+import rx.observers.TestSubscriber;
 import rx.subjects.PublishSubject;
 
 public class OperatorRetryWithPredicateTest {
@@ -269,5 +271,38 @@ public class OperatorRetryWithPredicateTest {
         inOrder.verify(observer, never()).onCompleted();
 
         assertEquals("Start 6 threads, retry 5 then fail on 6", 6, so.efforts.get());
+    }
+    
+    @Test
+    public void testIssue2826() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        final RuntimeException e = new RuntimeException("You shall not pass");
+        final AtomicInteger c = new AtomicInteger();
+        Observable.just(1).map(new Func1<Integer, Integer>() {
+            @Override
+            public Integer call(Integer t1) {
+                c.incrementAndGet();
+                throw e;
+            }
+        }).retry(retry5).subscribe(ts);
+
+        ts.assertTerminalEvent();
+        assertEquals(6, c.get());
+        assertEquals(Collections.singletonList(e), ts.getOnErrorEvents());
+    }
+    @Test
+    public void testJustAndRetry() throws Exception {
+        final AtomicBoolean throwException = new AtomicBoolean(true);
+        int value = Observable.just(1).map(new Func1<Integer, Integer>() {
+            @Override
+            public Integer call(Integer t1) {
+                if (throwException.compareAndSet(true, false)) {
+                    throw new TestException();
+                }
+                return t1;
+            }
+        }).retry(1).toBlocking().single();
+
+        assertEquals(1, value);
     }
 }
