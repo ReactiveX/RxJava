@@ -23,6 +23,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -127,6 +128,48 @@ public class BlockingObservableTest {
     public void testSingle() {
         BlockingObservable<String> observable = BlockingObservable.from(Observable.just("one"));
         assertEquals("one", observable.single());
+    }
+    
+    @Test
+    public void testSingleDoesNotRequestMoreThanItNeedsToEmitItem() {
+        final AtomicLong request = new AtomicLong();
+        Observable.just(1).doOnRequest(new Action1<Long>() {
+            @Override
+            public void call(Long n) {
+                request.addAndGet(n);
+            }
+        }).toBlocking().single();
+        assertEquals(2, request.get());
+    }
+
+    @Test
+    public void testSingleDoesNotRequestMoreThanItNeedsToEmitErrorFromEmpty() {
+        final AtomicLong request = new AtomicLong();
+        try {
+            Observable.empty().doOnRequest(new Action1<Long>() {
+                @Override
+                public void call(Long n) {
+                    request.addAndGet(n);
+                }
+            }).toBlocking().single();
+        } catch (NoSuchElementException e) {
+            assertEquals(1, request.get());
+        }
+    }
+
+    @Test
+    public void testSingleDoesNotRequestMoreThanItNeedsToEmitErrorFromMoreThanOne() {
+        final AtomicLong request = new AtomicLong();
+        try {
+            Observable.just(1, 2).doOnRequest(new Action1<Long>() {
+                @Override
+                public void call(Long n) {
+                    request.addAndGet(n);
+                }
+            }).toBlocking().single();
+        } catch (IllegalArgumentException e) {
+            assertEquals(2, request.get());
+        }
     }
 
     @Test
