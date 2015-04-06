@@ -440,6 +440,12 @@ public final class BlockingObservable<T> {
         final CountDownLatch latch = new CountDownLatch(1);
 
         Subscription subscription = observable.subscribe(new Subscriber<T>() {
+            
+            @Override
+            public void onStart() {
+                request(1);
+            }
+            
             @Override
             public void onCompleted() {
                 latch.countDown();
