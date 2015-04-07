@@ -1270,8 +1270,14 @@ public class OperatorZipTest {
     }
     @Test(timeout = 10000)
     public void testZipRace() {
+        long startTime = System.currentTimeMillis();
         Observable<Integer> src = Observable.just(1).subscribeOn(Schedulers.computation());
-        for (int i = 0; i < 100000; i++) {
+        
+        // now try and generate a hang by zipping src with itself repeatedly. A
+        // time limit of 9 seconds ( 1 second less than the test timeout) is
+        // used so that this test will not timeout on slow machines.
+        int i = 0;
+        while (System.currentTimeMillis()-startTime < 9000 && i++ < 100000) {
             int value = Observable.zip(src, src, new Func2<Integer, Integer, Integer>() {
                 @Override
                 public Integer call(Integer t1, Integer t2) {
