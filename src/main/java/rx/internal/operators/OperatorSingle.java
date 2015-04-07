@@ -16,8 +16,10 @@
 package rx.internal.operators;
 
 import java.util.NoSuchElementException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import rx.Observable.Operator;
+import rx.Producer;
 import rx.Subscriber;
 
 /**
@@ -44,53 +46,84 @@ public final class OperatorSingle<T> implements Operator<T, T> {
     }
 
     @Override
-    public Subscriber<? super T> call(final Subscriber<? super T> subscriber) {
-        return new Subscriber<T>(subscriber) {
+    public Subscriber<? super T> call(final Subscriber<? super T> child) {
 
-            private T value;
-            private boolean isNonEmpty = false;
-            private boolean hasTooManyElements = false;
+        final ParentSubscriber<T> parent = new ParentSubscriber<T>(child, hasDefaultValue,
+                defaultValue);
+
+        child.setProducer(new Producer() {
+
+            private final AtomicBoolean requestedTwo = new AtomicBoolean(false);
 
             @Override
-            public void onNext(T value) {
-                if (isNonEmpty) {
-                    hasTooManyElements = true;
-                    subscriber.onError(new IllegalArgumentException("Sequence contains too many elements"));
-                    unsubscribe();
-                } else {
-                    this.value = value;
-                    isNonEmpty = true;
-                    // Issue: https://github.com/ReactiveX/RxJava/pull/1527
-                    // Because we cache a value and don't emit now, we need to request another one.
-                    request(1);
+            public void request(long n) {
+                if (n > 0 && requestedTwo.compareAndSet(false, true)) {
+                    parent.requestMore(2);
                 }
             }
 
-            @Override
-            public void onCompleted() {
-                if (hasTooManyElements) {
-                    // We have already sent an onError message
+        });
+        child.add(parent);
+        return parent;
+    }
+
+    private static final class ParentSubscriber<T> extends Subscriber<T> {
+        private final Subscriber<? super T> child;
+        private final boolean hasDefaultValue;
+        private final T defaultValue;
+        
+        private T value;
+        private boolean isNonEmpty = false;
+        private boolean hasTooManyElements = false;
+
+        
+        ParentSubscriber(Subscriber<? super T> child, boolean hasDefaultValue,
+                T defaultValue) {
+            this.child = child;
+            this.hasDefaultValue = hasDefaultValue;
+            this.defaultValue = defaultValue;
+        }
+
+        void requestMore(long n) {
+            request(n);
+        }
+
+        @Override
+        public void onNext(T value) {
+            if (isNonEmpty) {
+                hasTooManyElements = true;
+                child.onError(new IllegalArgumentException("Sequence contains too many elements"));
+                unsubscribe();
+            } else {
+                this.value = value;
+                isNonEmpty = true;
+            }
+        }
+
+        @Override
+        public void onCompleted() {
+            if (hasTooManyElements) {
+                // We have already sent an onError message
+            } else {
+                if (isNonEmpty) {
+                    child.onNext(value);
+                    child.onCompleted();
                 } else {
-                    if (isNonEmpty) {
-                        subscriber.onNext(value);
-                        subscriber.onCompleted();
+                    if (hasDefaultValue) {
+                        child.onNext(defaultValue);
+                        child.onCompleted();
                     } else {
-                        if (hasDefaultValue) {
-                            subscriber.onNext(defaultValue);
-                            subscriber.onCompleted();
-                        } else {
-                            subscriber.onError(new NoSuchElementException("Sequence contains no elements"));
-                        }
+                        child.onError(new NoSuchElementException("Sequence contains no elements"));
                     }
                 }
             }
+        }
 
-            @Override
-            public void onError(Throwable e) {
-                subscriber.onError(e);
-            }
+        @Override
+        public void onError(Throwable e) {
+            child.onError(e);
+        }
 
-        };
     }
 
 }

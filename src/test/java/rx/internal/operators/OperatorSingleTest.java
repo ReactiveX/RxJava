@@ -17,9 +17,16 @@ package rx.internal.operators;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.isA;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.junit.Test;
 import org.mockito.InOrder;
@@ -27,6 +34,7 @@ import org.mockito.InOrder;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscriber;
+import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.functions.Func2;
 
@@ -73,6 +81,164 @@ public class OperatorSingleTest {
                 isA(NoSuchElementException.class));
         inOrder.verifyNoMoreInteractions();
     }
+    
+    @Test
+    public void testSingleDoesNotRequestMoreThanItNeedsToEmitItem() {
+        final AtomicLong request = new AtomicLong();
+        Observable.just(1).doOnRequest(new Action1<Long>() {
+            @Override
+            public void call(Long n) {
+                request.addAndGet(n);
+            }
+        }).toBlocking().single();
+        assertEquals(2, request.get());
+    }
+
+    @Test
+    public void testSingleDoesNotRequestMoreThanItNeedsToEmitErrorFromEmpty() {
+        final AtomicLong request = new AtomicLong();
+        try {
+            Observable.empty().doOnRequest(new Action1<Long>() {
+                @Override
+                public void call(Long n) {
+                    request.addAndGet(n);
+                }
+            }).toBlocking().single();
+        } catch (NoSuchElementException e) {
+            assertEquals(2, request.get());
+        }
+    }
+
+    @Test
+    public void testSingleDoesNotRequestMoreThanItNeedsToEmitErrorFromMoreThanOne() {
+        final AtomicLong request = new AtomicLong();
+        try {
+            Observable.just(1, 2).doOnRequest(new Action1<Long>() {
+                @Override
+                public void call(Long n) {
+                    request.addAndGet(n);
+                }
+            }).toBlocking().single();
+        } catch (IllegalArgumentException e) {
+            assertEquals(2, request.get());
+        }
+    }
+    
+    @Test
+    public void testSingleDoesNotRequestMoreThanItNeedsIf1Then2Requested() {
+        final List<Long> requests = new ArrayList<Long>();
+        Observable.just(1)
+        //
+                .doOnRequest(new Action1<Long>() {
+                    @Override
+                    public void call(Long n) {
+                        requests.add(n);
+                    }
+                })
+                //
+                .single()
+                //
+                .subscribe(new Subscriber<Integer>() {
+
+                    @Override
+                    public void onStart() {
+                        request(1);
+                    }
+
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onNext(Integer t) {
+                        request(2);
+                    }
+                });
+        assertEquals(Arrays.asList(2L), requests);
+    }
+    
+    @Test
+    public void testSingleDoesNotRequestMoreThanItNeedsIf3Requested() {
+        final List<Long> requests = new ArrayList<Long>();
+        Observable.just(1)
+        //
+                .doOnRequest(new Action1<Long>() {
+                    @Override
+                    public void call(Long n) {
+                        requests.add(n);
+                    }
+                })
+                //
+                .single()
+                //
+                .subscribe(new Subscriber<Integer>() {
+
+                    @Override
+                    public void onStart() {
+                        request(3);
+                    }
+
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onNext(Integer t) {
+                    }
+                });
+        assertEquals(Arrays.asList(2L), requests);
+    }
+    
+    @Test
+    public void testSingleRequestsExactlyWhatItNeedsIf1Requested() {
+        final List<Long> requests = new ArrayList<Long>();
+        Observable.just(1)
+        //
+                .doOnRequest(new Action1<Long>() {
+                    @Override
+                    public void call(Long n) {
+                        requests.add(n);
+                    }
+                })
+                //
+                .single()
+                //
+                .subscribe(new Subscriber<Integer>() {
+
+                    @Override
+                    public void onStart() {
+                        request(1);
+                    }
+
+                    @Override
+                    public void onCompleted() {
+
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onNext(Integer t) {
+                    }
+                });
+        assertEquals(Arrays.asList(2L), requests);
+    }
+
 
     @Test
     public void testSingleWithPredicate() {
