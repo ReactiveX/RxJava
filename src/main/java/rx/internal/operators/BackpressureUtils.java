@@ -22,8 +22,11 @@ import java.util.concurrent.atomic.AtomicLongFieldUpdater;
  * Utility functions for use with backpressure.
  *
  */
-final class BackpressureUtils {
-
+public final class BackpressureUtils {
+    /** Utility class, no instances. */
+    private BackpressureUtils() {
+        throw new IllegalStateException("No instances!");
+    }
     /**
      * Adds {@code n} to {@code requested} field and returns the value prior to
      * addition once the addition is successful (uses CAS semantics). If
@@ -37,16 +40,18 @@ final class BackpressureUtils {
      *            the number of requests to add to the requested count
      * @return requested value just prior to successful addition
      */
-    static <T> long getAndAddRequest(AtomicLongFieldUpdater<T> requested, T object, long n) {
+    public static <T> long getAndAddRequest(AtomicLongFieldUpdater<T> requested, T object, long n) {
         // add n to field but check for overflow
         while (true) {
             long current = requested.get(object);
             long next = current + n;
             // check for overflow
-            if (next < 0)
+            if (next < 0) {
                 next = Long.MAX_VALUE;
-            if (requested.compareAndSet(object, current, next))
+            }
+            if (requested.compareAndSet(object, current, next)) {
                 return current;
+            }
         }
     }
 
@@ -63,16 +68,18 @@ final class BackpressureUtils {
      *            the number of requests to add to the requested count
      * @return requested value just prior to successful addition
      */
-    static <T> long getAndAddRequest(AtomicLong requested, long n) {
+    public static long getAndAddRequest(AtomicLong requested, long n) {
         // add n to field but check for overflow
         while (true) {
             long current = requested.get();
             long next = current + n;
             // check for overflow
-            if (next < 0)
+            if (next < 0) {
                 next = Long.MAX_VALUE;
-            if (requested.compareAndSet(current, next))
+            }
+            if (requested.compareAndSet(current, next)) {
                 return current;
+            }
         }
     }
 }
