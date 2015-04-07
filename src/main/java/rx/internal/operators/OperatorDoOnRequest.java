@@ -48,7 +48,7 @@ public class OperatorDoOnRequest<T> implements Operator<T, T> {
             }
 
         });
-
+        child.add(parent);
         return parent;
     }
 
