@@ -16,12 +16,13 @@
 
 package rx.observables;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
 import org.mockito.InOrder;
@@ -502,5 +503,38 @@ public class AbstractOnSubscribeTest {
         verify(o, never()).onCompleted();
         verify(o, never()).onNext(any(Object.class));
         verify(o).onError(any(IllegalStateException.class));
+    }
+    
+    @Test
+    public void testCanRequestInOnNext() {
+        AbstractOnSubscribe<Integer, Void> aos = new AbstractOnSubscribe<Integer, Void>() {
+            @Override
+            protected void next(SubscriptionState<Integer, Void> state) {
+                state.onNext(1);
+                state.onCompleted();
+            }
+        };
+        final AtomicReference<Throwable> exception = new AtomicReference<Throwable>();
+        aos.toObservable().subscribe(new Subscriber<Integer>() {
+
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                exception.set(e);
+            }
+
+            @Override
+            public void onNext(Integer t) {
+                request(1);
+            }
+        });
+        if (exception.get()!=null) {
+            exception.get().printStackTrace();
+        }
+        assertNull(exception.get());
     }
 }

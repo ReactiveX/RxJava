@@ -24,6 +24,7 @@ import rx.Observable.OnSubscribe;
 import rx.annotations.Experimental;
 import rx.exceptions.CompositeException;
 import rx.functions.*;
+import rx.internal.operators.BackpressureUtils;
 
 /**
  * Abstract base class for the {@link OnSubscribe} interface that helps you build Observable sources one
@@ -332,14 +333,15 @@ public abstract class AbstractOnSubscribe<T, S> implements OnSubscribe<T> {
         }
         @Override
         public void request(long n) {
-            if (n == Long.MAX_VALUE) {
-                for (; !state.subscriber.isUnsubscribed(); ) {
-                    if (!doNext()) {
-                        break;
+            if (n > 0 && BackpressureUtils.getAndAddRequest(state.requestCount, n) == 0) {
+                if (n == Long.MAX_VALUE) {
+                    // fast-path
+                    for (; !state.subscriber.isUnsubscribed(); ) {
+                        if (!doNext()) {
+                            break;
+                        }
                     }
-                }
-            } else 
-            if (n > 0 && state.requestCount.getAndAdd(n) == 0) {
+                } else 
                 if (!state.subscriber.isUnsubscribed()) {
                     do {
                         if (!doNext()) {
