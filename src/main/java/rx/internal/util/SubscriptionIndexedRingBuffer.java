@@ -27,7 +27,6 @@ import rx.functions.Func1;
  */
 public final class SubscriptionIndexedRingBuffer<T extends Subscription> implements Subscription {
 
-    @SuppressWarnings("unchecked")
     private volatile IndexedRingBuffer<T> subscriptions = IndexedRingBuffer.getInstance();
     private volatile int unsubscribed = 0;
     @SuppressWarnings("rawtypes")

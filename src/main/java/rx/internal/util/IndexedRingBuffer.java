@@ -48,17 +48,18 @@ import rx.functions.Func1;
  */
 public final class IndexedRingBuffer<E> implements Subscription {
 
-    private static final ObjectPool<IndexedRingBuffer> POOL = new ObjectPool<IndexedRingBuffer>() {
+    private static final ObjectPool<IndexedRingBuffer<?>> POOL = new ObjectPool<IndexedRingBuffer<?>>() {
 
         @Override
-        protected IndexedRingBuffer createObject() {
-            return new IndexedRingBuffer();
+        protected IndexedRingBuffer<?> createObject() {
+            return new IndexedRingBuffer<Object>();
         }
 
     };
 
-    public final static IndexedRingBuffer getInstance() {
-        return POOL.borrowObject();
+    @SuppressWarnings("unchecked")
+    public final static <T> IndexedRingBuffer<T> getInstance() {
+        return (IndexedRingBuffer<T>) POOL.borrowObject();
     }
 
     private final ElementSection<E> elements = new ElementSection<E>();
