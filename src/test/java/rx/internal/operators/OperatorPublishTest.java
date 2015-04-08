@@ -251,7 +251,7 @@ public class OperatorPublishTest {
         co.connect();
         // Emit 0
         scheduler.advanceTimeBy(15, TimeUnit.MILLISECONDS);
-        TestSubscriber subscriber = new TestSubscriber<Long>();
+        TestSubscriber<Long> subscriber = new TestSubscriber<Long>();
         co.subscribe(subscriber);
         // Emit 1 and 2
         scheduler.advanceTimeBy(50, TimeUnit.MILLISECONDS);

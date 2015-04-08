@@ -15,17 +15,23 @@
  */
 package rx.internal.operators;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.notNull;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.notNull;
-import static org.mockito.Mockito.*;
 
 import org.junit.Test;
 import org.mockito.InOrder;
-
 
 import rx.Observable;
 import rx.Observer;
@@ -523,14 +529,15 @@ public class OperatorReplayTest {
     /**
      * test the basic expectation of OperatorMulticast via replay
      */
+    @SuppressWarnings("unchecked")
     @Test
     public void testIssue2191_UnsubscribeSource() {
         // setup mocks
-        Action1 sourceNext = mock(Action1.class);
+        Action1<Integer> sourceNext = mock(Action1.class);
         Action0 sourceCompleted = mock(Action0.class);
         Action0 sourceUnsubscribed = mock(Action0.class);
-        Observer spiedSubscriberBeforeConnect = mock(Observer.class);
-        Observer spiedSubscriberAfterConnect = mock(Observer.class);
+        Observer<Integer> spiedSubscriberBeforeConnect = mock(Observer.class);
+        Observer<Integer> spiedSubscriberAfterConnect = mock(Observer.class);
 
         // Observable under test
         Observable<Integer> source = Observable.just(1,2);
@@ -570,17 +577,18 @@ public class OperatorReplayTest {
      *
      * @throws Exception
      */
+    @SuppressWarnings("unchecked")
     @Test
     public void testIssue2191_SchedulerUnsubscribe() throws Exception {
         // setup mocks
-        Action1 sourceNext = mock(Action1.class);
+        Action1<Integer> sourceNext = mock(Action1.class);
         Action0 sourceCompleted = mock(Action0.class);
         Action0 sourceUnsubscribed = mock(Action0.class);
         final Scheduler mockScheduler = mock(Scheduler.class);
         final Subscription mockSubscription = mock(Subscription.class);
         Worker spiedWorker = workerSpy(mockSubscription);
-        Observer mockObserverBeforeConnect = mock(Observer.class);
-        Observer mockObserverAfterConnect = mock(Observer.class);
+        Observer<Integer> mockObserverBeforeConnect = mock(Observer.class);
+        Observer<Integer> mockObserverAfterConnect = mock(Observer.class);
 
         when(mockScheduler.createWorker()).thenReturn(spiedWorker);
 
@@ -626,18 +634,19 @@ public class OperatorReplayTest {
      *
      * @throws Exception
      */
+    @SuppressWarnings("unchecked")
     @Test
     public void testIssue2191_SchedulerUnsubscribeOnError() throws Exception {
         // setup mocks
-        Action1 sourceNext = mock(Action1.class);
+        Action1<Integer> sourceNext = mock(Action1.class);
         Action0 sourceCompleted = mock(Action0.class);
-        Action1 sourceError = mock(Action1.class);
+        Action1<Throwable> sourceError = mock(Action1.class);
         Action0 sourceUnsubscribed = mock(Action0.class);
         final Scheduler mockScheduler = mock(Scheduler.class);
         final Subscription mockSubscription = mock(Subscription.class);
         Worker spiedWorker = workerSpy(mockSubscription);
-        Observer mockObserverBeforeConnect = mock(Observer.class);
-        Observer mockObserverAfterConnect = mock(Observer.class);
+        Observer<Integer> mockObserverBeforeConnect = mock(Observer.class);
+        Observer<Integer> mockObserverAfterConnect = mock(Observer.class);
 
         when(mockScheduler.createWorker()).thenReturn(spiedWorker);
 
@@ -682,14 +691,14 @@ public class OperatorReplayTest {
         verifyNoMoreInteractions(mockObserverAfterConnect);
     }
 
-    private static void verifyObserverMock(Observer mock, int numSubscriptions, int numItemsExpected) {
-        verify(mock, times(numItemsExpected)).onNext(notNull());
+    private static void verifyObserverMock(Observer<Integer> mock, int numSubscriptions, int numItemsExpected) {
+        verify(mock, times(numItemsExpected)).onNext((Integer) notNull());
         verify(mock, times(numSubscriptions)).onCompleted();
         verifyNoMoreInteractions(mock);
     }
 
-    private static void verifyObserver(Observer mock, int numSubscriptions, int numItemsExpected, Throwable error) {
-        verify(mock, times(numItemsExpected)).onNext(notNull());
+    private static void verifyObserver(Observer<Integer> mock, int numSubscriptions, int numItemsExpected, Throwable error) {
+        verify(mock, times(numItemsExpected)).onNext((Integer) notNull());
         verify(mock, times(numSubscriptions)).onError(error);
         verifyNoMoreInteractions(mock);
     }

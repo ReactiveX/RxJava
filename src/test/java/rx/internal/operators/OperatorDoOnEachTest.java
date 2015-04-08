@@ -123,9 +123,9 @@ public class OperatorDoOnEachTest {
     @Test
     public void testIssue1451Case1() {
         // https://github.com/Netflix/RxJava/issues/1451
-        int[] nums = { 1, 2, 3 };
+        final int expectedCount = 3;
         final AtomicInteger count = new AtomicInteger();
-        for (final int n : nums) {
+        for (int i=0; i < expectedCount; i++) {
             Observable
                     .just(Boolean.TRUE, Boolean.FALSE)
                     .takeWhile(new Func1<Boolean, Boolean>() {
@@ -143,15 +143,15 @@ public class OperatorDoOnEachTest {
                     })
                     .subscribe();
         }
-        assertEquals(nums.length, count.get());
+        assertEquals(expectedCount, count.get());
     }
 
     @Test
     public void testIssue1451Case2() {
         // https://github.com/Netflix/RxJava/issues/1451
-        int[] nums = { 1, 2, 3 };
+        final int expectedCount = 3;
         final AtomicInteger count = new AtomicInteger();
-        for (final int n : nums) {
+        for (int i=0; i < expectedCount; i++) {
             Observable
                     .just(Boolean.TRUE, Boolean.FALSE, Boolean.FALSE)
                     .takeWhile(new Func1<Boolean, Boolean>() {
@@ -169,7 +169,7 @@ public class OperatorDoOnEachTest {
                     })
                     .subscribe();
         }
-        assertEquals(nums.length, count.get());
+        assertEquals(expectedCount, count.get());
     }
 
     @Test

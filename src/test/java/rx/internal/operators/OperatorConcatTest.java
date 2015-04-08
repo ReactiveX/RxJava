@@ -485,11 +485,11 @@ public class OperatorConcatTest {
         private final T seed;
         private final int size;
 
-        public TestObservable(T... values) {
+        public TestObservable(@SuppressWarnings("unchecked") T... values) {
             this(null, null, values);
         }
 
-        public TestObservable(CountDownLatch once, CountDownLatch okToContinue, T... values) {
+        public TestObservable(CountDownLatch once, CountDownLatch okToContinue, @SuppressWarnings("unchecked") T... values) {
             this.values = Arrays.asList(values);
             this.size = this.values.size();
             this.once = once;

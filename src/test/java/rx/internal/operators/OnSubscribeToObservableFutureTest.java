@@ -88,7 +88,7 @@ public class OnSubscribeToObservableFutureTest {
 
         TestSubscriber<Object> testSubscriber = new TestSubscriber<Object>(o);
         testSubscriber.unsubscribe();
-        Subscription sub = Observable.from(future).subscribe(testSubscriber);
+        Observable.from(future).subscribe(testSubscriber);
         assertEquals(0, testSubscriber.getOnErrorEvents().size());
         assertEquals(0, testSubscriber.getOnCompletedEvents().size());
     }

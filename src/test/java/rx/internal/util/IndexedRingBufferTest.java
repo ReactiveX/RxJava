@@ -242,7 +242,7 @@ public class IndexedRingBufferTest {
         list.forEach(newCounterAction(c));
         assertEquals(0, c.get());
         //        System.out.println("Index is: " + list.index.get() + " when it should be no bigger than " + list.SIZE);
-        assertTrue(list.index.get() < list.SIZE);
+        assertTrue(list.index.get() < IndexedRingBuffer.SIZE);
         // it should actually be 1 since we only did add/remove sequentially
         assertEquals(1, list.index.get());
     }
