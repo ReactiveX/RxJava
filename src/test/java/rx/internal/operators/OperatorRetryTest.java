@@ -399,8 +399,9 @@ public class OperatorRetryTest {
                 public void request(long n) {
                     if (n == Long.MAX_VALUE) {
                         o.onNext("beginningEveryTime");
-                        if (count.getAndIncrement() < numFailures) {
-                            o.onError(new RuntimeException("forced failure: " + count.get()));
+                        int i = count.getAndIncrement();
+                        if (i < numFailures) {
+                            o.onError(new RuntimeException("forced failure: " + (i + 1)));
                         } else {
                             o.onNext("onSuccessOnly");
                             o.onCompleted();
@@ -411,8 +412,7 @@ public class OperatorRetryTest {
                         int i = count.getAndIncrement();
                         if (i < numFailures) {
                             o.onNext("beginningEveryTime");
-                            o.onError(new RuntimeException("forced failure: " + count.get()));
-                            req.decrementAndGet();
+                            o.onError(new RuntimeException("forced failure: " + (i + 1)));
                         } else {
                             do {
                                 if (i == numFailures) {
@@ -705,17 +705,18 @@ public class OperatorRetryTest {
             inOrder.verifyNoMoreInteractions();
         }
     }
+    
     @Test(timeout = 15000)
     public void testRetryWithBackpressureParallel() throws InterruptedException {
         final int NUM_RETRIES = RxRingBuffer.SIZE * 2;
         int ncpu = Runtime.getRuntime().availableProcessors();
-        ExecutorService exec = Executors.newFixedThreadPool(Math.max(ncpu / 2, 1));
+        ExecutorService exec = Executors.newFixedThreadPool(Math.max(ncpu / 2, 2));
         final AtomicInteger timeouts = new AtomicInteger();
         final Map<Integer, List<String>> data = new ConcurrentHashMap<Integer, List<String>>();
         final Map<Integer, List<Throwable>> exceptions = new ConcurrentHashMap<Integer, List<Throwable>>();
         final Map<Integer, Integer> completions = new ConcurrentHashMap<Integer, Integer>();
         
-        int m = 2000;
+        int m = 5000;
         final CountDownLatch cdl = new CountDownLatch(m);
         for (int i = 0; i < m; i++) {
             final int j = i;
@@ -726,16 +727,17 @@ public class OperatorRetryTest {
                     try {
                         Observable<String> origin = Observable.create(new FuncWithErrors(NUM_RETRIES));
                         TestSubscriber<String> ts = new TestSubscriber<String>();
-                        origin.retry().observeOn(Schedulers.computation()).unsafeSubscribe(ts);
-                        ts.awaitTerminalEvent(2, TimeUnit.SECONDS);
-                        if (ts.getOnNextEvents().size() != NUM_RETRIES + 2) {
-                            data.put(j, ts.getOnNextEvents());
+                        origin.retry()
+                        .observeOn(Schedulers.computation()).unsafeSubscribe(ts);
+                        ts.awaitTerminalEvent(2500, TimeUnit.MILLISECONDS);
+                        if (ts.getOnCompletedEvents().size() != 1) {
+                            completions.put(j, ts.getOnCompletedEvents().size());
                         }
                         if (ts.getOnErrorEvents().size() != 0) {
                             exceptions.put(j, ts.getOnErrorEvents());
                         }
-                        if (ts.getOnCompletedEvents().size() != 1) {
-                            completions.put(j, ts.getOnCompletedEvents().size());
+                        if (ts.getOnNextEvents().size() != NUM_RETRIES + 2) {
+                            data.put(j, ts.getOnNextEvents());
                         }
                     } catch (Throwable t) {
                         timeouts.incrementAndGet();
@@ -749,7 +751,16 @@ public class OperatorRetryTest {
         cdl.await();
         assertEquals(0, timeouts.get());
         if (data.size() > 0) {
-            fail("Data content mismatch: " + data);
+            System.out.println(allSequenceFrequency(data));
+        }
+        if (exceptions.size() > 0) {
+            System.out.println(exceptions);
+        }
+        if (completions.size() > 0) {
+            System.out.println(completions);
+        }
+        if (data.size() > 0) {
+            fail("Data content mismatch: " + allSequenceFrequency(data));
         }
         if (exceptions.size() > 0) {
             fail("Exceptions received: " + exceptions);
@@ -757,6 +768,45 @@ public class OperatorRetryTest {
         if (completions.size() > 0) {
             fail("Multiple completions received: " + completions);
         }
+    }
+    static <T> StringBuilder allSequenceFrequency(Map<Integer, List<T>> its) {
+        StringBuilder b = new StringBuilder();
+        for (Map.Entry<Integer, List<T>> e : its.entrySet()) {
+            if (b.length() > 0) {
+                b.append(", ");
+            }
+            b.append(e.getKey()).append("={");
+            b.append(sequenceFrequency(e.getValue()));
+            b.append("}");
+        }
+        return b;
+    }
+    static <T> StringBuilder sequenceFrequency(Iterable<T> it) {
+        StringBuilder sb = new StringBuilder();
+        
+        Object prev = null;
+        int cnt = 0;
+        
+        for (Object curr : it) {
+            if (sb.length() > 0) {
+                if (!curr.equals(prev)) {
+                    if (cnt > 1) {
+                        sb.append(" x ").append(cnt);
+                        cnt = 1;
+                    }
+                    sb.append(", ");
+                    sb.append(curr);
+                } else {
+                    cnt++;
+                }
+            } else {
+                sb.append(curr);
+                cnt++;
+            }
+            prev = curr;
+        }
+        
+        return sb;
     }
     @Test(timeout = 3000)
     public void testIssue1900() throws InterruptedException {
