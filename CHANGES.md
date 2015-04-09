@@ -1,5 +1,26 @@
 # RxJava Releases #
 
+### Version 1.0.9 – April 9th 2015 ([Maven Central](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.0.9%7C)) ###
+
+* [Pull 2845] (https://github.com/ReactiveX/RxJava/pull/2845) Fix for repeat: wrong target of request 
+* [Pull 2851] (https://github.com/ReactiveX/RxJava/pull/2851) Add 'request(Long.MAX_VALUE)' in 'onStart' to fix the backpressure issue of debounce
+* [Pull 2852] (https://github.com/ReactiveX/RxJava/pull/2852) Change retryWhen to eagerly ignore an error'd source's subsequent events
+* [Pull 2859] (https://github.com/ReactiveX/RxJava/pull/2859) OperatorDoOnRequest should unsubscribe from upstream
+* [Pull 2854] (https://github.com/ReactiveX/RxJava/pull/2854) Fixes wrong request accounting in AbstractOnSubscribe
+* [Pull 2860] (https://github.com/ReactiveX/RxJava/pull/2860) OperatorSingle should request exactly what it needs
+* [Pull 2817] (https://github.com/ReactiveX/RxJava/pull/2817) Fix for non-deterministic: testOnBackpressureDropWithAction
+* [Pull 2818] (https://github.com/ReactiveX/RxJava/pull/2818) Small fix for the getValue javadoc in AsyncSubject and BehaviorSubject
+* [Pull 2823] (https://github.com/ReactiveX/RxJava/pull/2823) Enable maven central sync via bintray
+* [Pull 2807] (https://github.com/ReactiveX/RxJava/pull/2807) Corrected all Java interfaces declarations
+* [Pull 2632] (https://github.com/ReactiveX/RxJava/pull/2632) Implement hook to render specific types in OnNextValue
+* [Pull 2837] (https://github.com/ReactiveX/RxJava/pull/2837) Fixed a non-deterministic test and a few scheduler leaks (in tests)
+* [Pull 2825] (https://github.com/ReactiveX/RxJava/pull/2825) Fixed javadoc for Observable.repeat() method
+* [Pull 2838] (https://github.com/ReactiveX/RxJava/pull/2838) Fix typo in OnSubscribe interface's Javadoc
+* [Pull 2864] (https://github.com/ReactiveX/RxJava/pull/2864) IndexedRingBuffer.getInstance can infer type
+* [Pull 2862] (https://github.com/ReactiveX/RxJava/pull/2862) Cleanup warnings in test source
+* [Pull 2868] (https://github.com/ReactiveX/RxJava/pull/2868) Fixed reentrancy issue with the error producer. 
+* [Pull 2866] (https://github.com/ReactiveX/RxJava/pull/2866) Use simpler naming in Action1, Func1 to assist IDEs
+
 ### Version 1.0.8 – March 7th 2015 ([Maven Central](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.0.8%7C)) ###
 
 * [Pull 2809] (https://github.com/ReactiveX/RxJava/pull/2809) Fixed takeUntil not unsubscribing from either of the observables in case of a terminal condition.
