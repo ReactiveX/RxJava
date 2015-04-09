@@ -318,7 +318,7 @@ public class OperatorScanTest {
         final AtomicReference<Producer> producer = new AtomicReference<Producer>();
         Observable<Integer> o = Observable.create(new Observable.OnSubscribe<Integer>() {
             @Override
-            public void call(final Subscriber subscriber) {
+            public void call(final Subscriber<? super Integer> subscriber) {
                 Producer p = spy(new Producer() {
 
                     private AtomicBoolean requested = new AtomicBoolean(false);

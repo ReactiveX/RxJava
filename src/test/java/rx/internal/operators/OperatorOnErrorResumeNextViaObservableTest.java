@@ -21,8 +21,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import java.util.concurrent.TimeUnit;
-
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -109,7 +107,6 @@ public class OperatorOnErrorResumeNextViaObservableTest {
     
     @Test
     public void testResumeNextWithFailedOnSubscribe() {
-        Subscription s = mock(Subscription.class);
         Observable<String> testObservable = Observable.create(new OnSubscribe<String>() {
 
             @Override
@@ -132,7 +129,6 @@ public class OperatorOnErrorResumeNextViaObservableTest {
     
     @Test
     public void testResumeNextWithFailedOnSubscribeAsync() {
-        Subscription s = mock(Subscription.class);
         Observable<String> testObservable = Observable.create(new OnSubscribe<String>() {
 
             @Override

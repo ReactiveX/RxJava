@@ -106,6 +106,7 @@ public class CovarianceTest {
         assertEquals(6, ts.getOnNextEvents().size());
     }
 
+    @SuppressWarnings("unused")
     @Test
     public void testCovarianceOfCompose() {
         Observable<HorrorMovie> movie = Observable.just(new HorrorMovie());
@@ -119,6 +120,7 @@ public class CovarianceTest {
         });
     }
     
+    @SuppressWarnings("unused")
     @Test
     public void testCovarianceOfCompose2() {
         Observable<Movie> movie = Observable.<Movie> just(new HorrorMovie());
@@ -130,6 +132,7 @@ public class CovarianceTest {
         });
     }
 
+    @SuppressWarnings("unused")
     @Test
     public void testCovarianceOfCompose3() {
         Observable<Movie> movie = Observable.<Movie>just(new HorrorMovie());
@@ -147,6 +150,7 @@ public class CovarianceTest {
         });
     }
 
+    @SuppressWarnings("unused")
     @Test
     public void testCovarianceOfCompose4() {
         Observable<HorrorMovie> movie = Observable.just(new HorrorMovie());
@@ -201,7 +205,7 @@ public class CovarianceTest {
                 oldList.removeAll(newList);
 
                 // for all left in the oldList we'll create DROP events
-                for (Movie old : oldList) {
+                for (@SuppressWarnings("unused") Movie old : oldList) {
                     delta.add(new Movie());
                 }
 

@@ -33,7 +33,6 @@ import rx.Observable.OnSubscribe;
 import rx.functions.Action0;
 import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
-import rx.subscriptions.Subscriptions;
 
 public class OperatorSampleTest {
     private TestScheduler scheduler;

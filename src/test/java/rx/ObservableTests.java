@@ -1054,9 +1054,9 @@ public class ObservableTests {
 
     @Test
     public void testTakeWhileToList() {
-        int[] nums = {1, 2, 3};
+        final int expectedCount = 3;
         final AtomicInteger count = new AtomicInteger();
-        for(final int n: nums) {
+        for (int i = 0;i < expectedCount; i++) {
             Observable
                     .just(Boolean.TRUE, Boolean.FALSE)
                     .takeWhile(new Func1<Boolean, Boolean>() {
@@ -1074,7 +1074,7 @@ public class ObservableTests {
                     })
                     .subscribe();
         }
-        assertEquals(nums.length, count.get());
+        assertEquals(expectedCount, count.get());
     }
     
     @Test
