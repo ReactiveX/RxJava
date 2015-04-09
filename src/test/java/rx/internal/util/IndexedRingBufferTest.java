@@ -37,7 +37,6 @@ public class IndexedRingBufferTest {
 
     @Test
     public void add() {
-        @SuppressWarnings("unchecked")
         IndexedRingBuffer<LSubscription> list = IndexedRingBuffer.getInstance();
         list.add(new LSubscription(1));
         list.add(new LSubscription(2));
@@ -49,7 +48,6 @@ public class IndexedRingBufferTest {
 
     @Test
     public void removeEnd() {
-        @SuppressWarnings("unchecked")
         IndexedRingBuffer<LSubscription> list = IndexedRingBuffer.getInstance();
         list.add(new LSubscription(1));
         int n2 = list.add(new LSubscription(2));
@@ -67,7 +65,6 @@ public class IndexedRingBufferTest {
 
     @Test
     public void removeMiddle() {
-        @SuppressWarnings("unchecked")
         IndexedRingBuffer<LSubscription> list = IndexedRingBuffer.getInstance();
         list.add(new LSubscription(1));
         int n2 = list.add(new LSubscription(2));
@@ -82,7 +79,6 @@ public class IndexedRingBufferTest {
 
     @Test
     public void addRemoveAdd() {
-        @SuppressWarnings("unchecked")
         IndexedRingBuffer<String> list = IndexedRingBuffer.getInstance();
         list.add("one");
         list.add("two");
@@ -119,7 +115,6 @@ public class IndexedRingBufferTest {
     @Test
     public void addThousands() {
         String s = "s";
-        @SuppressWarnings("unchecked")
         IndexedRingBuffer<String> list = IndexedRingBuffer.getInstance();
         for (int i = 0; i < 10000; i++) {
             list.add(s);
@@ -145,7 +140,6 @@ public class IndexedRingBufferTest {
 
     @Test
     public void testForEachWithIndex() {
-        @SuppressWarnings("unchecked")
         IndexedRingBuffer<String> buffer = IndexedRingBuffer.getInstance();
         buffer.add("zero");
         buffer.add("one");
@@ -212,7 +206,6 @@ public class IndexedRingBufferTest {
 
     @Test
     public void testForEachAcrossSections() {
-        @SuppressWarnings("unchecked")
         IndexedRingBuffer<Integer> buffer = IndexedRingBuffer.getInstance();
         for (int i = 0; i < 10000; i++) {
             buffer.add(i);
@@ -231,7 +224,6 @@ public class IndexedRingBufferTest {
     @Test
     public void longRunningAddRemoveAddDoesntLeakMemory() {
         String s = "s";
-        @SuppressWarnings("unchecked")
         IndexedRingBuffer<String> list = IndexedRingBuffer.getInstance();
         for (int i = 0; i < 20000; i++) {
             int index = list.add(s);
@@ -242,14 +234,13 @@ public class IndexedRingBufferTest {
         list.forEach(newCounterAction(c));
         assertEquals(0, c.get());
         //        System.out.println("Index is: " + list.index.get() + " when it should be no bigger than " + list.SIZE);
-        assertTrue(list.index.get() < list.SIZE);
+        assertTrue(list.index.get() < IndexedRingBuffer.SIZE);
         // it should actually be 1 since we only did add/remove sequentially
         assertEquals(1, list.index.get());
     }
 
     @Test
     public void testConcurrentAdds() throws InterruptedException {
-        @SuppressWarnings("unchecked")
         final IndexedRingBuffer<Integer> list = IndexedRingBuffer.getInstance();
 
         Scheduler.Worker w1 = Schedulers.computation().createWorker();
@@ -300,7 +291,6 @@ public class IndexedRingBufferTest {
 
     @Test
     public void testConcurrentAddAndRemoves() throws InterruptedException {
-        @SuppressWarnings("unchecked")
         final IndexedRingBuffer<Integer> list = IndexedRingBuffer.getInstance();
 
         final List<Exception> exceptions = Collections.synchronizedList(new ArrayList<Exception>());
