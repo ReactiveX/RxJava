@@ -19,7 +19,6 @@ import rx.Observable;
 import rx.Subscriber;
 import rx.annotations.Experimental;
 import rx.exceptions.Exceptions;
-import rx.exceptions.OnErrorThrowable;
 
 /**
  * Abstract class for defining error handling logic in addition to the normal

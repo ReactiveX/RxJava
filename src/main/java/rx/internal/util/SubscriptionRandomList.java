@@ -16,14 +16,13 @@
 package rx.internal.util;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import rx.Subscription;
-import rx.exceptions.*;
+import rx.exceptions.Exceptions;
 import rx.functions.Action1;
 
 /**
@@ -37,10 +36,6 @@ public final class SubscriptionRandomList<T extends Subscription> implements Sub
     private boolean unsubscribed = false;
 
     public SubscriptionRandomList() {
-    }
-
-    public SubscriptionRandomList(final T... subscriptions) {
-        this.subscriptions = new HashSet<T>(Arrays.asList(subscriptions));
     }
 
     @Override
