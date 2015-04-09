@@ -35,12 +35,6 @@ public final class SubscriptionIndexedRingBuffer<T extends Subscription> impleme
     public SubscriptionIndexedRingBuffer() {
     }
 
-    public SubscriptionIndexedRingBuffer(final T... subscriptions) {
-        for (T t : subscriptions) {
-            this.subscriptions.add(t);
-        }
-    }
-
     @Override
     public boolean isUnsubscribed() {
         return unsubscribed == 1;
