@@ -1,8 +1,6 @@
 language: java
-
 jdk:
-  - oraclejdk7
-  
+- oraclejdk7
 sudo: false
 # as per http://blog.travis-ci.com/2014-12-17-faster-builds-with-container-based-infrastructure/
 
@@ -14,11 +12,9 @@ cache:
   directories:
   - $HOME/.m2
   - $HOME/.gradle
-
-# secure environment variables for release to Bintray
 env:
   global:
-  - secure: "HzRt91B6CLkBCxRXlo7V+F5L8SSHSW8dgkO8nAlTnOIK73k3QelDeBlcm1wnuNa3x+54YS9WBv6QrTNZr9lVi/8IPfKpd+jtjIbCWRvh6aNhqLIXWTL7oTvUd4E8DDUAKB6UMae6SiBSy2wsFELGHXeNwg7EiPfxsd5sKRiS7H4="
-  - secure: "MSZLPasqNKAC+8qhKQD3xO+ZbuOy65HpUN+1+KnoOLMkHCu/f4x60W1tpTAzn1DFEVpokHR0n3I4z4HpWybURDQfDHD1bB4IsznjCUBYA9Uo9Sb0U4TS17dQr8s7SORIjHDLGNSWETJjrA9TfuUV6HTVhRO1ECx3H+wuTwCVDN0="
-  - secure: Joj/k9B4q1BttgP7rY1DFR9flURcvT2b4PFnxYwxljQuu6NHwz/3yLM1b711Kv9oAXlo1D/ZTXsCzle8tLs5yC3GakDCpapqZP4Gmen4zGLuHB851gejH134dJj4bEWigrSM6NJMzjbl7qmlMAc8R+DlLi/J7AxNicOrhOT5MGw=
-  - secure: jxpzSkzSBnTqlAAY6r8QmX4b/Gf36NTshQ7xWQ8UWkWHHjm4GTnCoR71nXCIqhtZRgXvteR2AKYbraXU3ROGkZZXR4KkEwjhkf2FVr16bmUWbiqQrVvIdBPljcV9m3OevNEzCqd3QPod/Jma5s8WIDvuOv2z/cnpN/HQiHaRFEM=
+  - secure: YcLpYfNc/dyDON+oDvnJK5pFNhpPeJHxlAHV8JBt42e51prAl6njqrg1Qlfdp0pvBiskTPQHUxbFy9DOB1Z+43lPj5vlqz6qBgtS3vtBnsrczr+5Xx7NTdVKq6oZGl45VjfNPT7zdM6GQ5ifdzOid6kJIFu34g9JZkCzOY3BWGM=
+  - secure: WVmfSeW1UMNdem7+X4cVDjkEkqdeNavYH4udn3bFN1IFaWdliWFp4FYVBVi+p1T/IgkRSqzoW9Bm43DABe1UMFoErFCbfd7B0Ofgb4NZAsxFgokHGVLCe6k5+rQyASseiO7k0itSj3Kq9TrDueKPhv+g+IG0w1A8yZTnXdhXHvY=
+  - secure: Xt8E09nmSr+5r7ly95hG/EiBitZbhFGPRGp8oqPkNn1A2fzG9+hnvlNLgQhVPsISZGzJwkWa3LGBxAVGmuysVOz7eCwkoqlDZaaSLYAPfWXqkr+cmYGPkErgHSp+n/hnQG4TylX0YxzqX8flr6db21zWyNduiyHmo+xFydI5LeM=
+  - secure: RmpIsmYa5BdLLWR6DILjhEE/dx2q3O0NIkvnMx5G1cyRCNCrOf1B7fYFHnsTDwpvRA+6H6dZinmeyf6D3G+czOG5q/TW2jcu5nh+YOLhBb6jPIqRDfq/WHAa5Lkdssxs5g9RdWlEDVFMoE62lGc4cnfJz5F5puH29dy2SvXxIQw=
