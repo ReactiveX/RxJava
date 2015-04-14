@@ -628,7 +628,7 @@ public class OperatorMergeTest {
         assertTrue(generated1.get() >= RxRingBuffer.SIZE * 2 && generated1.get() <= RxRingBuffer.SIZE * 4);
     }
 
-    @Test
+    @Test//(timeout = 10000)
     public void testBackpressureUpstream2InLoop() throws InterruptedException {
         for (int i = 0; i < 1000; i++) {
             System.err.flush();
@@ -651,7 +651,7 @@ public class OperatorMergeTest {
         };
 
         Observable.merge(o1.take(RxRingBuffer.SIZE * 2), Observable.just(-99)).subscribe(testSubscriber);
-        testSubscriber.awaitTerminalEvent();
+        testSubscriber.awaitTerminalEvent(2, TimeUnit.SECONDS);
         
         List<Integer> onNextEvents = testSubscriber.getOnNextEvents();
         
