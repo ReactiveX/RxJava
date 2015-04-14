@@ -114,8 +114,9 @@ public final class OperatorConcat<T> implements Operator<T, Observable<? extends
 
         private void requestFromChild(long n) {
             // we track 'requested' so we know whether we should subscribe the next or not
+            ConcatInnerSubscriber<T> actualSubscriber = currentSubscriber;
             if (REQUESTED_UPDATER.getAndAdd(this, n) == 0) {
-                if (currentSubscriber == null && wip > 0) {
+                if (actualSubscriber == null && wip > 0) {
                     // this means we may be moving from one subscriber to another after having stopped processing
                     // so need to kick off the subscribe via this request notification
                     subscribeNext();
@@ -124,9 +125,9 @@ public final class OperatorConcat<T> implements Operator<T, Observable<? extends
                 }
             } 
                 
-            if (currentSubscriber != null) {
+            if (actualSubscriber != null) {
                 // otherwise we are just passing it through to the currentSubscriber
-                currentSubscriber.requestMore(n);
+                actualSubscriber.requestMore(n);
             }
         }
 
