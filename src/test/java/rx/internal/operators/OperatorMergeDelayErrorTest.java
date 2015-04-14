@@ -15,30 +15,23 @@
  */
 package rx.internal.operators;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.InOrder;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-
-import rx.Observable;
-import rx.Observable.OnSubscribe;
-import rx.Observer;
-import rx.Subscriber;
-import rx.exceptions.CompositeException;
-import rx.exceptions.TestException;
-import rx.observers.TestSubscriber;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
+
+import java.util.*;
+import java.util.concurrent.*;
+
+import org.junit.*;
+import org.mockito.*;
+
+import rx.*;
+import rx.Observable.OnSubscribe;
+import rx.Observable;
+import rx.Observer;
+import rx.exceptions.*;
+import rx.functions.Action1;
+import rx.observers.TestSubscriber;
 
 public class OperatorMergeDelayErrorTest {
 
@@ -545,5 +538,28 @@ public class OperatorMergeDelayErrorTest {
             });
             t.start();
         }
+    }
+    
+    @Test
+    public void testDelayErrorMaxConcurrent() {
+        final List<Long> requests = new ArrayList<Long>();
+        Observable<Integer> source = Observable.mergeDelayError(Observable.just(
+                Observable.just(1).asObservable(), 
+                Observable.<Integer>error(new TestException())).doOnRequest(new Action1<Long>() {
+                    @Override
+                    public void call(Long t1) {
+                        requests.add(t1);
+                    }
+                }), 1);
+        
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        
+        source.subscribe(ts);
+        
+        ts.assertReceivedOnNext(Arrays.asList(1));
+        ts.assertTerminalEvent();
+        assertEquals(1, ts.getOnErrorEvents().size());
+        assertTrue(ts.getOnErrorEvents().get(0) instanceof TestException);
+        assertEquals(Arrays.asList(1L, 1L, 1L), requests);
     }
 }

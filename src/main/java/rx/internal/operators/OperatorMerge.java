@@ -53,12 +53,12 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
     /** Lazy initialization via inner-class holder. */
     private static final class HolderNoDelay {
         /** A singleton instance. */
-        static final OperatorMerge<Object> INSTANCE = new OperatorMerge<Object>(false);
+        static final OperatorMerge<Object> INSTANCE = new OperatorMerge<Object>(false, Integer.MAX_VALUE);
     }
     /** Lazy initialization via inner-class holder. */
     private static final class HolderDelayErrors {
         /** A singleton instance. */
-        static final OperatorMerge<Object> INSTANCE = new OperatorMerge<Object>(true);
+        static final OperatorMerge<Object> INSTANCE = new OperatorMerge<Object>(true, Integer.MAX_VALUE);
     }
     /**
      * @param delayErrors should the merge delay errors?
@@ -70,6 +70,16 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
             return (OperatorMerge<T>)HolderDelayErrors.INSTANCE;
         }
         return (OperatorMerge<T>)HolderNoDelay.INSTANCE;
+    }
+    
+    /**
+     * Returns a new instance of OperatorMerge with the given settings.
+     * @param delayErrors should the merge delay errors?
+     * @param maxConcurrent the maximum number of concurrent subscriptions to sources
+     * @return the new instance
+     */
+    public static <T> OperatorMerge<T> instance(boolean delayErrors, int maxConcurrent) {
+        return new OperatorMerge<T>(delayErrors, maxConcurrent);
     }
     /*
      * benjchristensen => This class is complex and I'm not a fan of it despite writing it. I want to give some background
@@ -100,20 +110,19 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
      * The benchmarks I use are in the JMH OperatorMergePerf class. GC memory pressure is tested using Java Flight Recorder
      * to track object allocation.
      */
-
-    private OperatorMerge() {
-        this.delayErrors = false;
-    }
-
-    private OperatorMerge(boolean delayErrors) {
-        this.delayErrors = delayErrors;
-    }
-
     private final boolean delayErrors;
+    
+    final int maxConcurrent;
+
+    private OperatorMerge(boolean delayErrors, int maxConcurrent) {
+        this.delayErrors = delayErrors;
+        this.maxConcurrent = maxConcurrent;
+    }
+
 
     @Override
     public Subscriber<Observable<? extends T>> call(final Subscriber<? super T> child) {
-        return new MergeSubscriber<T>(child, delayErrors);
+        return new MergeSubscriber<T>(child, delayErrors, maxConcurrent);
 
     }
 
@@ -128,11 +137,12 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
 
         private volatile SubscriptionIndexedRingBuffer<InnerSubscriber<T>> childrenSubscribers;
 
-        private volatile RxRingBuffer scalarValueQueue = null;
+        private volatile RxRingBuffer scalarValueQueue;
 
         /* protected by lock on MergeSubscriber instance */
         private int missedEmitting = 0;
         private boolean emitLock = false;
+        private int maxConcurrent;
 
         /**
          * Using synchronized(this) for `emitLock` instead of ReentrantLock or AtomicInteger is faster when there is no contention.
@@ -149,9 +159,10 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
          * } </pre>
          */
 
-        public MergeSubscriber(Subscriber<? super T> actual, boolean delayErrors) {
+        public MergeSubscriber(Subscriber<? super T> actual, boolean delayErrors, int maxConcurrent) {
             super(actual);
             this.actual = actual;
+            this.maxConcurrent = maxConcurrent;
             this.mergeProducer = new MergeProducer<T>(this);
             this.delayErrors = delayErrors;
             // decoupled the subscription chain because we need to decouple and control backpressure
@@ -163,7 +174,7 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
         public void onStart() {
             // we request backpressure so we can handle long-running Observables that are enqueueing, such as flatMap use cases
             // we decouple the Producer chain while keeping the Subscription chain together (perf benefit) via super(actual)
-            request(RxRingBuffer.SIZE);
+            request(Math.min(maxConcurrent, RxRingBuffer.SIZE));
         }
 
         /*
@@ -178,9 +189,18 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
                 if (t == null || isUnsubscribed()) {
                     return;
                 }
+                boolean overflow = false;
                 synchronized (this) {
                     // synchronized here because `wip` can be concurrently changed by children Observables
-                    wip++;
+                    overflow = wip >= maxConcurrent;
+                    if (!overflow) {
+                        wip++;
+                    }
+                }
+                if (overflow) {
+                    onError(new MissingBackpressureException("The outer Observable didn't respect backpressure."));
+                    unsubscribe();
+                    return;
                 }
                 handleNewSource(t);
             }
@@ -213,7 +233,7 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
             InnerSubscriber<T> i = new InnerSubscriber<T>(this, producerIfNeeded);
             i.sindex = childrenSubscribers.add(i);
             t.unsafeSubscribe(i);
-            if (!isUnsubscribed()) {
+            if (!isUnsubscribed() && maxConcurrent == Integer.MAX_VALUE) {
                 request(1);
             }
         }
@@ -452,6 +472,8 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
                 }
                 if (sendOnComplete) {
                     drainAndComplete();
+                } else {
+                    request(1);
                 }
             } else {
                 actual.onError(e);
@@ -484,6 +506,8 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
             childrenSubscribers.remove(s.sindex);
             if (sendOnComplete) {
                 drainAndComplete();
+            } else {
+                request(1);
             }
         }
 
