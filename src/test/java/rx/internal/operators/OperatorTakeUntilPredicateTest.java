@@ -129,7 +129,7 @@ public class OperatorTakeUntilPredicateTest {
         Observable.range(1, 1000).takeUntil(UtilityFunctions.alwaysFalse()).subscribe(ts);
         
         ts.assertNoErrors();
-        ts.assertReceivedOnNext(Arrays.asList(1, 2, 3, 4, 5));
+        ts.assertReceivedOnNext(1, 2, 3, 4, 5);
         Assert.assertEquals(0, ts.getOnCompletedEvents().size());
     }
 }

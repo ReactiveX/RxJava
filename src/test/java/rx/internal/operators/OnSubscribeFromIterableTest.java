@@ -127,11 +127,11 @@ public class OnSubscribeFromIterableTest {
         ts.assertReceivedOnNext(Collections.<Integer> emptyList());
         ts.requestMore(1);
         o.call(ts);
-        ts.assertReceivedOnNext(Arrays.asList(1));
+        ts.assertReceivedOnNext(1);
         ts.requestMore(2);
-        ts.assertReceivedOnNext(Arrays.asList(1, 2, 3));
+        ts.assertReceivedOnNext(1, 2, 3);
         ts.requestMore(3);
-        ts.assertReceivedOnNext(Arrays.asList(1, 2, 3, 4, 5, 6));
+        ts.assertReceivedOnNext(1, 2, 3, 4, 5, 6);
         ts.requestMore(list.size());
         ts.assertTerminalEvent();
     }
@@ -143,7 +143,7 @@ public class OnSubscribeFromIterableTest {
         ts.assertReceivedOnNext(Collections.<Integer> emptyList());
         ts.requestMore(Long.MAX_VALUE); // infinite
         o.call(ts);
-        ts.assertReceivedOnNext(Arrays.asList(1, 2, 3, 4, 5));
+        ts.assertReceivedOnNext(1, 2, 3, 4, 5);
         ts.assertTerminalEvent();
     }
 
@@ -152,15 +152,15 @@ public class OnSubscribeFromIterableTest {
         OnSubscribeFromIterable<Integer> o = new OnSubscribeFromIterable<Integer>(Arrays.asList(1, 2, 3));
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         o.call(ts);
-        ts.assertReceivedOnNext(Arrays.asList(1, 2, 3));
+        ts.assertReceivedOnNext(1, 2, 3);
 
         ts = new TestSubscriber<Integer>();
         o.call(ts);
-        ts.assertReceivedOnNext(Arrays.asList(1, 2, 3));
+        ts.assertReceivedOnNext(1, 2, 3);
 
         ts = new TestSubscriber<Integer>();
         o.call(ts);
-        ts.assertReceivedOnNext(Arrays.asList(1, 2, 3));
+        ts.assertReceivedOnNext(1, 2, 3);
     }
     
     @Test

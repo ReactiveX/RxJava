@@ -127,7 +127,7 @@ public class OnSubscribeCacheTest {
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
         System.out.println(ts.getOnNextEvents());
-        ts.assertReceivedOnNext(Arrays.asList(expected));
+        ts.assertReceivedOnNext(expected);
     }
 
     @Test(timeout = 10000)

@@ -56,7 +56,7 @@ public class AbstractOnSubscribeTest {
         
         ts.assertNoErrors();
         ts.assertTerminalEvent();
-        ts.assertReceivedOnNext(Arrays.asList(1));
+        ts.assertReceivedOnNext(1);
     }
     @Test
     public void testJustMisbehaving() {

@@ -159,7 +159,7 @@ public class OperatorPublishTest {
         }).subscribe(ts);
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
-        ts.assertReceivedOnNext(Arrays.asList(0, 1, 2, 3));
+        ts.assertReceivedOnNext(0, 1, 2, 3);
         assertEquals(5, emitted.get());
         System.out.println(ts.getOnNextEvents());
     }
@@ -238,8 +238,8 @@ public class OperatorPublishTest {
         assertTrue(child1Unsubscribed.get());
         assertTrue(child2Unsubscribed.get());
         
-        ts1.assertReceivedOnNext(Arrays.asList(1, 2, 3, 4, 5));
-        ts2.assertReceivedOnNext(Arrays.asList(4, 5, 6, 7, 8));
+        ts1.assertReceivedOnNext(1, 2, 3, 4, 5);
+        ts2.assertReceivedOnNext(4, 5, 6, 7, 8);
         
         assertEquals(8, sourceEmission.get());
     }
@@ -255,7 +255,7 @@ public class OperatorPublishTest {
         co.subscribe(subscriber);
         // Emit 1 and 2
         scheduler.advanceTimeBy(50, TimeUnit.MILLISECONDS);
-        subscriber.assertReceivedOnNext(Arrays.asList(1L, 2L));
+        subscriber.assertReceivedOnNext(1L, 2L);
         subscriber.assertNoErrors();
         subscriber.assertTerminalEvent();
     }

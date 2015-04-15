@@ -185,7 +185,7 @@ public class OperatorSubscribeOnTest {
 
         ts.awaitTerminalEventAndUnsubscribeOnTimeout(1000, TimeUnit.MILLISECONDS);
         Thread.sleep(200); // give time for the loop to continue
-        ts.assertReceivedOnNext(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+        ts.assertReceivedOnNext(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
         assertEquals(10, count.get());
     }
 

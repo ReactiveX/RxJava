@@ -42,7 +42,7 @@ public class TestObserverTest {
         TestObserver<Integer> o = new TestObserver<Integer>();
         oi.subscribe(o);
 
-        o.assertReceivedOnNext(Arrays.asList(1, 2));
+        o.assertReceivedOnNext(1, 2);
         assertEquals(2, o.getOnNextEvents().size());
         o.assertTerminalEvent();
     }
@@ -56,7 +56,7 @@ public class TestObserverTest {
         thrown.expect(AssertionError.class);
         thrown.expectMessage("Number of items does not match. Provided: 1  Actual: 2");
 
-        o.assertReceivedOnNext(Arrays.asList(1));
+        o.assertReceivedOnNext(1);
         assertEquals(2, o.getOnNextEvents().size());
         o.assertTerminalEvent();
     }
@@ -70,7 +70,7 @@ public class TestObserverTest {
         thrown.expect(AssertionError.class);
         thrown.expectMessage("Value at index: 1 expected to be [3] (Integer) but was: [2] (Integer)");
 
-        o.assertReceivedOnNext(Arrays.asList(1, 3));
+        o.assertReceivedOnNext(1, 3);
         assertEquals(2, o.getOnNextEvents().size());
         o.assertTerminalEvent();
     }
@@ -87,7 +87,7 @@ public class TestObserverTest {
         thrown.expect(AssertionError.class);
         thrown.expectMessage("No terminal events received.");
 
-        o.assertReceivedOnNext(Arrays.asList(1, 2));
+        o.assertReceivedOnNext(1, 2);
         assertEquals(2, o.getOnNextEvents().size());
         o.assertTerminalEvent();
     }

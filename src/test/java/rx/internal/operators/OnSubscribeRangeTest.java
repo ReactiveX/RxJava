@@ -108,11 +108,11 @@ public class OnSubscribeRangeTest {
         ts.assertReceivedOnNext(Collections.<Integer> emptyList());
         ts.requestMore(1);
         o.call(ts);
-        ts.assertReceivedOnNext(Arrays.asList(1));
+        ts.assertReceivedOnNext(1);
         ts.requestMore(2);
-        ts.assertReceivedOnNext(Arrays.asList(1, 2, 3));
+        ts.assertReceivedOnNext(1, 2, 3);
         ts.requestMore(3);
-        ts.assertReceivedOnNext(Arrays.asList(1, 2, 3, 4, 5, 6));
+        ts.assertReceivedOnNext(1, 2, 3, 4, 5, 6);
         ts.requestMore(RxRingBuffer.SIZE);
         ts.assertTerminalEvent();
     }

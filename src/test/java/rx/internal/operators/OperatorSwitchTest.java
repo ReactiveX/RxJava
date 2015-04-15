@@ -513,7 +513,7 @@ public class OperatorSwitchTest {
             }
         });
         scheduler.advanceTimeBy(10, TimeUnit.MILLISECONDS);
-        testSubscriber.assertReceivedOnNext(Arrays.asList("a1", "b1", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8", "c9", "c10"));
+        testSubscriber.assertReceivedOnNext("a1", "b1", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "c8", "c9", "c10");
         testSubscriber.assertNoErrors();
         testSubscriber.assertTerminalEvent();
     }

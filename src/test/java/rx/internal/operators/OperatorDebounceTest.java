@@ -301,7 +301,7 @@ public class OperatorDebounceTest {
 
         scheduler.advanceTimeBy(30, TimeUnit.MILLISECONDS);
 
-        subscriber.assertReceivedOnNext(Arrays.asList(2));
+        subscriber.assertReceivedOnNext(2);
         subscriber.assertTerminalEvent();
         subscriber.assertNoErrors();
     }

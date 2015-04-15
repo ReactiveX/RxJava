@@ -207,10 +207,10 @@ public class OperatorTakeUntilTest {
 
         source.onNext(1);
         
-        ts.assertReceivedOnNext(Arrays.asList(1));
+        ts.assertReceivedOnNext(1);
         until.onNext(1);
         
-        ts.assertReceivedOnNext(Arrays.asList(1));
+        ts.assertReceivedOnNext(1);
         ts.assertNoErrors();
         ts.assertTerminalEvent();
         
@@ -233,7 +233,7 @@ public class OperatorTakeUntilTest {
         source.onNext(1);
         source.onCompleted();
         
-        ts.assertReceivedOnNext(Arrays.asList(1));
+        ts.assertReceivedOnNext(1);
         ts.assertNoErrors();
         ts.assertTerminalEvent();
         
@@ -255,7 +255,7 @@ public class OperatorTakeUntilTest {
 
         source.onNext(1);
         
-        ts.assertReceivedOnNext(Arrays.asList(1));
+        ts.assertReceivedOnNext(1);
         ts.assertNoErrors();
         ts.assertTerminalEvent();
         
@@ -279,7 +279,7 @@ public class OperatorTakeUntilTest {
 
         ts.requestMore(1);
         
-        ts.assertReceivedOnNext(Arrays.asList(1));
+        ts.assertReceivedOnNext(1);
         ts.assertNoErrors();
         assertTrue("TestSubscriber completed", ts.getOnCompletedEvents().isEmpty());
         

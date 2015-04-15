@@ -178,7 +178,7 @@ public class OperatorOnErrorResumeNextViaFunctionTest {
 
         ts.assertTerminalEvent();
         System.out.println(ts.getOnNextEvents());
-        ts.assertReceivedOnNext(Arrays.asList("success"));
+        ts.assertReceivedOnNext("success");
     }
 
     /**
@@ -227,7 +227,7 @@ public class OperatorOnErrorResumeNextViaFunctionTest {
 
         ts.assertTerminalEvent();
         System.out.println(ts.getOnNextEvents());
-        ts.assertReceivedOnNext(Arrays.asList("success"));
+        ts.assertReceivedOnNext("success");
     }
     
     @Test

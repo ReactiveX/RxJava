@@ -119,7 +119,7 @@ public class OperatorWindowWithSizeTest {
         }).window(5).take(2)).subscribe(ts);
         ts.awaitTerminalEvent(500, TimeUnit.MILLISECONDS);
         ts.assertTerminalEvent();
-        ts.assertReceivedOnNext(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+        ts.assertReceivedOnNext(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
         //        System.out.println(ts.getOnNextEvents());
         assertEquals(10, count.get());
     }
@@ -143,7 +143,7 @@ public class OperatorWindowWithSizeTest {
                 .subscribe(ts);
         ts.awaitTerminalEvent(500, TimeUnit.MILLISECONDS);
         ts.assertTerminalEvent();
-        ts.assertReceivedOnNext(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+        ts.assertReceivedOnNext(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
         // make sure we don't emit all values ... the unsubscribe should propagate
         assertTrue(count.get() < 100000);
     }
@@ -163,7 +163,7 @@ public class OperatorWindowWithSizeTest {
         ts.awaitTerminalEvent(500, TimeUnit.MILLISECONDS);
         ts.assertTerminalEvent();
         //        System.out.println(ts.getOnNextEvents());
-        ts.assertReceivedOnNext(Arrays.asList(1, 2, 3, 4, 5, 5, 6, 7, 8, 9));
+        ts.assertReceivedOnNext(1, 2, 3, 4, 5, 5, 6, 7, 8, 9);
         assertEquals(9, count.get());
     }
 
@@ -186,7 +186,7 @@ public class OperatorWindowWithSizeTest {
                 .subscribe(ts);
         ts.awaitTerminalEvent(500, TimeUnit.MILLISECONDS);
         ts.assertTerminalEvent();
-        ts.assertReceivedOnNext(Arrays.asList(1, 2, 3, 4, 5, 5, 6, 7, 8, 9));
+        ts.assertReceivedOnNext(1, 2, 3, 4, 5, 5, 6, 7, 8, 9);
         // make sure we don't emit all values ... the unsubscribe should propagate
         assertTrue(count.get() < 100000);
     }

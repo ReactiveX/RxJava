@@ -489,7 +489,7 @@ public class OperatorMergeDelayErrorTest {
                 ).subscribe(ts);
         ts.awaitTerminalEvent();
         ts.assertTerminalEvent();
-        ts.assertReceivedOnNext(Arrays.asList(1, 2));
+        ts.assertReceivedOnNext(1, 2);
         assertEquals(1, ts.getOnErrorEvents().size());
 
     }

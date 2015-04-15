@@ -31,6 +31,6 @@ public class SerializedSubjectTest {
         subject.onNext("hello");
         subject.onCompleted();
         ts.awaitTerminalEvent();
-        ts.assertReceivedOnNext(Arrays.asList("hello"));
+        ts.assertReceivedOnNext("hello");
     }
 }
