@@ -125,6 +125,7 @@ public final class PublishSubject<T> extends Subject<T, T> {
      * @return true if the subject has received a throwable through {@code onError}.
      */
     @Experimental
+    @Override
     public boolean hasThrowable() {
         Object o = state.get();
         return nl.isError(o);
@@ -134,6 +135,7 @@ public final class PublishSubject<T> extends Subject<T, T> {
      * @return true if the subject completed normally via {@code onCompleted}
      */
     @Experimental
+    @Override
     public boolean hasCompleted() {
         Object o = state.get();
         return o != null && !nl.isError(o);
@@ -144,11 +146,36 @@ public final class PublishSubject<T> extends Subject<T, T> {
      * subject hasn't terminated yet or it terminated normally.
      */
     @Experimental
+    @Override
     public Throwable getThrowable() {
         Object o = state.get();
         if (nl.isError(o)) {
             return nl.getError(o);
         }
         return null;
+    }
+    
+    @Override
+    @Experimental
+    public boolean hasValue() {
+        return false;
+    }
+    @Override
+    @Experimental
+    public T getValue() {
+        return null;
+    }
+    @Override
+    @Experimental
+    public Object[] getValues() {
+        return new Object[0];
+    }
+    @Override
+    @Experimental
+    public T[] getValues(T[] a) {
+        if (a.length > 0) {
+            a[0] = null;
+        }
+        return a;
     }
 }
