@@ -7771,7 +7771,12 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/takelast.html">ReactiveX operators documentation: TakeLast</a>
      */
     public final Observable<T> takeLast(final int count) {
-        return lift(new OperatorTakeLast<T>(count));
+        if (count == 0)
+            return ignoreElements();
+        else if (count == 1 )
+            return lift(OperatorTakeLastOne.<T>instance());
+        else 
+            return lift(new OperatorTakeLast<T>(count));
     }
 
     /**
