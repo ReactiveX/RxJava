@@ -20,6 +20,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import rx.Observable.Operator;
 import rx.Producer;
 import rx.Subscriber;
+import rx.exceptions.Exceptions;
 import rx.exceptions.OnErrorThrowable;
 import rx.functions.Func0;
 import rx.functions.Func2;
@@ -103,7 +104,9 @@ public final class OperatorScan<R, T> implements Operator<R, T> {
                     try {
                         this.value = accumulator.call(this.value, currentValue);
                     } catch (Throwable e) {
+                        Exceptions.throwIfFatal(e);
                         child.onError(OnErrorThrowable.addValueAsLastCause(e, currentValue));
+                        return;
                     }
                 }
                 child.onNext(this.value);
