@@ -44,7 +44,7 @@ public final class OnSubscribeRange implements OnSubscribe<Integer> {
         // accessed by REQUESTED_UPDATER
         private volatile long requested;
         private static final AtomicLongFieldUpdater<RangeProducer> REQUESTED_UPDATER = AtomicLongFieldUpdater.newUpdater(RangeProducer.class, "requested");
-        private long index;
+        private volatile long index;
         private final int end;
 
         private RangeProducer(Subscriber<? super Integer> o, int start, int end) {
