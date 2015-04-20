@@ -158,11 +158,11 @@ public final class OperatorConcat<T> implements Operator<T, Observable<? extends
         }
 
         void completeInner() {
-            request(1);
             currentSubscriber = null;
             if (WIP_UPDATER.decrementAndGet(this) > 0) {
                 subscribeNext();
             }
+            request(1);
         }
 
         void subscribeNext() {
