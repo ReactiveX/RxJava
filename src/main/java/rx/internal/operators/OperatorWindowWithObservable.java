@@ -119,7 +119,7 @@ public final class OperatorWindowWithObservable<T, U> implements Operator<Observ
                 do {
                     drain(localQueue);
                     if (once) {
-                        once = true;
+                        once = false;
                         emitValue(t);
                     }
                     

@@ -22,6 +22,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
@@ -29,6 +30,8 @@ import org.junit.Test;
 import rx.Observable;
 import rx.Observer;
 import rx.exceptions.TestException;
+import rx.functions.Func0;
+import rx.observers.TestSubscriber;
 import rx.subjects.PublishSubject;
 
 public class OperatorWindowWithObservableTest {
@@ -251,5 +254,40 @@ public class OperatorWindowWithObservableTest {
 
         verify(o, never()).onCompleted();
         verify(o).onError(any(TestException.class));
+    }
+
+    @Test
+    public void testWindowNoDuplication() {
+        final PublishSubject<Integer> source = PublishSubject.create();
+        final TestSubscriber<Integer> tsw = new TestSubscriber<Integer>() {
+            boolean once;
+            @Override
+            public void onNext(Integer t) {
+                if (!once) {
+                    once = true;
+                    source.onNext(2);
+                }
+                super.onNext(t);
+            }
+        };
+        TestSubscriber<Observable<Integer>> ts = new TestSubscriber<Observable<Integer>>() {
+            @Override
+            public void onNext(Observable<Integer> t) {
+                t.subscribe(tsw);
+                super.onNext(t);
+            }
+        };
+        source.window(new Func0<Observable<Object>>() {
+            @Override
+            public Observable<Object> call() {
+                return Observable.never();
+            }
+        }).subscribe(ts);
+
+        source.onNext(1);
+        source.onCompleted();
+
+        assertEquals(1, ts.getOnNextEvents().size());
+        assertEquals(Arrays.asList(1, 2), tsw.getOnNextEvents());
     }
 }
