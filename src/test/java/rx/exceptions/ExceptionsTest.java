@@ -18,6 +18,8 @@ package rx.exceptions;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.junit.Test;
 
 import rx.Observable;
@@ -39,27 +41,13 @@ public class ExceptionsTest {
         });
     }
 
-    @Test(expected = StackOverflowError.class)
-    public void testStackOverflowIsThrown() {
+    @Test
+    public void testStackOverflowWouldOccur() {
         final PublishSubject<Integer> a = PublishSubject.create();
         final PublishSubject<Integer> b = PublishSubject.create();
-        new Observer<Integer>() {
-
-            @Override
-            public void onCompleted() {
-
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                e.printStackTrace();
-            }
-
-            @Override
-            public void onNext(Integer args) {
-                System.out.println(args);
-            }
-        };
+        final int MAX_STACK_DEPTH = 1000;
+        final AtomicInteger depth = new AtomicInteger();
+        
         a.subscribe(new Observer<Integer>() {
 
             @Override
@@ -73,26 +61,8 @@ public class ExceptionsTest {
             }
 
             @Override
-            public void onNext(Integer args) {
-                System.out.println(args);
-            }
-        });
-        b.subscribe();
-        a.subscribe(new Observer<Integer>() {
-
-            @Override
-            public void onCompleted() {
-
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                e.printStackTrace();
-            }
-
-            @Override
-            public void onNext(Integer args) {
-                b.onNext(args + 1);
+            public void onNext(Integer n) {
+                b.onNext(n + 1);
             }
         });
         b.subscribe(new Observer<Integer>() {
@@ -108,11 +78,37 @@ public class ExceptionsTest {
             }
 
             @Override
-            public void onNext(Integer args) {
-                a.onNext(args + 1);
+            public void onNext(Integer n) {
+                if (depth.get() < MAX_STACK_DEPTH) { 
+                    depth.set(Thread.currentThread().getStackTrace().length);
+                    a.onNext(n + 1);
+                }
             }
         });
         a.onNext(1);
+        assertTrue(depth.get() > MAX_STACK_DEPTH);
+    }
+    
+    @Test(expected = StackOverflowError.class)
+    public void testStackOverflowErrorIsThrown() {
+        Observable.just(1).subscribe(new Observer<Integer>() {
+
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onNext(Integer t) {
+                throw new StackOverflowError();
+            }
+
+        });
     }
 
     @Test(expected = ThreadDeath.class)
