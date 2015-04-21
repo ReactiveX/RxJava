@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -74,12 +75,12 @@ public class OnSubscribeFromIterableTest {
 
                     @Override
                     public boolean hasNext() {
-                        return i++ < 3;
+                        return i < 3;
                     }
 
                     @Override
                     public String next() {
-                        return String.valueOf(i);
+                        return String.valueOf(++i);
                     }
 
                     @Override
@@ -193,5 +194,31 @@ public class OnSubscribeFromIterableTest {
         assertTrue(latch.await(10, TimeUnit.SECONDS));
     }
 
+    @Test
+    public void testFromEmptyIterableWhenZeroRequestedShouldStillEmitOnCompletedEagerly() {
+        final AtomicBoolean completed = new AtomicBoolean(false);
+        Observable.from(Collections.emptyList()).subscribe(new Subscriber<Object>() {
 
+            @Override
+            public void onStart() {
+                request(0);
+            }
+            
+            @Override
+            public void onCompleted() {
+                completed.set(true);
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                
+            }
+
+            @Override
+            public void onNext(Object t) {
+                
+            }});
+        assertTrue(completed.get());
+    }
+    
 }
