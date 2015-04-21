@@ -17,6 +17,7 @@ package rx.internal.operators;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -26,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
@@ -77,7 +79,7 @@ public class OnSubscribeRangeTest {
     }
 
     @Test
-    public void testRangeWithOverflow() {
+    public void testRangeWithZero() {
         Observable.range(1, 0);
     }
 
@@ -219,5 +221,32 @@ public class OnSubscribeRangeTest {
                 request(Long.MAX_VALUE - 1);
             }});
         assertEquals(n, count.get());
+    }
+    
+    @Test
+    public void testEmptyRangeSendsOnCompleteEagerlyWithRequestZero() {
+        final AtomicBoolean completed = new AtomicBoolean(false);
+        Observable.range(1, 0).subscribe(new Subscriber<Integer>() {
+
+            @Override
+            public void onStart() {
+                request(0);
+            }
+            
+            @Override
+            public void onCompleted() {
+                completed.set(true);
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                
+            }
+
+            @Override
+            public void onNext(Integer t) {
+                
+            }});
+        assertTrue(completed.get());
     }
 }
