@@ -52,10 +52,11 @@ public final class OperatorToObservableList<T> implements Operator<List<T>, T> {
     private OperatorToObservableList() { }
     @Override
     public Subscriber<? super T> call(final Subscriber<? super List<T>> o) {
-        return new Subscriber<T>(o) {
+        final SingleDelayedProducer<List<T>> producer = new SingleDelayedProducer<List<T>>(o);
+        Subscriber<T> result =  new Subscriber<T>() {
 
-            private boolean completed = false;
-            final List<T> list = new LinkedList<T>();
+            boolean completed = false;
+            List<T> list = new LinkedList<T>();
 
             @Override
             public void onStart() {
@@ -64,27 +65,32 @@ public final class OperatorToObservableList<T> implements Operator<List<T>, T> {
 
             @Override
             public void onCompleted() {
-                try {
+                if (!completed) {
                     completed = true;
-                    /*
-                     * Ideally this should just return Collections.unmodifiableList(list) and not copy it, 
-                     * but, it ends up being a breaking change if we make that modification. 
-                     * 
-                     * Here is an example of is being done with these lists that breaks if we make it immutable:
-                     * 
-                     * Caused by: java.lang.UnsupportedOperationException
-                     *     at java.util.Collections$UnmodifiableList$1.set(Collections.java:1244)
-                     *     at java.util.Collections.sort(Collections.java:221)
-                     *     ...
-                     * Caused by: rx.exceptions.OnErrorThrowable$OnNextValue: OnError while emitting onNext value: UnmodifiableList.class
-                     *     at rx.exceptions.OnErrorThrowable.addValueAsLastCause(OnErrorThrowable.java:98)
-                     *     at rx.internal.operators.OperatorMap$1.onNext(OperatorMap.java:56)
-                     *     ... 419 more
-                     */
-                    o.onNext(new ArrayList<T>(list));
-                    o.onCompleted();
-                } catch (Throwable e) {
-                    onError(e);
+                    List<T> result;
+                    try {
+                        /*
+                         * Ideally this should just return Collections.unmodifiableList(list) and not copy it, 
+                         * but, it ends up being a breaking change if we make that modification. 
+                         * 
+                         * Here is an example of is being done with these lists that breaks if we make it immutable:
+                         * 
+                         * Caused by: java.lang.UnsupportedOperationException
+                         *     at java.util.Collections$UnmodifiableList$1.set(Collections.java:1244)
+                         *     at java.util.Collections.sort(Collections.java:221)
+                         *     ...
+                         * Caused by: rx.exceptions.OnErrorThrowable$OnNextValue: OnError while emitting onNext value: UnmodifiableList.class
+                         *     at rx.exceptions.OnErrorThrowable.addValueAsLastCause(OnErrorThrowable.java:98)
+                         *     at rx.internal.operators.OperatorMap$1.onNext(OperatorMap.java:56)
+                         *     ... 419 more
+                         */
+                        result = new ArrayList<T>(list);
+                    } catch (Throwable t) {
+                        onError(t);
+                        return;
+                    }
+                    list = null;
+                    producer.set(result);
                 }
             }
 
@@ -101,6 +107,9 @@ public final class OperatorToObservableList<T> implements Operator<List<T>, T> {
             }
 
         };
+        o.add(result);
+        o.setProducer(producer);
+        return result;
     }
 
 }
