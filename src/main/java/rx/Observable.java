@@ -3630,12 +3630,16 @@ public class Observable<T> {
      * @see #countLong()
      */
     public final Observable<Integer> count() {
-        return reduce(0, new Func2<Integer, T, Integer>() {
+        return reduce(0, CountHolder.INSTANCE);
+    }
+    
+    private static final class CountHolder {
+        static final Func2<Integer, Object, Integer> INSTANCE = new Func2<Integer, Object, Integer>() {
             @Override
-            public final Integer call(Integer t1, T t2) {
-                return t1 + 1;
+            public final Integer call(Integer count, Object o) {
+                return count + 1;
             }
-        });
+        };
     }
     
     /**
@@ -3657,14 +3661,18 @@ public class Observable<T> {
      * @see #count()
      */
     public final Observable<Long> countLong() {
-        return reduce(0L, new Func2<Long, T, Long>() {
-            @Override
-            public final Long call(Long t1, T t2) {
-                return t1 + 1;
-            }
-        });
+        return reduce(0L, CountLongHolder.INSTANCE);
     }
 
+    private static final class CountLongHolder {
+        static final Func2<Long, Object, Long> INSTANCE = new Func2<Long, Object, Long>() {
+            @Override
+            public final Long call(Long count, Object o) {
+                return count + 1;
+            }
+        };
+    }
+    
     /**
      * Returns an Observable that mirrors the source Observable, except that it drops items emitted by the
      * source Observable that are followed by another item within a computed debounce duration.
