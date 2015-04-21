@@ -234,19 +234,7 @@ public class OperatorPublish<T> extends ConnectableObservable<T> {
             if (r == null) {
                 subs.put(subscriber, new AtomicLong(request));
             } else {
-                do {
-                    long current = r.get();
-                    if (current == Long.MAX_VALUE) {
-                        break;
-                    }
-                    long u = current + request;
-                    if (u < 0) {
-                        u = Long.MAX_VALUE;
-                    }
-                    if (r.compareAndSet(current, u)) {
-                        break;
-                    }
-                } while (true);
+                BackpressureUtils.getAndAddRequest(r, request);
             }
 
             return resetAfterSubscriberUpdate(subs);
