@@ -44,7 +44,10 @@ public final class OnSubscribeFromIterable<T> implements OnSubscribe<T> {
     @Override
     public void call(final Subscriber<? super T> o) {
         final Iterator<? extends T> it = is.iterator();
-        o.setProducer(new IterableProducer<T>(o, it));
+        if (!it.hasNext() && !o.isUnsubscribed())
+            o.onCompleted();
+        else 
+            o.setProducer(new IterableProducer<T>(o, it));
     }
 
     private static final class IterableProducer<T> implements Producer {
