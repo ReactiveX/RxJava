@@ -28,22 +28,20 @@ import static org.mockito.Mockito.verify;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.*;
 
 import org.junit.Test;
 import org.mockito.InOrder;
 
-import rx.Observable;
 import rx.Observable.OnSubscribe;
-import rx.Observer;
-import rx.Subscriber;
-import rx.Subscription;
+import rx.*;
+import rx.functions.Func1;
 import rx.internal.util.RxRingBuffer;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 import rx.schedulers.TestScheduler;
+import rx.subjects.Subject;
 import rx.subscriptions.BooleanSubscription;
 
 public class OperatorConcatTest {
@@ -485,11 +483,11 @@ public class OperatorConcatTest {
         private final T seed;
         private final int size;
 
-        public TestObservable(@SuppressWarnings("unchecked") T... values) {
+        public TestObservable(T... values) {
             this(null, null, values);
         }
 
-        public TestObservable(CountDownLatch once, CountDownLatch okToContinue, @SuppressWarnings("unchecked") T... values) {
+        public TestObservable(CountDownLatch once, CountDownLatch okToContinue, T... values) {
             this.values = Arrays.asList(values);
             this.size = this.values.size();
             this.once = once;
@@ -718,4 +716,54 @@ public class OperatorConcatTest {
         ts.assertReceivedOnNext(Arrays.asList("hello", "hello"));
     }
 
+    @Test(timeout = 10000)
+    public void testIssue2890NoStackoverflow() throws InterruptedException {
+        final ExecutorService executor = Executors.newFixedThreadPool(2);
+        final Scheduler sch = Schedulers.from(executor);
+
+        Func1<Integer, Observable<Integer>> func = new Func1<Integer, Observable<Integer>>() {
+            @Override
+            public Observable<Integer> call(Integer t) {
+                Observable<Integer> observable = Observable.just(t)
+                        .subscribeOn(sch)
+                ;
+                Subject<Integer, Integer> subject = BufferUntilSubscriber.create();
+                observable.subscribe(subject);
+                return subject;
+            }
+        };
+
+        int n = 5000;
+        final AtomicInteger counter = new AtomicInteger();
+
+        Observable.range(1, n).concatMap(func).subscribe(new Subscriber<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                // Consume after sleep for 1 ms
+                try {
+                    Thread.sleep(1);
+                } catch (InterruptedException e) {
+                    // ignored
+                }
+                if (counter.getAndIncrement() % 100 == 0) {
+                    System.out.print("testIssue2890NoStackoverflow -> ");
+                    System.out.println(counter.get());
+                };
+            }
+
+            @Override
+            public void onCompleted() {
+                executor.shutdown();
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                executor.shutdown();
+            }
+        });
+
+        executor.awaitTermination(12000, TimeUnit.MILLISECONDS);
+        
+        assertEquals(n, counter.get());
+    }
 }
