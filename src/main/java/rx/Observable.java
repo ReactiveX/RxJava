@@ -2295,7 +2295,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/empty-never-throw.html">ReactiveX operators documentation: Never</a>
      */
     public final static <T> Observable<T> never() {
-        return new NeverObservable<T>();
+        return NeverObservable.instance();
     }
 
     /**
@@ -4026,7 +4026,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/distinct.html">ReactiveX operators documentation: Distinct</a>
      */
     public final Observable<T> distinct() {
-        return lift(new OperatorDistinct<T, T>(UtilityFunctions.<T>identity()));
+        return lift(OperatorDistinct.<T> instance());
     }
 
     /**
@@ -4064,7 +4064,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/distinct.html">ReactiveX operators documentation: Distinct</a>
      */
     public final Observable<T> distinctUntilChanged() {
-        return lift(new OperatorDistinctUntilChanged<T, T>(UtilityFunctions.<T>identity()));
+        return lift(OperatorDistinctUntilChanged.<T> instance());
     }
 
     /**
@@ -4959,8 +4959,13 @@ public class Observable<T> {
      * @return an Observable that emits a Boolean
      * @see <a href="http://reactivex.io/documentation/operators/contains.html">ReactiveX operators documentation: Contains</a>
      */
+    @SuppressWarnings("unchecked")
     public final Observable<Boolean> isEmpty() {
-        return lift(new OperatorAny<T>(UtilityFunctions.alwaysTrue(), true));
+        return lift((OperatorAny<T>) HolderAnyForEmpty.INSTANCE);
+    }
+    
+    private static class HolderAnyForEmpty {
+        static final OperatorAny<?> INSTANCE = new OperatorAny<Object>(UtilityFunctions.alwaysTrue(), true);
     }
 
     /**
@@ -5226,7 +5231,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/backpressure.html">ReactiveX operators documentation: backpressure operators</a>
      */
     public final Observable<T> onBackpressureBuffer() {
-        return lift(new OperatorOnBackpressureBuffer<T>());
+        return lift(OperatorOnBackpressureBuffer.<T> instance());
     }
 
     /**
@@ -6709,7 +6714,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/first.html">ReactiveX operators documentation: First</a>
      */
     public final Observable<T> single() {
-        return lift(new OperatorSingle<T>());
+        return lift(OperatorSingle.<T> instance());
     }
 
     /**
@@ -9276,7 +9281,22 @@ public class Observable<T> {
      *            the type of item (not) emitted by the Observable
      */
     private static class NeverObservable<T> extends Observable<T> {
-        public NeverObservable() {
+        
+        private static class Holder {
+            static final NeverObservable<?> INSTANCE = new NeverObservable<Object>();
+        }
+        
+        /**
+         * Returns a singleton instance of NeverObservble (cast to the generic type).
+         * 
+         * @return
+         */
+        @SuppressWarnings("unchecked")
+        static <T> NeverObservable<T> instance() {
+            return (NeverObservable<T>) Holder.INSTANCE;
+        }
+        
+        NeverObservable() {
             super(new OnSubscribe<T>() {
 
                 @Override
