@@ -23,7 +23,9 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
@@ -292,5 +294,33 @@ public class OperatorTakeLastTest {
             }
         });
         assertEquals(1,count.get());
+    }
+    
+    @Test(timeout=10000)
+    public void testRequestOverflow() {
+        final List<Integer> list = new ArrayList<Integer>();
+        Observable.range(1, 100).takeLast(50).subscribe(new Subscriber<Integer>() {
+
+            @Override
+            public void onStart() {
+                request(2);
+            }
+            
+            @Override
+            public void onCompleted() {
+                
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                
+            }
+
+            @Override
+            public void onNext(Integer t) {
+                list.add(t);
+                request(Long.MAX_VALUE-1);
+            }});
+        assertEquals(50, list.size());
     }
 }

@@ -55,7 +55,7 @@ final class TakeLastQueueProducer<T> implements Producer {
         if (n == Long.MAX_VALUE) {
             _c = REQUESTED_UPDATER.getAndSet(this, Long.MAX_VALUE);
         } else {
-            _c = REQUESTED_UPDATER.getAndAdd(this, n);
+            _c = BackpressureUtils.getAndAddRequest(REQUESTED_UPDATER, this, n);
         }
         if (!emittingStarted) {
             // we haven't started yet, so record what was requested and return
