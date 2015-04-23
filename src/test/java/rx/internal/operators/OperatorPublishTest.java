@@ -17,7 +17,7 @@ package rx.internal.operators;
 
 import static org.junit.Assert.*;
 
-import java.util.Arrays;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.*;
 
@@ -25,12 +25,12 @@ import org.junit.Test;
 
 import rx.*;
 import rx.Observable.OnSubscribe;
+import rx.Observable;
 import rx.functions.*;
 import rx.internal.util.RxRingBuffer;
 import rx.observables.ConnectableObservable;
 import rx.observers.TestSubscriber;
-import rx.schedulers.Schedulers;
-import rx.schedulers.TestScheduler;
+import rx.schedulers.*;
 
 public class OperatorPublishTest {
 
@@ -258,5 +258,161 @@ public class OperatorPublishTest {
         subscriber.assertReceivedOnNext(Arrays.asList(1L, 2L));
         subscriber.assertNoErrors();
         subscriber.assertTerminalEvent();
+    }
+    
+    @Test
+    public void testSubscribeAfterDisconnectThenConnect() {
+        ConnectableObservable<Integer> source = Observable.just(1).publish();
+
+        TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>();
+
+        source.subscribe(ts1);
+
+        Subscription s = source.connect();
+
+        ts1.assertReceivedOnNext(Arrays.asList(1));
+        ts1.assertNoErrors();
+        ts1.assertTerminalEvent();
+
+        TestSubscriber<Integer> ts2 = new TestSubscriber<Integer>();
+
+        source.subscribe(ts2);
+
+        Subscription s2 = source.connect();
+
+        ts2.assertReceivedOnNext(Arrays.asList(1));
+        ts2.assertNoErrors();
+        ts2.assertTerminalEvent();
+
+        System.out.println(s);
+        System.out.println(s2);
+    }
+    
+    @Test
+    public void testNoSubscriberRetentionOnCompleted() {
+        OperatorPublish<Integer> source = (OperatorPublish<Integer>)Observable.just(1).publish();
+
+        TestSubscriber<Integer> ts1 = new TestSubscriber<Integer>();
+
+        source.unsafeSubscribe(ts1);
+
+        ts1.assertReceivedOnNext(Arrays.<Integer>asList());
+        ts1.assertNoErrors();
+        assertTrue(ts1.getOnCompletedEvents().isEmpty());
+        
+        source.connect();
+
+        ts1.assertReceivedOnNext(Arrays.asList(1));
+        ts1.assertNoErrors();
+        ts1.assertTerminalEvent();
+
+        assertNull(source.current.get());
+    }
+    
+    @Test
+    public void testNonNullConnection() {
+        ConnectableObservable<Object> source = Observable.never().publish();
+        
+        assertNotNull(source.connect());
+        assertNotNull(source.connect());
+    }
+    
+    @Test
+    public void testNoDisconnectSomeoneElse() {
+        ConnectableObservable<Object> source = Observable.never().publish();
+
+        Subscription s1 = source.connect();
+        Subscription s2 = source.connect();
+        
+        s1.unsubscribe();
+        
+        Subscription s3 = source.connect();
+        
+        s2.unsubscribe();
+        
+        assertTrue(s1.isUnsubscribed());
+        assertTrue(s2.isUnsubscribed());
+        assertFalse(s3.isUnsubscribed());
+    }
+    
+    @Test
+    public void testZeroRequested() {
+        ConnectableObservable<Integer> source = Observable.just(1).publish();
+        
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
+            @Override
+            public void onStart() {
+                request(0);
+            }
+        };
+        
+        source.subscribe(ts);
+        
+        ts.assertReceivedOnNext(Arrays.<Integer>asList());
+        ts.assertNoErrors();
+        assertTrue(ts.getOnCompletedEvents().isEmpty());
+        
+        source.connect();
+
+        ts.assertReceivedOnNext(Arrays.<Integer>asList());
+        ts.assertNoErrors();
+        assertTrue(ts.getOnCompletedEvents().isEmpty());
+        
+        ts.requestMore(5);
+        
+        ts.assertReceivedOnNext(Arrays.<Integer>asList(1));
+        ts.assertNoErrors();
+        ts.assertTerminalEvent();
+    }
+    @Test
+    public void testConnectIsIdempotent() {
+        final AtomicInteger calls = new AtomicInteger();
+        Observable<Integer> source = Observable.create(new OnSubscribe<Integer>() {
+            @Override
+            public void call(Subscriber<? super Integer> t) {
+                calls.getAndIncrement();
+            }
+        });
+        
+        ConnectableObservable<Integer> conn = source.publish();
+
+        assertEquals(0, calls.get());
+
+        conn.connect();
+        conn.connect();
+        
+        assertEquals(1, calls.get());
+        
+        conn.connect().unsubscribe();
+        
+        conn.connect();
+        conn.connect();
+
+        assertEquals(2, calls.get());
+    }
+    @Test
+    public void testObserveOn() {
+        ConnectableObservable<Integer> co = Observable.range(0, 1000).publish();
+        Observable<Integer> obs = co.observeOn(Schedulers.computation());
+        for (int i = 0; i < 1000; i++) {
+            for (int j = 1; j < 6; j++) {
+                List<TestSubscriber<Integer>> tss = new ArrayList<TestSubscriber<Integer>>();
+                for (int k = 1; k < j; k++) {
+                    TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+                    tss.add(ts);
+                    obs.subscribe(ts);
+                }
+                
+                Subscription s = co.connect();
+                
+                for (TestSubscriber<Integer> ts : tss) {
+                    ts.awaitTerminalEvent(2, TimeUnit.SECONDS);
+                    ts.assertTerminalEvent();
+                    ts.assertNoErrors();
+                    assertEquals(1000, ts.getOnNextEvents().size());
+                }
+                s.unsubscribe();
+            }
+        }
     }
 }
