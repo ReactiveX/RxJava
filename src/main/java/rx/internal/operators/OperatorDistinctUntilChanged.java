@@ -18,6 +18,7 @@ package rx.internal.operators;
 import rx.Observable.Operator;
 import rx.Subscriber;
 import rx.functions.Func1;
+import rx.internal.util.UtilityFunctions;
 
 /**
  * Returns an Observable that emits all sequentially distinct items emitted by the source.
@@ -26,6 +27,22 @@ import rx.functions.Func1;
  */
 public final class OperatorDistinctUntilChanged<T, U> implements Operator<T, T> {
     final Func1<? super T, ? extends U> keySelector;
+    
+    private static class Holder {
+        static final OperatorDistinctUntilChanged<?,?> INSTANCE = new OperatorDistinctUntilChanged<Object,Object>(UtilityFunctions.identity());
+    }
+    
+
+    /**
+     * Returns a singleton instance of OperatorDistinctUntilChanged that was built using 
+     * the identity function for comparison (<code>new OperatorDistinctUntilChanged(UtilityFunctions.identity())</code>).
+     * 
+     * @return Operator that emits sequentially distinct values only using the identity function for comparison 
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> OperatorDistinctUntilChanged<T,T> instance() {
+        return (OperatorDistinctUntilChanged<T, T>) Holder.INSTANCE;
+    }
 
     public OperatorDistinctUntilChanged(Func1<? super T, ? extends U> keySelector) {
         this.keySelector = keySelector;

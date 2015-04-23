@@ -17,9 +17,11 @@ package rx.internal.operators;
 
 import java.util.HashSet;
 import java.util.Set;
+
 import rx.Observable.Operator;
 import rx.Subscriber;
 import rx.functions.Func1;
+import rx.internal.util.UtilityFunctions;
 
 /**
  * Returns an Observable that emits all distinct items emitted by the source.
@@ -29,6 +31,21 @@ import rx.functions.Func1;
  */
 public final class OperatorDistinct<T, U> implements Operator<T, T> {
     final Func1<? super T, ? extends U> keySelector;
+    
+    private static class Holder {
+        static final OperatorDistinct<?,?> INSTANCE = new OperatorDistinct<Object,Object>(UtilityFunctions.<Object>identity());
+    }
+    
+    /**
+     * Returns a singleton instance of OperatorDistinct that was built using 
+     * the identity function for comparison (<code>new OperatorDistinct(UtilityFunctions.identity())</code>).
+     * 
+     * @return Operator that emits distinct values only (regardless of order) using the identity function for comparison 
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> OperatorDistinct<T,T> instance() {
+        return (OperatorDistinct<T, T>) Holder.INSTANCE;
+    }
 
     public OperatorDistinct(Func1<? super T, ? extends U> keySelector) {
         this.keySelector = keySelector;

@@ -32,7 +32,22 @@ public final class OperatorSingle<T> implements Operator<T, T> {
     private final boolean hasDefaultValue;
     private final T defaultValue;
 
-    public OperatorSingle() {
+    private static class Holder {
+        final static OperatorSingle<?> INSTANCE = new OperatorSingle<Object>();
+    }
+    
+    /**
+     * Returns a singleton instance of OperatorSingle (if the stream is empty or has 
+     * more than one element an error will be emitted) that is cast to the generic type.
+     *  
+     * @return a singleton instance of an Operator that will emit a single value only unless the stream has zero or more than one element in which case it will emit an error.
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> OperatorSingle<T> instance() {
+        return (OperatorSingle<T>) Holder.INSTANCE;
+    }
+    
+    private OperatorSingle() {
         this(false, null);
     }
 
