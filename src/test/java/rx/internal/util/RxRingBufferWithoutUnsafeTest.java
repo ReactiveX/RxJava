@@ -17,13 +17,13 @@ package rx.internal.util;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
-import rx.Producer;
-import rx.Scheduler;
+import rx.*;
 import rx.exceptions.MissingBackpressureException;
 import rx.functions.Action0;
 import rx.observers.TestSubscriber;
@@ -36,18 +36,25 @@ public class RxRingBufferWithoutUnsafeTest extends RxRingBufferBase {
         return new RxRingBuffer();
     }
 
+    @Test(timeout = 20000)
+    public void testConcurrencyLoop() throws InterruptedException {
+        for (int i = 0; i < 50; i++) {
+            testConcurrency();
+        }
+    }
+    
     /**
      * Single producer, 2 consumers. The request() ensures it gets scheduled back on the same Producer thread.
      */
-    @Test
+    @Test(timeout = 10000)
     public void testConcurrency() throws InterruptedException {
         final RxRingBuffer b = createRingBuffer();
-        final CountDownLatch emitLatch = new CountDownLatch(255);
-        final CountDownLatch drainLatch = new CountDownLatch(2);
+        final CountDownLatch emitLatch = new CountDownLatch(127);
+        int drainers = 3;
+        final CountDownLatch drainLatch = new CountDownLatch(drainers);
 
         final Scheduler.Worker w1 = Schedulers.newThread().createWorker();
-        Scheduler.Worker w2 = Schedulers.newThread().createWorker();
-        Scheduler.Worker w3 = Schedulers.newThread().createWorker();
+        List<Scheduler.Worker> drainerWorkers = new ArrayList<Scheduler.Worker>();
 
         final AtomicInteger emit = new AtomicInteger();
         final AtomicInteger poll = new AtomicInteger();
@@ -110,7 +117,12 @@ public class RxRingBufferWithoutUnsafeTest extends RxRingBufferBase {
                             ts.requestMore(emitted);
                             emitted = 0;
                         } else {
-                            if (emitLatch.getCount() == 0) {
+                            try {
+                                Thread.sleep(1);
+                            } catch (InterruptedException ex) {
+                                // ignored
+                            }
+                            if (emitLatch.getCount() == 0 && b.isEmpty()) {
                                 // this works with SynchronizedQueue, if changing to a non-blocking Queue
                                 // then this will likely need to change like the SpmcTest version
                                 drainLatch.countDown();
@@ -124,14 +136,18 @@ public class RxRingBufferWithoutUnsafeTest extends RxRingBufferBase {
 
         };
 
-        w2.schedule(drainer);
-        w3.schedule(drainer);
+        for (int i = 0; i < drainers; i++) {
+            Scheduler.Worker w = Schedulers.newThread().createWorker();
+            w.schedule(drainer);
+            drainerWorkers.add(w);
+        }
 
         emitLatch.await();
         drainLatch.await();
 
-        w2.unsubscribe();
-        w3.unsubscribe();
+        for (Scheduler.Worker w : drainerWorkers) {
+            w.unsubscribe();
+        }
         w1.unsubscribe(); // put this one last as unsubscribing from it can cause Exceptions to be throw in w2/w3
 
         System.out.println("emit: " + emit.get() + " poll: " + poll.get());
