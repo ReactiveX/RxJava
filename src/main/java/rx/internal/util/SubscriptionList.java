@@ -15,12 +15,7 @@
  */
 package rx.internal.util;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.*;
 
 import rx.Subscription;
 import rx.exceptions.Exceptions;
@@ -34,7 +29,6 @@ public final class SubscriptionList implements Subscription {
 
     private LinkedList<Subscription> subscriptions;
     private volatile boolean unsubscribed;
-    private final ReentrantLock lock = new ReentrantLock();
 
     public SubscriptionList() {
     }
@@ -66,8 +60,7 @@ public final class SubscriptionList implements Subscription {
             return;
         }
         if (!unsubscribed) {
-            lock.lock();
-            try {
+            synchronized (this) {
                 if (!unsubscribed) {
                     LinkedList<Subscription> subs = subscriptions;
                     if (subs == null) {
@@ -77,8 +70,6 @@ public final class SubscriptionList implements Subscription {
                     subs.add(s);
                     return;
                 }
-            } finally {
-                lock.unlock();
             }
         }
         // call after leaving the synchronized block so we're not holding a lock while executing this
@@ -88,15 +79,12 @@ public final class SubscriptionList implements Subscription {
     public void remove(final Subscription s) {
         if (!unsubscribed) {
             boolean unsubscribe = false;
-            lock.lock();
-            try {
+            synchronized (this) {
                 LinkedList<Subscription> subs = subscriptions;
                 if (unsubscribed || subs == null) {
                     return;
                 }
                 unsubscribe = subs.remove(s);
-            } finally {
-                lock.unlock();
             }
             if (unsubscribe) {
                 // if we removed successfully we then need to call unsubscribe on it (outside of the lock)
@@ -113,16 +101,13 @@ public final class SubscriptionList implements Subscription {
     public void unsubscribe() {
         if (!unsubscribed) {
             List<Subscription> list;
-            lock.lock();
-            try {
+            synchronized (this) {
                 if (unsubscribed) {
                     return;
                 }
                 unsubscribed = true;
                 list = subscriptions;
                 subscriptions = null;
-            } finally {
-                lock.unlock();
             }
             // we will only get here once
             unsubscribeFromAll(list);
@@ -150,12 +135,9 @@ public final class SubscriptionList implements Subscription {
     public void clear() {
         if (!unsubscribed) {
             List<Subscription> list;
-            lock.lock();
-            try {
+            synchronized (this) {
                 list = subscriptions;
                 subscriptions = null;
-            } finally {
-                lock.unlock();
             }
             unsubscribeFromAll(list);
         }
@@ -166,11 +148,8 @@ public final class SubscriptionList implements Subscription {
      */
     public boolean hasSubscriptions() {
         if (!unsubscribed) {
-            lock.lock();
-            try {
+            synchronized (this) {
                 return !unsubscribed && subscriptions != null && !subscriptions.isEmpty();
-            } finally {
-                lock.unlock();
             }
         }
         return false;
