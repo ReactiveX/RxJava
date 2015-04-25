@@ -14,7 +14,6 @@ import org.junit.Test;
 
 import rx.Observable;
 import rx.Subscriber;
-import rx.Subscription;
 import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.observers.TestSubscriber;
