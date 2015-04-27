@@ -4941,7 +4941,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/ignoreelements.html">ReactiveX operators documentation: IgnoreElements</a>
      */
     public final Observable<T> ignoreElements() {
-        return filter(UtilityFunctions.alwaysFalse());
+        return lift(OperatorIgnoreElements.<T> instance());
     }
 
     /**
