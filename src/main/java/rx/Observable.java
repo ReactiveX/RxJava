@@ -8596,7 +8596,7 @@ public class Observable<T> {
      * you do not have the option to unsubscribe.
      * <dl>
      *  <dt><b>Backpressure Support:</b></dt>
-     *  <dd>This operator does not support backpressure as by intent it is requesting and buffering everything.</dd>
+     *  <dd>The operator buffers everything from its upstream but it only emits the aggregated list when the downstream requests at least one item.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code toList} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -8797,7 +8797,7 @@ public class Observable<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toSortedList.png" alt="">
      * <dl>
      *  <dt><b>Backpressure Support:</b></dt>
-     *  <dd>This operator does not support backpressure as by intent it is requesting and buffering everything.</dd>
+     *  <dd>The operator buffers everything from its upstream but it only emits the sorted list when the downstream requests at least one item.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code toSortedList} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -8810,7 +8810,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
      */
     public final Observable<List<T>> toSortedList() {
-        return lift(new OperatorToObservableSortedList<T>());
+        return lift(new OperatorToObservableSortedList<T>(10));
     }
 
     /**
@@ -8820,7 +8820,7 @@ public class Observable<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toSortedList.f.png" alt="">
      * <dl>
      *  <dt><b>Backpressure Support:</b></dt>
-     *  <dd>This operator does not support backpressure as by intent it is requesting and buffering everything.</dd>
+     *  <dd>The operator buffers everything from its upstream but it only emits the sorted list when the downstream requests at least one item.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code toSortedList} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -8833,7 +8833,60 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
      */
     public final Observable<List<T>> toSortedList(Func2<? super T, ? super T, Integer> sortFunction) {
-        return lift(new OperatorToObservableSortedList<T>(sortFunction));
+        return lift(new OperatorToObservableSortedList<T>(sortFunction, 10));
+    }
+
+    /**
+     * Returns an Observable that emits a list that contains the items emitted by the source Observable, in a
+     * sorted order. Each item emitted by the Observable must implement {@link Comparable} with respect to all
+     * other items in the sequence.
+     * <p>
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toSortedList.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>The operator buffers everything from its upstream but it only emits the sorted list when the downstream requests at least one item.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code toSortedList} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @throws ClassCastException
+     *             if any item emitted by the Observable does not implement {@link Comparable} with respect to
+     *             all other items emitted by the Observable
+     * @param initialCapacity 
+     *             the initial capacity of the ArrayList used to accumulate items before sorting
+     * @return an Observable that emits a list that contains the items emitted by the source Observable in
+     *         sorted order
+     * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
+     */
+    @Experimental
+    public final Observable<List<T>> toSortedList(int initialCapacity) {
+        return lift(new OperatorToObservableSortedList<T>(initialCapacity));
+    }
+
+    /**
+     * Returns an Observable that emits a list that contains the items emitted by the source Observable, in a
+     * sorted order based on a specified comparison function.
+     * <p>
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toSortedList.f.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>The operator buffers everything from its upstream but it only emits the sorted list when the downstream requests at least one item.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code toSortedList} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @param sortFunction
+     *            a function that compares two items emitted by the source Observable and returns an Integer
+     *            that indicates their sort order
+     * @param initialCapacity 
+     *             the initial capacity of the ArrayList used to accumulate items before sorting
+     * @return an Observable that emits a list that contains the items emitted by the source Observable in
+     *         sorted order
+     * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
+     */
+    @Experimental
+    public final Observable<List<T>> toSortedList(Func2<? super T, ? super T, Integer> sortFunction, int initialCapacity) {
+        return lift(new OperatorToObservableSortedList<T>(sortFunction, initialCapacity));
     }
 
     /**

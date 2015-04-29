@@ -15,13 +15,10 @@
  */
 package rx.internal.operators;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 import rx.Observable.Operator;
-import rx.Subscriber;
+import rx.*;
 import rx.functions.Func2;
 
 /**
@@ -35,23 +32,33 @@ import rx.functions.Func2;
  *          the type of the items emitted by the source and the resulting {@code Observable}s
  */
 public final class OperatorToObservableSortedList<T> implements Operator<List<T>, T> {
-    private final Func2<? super T, ? super T, Integer> sortFunction;
+    private final Comparator<? super T> sortFunction;
+    private final int initialCapacity;
 
     @SuppressWarnings("unchecked")
-    public OperatorToObservableSortedList() {
-        this.sortFunction = defaultSortFunction;
+    public OperatorToObservableSortedList(int initialCapacity) {
+        this.sortFunction = DEFAULT_SORT_FUNCTION;
+        this.initialCapacity = initialCapacity;
     }
 
-    public OperatorToObservableSortedList(Func2<? super T, ? super T, Integer> sortFunction) {
-        this.sortFunction = sortFunction;
+    public OperatorToObservableSortedList(final Func2<? super T, ? super T, Integer> sortFunction, int initialCapacity) {
+        this.initialCapacity = initialCapacity;
+        this.sortFunction = new Comparator<T>() {
+            @Override
+            public int compare(T o1, T o2) {
+                return sortFunction.call(o1, o2);
+            }
+        };
     }
 
     @Override
-    public Subscriber<? super T> call(final Subscriber<? super List<T>> o) {
-        return new Subscriber<T>(o) {
+    public Subscriber<? super T> call(final Subscriber<? super List<T>> child) {
+        final SingleDelayedProducer<List<T>> producer = new SingleDelayedProducer<List<T>>(child);
+        Subscriber<T> result = new Subscriber<T>() {
 
-            final List<T> list = new ArrayList<T>();
-
+            List<T> list = new ArrayList<T>(initialCapacity);
+            boolean completed;
+            
             @Override
             public void onStart() {
                 request(Long.MAX_VALUE);
@@ -59,48 +66,48 @@ public final class OperatorToObservableSortedList<T> implements Operator<List<T>
 
             @Override
             public void onCompleted() {
-                try {
-
-                    // sort the list before delivery
-                    Collections.sort(list, new Comparator<T>() {
-
-                        @Override
-                        public int compare(T o1, T o2) {
-                            return sortFunction.call(o1, o2);
-                        }
-
-                    });
-
-                    o.onNext(Collections.unmodifiableList(list));
-                    o.onCompleted();
-                } catch (Throwable e) {
-                    onError(e);
+                if (!completed) {
+                    completed = true;
+                    List<T> a = list;
+                    list = null;
+                    try {
+                        // sort the list before delivery
+                        Collections.sort(a, sortFunction);
+                    } catch (Throwable e) {
+                        onError(e);
+                        return;
+                    }
+                    producer.set(a);
                 }
             }
 
             @Override
             public void onError(Throwable e) {
-                o.onError(e);
+                child.onError(e);
             }
 
             @Override
             public void onNext(T value) {
-                list.add(value);
+                if (!completed) {
+                    list.add(value);
+                }
             }
 
         };
+        child.add(result);
+        child.setProducer(producer);
+        return result;
     }
-
     // raw because we want to support Object for this default
     @SuppressWarnings("rawtypes")
-    private static Func2 defaultSortFunction = new DefaultComparableFunction();
+    private static Comparator DEFAULT_SORT_FUNCTION = new DefaultComparableFunction();
 
-    private static class DefaultComparableFunction implements Func2<Object, Object, Integer> {
+    private static class DefaultComparableFunction implements Comparator<Object> {
 
         // unchecked because we want to support Object for this default
         @SuppressWarnings("unchecked")
         @Override
-        public Integer call(Object t1, Object t2) {
+        public int compare(Object t1, Object t2) {
             Comparable<Object> c1 = (Comparable<Object>) t1;
             Comparable<Object> c2 = (Comparable<Object>) t2;
             return c1.compareTo(c2);

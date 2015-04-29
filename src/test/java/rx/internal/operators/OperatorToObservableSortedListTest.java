@@ -15,29 +15,30 @@
  */
 package rx.internal.operators;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.*;
 
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import rx.*;
 import rx.Observable;
 import rx.Observer;
-import rx.functions.Func2;
-import rx.internal.operators.OperatorToObservableSortedList;
+import rx.functions.*;
+import rx.observers.TestSubscriber;
+import rx.schedulers.Schedulers;
+import rx.subjects.PublishSubject;
 
 public class OperatorToObservableSortedListTest {
 
     @Test
     public void testSortedList() {
         Observable<Integer> w = Observable.just(1, 3, 2, 5, 4);
-        Observable<List<Integer>> observable = w.lift(new OperatorToObservableSortedList<Integer>());
+        Observable<List<Integer>> observable = w.toSortedList();
 
         @SuppressWarnings("unchecked")
         Observer<List<Integer>> observer = mock(Observer.class);
@@ -50,14 +51,14 @@ public class OperatorToObservableSortedListTest {
     @Test
     public void testSortedListWithCustomFunction() {
         Observable<Integer> w = Observable.just(1, 3, 2, 5, 4);
-        Observable<List<Integer>> observable = w.lift(new OperatorToObservableSortedList<Integer>(new Func2<Integer, Integer, Integer>() {
+        Observable<List<Integer>> observable = w.toSortedList(new Func2<Integer, Integer, Integer>() {
 
             @Override
             public Integer call(Integer t1, Integer t2) {
                 return t2 - t1;
             }
 
-        }));
+        });
 
         @SuppressWarnings("unchecked")
         Observer<List<Integer>> observer = mock(Observer.class);
@@ -71,5 +72,80 @@ public class OperatorToObservableSortedListTest {
     public void testWithFollowingFirst() {
         Observable<Integer> o = Observable.just(1, 3, 2, 5, 4);
         assertEquals(Arrays.asList(1, 2, 3, 4, 5), o.toSortedList().toBlocking().first());
+    }
+    @Test
+    public void testBackpressureHonored() {
+        Observable<List<Integer>> w = Observable.just(1, 3, 2, 5, 4).toSortedList();
+        TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>() {
+            @Override
+            public void onStart() {
+                requestMore(0);
+            }
+        };
+        
+        w.subscribe(ts);
+        
+        assertTrue(ts.getOnNextEvents().isEmpty());
+        assertTrue(ts.getOnErrorEvents().isEmpty());
+        assertTrue(ts.getOnCompletedEvents().isEmpty());
+        
+        ts.requestMore(1);
+        
+        ts.assertReceivedOnNext(Collections.singletonList(Arrays.asList(1, 2, 3, 4, 5)));
+        assertTrue(ts.getOnErrorEvents().isEmpty());
+        assertEquals(1, ts.getOnCompletedEvents().size());
+
+        ts.requestMore(1);
+
+        ts.assertReceivedOnNext(Collections.singletonList(Arrays.asList(1, 2, 3, 4, 5)));
+        assertTrue(ts.getOnErrorEvents().isEmpty());
+        assertEquals(1, ts.getOnCompletedEvents().size());
+    }
+    @Test(timeout = 2000)
+    public void testAsyncRequested() {
+        Scheduler.Worker w = Schedulers.newThread().createWorker();
+        try {
+            for (int i = 0; i < 1000; i++) {
+                if (i % 50 == 0) {
+                    System.out.println("testAsyncRequested -> " + i);
+                }
+                PublishSubject<Integer> source = PublishSubject.create();
+                Observable<List<Integer>> sorted = source.toSortedList();
+
+                final CyclicBarrier cb = new CyclicBarrier(2);
+                final TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>() {
+                    @Override
+                    public void onStart() {
+                        requestMore(0);
+                    }
+                };
+                sorted.subscribe(ts);
+                w.schedule(new Action0() {
+                    @Override
+                    public void call() {
+                        await(cb);
+                        ts.requestMore(1);
+                    }
+                });
+                source.onNext(1);
+                await(cb);
+                source.onCompleted();
+                ts.awaitTerminalEvent(1, TimeUnit.SECONDS);
+                ts.assertTerminalEvent();
+                ts.assertNoErrors();
+                ts.assertReceivedOnNext(Collections.singletonList(Arrays.asList(1)));
+            }
+        } finally {
+            w.unsubscribe();
+        }
+    }
+    static void await(CyclicBarrier cb) {
+        try {
+            cb.await();
+        } catch (InterruptedException ex) {
+            ex.printStackTrace();
+        } catch (BrokenBarrierException ex) {
+            ex.printStackTrace();
+        }
     }
 }
