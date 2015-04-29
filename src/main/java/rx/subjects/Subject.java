@@ -30,6 +30,7 @@ public abstract class Subject<T, R> extends Observable<R> implements Observer<T>
 
     /**
      * Indicates whether the {@link Subject} has {@link Observer Observers} subscribed to it.
+     *
      * @return true if there is at least one Observer subscribed to this Subject, false otherwise
      */
     public abstract boolean hasObservers();
@@ -58,7 +59,9 @@ public abstract class Subject<T, R> extends Observable<R> implements Observer<T>
     /**
      * Check if the Subject has terminated with an exception.
      * <p>The operation is threadsafe.
-     * @return true if the subject has received a throwable through {@code onError}.
+     *
+     * @return {@code true} if the subject has received a throwable through {@code onError}.
+     * @since (If this graduates from being an Experimental class method, replace this parenthetical with the release number)
      */
     @Experimental
     public boolean hasThrowable() {
@@ -67,7 +70,9 @@ public abstract class Subject<T, R> extends Observable<R> implements Observer<T>
     /**
      * Check if the Subject has terminated normally.
      * <p>The operation is threadsafe.
-     * @return true if the subject completed normally via {@code onCompleted}
+     *
+     * @return {@code true} if the subject completed normally via {@code onCompleted}
+     * @since (If this graduates from being an Experimental class method, replace this parenthetical with the release number)
      */
     @Experimental
     public boolean hasCompleted() {
@@ -76,8 +81,10 @@ public abstract class Subject<T, R> extends Observable<R> implements Observer<T>
     /**
      * Returns the Throwable that terminated the Subject.
      * <p>The operation is threadsafe.
-     * @return the Throwable that terminated the Subject or {@code null} if the
-     * subject hasn't terminated yet or it terminated normally.
+     *
+     * @return the Throwable that terminated the Subject or {@code null} if the subject hasn't terminated yet or
+     *         if it terminated normally.
+     * @since (If this graduates from being an Experimental class method, replace this parenthetical with the release number)
      */
     @Experimental
     public Throwable getThrowable() {
@@ -89,7 +96,9 @@ public abstract class Subject<T, R> extends Observable<R> implements Observer<T>
      * <p>Note that unless {@link #hasCompleted()} or {@link #hasThrowable()} returns true, the value
      * retrieved by {@code getValue()} may get outdated.
      * <p>The operation is threadsafe.
-     * @return true if and only if the subject has some value but not an error
+     *
+     * @return {@code true} if and only if the subject has some value but not an error
+     * @since (If this graduates from being an Experimental class method, replace this parenthetical with the release number)
      */
     @Experimental
     public boolean hasValue() {
@@ -102,8 +111,10 @@ public abstract class Subject<T, R> extends Observable<R> implements Observer<T>
      * and {@link #hasCompleted()} to determine if such {@code null} is a valid value, there was an
      * exception or the Subject terminated without receiving any value. 
      * <p>The operation is threadsafe.
-     * @return the current value or {@code null} if the Subject doesn't have a value,
-     * has terminated with an exception or has an actual {@code null} as a value.
+     *
+     * @return the current value or {@code null} if the Subject doesn't have a value, has terminated with an
+     *         exception or has an actual {@code null} as a value.
+     * @since (If this graduates from being an Experimental class method, replace this parenthetical with the release number)
      */
     @Experimental
     public T getValue() {
@@ -114,7 +125,9 @@ public abstract class Subject<T, R> extends Observable<R> implements Observer<T>
     /**
      * Returns a snapshot of the currently buffered non-terminal events.
      * <p>The operation is threadsafe.
+     *
      * @return a snapshot of the currently buffered non-terminal events.
+     * @since (If this graduates from being an Experimental class method, replace this parenthetical with the release number)
      */
     @SuppressWarnings("unchecked")
     @Experimental
@@ -131,10 +144,12 @@ public abstract class Subject<T, R> extends Observable<R> implements Observer<T>
      * <p>If the subject's values fit in the specified array with room to spare
      * (i.e., the array has more elements than the list), the element in
      * the array immediately following the end of the subject's values is set to
-     * <tt>null</tt>.
+     * {@code null}.
      * <p>The operation is threadsafe.
+     *
      * @param a the array to fill in
      * @return the array {@code a} if it had enough capacity or a new array containing the available values 
+     * @since (If this graduates from being an Experimental class method, replace this parenthetical with the release number)
      */
     @Experimental
     public T[] getValues(T[] a) {

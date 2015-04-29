@@ -2597,8 +2597,7 @@ public class Observable<T> {
      * @return the Observable whose lifetime controls the lifetime of the dependent resource object
      * @see <a href="http://reactivex.io/documentation/operators/using.html">ReactiveX operators documentation: Using</a>
      * @Experimental The behavior of this can change at any time.
-     * @since (if this graduates from Experimental/Beta to supported, replace
-     *        this parenthetical with the release number)
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
     @Experimental
     public final static <T, Resource> Observable<T> using(
@@ -8857,6 +8856,7 @@ public class Observable<T> {
      * @return an Observable that emits a list that contains the items emitted by the source Observable in
      *         sorted order
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
     @Experimental
     public final Observable<List<T>> toSortedList(int initialCapacity) {
@@ -8883,6 +8883,7 @@ public class Observable<T> {
      * @return an Observable that emits a list that contains the items emitted by the source Observable in
      *         sorted order
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
     @Experimental
     public final Observable<List<T>> toSortedList(Func2<? super T, ? super T, Integer> sortFunction, int initialCapacity) {
