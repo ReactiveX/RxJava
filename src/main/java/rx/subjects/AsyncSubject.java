@@ -15,6 +15,7 @@
  */
 package rx.subjects;
 
+import java.lang.reflect.Array;
 import java.util.*;
 
 import rx.Observer;
@@ -141,6 +142,7 @@ public final class AsyncSubject<T> extends Subject<T, T> {
      * @return true if and only if the subject has some value but not an error
      */
     @Experimental
+    @Override
     public boolean hasValue() {
         Object v = lastValue;
         Object o = state.get();
@@ -151,6 +153,7 @@ public final class AsyncSubject<T> extends Subject<T, T> {
      * @return true if the subject has received a throwable through {@code onError}.
      */
     @Experimental
+    @Override
     public boolean hasThrowable() {
         Object o = state.get();
         return nl.isError(o);
@@ -160,6 +163,7 @@ public final class AsyncSubject<T> extends Subject<T, T> {
      * @return true if the subject completed normally via {@code onCompleted()}
      */
     @Experimental
+    @Override
     public boolean hasCompleted() {
         Object o = state.get();
         return o != null && !nl.isError(o);
@@ -174,6 +178,7 @@ public final class AsyncSubject<T> extends Subject<T, T> {
      * has terminated with an exception or has an actual {@code null} as a value.
      */
     @Experimental
+    @Override
     public T getValue() {
         Object v = lastValue;
         Object o = state.get();
@@ -188,11 +193,33 @@ public final class AsyncSubject<T> extends Subject<T, T> {
      * subject hasn't terminated yet or it terminated normally.
      */
     @Experimental
+    @Override
     public Throwable getThrowable() {
         Object o = state.get();
         if (nl.isError(o)) {
             return nl.getError(o);
         }
         return null;
+    }
+    @Override
+    @Experimental
+    @SuppressWarnings("unchecked")
+    public T[] getValues(T[] a) {
+        Object v = lastValue;
+        Object o = state.get();
+        if (!nl.isError(o) && nl.isNext(v)) {
+            T val = nl.getValue(v);
+            if (a.length == 0) {
+                a = (T[])Array.newInstance(a.getClass().getComponentType(), 1);
+            }
+            a[0] = val;
+            if (a.length > 1) {
+                a[1] = null;
+            }
+        } else
+        if (a.length > 0) {
+            a[0] = null;
+        }
+        return a;
     }
 }

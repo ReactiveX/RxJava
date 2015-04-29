@@ -550,11 +550,29 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                 for (int i = 0; i < s; i++) {
                     a[i] = (T)list.get(i);
                 }
-                if (s < a.length - 1) {
+                if (a.length > s) {
                     a[s] = null;
                 }
+            } else
+            if (a.length > 0) {
+                a[0] = null;
             }
             return a;
+        }
+        @Override
+        public T latest() {
+            int idx = index;
+            if (idx > 0) {
+                Object o = list.get(idx - 1);
+                if (nl.isCompleted(o) || nl.isError(o)) {
+                    if (idx > 1) {
+                        return nl.getValue(list.get(idx - 2));
+                    }
+                    return null;
+                }
+                return nl.getValue(o);
+            }
+            return null;
         }
     }
     
@@ -715,6 +733,27 @@ public final class ReplaySubject<T> extends Subject<T, T> {
             }
             return list.toArray(a);
         }
+        @Override
+        public T latest() {
+            Node<Object> h = head().next;
+            if (h == null) {
+                return null;
+            }
+            Node<Object> p = null;
+            while (h != tail()) {
+                p = h;
+                h = h.next;
+            }
+            Object value = leaveTransform.call(h.value);
+            if (nl.isError(value) || nl.isCompleted(value)) {
+                if (p != null) {
+                    value = leaveTransform.call(p.value);
+                    return nl.getValue(value);
+                }
+                return null;
+            }
+            return nl.getValue(value);
+        }
     }
     
     // **************
@@ -781,6 +820,12 @@ public final class ReplaySubject<T> extends Subject<T, T> {
          * @return the array or a new array containing the current values
          */
         T[] toArray(T[] a);
+        /**
+         * Returns the latest value that has been buffered or null if no such value
+         * present.
+         * @return the latest value buffered or null if none
+         */
+        T latest();
     }
     
     /** Interface to manage eviction checking. */
@@ -1054,6 +1099,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
      * @return true if the subject has received a throwable through {@code onError}.
      */
     @Experimental
+    @Override
     public boolean hasThrowable() {
         NotificationLite<T> nl = ssm.nl;
         Object o = ssm.get();
@@ -1064,6 +1110,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
      * @return true if the subject completed normally via {@code onCompleted}
      */
     @Experimental
+    @Override
     public boolean hasCompleted() {
         NotificationLite<T> nl = ssm.nl;
         Object o = ssm.get();
@@ -1075,6 +1122,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
      * subject hasn't terminated yet or it terminated normally.
      */
     @Experimental
+    @Override
     public Throwable getThrowable() {
         NotificationLite<T> nl = ssm.nl;
         Object o = ssm.get();
@@ -1098,15 +1146,10 @@ public final class ReplaySubject<T> extends Subject<T, T> {
     public boolean hasAnyValue() {
         return !state.isEmpty();
     }
-    /** An empty array to trigger getValues() to return a new array. */
-    private static final Object[] EMPTY_ARRAY = new Object[0];
-    /**
-     * @return returns a snapshot of the currently buffered non-terminal events.
-     */
-    @SuppressWarnings("unchecked")
     @Experimental
-    public Object[] getValues() {
-        return state.toArray((T[])EMPTY_ARRAY);
+    @Override
+    public boolean hasValue() {
+        return hasAnyValue();
     }
     /**
      * Returns a snapshot of the currently buffered non-terminal events into 
@@ -1115,7 +1158,12 @@ public final class ReplaySubject<T> extends Subject<T, T> {
      * @return the array {@code a} if it had enough capacity or a new array containing the available values 
      */
     @Experimental
+    @Override
     public T[] getValues(T[] a) {
         return state.toArray(a);
+    }
+    @Override
+    public T getValue() {
+        return state.latest();
     }
 }
