@@ -16,15 +16,22 @@
 package rx.internal.operators;
 
 import java.util.Queue;
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
+import java.util.concurrent.atomic.AtomicLongFieldUpdater;
 
 import rx.Observable.Operator;
-import rx.*;
+import rx.Producer;
+import rx.Scheduler;
+import rx.Subscriber;
+import rx.Subscription;
 import rx.exceptions.MissingBackpressureException;
 import rx.functions.Action0;
-import rx.internal.util.*;
-import rx.internal.util.unsafe.*;
-import rx.schedulers.*;
+import rx.internal.util.RxRingBuffer;
+import rx.internal.util.SynchronizedQueue;
+import rx.internal.util.unsafe.SpscArrayQueue;
+import rx.internal.util.unsafe.UnsafeAccess;
+import rx.schedulers.ImmediateScheduler;
+import rx.schedulers.TrampolineScheduler;
 
 /**
  * Delivers events on the specified {@code Scheduler} asynchronously via an unbounded buffer.
@@ -96,7 +103,7 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
 
                 @Override
                 public void request(long n) {
-                    REQUESTED.getAndAdd(ObserveOnSubscriber.this, n);
+                    BackpressureUtils.getAndAddRequest(REQUESTED, ObserveOnSubscriber.this, n);
                     schedule();
                 }
 

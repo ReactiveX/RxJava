@@ -724,4 +724,45 @@ public class OperatorObserveOnTest {
         assertEquals(MissingBackpressureException.class, ts.getOnErrorEvents().get(0).getClass());
     }
 
+    @Test
+    public void testRequestOverflow() throws InterruptedException {
+
+        final CountDownLatch latch = new CountDownLatch(1);
+        final AtomicInteger count = new AtomicInteger();
+        Observable.range(1, 100).observeOn(Schedulers.computation())
+                .subscribe(new Subscriber<Integer>() {
+
+                    boolean first = true;
+                    
+                    @Override
+                    public void onStart() {
+                        request(2);
+                    }
+
+                    @Override
+                    public void onCompleted() {
+                        latch.countDown();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+
+                    @Override
+                    public void onNext(Integer t) {
+                        count.incrementAndGet();
+                        if (first) {
+                            request(Long.MAX_VALUE - 1);
+                            request(Long.MAX_VALUE - 1);
+                            request(10);
+                            first = false;
+                        }
+                    }
+                });
+        assertTrue(latch.await(10, TimeUnit.SECONDS));
+        assertEquals(100, count.get());
+
+    }
+    
 }
