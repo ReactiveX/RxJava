@@ -5368,6 +5368,27 @@ public class Observable<T> {
     }
     
     /**
+     * Instructs an Observable that is emitting items faster than its observer can consume them to 
+     * hold onto the latest value and emit that on request.
+     * <p>
+     * Its behavior is logically equivalent to toBlocking().latest() with the exception that
+     * the downstream is not blocking while requesting more values.
+     * <p>
+     * Note that if the upstream Observable does support backpressure, this operator ignores that capability
+     * and doesn't propagate any backpressure requests from downstream.
+     * <p>
+     * Note that due to the nature of how backpressure requests are propagated through subscribeOn/observeOn,
+     * requesting more than 1 from downstream doesn't guarantee a continuous delivery of onNext events.
+     * @return
+     * @Experimental The behavior of this can change at any time. 
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     */
+    @Experimental
+    public final Observable<T> onBackpressureLatest() {
+        return lift(OperatorOnBackpressureLatest.<T>instance());
+    }
+    
+    /**
      * Instructs an Observable to pass control to another Observable rather than invoking
      * {@link Observer#onError onError} if it encounters an error.
      * <p>
