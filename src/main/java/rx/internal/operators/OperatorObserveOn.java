@@ -61,7 +61,9 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
             // avoid overhead, execute directly
             return child;
         } else {
-            return new ObserveOnSubscriber<T>(scheduler, child);
+            ObserveOnSubscriber<T> parent = new ObserveOnSubscriber<T>(scheduler, child);
+            parent.init();
+            return parent;
         }
     }
 
@@ -98,6 +100,11 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
                 queue = new SynchronizedQueue<Object>(RxRingBuffer.SIZE);
             }
             this.scheduledUnsubscribe = new ScheduledUnsubscribe(recursiveScheduler);
+        }
+        
+        void init() {
+            // don't want this code in the constructor because `this` can escape through the 
+            // setProducer call
             child.add(scheduledUnsubscribe);
             child.setProducer(new Producer() {
 
