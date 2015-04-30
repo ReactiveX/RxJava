@@ -131,8 +131,8 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
         private volatile RxRingBuffer scalarValueQueue = null;
 
         /* protected by lock on MergeSubscriber instance */
-        private int missedEmitting = 0;
-        private boolean emitLock = false;
+        private boolean missedEmitting;
+        private boolean emitLock;
 
         /**
          * Using synchronized(this) for `emitLock` instead of ReentrantLock or AtomicInteger is faster when there is no contention.
@@ -246,62 +246,57 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
 
         private void handleScalarSynchronousObservableWithoutRequestLimits(ScalarSynchronousObservable<? extends T> t) {
             T value = t.get();
-            if (getEmitLock()) {
-                boolean moreToDrain;
-                try {
-                    actual.onNext(value);
-                } finally {
-                    moreToDrain = releaseEmitLock();
+            try {
+                synchronized (this) {
+                    if (emitLock) {
+                        missedEmitting = true;
+                        getOrCreateScalarValueQueue().onNext(value);
+                        return;
+                    }
+                    missedEmitting = false;
+                    emitLock = true;
                 }
-                if (moreToDrain) {
-                    drainQueuesIfNeeded();
-                }
-                request(1);
-                return;
-            } else {
-                try {
-                    getOrCreateScalarValueQueue().onNext(value);
-                } catch (MissingBackpressureException e) {
-                    onError(e);
-                }
+            } catch (MissingBackpressureException e) {
+                onError(e);
                 return;
             }
+            boolean moreToDrain;
+            try {
+                actual.onNext(value);
+            } finally {
+                moreToDrain = releaseEmitLock();
+            }
+            if (moreToDrain) {
+                drainQueuesIfNeeded();
+            }
+            request(1);
         }
 
         private void handleScalarSynchronousObservableWithRequestLimits(ScalarSynchronousObservable<? extends T> t) {
-            if (getEmitLock()) {
-                boolean emitted = false;
-                boolean moreToDrain;
-                boolean isReturn = false;
-                try {
-                    long r = mergeProducer.requested;
-                    if (r > 0) {
-                        emitted = true;
-                        actual.onNext(t.get());
-                        MergeProducer.REQUESTED.decrementAndGet(mergeProducer);
-                        // we handle this Observable without ever incrementing the wip or touching other machinery so just return here
-                        isReturn = true;
-                    }
-                } finally {
-                    moreToDrain = releaseEmitLock();
-                }
-                if (moreToDrain) {
-                    drainQueuesIfNeeded();
-                }
-                if (emitted) {
-                    request(1);
-                }
-                if (isReturn) {
-                    return;
-                }
-            }
-
+            
             // if we didn't return above we need to enqueue
             // enqueue the values for later delivery
             try {
                 getOrCreateScalarValueQueue().onNext(t.get());
             } catch (MissingBackpressureException e) {
                 onError(e);
+                return;
+            }
+            
+            if (getEmitLock()) {
+                int emitted = 0;
+                boolean moreToDrain;
+                try {
+                    emitted = drainScalarValueQueue();
+                } finally {
+                    moreToDrain = releaseEmitLock();
+                }
+                if (moreToDrain) {
+                    drainQueuesIfNeeded();
+                }
+                if (emitted > 0) {
+                    request(emitted);
+                }
             }
         }
 
@@ -316,20 +311,16 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
 
         private synchronized boolean releaseEmitLock() {
             emitLock = false;
-            if (missedEmitting == 0) {
-                return false;
-            } else {
-                return true;
-            }
+            return missedEmitting;
         }
 
         private synchronized boolean getEmitLock() {
             if (emitLock) {
-                missedEmitting++;
+                missedEmitting = true;
                 return false;
             } else {
                 emitLock = true;
-                missedEmitting = 0;
+                missedEmitting = false;
                 return true;
             }
         }
@@ -446,7 +437,8 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
                     if (!parent) {
                         wip--;
                     }
-                    if ((wip == 0 && completed) || (wip < 0)) {
+                    RxRingBuffer svq = scalarValueQueue;
+                    if ((wip == 0 && completed && (svq == null || svq.isEmpty())) || (wip < 0)) {
                         sendOnComplete = true;
                     }
                 }
@@ -463,7 +455,8 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
             boolean c = false;
             synchronized (this) {
                 completed = true;
-                if (wip == 0) {
+                RxRingBuffer svq = scalarValueQueue;
+                if (wip == 0 && (svq == null || svq.isEmpty())) {
                     c = true;
                 }
             }
@@ -477,7 +470,8 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
             boolean sendOnComplete = false;
             synchronized (this) {
                 wip--;
-                if (wip == 0 && completed) {
+                RxRingBuffer svq = scalarValueQueue;
+                if (wip == 0 && completed && (svq == null || svq.isEmpty())) {
                     sendOnComplete = true;
                 }
             }
@@ -491,12 +485,12 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
             boolean moreToDrain = true;
             while (moreToDrain) {
                 synchronized (this) {
-                    missedEmitting = 0;
+                    missedEmitting = false;
                 }
                 drainScalarValueQueue();
                 drainChildrenQueues();
                 synchronized (this) {
-                    moreToDrain = missedEmitting > 0;
+                    moreToDrain = missedEmitting;
                 }
             }
             RxRingBuffer svq = scalarValueQueue;
@@ -549,7 +543,8 @@ public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
                 if (ms.drainQueuesIfNeeded()) {
                     boolean sendComplete = false;
                     synchronized (ms) {
-                        if (ms.wip == 0 && ms.scalarValueQueue != null && ms.scalarValueQueue.isEmpty()) {
+                        RxRingBuffer svq = ms.scalarValueQueue;
+                        if (ms.wip == 0 && ms.completed && (svq == null || svq.isEmpty())) {
                             sendComplete = true;
                         }
                     }

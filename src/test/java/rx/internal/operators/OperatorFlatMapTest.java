@@ -15,6 +15,7 @@
  */
 package rx.internal.operators;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
@@ -415,5 +416,74 @@ public class OperatorFlatMapTest {
 
         verify(o, never()).onNext(5);
         verify(o, never()).onError(any(Throwable.class));
+    }
+    @Test(timeout = 10000)
+    public void flatMapRangeAsyncLoop() {
+        for (int i = 0; i < 2000; i++) {
+            if (i % 10 == 0) {
+                System.out.println("flatMapRangeAsyncLoop > " + i);
+            }
+            TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+            Observable.range(0, 1000)
+            .flatMap(new Func1<Integer, Observable<Integer>>() {
+                @Override
+                public Observable<Integer> call(Integer t) {
+                    return Observable.just(t);
+                }
+            })
+            .observeOn(Schedulers.computation())
+            .subscribe(ts);
+
+            ts.awaitTerminalEvent(2500, TimeUnit.MILLISECONDS);
+            if (ts.getOnCompletedEvents().isEmpty()) {
+                System.out.println(ts.getOnNextEvents().size());
+            }
+            ts.assertTerminalEvent();
+            ts.assertNoErrors();
+            List<Integer> list = ts.getOnNextEvents();
+            assertEquals(1000, list.size());
+            boolean f = false;
+            for (int j = 0; j < list.size(); j++) {
+                if (list.get(j) != j) {
+                    System.out.println(j + " " + list.get(j));
+                    f = true;
+                }
+            }
+            if (f) {
+                Assert.fail("Results are out of order!");
+            }
+        }
+    }
+    @Test(timeout = 10000)
+    public void flatMapRangeMixedAsyncLoop() {
+        for (int i = 0; i < 2000; i++) {
+            if (i % 10 == 0) {
+                System.out.println("flatMapRangeAsyncLoop > " + i);
+            }
+            TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+            Observable.range(0, 1000)
+            .flatMap(new Func1<Integer, Observable<Integer>>() {
+                final Random rnd = new Random();
+                @Override
+                public Observable<Integer> call(Integer t) {
+                    Observable<Integer> r = Observable.just(t);
+                    if (rnd.nextBoolean()) {
+                        r = r.asObservable();
+                    }
+                    return r;
+                }
+            })
+            .observeOn(Schedulers.computation())
+            .subscribe(ts);
+
+            ts.awaitTerminalEvent(2500, TimeUnit.MILLISECONDS);
+            if (ts.getOnCompletedEvents().isEmpty()) {
+                System.out.println(ts.getOnNextEvents().size());
+            }
+            ts.assertTerminalEvent();
+            ts.assertNoErrors();
+            List<Integer> list = ts.getOnNextEvents();
+            assertEquals(1000, list.size());
+        }
     }
 }
