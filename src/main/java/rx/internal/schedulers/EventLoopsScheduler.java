@@ -117,10 +117,7 @@ public class EventLoopsScheduler extends Scheduler {
             if (isUnsubscribed()) {
                 return Subscriptions.unsubscribed();
             }
-            ScheduledAction s = poolWorker.scheduleActual(action, 0, null);
-            
-            serial.add(s);
-            s.addParent(serial);
+            ScheduledAction s = poolWorker.scheduleActual(action, 0, null, serial);
             
             return s;
         }
