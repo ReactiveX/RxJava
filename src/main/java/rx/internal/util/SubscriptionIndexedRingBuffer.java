@@ -75,11 +75,9 @@ public final class SubscriptionIndexedRingBuffer<T extends Subscription> impleme
             return;
         }
         Subscription t = subscriptions.remove(n);
+        // if we removed successfully we then need to call unsubscribe on it
         if (t != null) {
-            // if we removed successfully we then need to call unsubscribe on it
-            if (t != null) {
-                t.unsubscribe();
-            }
+            t.unsubscribe();
         }
     }
 
