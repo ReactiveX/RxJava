@@ -24,7 +24,6 @@ import org.openjdk.jmh.infra.Blackhole;
 
 import rx.*;
 import rx.Observable;
-import rx.functions.Action0;
 import rx.observables.ConnectableObservable;
 import rx.schedulers.Schedulers;
 
@@ -90,7 +89,6 @@ public class OperatorPublishPerf {
     
     private ConnectableObservable<Integer> source;
     private Observable<Integer> observable;
-    private CyclicBarrier sourceDone;
     @Setup
     public void setup() {
         List<Integer> list = new ArrayList<Integer>();
@@ -98,25 +96,6 @@ public class OperatorPublishPerf {
             list.add(i);
         }
         Observable<Integer> src = Observable.from(list);
-        if (childCount == 0) {
-            sourceDone = new CyclicBarrier(2);
-            src = src
-                // for childCount == 0, make sure we measure how fast the source is depleted
-                .doOnCompleted(new Action0() {
-                    @Override
-                    public void call() {
-                        try {
-                            sourceDone.await(2, TimeUnit.SECONDS);
-                        } catch (InterruptedException ex) {
-                            // ignored
-                        } catch (BrokenBarrierException ex) {
-                            // ignored
-                        } catch (TimeoutException ex) {
-                            // ignored
-                        }
-                    }
-                });
-        }
         source = src.publish();
         observable = async ? source.observeOn(Schedulers.computation()) : source;
     }
@@ -137,23 +116,20 @@ public class OperatorPublishPerf {
         
         Subscription s = source.connect();
         
-        if (cc == 0) {
-            sourceDone.await(2, TimeUnit.SECONDS);
-        }
         if (completion != null && !completion.await(2, TimeUnit.SECONDS)) {
             throw new RuntimeException("Source hung!");
         }
         s.unsubscribe();
     }
-//    public static void main(String[] args) throws Exception {
-//        OperatorPublishPerf o = new OperatorPublishPerf();
-//        o.async = true;
-//        o.batchFrequency = 1;
-//        o.childCount = 1;
-//        o.size = 1000000;
-//        o.setup();
-//        for (int j = 0; j < 1000; j++) {
-//            o.benchmark(null);
-//        }
-//    }
+    public static void main(String[] args) throws Exception {
+        OperatorPublishPerf o = new OperatorPublishPerf();
+        o.async = false;
+        o.batchFrequency = 1;
+        o.childCount = 0;
+        o.size = 1;
+        o.setup();
+        for (int j = 0; j < 1000; j++) {
+            o.benchmark(null);
+        }
+    }
 }
