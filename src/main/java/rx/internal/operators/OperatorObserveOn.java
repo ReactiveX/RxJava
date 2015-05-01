@@ -75,15 +75,19 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
         final NotificationLite<T> on = NotificationLite.instance();
 
         final Queue<Object> queue;
-        volatile boolean completed = false;
-        volatile boolean failure = false;
+        
+        // the status of the current stream
+        volatile boolean finished = false;
 
+        @SuppressWarnings("unused")
         volatile long requested = 0;
+        
         @SuppressWarnings("rawtypes")
         static final AtomicLongFieldUpdater<ObserveOnSubscriber> REQUESTED = AtomicLongFieldUpdater.newUpdater(ObserveOnSubscriber.class, "requested");
 
         @SuppressWarnings("unused")
         volatile long counter;
+        
         @SuppressWarnings("rawtypes")
         static final AtomicLongFieldUpdater<ObserveOnSubscriber> COUNTER_UPDATER = AtomicLongFieldUpdater.newUpdater(ObserveOnSubscriber.class, "counter");
 
@@ -127,7 +131,7 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
 
         @Override
         public void onNext(final T t) {
-            if (isUnsubscribed() || completed) {
+            if (isUnsubscribed()) {
                 return;
             }
             if (!queue.offer(on.next(t))) {
@@ -139,30 +143,23 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
 
         @Override
         public void onCompleted() {
-            if (isUnsubscribed() || completed) {
+            if (isUnsubscribed() || finished) {
                 return;
             }
-            if (error != null) {
-                return;
-            }
-            completed = true;
+            finished = true;
             schedule();
         }
 
         @Override
         public void onError(final Throwable e) {
-            if (isUnsubscribed() || completed) {
-                return;
-            }
-            if (error != null) {
+            if (isUnsubscribed() || finished) {
                 return;
             }
             error = e;
             // unsubscribe eagerly since time will pass before the scheduled onError results in an unsubscribe event
             unsubscribe();
-            // mark failure so the polling thread will skip onNext still in the queue
-            completed = true;
-            failure = true;
+            finished = true;
+            // polling thread should skip any onNext still in the queue
             schedule();
         }
 
@@ -191,41 +188,51 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
                  */
                 counter = 1;
 
-//                middle:
                 while (!scheduledUnsubscribe.isUnsubscribed()) {
-                    if (failure) {
-                        child.onError(error);
-                        return;
-                    } else {
-                        if (requested == 0 && completed && queue.isEmpty()) {
+                    if (finished) {
+                        // only read volatile error once
+                        Throwable err = error;
+                        if (err != null) {
+                            // clear the queue to enable gc 
+                            queue.clear();
+                            // even if there are onNext in the queue we eagerly notify of error
+                            child.onError(err);
+                            return;
+                        } else if (queue.isEmpty()) {
                             child.onCompleted();
                             return;
                         }
-                        if (REQUESTED.getAndDecrement(this) != 0) {
-                            Object o = queue.poll();
-                            if (o == null) {
-                                if (completed) {
-                                    if (failure) {
-                                        child.onError(error);
-                                    } else {
-                                        child.onCompleted();
-                                    }
+                    }
+                    if (REQUESTED.getAndDecrement(this) != 0) {
+                        Object o = queue.poll();
+                        if (o == null) {
+                            // nothing in queue (but be careful, something could be added concurrently right now)
+                            if (finished) {
+                                // only read volatile error once
+                                Throwable err = error;
+                                if (err != null) {
+                                    // clear the queue to enable gc 
+                                    queue.clear();
+                                    // even if there are onNext in the queue we eagerly notify of error
+                                    child.onError(err);
+                                    return;
+                                } else if (queue.isEmpty()) {
+                                    child.onCompleted();
                                     return;
                                 }
-                                // nothing in queue
-                                REQUESTED.incrementAndGet(this);
-                                break;
-                            } else {
-                                if (!on.accept(child, o)) {
-                                    // non-terminal event so let's increment count
-                                    emitted++;
-                                }
                             }
-                        } else {
-                            // we hit the end ... so increment back to 0 again
-                            REQUESTED.incrementAndGet(this);
+                            BackpressureUtils.getAndAddRequest(REQUESTED, this, 1);
                             break;
+                        } else {
+                            if (!on.accept(child, o)) {
+                                // non-terminal event so let's increment count
+                                emitted++;
+                            }
                         }
+                    } else {
+                        // we hit the end ... so increment back to 0 again
+                        BackpressureUtils.getAndAddRequest(REQUESTED, this, 1);
+                        break;
                     }
                 }
             } while (COUNTER_UPDATER.decrementAndGet(this) > 0);
