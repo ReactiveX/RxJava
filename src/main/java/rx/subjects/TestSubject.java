@@ -15,8 +15,6 @@
  */
 package rx.subjects;
 
-import java.util.concurrent.TimeUnit;
-
 import rx.Observer;
 import rx.Scheduler;
 import rx.functions.Action0;
@@ -24,6 +22,8 @@ import rx.functions.Action1;
 import rx.internal.operators.NotificationLite;
 import rx.schedulers.TestScheduler;
 import rx.subjects.SubjectSubscriptionManager.SubjectObserver;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * A variety of Subject that is useful for testing purposes. It operates on a {@link TestScheduler} and allows
@@ -136,11 +136,11 @@ public final class TestSubject<T> extends Subject<T, T> {
     }
 
     /**
-     * Schedule a call to {@code onNext} at relative time of "now()" on TestScheduler.
+     * Schedule a call to {@code onNext} on TestScheduler.
      */
     @Override
     public void onNext(T v) {
-        onNext(v, innerScheduler.now());
+        onNext(v, 0);
     }
 
     private void _onNext(T v) {
@@ -154,10 +154,10 @@ public final class TestSubject<T> extends Subject<T, T> {
      *
      * @param v
      *         the item to emit
-     * @param timeInMilliseconds
+     * @param delayTime
      *         the number of milliseconds in the future relative to "now()" at which to call {@code onNext}
      */
-    public void onNext(final T v, long timeInMilliseconds) {
+    public void onNext(final T v, long delayTime) {
         innerScheduler.schedule(new Action0() {
 
             @Override
@@ -165,7 +165,7 @@ public final class TestSubject<T> extends Subject<T, T> {
                 _onNext(v);
             }
 
-        }, timeInMilliseconds, TimeUnit.MILLISECONDS);
+        }, delayTime, TimeUnit.MILLISECONDS);
     }
 
     @Override
