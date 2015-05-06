@@ -3481,6 +3481,47 @@ public class Observable<T> {
     }
 
     /**
+     * Caches the emission of this Observable and replays them to any subscribers.
+     * The returned CachedObservable auto-subscribes to this Observable on the first subscriber and
+     * it allows disconnecting the cache by either triggering an completion or error.
+     * <p>
+     * Note that the underlying buffer is expanded incrementally by 16 elements at once.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>The operator ignores upstream backpressure support and requests everything but honors 
+     *  the backpressure behavior of its Subscribers.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code cache} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @return the CachedObservable instance wrapping this Observable
+     */
+    public final CachedObservable<T> toCached() {
+        return CachedObservable.from(this);
+    }
+    
+    /**
+     * Caches the emission of this Observable and replays them to any subscribers while using the
+     * given capacityHint in the underlying buffer to reduce its allocation frequency..
+     * The returned CachedObservable auto-subscribes to this Observable on the first subscriber and
+     * it allows disconnecting the cache by either triggering an completion or error.
+     * <p>
+     * Note that the underlying buffer is expanded incrementally by the specified {@code capacityHint}
+     * number of elements at once.
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>The operator ignores upstream backpressure support and requests everything but honors 
+     *  the backpressure behavior of its Subscribers.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code cache} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * @param capacityHint hint for number of items to cache (for optimizing underlying data structure)
+     * @return the CachedObservable instance wrapping this Observable
+     */
+    public final CachedObservable<T> toCached(int capacityHint) {
+        return CachedObservable.from(this, capacityHint);
+    }
+    
+    /**
      * Returns an Observable that emits the items emitted by the source Observable, converted to the specified
      * type.
      * <p>
