@@ -19,6 +19,7 @@ import org.junit.Test;
 import rx.Observer;
 import rx.schedulers.TestScheduler;
 
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import static org.mockito.Mockito.*;
@@ -54,5 +55,73 @@ public class TestSubjectTest {
         scheduler.triggerActions();
 
         verify(observer, times(1)).onNext(1);
+    }
+
+
+
+    @Test
+    public void testObserverPropagateErrorAfterTriggeringActions() {
+        final IOException e = new IOException();
+        final TestScheduler scheduler = new TestScheduler();
+
+        final TestSubject<Integer> subject = TestSubject.create(scheduler);
+        @SuppressWarnings("unchecked")
+        Observer<Integer> observer = mock(Observer.class);
+        subject.subscribe(observer);
+
+        subject.onError(e);
+        scheduler.triggerActions();
+
+        verify(observer, times(1)).onError(e);
+    }
+
+    @Test
+    public void testObserverPropagateErrorInFutureTimeAfterTriggeringActions() {
+        final IOException e = new IOException();
+        final TestScheduler scheduler = new TestScheduler();
+        scheduler.advanceTimeTo(100, TimeUnit.SECONDS);
+
+        final TestSubject<Integer> subject = TestSubject.create(scheduler);
+        @SuppressWarnings("unchecked")
+        Observer<Integer> observer = mock(Observer.class);
+        subject.subscribe(observer);
+
+        subject.onError(e);
+        scheduler.triggerActions();
+
+        verify(observer, times(1)).onError(e);
+    }
+
+
+
+    @Test
+    public void testObserverPropagateCompletedAfterTriggeringActions() {
+        final TestScheduler scheduler = new TestScheduler();
+
+        final TestSubject<Integer> subject = TestSubject.create(scheduler);
+        @SuppressWarnings("unchecked")
+        Observer<Integer> observer = mock(Observer.class);
+        subject.subscribe(observer);
+
+        subject.onCompleted();
+        scheduler.triggerActions();
+
+        verify(observer, times(1)).onCompleted();
+    }
+
+    @Test
+    public void testObserverPropagateCompletedInFutureTimeAfterTriggeringActions() {
+        final TestScheduler scheduler = new TestScheduler();
+        scheduler.advanceTimeTo(100, TimeUnit.SECONDS);
+
+        final TestSubject<Integer> subject = TestSubject.create(scheduler);
+        @SuppressWarnings("unchecked")
+        Observer<Integer> observer = mock(Observer.class);
+        subject.subscribe(observer);
+
+        subject.onCompleted();
+        scheduler.triggerActions();
+
+        verify(observer, times(1)).onCompleted();
     }
 }
