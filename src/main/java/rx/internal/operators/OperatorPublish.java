@@ -535,10 +535,11 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
                         // may contain less than requested
                         int d = 0;
                         while (d < maxRequested) {
+                            term = terminalEvent;
                             Object v = queue.poll();
                             empty = v == null;
                             // let's check if there is a terminal event and the queue became empty just now
-                            if (checkTerminated(terminalEvent, empty)) {
+                            if (checkTerminated(term, empty)) {
                                 skipFinal = true;
                                 return;
                             }
