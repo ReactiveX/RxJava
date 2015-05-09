@@ -116,26 +116,22 @@ public final class OperatorDebounceWithTime<T> implements Operator<T, T> {
         }
         public void emit(int index, Subscriber<T> onNextAndComplete, Subscriber<?> onError) {
             T localValue;
-            boolean localHasValue;
             synchronized (this) {
                 if (emitting || !hasValue || index != this.index) {
                     return;
                 }
                 localValue = value;
-                localHasValue = hasValue;
                 
                 value = null;
                 hasValue = false;
                 emitting = true;
             }
 
-            if  (localHasValue) {
-                try {
-                    onNextAndComplete.onNext(localValue);
-                } catch (Throwable e) {
-                    onError.onError(e);
-                    return;
-                }
+            try {
+                onNextAndComplete.onNext(localValue);
+            } catch (Throwable e) {
+                onError.onError(e);
+                return;
             }
 
             // Check if a termination was requested in the meantime.
