@@ -182,62 +182,42 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
         void pollQueue() {
             int emitted = 0;
             do {
-                /*
-                 * Set to 1 otherwise it could have grown very large while in the last poll loop
-                 * and then we can end up looping all those times again here before exiting even once we've drained
-                 */
                 counter = 1;
-
-                while (!scheduledUnsubscribe.isUnsubscribed()) {
+                long produced = 0;
+                long r = requested;
+                while (!child.isUnsubscribed()) {
+                    Throwable error;
                     if (finished) {
-                        // only read volatile error once
-                        Throwable err = error;
-                        if (err != null) {
-                            // clear the queue to enable gc 
+                        if ((error = this.error) != null) {
+                            // errors shortcut the queue so 
+                            // release the elements in the queue for gc
                             queue.clear();
-                            // even if there are onNext in the queue we eagerly notify of error
-                            child.onError(err);
+                            child.onError(error);
                             return;
-                        } else if (queue.isEmpty()) {
+                        } else
+                        if (queue.isEmpty()) {
                             child.onCompleted();
                             return;
                         }
                     }
-                    if (REQUESTED.getAndDecrement(this) != 0) {
+                    if (r > 0) {
                         Object o = queue.poll();
-                        if (o == null) {
-                            // nothing in queue (but be careful, something could be added concurrently right now)
-                            if (finished) {
-                                // only read volatile error once
-                                Throwable err = error;
-                                if (err != null) {
-                                    // clear the queue to enable gc 
-                                    queue.clear();
-                                    // even if there are onNext in the queue we eagerly notify of error
-                                    child.onError(err);
-                                    return;
-                                } else if (queue.isEmpty()) {
-                                    child.onCompleted();
-                                    return;
-                                }
-                            }
-                            BackpressureUtils.getAndAddRequest(REQUESTED, this, 1);
-                            break;
+                        if (o != null) {
+                            child.onNext(on.getValue(o));
+                            r--;
+                            emitted++;
+                            produced++;
                         } else {
-                            if (!on.accept(child, o)) {
-                                // non-terminal event so let's increment count
-                                emitted++;
-                            }
+                            break;
                         }
                     } else {
-                        // we hit the end ... so increment back to 0 again
-                        BackpressureUtils.getAndAddRequest(REQUESTED, this, 1);
                         break;
                     }
                 }
+                if (produced > 0) {
+                    REQUESTED.addAndGet(this, -produced);
+                }
             } while (COUNTER_UPDATER.decrementAndGet(this) > 0);
-
-            // request the number of items that we emitted in this poll loop
             if (emitted > 0) {
                 request(emitted);
             }
