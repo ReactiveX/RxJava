@@ -1,6 +1,6 @@
 # RxJava: Reactive Extensions for the JVM
 
-Nishaanth's edit for Travis build.
+Nishaanth's second edit for Travis build.
 
 RxJava is a Java VM implementation of [Reactive Extensions](http://reactivex.io): a library for composing asynchronous and event-based programs by using observable sequences.
 
