@@ -1,5 +1,7 @@
 # RxJava: Reactive Extensions for the JVM
 
+Nishaanth's edit for Travis build.
+
 RxJava is a Java VM implementation of [Reactive Extensions](http://reactivex.io): a library for composing asynchronous and event-based programs by using observable sequences.
 
 It extends the [observer pattern](http://en.wikipedia.org/wiki/Observer_pattern) to support sequences of data/events and adds operators that allow you to compose sequences together declaratively while abstracting away concerns about things like low-level threading, synchronization, thread-safety and concurrent data structures.
@@ -31,7 +33,7 @@ Version 1.x is now a stable API and will be supported for several years.
 
 Minor 1.x increments (such as 1.1, 1.2, etc) will occur when non-trivial new functionality is added or significant enhancements or bug fixes occur that may have behavioral changes that may affect some edge cases (such as dependence on behavior resulting from a bug). An example of an enhancement that would classify as this is adding reactive pull backpressure support to an operator that previously did not support it. This should be backwards compatible but does behave differently.
 
-Patch 1.x.y increments (such as 1.0.0 -> 1.0.1, 1.3.1 -> 1.3.2, etc) will occur for bug fixes and trivial functionality (like adding a method overload). New functionality marked with an `@Beta` or `@Experimental` annotation can also be added in patch releases to allow rapid exploration and iteration of unstable new functionality. 
+Patch 1.x.y increments (such as 1.0.0 -> 1.0.1, 1.3.1 -> 1.3.2, etc) will occur for bug fixes and trivial functionality (like adding a method overload). New functionality marked with an `@Beta` or `@Experimental` annotation can also be added in patch releases to allow rapid exploration and iteration of unstable new functionality.
 
 #### @Beta
 
@@ -39,15 +41,15 @@ APIs marked with the `@Beta` annotation at the class or method level are subject
 
 #### @Experimental
 
-APIs marked with the `@Experimental` annotation at the class or method level will almost certainly change. They can be modified in any way, or even removed, at any time. You should not use or rely on them in any production code. They are purely to allow broad testing and feedback. 
+APIs marked with the `@Experimental` annotation at the class or method level will almost certainly change. They can be modified in any way, or even removed, at any time. You should not use or rely on them in any production code. They are purely to allow broad testing and feedback.
 
 #### @Deprecated
 
-APIs marked with the `@Deprecated` annotation at the class or method level will remain supported until the next major release but it is recommended to stop using them. 
+APIs marked with the `@Deprecated` annotation at the class or method level will remain supported until the next major release but it is recommended to stop using them.
 
 #### rx.internal.*
 
-All code inside the `rx.internal.*` packages is considered private API and should not be relied upon at all. It can change at any time. 
+All code inside the `rx.internal.*` packages is considered private API and should not be relied upon at all. It can change at any time.
 
 ## Full Documentation
 
@@ -89,7 +91,7 @@ Futher details on building can be found on the [Getting Started](https://github.
 
 For bugs, questions and discussions please use the [Github Issues](https://github.com/ReactiveX/RxJava/issues).
 
- 
+
 ## LICENSE
 
 Copyright 2013 Netflix, Inc.
