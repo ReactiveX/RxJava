@@ -3288,7 +3288,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/buffer.html">ReactiveX operators documentation: Buffer</a>
      */
     public final Observable<List<T>> buffer(long timespan, TimeUnit unit, int count, Scheduler scheduler) {
-        return lift(new OperatorBufferWithTime<T>(timespan, timespan, unit, count, scheduler));
+        return lift(new OperatorBufferWithTimeAndSize<T>(timespan, unit, count, scheduler));
     }
 
     /**
@@ -3319,7 +3319,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/buffer.html">ReactiveX operators documentation: Buffer</a>
      */
     public final Observable<List<T>> buffer(long timespan, TimeUnit unit, Scheduler scheduler) {
-        return buffer(timespan, timespan, unit, scheduler);
+        return buffer(timespan, unit, Integer.MAX_VALUE, scheduler);
     }
 
     /**
