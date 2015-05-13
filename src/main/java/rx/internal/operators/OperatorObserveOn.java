@@ -214,7 +214,7 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
                         break;
                     }
                 }
-                if (produced > 0) {
+                if (produced > 0 && requested != Long.MAX_VALUE) {
                     REQUESTED.addAndGet(this, -produced);
                 }
             } while (COUNTER_UPDATER.decrementAndGet(this) > 0);
