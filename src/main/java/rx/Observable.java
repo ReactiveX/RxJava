@@ -5370,7 +5370,9 @@ public class Observable<T> {
      * Instructs an Observable that is emitting items faster than its observer can consume them to 
      * hold onto the latest value and emit that on request.
      * <p>
-     * Its behavior is logically equivalent to toBlocking().latest() with the exception that
+     * <img width="640" height="245" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/bp.obp.latest.png" alt="">
+     * <p>
+     * Its behavior is logically equivalent to {@code toBlocking().latest()} with the exception that
      * the downstream is not blocking while requesting more values.
      * <p>
      * Note that if the upstream Observable does support backpressure, this operator ignores that capability
@@ -5378,7 +5380,8 @@ public class Observable<T> {
      * <p>
      * Note that due to the nature of how backpressure requests are propagated through subscribeOn/observeOn,
      * requesting more than 1 from downstream doesn't guarantee a continuous delivery of onNext events.
-     * @return
+     *
+     * @return the source Observable modified so that it emits the most recently-received item upon request
      * @Experimental The behavior of this can change at any time. 
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
