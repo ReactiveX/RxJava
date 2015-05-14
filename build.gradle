@@ -7,47 +7,10 @@ description = 'RxJava: Reactive Extensions for the JVM – a library for composi
 
 apply plugin: 'rxjava-project'
 apply plugin: 'java'
-apply plugin: 'findbugs'
-apply plugin: 'jacoco'
 
 dependencies {
     testCompile 'junit:junit-dep:4.10'
     testCompile 'org.mockito:mockito-core:1.8.5'
-}
-
-////////////////////////////////////////////////////////////////////
-// to run findbugs: 
-//     ./gradlew check
-// then open build/reports/findbugs/main.html
-////////////////////////////////////////////////////////////////////
-
-findbugs {
-  ignoreFailures = true
-  toolVersion = "+"
-  sourceSets = [sourceSets.main]
-  reportsDir = file("$project.buildDir/reports/findbugs")
-  effort = "max"
-}
-
-//////////////////////////////////////////////////////////////////
-// to run jacoco: 
-//     ./gradlew test jacocoTestReport
-// to run jacoco on a single test (matches OperatorRetry to OperatorRetryTest in test code base):
-//     ./gradlew -Dtest.single=OperatorRetry test jacocoTestReport
-// then open build/reports/jacoco/index.html
-/////////////////////////////////////////////////////////////////
-
-jacoco {
-    toolVersion = "+"
-    reportsDir = file("$buildDir/customJacocoReportDir")
-}
-
-jacocoTestReport {
-    reports {
-        xml.enabled false
-        csv.enabled false
-        html.destination "${buildDir}/reports/jacoco"
-    }
 }
 
 javadoc {
@@ -67,10 +30,3 @@ if (project.hasProperty('release.useLastTag')) {
 test{
      maxHeapSize = "2g"
 }
-
-tasks.withType(FindBugs) {
-    reports {
-        xml.enabled = false
-        html.enabled = true
-    }
- }
