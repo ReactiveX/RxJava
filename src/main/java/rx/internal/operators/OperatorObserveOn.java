@@ -69,17 +69,18 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
 
     /** Observe through individual queue per observer. */
     private static final class ObserveOnSubscriber<T> extends Subscriber<T> {
+        
+        //represents null in the queue
+        private static final Object NULL_SENTINEL = new Object();
+        
         final Subscriber<? super T> child;
         final Scheduler.Worker recursiveScheduler;
         final ScheduledUnsubscribe scheduledUnsubscribe;
-        final NotificationLite<T> on = NotificationLite.instance();
-
-        final Queue<Object> queue;
+        final Queue<T> queue;
         
         // the status of the current stream
         volatile boolean finished = false;
 
-        @SuppressWarnings("unused")
         volatile long requested = 0;
         
         @SuppressWarnings("rawtypes")
@@ -99,9 +100,9 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
             this.child = child;
             this.recursiveScheduler = scheduler.createWorker();
             if (UnsafeAccess.isUnsafeAvailable()) {
-                queue = new SpscArrayQueue<Object>(RxRingBuffer.SIZE);
+                queue = new SpscArrayQueue<T>(RxRingBuffer.SIZE);
             } else {
-                queue = new SynchronizedQueue<Object>(RxRingBuffer.SIZE);
+                queue = new SynchronizedQueue<T>(RxRingBuffer.SIZE);
             }
             this.scheduledUnsubscribe = new ScheduledUnsubscribe(recursiveScheduler);
         }
@@ -129,12 +130,18 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
             request(RxRingBuffer.SIZE);
         }
 
+        @SuppressWarnings("unchecked")
         @Override
         public void onNext(final T t) {
             if (isUnsubscribed()) {
                 return;
             }
-            if (!queue.offer(on.next(t))) {
+            T t2;
+            if (t == null)
+                t2 = (T) NULL_SENTINEL;
+            else 
+                t2 = t;
+            if (!queue.offer(t2)) {
                 onError(new MissingBackpressureException());
                 return;
             }
@@ -179,6 +186,7 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
         }
 
         // only execute this from schedule()
+        @SuppressWarnings("unchecked")
         void pollQueue() {
             int emitted = 0;
             do {
@@ -203,7 +211,10 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
                     if (r > 0) {
                         Object o = queue.poll();
                         if (o != null) {
-                            child.onNext(on.getValue(o));
+                            if (o == NULL_SENTINEL)
+                                child.onNext(null);
+                            else 
+                                child.onNext((T) o);
                             r--;
                             emitted++;
                             produced++;
