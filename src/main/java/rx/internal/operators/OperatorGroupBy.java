@@ -194,7 +194,7 @@ public class OperatorGroupBy<T, K, R> implements Operator<GroupedObservable<K, R
         // If we already have items queued when a request comes in we vend those and decrement the outstanding request count
 
         void requestFromGroupedObservable(long n, GroupState<K, T> group) {
-            group.requested.getAndAdd(n);
+            BackpressureUtils.getAndAddRequest(group.requested, n);
             if (group.count.getAndIncrement() == 0) {
                 pollQueue(group);
             }
@@ -330,13 +330,19 @@ public class OperatorGroupBy<T, K, R> implements Operator<GroupedObservable<K, R
         private void emitItem(GroupState<K, T> groupState, Object item) {
             Queue<Object> q = groupState.buffer;
             AtomicLong keyRequested = groupState.requested;
+            //don't need to check for requested being Long.MAX_VALUE because this
+            //field is capped at MAX_QUEUE_SIZE
             REQUESTED.decrementAndGet(this);
             // short circuit buffering
             if (keyRequested != null && keyRequested.get() > 0 && (q == null || q.isEmpty())) {
                 @SuppressWarnings("unchecked")
                 Observer<Object> obs = (Observer<Object>)groupState.getObserver();
                 nl.accept(obs, item);
-                keyRequested.decrementAndGet();
+                if (keyRequested.get() != Long.MAX_VALUE) {
+                    // best endeavours check (no CAS loop here) because we mainly care about 
+                    // the initial request being Long.MAX_VALUE and that value being conserved.
+                    keyRequested.decrementAndGet();
+                }
             } else {
                 q.add(item);
                 BUFFERED_COUNT.incrementAndGet(this);
@@ -381,7 +387,11 @@ public class OperatorGroupBy<T, K, R> implements Operator<GroupedObservable<K, R
                     @SuppressWarnings("unchecked")
                     Observer<Object> obs = (Observer<Object>)groupState.getObserver();
                     nl.accept(obs, t);
-                    groupState.requested.decrementAndGet();
+                    if (groupState.requested.get()!=Long.MAX_VALUE) {
+                        // best endeavours check (no CAS loop here) because we mainly care about 
+                        // the initial request being Long.MAX_VALUE and that value being conserved.
+                        groupState.requested.decrementAndGet();
+                    }
                     BUFFERED_COUNT.decrementAndGet(this);
 
                     // if we have used up all the events we requested from upstream then figure out what to ask for this time based on the empty space in the buffer

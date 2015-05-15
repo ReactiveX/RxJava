@@ -34,6 +34,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -1453,5 +1454,51 @@ public class OperatorGroupByTest {
         assertEquals(Arrays.asList(e), outer.getOnErrorEvents());
         assertEquals(Arrays.asList(e), inner1.getOnErrorEvents());
         assertEquals(Arrays.asList(e), inner2.getOnErrorEvents());
+    }
+    
+    @Test
+    public void testRequestOverflow() {
+        final AtomicBoolean completed = new AtomicBoolean(false);
+        Observable
+                .just(1, 2, 3)
+                // group into one group
+                .groupBy(new Func1<Integer, Integer>() {
+                    @Override
+                    public Integer call(Integer t) {
+                        return 1;
+                    }
+                })
+                // flatten
+                .concatMap(new Func1<GroupedObservable<Integer, Integer>, Observable<Integer>>() {
+                    @Override
+                    public Observable<Integer> call(GroupedObservable<Integer, Integer> g) {
+                        return g;
+                    }
+                })
+                .subscribe(new Subscriber<Integer>() {
+                    
+                    @Override
+                    public void onStart() {
+                        request(2);
+                    }
+
+                    @Override
+                    public void onCompleted() {
+                        completed.set(true);
+                        
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        
+                    }
+
+                    @Override
+                    public void onNext(Integer t) {
+                        System.out.println(t);
+                        //provoke possible request overflow
+                        request(Long.MAX_VALUE-1);
+                    }});
+        assertTrue(completed.get());
     }
 }
