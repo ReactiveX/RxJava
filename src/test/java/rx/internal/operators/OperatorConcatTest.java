@@ -16,6 +16,7 @@
 package rx.internal.operators;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
@@ -35,7 +36,9 @@ import org.junit.Test;
 import org.mockito.InOrder;
 
 import rx.Observable.OnSubscribe;
+import rx.Scheduler.Worker;
 import rx.*;
+import rx.functions.Action0;
 import rx.functions.Func1;
 import rx.internal.util.RxRingBuffer;
 import rx.observers.TestSubscriber;
@@ -766,4 +769,30 @@ public class OperatorConcatTest {
         
         assertEquals(n, counter.get());
     }
+    
+    @Test
+    public void testRequestOverflowDoesNotStallStream() {
+        Observable<Integer> o1 = Observable.just(1,2,3);
+        Observable<Integer> o2 = Observable.just(4,5,6);
+        final AtomicBoolean completed = new AtomicBoolean(false);
+        o1.concatWith(o2).subscribe(new Subscriber<Integer>() {
+
+            @Override
+            public void onCompleted() {
+                completed.set(true);
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                
+            }
+
+            @Override
+            public void onNext(Integer t) {
+                request(2);
+            }});
+        
+        assertTrue(completed.get());
+    }
+    
 }
