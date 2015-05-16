@@ -26,7 +26,9 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -763,6 +765,44 @@ public class OperatorObserveOnTest {
         assertTrue(latch.await(10, TimeUnit.SECONDS));
         assertEquals(100, count.get());
 
+    }
+    
+    @Test
+    public void testNoMoreRequestsAfterUnsubscribe() throws InterruptedException {
+        final CountDownLatch latch = new CountDownLatch(1);
+        final List<Long> requests = Collections.synchronizedList(new ArrayList<Long>());
+        Observable.range(1, 1000000)
+                .doOnRequest(new Action1<Long>() {
+
+                    @Override
+                    public void call(Long n) {
+                        requests.add(n);
+                    }
+                })
+                .observeOn(Schedulers.io())
+                .subscribe(new Subscriber<Integer>() {
+
+                    @Override
+                    public void onStart() {
+                        request(1);
+                    }
+
+                    @Override
+                    public void onCompleted() {
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                    }
+
+                    @Override
+                    public void onNext(Integer t) {
+                        unsubscribe();
+                        latch.countDown();
+                    }
+                });
+        assertTrue(latch.await(10, TimeUnit.SECONDS));
+        assertEquals(1, requests.size());
     }
     
 }

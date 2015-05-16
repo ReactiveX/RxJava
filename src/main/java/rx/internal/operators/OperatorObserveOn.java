@@ -185,7 +185,9 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
                 counter = 1;
                 long produced = 0;
                 long r = requested;
-                while (!child.isUnsubscribed()) {
+                for (;;) {
+                    if (child.isUnsubscribed())
+                        return;
                     Throwable error;
                     if (finished) {
                         if ((error = this.error) != null) {
