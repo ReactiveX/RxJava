@@ -22,6 +22,7 @@ import static org.mockito.Mockito.times;
 import static rx.internal.operators.OnSubscribeAmb.amb;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -36,6 +37,7 @@ import rx.Producer;
 import rx.Scheduler;
 import rx.Subscriber;
 import rx.functions.Action0;
+import rx.functions.Action1;
 import rx.internal.util.RxRingBuffer;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
@@ -219,4 +221,72 @@ public class OnSubscribeAmbTest {
         ts.assertNoErrors();
         assertEquals(RxRingBuffer.SIZE * 2, ts.getOnNextEvents().size());
     }
+    
+    
+    @Test
+    public void testSubscriptionOnlyHappensOnce() throws InterruptedException {
+        final AtomicLong count = new AtomicLong();
+        Action0 incrementer = new Action0() {
+            @Override
+            public void call() {
+                count.incrementAndGet();
+            }
+        };
+        //this aync stream should emit first
+        Observable<Integer> o1 = Observable.just(1).doOnSubscribe(incrementer)
+                .delay(100, TimeUnit.MILLISECONDS).subscribeOn(Schedulers.computation());
+        //this stream emits second
+        Observable<Integer> o2 = Observable.just(1).doOnSubscribe(incrementer)
+                .delay(100, TimeUnit.MILLISECONDS).subscribeOn(Schedulers.computation());
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        Observable.amb(o1, o2).subscribe(ts);
+        ts.requestMore(1);
+        ts.awaitTerminalEvent(5, TimeUnit.SECONDS);
+        ts.assertNoErrors();
+        assertEquals(2, count.get());
+    }
+    
+    @Test
+    public void testSecondaryRequestsPropagatedToChildren() throws InterruptedException {
+        //this aync stream should emit first
+        Observable<Integer> o1 = Observable.from(Arrays.asList(1, 2, 3))
+                .delay(100, TimeUnit.MILLISECONDS).subscribeOn(Schedulers.computation());
+        //this stream emits second
+        Observable<Integer> o2 = Observable.from(Arrays.asList(4, 5, 6))
+                .delay(200, TimeUnit.MILLISECONDS).subscribeOn(Schedulers.computation());
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
+            @Override
+            public void onStart() {
+                request(1);
+            }};
+        Observable.amb(o1, o2).subscribe(ts);
+        // before first emission request 20 more
+        // this request should suffice to emit all
+        ts.requestMore(20);
+        //ensure stream does not hang
+        ts.awaitTerminalEvent(5, TimeUnit.SECONDS);
+        ts.assertNoErrors();
+    }
+
+    @Test
+    public void testSynchronousSources() {
+        // under async subscription the second observable would complete before
+        // the first but because this is a synchronous subscription to sources
+        // then second observable does not get subscribed to before first
+        // subscription completes hence first observable emits result through
+        // amb
+        int result = Observable.just(1).doOnNext(new Action1<Object>() {
+
+            @Override
+            public void call(Object t) {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    //
+                }
+            }
+        }).ambWith(Observable.just(2)).toBlocking().single();
+        assertEquals(1, result);
+    }
+    
 }

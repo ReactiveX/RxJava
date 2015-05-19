@@ -269,6 +269,7 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
 
         private final Subscriber<? super T> subscriber;
         private final Selection<T> selection;
+        private boolean chosen;
 
         private AmbSubscriber(long requested, Subscriber<? super T> subscriber, Selection<T> selection) {
             this.subscriber = subscriber;
@@ -282,11 +283,11 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
         }
 
         @Override
-        public void onNext(T args) {
+        public void onNext(T t) {
             if (!isSelected()) {
                 return;
             }
-            subscriber.onNext(args);
+            subscriber.onNext(t);
         }
 
         @Override
@@ -306,12 +307,17 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
         }
 
         private boolean isSelected() {
+            if (chosen) {
+                return true;
+            }
             if (selection.choice.get() == this) {
                 // fast-path
+                chosen = true;
                 return true;
             } else {
                 if (selection.choice.compareAndSet(null, this)) {
                     selection.unsubscribeOthers(this);
+                    chosen = true;
                     return true;
                 } else {
                     // we lost so unsubscribe ... and force cleanup again due to possible race conditions
@@ -343,59 +349,97 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
         }
 
     }
-
-    private final Iterable<? extends Observable<? extends T>> sources;
-    private final Selection<T> selection = new Selection<T>();
-
+    
+    //give default access instead of private as a micro-optimization 
+    //for access from anonymous classes below
+    final Iterable<? extends Observable<? extends T>> sources;
+    final Selection<T> selection = new Selection<T>();
+    final AtomicReference<AmbSubscriber<T>> choice = selection.choice;
+    
     private OnSubscribeAmb(Iterable<? extends Observable<? extends T>> sources) {
         this.sources = sources;
     }
 
     @Override
     public void call(final Subscriber<? super T> subscriber) {
+        
+        //setup unsubscription of all the subscribers to the sources
         subscriber.add(Subscriptions.create(new Action0() {
 
             @Override
             public void call() {
-                if (selection.choice.get() != null) {
+                AmbSubscriber<T> c;
+                if ((c = choice.get()) != null) {
                     // there is a single winner so we unsubscribe it
-                    selection.choice.get().unsubscribe();
+                    c.unsubscribe();
                 } 
                 // if we are racing with others still existing, we'll also unsubscribe them
-                if(!selection.ambSubscribers.isEmpty()) {
-                    for (AmbSubscriber<T> other : selection.ambSubscribers) {
-                        other.unsubscribe();
-                    }
-                    selection.ambSubscribers.clear();
-                }
+                // if subscriptions are occurring as this is happening then this call may not 
+                // unsubscribe everything. We protect ourselves though by doing another unsubscribe check
+                // after the subscription loop below
+                unsubscribeAmbSubscribers(selection.ambSubscribers);
             }
-            
+
         }));
+        
+        //need to subscribe to all the sources
+        for (Observable<? extends T> source : sources) {
+            if (subscriber.isUnsubscribed()) {
+                break;
+            }
+            AmbSubscriber<T> ambSubscriber = new AmbSubscriber<T>(0, subscriber, selection);
+            selection.ambSubscribers.add(ambSubscriber);
+            // check again if choice has been made so can stop subscribing
+            // if all sources were backpressure aware then this check 
+            // would be pointless given that 0 was requested above from each ambSubscriber
+            AmbSubscriber<T> c;
+            if ((c = choice.get()) != null) {
+                // Already chose one, the rest can be skipped and we can clean up
+                selection.unsubscribeOthers(c);
+                return;
+            }
+            source.unsafeSubscribe(ambSubscriber);
+        }
+        // while subscribing unsubscription may have occurred so we clean up after
+        if (subscriber.isUnsubscribed()) {
+            unsubscribeAmbSubscribers(selection.ambSubscribers);
+        }
+
         subscriber.setProducer(new Producer() {
 
             @Override
             public void request(long n) {
-                if (selection.choice.get() != null) {
+                final AmbSubscriber<T> c;
+                if ((c = choice.get()) != null) {
                     // propagate the request to that single Subscriber that won
-                    selection.choice.get().requestMore(n);
+                    c.requestMore(n);
                 } else {
-                    for (Observable<? extends T> source : sources) {
-                        if (subscriber.isUnsubscribed()) {
-                            break;
+                    //propagate the request to all the amb subscribers
+                    for (AmbSubscriber<T> ambSubscriber: selection.ambSubscribers) {
+                        if (!ambSubscriber.isUnsubscribed()) {
+                            // make a best endeavours check to not waste requests 
+                            // if first emission has already occurred
+                            if (choice.get() == ambSubscriber) {
+                                ambSubscriber.requestMore(n);
+                                // don't need to request from other subscribers because choice has been made
+                                // and request has gone to choice 
+                                return;
+                            } else {
+                                ambSubscriber.requestMore(n);
+                            }
                         }
-                        AmbSubscriber<T> ambSubscriber = new AmbSubscriber<T>(n, subscriber, selection);
-                        selection.ambSubscribers.add(ambSubscriber);
-                        // possible race condition in previous lines ... a choice may have been made so double check (instead of synchronizing)
-                        if (selection.choice.get() != null) {
-                            // Already chose one, the rest can be skipped and we can clean up
-                            selection.unsubscribeOthers(selection.choice.get());
-                            break;
-                        }
-                        source.unsafeSubscribe(ambSubscriber);
                     }
                 }
             }
         });
     }
 
+    private static <T> void unsubscribeAmbSubscribers(Collection<AmbSubscriber<T>> ambSubscribers) {
+        if(!ambSubscribers.isEmpty()) {
+            for (AmbSubscriber<T> other : ambSubscribers) {
+                other.unsubscribe();
+            }
+            ambSubscribers.clear();
+        }
+    }
 }
