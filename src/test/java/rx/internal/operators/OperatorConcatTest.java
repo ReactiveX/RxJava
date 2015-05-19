@@ -36,9 +36,7 @@ import org.junit.Test;
 import org.mockito.InOrder;
 
 import rx.Observable.OnSubscribe;
-import rx.Scheduler.Worker;
 import rx.*;
-import rx.functions.Action0;
 import rx.functions.Func1;
 import rx.internal.util.RxRingBuffer;
 import rx.observers.TestSubscriber;
@@ -793,6 +791,35 @@ public class OperatorConcatTest {
             }});
         
         assertTrue(completed.get());
+    }
+    
+    @Test//(timeout = 100000)
+    public void concatMapRangeAsyncLoopIssue2876() {
+        final long durationSeconds = 2;
+        final long startTime = System.currentTimeMillis();
+        for (int i = 0;; i++) {
+            //only run this for a max of ten seconds
+            if (System.currentTimeMillis()-startTime > TimeUnit.SECONDS.toMillis(durationSeconds))
+                return;
+            if (i % 1000 == 0) {
+                System.out.println("concatMapRangeAsyncLoop > " + i);
+            }
+            TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+            Observable.range(0, 1000)
+            .concatMap(new Func1<Integer, Observable<Integer>>() {
+                @Override
+                public Observable<Integer> call(Integer t) {
+                    return Observable.from(Arrays.asList(t));
+                }
+            })
+            .observeOn(Schedulers.computation()).subscribe(ts);
+
+            ts.awaitTerminalEvent(2500, TimeUnit.MILLISECONDS);
+            ts.assertTerminalEvent();
+            ts.assertNoErrors();
+            assertEquals(1000, ts.getOnNextEvents().size());
+            assertEquals((Integer)999, ts.getOnNextEvents().get(999));
+        }
     }
     
 }
