@@ -16,6 +16,7 @@
 package rx.observers;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -111,6 +112,18 @@ public class TestObserver<T> implements Observer<T> {
      * @throws AssertionError
      *          if the sequence of items observed does not exactly match {@code items}
      */
+    public void assertReceivedOnNext(T... items) {
+        assertReceivedOnNext(Arrays.asList(items));
+    }
+
+    /**
+     * Assert that a particular sequence of items was received in order.
+     *
+     * @param items
+     *          the sequence of items expected to have been observed
+     * @throws AssertionError
+     *          if the sequence of items observed does not exactly match {@code items}
+     */
     public void assertReceivedOnNext(List<T> items) {
         if (onNextEvents.size() != items.size()) {
             throw new AssertionError("Number of items does not match. Provided: " + items.size() + "  Actual: " + onNextEvents.size());
@@ -127,7 +140,6 @@ public class TestObserver<T> implements Observer<T> {
 
             }
         }
-
     }
 
     /**

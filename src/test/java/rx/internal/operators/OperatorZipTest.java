@@ -1266,7 +1266,7 @@ public class OperatorZipTest {
         
         ts.assertNoErrors();
         ts.assertTerminalEvent();
-        ts.assertReceivedOnNext(Arrays.asList(11, 22));
+        ts.assertReceivedOnNext(11, 22);
     }
     @Test(timeout = 10000)
     public void testZipRace() {
@@ -1311,6 +1311,6 @@ public class OperatorZipTest {
         
         ts.awaitTerminalEvent(1, TimeUnit.SECONDS);
         ts.assertNoErrors();
-        ts.assertReceivedOnNext(Arrays.asList(11));
+        ts.assertReceivedOnNext(11);
     }
 }

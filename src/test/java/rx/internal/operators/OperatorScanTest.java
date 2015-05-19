@@ -308,7 +308,7 @@ public class OperatorScanTest {
         }).take(1);
         TestSubscriber<Integer> subscriber = new TestSubscriber<Integer>();
         o.subscribe(subscriber);
-        subscriber.assertReceivedOnNext(Arrays.asList(0));
+        subscriber.assertReceivedOnNext(0);
         subscriber.assertTerminalEvent();
         subscriber.assertNoErrors();
     }

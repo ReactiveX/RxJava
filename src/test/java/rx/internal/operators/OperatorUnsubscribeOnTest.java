@@ -71,7 +71,7 @@ public class OperatorUnsubscribeOnTest {
             System.out.println("subscribeThread.get(): " + subscribeThread.get());
             assertTrue(unsubscribeThread == UI_EVENT_LOOP.getThread());
 
-            observer.assertReceivedOnNext(Arrays.asList(1, 2));
+            observer.assertReceivedOnNext(1, 2);
             observer.assertTerminalEvent();
         } finally {
             UI_EVENT_LOOP.shutdown();
@@ -112,7 +112,7 @@ public class OperatorUnsubscribeOnTest {
             System.out.println("subscribeThread.get(): " + subscribeThread.get());
             assertTrue(unsubscribeThread == UI_EVENT_LOOP.getThread());
 
-            observer.assertReceivedOnNext(Arrays.asList(1, 2));
+            observer.assertReceivedOnNext(1, 2);
             observer.assertTerminalEvent();
         } finally {
             UI_EVENT_LOOP.shutdown();

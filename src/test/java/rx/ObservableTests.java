@@ -1024,21 +1024,21 @@ public class ObservableTests {
     public void testMergeWith() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         Observable.just(1).mergeWith(Observable.just(2)).subscribe(ts);
-        ts.assertReceivedOnNext(Arrays.asList(1, 2));
+        ts.assertReceivedOnNext(1, 2);
     }
     
     @Test
     public void testConcatWith() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         Observable.just(1).concatWith(Observable.just(2)).subscribe(ts);
-        ts.assertReceivedOnNext(Arrays.asList(1, 2));
+        ts.assertReceivedOnNext(1, 2);
     }
     
     @Test
     public void testAmbWith() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         Observable.just(1).ambWith(Observable.just(2)).subscribe(ts);
-        ts.assertReceivedOnNext(Arrays.asList(1));
+        ts.assertReceivedOnNext(1);
     }
 
     @Test(expected = OnErrorNotImplementedException.class)
@@ -1097,7 +1097,7 @@ public class ObservableTests {
         }).subscribe(ts);
         ts.assertTerminalEvent();
         ts.assertNoErrors();
-        ts.assertReceivedOnNext(Arrays.asList("1", "2", "3"));
+        ts.assertReceivedOnNext("1", "2", "3");
     }
     
     @Test

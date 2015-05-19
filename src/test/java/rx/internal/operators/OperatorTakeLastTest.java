@@ -123,7 +123,7 @@ public class OperatorTakeLastTest {
         Observable.range(1, 100000).takeLast(1).observeOn(Schedulers.newThread()).map(newSlowProcessor()).subscribe(ts);
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
-        ts.assertReceivedOnNext(Arrays.asList(100000));
+        ts.assertReceivedOnNext(100000);
     }
 
     @Test

@@ -663,7 +663,7 @@ public class OperatorDelayTest {
         delayed.subscribe(observer);
         // all will be delivered after 500ms since range does not delay between them
         scheduler.advanceTimeBy(500L, TimeUnit.MILLISECONDS);
-        observer.assertReceivedOnNext(Arrays.asList(1, 2, 3, 4, 5));
+        observer.assertReceivedOnNext(1, 2, 3, 4, 5);
     }
 
     @Test

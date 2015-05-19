@@ -198,6 +198,18 @@ public class TestSubscriber<T> extends Subscriber<T> {
      * @throws AssertionError
      *          if the sequence of items observed does not exactly match {@code items}
      */
+    public void assertReceivedOnNext(T... items) {
+        testObserver.assertReceivedOnNext(items);
+    }
+
+    /**
+     * Assert that a particular sequence of items was received by this {@link Subscriber} in order.
+     *
+     * @param items
+     *          the sequence of items expected to have been observed
+     * @throws AssertionError
+     *          if the sequence of items observed does not exactly match {@code items}
+     */
     public void assertReceivedOnNext(List<T> items) {
         testObserver.assertReceivedOnNext(items);
     }

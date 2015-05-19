@@ -716,7 +716,7 @@ public class OperatorConcatTest {
         ts.awaitTerminalEvent(500, TimeUnit.MILLISECONDS);
         ts.assertTerminalEvent();
         ts.assertNoErrors();
-        ts.assertReceivedOnNext(Arrays.asList("hello", "hello"));
+        ts.assertReceivedOnNext("hello", "hello");
     }
 
     @Test(timeout = 10000)

@@ -236,12 +236,12 @@ public class OperatorTakeWhileTest {
         source.subscribe(ts);
         
         ts.assertNoErrors();
-        ts.assertReceivedOnNext(Arrays.asList(1, 2, 3, 4, 5));
+        ts.assertReceivedOnNext(1, 2, 3, 4, 5);
         
         ts.requestMore(5);
 
         ts.assertNoErrors();
-        ts.assertReceivedOnNext(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+        ts.assertReceivedOnNext(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
     }
     
     @Test
@@ -257,7 +257,7 @@ public class OperatorTakeWhileTest {
         source.unsafeSubscribe(ts);
         
         ts.assertNoErrors();
-        ts.assertReceivedOnNext(Arrays.asList(1));
+        ts.assertReceivedOnNext(1);
         
         Assert.assertFalse("Unsubscribed!", ts.isUnsubscribed());
     }

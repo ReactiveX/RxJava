@@ -457,7 +457,7 @@ public class OperatorObserveOnTest {
                 .subscribe(testSubscriber);
         testSubscriber.awaitTerminalEvent();
         System.err.println(testSubscriber.getOnNextEvents());
-        testSubscriber.assertReceivedOnNext(Arrays.asList(0, 1, 2));
+        testSubscriber.assertReceivedOnNext(0, 1, 2);
         // it should be between the take num and requested batch size across the async boundary
         System.out.println("Generated: " + generated.get());
         assertTrue(generated.get() >= 3 && generated.get() <= RxRingBuffer.SIZE);
@@ -540,7 +540,7 @@ public class OperatorObserveOnTest {
                 .subscribe(testSubscriber);
 
         testSubscriber.awaitTerminalEvent();
-        testSubscriber.assertReceivedOnNext(Arrays.asList(0, 1, 2, 3, 4, 5, 6));
+        testSubscriber.assertReceivedOnNext(0, 1, 2, 3, 4, 5, 6);
         assertEquals(7, generated.get());
     }
 

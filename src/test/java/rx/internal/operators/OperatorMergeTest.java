@@ -418,7 +418,7 @@ public class OperatorMergeTest {
         scheduler1.advanceTimeBy(3, TimeUnit.SECONDS);
         scheduler2.advanceTimeBy(2, TimeUnit.SECONDS);
 
-        ts.assertReceivedOnNext(Arrays.asList(0L, 1L, 2L, 0L, 1L));
+        ts.assertReceivedOnNext(0L, 1L, 2L, 0L, 1L);
         // not unsubscribed yet
         assertFalse(os1.get());
         assertFalse(os2.get());
@@ -426,14 +426,14 @@ public class OperatorMergeTest {
         // advance to the end at which point it should complete
         scheduler1.advanceTimeBy(3, TimeUnit.SECONDS);
 
-        ts.assertReceivedOnNext(Arrays.asList(0L, 1L, 2L, 0L, 1L, 3L, 4L));
+        ts.assertReceivedOnNext(0L, 1L, 2L, 0L, 1L, 3L, 4L);
         assertTrue(os1.get());
         assertFalse(os2.get());
 
         // both should be completed now
         scheduler2.advanceTimeBy(3, TimeUnit.SECONDS);
 
-        ts.assertReceivedOnNext(Arrays.asList(0L, 1L, 2L, 0L, 1L, 3L, 4L, 2L, 3L, 4L));
+        ts.assertReceivedOnNext(0L, 1L, 2L, 0L, 1L, 3L, 4L, 2L, 3L, 4L);
         assertTrue(os1.get());
         assertTrue(os2.get());
 
@@ -460,7 +460,7 @@ public class OperatorMergeTest {
             scheduler1.advanceTimeBy(3, TimeUnit.SECONDS);
             scheduler2.advanceTimeBy(2, TimeUnit.SECONDS);
 
-            ts.assertReceivedOnNext(Arrays.asList(0L, 1L, 2L, 0L, 1L));
+            ts.assertReceivedOnNext(0L, 1L, 2L, 0L, 1L);
             // not unsubscribed yet
             assertFalse(os1.get());
             assertFalse(os2.get());
@@ -471,7 +471,7 @@ public class OperatorMergeTest {
             assertTrue(os1.get());
             assertTrue(os2.get());
 
-            ts.assertReceivedOnNext(Arrays.asList(0L, 1L, 2L, 0L, 1L));
+            ts.assertReceivedOnNext(0L, 1L, 2L, 0L, 1L);
             ts.assertUnsubscribed();
         }
     }
@@ -811,7 +811,7 @@ public class OperatorMergeTest {
         Observable.merge(Observable.just(null, "one"), Observable.just("two", null)).subscribe(ts);
         ts.assertTerminalEvent();
         ts.assertNoErrors();
-        ts.assertReceivedOnNext(Arrays.asList(null, "one", "two", null));
+        ts.assertReceivedOnNext(null, "one", "two", null);
     }
 
     @Test
@@ -830,7 +830,7 @@ public class OperatorMergeTest {
         });
         Observable.merge(Observable.just(null, "one"), bad).subscribe(ts);
         ts.assertNoErrors();
-        ts.assertReceivedOnNext(Arrays.asList(null, "one", "two"));
+        ts.assertReceivedOnNext(null, "one", "two");
     }
 
     @Test
@@ -838,7 +838,7 @@ public class OperatorMergeTest {
         TestSubscriber<String> ts = new TestSubscriber<String>();
         Observable.merge(Observable.just("one"), null).subscribe(ts);
         ts.assertNoErrors();
-        ts.assertReceivedOnNext(Arrays.asList("one"));
+        ts.assertReceivedOnNext("one");
     }
 
     @Test
@@ -1028,7 +1028,7 @@ public class OperatorMergeTest {
         subscriber.requestMore(0);
         source.subscribe(subscriber);
         subscriber.requestMore(3); // 1, 2, <complete> - with requestMore(2) we get the 1 and 2 but not the <complete>
-        subscriber.assertReceivedOnNext(asList(1, 2));
+        subscriber.assertReceivedOnNext(1, 2);
         subscriber.assertTerminalEvent();
     }
 
@@ -1039,7 +1039,7 @@ public class OperatorMergeTest {
         subscriber.requestMore(0);
         source.subscribe(subscriber);
         subscriber.requestMore(2); // 1, <complete> - should work as per .._NormalPath above
-        subscriber.assertReceivedOnNext(asList(1));
+        subscriber.assertReceivedOnNext(1);
         subscriber.assertTerminalEvent();
     }
 
@@ -1054,7 +1054,7 @@ public class OperatorMergeTest {
         subscriber.assertReceivedOnNext(Collections.<Long>emptyList());
         assertEquals(Collections.<Notification<Long>>emptyList(), subscriber.getOnCompletedEvents());
         subscriber.requestMore(1);
-        subscriber.assertReceivedOnNext(asList(1L));
+        subscriber.assertReceivedOnNext(1L);
         assertEquals(Collections.<Notification<Long>>emptyList(), subscriber.getOnCompletedEvents());
         subscriber.requestMore(1);
         subscriber.assertTerminalEvent();
@@ -1068,7 +1068,7 @@ public class OperatorMergeTest {
         subscriber.requestMore(0);
         source.subscribe(subscriber);
         subscriber.requestMore(3); // 1, 2, <error>
-        subscriber.assertReceivedOnNext(asList(1, 2));
+        subscriber.assertReceivedOnNext(1, 2);
         subscriber.assertTerminalEvent();
         assertEquals(asList(exception), subscriber.getOnErrorEvents());
     }
@@ -1081,7 +1081,7 @@ public class OperatorMergeTest {
         subscriber.requestMore(0);
         source.subscribe(subscriber);
         subscriber.requestMore(2); // 1, <error>
-        subscriber.assertReceivedOnNext(asList(1));
+        subscriber.assertReceivedOnNext(1);
         subscriber.assertTerminalEvent();
         assertEquals(asList(exception), subscriber.getOnErrorEvents());
     }
@@ -1092,9 +1092,9 @@ public class OperatorMergeTest {
         TestSubscriber<Integer> subscriber = new TestSubscriber<Integer>();
         subscriber.requestMore(1);
         source.subscribe(subscriber);
-        subscriber.assertReceivedOnNext(asList(1));
+        subscriber.assertReceivedOnNext(1);
         subscriber.requestMore(1);
-        subscriber.assertReceivedOnNext(asList(1, 2));
+        subscriber.assertReceivedOnNext(1, 2);
     }
 
     @Test
@@ -1104,10 +1104,10 @@ public class OperatorMergeTest {
         TestSubscriber<Integer> subscriber = new TestSubscriber<Integer>();
         subscriber.requestMore(1);
         source.subscribe(subscriber);
-        subscriber.assertReceivedOnNext(asList(1));
+        subscriber.assertReceivedOnNext(1);
         assertEquals(Collections.<Throwable>emptyList(), subscriber.getOnErrorEvents());
         subscriber.requestMore(1);
-        subscriber.assertReceivedOnNext(asList(1, 2));
+        subscriber.assertReceivedOnNext(1, 2);
         assertEquals(asList(exception), subscriber.getOnErrorEvents());
     }
 
@@ -1118,10 +1118,10 @@ public class OperatorMergeTest {
         TestSubscriber<Integer> subscriber = new TestSubscriber<Integer>();
         subscriber.requestMore(3);
         source.subscribe(subscriber);
-        subscriber.assertReceivedOnNext(asList(1, 2, 3));
+        subscriber.assertReceivedOnNext(1, 2, 3);
         assertEquals(Collections.<Throwable>emptyList(), subscriber.getOnErrorEvents());
         subscriber.requestMore(2);
-        subscriber.assertReceivedOnNext(asList(1, 2, 3, 4));
+        subscriber.assertReceivedOnNext(1, 2, 3, 4);
         assertEquals(asList(exception), subscriber.getOnErrorEvents());
     }
     
