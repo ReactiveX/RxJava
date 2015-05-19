@@ -15,12 +15,11 @@
  */
 package rx.internal.operators;
 
-import rx.Observable.Operator;
-import rx.Subscriber;
+import java.util.*;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import rx.Observable.Operator;
+import rx.*;
+import rx.internal.producers.SingleDelayedProducer;
 
 /**
  * Returns an {@code Observable} that emits a single item, a list composed of all the items emitted by the
@@ -90,7 +89,7 @@ public final class OperatorToObservableList<T> implements Operator<List<T>, T> {
                         return;
                     }
                     list = null;
-                    producer.set(result);
+                    producer.setValue(result);
                 }
             }
 

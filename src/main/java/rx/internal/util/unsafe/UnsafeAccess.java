@@ -84,4 +84,25 @@ public final class UnsafeAccess {
     public static boolean compareAndSwapInt(Object obj, long offset, int expected, int newValue) {
         return UNSAFE.compareAndSwapInt(obj, offset, expected, newValue);
     }
+    
+    /**
+     * Returns the address of the specific field on the class and
+     * wraps a NoSuchFieldException into an internal error.
+     * <p>
+     * One can avoid using static initializers this way and just assign
+     * the address directly to the target static field.
+     * @param clazz the target class
+     * @param fieldName the target field name
+     * @return the address (offset) of the field
+     */
+    public static long addressOf(Class<?> clazz, String fieldName) {
+        try {
+            Field f = clazz.getDeclaredField(fieldName);
+            return UNSAFE.objectFieldOffset(f);
+        } catch (NoSuchFieldException ex) {
+            InternalError ie = new InternalError();
+            ie.initCause(ex);
+            throw ie;
+        }
+    }
 }

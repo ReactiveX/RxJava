@@ -20,6 +20,7 @@ import java.util.*;
 import rx.Observable.Operator;
 import rx.*;
 import rx.functions.Func2;
+import rx.internal.producers.SingleDelayedProducer;
 
 /**
  * Return an {@code Observable} that emits the items emitted by the source {@code Observable}, in a sorted order
@@ -77,7 +78,7 @@ public final class OperatorToObservableSortedList<T> implements Operator<List<T>
                         onError(e);
                         return;
                     }
-                    producer.set(a);
+                    producer.setValue(a);
                 }
             }
 
