@@ -1,5 +1,46 @@
 # RxJava Releases #
 
+### Version 1.0.11 – May 19th 2015 ([Maven Central](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.0.11%7C)) ###
+
+* [Pull 2948] (https://github.com/ReactiveX/RxJava/pull/2948) More assertions for TestSubscriber
+* [Pull 2956] (https://github.com/ReactiveX/RxJava/pull/2956) OperatorObserveOn should not request more after child is unsubscribed
+* [Pull 2951] (https://github.com/ReactiveX/RxJava/pull/2951) OperatorConcat - prevent request overflow and fix race condition
+* [Pull 2950] (https://github.com/ReactiveX/RxJava/pull/2950) OperatorGroupBy - check for request overflow and don't decrement when at Long.MAX_VALUE
+* [Pull 2923] (https://github.com/ReactiveX/RxJava/pull/2923) OnBackpressureLatest: Non-blocking version of the toBlocking().latest() operator.
+* [Pull 2907] (https://github.com/ReactiveX/RxJava/pull/2907) Fixed schedule race and task retention with ExecutorScheduler.
+* [Pull 2929] (https://github.com/ReactiveX/RxJava/pull/2929) OperatorObserveOn onComplete can be emitted despite onError being called
+* [Pull 2940] (https://github.com/ReactiveX/RxJava/pull/2940) Remove unnecessary localHasValue check
+* [Pull 2939] (https://github.com/ReactiveX/RxJava/pull/2939) publish: Fix another race between terminalEvent and the queue being empty.
+* [Pull 2938] (https://github.com/ReactiveX/RxJava/pull/2938) Fixed Observable.combineLatest overflow bug on Android
+* [Pull 2936] (https://github.com/ReactiveX/RxJava/pull/2936) Fix TestSubject bug
+* [Pull 2934] (https://github.com/ReactiveX/RxJava/pull/2934) Fix termination race condition in OperatorPublish.dispatch
+* [Pull 2963] (https://github.com/ReactiveX/RxJava/pull/2963) Set of standard producers and updated queue implementations with some
+
+### Version 1.0.10 – April 30th 2015 ([Maven Central](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.0.10%7C)) ###
+
+* [Pull 2892] (https://github.com/ReactiveX/RxJava/pull/2892) Fix Observable.range race condition 
+* [Pull 2895] (https://github.com/ReactiveX/RxJava/pull/2895) Fix Observable.from(Iterable) race condition
+* [Pull 2898] (https://github.com/ReactiveX/RxJava/pull/2898) Observable.range - add unit test for eager completion on empty
+* [Pull 2899] (https://github.com/ReactiveX/RxJava/pull/2899) Observable.from(empty) to emit onComplete even when 0 requested
+* [Pull 2894] (https://github.com/ReactiveX/RxJava/pull/2894) Concat: fixed reentrancy problem in completeInner
+* [Pull 2880] (https://github.com/ReactiveX/RxJava/pull/2880) Use singleton reduction functions in count and countLong
+* [Pull 2902] (https://github.com/ReactiveX/RxJava/pull/2902) Prevent ExceptionsTest from hanging when testing stack overflow
+* [Pull 2897] (https://github.com/ReactiveX/RxJava/pull/2897) Fix for overlapping windows.
+* [Pull 2904] (https://github.com/ReactiveX/RxJava/pull/2904) TakeLast - add request overflow check
+* [Pull 2905] (https://github.com/ReactiveX/RxJava/pull/2905) Use singleton Operators where we can
+* [Pull 2909] (https://github.com/ReactiveX/RxJava/pull/2909) Fix the drainer to check if the queue is empty before quitting.
+* [Pull 2911] (https://github.com/ReactiveX/RxJava/pull/2911) OperatorPublish benchmark
+* [Pull 2914] (https://github.com/ReactiveX/RxJava/pull/2914) Optimization - use OperatorTakeLastOne for takeLast(1)
+* [Pull 2915] (https://github.com/ReactiveX/RxJava/pull/2915) Observable.ignoreElements - optimize
+* [Pull 2883] (https://github.com/ReactiveX/RxJava/pull/2883) Proposal: standardized Subject state-peeking methods.
+* [Pull 2901] (https://github.com/ReactiveX/RxJava/pull/2901) Operators toList and toSortedList now support backpressure
+* [Pull 2921] (https://github.com/ReactiveX/RxJava/pull/2921) OperatorObserveOn - handle request overflow correctly
+* [Pull 2882] (https://github.com/ReactiveX/RxJava/pull/2882) OperatorScan - don't call onNext after onError is called
+* [Pull 2875] (https://github.com/ReactiveX/RxJava/pull/2875) Fix: NPE in requestFromChild method.
+* [Pull 2814] (https://github.com/ReactiveX/RxJava/pull/2814) Operator Publish full rewrite
+* [Pull 2820] (https://github.com/ReactiveX/RxJava/pull/2820) Backpressure for window(size)
+* [Pull 2912] (https://github.com/ReactiveX/RxJava/pull/2912) Fix the Scheduler performance degradation
+
 ### Version 1.0.9 – April 9th 2015 ([Maven Central](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.0.9%7C)) ###
 
 * [Pull 2845] (https://github.com/ReactiveX/RxJava/pull/2845) Fix for repeat: wrong target of request 
