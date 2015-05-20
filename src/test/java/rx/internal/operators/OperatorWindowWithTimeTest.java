@@ -26,6 +26,7 @@ import rx.*;
 import rx.Observable;
 import rx.Observer;
 import rx.functions.*;
+import rx.observers.TestSubscriber;
 import rx.schedulers.TestScheduler;
 
 public class OperatorWindowWithTimeTest {
@@ -169,6 +170,27 @@ public class OperatorWindowWithTimeTest {
         assertEquals(Arrays.asList(7, 8, 9), lists.get(2));
         assertEquals(1, lists.get(3).size());
         assertEquals(Arrays.asList(10), lists.get(3));
+    }
+    
+    @Test
+    public void testTakeFlatMapCompletes() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        
+        final int indicator = 999999999;
+        
+        OperatorWindowWithSizeTest.hotStream()
+        .window(300, TimeUnit.MILLISECONDS)
+        .take(10)
+        .flatMap(new Func1<Observable<Integer>, Observable<Integer>>() {
+            @Override
+            public Observable<Integer> call(Observable<Integer> w) {
+                return w.startWith(indicator);
+            }
+        }).subscribe(ts);
+        
+        ts.awaitTerminalEvent(5, TimeUnit.SECONDS);
+        ts.assertCompleted();
+        Assert.assertFalse(ts.getOnNextEvents().isEmpty());
     }
     
 }

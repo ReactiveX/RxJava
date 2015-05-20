@@ -48,9 +48,13 @@ public final class OperatorWindowWithSize<T> implements Operator<Observable<T>, 
     @Override
     public Subscriber<? super T> call(Subscriber<? super Observable<T>> child) {
         if (skip == size) {
-            return new ExactSubscriber(child);
+            ExactSubscriber e = new ExactSubscriber(child);
+            e.init();
+            return e;
         }
-        return new InexactSubscriber(child);
+        InexactSubscriber ie = new InexactSubscriber(child);
+        ie.init();
+        return ie;
     }
     /** Subscriber with exact, non-overlapping window bounds. */
     final class ExactSubscriber extends Subscriber<T> {
@@ -58,7 +62,6 @@ public final class OperatorWindowWithSize<T> implements Operator<Observable<T>, 
         int count;
         BufferUntilSubscriber<T> window;
         volatile boolean noWindow = true;
-        final Subscription parentSubscription = this;
         public ExactSubscriber(Subscriber<? super Observable<T>> child) {
             /**
              * See https://github.com/ReactiveX/RxJava/issues/1546
@@ -69,13 +72,15 @@ public final class OperatorWindowWithSize<T> implements Operator<Observable<T>, 
             /*
              * Add unsubscribe hook to child to get unsubscribe on outer (unsubscribing on next window, not on the inner window itself)
              */
+        }
+        void init() {
             child.add(Subscriptions.create(new Action0() {
 
                 @Override
                 public void call() {
                     // if no window we unsubscribe up otherwise wait until window ends
                     if (noWindow) {
-                        parentSubscription.unsubscribe();
+                        unsubscribe();
                     }
                 }
                 
@@ -111,7 +116,7 @@ public final class OperatorWindowWithSize<T> implements Operator<Observable<T>, 
                 window = null;
                 noWindow = true;
                 if (child.isUnsubscribed()) {
-                    parentSubscription.unsubscribe();
+                    unsubscribe();
                     return;
                 }
             }
@@ -139,7 +144,7 @@ public final class OperatorWindowWithSize<T> implements Operator<Observable<T>, 
         final Subscriber<? super Observable<T>> child;
         int count;
         final List<CountedSubject<T>> chunks = new LinkedList<CountedSubject<T>>();
-        final Subscription parentSubscription = this;
+        volatile boolean noWindow = true;
 
         public InexactSubscriber(Subscriber<? super Observable<T>> child) {
             /**
@@ -148,6 +153,9 @@ public final class OperatorWindowWithSize<T> implements Operator<Observable<T>, 
              * applies to the outer, not the inner.
              */
             this.child = child;
+        }
+
+        void init() {
             /*
              * Add unsubscribe hook to child to get unsubscribe on outer (unsubscribing on next window, not on the inner window itself)
              */
@@ -156,24 +164,38 @@ public final class OperatorWindowWithSize<T> implements Operator<Observable<T>, 
                 @Override
                 public void call() {
                     // if no window we unsubscribe up otherwise wait until window ends
-                    if (chunks == null || chunks.size() == 0) {
-                        parentSubscription.unsubscribe();
+                    if (noWindow) {
+                        unsubscribe();
                     }
                 }
 
             }));
-        }
-
-        @Override
-        public void onStart() {
-            // no backpressure as we are controlling data flow by window size
-            request(Long.MAX_VALUE);
+            
+            child.setProducer(new Producer() {
+                @Override
+                public void request(long n) {
+                    if (n > 0) {
+                        long u = n * size;
+                        if (((u >>> 31) != 0) && (u / n != size)) {
+                            u = Long.MAX_VALUE;
+                        }
+                        requestMore(u);
+                    }
+                }
+            });
         }
         
+        void requestMore(long n) {
+            request(n);
+        }
+
         @Override
         public void onNext(T t) {
             if (count++ % skip == 0) {
                 if (!child.isUnsubscribed()) {
+                    if (chunks.isEmpty()) {
+                        noWindow = false;
+                    }
                     CountedSubject<T> cs = createCountedSubject();
                     chunks.add(cs);
                     child.onNext(cs.producer);
@@ -189,9 +211,11 @@ public final class OperatorWindowWithSize<T> implements Operator<Observable<T>, 
                     cs.consumer.onCompleted();
                 }
             }
-            if (chunks.size() == 0 && child.isUnsubscribed()) {
-                parentSubscription.unsubscribe();
-                return;
+            if (chunks.isEmpty()) {
+                noWindow = true;
+                if (child.isUnsubscribed()) {
+                    unsubscribe();
+                }
             }
         }
 
@@ -199,6 +223,7 @@ public final class OperatorWindowWithSize<T> implements Operator<Observable<T>, 
         public void onError(Throwable e) {
             List<CountedSubject<T>> list = new ArrayList<CountedSubject<T>>(chunks);
             chunks.clear();
+            noWindow = true;
             for (CountedSubject<T> cs : list) {
                 cs.consumer.onError(e);
             }
@@ -209,6 +234,7 @@ public final class OperatorWindowWithSize<T> implements Operator<Observable<T>, 
         public void onCompleted() {
             List<CountedSubject<T>> list = new ArrayList<CountedSubject<T>>(chunks);
             chunks.clear();
+            noWindow = true;
             for (CountedSubject<T> cs : list) {
                 cs.consumer.onCompleted();
             }
