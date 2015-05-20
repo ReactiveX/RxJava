@@ -45,7 +45,7 @@ import rx.subscriptions.Subscriptions;
  */
 public class Observable<T> {
 
-    final OnSubscribe<T> onSubscribe;
+    protected final OnSubscribe<T> onSubscribe;
 
     /**
      * Creates an Observable with a Function to execute when it is subscribed to.
@@ -57,10 +57,10 @@ public class Observable<T> {
      *            {@link OnSubscribe} to be executed when {@link #subscribe(Subscriber)} is called
      */
     protected Observable(OnSubscribe<T> f) {
-        this.onSubscribe = f;
+        this.onSubscribe = hook.onCreate(f);
     }
 
-    private static final RxJavaObservableExecutionHook hook = RxJavaPlugins.getInstance().getObservableExecutionHook();
+    protected static final RxJavaObservableExecutionHook hook = RxJavaPlugins.getInstance().getObservableExecutionHook();
 
     /**
      * Returns an Observable that will execute the specified function when a {@link Subscriber} subscribes to
@@ -92,7 +92,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/create.html">ReactiveX operators documentation: Create</a>
      */
     public final static <T> Observable<T> create(OnSubscribe<T> f) {
-        return new Observable<T>(hook.onCreate(f));
+        return new Observable<T>(f);
     }
 
     /**
@@ -132,12 +132,14 @@ public class Observable<T> {
      * @return an Observable that is the result of applying the lifted Operator to the source Observable
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Implementing-Your-Own-Operators">RxJava wiki: Implementing Your Own Operators</a>
      */
-    public final <R> Observable<R> lift(final Operator<? extends R, ? super T> lift) {
+    public final <R> Observable<R> lift(Operator<? extends R, ? super T> lift) {
+        final Operator<? extends R, ? super T> wrappedLift = hook.onLift(lift);
+
         return new Observable<R>(new OnSubscribe<R>() {
             @Override
             public void call(Subscriber<? super R> o) {
                 try {
-                    Subscriber<? super T> st = hook.onLift(lift).call(o);
+                    Subscriber<? super T> st = wrappedLift.call(o);
                     try {
                         // new Subscriber created and being subscribed with so 'onStart' it
                         st.onStart();
