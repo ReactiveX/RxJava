@@ -56,7 +56,9 @@ public class TestSubscriber<T> extends Subscriber<T> {
 
     /**
      * Constructs a TestSubscriber with the initial request to be requested from upstream.
+     *
      * @param initialRequest the initial request value, negative value will revert to the default unbounded behavior
+     * @since (if this graduates from "Experimental" replace this parenthetical with the release number)
      */
     @SuppressWarnings("unchecked")
     @Experimental
@@ -67,8 +69,10 @@ public class TestSubscriber<T> extends Subscriber<T> {
     /**
      * Constructs a TestSubscriber with the initial request to be requested from upstream
      * and a delegate Observer to wrap.
+     *
      * @param initialRequest the initial request value, negative value will revert to the default unbounded behavior
      * @param delegate the Observer instance to wrap
+     * @since (if this graduates from "Experimental" replace this parenthetical with the release number)
      */
     @Experimental
     public TestSubscriber(Observer<T> delegate, long initialRequest) {
@@ -78,7 +82,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
         this.testObserver = new TestObserver<T>(delegate);
         this.initialRequest = initialRequest;
     }
-    
+
     public TestSubscriber(Subscriber<T> delegate) {
         this(delegate, -1);
     }
@@ -305,6 +309,9 @@ public class TestSubscriber<T> extends Subscriber<T> {
     
     /**
      * Assert if there is exactly a single completion event.
+     *
+     * @throws AssertionError if there were zero, or more than one, onCompleted events
+     * @since (if this graduates from "Experimental" replace this parenthetical with the release number)
      */
     @Experimental
     public void assertCompleted() {
@@ -316,8 +323,12 @@ public class TestSubscriber<T> extends Subscriber<T> {
             throw new AssertionError("Completed multiple times: " + s);
         }
     }
+
     /**
      * Assert if there is no completion event.
+     *
+     * @throws AssertionError if there were one or more than one onCompleted events
+     * @since (if this graduates from "Experimental" replace this parenthetical with the release number)
      */
     @Experimental
     public void assertNotCompleted() {
@@ -329,9 +340,14 @@ public class TestSubscriber<T> extends Subscriber<T> {
             throw new AssertionError("Completed multiple times: " + s);
         }
     }
+
     /**
      * Assert if there is exactly one error event which is a subclass of the given class.
+     *
      * @param clazz the class to check the error against.
+     * @throws AssertionError if there were zero, or more than one, onError events, or if the single onError
+     *                        event did not carry an error of a subclass of the given class
+     * @since (if this graduates from "Experimental" replace this parenthetical with the release number)
      */
     @Experimental
     public void assertError(Class<? extends Throwable> clazz) {
@@ -346,9 +362,14 @@ public class TestSubscriber<T> extends Subscriber<T> {
             throw new AssertionError("Exceptions differ; expected: " + clazz + ", actual: " + err.get(0), err.get(0));
         }
     }
+
     /**
      * Assert there is a single onError event with the exact exception.
+     *
      * @param throwable the throwable to check
+     * @throws AssertionError if there were zero, or more than one, onError events, or if the single onError
+     *                        event did not carry an error that matches the specified throwable
+     * @since (if this graduates from "Experimental" replace this parenthetical with the release number)
      */
     @Experimental
     public void assertError(Throwable throwable) {
@@ -363,8 +384,12 @@ public class TestSubscriber<T> extends Subscriber<T> {
             throw new AssertionError("Exceptions differ; expected: " + throwable + ", actual: " + err.get(0), err.get(0));
         }
     }
+
     /**
      * Assert for no onError and onCompleted events.
+     *
+     * @throws AssertionError if there was either an onError or onCompleted event
+     * @since (if this graduates from "Experimental" replace this parenthetical with the release number)
      */
     @Experimental
     public void assertNoTerminalEvent() {
@@ -381,8 +406,12 @@ public class TestSubscriber<T> extends Subscriber<T> {
             }
         }
     }
+
     /**
      * Assert if there are no onNext events received.
+     *
+     * @throws AssertionError if there were any onNext events
+     * @since (if this graduates from "Experimental" replace this parenthetical with the release number)
      */
     @Experimental
     public void assertNoValues() {
@@ -391,9 +420,13 @@ public class TestSubscriber<T> extends Subscriber<T> {
             throw new AssertionError("No onNext events expected yet some received: " + s);
         }
     }
+
     /**
      * Assert if the given number of onNext events are received.
+     *
      * @param count the expected number of onNext events
+     * @throws AssertionError if there were more or fewer onNext events than specified by {@code count}
+     * @since (if this graduates from "Experimental" replace this parenthetical with the release number)
      */
     @Experimental
     public void assertValueCount(int count) {
@@ -404,16 +437,23 @@ public class TestSubscriber<T> extends Subscriber<T> {
     }
     
     /**
-     * Assert if the received onNext events, in order, are the specified values.
-     * @param values the values to check
+     * Assert if the received onNext events, in order, are the specified items.
+     *
+     * @param values the items to check
+     * @throws AssertionError if the items emitted do not exactly match those specified by {@code values}
+     * @since (if this graduates from "Experimental" replace this parenthetical with the release number)
      */
     @Experimental
     public void assertValues(T... values) {
         assertReceivedOnNext(Arrays.asList(values));
     }
+
     /**
-     * Assert if there is only a single received onNext event.
-     * @param values the values to check
+     * Assert if there is only a single received onNext event and that it marks the emission of a specific item.
+     *
+     * @param value the item to check
+     * @throws AssertionError if the Observable does not emit only the single item specified by {@code value}
+     * @since (if this graduates from "Experimental" replace this parenthetical with the release number)
      */
     @Experimental
     public void assertValue(T value) {
