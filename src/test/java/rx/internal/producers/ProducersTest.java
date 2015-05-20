@@ -355,10 +355,10 @@ public class ProducersTest {
         TestScheduler test = Schedulers.test();
         @SuppressWarnings("unchecked")
         List<Observable<Long>> timers = Arrays.asList(
-            Observable.timer(100, 100, TimeUnit.MILLISECONDS, test),
-            Observable.timer(100, 100, TimeUnit.MILLISECONDS, test)
+            Observable.interval(100, 100, TimeUnit.MILLISECONDS, test),
+            Observable.interval(100, 100, TimeUnit.MILLISECONDS, test)
                 .map(plus(20)),
-            Observable.timer(100, 100, TimeUnit.MILLISECONDS, test)
+            Observable.interval(100, 100, TimeUnit.MILLISECONDS, test)
                 .map(plus(40))
         );
          

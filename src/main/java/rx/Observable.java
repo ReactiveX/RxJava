@@ -1225,7 +1225,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/interval.html">ReactiveX operators documentation: Interval</a>
      */
     public final static Observable<Long> interval(long interval, TimeUnit unit) {
-        return interval(interval, unit, Schedulers.computation());
+        return interval(interval, interval, unit, Schedulers.computation());
     }
 
     /**
@@ -1248,7 +1248,65 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/interval.html">ReactiveX operators documentation: Interval</a>
      */
     public final static Observable<Long> interval(long interval, TimeUnit unit, Scheduler scheduler) {
-        return create(new OnSubscribeTimerPeriodically(interval, interval, unit, scheduler));
+        return interval(interval, interval, unit, scheduler);
+    }
+
+    /**
+     * Returns an Observable that emits a {@code 0L} after the {@code initialDelay} and ever increasing numbers
+     * after each {@code period} of time thereafter.
+     * <p>
+     * <img width="640" height="200" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timer.p.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure as it uses time. If the downstream needs a slower rate
+     *      it should slow the timer or use something like {@link #onBackpressureDrop}.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code timer} operates by default on the {@code computation} {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @param initialDelay
+     *            the initial delay time to wait before emitting the first value of 0L
+     * @param period
+     *            the period of time between emissions of the subsequent numbers
+     * @param unit
+     *            the time unit for both {@code initialDelay} and {@code period}
+     * @return an Observable that emits a 0L after the {@code initialDelay} and ever increasing numbers after
+     *         each {@code period} of time thereafter
+     * @see <a href="http://reactivex.io/documentation/operators/interval.html">ReactiveX operators documentation: Interval</a>
+     * @since 1.0.12
+     */
+    public final static Observable<Long> interval(long initialDelay, long period, TimeUnit unit) {
+        return interval(initialDelay, period, unit, Schedulers.computation());
+    }
+
+    /**
+     * Returns an Observable that emits a {@code 0L} after the {@code initialDelay} and ever increasing numbers
+     * after each {@code period} of time thereafter, on a specified {@link Scheduler}.
+     * <p>
+     * <img width="640" height="200" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timer.ps.png" alt="">
+     * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure as it uses time. If the downstream needs a slower rate
+     *      it should slow the timer or use something like {@link #onBackpressureDrop}.</dd>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>you specify which {@link Scheduler} this operator will use</dd>
+     * </dl>
+     * 
+     * @param initialDelay
+     *            the initial delay time to wait before emitting the first value of 0L
+     * @param period
+     *            the period of time between emissions of the subsequent numbers
+     * @param unit
+     *            the time unit for both {@code initialDelay} and {@code period}
+     * @param scheduler
+     *            the Scheduler on which the waiting happens and items are emitted
+     * @return an Observable that emits a 0L after the {@code initialDelay} and ever increasing numbers after
+     *         each {@code period} of time thereafter, while running on the given Scheduler
+     * @see <a href="http://reactivex.io/documentation/operators/interval.html">ReactiveX operators documentation: Interval</a>
+     * @since 1.0.12
+     */
+    public final static Observable<Long> interval(long initialDelay, long period, TimeUnit unit, Scheduler scheduler) {
+        return create(new OnSubscribeTimerPeriodically(initialDelay, period, unit, scheduler));
     }
 
     /**
@@ -2462,9 +2520,11 @@ public class Observable<T> {
      * @return an Observable that emits a 0L after the {@code initialDelay} and ever increasing numbers after
      *         each {@code period} of time thereafter
      * @see <a href="http://reactivex.io/documentation/operators/timer.html">ReactiveX operators documentation: Timer</a>
+     * @deprecated use {@link #interval(long, long, TimeUnit)} instead
      */
+    @Deprecated
     public final static Observable<Long> timer(long initialDelay, long period, TimeUnit unit) {
-        return timer(initialDelay, period, unit, Schedulers.computation());
+        return interval(initialDelay, period, unit, Schedulers.computation());
     }
 
     /**
@@ -2491,9 +2551,11 @@ public class Observable<T> {
      * @return an Observable that emits a 0L after the {@code initialDelay} and ever increasing numbers after
      *         each {@code period} of time thereafter, while running on the given Scheduler
      * @see <a href="http://reactivex.io/documentation/operators/timer.html">ReactiveX operators documentation: Timer</a>
+     * @deprecated use {@link #interval(long, long, TimeUnit, Scheduler)} instead
      */
+    @Deprecated
     public final static Observable<Long> timer(long initialDelay, long period, TimeUnit unit, Scheduler scheduler) {
-        return create(new OnSubscribeTimerPeriodically(initialDelay, period, unit, scheduler));
+        return interval(initialDelay, period, unit, scheduler);
     }
 
     /**

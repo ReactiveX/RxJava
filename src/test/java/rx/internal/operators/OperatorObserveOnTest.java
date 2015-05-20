@@ -663,7 +663,7 @@ public class OperatorObserveOnTest {
     @Test
     public void testHotOperatorBackpressure() {
         TestSubscriber<String> ts = new TestSubscriber<String>();
-        Observable.timer(0, 1, TimeUnit.MICROSECONDS)
+        Observable.interval(0, 1, TimeUnit.MICROSECONDS)
                 .observeOn(Schedulers.computation())
                 .map(new Func1<Long, String>() {
 
@@ -687,7 +687,7 @@ public class OperatorObserveOnTest {
 
     @Test
     public void testErrorPropagatesWhenNoOutstandingRequests() {
-        Observable<Long> timer = Observable.timer(0, 1, TimeUnit.MICROSECONDS)
+        Observable<Long> timer = Observable.interval(0, 1, TimeUnit.MICROSECONDS)
                 .doOnEach(new Action1<Notification<? super Long>>() {
 
                     @Override

@@ -247,7 +247,7 @@ public class OperatorPublishTest {
     @Test
     public void testConnectWithNoSubscriber() {
         TestScheduler scheduler = new TestScheduler();
-        ConnectableObservable<Long> co = Observable.timer(10, 10, TimeUnit.MILLISECONDS, scheduler).take(3).publish();
+        ConnectableObservable<Long> co = Observable.interval(10, 10, TimeUnit.MILLISECONDS, scheduler).take(3).publish();
         co.connect();
         // Emit 0
         scheduler.advanceTimeBy(15, TimeUnit.MILLISECONDS);

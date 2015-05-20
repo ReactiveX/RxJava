@@ -90,7 +90,7 @@ public class OperatorSerializePerf {
         public void setup(Blackhole bh) {
             super.setup(bh);
 
-            interval = Observable.timer(0, 1, TimeUnit.MILLISECONDS).take(size).map(this);
+            interval = Observable.interval(0, 1, TimeUnit.MILLISECONDS).take(size).map(this);
         }
         @Override
         public Integer call(Long t1) {

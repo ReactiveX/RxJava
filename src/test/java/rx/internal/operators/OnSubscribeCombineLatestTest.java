@@ -820,7 +820,7 @@ public class OnSubscribeCombineLatestTest {
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicInteger count = new AtomicInteger();
         final int SIZE = 2000;
-        Observable<Long> timer = Observable.timer(0, 1, TimeUnit.MILLISECONDS)
+        Observable<Long> timer = Observable.interval(0, 1, TimeUnit.MILLISECONDS)
                 .observeOn(Schedulers.newThread())
                 .doOnEach(new Action1<Notification<? super Long>>() {
 
