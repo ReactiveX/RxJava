@@ -5332,14 +5332,23 @@ public class Observable<T> {
      * <p>
      * Note that if the upstream Observable does support backpressure, this operator ignores that capability
      * and doesn't propagate any backpressure requests from downstream.
+     * <p>
+     * Warning! Using a chain like {@code source.onBackpressureBlock().subscribeOn(scheduler)} is prone to
+     * deadlocks because the consumption of the internal queue is scheduled behind a blocked emission by
+     * the subscribeOn. In order to avoid this, the operators have to be swapped in the chain: 
+     * {@code source.subscribeOn(scheduler).onBackpressureBlock()} and in general, no subscribeOn operator should follow
+     * this operator.
      *  
      * @param maxQueueLength the maximum number of items the producer can emit without blocking
      * @return the source Observable modified to block {@code onNext} notifications on overflow
      * @see <a href="http://reactivex.io/documentation/operators/backpressure.html">ReactiveX operators documentation: backpressure operators</a>
-     * @Experimental The behavior of this can change at any time. 
+     * @Experimental The behavior of this can change at any time.
+     * @deprecated The operator doesn't work properly with {@link #subscribeOn(Scheduler)} and is prone to
+     *             deadlocks. It will be removed/unavailable starting from 1.1.
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
     @Experimental
+    @Deprecated
     public final Observable<T> onBackpressureBlock(int maxQueueLength) {
         return lift(new OperatorOnBackpressureBlock<T>(maxQueueLength));
     }
@@ -5355,13 +5364,22 @@ public class Observable<T> {
      * <p>
      * Note that if the upstream Observable does support backpressure, this operator ignores that capability
      * and doesn't propagate any backpressure requests from downstream.
+     * <p>
+     * Warning! Using a chain like {@code source.onBackpressureBlock().subscribeOn(scheduler)} is prone to
+     * deadlocks because the consumption of the internal queue is scheduled behind a blocked emission by
+     * the subscribeOn. In order to avoid this, the operators have to be swapped in the chain: 
+     * {@code source.subscribeOn(scheduler).onBackpressureBlock()} and in general, no subscribeOn operator should follow
+     * this operator.
      * 
      * @return the source Observable modified to block {@code onNext} notifications on overflow
      * @see <a href="http://reactivex.io/documentation/operators/backpressure.html">ReactiveX operators documentation: backpressure operators</a>
      * @Experimental The behavior of this can change at any time. 
+     * @deprecated The operator doesn't work properly with {@link #subscribeOn(Scheduler)} and is prone to
+     *             deadlocks. It will be removed/unavailable starting from 1.1.
      * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
     @Experimental
+    @Deprecated
     public final Observable<T> onBackpressureBlock() {
         return onBackpressureBlock(rx.internal.util.RxRingBuffer.SIZE);
     }
