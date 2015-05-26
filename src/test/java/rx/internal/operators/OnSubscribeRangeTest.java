@@ -106,7 +106,7 @@ public class OnSubscribeRangeTest {
     @Test
     public void testBackpressureViaRequest() {
         OnSubscribeRange o = new OnSubscribeRange(1, RxRingBuffer.SIZE);
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = TestSubscriber.create();
         ts.assertReceivedOnNext(Collections.<Integer> emptyList());
         ts.requestMore(1);
         o.call(ts);
@@ -127,7 +127,7 @@ public class OnSubscribeRangeTest {
         }
 
         OnSubscribeRange o = new OnSubscribeRange(1, list.size());
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = TestSubscriber.create();
         ts.assertReceivedOnNext(Collections.<Integer> emptyList());
         ts.requestMore(Long.MAX_VALUE); // infinite
         o.call(ts);
@@ -137,7 +137,7 @@ public class OnSubscribeRangeTest {
     void testWithBackpressureOneByOne(int start) {
         Observable<Integer> source = Observable.range(start, 100);
         
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = TestSubscriber.create();
         ts.requestMore(1);
         source.subscribe(ts);
         
@@ -152,7 +152,7 @@ public class OnSubscribeRangeTest {
     void testWithBackpressureAllAtOnce(int start) {
         Observable<Integer> source = Observable.range(start, 100);
         
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = TestSubscriber.create();
         ts.requestMore(100);
         source.subscribe(ts);
         
@@ -179,7 +179,7 @@ public class OnSubscribeRangeTest {
     public void testWithBackpressureRequestWayMore() {
         Observable<Integer> source = Observable.range(50, 100);
         
-        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        TestSubscriber<Integer> ts = TestSubscriber.create();
         ts.requestMore(150);
         source.subscribe(ts);
         
