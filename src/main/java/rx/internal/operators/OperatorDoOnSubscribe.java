@@ -39,6 +39,19 @@ public class OperatorDoOnSubscribe<T> implements Operator<T, T> {
         subscribe.call();
         // Pass through since this operator is for notification only, there is
         // no change to the stream whatsoever.
-        return child;
+        return new Subscriber<T>(child) {
+            @Override
+            public void onNext(T t) {
+                child.onNext(t);
+            }
+            @Override
+            public void onError(Throwable e) {
+                child.onError(e);
+            }
+            @Override
+            public void onCompleted() {
+                child.onCompleted();
+            }
+        };
     }
 }

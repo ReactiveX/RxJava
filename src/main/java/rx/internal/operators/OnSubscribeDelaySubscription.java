@@ -16,11 +16,10 @@
 package rx.internal.operators;
 
 import java.util.concurrent.TimeUnit;
-import rx.Observable;
+
+import rx.*;
 import rx.Observable.OnSubscribe;
-import rx.Scheduler;
 import rx.Scheduler.Worker;
-import rx.Subscriber;
 import rx.functions.Action0;
 
 /**
@@ -50,7 +49,20 @@ public final class OnSubscribeDelaySubscription<T> implements OnSubscribe<T> {
             @Override
             public void call() {
                 if (!s.isUnsubscribed()) {
-                    source.unsafeSubscribe(s);
+                    source.unsafeSubscribe(new Subscriber<T>(s) {
+                        @Override
+                        public void onNext(T t) {
+                            s.onNext(t);
+                        }
+                        @Override
+                        public void onError(Throwable e) {
+                            s.onError(e);
+                        }
+                        @Override
+                        public void onCompleted() {
+                            s.onCompleted();
+                        }
+                    });
                 }
             }
         }, time, unit);

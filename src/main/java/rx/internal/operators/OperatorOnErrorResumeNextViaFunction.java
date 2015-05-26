@@ -15,13 +15,13 @@
  */
 package rx.internal.operators;
 
-import rx.Observable;
-import rx.Producer;
+import rx.*;
 import rx.Observable.Operator;
-import rx.Subscriber;
 import rx.exceptions.Exceptions;
 import rx.functions.Func1;
+import rx.internal.producers.ProducerArbiter;
 import rx.plugins.RxJavaPlugins;
+import rx.subscriptions.SerialSubscription;
 
 /**
  * Instruct an Observable to pass control to another Observable (the return value of a function)
@@ -51,6 +51,8 @@ public final class OperatorOnErrorResumeNextViaFunction<T> implements Operator<T
 
     @Override
     public Subscriber<? super T> call(final Subscriber<? super T> child) {
+        final ProducerArbiter pa = new ProducerArbiter();
+        final SerialSubscription ssub = new SerialSubscription();
         Subscriber<T> parent = new Subscriber<T>() {
 
             private boolean done = false;
@@ -74,8 +76,28 @@ public final class OperatorOnErrorResumeNextViaFunction<T> implements Operator<T
                 try {
                     RxJavaPlugins.getInstance().getErrorHandler().handleError(e);
                     unsubscribe();
+                    Subscriber<T> next = new Subscriber<T>() {
+                        @Override
+                        public void onNext(T t) {
+                            child.onNext(t);
+                        }
+                        @Override
+                        public void onError(Throwable e) {
+                            child.onError(e);
+                        }
+                        @Override
+                        public void onCompleted() {
+                            child.onCompleted();
+                        }
+                        @Override
+                        public void setProducer(Producer producer) {
+                            pa.setProducer(producer);
+                        }
+                    };
+                    ssub.set(next);
+                    
                     Observable<? extends T> resume = resumeFunction.call(e);
-                    resume.unsafeSubscribe(child);
+                    resume.unsafeSubscribe(next);
                 } catch (Throwable e2) {
                     child.onError(e2);
                 }
@@ -91,16 +113,13 @@ public final class OperatorOnErrorResumeNextViaFunction<T> implements Operator<T
             
             @Override
             public void setProducer(final Producer producer) {
-                child.setProducer(new Producer() {
-                    @Override
-                    public void request(long n) {
-                        producer.request(n);
-                    }
-                });
+                pa.setProducer(producer);
             }
 
         };
-        child.add(parent);
+        child.add(ssub);
+        ssub.set(parent);
+        child.setProducer(pa);
         return parent;
     }
 
