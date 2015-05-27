@@ -120,31 +120,38 @@ public class OperatorSerializeTest {
 
     @Test
     public void testMultiThreadedWithNPEinMiddle() {
-        TestMultiThreadedObservable onSubscribe = new TestMultiThreadedObservable("one", "two", "three", null, "four", "five", "six", "seven", "eight", "nine");
-        Observable<String> w = Observable.create(onSubscribe);
-
-        BusyObserver busyobserver = new BusyObserver();
-
-        w.serialize().subscribe(busyobserver);
-        onSubscribe.waitToFinish();
-
-        System.out.println("maxConcurrentThreads: " + onSubscribe.maxConcurrentThreads.get());
-        // this should not be the full number of items since the error should stop it before it completes all 9
-        System.out.println("onNext count: " + busyobserver.onNextCount.get());
-        assertTrue(busyobserver.onNextCount.get() < 9);
-        assertTrue(busyobserver.onError);
-        // no onCompleted because onError was invoked
-        assertFalse(busyobserver.onCompleted);
-        // non-deterministic because unsubscribe happens after 'waitToFinish' releases
-        // so commenting out for now as this is not a critical thing to test here
-        // verify(s, times(1)).unsubscribe();
-
-        // we can have concurrency ...
-        assertTrue(onSubscribe.maxConcurrentThreads.get() > 1);
-        // ... but the onNext execution should be single threaded
-        assertEquals(1, busyobserver.maxConcurrentThreads.get());
+        boolean lessThan9 = false;
+        for (int i = 0; i < 3; i++) {
+            TestMultiThreadedObservable onSubscribe = new TestMultiThreadedObservable("one", "two", "three", null, "four", "five", "six", "seven", "eight", "nine");
+            Observable<String> w = Observable.create(onSubscribe);
+    
+            BusyObserver busyobserver = new BusyObserver();
+    
+            w.serialize().subscribe(busyobserver);
+            onSubscribe.waitToFinish();
+    
+            System.out.println("maxConcurrentThreads: " + onSubscribe.maxConcurrentThreads.get());
+            // this should not always be the full number of items since the error should (very often) 
+            // stop it before it completes all 9
+            System.out.println("onNext count: " + busyobserver.onNextCount.get());
+            if (busyobserver.onNextCount.get() < 9) {
+                lessThan9 = true;
+            }
+            assertTrue(busyobserver.onError);
+            // no onCompleted because onError was invoked
+            assertFalse(busyobserver.onCompleted);
+            // non-deterministic because unsubscribe happens after 'waitToFinish' releases
+            // so commenting out for now as this is not a critical thing to test here
+            // verify(s, times(1)).unsubscribe();
+    
+            // we can have concurrency ...
+            assertTrue(onSubscribe.maxConcurrentThreads.get() > 1);
+            // ... but the onNext execution should be single threaded
+            assertEquals(1, busyobserver.maxConcurrentThreads.get());
+        }
+        assertTrue(lessThan9);
     }
-
+    
     /**
      * A thread that will pass data to onNext
      */
@@ -276,6 +283,7 @@ public class OperatorSerializeTest {
         @Override
         public void call(final Subscriber<? super String> observer) {
             System.out.println("TestMultiThreadedObservable subscribed to ...");
+            final NullPointerException npe = new NullPointerException();
             t = new Thread(new Runnable() {
 
                 @Override
@@ -290,11 +298,12 @@ public class OperatorSerializeTest {
                                     threadsRunning.incrementAndGet();
                                     try {
                                         // perform onNext call
-                                        System.out.println("TestMultiThreadedObservable onNext: " + s);
                                         if (s == null) {
+                                            System.out.println("TestMultiThreadedObservable onNext: null");
                                             // force an error
-                                            throw new NullPointerException();
-                                        }
+                                            throw npe;
+                                        } else 
+                                            System.out.println("TestMultiThreadedObservable onNext: " + s);
                                         observer.onNext(s);
                                         // capture 'maxThreads'
                                         int concurrentThreads = threadsRunning.get();
