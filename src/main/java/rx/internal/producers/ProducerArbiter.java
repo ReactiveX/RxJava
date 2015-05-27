@@ -95,7 +95,7 @@ public final class ProducerArbiter implements Producer {
             if (r != Long.MAX_VALUE) {
                 long u = r - n;
                 if (u < 0) {
-                    throw new IllegalStateException();
+                    throw new IllegalStateException("more items arrived than were requested");
                 }
                 requested = u;
             }
