@@ -17,7 +17,10 @@ package rx.internal.operators;
 
 import rx.Observable.Operator;
 import rx.Subscriber;
+import rx.exceptions.Exceptions;
+import rx.exceptions.OnErrorThrowable;
 import rx.functions.Func1;
+import rx.internal.producers.SingleDelayedProducer;
 
 /**
  * Returns an Observable that emits a Boolean that indicates whether all items emitted by an
@@ -34,21 +37,27 @@ public final class OperatorAll<T> implements Operator<Boolean, T> {
 
     @Override
     public Subscriber<? super T> call(final Subscriber<? super Boolean> child) {
+        final SingleDelayedProducer<Boolean> producer = new SingleDelayedProducer<Boolean>(child);
         Subscriber<T> s = new Subscriber<T>() {
             boolean done;
 
             @Override
             public void onNext(T t) {
-                boolean result = predicate.call(t);
+                Boolean result;
+                try {
+                    result = predicate.call(t);
+                } catch (Throwable e) {
+                    Exceptions.throwIfFatal(e);
+                    onError(OnErrorThrowable.addValueAsLastCause(e, t));
+                    return;
+                }
                 if (!result && !done) {
                     done = true;
-                    child.onNext(false);
-                    child.onCompleted();
+                    producer.setValue(false);
                     unsubscribe();
-                } else {
-                	// if we drop values we must replace them upstream as downstream won't receive and request more
-                	request(1);
-                }
+                } 
+                // note that don't need to request more of upstream because this subscriber 
+                // defaults to requesting Long.MAX_VALUE
             }
 
             @Override
@@ -60,12 +69,12 @@ public final class OperatorAll<T> implements Operator<Boolean, T> {
             public void onCompleted() {
                 if (!done) {
                     done = true;
-                    child.onNext(true);
-                    child.onCompleted();
+                    producer.setValue(true);
                 }
             }
         };
         child.add(s);
+        child.setProducer(producer);
         return s;
     }
 }
