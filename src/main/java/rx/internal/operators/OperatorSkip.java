@@ -15,6 +15,8 @@
  */
 package rx.internal.operators;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import rx.Observable;
 import rx.Producer;
 import rx.Subscriber;
@@ -63,19 +65,8 @@ public final class OperatorSkip<T> implements Observable.Operator<T, T> {
 
             @Override
             public void setProducer(final Producer producer) {
-                child.setProducer(new Producer() {
-
-                    @Override
-                    public void request(long n) {
-                        if (n == Long.MAX_VALUE) {
-                            // infinite so leave it alone
-                            producer.request(n);
-                        } else if (n > 0) {
-                            // add the skip num to the requested amount, since we'll skip everything and then emit to the buffer downstream
-                            producer.request(n + (toSkip - skipped));
-                        }
-                    }
-                });
+                child.setProducer(producer);
+                producer.request(toSkip);
             }
 
         };
