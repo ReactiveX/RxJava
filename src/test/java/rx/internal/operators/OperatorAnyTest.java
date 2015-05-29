@@ -19,6 +19,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
@@ -26,6 +27,7 @@ import org.junit.Test;
 import rx.*;
 import rx.functions.Func1;
 import rx.internal.util.UtilityFunctions;
+import rx.observers.TestSubscriber;
 
 public class OperatorAnyTest {
 
@@ -219,5 +221,53 @@ public class OperatorAnyTest {
                 }
         });
         assertEquals((Object)2, source.toBlocking().first());
+    }
+    
+    @Test
+    public void testBackpressureIfNoneRequestedNoneShouldBeDelivered() {
+        TestSubscriber<Boolean> ts = new TestSubscriber<Boolean>(0);
+        Observable.just(1).exists(new Func1<Object, Boolean>() {
+            @Override
+            public Boolean call(Object t1) {
+                return true;
+            }
+        }).subscribe(ts);
+        ts.assertNoValues();
+        ts.assertNoErrors();
+        ts.assertNotCompleted();
+    }
+    
+    @Test
+    public void testBackpressureIfOneRequestedOneShouldBeDelivered() {
+        TestSubscriber<Boolean> ts = new TestSubscriber<Boolean>(1);
+        Observable.just(1).exists(new Func1<Object, Boolean>() {
+            @Override
+            public Boolean call(Object object) {
+                return true;
+            }
+        }).subscribe(ts);
+        ts.assertTerminalEvent();
+        ts.assertNoErrors();
+        ts.assertCompleted();
+        ts.assertValue(true);
+    }
+    
+    @Test
+    public void testPredicateThrowsExceptionAndValueInCauseMessage() {
+        TestSubscriber<Boolean> ts = new TestSubscriber<Boolean>(0);
+        final IllegalArgumentException ex = new IllegalArgumentException();
+        Observable.just("Boo!").exists(new Func1<Object, Boolean>() {
+            @Override
+            public Boolean call(Object object) {
+                throw ex;
+            }
+        }).subscribe(ts);
+        ts.assertTerminalEvent();
+        ts.assertNoValues();
+        ts.assertNotCompleted();
+        List<Throwable> errors = ts.getOnErrorEvents();
+        assertEquals(1, errors.size());
+        assertEquals(ex, errors.get(0));
+        assertTrue(ex.getCause().getMessage().contains("Boo!"));
     }
 }
