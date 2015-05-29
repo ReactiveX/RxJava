@@ -15,6 +15,8 @@
  */
 package rx.internal.operators;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 import rx.Observable.Operator;
 import rx.Producer;
 import rx.Subscriber;
@@ -78,15 +80,24 @@ public final class OperatorTake<T> implements Operator<T, T> {
             @Override
             public void setProducer(final Producer producer) {
                 child.setProducer(new Producer() {
-
+                    
+                    // keeps track of requests up to maximum of `limit`
+                    final AtomicLong requested = new AtomicLong(0);
+                    
                     @Override
                     public void request(long n) {
-                        if (!completed) {
-                            long c = limit - count;
-                            if (n < c) {
-                                producer.request(n);
-                            } else {
-                                producer.request(c);
+                        if (n >0 && !completed) {
+                            // because requests may happen concurrently use a CAS loop to 
+                            // ensure we only request as much as needed, no more no less
+                            while (true) {
+                                long r = requested.get();
+                                long c = Math.min(n, limit - r);
+                                if (c == 0)
+                                    break;
+                                else if (requested.compareAndSet(r, r + c)) {
+                                    producer.request(c);
+                                    break;
+                                }
                             }
                         }
                     }

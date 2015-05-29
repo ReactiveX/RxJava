@@ -27,6 +27,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
@@ -387,5 +388,30 @@ public class OperatorTakeTest {
 
         latch.await();
         assertNull(exception.get());
+    }
+    
+    @Test
+    public void testDoesntRequestMoreThanNeededFromUpstream() throws InterruptedException {
+        final AtomicLong requests = new AtomicLong();
+        TestSubscriber<Long> ts = new TestSubscriber<Long>(0);
+        Observable.interval(100, TimeUnit.MILLISECONDS)
+            //
+            .doOnRequest(new Action1<Long>() {
+                @Override
+                public void call(Long n) {
+                    requests.addAndGet(n);
+            }})
+            //
+            .take(2)
+            //
+            .subscribe(ts);
+        Thread.sleep(50);
+        ts.requestMore(1);
+        ts.requestMore(1);
+        ts.requestMore(1);
+        ts.awaitTerminalEvent();
+        ts.assertCompleted();
+        ts.assertNoErrors();
+        assertEquals(2,requests.get());
     }
 }
