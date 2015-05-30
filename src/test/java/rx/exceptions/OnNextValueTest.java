@@ -15,14 +15,18 @@
  */
 package rx.exceptions;
 
+import org.junit.Assert;
 import org.junit.Test;
+
 import rx.Observable;
 import rx.Observer;
+import rx.exceptions.OnErrorThrowable.OnNextValue;
 import rx.functions.Func1;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -117,5 +121,50 @@ public final class OnNextValueTest {
                     }
                 }).subscribe(observer);
 
+    }
+    
+    @Test
+    public void testRenderInteger() {
+        assertEquals("123", OnNextValue.renderValue(123));
+    }
+    
+    @Test
+    public void testRenderByte() {
+        assertEquals("10", OnNextValue.renderValue((byte) 10));
+    }
+    
+    @Test
+    public void testRenderBoolean() {
+        assertEquals("true", OnNextValue.renderValue(true));
+    }
+    
+    @Test
+    public void testRenderShort() {
+        assertEquals("10", OnNextValue.renderValue((short) 10));
+    }
+    
+    @Test
+    public void testRenderLong() {
+        assertEquals("10", OnNextValue.renderValue(10L));
+    }
+    
+    @Test
+    public void testRenderCharacter() {
+        assertEquals("10", OnNextValue.renderValue(10L));
+    }
+    
+    @Test
+    public void testRenderFloat() {
+        assertEquals("10.0", OnNextValue.renderValue(10.0f));
+    }
+    
+    @Test
+    public void testRenderDouble() {
+        assertEquals("10.0", OnNextValue.renderValue(10.0));
+    }
+    
+    @Test
+    public void testRenderVoid() {
+        assertEquals("null", OnNextValue.renderValue((Void) null));
     }
 }

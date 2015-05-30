@@ -15,6 +15,9 @@
  */
 package rx.exceptions;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import rx.plugins.RxJavaErrorHandler;
 import rx.plugins.RxJavaPlugins;
 
@@ -109,6 +112,27 @@ public final class OnErrorThrowable extends RuntimeException {
     public static class OnNextValue extends RuntimeException {
 
         private static final long serialVersionUID = -3454462756050397899L;
+        
+        // Lazy loaded singleton 
+        private static final class Primitives {
+            
+            static final Set<Class<?>> INSTANCE = create();
+
+            private static Set<Class<?>> create() {
+                Set<Class<?>> set = new HashSet<Class<?>>();
+                set.add(Boolean.class);
+                set.add(Character.class);
+                set.add(Byte.class);
+                set.add(Short.class);
+                set.add(Integer.class);
+                set.add(Long.class);
+                set.add(Float.class);
+                set.add(Double.class);
+                // Void is another primitive but cannot be instantiated 
+                // and is caught by the null check in renderValue
+                return set;
+            }
+        }
 
         private final Object value;
 
@@ -148,11 +172,11 @@ public final class OnErrorThrowable extends RuntimeException {
          * @return a string version of the object if primitive or managed through error plugin,
          *        otherwise the classname of the object
          */
-        private static String renderValue(Object value){
+        static String renderValue(Object value){
             if (value == null) {
                 return "null";
             }
-            if (value.getClass().isPrimitive()) {
+            if (Primitives.INSTANCE.contains(value.getClass())) {
                 return value.toString();
             }
             if (value instanceof String) {
