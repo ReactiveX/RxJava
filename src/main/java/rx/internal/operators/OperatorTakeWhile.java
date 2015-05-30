@@ -17,6 +17,8 @@ package rx.internal.operators;
 
 import rx.Observable.Operator;
 import rx.Subscriber;
+import rx.exceptions.Exceptions;
+import rx.exceptions.OnErrorThrowable;
 import rx.functions.Func1;
 import rx.functions.Func2;
 
@@ -52,18 +54,19 @@ public final class OperatorTakeWhile<T> implements Operator<T, T> {
             private boolean done = false;
 
             @Override
-            public void onNext(T args) {
+            public void onNext(T t) {
                 boolean isSelected;
                 try {
-                    isSelected = predicate.call(args, counter++);
+                    isSelected = predicate.call(t, counter++);
                 } catch (Throwable e) {
                     done = true;
-                    subscriber.onError(e);
+                    Exceptions.throwIfFatal(e);
+                    subscriber.onError(OnErrorThrowable.addValueAsLastCause(e, t));
                     unsubscribe();
                     return;
                 }
                 if (isSelected) {
-                    subscriber.onNext(args);
+                    subscriber.onNext(t);
                 } else {
                     done = true;
                     subscriber.onCompleted();

@@ -15,6 +15,7 @@
  */
 package rx.internal.operators;
 
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
@@ -25,6 +26,7 @@ import org.junit.*;
 
 import rx.*;
 import rx.Observable.OnSubscribe;
+import rx.exceptions.TestException;
 import rx.functions.Func1;
 import rx.observers.TestSubscriber;
 import rx.subjects.*;
@@ -261,4 +263,20 @@ public class OperatorTakeWhileTest {
         
         Assert.assertFalse("Unsubscribed!", ts.isUnsubscribed());
     }
+    
+    @Test
+    public void testErrorCauseIncludesLastValue() {
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+        Observable.just("abc").takeWhile(new Func1<String, Boolean>() {
+            @Override
+            public Boolean call(String t1) {
+                throw new TestException();
+            }
+        }).subscribe(ts);
+        
+        ts.assertTerminalEvent();
+        ts.assertNoValues();
+        assertTrue(ts.getOnErrorEvents().get(0).getCause().getMessage().contains("abc"));
+    }
+    
 }
