@@ -18,6 +18,8 @@ package rx.internal.operators;
 import rx.Observable.Operator;
 import rx.*;
 import rx.annotations.Experimental;
+import rx.exceptions.Exceptions;
+import rx.exceptions.OnErrorThrowable;
 import rx.functions.Func1;
 
 /**
@@ -37,15 +39,16 @@ public final class OperatorTakeUntilPredicate<T> implements Operator<T, T> {
         }
 
         @Override
-        public void onNext(T args) {
-            child.onNext(args);
+        public void onNext(T t) {
+            child.onNext(t);
             
             boolean stop = false;
             try {
-                stop = stopPredicate.call(args);
+                stop = stopPredicate.call(t);
             } catch (Throwable e) {
                 done = true;
-                child.onError(e);
+                Exceptions.throwIfFatal(e);
+                child.onError(OnErrorThrowable.addValueAsLastCause(e, t));
                 unsubscribe();
                 return;
             }
