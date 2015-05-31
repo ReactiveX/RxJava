@@ -15,9 +15,9 @@
  */
 package rx.internal.operators;
 
-import java.util.concurrent.atomic.AtomicLong;
 
 import rx.*;
+import rx.internal.producers.ProducerArbiter;
 import rx.subscriptions.SerialSubscription;
 
 /**
@@ -35,36 +35,32 @@ public final class OperatorSwitchIfEmpty<T> implements Observable.Operator<T, T>
     @Override
     public Subscriber<? super T> call(Subscriber<? super T> child) {
         final SerialSubscription ssub = new SerialSubscription();
-        final SwitchIfEmptySubscriber parent = new SwitchIfEmptySubscriber(child, ssub);
+        ProducerArbiter arbiter = new ProducerArbiter();
+        final ParentSubscriber<T> parent = new ParentSubscriber<T>(child, ssub, arbiter, alternate);
         ssub.set(parent);
         child.add(ssub);
+        child.setProducer(arbiter);
         return parent;
     }
 
-    private class SwitchIfEmptySubscriber extends Subscriber<T> {
+    private static final class ParentSubscriber<T> extends Subscriber<T> {
 
-        boolean empty = true;
-        final AtomicLong consumerCapacity = new AtomicLong(0l);
-
+        private boolean empty = true;
         private final Subscriber<? super T> child;
-        final SerialSubscription ssub;
+        private final SerialSubscription ssub;
+        private final ProducerArbiter arbiter;
+        private final Observable<? extends T> alternate;
 
-        public SwitchIfEmptySubscriber(Subscriber<? super T> child, final SerialSubscription ssub) {
+        ParentSubscriber(Subscriber<? super T> child, final SerialSubscription ssub, ProducerArbiter arbiter, Observable<? extends T> alternate) {
             this.child = child;
             this.ssub = ssub;
+            this.arbiter = arbiter;
+            this.alternate = alternate;
         }
 
         @Override
         public void setProducer(final Producer producer) {
-            super.setProducer(new Producer() {
-                @Override
-                public void request(long n) {
-                    if (empty) {
-                        consumerCapacity.set(n);
-                    }
-                    producer.request(n);
-                }
-            });
+            arbiter.setProducer(producer);
         }
 
         @Override
@@ -77,41 +73,9 @@ public final class OperatorSwitchIfEmpty<T> implements Observable.Operator<T, T>
         }
 
         private void subscribeToAlternate() {
-            ssub.set(alternate.unsafeSubscribe(new Subscriber<T>() {
-
-                @Override
-                public void setProducer(final Producer producer) {
-                    child.setProducer(new Producer() {
-                        @Override
-                        public void request(long n) {
-                            producer.request(n);
-                        }
-                    });
-                }
-
-                @Override
-                public void onStart() {
-                    final long capacity = consumerCapacity.get();
-                    if (capacity > 0) {
-                        request(capacity);
-                    }
-                }
-
-                @Override
-                public void onCompleted() {
-                    child.onCompleted();
-                }
-
-                @Override
-                public void onError(Throwable e) {
-                    child.onError(e);
-                }
-
-                @Override
-                public void onNext(T t) {
-                    child.onNext(t);
-                }
-            }));
+            AlternateSubscriber<T> as = new AlternateSubscriber<T>(child, arbiter);
+            ssub.set(as);
+            alternate.unsafeSubscribe(as);
         }
 
         @Override
@@ -123,6 +87,39 @@ public final class OperatorSwitchIfEmpty<T> implements Observable.Operator<T, T>
         public void onNext(T t) {
             empty = false;
             child.onNext(t);
+            arbiter.produced(1);
         }
+    }
+    
+    private static final class AlternateSubscriber<T> extends Subscriber<T> {
+        
+        private final ProducerArbiter arbiter;
+        private final Subscriber<? super T> child;
+
+        AlternateSubscriber(Subscriber<? super T> child, ProducerArbiter arbiter) {
+            this.child = child;
+            this.arbiter = arbiter;
+        }
+        
+        @Override
+        public void setProducer(final Producer producer) {
+            arbiter.setProducer(producer);
+        }
+
+        @Override
+        public void onCompleted() {
+            child.onCompleted();
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            child.onError(e);
+        }
+
+        @Override
+        public void onNext(T t) {
+            child.onNext(t);
+            arbiter.produced(1);
+        }        
     }
 }

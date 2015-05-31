@@ -18,14 +18,18 @@ package rx.internal.operators;
 import static org.junit.Assert.*;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.Test;
 
 import rx.*;
 import rx.Observable;
+import rx.Observable.OnSubscribe;
 import rx.functions.Action0;
+import rx.functions.Action1;
 import rx.observers.TestSubscriber;
+import rx.schedulers.Schedulers;
 import rx.subscriptions.Subscriptions;
 
 public class OperatorSwitchIfEmptyTest {
@@ -142,6 +146,10 @@ public class OperatorSwitchIfEmptyTest {
         
         assertEquals(Arrays.asList(1), ts.getOnNextEvents());
         ts.assertNoErrors();
+        ts.requestMore(1);
+        ts.assertValueCount(2);
+        ts.requestMore(1);
+        ts.assertValueCount(3);
     }
     @Test
     public void testBackpressureNoRequest() {
@@ -153,8 +161,51 @@ public class OperatorSwitchIfEmptyTest {
             }
         };
         Observable.<Integer>empty().switchIfEmpty(Observable.just(1, 2, 3)).subscribe(ts);
-        
         assertTrue(ts.getOnNextEvents().isEmpty());
         ts.assertNoErrors();
+    }
+    
+    @Test
+    public void testBackpressureOnFirstObservable() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0);
+        Observable.just(1,2,3).switchIfEmpty(Observable.just(4, 5, 6)).subscribe(ts);
+        ts.assertNotCompleted();
+        ts.assertNoErrors();
+        ts.assertNoValues();
+    }
+    
+    @Test(timeout = 10000)
+    public void testRequestsNotLost() throws InterruptedException {
+        final TestSubscriber<Long> ts = new TestSubscriber<Long>(0);
+        Observable.create(new OnSubscribe<Long>() {
+
+            @Override
+            public void call(final Subscriber<? super Long> subscriber) {
+                subscriber.setProducer(new Producer() {
+                    final AtomicBoolean completed = new AtomicBoolean(false);
+                    @Override
+                    public void request(long n) {
+                        if (n > 0 && completed.compareAndSet(false, true)) {
+                            Schedulers.io().createWorker().schedule(new Action0() {
+                                @Override
+                                public void call() {
+                                    subscriber.onCompleted();
+                                }}, 100, TimeUnit.MILLISECONDS);
+                        }
+                    }});
+            }})
+          .switchIfEmpty(Observable.from(Arrays.asList(1L, 2L, 3L)))
+          .subscribeOn(Schedulers.computation())
+          .subscribe(ts);
+        ts.requestMore(0);
+        Thread.sleep(50);
+        //request while first observable is still finishing (as empty)
+        ts.requestMore(1);
+        ts.requestMore(1);
+        Thread.sleep(500);
+        ts.assertNotCompleted();
+        ts.assertNoErrors();
+        ts.assertValueCount(2);
+        ts.unsubscribe();
     }
 }
