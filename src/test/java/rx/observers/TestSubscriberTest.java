@@ -121,4 +121,11 @@ public class TestSubscriberTest {
         inOrder.verifyNoMoreInteractions();
     }
 
+    @Test
+    public void testAssertError() {
+        RuntimeException e = new RuntimeException("Oops");
+        TestSubscriber subscriber = new TestSubscriber();
+        Observable.error(e).subscribe(subscriber);
+        subscriber.assertError(e);
+    }
 }

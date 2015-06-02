@@ -380,7 +380,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
         if (err.size() > 1) {
             throw new AssertionError("Multiple errors: " + err.size(), new CompositeException(err));
         } else
-        if (throwable.equals(err.get(0))) {
+        if (!throwable.equals(err.get(0))) {
             throw new AssertionError("Exceptions differ; expected: " + throwable + ", actual: " + err.get(0), err.get(0));
         }
     }
