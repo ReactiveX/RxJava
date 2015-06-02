@@ -114,7 +114,7 @@ public final class ReplaySubject<T> extends Subject<T, T> {
                 boolean skipFinal = false;
                 try {
                     for (;;) {
-                        int idx = o.index();
+                        int idx = o.<Integer>index();
                         int sidx = state.index;
                         if (idx != sidx) {
                             Integer j = state.replayObserverFromIndex(idx, o);
