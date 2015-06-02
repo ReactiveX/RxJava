@@ -356,12 +356,14 @@ public class TestSubscriber<T> extends Subscriber<T> {
             throw new AssertionError("No errors");
         } else
         if (err.size() > 1) {
-            // can't use AssertionError because (message, cause) doesn't exist until Java 7
-            throw new RuntimeException("Multiple errors: " + err.size(), new CompositeException(err));
+            AssertionError ae = new AssertionError("Multiple errors: " + err.size());
+            ae.initCause(new CompositeException(err));
+            throw ae;
         } else
         if (!clazz.isInstance(err.get(0))) {
-            // can't use AssertionError because (message, cause) doesn't exist until Java 7
-            throw new RuntimeException("Exceptions differ; expected: " + clazz + ", actual: " + err.get(0), err.get(0));
+            AssertionError ae = new AssertionError("Exceptions differ; expected: " + clazz + ", actual: " + err.get(0));
+            ae.initCause(err.get(0));
+            throw ae;
         }
     }
 
@@ -380,12 +382,14 @@ public class TestSubscriber<T> extends Subscriber<T> {
             throw new AssertionError("No errors");
         } else
         if (err.size() > 1) {
-            // can't use AssertionError because (message, cause) doesn't exist until Java 7
-            throw new RuntimeException("Multiple errors: " + err.size(), new CompositeException(err));
+            AssertionError ae = new AssertionError("Multiple errors: " + err.size());
+            ae.initCause(new CompositeException(err));
+            throw ae;
         } else
         if (!throwable.equals(err.get(0))) {
-            // can't use AssertionError because (message, cause) doesn't exist until Java 7
-            throw new RuntimeException("Exceptions differ; expected: " + throwable + ", actual: " + err.get(0), err.get(0));
+            AssertionError ae = new AssertionError("Exceptions differ; expected: " + throwable + ", actual: " + err.get(0));
+            ae.initCause(err.get(0));
+            throw ae;
         }
     }
 
@@ -404,11 +408,13 @@ public class TestSubscriber<T> extends Subscriber<T> {
                 throw new AssertionError("Found " + err.size() + " errors and " + s + " completion events instead of none");
             } else
             if (err.size() == 1) {
-                // can't use AssertionError because (message, cause) doesn't exist until Java 7
-                throw new RuntimeException("Found " + err.size() + " errors and " + s + " completion events instead of none", err.get(0));
+                AssertionError ae = new AssertionError("Found " + err.size() + " errors and " + s + " completion events instead of none");
+                ae.initCause(err.get(0));
+                throw ae;
             } else {
-                // can't use AssertionError because (message, cause) doesn't exist until Java 7
-                throw new RuntimeException("Found " + err.size() + " errors and " + s + " completion events instead of none", new CompositeException(err));
+                AssertionError ae = new AssertionError("Found " + err.size() + " errors and " + s + " completion events instead of none");
+                ae.initCause(new CompositeException(err));
+                throw ae;
             }
         }
     }
