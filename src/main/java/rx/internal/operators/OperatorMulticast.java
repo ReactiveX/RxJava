@@ -26,6 +26,7 @@ import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Func0;
 import rx.observables.ConnectableObservable;
+import rx.observers.Subscribers;
 import rx.subjects.Subject;
 import rx.subscriptions.Subscriptions;
 
@@ -90,22 +91,7 @@ public final class OperatorMulticast<T, R> extends ConnectableObservable<R> {
                 final Subject<? super T, ? extends R> subject = subjectFactory.call();
                 // create new Subscriber that will pass-thru to the subject we just created
                 // we do this since it is also a Subscription whereas the Subject is not
-                subscription = new Subscriber<T>() {
-                    @Override
-                    public void onCompleted() {
-                        subject.onCompleted();
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        subject.onError(e);
-                    }
-
-                    @Override
-                    public void onNext(T args) {
-                        subject.onNext(args);
-                    }
-                };
+                subscription = Subscribers.from(subject);
                 final AtomicReference<Subscription> gs = new AtomicReference<Subscription>();
                 gs.set(Subscriptions.create(new Action0() {
                     @Override

@@ -20,6 +20,7 @@ import rx.Observable.Operator;
 import rx.Subscriber;
 import rx.functions.Func1;
 import rx.observers.SerializedSubscriber;
+import rx.observers.Subscribers;
 import rx.subjects.PublishSubject;
 
 /**
@@ -44,24 +45,7 @@ public final class OperatorDelayWithSelector<T, V> implements Operator<T, T> {
         final SerializedSubscriber<T> child = new SerializedSubscriber<T>(_child);
         final PublishSubject<Observable<T>> delayedEmissions = PublishSubject.create();
 
-        _child.add(Observable.merge(delayedEmissions).unsafeSubscribe(new Subscriber<T>() {
-
-            @Override
-            public void onCompleted() {
-                child.onCompleted();
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                child.onError(e);
-            }
-
-            @Override
-            public void onNext(T t) {
-                child.onNext(t);
-            }
-
-        }));
+        _child.add(Observable.merge(delayedEmissions).unsafeSubscribe(Subscribers.from(child)));
 
         return new Subscriber<T>(_child) {
 
