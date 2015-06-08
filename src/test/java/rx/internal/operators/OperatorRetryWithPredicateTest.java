@@ -20,7 +20,10 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.*;
 
@@ -304,5 +307,57 @@ public class OperatorRetryWithPredicateTest {
         }).retry(1).toBlocking().single();
 
         assertEquals(1, value);
+    }
+    
+    @Test
+    public void testIssue3008RetryWithPredicate() {
+        final List<Long> list = new CopyOnWriteArrayList<Long>();
+        final AtomicBoolean isFirst = new AtomicBoolean(true);
+        Observable.<Long> just(1L, 2L, 3L).map(new Func1<Long, Long>(){
+            @Override
+            public Long call(Long x) {
+                System.out.println("map " + x);
+                if (x == 2 && isFirst.getAndSet(false)) {
+                    throw new RuntimeException("retryable error");
+                }
+                return x;
+            }})
+        .retry(new Func2<Integer, Throwable, Boolean>() {
+            @Override
+            public Boolean call(Integer t1, Throwable t2) {
+                return true;
+            }})
+        .forEach(new Action1<Long>() {
+
+            @Override
+            public void call(Long t) {
+                System.out.println(t);
+                list.add(t);
+            }});
+        assertEquals(Arrays.asList(1L,1L,2L,3L), list);
+    }
+    
+    @Test
+    public void testIssue3008RetryInfinite() {
+        final List<Long> list = new CopyOnWriteArrayList<Long>();
+        final AtomicBoolean isFirst = new AtomicBoolean(true);
+        Observable.<Long> just(1L, 2L, 3L).map(new Func1<Long, Long>(){
+            @Override
+            public Long call(Long x) {
+                System.out.println("map " + x);
+                if (x == 2 && isFirst.getAndSet(false)) {
+                    throw new RuntimeException("retryable error");
+                }
+                return x;
+            }})
+        .retry()
+        .forEach(new Action1<Long>() {
+
+            @Override
+            public void call(Long t) {
+                System.out.println(t);
+                list.add(t);
+            }});
+        assertEquals(Arrays.asList(1L,1L,2L,3L), list);
     }
 }
