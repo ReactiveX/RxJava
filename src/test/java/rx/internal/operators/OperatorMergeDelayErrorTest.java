@@ -15,6 +15,24 @@
  */
 package rx.internal.operators;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InOrder;
@@ -27,18 +45,8 @@ import rx.Observer;
 import rx.Subscriber;
 import rx.exceptions.CompositeException;
 import rx.exceptions.TestException;
+import rx.functions.Action1;
 import rx.observers.TestSubscriber;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Mockito.*;
 
 public class OperatorMergeDelayErrorTest {
 
@@ -287,7 +295,7 @@ public class OperatorMergeDelayErrorTest {
         verify(stringObserver, times(1)).onCompleted();
     }
 
-    @Test(timeout=1000L)
+    @Test//(timeout=1000L)
     public void testSynchronousError() {
         final Observable<Observable<String>> o1 = Observable.error(new RuntimeException("unit test"));
 
@@ -545,5 +553,27 @@ public class OperatorMergeDelayErrorTest {
             });
             t.start();
         }
+    }
+    @Test
+    public void testDelayErrorMaxConcurrent() {
+        final List<Long> requests = new ArrayList<Long>();
+        Observable<Integer> source = Observable.mergeDelayError(Observable.just(
+                Observable.just(1).asObservable(), 
+                Observable.<Integer>error(new TestException())).doOnRequest(new Action1<Long>() {
+                    @Override
+                    public void call(Long t1) {
+                        requests.add(t1);
+                    }
+                }), 1);
+        
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        
+        source.subscribe(ts);
+        
+        ts.assertReceivedOnNext(Arrays.asList(1));
+        ts.assertTerminalEvent();
+        assertEquals(1, ts.getOnErrorEvents().size());
+        assertTrue(ts.getOnErrorEvents().get(0) instanceof TestException);
+        assertEquals(Arrays.asList(1L, 1L, 1L), requests);
     }
 }

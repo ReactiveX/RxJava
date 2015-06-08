@@ -81,11 +81,11 @@ public class ConcatTests {
 
     @Test
     public void testConcatCovariance() {
-    	HorrorMovie horrorMovie1 = new HorrorMovie();
-    	Movie movie = new Movie();
-    	Media media = new Media();
-    	HorrorMovie horrorMovie2 = new HorrorMovie();
-    	
+        HorrorMovie horrorMovie1 = new HorrorMovie();
+        Movie movie = new Movie();
+        Media media = new Media();
+        HorrorMovie horrorMovie2 = new HorrorMovie();
+        
         Observable<Media> o1 = Observable.<Media> just(horrorMovie1, movie);
         Observable<Media> o2 = Observable.just(media, horrorMovie2);
 
@@ -102,12 +102,12 @@ public class ConcatTests {
 
     @Test
     public void testConcatCovariance2() {
-    	HorrorMovie horrorMovie1 = new HorrorMovie();
-    	Movie movie = new Movie();
-    	Media media1 = new Media();
-    	Media media2 = new Media();
-    	HorrorMovie horrorMovie2 = new HorrorMovie();
-    	
+        HorrorMovie horrorMovie1 = new HorrorMovie();
+        Movie movie = new Movie();
+        Media media1 = new Media();
+        Media media2 = new Media();
+        HorrorMovie horrorMovie2 = new HorrorMovie();
+        
         Observable<Media> o1 = Observable.just(horrorMovie1, movie, media1);
         Observable<Media> o2 = Observable.just(media2, horrorMovie2);
 
@@ -125,11 +125,11 @@ public class ConcatTests {
 
     @Test
     public void testConcatCovariance3() {
-    	HorrorMovie horrorMovie1 = new HorrorMovie();
-    	Movie movie = new Movie();
-    	Media media = new Media();
-    	HorrorMovie horrorMovie2 = new HorrorMovie();
-    	
+        HorrorMovie horrorMovie1 = new HorrorMovie();
+        Movie movie = new Movie();
+        Media media = new Media();
+        HorrorMovie horrorMovie2 = new HorrorMovie();
+        
         Observable<Movie> o1 = Observable.just(horrorMovie1, movie);
         Observable<Media> o2 = Observable.just(media, horrorMovie2);
 
@@ -144,11 +144,11 @@ public class ConcatTests {
 
     @Test
     public void testConcatCovariance4() {
-    	final HorrorMovie horrorMovie1 = new HorrorMovie();
-    	final Movie movie = new Movie();
-    	Media media = new Media();
-    	HorrorMovie horrorMovie2 = new HorrorMovie();
-    	
+        final HorrorMovie horrorMovie1 = new HorrorMovie();
+        final Movie movie = new Movie();
+        Media media = new Media();
+        HorrorMovie horrorMovie2 = new HorrorMovie();
+        
         Observable<Movie> o1 = Observable.create(new OnSubscribe<Movie>() {
 
             @Override
