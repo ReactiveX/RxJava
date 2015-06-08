@@ -71,14 +71,19 @@ public final class OnSubscribeFromIterable<T> implements OnSubscribe<T> {
             }
             if (n == Long.MAX_VALUE && REQUESTED_UPDATER.compareAndSet(this, 0, Long.MAX_VALUE)) {
                 // fast-path without backpressure
-                while (it.hasNext()) {
+
+                while (true) {
                     if (o.isUnsubscribed()) {
                         return;
+                    } else if (it.hasNext()) {
+                        o.onNext(it.next());
+                    } else if (!o.isUnsubscribed()) {
+                        o.onCompleted();
+                        return;
+                    } else {
+                        // is unsubscribed
+                        return;
                     }
-                    o.onNext(it.next());
-                }
-                if (!o.isUnsubscribed()) {
-                    o.onCompleted();
                 }
             } else if (n > 0) {
                 // backpressure is requested
@@ -86,27 +91,32 @@ public final class OnSubscribeFromIterable<T> implements OnSubscribe<T> {
                 if (_c == 0) {
                     while (true) {
                         /*
-                         * This complicated logic is done to avoid touching the volatile `requested` value
-                         * during the loop itself. If it is touched during the loop the performance is impacted significantly.
+                         * This complicated logic is done to avoid touching the
+                         * volatile `requested` value during the loop itself. If
+                         * it is touched during the loop the performance is
+                         * impacted significantly.
                          */
                         long r = requested;
                         long numToEmit = r;
-                        while (it.hasNext() && --numToEmit >= 0) {
+                        while (true) {
                             if (o.isUnsubscribed()) {
                                 return;
-                            }
-                            o.onNext(it.next());
-
-                        }
-
-                        if (!it.hasNext()) {
-                            if (!o.isUnsubscribed()) {
+                            } else if (it.hasNext()) {
+                                if (--numToEmit >= 0) {
+                                    o.onNext(it.next());
+                                } else
+                                    break;
+                            } else if (!o.isUnsubscribed()) {
                                 o.onCompleted();
+                                return;
+                            } else {
+                                // is unsubscribed
+                                return;
                             }
-                            return;
                         }
                         if (REQUESTED_UPDATER.addAndGet(this, -r) == 0) {
-                            // we're done emitting the number requested so return
+                            // we're done emitting the number requested so
+                            // return
                             return;
                         }
 

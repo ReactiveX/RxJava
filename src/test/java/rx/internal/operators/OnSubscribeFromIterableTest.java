@@ -15,6 +15,7 @@
  */
 package rx.internal.operators;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
@@ -29,6 +30,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -219,6 +221,97 @@ public class OnSubscribeFromIterableTest {
                 
             }});
         assertTrue(completed.get());
+    }
+    
+    @Test
+    public void testDoesNotCallIteratorHasNextMoreThanRequiredWithBackpressure() {
+        final AtomicBoolean called = new AtomicBoolean(false);
+        Iterable<Integer> iterable = new Iterable<Integer>() {
+
+            @Override
+            public Iterator<Integer> iterator() {
+                return new Iterator<Integer>() {
+
+                    int count = 1;
+                    
+                    @Override
+                    public void remove() {
+                        // ignore
+                    }
+
+                    @Override
+                    public boolean hasNext() {
+                        if (count > 1) {
+                            called.set(true);
+                            return false;
+                        } else
+                            return true;
+                    }
+
+                    @Override
+                    public Integer next() {
+                        return count++;
+                    }
+
+                };
+            }
+        };
+        Observable.from(iterable).take(1).subscribe();
+        assertFalse(called.get());
+    }
+
+    @Test
+    public void testDoesNotCallIteratorHasNextMoreThanRequiredFastPath() {
+        final AtomicBoolean called = new AtomicBoolean(false);
+        Iterable<Integer> iterable = new Iterable<Integer>() {
+
+            @Override
+            public Iterator<Integer> iterator() {
+                return new Iterator<Integer>() {
+
+                    @Override
+                    public void remove() {
+                        // ignore
+                    }
+
+                    int count = 1;
+
+                    @Override
+                    public boolean hasNext() {
+                        if (count > 1) {
+                            called.set(true);
+                            return false;
+                        } else
+                            return true;
+                    }
+
+                    @Override
+                    public Integer next() {
+                        return count++;
+                    }
+
+                };
+            }
+        };
+        Observable.from(iterable).subscribe(new Subscriber<Integer>() {
+
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(Integer t) {
+                // unsubscribe on first emission
+                unsubscribe();
+            }
+        });
+        assertFalse(called.get());
     }
     
 }
