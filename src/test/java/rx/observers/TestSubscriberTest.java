@@ -16,11 +16,15 @@
 package rx.observers;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -29,6 +33,7 @@ import org.mockito.InOrder;
 
 import rx.Observable;
 import rx.Observer;
+import rx.functions.Action0;
 import rx.subjects.PublishSubject;
 
 public class TestSubscriberTest {
@@ -124,8 +129,33 @@ public class TestSubscriberTest {
     @Test
     public void testAssertError() {
         RuntimeException e = new RuntimeException("Oops");
-        TestSubscriber subscriber = new TestSubscriber();
+        TestSubscriber<Object> subscriber = new TestSubscriber<Object>();
         Observable.error(e).subscribe(subscriber);
         subscriber.assertError(e);
+    }
+    
+    @Test
+    public void testAwaitTerminalEventWithDuration() {
+        TestSubscriber<Object> ts = new TestSubscriber<Object>();
+        Observable.just(1).subscribe(ts);
+        assertTrue(ts.awaitTerminalEvent(1, TimeUnit.SECONDS));
+    }
+    
+    @Test
+    public void testAwaitTerminalEventWithDurationAndUnsubscribeOnTimeout() {
+        TestSubscriber<Object> ts = new TestSubscriber<Object>();
+        final AtomicBoolean unsub = new AtomicBoolean(false);
+        Observable.just(1)
+        //
+                .doOnUnsubscribe(new Action0() {
+                    @Override
+                    public void call() {
+                        unsub.set(true);
+                    }
+                })
+                //
+                .delay(1000, TimeUnit.MILLISECONDS).subscribe(ts);
+        assertFalse(ts.awaitTerminalEventAndUnsubscribeOnTimeout(100, TimeUnit.MILLISECONDS));
+        assertTrue(unsub.get());
     }
 }

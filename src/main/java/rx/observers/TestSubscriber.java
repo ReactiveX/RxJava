@@ -266,12 +266,13 @@ public class TestSubscriber<T> extends Subscriber<T> {
      *          the duration of the timeout
      * @param unit
      *          the units in which {@code timeout} is expressed
+     * @return true if and only if the timeout did not occur
      * @throws RuntimeException
      *          if the Subscriber is interrupted before the Observable is able to complete
      */
-    public void awaitTerminalEvent(long timeout, TimeUnit unit) {
+    public boolean awaitTerminalEvent(long timeout, TimeUnit unit) {
         try {
-            latch.await(timeout, unit);
+            return latch.await(timeout, unit);
         } catch (InterruptedException e) {
             throw new RuntimeException("Interrupted", e);
         }
@@ -285,15 +286,15 @@ public class TestSubscriber<T> extends Subscriber<T> {
      *
      * @param timeout
      *          the duration of the timeout
+     * @return true if and only if the timeout did not occur
      * @param unit
      *          the units in which {@code timeout} is expressed
      */
-    public void awaitTerminalEventAndUnsubscribeOnTimeout(long timeout, TimeUnit unit) {
-        try {
-            awaitTerminalEvent(timeout, unit);
-        } catch (RuntimeException e) {
+    public boolean awaitTerminalEventAndUnsubscribeOnTimeout(long timeout, TimeUnit unit) {
+        boolean result = awaitTerminalEvent(timeout, unit);
+        if (!result)
             unsubscribe();
-        }
+        return result;
     }
 
     /**
