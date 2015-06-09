@@ -1,5 +1,24 @@
 # RxJava Releases #
 
+### Version 1.0.12 – June 9th 2015 ([Maven Central](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.0.12%7C)) ###
+
+* [Pull 2963] (https://github.com/ReactiveX/RxJava/pull/2963) Set of standard producers and updated queue implementations
+* [Pull 2961] (https://github.com/ReactiveX/RxJava/pull/2961) fix Amb backpressure bug
+* [Pull 2960] (https://github.com/ReactiveX/RxJava/pull/2960) fix OperatorConcat race condition where request lost
+* [Pull 2985] (https://github.com/ReactiveX/RxJava/pull/2985) improve OperatorSerializeTest.testMultiThreadedWithNPEinMiddle
+* [Pull 2986] (https://github.com/ReactiveX/RxJava/pull/2986) OperatorAll - implement backpressure and include last value in exception cause 
+* [Pull 2987] (https://github.com/ReactiveX/RxJava/pull/2987) fix skip() race condition and request overflow
+* [Pull 2988] (https://github.com/ReactiveX/RxJava/pull/2988) Operator exists() - implement backpressure & include last value in exception cause
+* [Pull 2989] (https://github.com/ReactiveX/RxJava/pull/2989) prevent take() from requesting more than needed
+* [Pull 2991] (https://github.com/ReactiveX/RxJava/pull/2991) takeUntil(predicate) - include last value in error cause
+* [Pull 2992] (https://github.com/ReactiveX/RxJava/pull/2992) Fix value rendering in error last cause for primitive types
+* [Pull 2993] (https://github.com/ReactiveX/RxJava/pull/2993) takeWhile(predicate) - include last value in error cause
+* [Pull 2996] (https://github.com/ReactiveX/RxJava/pull/2996) switchIfEmpty - fix backpressure bug and lost requests
+* [Pull 2999] (https://github.com/ReactiveX/RxJava/pull/2999) Fix a wrong assertion in assertError
+* [Pull 3000] (https://github.com/ReactiveX/RxJava/pull/3000) Replace the Java 7 AssertionError(message, cause) with initCause
+* [Pull 3001] (https://github.com/ReactiveX/RxJava/pull/3001) use Subscribers.from()
+* [Pull 3009] (https://github.com/ReactiveX/RxJava/pull/3009) Observable.from(iterable) - ensure it.hasNext() is not called unnecessarily
+
 ### Version 1.0.11 – May 19th 2015 ([Maven Central](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.0.11%7C)) ###
 
 * [Pull 2948] (https://github.com/ReactiveX/RxJava/pull/2948) More assertions for TestSubscriber
