@@ -30,7 +30,7 @@ import rx.jmh.InputWithIncrementingInteger;
 
 @BenchmarkMode(Mode.Throughput)
 @OutputTimeUnit(TimeUnit.SECONDS)
-public class PerfBaseline {
+public class ObservablePerfBaseline {
 
     @State(Scope.Thread)
     public static class Input extends InputWithIncrementingInteger {
