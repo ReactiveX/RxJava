@@ -73,12 +73,12 @@ public class Single<T> {
     /**
      * Creates a Single with a Function to execute when it is subscribed to (executed).
      * <p>
-     * <em>Note:</em> Use {@link #create(OnExecute)} to create a Single, instead of this constructor,
+     * <em>Note:</em> Use {@link #create(OnSubscribe)} to create a Single, instead of this constructor,
      * unless you specifically have a need for inheritance.
      * 
      * @param f
-     *            {@link OnExecute} to be executed when {@link #execute(SingleSubscriber)} or
-     *            {@link #subscribe(Subscriber)} is called
+     *            {@code OnExecute} to be executed when {@code execute(SingleSubscriber)} or
+     *            {@code subscribe(Subscriber)} is called
      */
     protected Single(final OnSubscribe<T> f) {
         // bridge between OnSubscribe (which all Operators and Observables use) and OnExecute (for Single)
@@ -1294,11 +1294,11 @@ public class Single<T> {
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.onErrorReturn.png" alt="">
      * <p>
      * By default, when a Single encounters an error that prevents it from emitting the expected item to its
-     * subscriber, the Single invokes its subscriber's {@link SingleSubscriber#onError} method, and then quits
+     * subscriber, the Single invokes its subscriber's {@link Subscriber#onError} method, and then quits
      * without invoking any more of its subscriber's methods. The {@code onErrorReturn} method changes this
      * behavior. If you pass a function ({@code resumeFunction}) to a Single's {@code onErrorReturn} method, if
      * the original Single encounters an error, instead of invoking its subscriber's
-     * {@link SingleSubsriber#onError} method, it will instead emit the return value of {@code resumeFunction}.
+     * {@link Subscriber#onError} method, it will instead emit the return value of {@code resumeFunction}.
      * <p>
      * You can use this to prevent errors from propagating or to supply fallback data should errors be
      * encountered.
@@ -1357,7 +1357,7 @@ public class Single<T> {
      * <dd>{@code subscribe} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param onNext
+     * @param onSuccess
      *            the {@code Action1<T>} you have designed to accept the emission from the Single
      * @return a {@link Subscription} reference can request the {@link Single} stop work.
      * @throws IllegalArgumentException
@@ -1399,7 +1399,7 @@ public class Single<T> {
      * <dd>{@code subscribe} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param onNext
+     * @param onSuccess
      *            the {@code Action1<T>} you have designed to accept the emission from the Single
      * @param onError
      *            the {@code Action1<Throwable>} you have designed to accept any error notification from the
@@ -1593,17 +1593,17 @@ public class Single<T> {
      * <dd>{@code subscribe} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param subscriber
-     *            the {@link Subscriber} that will handle the emission or notification from the Single
+     * @param te
+     *            the {@link SingleSubscriber} that will handle the emission or notification from the Single
      * @return a {@link Subscription} reference can request the {@link Single} stop work.
      * @throws IllegalStateException
      *             if {@code subscribe} is unable to obtain an {@code OnSubscribe<>} function
      * @throws IllegalArgumentException
-     *             if the {@link Subscriber} provided as the argument to {@code subscribe} is {@code null}
+     *             if the {@link SingleSubscriber} provided as the argument to {@code subscribe} is {@code null}
      * @throws OnErrorNotImplementedException
-     *             if the {@link Subscriber}'s {@code onError} method is null
+     *             if the {@link SingleSubscriber}'s {@code onError} method is null
      * @throws RuntimeException
-     *             if the {@link Subscriber}'s {@code onError} method itself threw a {@code Throwable}
+     *             if the {@link SingleSubscriber}'s {@code onError} method itself threw a {@code Throwable}
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
      */
     public final Subscription subscribe(final SingleSubscriber<? super T> te) {
