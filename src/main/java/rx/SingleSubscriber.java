@@ -21,10 +21,10 @@ import rx.internal.util.SubscriptionList;
 /**
  * Provides a mechanism for receiving push-based notifications.
  * <p>
- * After an SingleSubscriber calls an {@link Single}'s {@link Single#subscribe subscribe} method, the
- * {@code Single} calls the SingleSubscriber's {@link #onSuccess} and {@link #onError} methods to provide notifications. 
- * A well-behaved {@code Single} will call an SingleSubscriber's {@link #onSuccess} method exactly once or 
- * the SingleSubscriber's {@link #onError} method exactly once.
+ * After a SingleSubscriber calls a {@link Single}'s {@link Single#subscribe subscribe} method, the
+ * {@code Single} calls the SingleSubscriber's {@link #onSuccess} and {@link #onError} methods to provide
+ * notifications. A well-behaved {@code Single} will call a SingleSubscriber's {@link #onSuccess} method exactly
+ * once or the SingleSubscriber's {@link #onError} method exactly once.
  * 
  * @see <a href="http://reactivex.io/documentation/observable.html">ReactiveX documentation: Observable</a>
  * @param <T>
@@ -36,9 +36,13 @@ public abstract class SingleSubscriber<T> implements Subscription {
     private final SubscriptionList cs = new SubscriptionList();
     
     /**
-     * Notifies the SingleSubscriber with a single item and that the {@link Single} has finished sending push-based notifications.
+     * Notifies the SingleSubscriber with a single item and that the {@link Single} has finished sending
+     * push-based notifications.
      * <p>
      * The {@link Single} will not call this method if it calls {@link #onError}.
+     * 
+     * @param value
+     *          the item emitted by the Single
      */
     public abstract void onSuccess(T value);
 
@@ -47,7 +51,7 @@ public abstract class SingleSubscriber<T> implements Subscription {
      * <p>
      * If the {@link Single} calls this method, it will not thereafter call {@link #onSuccess}.
      * 
-     * @param e
+     * @param error
      *          the exception encountered by the Single
      */
     public abstract void onError(Throwable error);

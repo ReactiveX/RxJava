@@ -45,20 +45,25 @@ import rx.schedulers.Schedulers;
 import rx.subscriptions.Subscriptions;
 
 /**
- * The Single class that implements the Reactive Pattern for a single value response. See {@link Observable} for a stream or vector of values.
+ * The Single class implements the Reactive Pattern for a single value response. See {@link Observable} for the
+ * implementation of the Reactive Pattern for a stream or vector of values.
  * <p>
- * This behaves the same as an {@link Observable} except that it can only emit either a single successful value, or an error.
+ * {@code Single} behaves the same as {@link Observable} except that it can only emit either a single successful
+ * value, or an error (there is no "onComplete" notification as there is for {@link Observable})
  * <p>
- * Like an {@link Observable} it is lazy, can be either "hot" or "cold", synchronous or asynchronous.
+ * Like an {@link Observable}, a {@code Single} is lazy, can be either "hot" or "cold", synchronous or
+ * asynchronous.
  * <p>
  * The documentation for this class makes use of marble diagrams. The following legend explains these diagrams:
  * <p>
- * <img width="640" height="301" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/legend.png" alt="">
+ * <img width="605" height="285" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.legend.png" alt="">
  * <p>
- * For more information see the <a href="http://reactivex.io/documentation/observable.html">ReactiveX documentation</a>.
+ * For more information see the <a href="http://reactivex.io/documentation/observable.html">ReactiveX
+ * documentation</a>.
  * 
  * @param <T>
  *            the type of the item emitted by the Single
+ * @since (If this class graduates from "Experimental" replace this parenthetical with the release number)
  */
 @Experimental
 public class Single<T> {
@@ -68,11 +73,12 @@ public class Single<T> {
     /**
      * Creates a Single with a Function to execute when it is subscribed to (executed).
      * <p>
-     * <em>Note:</em> Use {@link #create(OnExecute)} to create a Single, instead of this constructor,
+     * <em>Note:</em> Use {@link #create(OnSubscribe)} to create a Single, instead of this constructor,
      * unless you specifically have a need for inheritance.
      * 
      * @param f
-     *            {@link OnExecute} to be executed when {@link #execute(SingleSubscriber)} or {@link #subscribe(Subscriber)} is called
+     *            {@code OnExecute} to be executed when {@code execute(SingleSubscriber)} or
+     *            {@code subscribe(Subscriber)} is called
      */
     protected Single(final OnSubscribe<T> f) {
         // bridge between OnSubscribe (which all Operators and Observables use) and OnExecute (for Single)
@@ -109,12 +115,14 @@ public class Single<T> {
     private static final RxJavaObservableExecutionHook hook = RxJavaPlugins.getInstance().getObservableExecutionHook();
 
     /**
-     * Returns a Single that will execute the specified function when a {@link SingleSubscriber} executes it or {@link Subscriber} subscribes to it.
+     * Returns a Single that will execute the specified function when a {@link SingleSubscriber} executes it or
+     * a {@link Subscriber} subscribes to it.
      * <p>
-     * <img width="640" height="200" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/create.png" alt="">
+     * <img width="640" height="200" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.create.png" alt="">
      * <p>
      * Write the function you pass to {@code create} so that it behaves as a Single: It should invoke the
-     * SingleSubscriber {@link SingleSubscriber#onSuccess onSuccess} and {@link SingleSubscriber#onError onError} methods appropriately.
+     * SingleSubscriber {@link SingleSubscriber#onSuccess onSuccess} and/or
+     * {@link SingleSubscriber#onError onError} methods appropriately.
      * <p>
      * A well-formed Single must invoke either the SingleSubscriber's {@code onSuccess} method exactly once or
      * its {@code onError} method exactly once.
@@ -127,7 +135,8 @@ public class Single<T> {
      * @param <T>
      *            the type of the item that this Single emits
      * @param f
-     *            a function that accepts an {@code SingleSubscriber<T>}, and invokes its {@code onSuccess} or {@code onError} methods as appropriate
+     *            a function that accepts an {@code SingleSubscriber<T>}, and invokes its {@code onSuccess} or
+     *            {@code onError} methods as appropriate
      * @return a Single that, when a {@link Subscriber} subscribes to it, will execute the specified function
      * @see <a href="http://reactivex.io/documentation/operators/create.html">ReactiveX operators documentation: Create</a>
      */
@@ -143,17 +152,17 @@ public class Single<T> {
     }
 
     /**
-     * Lifts a function to the current Single and returns a new Single that when subscribed to will pass
-     * the values of the current Single through the Operator function.
+     * Lifts a function to the current Single and returns a new Single that when subscribed to will pass the
+     * values of the current Single through the Operator function.
      * <p>
      * In other words, this allows chaining TaskExecutors together on a Single for acting on the values within
      * the Single.
-     * <p> {@code
-     * task.map(...).filter(...).lift(new OperatorA()).lift(new OperatorB(...)).subscribe()
-     * } <p>
-     * If the operator you are creating is designed to act on the item emitted by a source
-     * Single, use {@code lift}. If your operator is designed to transform the source Single as a whole
-     * (for instance, by applying a particular set of existing RxJava operators to it) use {@link #compose}.
+     * <p>
+     * {@code task.map(...).filter(...).lift(new OperatorA()).lift(new OperatorB(...)).subscribe() }
+     * <p>
+     * If the operator you are creating is designed to act on the item emitted by a source Single, use
+     * {@code lift}. If your operator is designed to transform the source Single as a whole (for instance, by
+     * applying a particular set of existing RxJava operators to it) use {@link #compose}.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code lift} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -198,22 +207,22 @@ public class Single<T> {
     }
 
     /**
-     * Transform an Observable by applying a particular Transformer function to it.
+     * Transform a Single by applying a particular Transformer function to it.
      * <p>
-     * This method operates on the Observable itself whereas {@link #lift} operates on the Observable's
-     * Subscribers or Observers.
+     * This method operates on the Single itself whereas {@link #lift} operates on the Single's Subscribers or
+     * Observers.
      * <p>
-     * If the operator you are creating is designed to act on the individual items emitted by a source
-     * Observable, use {@link #lift}. If your operator is designed to transform the source Observable as a whole
-     * (for instance, by applying a particular set of existing RxJava operators to it) use {@code compose}.
+     * If the operator you are creating is designed to act on the individual item emitted by a Single, use
+     * {@link #lift}. If your operator is designed to transform the source Single as a whole (for instance, by
+     * applying a particular set of existing RxJava operators to it) use {@code compose}.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code compose} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
      * @param transformer
-     *            implements the function that transforms the source Observable
-     * @return the source Observable, transformed by the transformer function
+     *            implements the function that transforms the source Single
+     * @return the source Single, transformed by the transformer function
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Implementing-Your-Own-Operators">RxJava wiki: Implementing Your Own Operators</a>
      */
     @SuppressWarnings("unchecked")
@@ -230,6 +239,11 @@ public class Single<T> {
         // cover for generics insanity
     }
 
+    /**
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.toObservable.png" alt="">
+     *
+     * @warn more complete description needed
+     */
     private static <T> Observable<T> toObservable(Single<T> t) {
         // is this sufficient, or do I need to keep the outer Single and subscribe to it?
         return Observable.create(t.onSubscribe);
@@ -238,16 +252,16 @@ public class Single<T> {
     /**
      * INTERNAL: Used with lift and operators.
      * 
-     * Converts the source {@code Single<T>} into an {@code Single<Observable<T>>} that emits the
-     * source Observable as its single emission.
+     * Converts the source {@code Single<T>} into an {@code Single<Observable<T>>} that emits an Observable
+     * that emits the same emission as the source Single.
      * <p>
-     * <img width="640" height="350" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/nest.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.nest.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code nest} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @return an Observable that emits a single item: the source Observable
+     * @return a Single that emits an Observable that emits the same item as the source Single
      * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
      */
     private final Single<Observable<T>> nest() {
@@ -260,10 +274,9 @@ public class Single<T> {
      */
 
     /**
-     * Returns an Observable that emits the items emitted by two Tasks, one after the other, without
-     * interleaving them.
+     * Returns an Observable that emits the items emitted by two Singles, one after the other.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concat.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -273,8 +286,7 @@ public class Single<T> {
      *            an Single to be concatenated
      * @param t2
      *            an Single to be concatenated
-     * @return an Observable that emits items emitted by the two source Observables, one after the other,
-     *         without interleaving them
+     * @return an Observable that emits items emitted by the two source Singles, one after the other.
      * @see <a href="http://reactivex.io/documentation/operators/concat.html">ReactiveX operators documentation: Concat</a>
      */
     public final static <T> Observable<T> concat(Single<? extends T> t1, Single<? extends T> t2) {
@@ -282,10 +294,9 @@ public class Single<T> {
     }
 
     /**
-     * Returns an Observable that emits the items emitted by three Tasks, one after the other, without
-     * interleaving them.
+     * Returns an Observable that emits the items emitted by three Singles, one after the other.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concat.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -297,8 +308,7 @@ public class Single<T> {
      *            a Single to be concatenated
      * @param t3
      *            a Single to be concatenated
-     * @return an Observable that emits items emitted by the three source Observables, one after the other,
-     *         without interleaving them
+     * @return an Observable that emits items emitted by the three source Singles, one after the other.
      * @see <a href="http://reactivex.io/documentation/operators/concat.html">ReactiveX operators documentation: Concat</a>
      */
     public final static <T> Observable<T> concat(Single<? extends T> t1, Single<? extends T> t2, Single<? extends T> t3) {
@@ -306,10 +316,9 @@ public class Single<T> {
     }
 
     /**
-     * Returns an Observable that emits the items emitted by four Observables, one after the other, without
-     * interleaving them.
+     * Returns an Observable that emits the items emitted by four Singles, one after the other.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concat.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -323,8 +332,7 @@ public class Single<T> {
      *            a Single to be concatenated
      * @param t4
      *            a Single to be concatenated
-     * @return an Observable that emits items emitted by the four source Observables, one after the other,
-     *         without interleaving them
+     * @return an Observable that emits items emitted by the four source Singles, one after the other.
      * @see <a href="http://reactivex.io/documentation/operators/concat.html">ReactiveX operators documentation: Concat</a>
      */
     public final static <T> Observable<T> concat(Single<? extends T> t1, Single<? extends T> t2, Single<? extends T> t3, Single<? extends T> t4) {
@@ -332,10 +340,9 @@ public class Single<T> {
     }
 
     /**
-     * Returns an Observable that emits the items emitted by five Observables, one after the other, without
-     * interleaving them.
+     * Returns an Observable that emits the items emitted by five Singles, one after the other.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concat.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -351,8 +358,7 @@ public class Single<T> {
      *            a Single to be concatenated
      * @param t5
      *            a Single to be concatenated
-     * @return an Observable that emits items emitted by the five source Observables, one after the other,
-     *         without interleaving them
+     * @return an Observable that emits items emitted by the five source Singles, one after the other.
      * @see <a href="http://reactivex.io/documentation/operators/concat.html">ReactiveX operators documentation: Concat</a>
      */
     public final static <T> Observable<T> concat(Single<? extends T> t1, Single<? extends T> t2, Single<? extends T> t3, Single<? extends T> t4, Single<? extends T> t5) {
@@ -360,10 +366,9 @@ public class Single<T> {
     }
 
     /**
-     * Returns an Observable that emits the items emitted by six Observables, one after the other, without
-     * interleaving them.
+     * Returns an Observable that emits the items emitted by six Singles, one after the other.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concat.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -381,8 +386,7 @@ public class Single<T> {
      *            a Single to be concatenated
      * @param t6
      *            a Single to be concatenated
-     * @return an Observable that emits items emitted by the six source Observables, one after the other,
-     *         without interleaving them
+     * @return an Observable that emits items emitted by the six source Singles, one after the other.
      * @see <a href="http://reactivex.io/documentation/operators/concat.html">ReactiveX operators documentation: Concat</a>
      */
     public final static <T> Observable<T> concat(Single<? extends T> t1, Single<? extends T> t2, Single<? extends T> t3, Single<? extends T> t4, Single<? extends T> t5, Single<? extends T> t6) {
@@ -390,10 +394,9 @@ public class Single<T> {
     }
 
     /**
-     * Returns an Observable that emits the items emitted by seven Observables, one after the other, without
-     * interleaving them.
+     * Returns an Observable that emits the items emitted by seven Singles, one after the other.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concat.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -413,8 +416,7 @@ public class Single<T> {
      *            a Single to be concatenated
      * @param t7
      *            a Single to be concatenated
-     * @return an Observable that emits items emitted by the seven source Observables, one after the other,
-     *         without interleaving them
+     * @return an Observable that emits items emitted by the seven source Singles, one after the other.
      * @see <a href="http://reactivex.io/documentation/operators/concat.html">ReactiveX operators documentation: Concat</a>
      */
     public final static <T> Observable<T> concat(Single<? extends T> t1, Single<? extends T> t2, Single<? extends T> t3, Single<? extends T> t4, Single<? extends T> t5, Single<? extends T> t6, Single<? extends T> t7) {
@@ -422,10 +424,9 @@ public class Single<T> {
     }
 
     /**
-     * Returns an Observable that emits the items emitted by eight Observables, one after the other, without
-     * interleaving them.
+     * Returns an Observable that emits the items emitted by eight Singles, one after the other.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concat.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -447,8 +448,7 @@ public class Single<T> {
      *            a Single to be concatenated
      * @param t8
      *            a Single to be concatenated
-     * @return an Observable that emits items emitted by the eight source Observables, one after the other,
-     *         without interleaving them
+     * @return an Observable that emits items emitted by the eight source Singles, one after the other.
      * @see <a href="http://reactivex.io/documentation/operators/concat.html">ReactiveX operators documentation: Concat</a>
      */
     public final static <T> Observable<T> concat(Single<? extends T> t1, Single<? extends T> t2, Single<? extends T> t3, Single<? extends T> t4, Single<? extends T> t5, Single<? extends T> t6, Single<? extends T> t7, Single<? extends T> t8) {
@@ -456,10 +456,9 @@ public class Single<T> {
     }
 
     /**
-     * Returns an Observable that emits the items emitted by nine Observables, one after the other, without
-     * interleaving them.
+     * Returns an Observable that emits the items emitted by nine Singles, one after the other.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concat.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -483,8 +482,7 @@ public class Single<T> {
      *            a Single to be concatenated
      * @param t9
      *            a Single to be concatenated
-     * @return an Observable that emits items emitted by the nine source Observables, one after the other,
-     *         without interleaving them
+     * @return an Observable that emits items emitted by the nine source Singles, one after the other.
      * @see <a href="http://reactivex.io/documentation/operators/concat.html">ReactiveX operators documentation: Concat</a>
      */
     public final static <T> Observable<T> concat(Single<? extends T> t1, Single<? extends T> t2, Single<? extends T> t3, Single<? extends T> t4, Single<? extends T> t5, Single<? extends T> t6, Single<? extends T> t7, Single<? extends T> t8, Single<? extends T> t9) {
@@ -492,21 +490,21 @@ public class Single<T> {
     }
 
     /**
-     * Returns an Observable that invokes an {@link Observer}'s {@link Observer#onError onError} method when the
-     * Observer subscribes to it.
+     * Returns a Single that invokes a subscriber's {@link SingleSubscriber#onError onError} method when the
+     * subscriber subscribes to it.
      * <p>
-     * <img width="640" height="190" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/error.png" alt="">
+     * <img width="640" height="190" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.error.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code error} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
      * @param exception
-     *            the particular Throwable to pass to {@link Observer#onError onError}
+     *            the particular Throwable to pass to {@link SingleSubscriber#onError onError}
      * @param <T>
-     *            the type of the items (ostensibly) emitted by the Observable
-     * @return an Observable that invokes the {@link Observer}'s {@link Observer#onError onError} method when
-     *         the Observer subscribes to it
+     *            the type of the item (ostensibly) emitted by the Single
+     * @return a Single that invokes the subscriber's {@link SingleSubscriber#onError onError} method when
+     *         the subscriber subscribes to it
      * @see <a href="http://reactivex.io/documentation/operators/empty-never-throw.html">ReactiveX operators documentation: Throw</a>
      */
     public final static <T> Single<T> error(final Throwable exception) {
@@ -521,14 +519,15 @@ public class Single<T> {
     }
 
     /**
-     * Converts a {@link Future} into an Observable.
+     * Converts a {@link Future} into a {@code Single}.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/from.Future.png" alt="">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.from.Future.png" alt="">
      * <p>
-     * You can convert any object that supports the {@link Future} interface into an Observable that emits the
-     * return value of the {@link Future#get} method of that object, by passing the object into the {@code from} method.
+     * You can convert any object that supports the {@link Future} interface into a Single that emits the return
+     * value of the {@link Future#get} method of that object, by passing the object into the {@code from}
+     * method.
      * <p>
-     * <em>Important note:</em> This Observable is blocking; you cannot unsubscribe from it.
+     * <em>Important note:</em> This Single is blocking; you cannot unsubscribe from it.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code from} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -538,8 +537,8 @@ public class Single<T> {
      *            the source {@link Future}
      * @param <T>
      *            the type of object that the {@link Future} returns, and also the type of item to be emitted by
-     *            the resulting Observable
-     * @return an Observable that emits the item from the source {@link Future}
+     *            the resulting {@code Single}
+     * @return a {@code Single} that emits the item from the source {@link Future}
      * @see <a href="http://reactivex.io/documentation/operators/from.html">ReactiveX operators documentation: From</a>
      */
     public final static <T> Single<T> from(Future<? extends T> future) {
@@ -547,14 +546,15 @@ public class Single<T> {
     }
 
     /**
-     * Converts a {@link Future} into an Observable, with a timeout on the Future.
+     * Converts a {@link Future} into a {@code Single}, with a timeout on the Future.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/from.Future.png" alt="">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.from.Future.png" alt="">
      * <p>
-     * You can convert any object that supports the {@link Future} interface into an Observable that emits the
-     * return value of the {@link Future#get} method of that object, by passing the object into the {@code from} method.
+     * You can convert any object that supports the {@link Future} interface into a {@code Single} that emits
+     * the return value of the {@link Future#get} method of that object, by passing the object into the
+     * {@code from} method.
      * <p>
-     * <em>Important note:</em> This Observable is blocking; you cannot unsubscribe from it.
+     * <em>Important note:</em> This {@code Single} is blocking; you cannot unsubscribe from it.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code from} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -568,8 +568,8 @@ public class Single<T> {
      *            the {@link TimeUnit} of the {@code timeout} argument
      * @param <T>
      *            the type of object that the {@link Future} returns, and also the type of item to be emitted by
-     *            the resulting Observable
-     * @return an Observable that emits the item from the source {@link Future}
+     *            the resulting {@code Single}
+     * @return a {@code Single} that emits the item from the source {@link Future}
      * @see <a href="http://reactivex.io/documentation/operators/from.html">ReactiveX operators documentation: From</a>
      */
     public final static <T> Single<T> from(Future<? extends T> future, long timeout, TimeUnit unit) {
@@ -577,12 +577,13 @@ public class Single<T> {
     }
 
     /**
-     * Converts a {@link Future}, operating on a specified {@link Scheduler}, into an Observable.
+     * Converts a {@link Future}, operating on a specified {@link Scheduler}, into a {@code Single}.
      * <p>
-     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/from.Future.s.png" alt="">
+     * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.from.Future.s.png" alt="">
      * <p>
-     * You can convert any object that supports the {@link Future} interface into an Observable that emits the
-     * return value of the {@link Future#get} method of that object, by passing the object into the {@code from} method.
+     * You can convert any object that supports the {@link Future} interface into a {@code Single} that emits
+     * the return value of the {@link Future#get} method of that object, by passing the object into the
+     * {@code from} method.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>you specify which {@link Scheduler} this operator will use</dd>
@@ -591,11 +592,12 @@ public class Single<T> {
      * @param future
      *            the source {@link Future}
      * @param scheduler
-     *            the {@link Scheduler} to wait for the Future on. Use a Scheduler such as {@link Schedulers#io()} that can block and wait on the Future
+     *            the {@link Scheduler} to wait for the Future on. Use a Scheduler such as
+     *            {@link Schedulers#io()} that can block and wait on the Future
      * @param <T>
      *            the type of object that the {@link Future} returns, and also the type of item to be emitted by
-     *            the resulting Observable
-     * @return an Observable that emits the item from the source {@link Future}
+     *            the resulting {@code Single}
+     * @return a {@code Single} that emits the item from the source {@link Future}
      * @see <a href="http://reactivex.io/documentation/operators/from.html">ReactiveX operators documentation: From</a>
      */
     public final static <T> Single<T> from(Future<? extends T> future, Scheduler scheduler) {
@@ -603,16 +605,12 @@ public class Single<T> {
     }
 
     /**
-     * Returns an Observable that emits a single item and then completes.
+     * Returns a {@code Single} that emits a specified item.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/just.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.just.png" alt="">
      * <p>
-     * To convert any object into an Observable that emits that object, pass that object into the {@code just} method.
-     * <p>
-     * This is similar to the {@link #from(java.lang.Object[])} method, except that {@code from} will convert
-     * an {@link Iterable} object into an Observable that emits each of the items in the Iterable, one at a
-     * time, while the {@code just} method converts an Iterable into an Observable that emits the entire
-     * Iterable as a single item.
+     * To convert any object into a {@code Single} that emits that object, pass that object into the
+     * {@code just} method.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code just} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -622,7 +620,7 @@ public class Single<T> {
      *            the item to emit
      * @param <T>
      *            the type of that item
-     * @return an Observable that emits {@code value} as a single item and then completes
+     * @return a {@code Single} that emits {@code value}
      * @see <a href="http://reactivex.io/documentation/operators/just.html">ReactiveX operators documentation: Just</a>
      */
     public final static <T> Single<T> just(final T value) {
@@ -638,10 +636,10 @@ public class Single<T> {
     }
 
     /**
-     * Flattens a Single that emits a Single into a single Single that emits the items emitted by
-     * the nested Single, without any transformation.
+     * Flattens a {@code Single} that emits a {@code Single} into a single {@code Single} that emits the item
+     * emitted by the nested {@code Single}, without any transformation.
      * <p>
-     * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.oo.png" alt="">
+     * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.merge.oo.png" alt="">
      * <p>
      * <dl>
      * <dt><b>Scheduler:</b></dt>
@@ -649,8 +647,9 @@ public class Single<T> {
      * </dl>
      *
      * @param source
-     *            a Single that emits a Single
-     * @return a Single that emits the item that is the result of flattening the Single emitted by the {@code source} Single
+     *            a {@code Single} that emits a {@code Single}
+     * @return a {@code Single} that emits the item that is the result of flattening the {@code Single} emitted
+     *         by {@code source}
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      */
     public final static <T> Single<T> merge(final Single<? extends Single<? extends T>> source) {
@@ -676,11 +675,11 @@ public class Single<T> {
     }
 
     /**
-     * Flattens two Observables into a single Observable, without any transformation.
+     * Flattens two Singles into a single Observable, without any transformation.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.merge.png" alt="">
      * <p>
-     * You can combine items emitted by multiple Observables so that they appear as a single Observable, by
+     * You can combine items emitted by multiple Singles so that they appear as a single Observable, by
      * using the {@code merge} method.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
@@ -691,7 +690,7 @@ public class Single<T> {
      *            a Single to be merged
      * @param t2
      *            a Single to be merged
-     * @return an Observable that emits all of the items emitted by the source Observables
+     * @return an Observable that emits all of the items emitted by the source Singles
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      */
     public final static <T> Observable<T> merge(Single<? extends T> t1, Single<? extends T> t2) {
@@ -699,12 +698,12 @@ public class Single<T> {
     }
 
     /**
-     * Flattens three Observables into a single Observable, without any transformation.
+     * Flattens three Singles into a single Observable, without any transformation.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.merge.png" alt="">
      * <p>
-     * You can combine items emitted by multiple Observables so that they appear as a single Observable, by
-     * using the {@code merge} method.
+     * You can combine items emitted by multiple Singles so that they appear as a single Observable, by using
+     * the {@code merge} method.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -716,7 +715,7 @@ public class Single<T> {
      *            a Single to be merged
      * @param t3
      *            a Single to be merged
-     * @return an Observable that emits all of the items emitted by the source Observables
+     * @return an Observable that emits all of the items emitted by the source Singles
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      */
     public final static <T> Observable<T> merge(Single<? extends T> t1, Single<? extends T> t2, Single<? extends T> t3) {
@@ -724,12 +723,12 @@ public class Single<T> {
     }
 
     /**
-     * Flattens four Observables into a single Observable, without any transformation.
+     * Flattens four Singles into a single Observable, without any transformation.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.merge.png" alt="">
      * <p>
-     * You can combine items emitted by multiple Observables so that they appear as a single Observable, by
-     * using the {@code merge} method.
+     * You can combine items emitted by multiple Singles so that they appear as a single Observable, by using
+     * the {@code merge} method.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -743,7 +742,7 @@ public class Single<T> {
      *            a Single to be merged
      * @param t4
      *            a Single to be merged
-     * @return an Observable that emits all of the items emitted by the source Observables
+     * @return an Observable that emits all of the items emitted by the source Singles
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      */
     public final static <T> Observable<T> merge(Single<? extends T> t1, Single<? extends T> t2, Single<? extends T> t3, Single<? extends T> t4) {
@@ -751,12 +750,12 @@ public class Single<T> {
     }
 
     /**
-     * Flattens five Observables into a single Observable, without any transformation.
+     * Flattens five Singles into a single Observable, without any transformation.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.merge.png" alt="">
      * <p>
-     * You can combine items emitted by multiple Observables so that they appear as a single Observable, by
-     * using the {@code merge} method.
+     * You can combine items emitted by multiple Singles so that they appear as a single Observable, by using
+     * the {@code merge} method.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -772,7 +771,7 @@ public class Single<T> {
      *            a Single to be merged
      * @param t5
      *            a Single to be merged
-     * @return an Observable that emits all of the items emitted by the source Observables
+     * @return an Observable that emits all of the items emitted by the source Singles
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      */
     public final static <T> Observable<T> merge(Single<? extends T> t1, Single<? extends T> t2, Single<? extends T> t3, Single<? extends T> t4, Single<? extends T> t5) {
@@ -780,12 +779,12 @@ public class Single<T> {
     }
 
     /**
-     * Flattens six Observables into a single Observable, without any transformation.
+     * Flattens six Singles into a single Observable, without any transformation.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.merge.png" alt="">
      * <p>
-     * You can combine items emitted by multiple Observables so that they appear as a single Observable, by
-     * using the {@code merge} method.
+     * You can combine items emitted by multiple Singles so that they appear as a single Observable, by using
+     * the {@code merge} method.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -803,7 +802,7 @@ public class Single<T> {
      *            a Single to be merged
      * @param t6
      *            a Single to be merged
-     * @return an Observable that emits all of the items emitted by the source Observables
+     * @return an Observable that emits all of the items emitted by the source Singles
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      */
     public final static <T> Observable<T> merge(Single<? extends T> t1, Single<? extends T> t2, Single<? extends T> t3, Single<? extends T> t4, Single<? extends T> t5, Single<? extends T> t6) {
@@ -811,12 +810,12 @@ public class Single<T> {
     }
 
     /**
-     * Flattens seven Observables into a single Observable, without any transformation.
+     * Flattens seven Singles into a single Observable, without any transformation.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.merge.png" alt="">
      * <p>
-     * You can combine items emitted by multiple Observables so that they appear as a single Observable, by
-     * using the {@code merge} method.
+     * You can combine items emitted by multiple Singles so that they appear as a single Observable, by using
+     * the {@code merge} method.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -836,7 +835,7 @@ public class Single<T> {
      *            a Single to be merged
      * @param t7
      *            a Single to be merged
-     * @return an Observable that emits all of the items emitted by the source Observables
+     * @return an Observable that emits all of the items emitted by the source Singles
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      */
     public final static <T> Observable<T> merge(Single<? extends T> t1, Single<? extends T> t2, Single<? extends T> t3, Single<? extends T> t4, Single<? extends T> t5, Single<? extends T> t6, Single<? extends T> t7) {
@@ -844,12 +843,12 @@ public class Single<T> {
     }
 
     /**
-     * Flattens eight Observables into a single Observable, without any transformation.
+     * Flattens eight Singles into a single Observable, without any transformation.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.merge.png" alt="">
      * <p>
-     * You can combine items emitted by multiple Observables so that they appear as a single Observable, by
-     * using the {@code merge} method.
+     * You can combine items emitted by multiple Singles so that they appear as a single Observable, by using
+     * the {@code merge} method.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -871,7 +870,7 @@ public class Single<T> {
      *            a Single to be merged
      * @param t8
      *            a Single to be merged
-     * @return an Observable that emits all of the items emitted by the source Observables
+     * @return an Observable that emits all of the items emitted by the source Singles
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      */
     public final static <T> Observable<T> merge(Single<? extends T> t1, Single<? extends T> t2, Single<? extends T> t3, Single<? extends T> t4, Single<? extends T> t5, Single<? extends T> t6, Single<? extends T> t7, Single<? extends T> t8) {
@@ -879,12 +878,12 @@ public class Single<T> {
     }
 
     /**
-     * Flattens nine Observables into a single Observable, without any transformation.
+     * Flattens nine Singles into a single Observable, without any transformation.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.merge.png" alt="">
      * <p>
-     * You can combine items emitted by multiple Observables so that they appear as a single Observable, by
-     * using the {@code merge} method.
+     * You can combine items emitted by multiple Singles so that they appear as a single Observable, by using
+     * the {@code merge} method.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -908,7 +907,7 @@ public class Single<T> {
      *            a Single to be merged
      * @param t9
      *            a Single to be merged
-     * @return an Observable that emits all of the items emitted by the source Observables
+     * @return an Observable that emits all of the items emitted by the source Singles
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      */
     public final static <T> Observable<T> merge(Single<? extends T> t1, Single<? extends T> t2, Single<? extends T> t3, Single<? extends T> t4, Single<? extends T> t5, Single<? extends T> t6, Single<? extends T> t7, Single<? extends T> t8, Single<? extends T> t9) {
@@ -916,31 +915,23 @@ public class Single<T> {
     }
 
     /**
-     * Returns an Observable that emits the results of a specified combiner function applied to combinations of
-     * two items emitted, in sequence, by two other Observables.
+     * Returns a Single that emits the results of a specified combiner function applied to two items emitted by
+     * two other Singles.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
-     * <p> {@code zip} applies this function in strict sequence, so the first item emitted by the new Observable
-     * will be the result of the function applied to the first item emitted by {@code o1} and the first item
-     * emitted by {@code o2}; the second item emitted by the new Observable will be the result of the function
-     * applied to the second item emitted by {@code o1} and the second item emitted by {@code o2}; and so forth.
-     * <p>
-     * The resulting {@code Observable<R>} returned from {@code zip} will invoke {@link Observer#onNext onNext} as many times as the number of {@code onNext} invocations of the source Observable that
-     * emits the fewest
-     * items.
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.zip.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
      * @param o1
-     *            the first source Observable
+     *            the first source Single
      * @param o2
-     *            a second source Observable
+     *            a second source Single
      * @param zipFunction
-     *            a function that, when applied to an item emitted by each of the source Observables, results
-     *            in an item that will be emitted by the resulting Observable
-     * @return an Observable that emits the zipped results
+     *            a function that, when applied to the item emitted by each of the source Singles, results in an
+     *            item that will be emitted by the resulting Single
+     * @return a Single that emits the zipped results
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
     public final static <T1, T2, R> Single<R> zip(Single<? extends T1> o1, Single<? extends T2> o2, final Func2<? super T1, ? super T2, ? extends R> zipFunction) {
@@ -948,34 +939,25 @@ public class Single<T> {
     }
 
     /**
-     * Returns an Observable that emits the results of a specified combiner function applied to combinations of
-     * three items emitted, in sequence, by three other Observables.
+     * Returns a Single that emits the results of a specified combiner function applied to three items emitted
+     * by three other Singles.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
-     * <p> {@code zip} applies this function in strict sequence, so the first item emitted by the new Observable
-     * will be the result of the function applied to the first item emitted by {@code o1}, the first item
-     * emitted by {@code o2}, and the first item emitted by {@code o3}; the second item emitted by the new
-     * Observable will be the result of the function applied to the second item emitted by {@code o1}, the
-     * second item emitted by {@code o2}, and the second item emitted by {@code o3}; and so forth.
-     * <p>
-     * The resulting {@code Observable<R>} returned from {@code zip} will invoke {@link Observer#onNext onNext} as many times as the number of {@code onNext} invocations of the source Observable that
-     * emits the fewest
-     * items.
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.zip.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
      * @param o1
-     *            the first source Observable
+     *            the first source Single
      * @param o2
-     *            a second source Observable
+     *            a second source Single
      * @param o3
-     *            a third source Observable
+     *            a third source Single
      * @param zipFunction
-     *            a function that, when applied to an item emitted by each of the source Observables, results in
-     *            an item that will be emitted by the resulting Observable
-     * @return an Observable that emits the zipped results
+     *            a function that, when applied to the item emitted by each of the source Singles, results in an
+     *            item that will be emitted by the resulting Single
+     * @return a Single that emits the zipped results
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
     public final static <T1, T2, T3, R> Single<R> zip(Single<? extends T1> o1, Single<? extends T2> o2, Single<? extends T3> o3, Func3<? super T1, ? super T2, ? super T3, ? extends R> zipFunction) {
@@ -983,36 +965,27 @@ public class Single<T> {
     }
 
     /**
-     * Returns an Observable that emits the results of a specified combiner function applied to combinations of
-     * four items emitted, in sequence, by four other Observables.
+     * Returns an Observable that emits the results of a specified combiner function applied to four items
+     * emitted by four other Singles.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
-     * <p> {@code zip} applies this function in strict sequence, so the first item emitted by the new Observable
-     * will be the result of the function applied to the first item emitted by {@code o1}, the first item
-     * emitted by {@code o2}, the first item emitted by {@code o3}, and the first item emitted by {@code 04};
-     * the second item emitted by the new Observable will be the result of the function applied to the second
-     * item emitted by each of those Observables; and so forth.
-     * <p>
-     * The resulting {@code Observable<R>} returned from {@code zip} will invoke {@link Observer#onNext onNext} as many times as the number of {@code onNext} invocations of the source Observable that
-     * emits the fewest
-     * items.
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.zip.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
      * @param o1
-     *            the first source Observable
+     *            the first source Single
      * @param o2
-     *            a second source Observable
+     *            a second source Single
      * @param o3
-     *            a third source Observable
+     *            a third source Single
      * @param o4
-     *            a fourth source Observable
+     *            a fourth source Single
      * @param zipFunction
-     *            a function that, when applied to an item emitted by each of the source Observables, results in
-     *            an item that will be emitted by the resulting Observable
-     * @return an Observable that emits the zipped results
+     *            a function that, when applied to the item emitted by each of the source Singles, results in an
+     *            item that will be emitted by the resulting Single
+     * @return a Single that emits the zipped results
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
     public final static <T1, T2, T3, T4, R> Single<R> zip(Single<? extends T1> o1, Single<? extends T2> o2, Single<? extends T3> o3, Single<? extends T4> o4, Func4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> zipFunction) {
@@ -1020,38 +993,29 @@ public class Single<T> {
     }
 
     /**
-     * Returns an Observable that emits the results of a specified combiner function applied to combinations of
-     * five items emitted, in sequence, by five other Observables.
+     * Returns an Observable that emits the results of a specified combiner function applied to five items
+     * emitted by five other Singles.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
-     * <p> {@code zip} applies this function in strict sequence, so the first item emitted by the new Observable
-     * will be the result of the function applied to the first item emitted by {@code o1}, the first item
-     * emitted by {@code o2}, the first item emitted by {@code o3}, the first item emitted by {@code o4}, and
-     * the first item emitted by {@code o5}; the second item emitted by the new Observable will be the result of
-     * the function applied to the second item emitted by each of those Observables; and so forth.
-     * <p>
-     * The resulting {@code Observable<R>} returned from {@code zip} will invoke {@link Observer#onNext onNext} as many times as the number of {@code onNext} invocations of the source Observable that
-     * emits the fewest
-     * items.
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.zip.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
      * @param o1
-     *            the first source Observable
+     *            the first source Single
      * @param o2
-     *            a second source Observable
+     *            a second source Single
      * @param o3
-     *            a third source Observable
+     *            a third source Single
      * @param o4
-     *            a fourth source Observable
+     *            a fourth source Single
      * @param o5
-     *            a fifth source Observable
+     *            a fifth source Single
      * @param zipFunction
-     *            a function that, when applied to an item emitted by each of the source Observables, results in
-     *            an item that will be emitted by the resulting Observable
-     * @return an Observable that emits the zipped results
+     *            a function that, when applied to the item emitted by each of the source Singles, results in an
+     *            item that will be emitted by the resulting Single
+     * @return a Single that emits the zipped results
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
     public final static <T1, T2, T3, T4, T5, R> Single<R> zip(Single<? extends T1> o1, Single<? extends T2> o2, Single<? extends T3> o3, Single<? extends T4> o4, Single<? extends T5> o5, Func5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> zipFunction) {
@@ -1059,39 +1023,31 @@ public class Single<T> {
     }
 
     /**
-     * Returns an Observable that emits the results of a specified combiner function applied to combinations of
-     * six items emitted, in sequence, by six other Observables.
+     * Returns an Observable that emits the results of a specified combiner function applied to six items
+     * emitted by six other Singles.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
-     * <p> {@code zip} applies this function in strict sequence, so the first item emitted by the new Observable
-     * will be the result of the function applied to the first item emitted by each source Observable, the
-     * second item emitted by the new Observable will be the result of the function applied to the second item
-     * emitted by each of those Observables, and so forth.
-     * <p>
-     * The resulting {@code Observable<R>} returned from {@code zip} will invoke {@link Observer#onNext onNext} as many times as the number of {@code onNext} invocations of the source Observable that
-     * emits the fewest
-     * items.
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.zip.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
      * @param o1
-     *            the first source Observable
+     *            the first source Single
      * @param o2
-     *            a second source Observable
+     *            a second source Single
      * @param o3
-     *            a third source Observable
+     *            a third source Single
      * @param o4
-     *            a fourth source Observable
+     *            a fourth source Single
      * @param o5
-     *            a fifth source Observable
+     *            a fifth source Single
      * @param o6
-     *            a sixth source Observable
+     *            a sixth source Single
      * @param zipFunction
-     *            a function that, when applied to an item emitted by each of the source Observables, results in
-     *            an item that will be emitted by the resulting Observable
-     * @return an Observable that emits the zipped results
+     *            a function that, when applied to the item emitted by each of the source Singles, results in an
+     *            item that will be emitted by the resulting Single
+     * @return a Single that emits the zipped results
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
     public final static <T1, T2, T3, T4, T5, T6, R> Single<R> zip(Single<? extends T1> o1, Single<? extends T2> o2, Single<? extends T3> o3, Single<? extends T4> o4, Single<? extends T5> o5, Single<? extends T6> o6,
@@ -1100,41 +1056,33 @@ public class Single<T> {
     }
 
     /**
-     * Returns an Observable that emits the results of a specified combiner function applied to combinations of
-     * seven items emitted, in sequence, by seven other Observables.
+     * Returns an Observable that emits the results of a specified combiner function applied to seven items
+     * emitted by seven other Singles.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
-     * <p> {@code zip} applies this function in strict sequence, so the first item emitted by the new Observable
-     * will be the result of the function applied to the first item emitted by each source Observable, the
-     * second item emitted by the new Observable will be the result of the function applied to the second item
-     * emitted by each of those Observables, and so forth.
-     * <p>
-     * The resulting {@code Observable<R>} returned from {@code zip} will invoke {@link Observer#onNext onNext} as many times as the number of {@code onNext} invocations of the source Observable that
-     * emits the fewest
-     * items.
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.zip.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
      * @param o1
-     *            the first source Observable
+     *            the first source Single
      * @param o2
-     *            a second source Observable
+     *            a second source Single
      * @param o3
-     *            a third source Observable
+     *            a third source Single
      * @param o4
-     *            a fourth source Observable
+     *            a fourth source Single
      * @param o5
-     *            a fifth source Observable
+     *            a fifth source Single
      * @param o6
-     *            a sixth source Observable
+     *            a sixth source Single
      * @param o7
-     *            a seventh source Observable
+     *            a seventh source Single
      * @param zipFunction
-     *            a function that, when applied to an item emitted by each of the source Observables, results in
-     *            an item that will be emitted by the resulting Observable
-     * @return an Observable that emits the zipped results
+     *            a function that, when applied to the item emitted by each of the source Singles, results in an
+     *            item that will be emitted by the resulting Single
+     * @return a Single that emits the zipped results
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
     public final static <T1, T2, T3, T4, T5, T6, T7, R> Single<R> zip(Single<? extends T1> o1, Single<? extends T2> o2, Single<? extends T3> o3, Single<? extends T4> o4, Single<? extends T5> o5, Single<? extends T6> o6, Single<? extends T7> o7,
@@ -1143,43 +1091,35 @@ public class Single<T> {
     }
 
     /**
-     * Returns an Observable that emits the results of a specified combiner function applied to combinations of
-     * eight items emitted, in sequence, by eight other Observables.
+     * Returns an Observable that emits the results of a specified combiner function applied to eight items
+     * emitted by eight other Singles.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
-     * <p> {@code zip} applies this function in strict sequence, so the first item emitted by the new Observable
-     * will be the result of the function applied to the first item emitted by each source Observable, the
-     * second item emitted by the new Observable will be the result of the function applied to the second item
-     * emitted by each of those Observables, and so forth.
-     * <p>
-     * The resulting {@code Observable<R>} returned from {@code zip} will invoke {@link Observer#onNext onNext} as many times as the number of {@code onNext} invocations of the source Observable that
-     * emits the fewest
-     * items.
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.zip.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
      * @param o1
-     *            the first source Observable
+     *            the first source Single
      * @param o2
-     *            a second source Observable
+     *            a second source Single
      * @param o3
-     *            a third source Observable
+     *            a third source Single
      * @param o4
-     *            a fourth source Observable
+     *            a fourth source Single
      * @param o5
-     *            a fifth source Observable
+     *            a fifth source Single
      * @param o6
-     *            a sixth source Observable
+     *            a sixth source Single
      * @param o7
-     *            a seventh source Observable
+     *            a seventh source Single
      * @param o8
-     *            an eighth source Observable
+     *            an eighth source Single
      * @param zipFunction
-     *            a function that, when applied to an item emitted by each of the source Observables, results in
-     *            an item that will be emitted by the resulting Observable
-     * @return an Observable that emits the zipped results
+     *            a function that, when applied to the item emitted by each of the source Singles, results in an
+     *            item that will be emitted by the resulting Single
+     * @return a Single that emits the zipped results
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
     public final static <T1, T2, T3, T4, T5, T6, T7, T8, R> Single<R> zip(Single<? extends T1> o1, Single<? extends T2> o2, Single<? extends T3> o3, Single<? extends T4> o4, Single<? extends T5> o5, Single<? extends T6> o6, Single<? extends T7> o7, Single<? extends T8> o8,
@@ -1188,45 +1128,37 @@ public class Single<T> {
     }
 
     /**
-     * Returns an Observable that emits the results of a specified combiner function applied to combinations of
-     * nine items emitted, in sequence, by nine other Observables.
+     * Returns an Observable that emits the results of a specified combiner function applied to nine items
+     * emitted by nine other Singles.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
-     * <p> {@code zip} applies this function in strict sequence, so the first item emitted by the new Observable
-     * will be the result of the function applied to the first item emitted by each source Observable, the
-     * second item emitted by the new Observable will be the result of the function applied to the second item
-     * emitted by each of those Observables, and so forth.
-     * <p>
-     * The resulting {@code Observable<R>} returned from {@code zip} will invoke {@link Observer#onNext onNext} as many times as the number of {@code onNext} invocations of the source Observable that
-     * emits the fewest
-     * items.
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.zip.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code zip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
      * @param o1
-     *            the first source Observable
+     *            the first source Single
      * @param o2
-     *            a second source Observable
+     *            a second source Single
      * @param o3
-     *            a third source Observable
+     *            a third source Single
      * @param o4
-     *            a fourth source Observable
+     *            a fourth source Single
      * @param o5
-     *            a fifth source Observable
+     *            a fifth source Single
      * @param o6
-     *            a sixth source Observable
+     *            a sixth source Single
      * @param o7
-     *            a seventh source Observable
+     *            a seventh source Single
      * @param o8
-     *            an eighth source Observable
+     *            an eighth source Single
      * @param o9
-     *            a ninth source Observable
+     *            a ninth source Single
      * @param zipFunction
-     *            a function that, when applied to an item emitted by each of the source Observables, results in
-     *            an item that will be emitted by the resulting Observable
-     * @return an Observable that emits the zipped results
+     *            a function that, when applied to the item emitted by each of the source Singles, results in an
+     *            item that will be emitted by the resulting Single
+     * @return a Single that emits the zipped results
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
      */
     public final static <T1, T2, T3, T4, T5, T6, T7, T8, T9, R> Single<R> zip(Single<? extends T1> o1, Single<? extends T2> o2, Single<? extends T3> o3, Single<? extends T4> o4, Single<? extends T5> o5, Single<? extends T6> o6, Single<? extends T7> o7, Single<? extends T8> o8,
@@ -1235,10 +1167,10 @@ public class Single<T> {
     }
 
     /**
-     * Returns an Observable that emits the items emitted from the current Observable, then the next, one after
-     * the other, without interleaving them.
+     * Returns an Observable that emits the item emitted by the source Single, then the item emitted by the
+     * specified Single.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/concat.png" alt="">
+     * <img width="640" height="335" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.concatWith.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code concat} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1246,8 +1178,8 @@ public class Single<T> {
      * 
      * @param t1
      *            a Single to be concatenated after the current
-     * @return an Observable that emits items emitted by the two source Observables, one after the other,
-     *         without interleaving them
+     * @return an Observable that emits the item emitted by the source Single, followed by the item emitted by
+     *         {@code t1}
      * @see <a href="http://reactivex.io/documentation/operators/concat.html">ReactiveX operators documentation: Concat</a>
      */
     public final Observable<T> concatWith(Single<? extends T> t1) {
@@ -1255,22 +1187,18 @@ public class Single<T> {
     }
 
     /**
-     * Returns an Observable that emits items based on applying a function that you supply to each item emitted
-     * by the source Observable, where that function returns an Observable, and then merging those resulting
-     * Observables and emitting the results of this merger.
+     * Returns a Single that is based on applying a specified function to the item emitted by the source Single,
+     * where that function returns a Single.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flatMap.png" alt="">
+     * <img width="640" height="300" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.flatMap.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
      * @param func
-     *            a function that, when applied to an item emitted by the source Observable, returns an
-     *            Observable
-     * @return an Observable that emits the result of applying the transformation function to each item emitted
-     *         by the source Observable and merging the results of the Observables obtained from this
-     *         transformation
+     *            a function that, when applied to the item emitted by the source Single, returns a Single
+     * @return the Single returned from {@code func} when applied to the item emitted by the source Single
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
      */
     public final <R> Single<R> flatMap(final Func1<? super T, ? extends Single<? extends R>> func) {
@@ -1278,22 +1206,19 @@ public class Single<T> {
     }
 
     /**
-     * Returns an Observable that emits items based on applying a function that you supply to each item emitted
-     * by the source Observable, where that function returns an Observable, and then merging those resulting
-     * Observables and emitting the results of this merger.
+     * Returns an Observable that emits items based on applying a specified function to the item emitted by the
+     * source Observable, where that function returns an Observable.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/flatMap.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.flatMapObservable.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
-     * <dd>{@code flatMap} does not operate by default on a particular {@link Scheduler}.</dd>
+     * <dd>{@code flatMapObservable} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
      * @param func
-     *            a function that, when applied to an item emitted by the source Observable, returns an
+     *            a function that, when applied to the item emitted by the source Single, returns an
      *            Observable
-     * @return an Observable that emits the result of applying the transformation function to each item emitted
-     *         by the source Observable and merging the results of the Observables obtained from this
-     *         transformation
+     * @return the Observable returned from {@code func} when applied to the item emitted by the source Single
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
      */
     public final <R> Observable<R> flatMapObservable(Func1<? super T, ? extends Observable<? extends R>> func) {
@@ -1302,9 +1227,9 @@ public class Single<T> {
 
     /**
      * Returns a Single that applies a specified function to the item emitted by the source Single and
-     * emits the result of this function applications.
+     * emits the result of this function application.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/map.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.map.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code map} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1320,12 +1245,12 @@ public class Single<T> {
     }
 
     /**
-     * Flattens this and another Observable into a single Observable, without any transformation.
+     * Flattens this and another Single into a single Observable, without any transformation.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.merge.png" alt="">
      * <p>
-     * You can combine items emitted by multiple Observables so that they appear as a single Observable, by
-     * using the {@code mergeWith} method.
+     * You can combine items emitted by multiple Singles so that they appear as a single Observable, by using
+     * the {@code mergeWith} method.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code mergeWith} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1333,7 +1258,7 @@ public class Single<T> {
      * 
      * @param t1
      *            a Single to be merged
-     * @return an Observable that emits all of the items emitted by the source Observables
+     * @return an Observable that emits all of the items emitted by the source Singles
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      */
     public final Observable<T> mergeWith(Single<? extends T> t1) {
@@ -1341,18 +1266,19 @@ public class Single<T> {
     }
 
     /**
-     * Modifies an Observable to perform its emissions and notifications on a specified {@link Scheduler},
-     * asynchronously with an unbounded buffer.
+     * Modifies a Single to emit its item (or notify of its error) on a specified {@link Scheduler},
+     * asynchronously.
      * <p>
-     * <img width="640" height="308" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/observeOn.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.observeOn.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>you specify which {@link Scheduler} this operator will use</dd>
      * </dl>
      * 
      * @param scheduler
-     *            the {@link Scheduler} to notify {@link Observer}s on
-     * @return the source Observable modified so that its {@link Observer}s are notified on the specified {@link Scheduler}
+     *            the {@link Scheduler} to notify subscribers on
+     * @return the source Single modified so that its subscribers are notified on the specified
+     *         {@link Scheduler}
      * @see <a href="http://reactivex.io/documentation/operators/observeon.html">ReactiveX operators documentation: ObserveOn</a>
      * @see <a href="http://www.grahamlea.com/2014/07/rxjava-threading-examples/">RxJava Threading Examples</a>
      * @see #subscribeOn
@@ -1362,15 +1288,17 @@ public class Single<T> {
     }
 
     /**
-     * Instructs an Observable to emit an item (returned by a specified function) rather than invoking {@link Observer#onError onError} if it encounters an error.
+     * Instructs a Single to emit an item (returned by a specified function) rather than invoking
+     * {@link SingleSubscriber#onError onError} if it encounters an error.
      * <p>
-     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/onErrorReturn.png" alt="">
+     * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.onErrorReturn.png" alt="">
      * <p>
-     * By default, when an Observable encounters an error that prevents it from emitting the expected item to
-     * its {@link Observer}, the Observable invokes its Observer's {@code onError} method, and then quits
-     * without invoking any more of its Observer's methods. The {@code onErrorReturn} method changes this
-     * behavior. If you pass a function ({@code resumeFunction}) to an Observable's {@code onErrorReturn} method, if the original Observable encounters an error, instead of invoking its Observer's
-     * {@code onError} method, it will instead emit the return value of {@code resumeFunction}.
+     * By default, when a Single encounters an error that prevents it from emitting the expected item to its
+     * subscriber, the Single invokes its subscriber's {@link Subscriber#onError} method, and then quits
+     * without invoking any more of its subscriber's methods. The {@code onErrorReturn} method changes this
+     * behavior. If you pass a function ({@code resumeFunction}) to a Single's {@code onErrorReturn} method, if
+     * the original Single encounters an error, instead of invoking its subscriber's
+     * {@link Subscriber#onError} method, it will instead emit the return value of {@code resumeFunction}.
      * <p>
      * You can use this to prevent errors from propagating or to supply fallback data should errors be
      * encountered.
@@ -1380,9 +1308,9 @@ public class Single<T> {
      * </dl>
      * 
      * @param resumeFunction
-     *            a function that returns an item that the new Observable will emit if the source Observable
-     *            encounters an error
-     * @return the original Observable with appropriately modified behavior
+     *            a function that returns an item that the new Single will emit if the source Single encounters
+     *            an error
+     * @return the original Single with appropriately modified behavior
      * @see <a href="http://reactivex.io/documentation/operators/catch.html">ReactiveX operators documentation: Catch</a>
      */
     public final Single<T> onErrorReturn(Func1<Throwable, ? extends T> resumeFunction) {
@@ -1390,7 +1318,7 @@ public class Single<T> {
     }
 
     /**
-     * Subscribes to an Observable but ignore its emissions and notifications.
+     * Subscribes to a Single but ignore its emission or notification.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code subscribe} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -1398,7 +1326,7 @@ public class Single<T> {
      * 
      * @return a {@link Subscription} reference can request the {@link Single} stop work.
      * @throws OnErrorNotImplementedException
-     *             if the Observable tries to call {@code onError}
+     *             if the Single tries to call {@link Subscriber#onError}
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
      */
     public final Subscription subscribe() {
@@ -1423,19 +1351,19 @@ public class Single<T> {
     }
 
     /**
-     * Subscribes to an Observable and provides a callback to handle the items it emits.
+     * Subscribes to a Single and provides a callback to handle the item it emits.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code subscribe} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param onNext
-     *            the {@code Action1<T>} you have designed to accept emissions from the Observable
+     * @param onSuccess
+     *            the {@code Action1<T>} you have designed to accept the emission from the Single
      * @return a {@link Subscription} reference can request the {@link Single} stop work.
      * @throws IllegalArgumentException
      *             if {@code onNext} is null
      * @throws OnErrorNotImplementedException
-     *             if the Observable tries to call {@code onError}
+     *             if the Single tries to call {@link Subscriber#onError}
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
      */
     public final Subscription subscribe(final Action1<? super T> onSuccess) {
@@ -1464,18 +1392,18 @@ public class Single<T> {
     }
 
     /**
-     * Subscribes to an Observable and provides callbacks to handle the items it emits and any error
-     * notification it issues.
+     * Subscribes to a Single and provides callbacks to handle the item it emits or any error notification it
+     * issues.
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code subscribe} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param onNext
-     *            the {@code Action1<T>} you have designed to accept emissions from the Observable
+     * @param onSuccess
+     *            the {@code Action1<T>} you have designed to accept the emission from the Single
      * @param onError
      *            the {@code Action1<Throwable>} you have designed to accept any error notification from the
-     *            Observable
+     *            Single
      * @return a {@link Subscription} reference can request the {@link Single} stop work.
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
      * @throws IllegalArgumentException
@@ -1511,7 +1439,7 @@ public class Single<T> {
     }
 
     /**
-     * Subscribes to an Observable and invokes {@link OnSubscribe} function without any contract protection,
+     * Subscribes to a Single and invokes the {@link OnSubscribe} function without any contract protection,
      * error handling, unsubscribe, or execution hooks.
      * <p>
      * Use this only for implementing an {@link Operator} that requires nested subscriptions. For other
@@ -1522,7 +1450,7 @@ public class Single<T> {
      * </dl>
      * 
      * @param subscriber
-     *            the Subscriber that will handle emissions and notifications from the Observable
+     *            the Subscriber that will handle the emission or notification from the Single
      */
     public final void unsafeSubscribe(Subscriber<? super T> subscriber) {
         try {
@@ -1554,19 +1482,18 @@ public class Single<T> {
     }
 
     /**
-     * Subscribes to an Single and provides a Subscriber that implements functions to handle the item the
-     * Single emits and any error notification it issues.
+     * Subscribes to a Single and provides a Subscriber that implements functions to handle the item the Single
+     * emits or any error notification it issues.
      * <p>
      * A typical implementation of {@code subscribe} does the following:
      * <ol>
      * <li>It stores a reference to the Subscriber in a collection object, such as a {@code List<T>} object.</li>
      * <li>It returns a reference to the {@link Subscription} interface. This enables Subscribers to
-     * unsubscribe, that is, to stop receiving items and notifications before the Observable completes, which
-     * also invokes the Subscriber's {@link Subscriber#onCompleted onCompleted} method.</li>
+     * unsubscribe, that is, to stop receiving the item or notification before the Single completes.</li>
      * </ol><p>
-     * An {@code Single<T>} instance is responsible for accepting all subscriptions and notifying all
+     * A {@code Single<T>} instance is responsible for accepting all subscriptions and notifying all
      * Subscribers. Unless the documentation for a particular {@code Single<T>} implementation indicates
-     * otherwise, Subscriber should make no assumptions about the order in which multiple Subscribers will
+     * otherwise, Subscribers should make no assumptions about the order in which multiple Subscribers will
      * receive their notifications.
      * <p>
      * For more information see the
@@ -1577,7 +1504,7 @@ public class Single<T> {
      * </dl>
      * 
      * @param subscriber
-     *            the {@link Subscriber} that will handle emissions and notifications from the Observable
+     *            the {@link Subscriber} that will handle the emission or notification from the Single
      * @return a {@link Subscription} reference can request the {@link Single} stop work.
      * @throws IllegalStateException
      *             if {@code subscribe} is unable to obtain an {@code OnSubscribe<>} function
@@ -1645,19 +1572,18 @@ public class Single<T> {
     }
 
     /**
-     * Subscribes to an Single and provides a SingleSubscriber that implements functions to handle the item the
-     * Single emits and any error notification it issues.
+     * Subscribes to a Single and provides a {@link SingleSubscriber} that implements functions to handle the
+     * item the Single emits or any error notification it issues.
      * <p>
      * A typical implementation of {@code subscribe} does the following:
      * <ol>
      * <li>It stores a reference to the Subscriber in a collection object, such as a {@code List<T>} object.</li>
      * <li>It returns a reference to the {@link Subscription} interface. This enables Subscribers to
-     * unsubscribe, that is, to stop receiving items and notifications before the Observable completes, which
-     * also invokes the Subscriber's {@link Subscriber#onCompleted onCompleted} method.</li>
+     * unsubscribe, that is, to stop receiving the item or notification before the Single completes.</li>
      * </ol><p>
-     * An {@code Single<T>} instance is responsible for accepting all subscriptions and notifying all
+     * A {@code Single<T>} instance is responsible for accepting all subscriptions and notifying all
      * Subscribers. Unless the documentation for a particular {@code Single<T>} implementation indicates
-     * otherwise, Subscriber should make no assumptions about the order in which multiple Subscribers will
+     * otherwise, Subscribers should make no assumptions about the order in which multiple Subscribers will
      * receive their notifications.
      * <p>
      * For more information see the
@@ -1667,17 +1593,17 @@ public class Single<T> {
      * <dd>{@code subscribe} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param subscriber
-     *            the {@link Subscriber} that will handle emissions and notifications from the Observable
+     * @param te
+     *            the {@link SingleSubscriber} that will handle the emission or notification from the Single
      * @return a {@link Subscription} reference can request the {@link Single} stop work.
      * @throws IllegalStateException
      *             if {@code subscribe} is unable to obtain an {@code OnSubscribe<>} function
      * @throws IllegalArgumentException
-     *             if the {@link Subscriber} provided as the argument to {@code subscribe} is {@code null}
+     *             if the {@link SingleSubscriber} provided as the argument to {@code subscribe} is {@code null}
      * @throws OnErrorNotImplementedException
-     *             if the {@link Subscriber}'s {@code onError} method is null
+     *             if the {@link SingleSubscriber}'s {@code onError} method is null
      * @throws RuntimeException
-     *             if the {@link Subscriber}'s {@code onError} method itself threw a {@code Throwable}
+     *             if the {@link SingleSubscriber}'s {@code onError} method itself threw a {@code Throwable}
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
      */
     public final Subscription subscribe(final SingleSubscriber<? super T> te) {
@@ -1705,9 +1631,9 @@ public class Single<T> {
     }
 
     /**
-     * Asynchronously subscribes Observers to this Observable on the specified {@link Scheduler}.
+     * Asynchronously subscribes subscribers to this Single on the specified {@link Scheduler}.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/subscribeOn.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.subscribeOn.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>you specify which {@link Scheduler} this operator will use</dd>
@@ -1715,8 +1641,7 @@ public class Single<T> {
      * 
      * @param scheduler
      *            the {@link Scheduler} to perform subscription actions on
-     * @return the source Observable modified so that its subscriptions happen on the
-     *         specified {@link Scheduler}
+     * @return the source Single modified so that its subscriptions happen on the specified {@link Scheduler}
      * @see <a href="http://reactivex.io/documentation/operators/subscribeon.html">ReactiveX operators documentation: SubscribeOn</a>
      * @see <a href="http://www.grahamlea.com/2014/07/rxjava-threading-examples/">RxJava Threading Examples</a>
      * @see #observeOn
@@ -1726,21 +1651,21 @@ public class Single<T> {
     }
 
     /**
-     * Returns an Observable that mirrors the source Observable but applies a timeout policy for each emitted
-     * item. If the next item isn't emitted within the specified timeout duration starting from its predecessor,
-     * the resulting Observable terminates and notifies observers of a {@code TimeoutException}.
+     * Returns a Single that mirrors the source Single but applies a timeout policy for its emitted item. If it
+     * is not emitted within the specified timeout duration, the resulting Single terminates and notifies
+     * subscribers of a {@code TimeoutException}.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeout.1.png" alt="">
+     * <img width="640" height="300" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.timeout.1.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>This version of {@code timeout} operates by default on the {@code computation} {@link Scheduler}.</dd>
      * </dl>
      * 
      * @param timeout
-     *            maximum duration between emitted items before a timeout occurs
+     *            maximum duration before the Single times out
      * @param timeUnit
      *            the unit of time that applies to the {@code timeout} argument.
-     * @return the source Observable modified to notify observers of a {@code TimeoutException} in case of a
+     * @return the source Single modified to notify subscribers of a {@code TimeoutException} in case of a
      *         timeout
      * @see <a href="http://reactivex.io/documentation/operators/timeout.html">ReactiveX operators documentation: Timeout</a>
      */
@@ -1749,24 +1674,23 @@ public class Single<T> {
     }
 
     /**
-     * Returns an Observable that mirrors the source Observable but applies a timeout policy for each emitted
-     * item, where this policy is governed on a specified Scheduler. If the next item isn't emitted within the
-     * specified timeout duration starting from its predecessor, the resulting Observable terminates and
-     * notifies observers of a {@code TimeoutException}.
+     * Returns a Single that mirrors the source Single but applies a timeout policy for its emitted item, where
+     * this policy is governed on a specified Scheduler. If the item is not emitted within the specified timeout
+     * duration, the resulting Single terminates and notifies subscribers of a {@code TimeoutException}.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeout.1s.png" alt="">
+     * <img width="640" height="300" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.timeout.1s.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>you specify which {@link Scheduler} this operator will use</dd>
      * </dl>
      * 
      * @param timeout
-     *            maximum duration between items before a timeout occurs
+     *            maximum duration before the Single times out
      * @param timeUnit
      *            the unit of time that applies to the {@code timeout} argument
      * @param scheduler
      *            the Scheduler to run the timeout timers on
-     * @return the source Observable modified to notify observers of a {@code TimeoutException} in case of a
+     * @return the source Single modified to notify subscribers of a {@code TimeoutException} in case of a
      *         timeout
      * @see <a href="http://reactivex.io/documentation/operators/timeout.html">ReactiveX operators documentation: Timeout</a>
      */
@@ -1775,23 +1699,23 @@ public class Single<T> {
     }
 
     /**
-     * Returns an Observable that mirrors the source Observable but applies a timeout policy for each emitted
-     * item. If the next item isn't emitted within the specified timeout duration starting from its predecessor,
-     * the resulting Observable begins instead to mirror a fallback Observable.
+     * Returns a Single that mirrors the source Single but applies a timeout policy for its emitted item. If it
+     * is not emitted within the specified timeout duration, the resulting Single instead mirrors a fallback
+     * Single.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeout.2.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.timeout.2.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>This version of {@code timeout} operates by default on the {@code computation} {@link Scheduler}.</dd>
      * </dl>
      * 
      * @param timeout
-     *            maximum duration between items before a timeout occurs
+     *            maximum time before a timeout occurs
      * @param timeUnit
      *            the unit of time that applies to the {@code timeout} argument
      * @param other
-     *            the fallback Observable to use in case of a timeout
-     * @return the source Observable modified to switch to the fallback Observable in case of a timeout
+     *            the fallback Single to use in case of a timeout
+     * @return the source Single modified to switch to the fallback Single in case of a timeout
      * @see <a href="http://reactivex.io/documentation/operators/timeout.html">ReactiveX operators documentation: Timeout</a>
      */
     public final Single<T> timeout(long timeout, TimeUnit timeUnit, Single<? extends T> other) {
@@ -1799,26 +1723,25 @@ public class Single<T> {
     }
 
     /**
-     * Returns an Observable that mirrors the source Observable but applies a timeout policy for each emitted
-     * item using a specified Scheduler. If the next item isn't emitted within the specified timeout duration
-     * starting from its predecessor, the resulting Observable begins instead to mirror a fallback Observable.
+     * Returns a Single that mirrors the source Single but applies a timeout policy for its emitted item, using
+     * a specified Scheduler. If the item isn't emitted within the specified timeout duration, the resulting
+     * Single instead mirrors a fallback Single.
      * <p>
-     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/timeout.2s.png" alt="">
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.timeout.2s.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>you specify which {@link Scheduler} this operator will use</dd>
      * </dl>
      * 
      * @param timeout
-     *            maximum duration between items before a timeout occurs
+     *            maximum duration before a timeout occurs
      * @param timeUnit
      *            the unit of time that applies to the {@code timeout} argument
      * @param other
-     *            the Observable to use as the fallback in case of a timeout
+     *            the Single to use as the fallback in case of a timeout
      * @param scheduler
      *            the {@link Scheduler} to run the timeout timers on
-     * @return the source Observable modified so that it will switch to the fallback Observable in case of a
-     *         timeout
+     * @return the source Single modified so that it will switch to the fallback Singlein case of a timeout
      * @see <a href="http://reactivex.io/documentation/operators/timeout.html">ReactiveX operators documentation: Timeout</a>
      */
     public final Single<T> timeout(long timeout, TimeUnit timeUnit, Single<? extends T> other, Scheduler scheduler) {
@@ -1829,24 +1752,24 @@ public class Single<T> {
     }
 
     /**
-     * Returns an Observable that emits items that are the result of applying a specified function to pairs of
-     * values, one each from the source Observable and another specified Observable.
+     * Returns a Single that emits the result of applying a specified function to the pair of items emitted by
+     * the source Single and another specified Single.
      * <p>
-     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/zip.png" alt="">
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.zip.png" alt="">
      * <dl>
      * <dt><b>Scheduler:</b></dt>
      * <dd>{@code zipWith} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
      * @param <T2>
-     *            the type of items emitted by the {@code other} Observable
+     *            the type of items emitted by the {@code other} Single
      * @param <R>
-     *            the type of items emitted by the resulting Observable
+     *            the type of items emitted by the resulting Single
      * @param other
      *            the other Observable
      * @param zipFunction
      *            a function that combines the pairs of items from the two Observables to generate the items to
-     *            be emitted by the resulting Observable
+     *            be emitted by the resulting Single
      * @return an Observable that pairs up values from the source Observable and the {@code other} Observable
      *         and emits the results of {@code zipFunction} applied to these pairs
      * @see <a href="http://reactivex.io/documentation/operators/zip.html">ReactiveX operators documentation: Zip</a>
