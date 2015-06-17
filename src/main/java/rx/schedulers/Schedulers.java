@@ -137,4 +137,37 @@ public final class Schedulers {
     public static Scheduler from(Executor executor) {
         return new ExecutorScheduler(executor);
     }
+    
+    /**
+     * Starts those standard Schedulers which support the SchedulerLifecycle interface.
+     * <p>The operation is idempotent and threadsafe.
+     */
+    public static void start() {
+        Schedulers s = INSTANCE;
+        if (s.computationScheduler instanceof SchedulerLifecycle) {
+            ((SchedulerLifecycle) s.computationScheduler).start();
+        }
+        if (s.ioScheduler instanceof SchedulerLifecycle) {
+            ((SchedulerLifecycle) s.computationScheduler).start();
+        }
+        if (s.newThreadScheduler instanceof SchedulerLifecycle) {
+            ((SchedulerLifecycle) s.computationScheduler).start();
+        }
+    }
+    /**
+     * Shuts down those standard Schedulers which support the SchedulerLifecycle interface.
+     * <p>The operation is idempotent and threadsafe
+     */
+    public static void shutdown() {
+        Schedulers s = INSTANCE;
+        if (s.computationScheduler instanceof SchedulerLifecycle) {
+            ((SchedulerLifecycle) s.computationScheduler).shutdown();
+        }
+        if (s.ioScheduler instanceof SchedulerLifecycle) {
+            ((SchedulerLifecycle) s.computationScheduler).shutdown();
+        }
+        if (s.newThreadScheduler instanceof SchedulerLifecycle) {
+            ((SchedulerLifecycle) s.computationScheduler).shutdown();
+        }
+    }
 }
