@@ -15,15 +15,17 @@
  */
 package rx.internal.operators;
 
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.*;
 
 import rx.*;
 import rx.Observable.Operator;
+import rx.Observable;
 import rx.exceptions.*;
 import rx.functions.Func1;
 import rx.internal.util.*;
+import rx.subscriptions.CompositeSubscription;
 
 /**
  * Flattens a list of {@link Observable}s into one {@code Observable}, without any transformation.
@@ -49,737 +51,909 @@ import rx.internal.util.*;
  * @param <T>
  *            the type of the items emitted by both the source and merged {@code Observable}s
  */
-public class OperatorMerge<T> implements Operator<T, Observable<? extends T>> {
-    /** Lazy initialization via inner-class holder. */
-    private static final class HolderNoDelay {
-        /** A singleton instance. */
-        static final OperatorMerge<Object> INSTANCE = new OperatorMerge<Object>(false);
-    }
-    /** Lazy initialization via inner-class holder. */
-    private static final class HolderDelayErrors {
-        /** A singleton instance. */
-        static final OperatorMerge<Object> INSTANCE = new OperatorMerge<Object>(true);
-    }
+public final class OperatorMerge<T, R> implements Operator<R, T> {
     /**
-     * @param delayErrors should the merge delay errors?
-     * @return a singleton instance of this stateless operator.
+     * Creates a new instance of the operator with the given delayError and maxConcurrency settings.
+     * @param delayErrors
+     * @param maxConcurrent the maximum number of concurrent subscriptions or Integer.MAX_VALUE for unlimited
+     * @param func the mapper function that maps a value into an observable
+     * @return
      */
-    @SuppressWarnings("unchecked")
-    public static <T> OperatorMerge<T> instance(boolean delayErrors) {
-        if (delayErrors) {
-            return (OperatorMerge<T>)HolderDelayErrors.INSTANCE;
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    public static <T, R> OperatorMerge<T, R> instance(boolean delayErrors, int maxConcurrent, 
+            Func1<? super T, ? extends Observable<? extends R>> func) {
+        if (maxConcurrent == Integer.MAX_VALUE && (Func1)func == UtilityFunctions.identity()) {
+            if (delayErrors) {
+                return (OperatorMerge<T, R>)HolderDelayErrors.INSTANCE;
+            }
+            return (OperatorMerge<T, R>)HolderPlain.INSTANCE;
         }
-        return (OperatorMerge<T>)HolderNoDelay.INSTANCE;
+        return new OperatorMerge<T, R>(delayErrors, maxConcurrent, func);
     }
-    /*
-     * benjchristensen => This class is complex and I'm not a fan of it despite writing it. I want to give some background
-     * as to why for anyone who wants to try and help improve it.
-     * 
-     * One of my first implementations that added backpressure support (Producer.request) was fairly elegant and used a simple
-     * queue draining approach. It was simple to understand as all onNext were added to their queues, then a single winner
-     * would drain the queues, similar to observeOn. It killed the Netflix API when I canaried it. There were two problems:
-     * (1) performance and (2) object allocation overhead causing massive GC pressure. Remember that merge is one of the most
-     * used operators (mostly due to flatmap) and is therefore critical to and a limiter of performance in any application.
-     * 
-     * All subsequent work on this class and the various fast-paths and branches within it have been to achieve the needed functionality
-     * while reducing or eliminating object allocation and keeping performance acceptable.
-     * 
-     * This has meant adopting strategies such as:
-     * 
-     * - ring buffers instead of growable queues
-     * - object pooling
-     * - skipping request logic when downstream does not need backpressure
-     * - ScalarValueQueue for optimizing synchronous single-value Observables
-     * - adopting data structures that use Unsafe (and gating them based on environment so non-Oracle JVMs still work)
-     * 
-     * It has definitely increased the complexity and maintenance cost of this class, but the performance gains have been significant.
-     * 
-     * The biggest cost of the increased complexity is concurrency bugs and reasoning through what's going on.
-     * 
-     * I'd love to have contributions that improve this class, but keep in mind the performance and GC pressure.
-     * The benchmarks I use are in the JMH OperatorMergePerf class. GC memory pressure is tested using Java Flight Recorder
-     * to track object allocation.
-     */
-
-    private OperatorMerge() {
-        this.delayErrors = false;
+    
+    static final class HolderPlain {
+        @SuppressWarnings({"rawtypes", "unchecked"})
+        static final OperatorMerge<Object, Object> INSTANCE = new OperatorMerge<Object, Object>(false, Integer.MAX_VALUE, (Func1)UtilityFunctions.identity());
+    }
+    static final class HolderDelayErrors {
+        @SuppressWarnings({"rawtypes", "unchecked"})
+        static final OperatorMerge<Object, Object> INSTANCE = new OperatorMerge<Object, Object>(true, Integer.MAX_VALUE, (Func1)UtilityFunctions.identity());
     }
 
-    private OperatorMerge(boolean delayErrors) {
+    final boolean delayErrors;
+    final int maxConcurrent;
+    final Func1<? super T, ? extends Observable<? extends R>> func;
+
+    private OperatorMerge(boolean delayErrors, int maxConcurrent, 
+            Func1<? super T, ? extends Observable<? extends R>> func) {
         this.delayErrors = delayErrors;
+        this.maxConcurrent = maxConcurrent;
+        this.func = func;
     }
-
-    private final boolean delayErrors;
 
     @Override
-    public Subscriber<Observable<? extends T>> call(final Subscriber<? super T> child) {
-        return new MergeSubscriber<T>(child, delayErrors);
-
+    public Subscriber<T> call(final Subscriber<? super R> child) {
+        MergeSubscriber<T, R> subscriber = new MergeSubscriber<T, R>(child, delayErrors, 
+                maxConcurrent, func);
+        MergeProducer<T, R> producer = new MergeProducer<T, R>(subscriber);
+        subscriber.producer = producer;
+        producer.lazySet(0); // make sure subscriber.producer is visible
+        
+        child.add(subscriber);
+        child.setProducer(producer);
+        
+        return subscriber;
     }
 
-    private static final class MergeSubscriber<T> extends Subscriber<Observable<? extends T>> {
-        final NotificationLite<T> on = NotificationLite.instance();
-        final Subscriber<? super T> actual;
-        private final MergeProducer<T> mergeProducer;
-        private int wip;
-        private boolean completed;
-        private final boolean delayErrors;
-        private ConcurrentLinkedQueue<Throwable> exceptions;
+    static final class MergeProducer<T, R> extends AtomicLong implements Producer {
+        /** */
+        private static final long serialVersionUID = -1214379189873595503L;
 
-        private volatile SubscriptionIndexedRingBuffer<InnerSubscriber<T>> childrenSubscribers;
-
-        private volatile RxRingBuffer scalarValueQueue = null;
-
-        /* protected by lock on MergeSubscriber instance */
-        private int missedEmitting = 0;
-        private boolean emitLock = false;
-
-        /**
-         * Using synchronized(this) for `emitLock` instead of ReentrantLock or AtomicInteger is faster when there is no contention.
-         * 
-         * <pre> {@code
-         * Using ReentrantLock:
-         * r.o.OperatorMergePerf.merge1SyncStreamOfN           1000  thrpt         5    44185.294     1295.565    ops/s
-         * 
-         * Using synchronized(this):
-         * r.o.OperatorMergePerf.merge1SyncStreamOfN           1000  thrpt         5    79715.981     3704.486    ops/s
-         * 
-         * Still slower though than allowing concurrency:
-         * r.o.OperatorMergePerf.merge1SyncStreamOfN           1000  thrpt         5   149331.046     4851.290    ops/s
-         * } </pre>
-         */
-
-        public MergeSubscriber(Subscriber<? super T> actual, boolean delayErrors) {
-            super(actual);
-            this.actual = actual;
-            this.mergeProducer = new MergeProducer<T>(this);
-            this.delayErrors = delayErrors;
-            // decoupled the subscription chain because we need to decouple and control backpressure
-            actual.add(this);
-            actual.setProducer(mergeProducer);
+        final MergeSubscriber<T, R> subscriber;
+        /** Indicates the producer mode: -1 no request, 0 unbounded fast, 1 bounded. */
+        volatile int mode;
+        @SuppressWarnings("rawtypes")
+        static final AtomicIntegerFieldUpdater<MergeProducer> MODE
+        = AtomicIntegerFieldUpdater.newUpdater(MergeProducer.class, "mode");
+        
+        public MergeProducer(MergeSubscriber<T, R> subscriber) {
+            this.subscriber = subscriber;
+            this.mode = -1;
         }
-
+        
         @Override
-        public void onStart() {
-            // we request backpressure so we can handle long-running Observables that are enqueueing, such as flatMap use cases
-            // we decouple the Producer chain while keeping the Subscription chain together (perf benefit) via super(actual)
-            request(RxRingBuffer.SIZE);
-        }
-
-        /*
-         * This is expected to be executed sequentially as per the Rx contract or it will not work.
-         */
-        @Override
-        public void onNext(Observable<? extends T> t) {
-            if (t instanceof ScalarSynchronousObservable) {
-                ScalarSynchronousObservable<? extends T> t2 = (ScalarSynchronousObservable<? extends T>)t;
-                handleScalarSynchronousObservable(t2);
-            } else {
-                if (t == null || isUnsubscribed()) {
+        public void request(long n) {
+            if (n >= 0) {
+                int m = mode;
+                // if in unbounded mode, quit
+                if (m == 0) {
                     return;
                 }
-                synchronized (this) {
-                    // synchronized here because `wip` can be concurrently changed by children Observables
-                    wip++;
-                }
-                handleNewSource(t);
-            }
-        }
-
-        private void handleNewSource(Observable<? extends T> t) {
-            if (childrenSubscribers == null) {
-                // lazily create this only if we receive Observables we need to subscribe to
-                childrenSubscribers = new SubscriptionIndexedRingBuffer<InnerSubscriber<T>>();
-                add(childrenSubscribers);
-            }
-            MergeProducer<T> producerIfNeeded = null;
-            // if we have received a request then we need to respect it, otherwise we fast-path
-            if (mergeProducer.requested != Long.MAX_VALUE) {
-                /**
-                 * <pre> {@code
-                 * With this optimization:
-                 * 
-                 * r.o.OperatorMergePerf.merge1SyncStreamOfN      1000  thrpt         5    57100.080     4686.331    ops/s
-                 * r.o.OperatorMergePerf.merge1SyncStreamOfN   1000000  thrpt         5       60.875        1.622    ops/s
-                 *  
-                 * Without this optimization:
-                 * 
-                 * r.o.OperatorMergePerf.merge1SyncStreamOfN      1000  thrpt         5    29863.945     1858.002    ops/s
-                 * r.o.OperatorMergePerf.merge1SyncStreamOfN   1000000  thrpt         5       30.516        1.087    ops/s
-                 * } </pre>
-                 */
-                producerIfNeeded = mergeProducer;
-            }
-            InnerSubscriber<T> i = new InnerSubscriber<T>(this, producerIfNeeded);
-            i.sindex = childrenSubscribers.add(i);
-            t.unsafeSubscribe(i);
-            if (!isUnsubscribed()) {
-                request(1);
-            }
-        }
-
-        private void handleScalarSynchronousObservable(ScalarSynchronousObservable<? extends T> t) {
-            // fast-path for scalar, synchronous values such as Observable.from(int)
-            /**
-             * Without this optimization:
-             * 
-             * <pre> {@code
-             * Benchmark                                          (size)   Mode   Samples        Score  Score error    Units
-             * r.o.OperatorMergePerf.oneStreamOfNthatMergesIn1         1  thrpt         5  2,418,452.409   130572.665    ops/s
-             * r.o.OperatorMergePerf.oneStreamOfNthatMergesIn1      1000  thrpt         5     5,690.456       94.958    ops/s
-             * r.o.OperatorMergePerf.merge1SyncStreamOfN         1000000  thrpt         5          takes too long
-             * 
-             * With this optimization:
-             * 
-             * r.o.OperatorMergePerf.merge1SyncStreamOfN               1  thrpt         5  5,475,300.198   156741.334    ops/s
-             * r.o.OperatorMergePerf.merge1SyncStreamOfN            1000  thrpt         5    68,932.278     1311.023    ops/s
-             * r.o.OperatorMergePerf.merge1SyncStreamOfN         1000000  thrpt         5       64.405        0.611    ops/s
-             * } </pre>
-             * 
-             */
-            if (mergeProducer.requested == Long.MAX_VALUE) {
-                handleScalarSynchronousObservableWithoutRequestLimits(t);
-            } else {
-                handleScalarSynchronousObservableWithRequestLimits(t);
-            }
-        }
-
-        private void handleScalarSynchronousObservableWithoutRequestLimits(ScalarSynchronousObservable<? extends T> t) {
-            T value = t.get();
-            if (getEmitLock()) {
-                boolean moreToDrain;
-                try {
-                    actual.onNext(value);
-                } finally {
-                    moreToDrain = releaseEmitLock();
-                }
-                if (moreToDrain) {
-                    drainQueuesIfNeeded();
-                }
-                request(1);
-                return;
-            } else {
-                try {
-                    getOrCreateScalarValueQueue().onNext(value);
-                } catch (MissingBackpressureException e) {
-                    onError(e);
-                }
-                return;
-            }
-        }
-
-        private void handleScalarSynchronousObservableWithRequestLimits(ScalarSynchronousObservable<? extends T> t) {
-            if (getEmitLock()) {
-                boolean emitted = false;
-                boolean moreToDrain;
-                boolean isReturn = false;
-                try {
-                    long r = mergeProducer.requested;
-                    if (r > 0) {
-                        emitted = true;
-                        actual.onNext(t.get());
-                        MergeProducer.REQUESTED.decrementAndGet(mergeProducer);
-                        // we handle this Observable without ever incrementing the wip or touching other machinery so just return here
-                        isReturn = true;
-                    }
-                } finally {
-                    moreToDrain = releaseEmitLock();
-                }
-                if (moreToDrain) {
-                    drainQueuesIfNeeded();
-                }
-                if (emitted) {
-                    request(1);
-                }
-                if (isReturn) {
+                // if bounded mode, update request count and emit
+                if (m == 1) {
+                    BackpressureUtils.getAndAddRequest(this, n);
+                    subscriber.emit();
                     return;
                 }
-            }
-
-            // if we didn't return above we need to enqueue
-            // enqueue the values for later delivery
-            try {
-                getOrCreateScalarValueQueue().onNext(t.get());
-            } catch (MissingBackpressureException e) {
-                onError(e);
-            }
-        }
-
-        private RxRingBuffer getOrCreateScalarValueQueue() {
-            RxRingBuffer svq = scalarValueQueue;
-            if (svq == null) {
-                svq = RxRingBuffer.getSpscInstance();
-                scalarValueQueue = svq;
-            }
-            return svq;
-        }
-
-        private synchronized boolean releaseEmitLock() {
-            emitLock = false;
-            if (missedEmitting == 0) {
-                return false;
-            } else {
-                return true;
-            }
-        }
-
-        private synchronized boolean getEmitLock() {
-            if (emitLock) {
-                missedEmitting++;
-                return false;
-            } else {
-                emitLock = true;
-                missedEmitting = 0;
-                return true;
-            }
-        }
-
-        private boolean drainQueuesIfNeeded() {
-            while (true) {
-                if (getEmitLock()) {
-                    int emitted = 0;
-                    boolean moreToDrain;
-                    try {
-                        emitted = drainScalarValueQueue();
-                        drainChildrenQueues();
-                    } finally {
-                        moreToDrain = releaseEmitLock();
+                // mode has not been set
+                if (n == Long.MAX_VALUE) {
+                    // try setting mode to unbounded
+                    if (MODE.compareAndSet(this, -1, 0)) {
+                        subscriber.requestAll();
+                        return;
                     }
-                    // request outside of lock
-                    if (emitted > 0) {
-                        request(emitted);
-                    }
-                    if (!moreToDrain) {
-                        return true;
-                    }
-                    // otherwise we'll loop and get whatever was added
                 } else {
-                    return false;
+                    if (MODE.compareAndSet(this, -1, 1)) {
+                        BackpressureUtils.getAndAddRequest(this, n);
+                        subscriber.requestDefault();
+                        return;
+                    }
                 }
+                // mode has changed concurrently
+                // recheck state
+                m = mode;
+                // if in unbounded mode, quit
+                if (m == 0) {
+                    return;
+                } else
+                // if bounded mode, update request count and emit
+                if (m == 1) {
+                    BackpressureUtils.getAndAddRequest(this, n);
+                    subscriber.emit();
+                    return;
+                }
+                throw new IllegalStateException("Shouldn't be in mode: " + m);
             }
         }
+        public long produced(int n) {
+            return addAndGet(-n);
+        }
+    }
+    
+    /**
+     * The subscriber that observes Observables. 
+     * @param <T> the value type
+     */
+    static final class MergeSubscriber<T, R> extends Subscriber<T> {
+        final Subscriber<? super R> child;
+        final boolean delayErrors;
+        final int maxConcurrent;
+        final Func1<? super T, ? extends Observable<? extends R>> func;
+        
+        MergeProducer<T, R> producer;
+        
+        /** Upstream might not produce scalar values at all so avoid creating a queue for it upfront. */
+        volatile RxRingBuffer scalarQueue;
+        /** Tracks the active subscriptions to sources. */
+        volatile CompositeSubscription subscriptions;
+        /** Due to the emission loop, we need to store errors somewhere if !delayErrors. */
+        volatile ConcurrentLinkedQueue<Throwable> errors;
+        
+        final NotificationLite<R> nl;
+        
+        volatile boolean done;
+        
+        /** Guarded by this. */
+        boolean emitting;
+        /** Guarded by this. */
+        boolean missed;
+        
+        final Object innerGuard;
+        /** Copy-on-write array, guarded by innerGuard. */
+        volatile InnerSubscriber<?, ?>[] innerSubscribers;
+        
+        /** Used to generate unique InnerSubscriber IDs. Modified from onNext only. */
+        long uniqueId;
+        
+        /** Which was the last InnerSubscriber that emitted? Accessed if emitting == true. */
+        long lastId;
+        /** What was its index in the innerSubscribers array? Accessed if emitting == true. */
+        int lastIndex;
+        
+        /** An empty array to avoid creating new empty arrays in removeInner. */ 
+        static final InnerSubscriber<?, ?>[] EMPTY = new InnerSubscriber<?, ?>[0];
 
-        int lastDrainedIndex = 0;
-
-        /**
-         * ONLY call when holding the EmitLock.
+        /** In fast mode, this counts the number of active subscriptions, including the one to upstream. */
+        volatile int fastWip;
+        @SuppressWarnings("rawtypes")
+        static final AtomicIntegerFieldUpdater<MergeSubscriber> FAST_WIP
+        = AtomicIntegerFieldUpdater.newUpdater(MergeSubscriber.class, "fastWip");
+        
+        volatile boolean fastMode;
+        
+        /** Guarded by this. */
+        Object[] fastArray;
+        /** Guarded by this. */
+        int fastSize;
+        
+        /** Fast, unbounded emission report contents of 'errors'. */
+        static final Object REPORT_ERROR = new Object();
+        /** Fast, unbounded emission complete. */
+        static final Object REPORT_COMPLETED = new Object();
+        
+        public MergeSubscriber(Subscriber<? super R> child, boolean delayErrors, 
+                int maxConcurrent, Func1<? super T, ? extends Observable<? extends R>> func) {
+            this.child = child;
+            this.delayErrors = delayErrors;
+            this.maxConcurrent = maxConcurrent;
+            this.nl = NotificationLite.instance();
+            this.innerGuard = new Object();
+            this.innerSubscribers = EMPTY;
+            this.func = func;
+            this.request(0);
+        }
+        
+        Queue<Throwable> getOrCreateErrorQueue() {
+            ConcurrentLinkedQueue<Throwable> q = errors;
+            if (q == null) {
+                synchronized (this) {
+                    q = errors;
+                    if (q == null) {
+                        q = new ConcurrentLinkedQueue<Throwable>();
+                        errors = q;
+                    }
+                }
+            }
+            return q;
+        }
+        CompositeSubscription getOrCreateComposite() {
+            CompositeSubscription c = subscriptions;
+            if (c == null) {
+                boolean shouldAdd = false;
+                synchronized (this) {
+                    c = subscriptions;
+                    if (c == null) {
+                        c = new CompositeSubscription();
+                        subscriptions = c;
+                        shouldAdd = true;
+                    }
+                }
+                if (shouldAdd) {
+                    add(c);
+                }
+            }
+            return c;
+        }
+        
+        /** 
+         * In case the downstream requests less than Long.MAX_VALUE initially, do the standard
+         * queued processing.
          */
-        private void drainChildrenQueues() {
-            if (childrenSubscribers != null) {
-                lastDrainedIndex = childrenSubscribers.forEach(DRAIN_ACTION, lastDrainedIndex);
-            }
+        void requestDefault() {
+            request(Math.min(maxConcurrent, RxRingBuffer.SIZE));
         }
-
         /**
-         * ONLY call when holding the EmitLock.
+         * In case the downstream requests Long.MAX_VALUE, perform a simplified merging without
+         * using queues at all.
          */
-        private int drainScalarValueQueue() {
-            RxRingBuffer svq = scalarValueQueue;
-            if (svq != null) {
-                long r = mergeProducer.requested;
-                int emittedWhileDraining = 0;
-                if (r < 0) {
-                    // drain it all
-                    Object o = null;
-                    while ((o = svq.poll()) != null) {
-                        on.accept(actual, o);
-                        emittedWhileDraining++;
-                    }
-                } else if (r > 0) {
-                    // drain what was requested
-                    long toEmit = r;
-                    for (int i = 0; i < toEmit; i++) {
-                        Object o = svq.poll();
-                        if (o == null) {
-                            break;
-                        } else {
-                            on.accept(actual, o);
-                            emittedWhileDraining++;
-                        }
-                    }
-                    // decrement the number we emitted from outstanding requests
-                    MergeProducer.REQUESTED.getAndAdd(mergeProducer, -emittedWhileDraining);
-                }
-                return emittedWhileDraining;
-            }
-            return 0;
+        void requestAll() {
+            FAST_WIP.lazySet(this, 1);
+            fastMode = true;
+            request(maxConcurrent == Integer.MAX_VALUE ? Long.MAX_VALUE : maxConcurrent);
         }
-
-        final Func1<InnerSubscriber<T>, Boolean> DRAIN_ACTION = new Func1<InnerSubscriber<T>, Boolean>() {
-
-            @Override
-            public Boolean call(InnerSubscriber<T> s) {
-                if (s.q != null) {
-                    long r = mergeProducer.requested;
-                    int emitted = s.drainQueue();
-                    if (emitted > 0) {
-                        s.requestMore(emitted);
-                    }
-                    if (emitted == r) {
-                        // we emitted as many as were requested so stop the forEach loop
-                        return Boolean.FALSE;
-                    }
-                }
-                return Boolean.TRUE;
-            }
-
-        };
-
+        
         @Override
-        public void onError(Throwable e) {
-            if (!completed) {
-                completed = true;
-                innerError(e, true);
+        public void onNext(T value) {
+            
+            Observable<? extends R> t;
+            try {
+                t = func.call(value);
+            } catch (Throwable e) {
+                onError(e);
+                return;
+            }
+            if (t == null) {
+                return;
+            }
+            if (fastMode) {
+                if (t.getClass() == ScalarSynchronousObservable.class) {
+                    R v = ((ScalarSynchronousObservable<? extends R>)t).get();
+                    fastEmitNext(v);
+                    if (maxConcurrent != Integer.MAX_VALUE) {
+                        request(1);
+                    }
+                } else {
+                    FastInnerSubscriber<T, R> fastInner = new FastInnerSubscriber<T, R>(this);
+                    getOrCreateComposite().add(fastInner);
+                    FAST_WIP.getAndIncrement(this);
+                    t.unsafeSubscribe(fastInner);
+                }
+            } else {
+                if (t.getClass() == ScalarSynchronousObservable.class) {
+                    tryEmitScalar(((ScalarSynchronousObservable<? extends R>)t).get());
+                } else {
+                    InnerSubscriber<T, R> inner = new InnerSubscriber<T, R>(this, uniqueId++);
+                    addInner(inner);
+                    t.unsafeSubscribe(inner);
+                    emit();
+                }
             }
         }
         
-        private void innerError(Throwable e, boolean parent) {
-            if (delayErrors) {
-                synchronized (this) {
-                    if (exceptions == null) {
-                        exceptions = new ConcurrentLinkedQueue<Throwable>();
-                    }
-                }
-                exceptions.add(e);
-                boolean sendOnComplete = false;
-                synchronized (this) {
-                    if (!parent) {
-                        wip--;
-                    }
-                    if ((wip == 0 && completed) || (wip < 0)) {
-                        sendOnComplete = true;
-                    }
-                }
-                if (sendOnComplete) {
-                    drainAndComplete();
+        void innerError(Throwable e, FastInnerSubscriber<T, R> fastInner) {
+            getOrCreateErrorQueue().offer(e);
+            subscriptions.remove(fastInner);
+            int n = FAST_WIP.decrementAndGet(this);
+            // if we don't delay errors or this was the very last event
+            if (!delayErrors || n == 0) {
+                try {
+                    fastEmitError();
+                } finally {
+                    unsubscribe();
                 }
             } else {
-                actual.onError(e);
+                request(1);
             }
         }
-
-        @Override
-        public void onCompleted() {
-            boolean c = false;
-            synchronized (this) {
-                completed = true;
-                if (wip == 0) {
-                    c = true;
-                }
-            }
-            if (c) {
-                // complete outside of lock
-                drainAndComplete();
+        private void reportError() {
+            List<Throwable> list = new ArrayList<Throwable>(errors);
+            if (list.size() == 1) {
+                child.onError(list.get(0));
+            } else {
+                child.onError(new CompositeException(list));
             }
         }
-
-        void completeInner(InnerSubscriber<T> s) {
-            boolean sendOnComplete = false;
-            synchronized (this) {
-                wip--;
-                if (wip == 0 && completed) {
-                    sendOnComplete = true;
-                }
-            }
-            childrenSubscribers.remove(s.sindex);
-            if (sendOnComplete) {
-                drainAndComplete();
-            }
-        }
-
-        private void drainAndComplete() {
-            boolean moreToDrain = true;
-            while (moreToDrain) {
-                synchronized (this) {
-                    missedEmitting = 0;
-                }
-                drainScalarValueQueue();
-                drainChildrenQueues();
-                synchronized (this) {
-                    moreToDrain = missedEmitting > 0;
-                }
-            }
-            RxRingBuffer svq = scalarValueQueue;
-            if (svq == null || svq.isEmpty()) {
-                if (delayErrors) {
-                    Queue<Throwable> es = null;
-                    synchronized (this) {
-                        es = exceptions;
-                    }
-                    if (es != null) {
-                        if (es.isEmpty()) {
-                            actual.onCompleted();
-                        } else if (es.size() == 1) {
-                            actual.onError(es.poll());
-                        } else {
-                            actual.onError(new CompositeException(es));
-                        }
-                    } else {
-                        actual.onCompleted();
-                    }
+        
+        
+        void innerComplete(FastInnerSubscriber<T, R> fastInner) {
+            subscriptions.remove(fastInner);
+            if (FAST_WIP.decrementAndGet(this) == 0) {
+                Queue<Throwable> e = errors;
+                if (e == null || e.isEmpty()) {
+                    fastEmitCompleted();
                 } else {
-                    actual.onCompleted();
+                    fastEmitError();
                 }
-            }
-        }
-
-    }
-
-    private static final class MergeProducer<T> implements Producer {
-
-        private final MergeSubscriber<T> ms;
-
-        public MergeProducer(MergeSubscriber<T> ms) {
-            this.ms = ms;
-        }
-
-        private volatile long requested = 0;
-        @SuppressWarnings("rawtypes")
-        static final AtomicLongFieldUpdater<MergeProducer> REQUESTED = AtomicLongFieldUpdater.newUpdater(MergeProducer.class, "requested");
-
-        @Override
-        public void request(long n) {
-            if (requested == Long.MAX_VALUE) {
-                return;
-            }
-            if (n == Long.MAX_VALUE) {
-                requested = Long.MAX_VALUE;
             } else {
-                BackpressureUtils.getAndAddRequest(REQUESTED, this, n);
-                if (ms.drainQueuesIfNeeded()) {
-                    boolean sendComplete = false;
-                    synchronized (ms) {
-                        if (ms.wip == 0 && ms.scalarValueQueue != null && ms.scalarValueQueue.isEmpty()) {
-                            sendComplete = true;
-                        }
-                    }
-                    if (sendComplete) {
-                        ms.drainAndComplete();
-                    }
-                }
+                request(1);
             }
         }
-
-    }
-
-    private static final class InnerSubscriber<T> extends Subscriber<T> {
-        public int sindex;
-        final MergeSubscriber<T> parentSubscriber;
-        final MergeProducer<T> producer;
-        /** Make sure the inner termination events are delivered only once. */
-        @SuppressWarnings("unused")
-        volatile int terminated;
-        @SuppressWarnings("rawtypes")
-        static final AtomicIntegerFieldUpdater<InnerSubscriber> ONCE_TERMINATED = AtomicIntegerFieldUpdater.newUpdater(InnerSubscriber.class, "terminated");
-
-        private final RxRingBuffer q = RxRingBuffer.getSpscInstance();
-
-        public InnerSubscriber(MergeSubscriber<T> parent, MergeProducer<T> producer) {
-            this.parentSubscriber = parent;
-            this.producer = producer;
-            add(q);
-            request(q.capacity());
-        }
-
-        @Override
-        public void onNext(T t) {
-            emit(t, false);
-        }
-
+        
         @Override
         public void onError(Throwable e) {
-            // it doesn't go through queues, it immediately onErrors and tears everything down
-            if (ONCE_TERMINATED.compareAndSet(this, 0, 1)) {
-                parentSubscriber.innerError(e, false);
+            getOrCreateErrorQueue().offer(e);
+            if (fastMode) {
+                int n = FAST_WIP.decrementAndGet(this);
+                // if we don't delay errors or this was the very last event
+                if (!delayErrors || n == 0) {
+                    fastEmitError();
+                }
+            } else {
+                done = true;
+                emit();
             }
         }
-
         @Override
         public void onCompleted() {
-            if (ONCE_TERMINATED.compareAndSet(this, 0, 1)) {
-                emit(null, true);
+            if (fastMode) {
+                if (FAST_WIP.decrementAndGet(this) == 0) {
+                    Queue<Throwable> e = errors;
+                    if (e == null || e.isEmpty()) {
+                        fastEmitCompleted();
+                    } else {
+                        reportError();
+                    }
+                }
+            } else {
+                done = true;
+                emit();
             }
         }
-
-        public void requestMore(long n) {
-            request(n);
+        
+        void addInner(InnerSubscriber<T, R> inner) {
+            getOrCreateComposite().add(inner);
+            synchronized (innerGuard) {
+                InnerSubscriber<?, ?>[] a = innerSubscribers;
+                int n = a.length;
+                InnerSubscriber<?, ?>[] b = new InnerSubscriber<?, ?>[n + 1];
+                System.arraycopy(a, 0, b, 0, n);
+                b[n] = inner;
+                innerSubscribers = b;
+            }
         }
-
-        private void emit(T t, boolean complete) {
-            boolean drain = false;
-            boolean enqueue = true;
-            /**
-             * This optimization to skip the queue is messy ... but it makes a big difference in performance when merging a single stream
-             * with many values, or many intermittent streams without contention. It doesn't make much of a difference if there is contention.
-             * 
-             * Below are some of the relevant benchmarks to show the difference.
-             * 
-             * <pre> {@code
-             * With this fast-path:
-             * 
-             * Benchmark                                          (size)   Mode   Samples        Score  Score error    Units
-             * r.o.OperatorMergePerf.merge1SyncStreamOfN               1  thrpt         5  5344143.680   393484.592    ops/s
-             * r.o.OperatorMergePerf.merge1SyncStreamOfN            1000  thrpt         5    83582.662     4293.755    ops/s +++
-             * r.o.OperatorMergePerf.merge1SyncStreamOfN         1000000  thrpt         5       73.889        4.477    ops/s +++
-             * 
-             * r.o.OperatorMergePerf.mergeNSyncStreamsOfN              1  thrpt         5  5799265.333   199205.296    ops/s +
-             * r.o.OperatorMergePerf.mergeNSyncStreamsOfN           1000  thrpt         5       62.655        2.521    ops/s +++
-             * 
-             * r.o.OperatorMergePerf.mergeTwoAsyncStreamsOfN           1  thrpt         5    76925.616     4909.174    ops/s
-             * r.o.OperatorMergePerf.mergeTwoAsyncStreamsOfN        1000  thrpt         5     3634.977      242.469    ops/s
-             * 
-             * Without:
-             * 
-             * Benchmark                                          (size)   Mode   Samples        Score  Score error    Units
-             * r.o.OperatorMergePerf.merge1SyncStreamOfN               1  thrpt         5  5099295.678   159539.842    ops/s
-             * r.o.OperatorMergePerf.merge1SyncStreamOfN            1000  thrpt         5    18196.671    10053.298    ops/s
-             * r.o.OperatorMergePerf.merge1SyncStreamOfN         1000000  thrpt         5       19.184        1.028    ops/s
-             * 
-             * r.o.OperatorMergePerf.mergeNSyncStreamsOfN              1  thrpt         5  5591612.719   591821.763    ops/s
-             * r.o.OperatorMergePerf.mergeNSyncStreamsOfN           1000  thrpt         5       21.018        3.251    ops/s
-             * 
-             * r.o.OperatorMergePerf.mergeTwoAsyncStreamsOfN           1  thrpt         5    72692.073    18395.031    ops/s
-             * r.o.OperatorMergePerf.mergeTwoAsyncStreamsOfN        1000  thrpt         5     4379.093      386.368    ops/s
-             * } </pre>
-             * 
-             * It looks like it may cause a slowdown in highly contended cases (like 'mergeTwoAsyncStreamsOfN' above) as instead of just
-             * putting in the queue, it attempts to get the lock. We are optimizing for the non-contended case.
-             */
-            if (parentSubscriber.getEmitLock()) {
-                long emitted = 0;
-                enqueue = false;
+        void removeInner(InnerSubscriber<T, R> inner) {
+            inner.queue.release();
+            // subscription is non-null here because the very first addInner will create it before
+            // this can be called
+            subscriptions.remove(inner);
+            synchronized (innerGuard) {
+                InnerSubscriber<?, ?>[] a = innerSubscribers;
+                int n = a.length;
+                int j = -1;
+                // locate the inner
+                for (int i = 0; i < n; i++) {
+                    if (inner.equals(a[i])) {
+                        j = i;
+                        break;
+                    }
+                }
+                if (j < 0) {
+                    return;
+                }
+                if (n == 1) {
+                    innerSubscribers = EMPTY;
+                    return;
+                }
+                InnerSubscriber<?, ?>[] b = new InnerSubscriber<?, ?>[n - 1];
+                System.arraycopy(a, 0, b, 0, j);
+                System.arraycopy(a, j + 1, b, j, n - j - 1);
+                innerSubscribers = b;
+            }
+        }
+        
+        /**
+         * Tries a fast-path emission of a scalar value or posts it to the scalar queue
+         * for processing later.
+         * @param value
+         */
+        void tryEmitScalar(R value) {
+            boolean success = false;
+            synchronized (this) {
+                // if nobody is emitting and child has available requests
+                if (!emitting && producer.get() > 0) {
+                    emitting = true;
+                    success = true;
+                }
+            }
+            if (success) {
+                boolean skipFinal = false;
                 try {
-                    // drain the queue if there is anything in it before emitting the current value
-                    emitted += drainQueue();
-                    //                    }
-                    if (producer == null) {
-                        // no backpressure requested
-                        if (complete) {
-                            parentSubscriber.completeInner(this);
-                        } else {
-                            try {
-                                parentSubscriber.actual.onNext(t);
-                            } catch (Throwable e) {
-                                // special error handling due to complexity of merge
-                                onError(OnErrorThrowable.addValueAsLastCause(e, t));
-                            }
-                            emitted++;
+                    try {
+                        child.onNext(value);
+                    } catch (Throwable t) {
+                        skipFinal = true;
+                        Exceptions.throwIfFatal(t);
+                        try {
+                            child.onError(t);
+                        } finally {
+                            unsubscribe();
                         }
-                    } else {
-                        // this needs to check q.count() as draining above may not have drained the full queue
-                        // perf tests show this to be okay, though different queue implementations could perform poorly with this
-                        if (producer.requested > 0 && q.count() == 0) {
-                            if (complete) {
-                                parentSubscriber.completeInner(this);
-                            } else {
-                                try {
-                                    parentSubscriber.actual.onNext(t);
-                                } catch (Throwable e) {
-                                    // special error handling due to complexity of merge
-                                    onError(OnErrorThrowable.addValueAsLastCause(e, t));
-                                }
-                                emitted++;
-                                MergeProducer.REQUESTED.decrementAndGet(producer);
-                            }
-                        } else {
-                            // no requests available, so enqueue it
-                            enqueue = true;
+                        return;
+                    }
+                    producer.produced(1);
+                    request(1);
+                    // check if some state changed while emitting
+                    synchronized (this) {
+                        skipFinal = true;
+                        if (!missed) {
+                            emitting = false;
+                            return;
                         }
+                        missed = false;
                     }
                 } finally {
-                    drain = parentSubscriber.releaseEmitLock();
-                }
-                // request upstream what we just emitted
-                if(emitted > 0) {
-                    request(emitted);
-                }
-            }
-            if (enqueue) {
-                enqueue(t, complete);
-                drain = true;
-            }
-            if (drain) {
-                /**
-                 * This extra check for whether to call drain is ugly, but it helps:
-                 * <pre> {@code
-                 * Without:
-                 * r.o.OperatorMergePerf.mergeNSyncStreamsOfN     1000  thrpt         5       61.812        1.455    ops/s
-                 * 
-                 * With:
-                 * r.o.OperatorMergePerf.mergeNSyncStreamsOfN     1000  thrpt         5       78.795        1.766    ops/s
-                 * } </pre>
-                 */
-                parentSubscriber.drainQueuesIfNeeded();
-            }
-        }
-
-        private void enqueue(T t, boolean complete) {
-            try {
-                if (complete) {
-                    q.onCompleted();
-                } else {
-                    q.onNext(t);
-                }
-            } catch (MissingBackpressureException e) {
-                onError(e);
-            }
-        }
-
-        private int drainRequested() {
-            int emitted = 0;
-            // drain what was requested
-            long toEmit = producer.requested;
-            Object o;
-            for (int i = 0; i < toEmit; i++) {
-                o = q.poll();
-                if (o == null) {
-                    // no more items
-                    break;
-                } else if (q.isCompleted(o)) {
-                    parentSubscriber.completeInner(this);
-                } else {
-                    try {
-                        if (!q.accept(o, parentSubscriber.actual)) {
-                            emitted++;
+                    if (!skipFinal) {
+                        synchronized (this) {
+                            emitting = false;
                         }
-                    } catch (Throwable e) {
-                        // special error handling due to complexity of merge
-                        onError(OnErrorThrowable.addValueAsLastCause(e, o));
                     }
                 }
-            }
-
-            // decrement the number we emitted from outstanding requests
-            MergeProducer.REQUESTED.getAndAdd(producer, -emitted);
-            return emitted;
-        }
-
-        private int drainAll() {
-            int emitted = 0;
-            // drain it all
-            Object o;
-            while ((o = q.poll()) != null) {
-                if (q.isCompleted(o)) {
-                    parentSubscriber.completeInner(this);
-                } else {
-                    try {
-                        if (!q.accept(o, parentSubscriber.actual)) {
-                            emitted++;
-                        }
-                    } catch (Throwable e) {
-                        // special error handling due to complexity of merge
-                        onError(OnErrorThrowable.addValueAsLastCause(e, o));
-                    }
-                }
-            }
-            return emitted;
-        }
-
-        private int drainQueue() {
-            if (producer != null) {
-                return drainRequested();
+                // in case there was some activity, continue with the regular emission loop
+                emitLoop();
             } else {
-                return drainAll();
+                // either someone else is emitting or there was no available request
+                // queue up the scalar
+                RxRingBuffer svq = scalarQueue;
+                if (svq == null) {
+                    svq = RxRingBuffer.getSpscInstance();
+                    add(svq);
+                    scalarQueue = svq;
+                }
+                try {
+                    svq.onNext(nl.next(value));
+                } catch (MissingBackpressureException ex) {
+                    onError(ex);
+                    return;
+                } catch (IllegalStateException ex) {
+                    // if there was an IAE and we are unsubscribed, just quit
+                    if (!isUnsubscribed()) {
+                        onError(ex);
+                    }
+                    return;
+                }
+                // then try to emit it (or notify the running emission loop).
+                emit();
+            }
+        }
+        
+        void fastEmitNext(R value) {
+            synchronized (this) {
+                if (emitting) {
+                    int s = fastSize;
+                    Object[] o = fastArray;
+                    if (o == null) {
+                        o = new Object[4];
+                        fastArray = o;
+                    } else
+                    if (s == o.length) {
+                        Object[] o2 = new Object[s + (s >> 2)];
+                        System.arraycopy(o, 0, o2, 0, s);
+                        fastArray = o2;
+                        o = o2;
+                    }
+                    o[s] = value;
+                    fastSize = s + 1;
+                    missed = true;
+                    return;
+                }
+                emitting = true;
+            }
+            boolean skipFinal = false;
+            try {
+                child.onNext(value);
+                for (int k = Integer.MAX_VALUE; k >= 0; k--) {
+                    Object[] a;
+                    int s;
+                    synchronized (this) {
+                        if (!missed) {
+                            emitting = false;
+                            skipFinal = true;
+                            return;
+                        }
+                        a = fastArray;
+                        s = fastSize;
+                        fastArray = null;
+                        fastSize = 0;
+                        missed = false;
+                    }
+                    for (int i = 0; i < s; i++) {
+                        Object v = a[i];
+                        if (v == REPORT_ERROR) {
+                            reportError();
+                            skipFinal = true;
+                            return;
+                        } else
+                        if (v == REPORT_COMPLETED) {
+                            child.onCompleted();
+                            skipFinal = true;
+                            return;
+                        }
+                        @SuppressWarnings("unchecked")
+                        R v2 = (R)v;
+                        child.onNext(v2);
+                    }
+                }
+            } finally {
+                if (!skipFinal) {
+                    synchronized (this) {
+                        emitting = false;
+                    }
+                }
+            }
+        }
+        void fastEmitError() {
+            synchronized (this) {
+                if (emitting) {
+                    Object[] o = new Object[1];
+                    o[0] = REPORT_ERROR;
+                    fastArray = o;
+                    fastSize = 1;
+                    missed = true;
+                    return;
+                }
+                emitting = true;
+            }
+            reportError();
+            // terminal event, no need to loop or stop emitting
+        }
+        void fastEmitCompleted() {
+            synchronized (this) {
+                if (emitting) {
+                    int s = fastSize;
+                    Object[] o = fastArray;
+                    if (o == null) {
+                        o = new Object[4];
+                        fastArray = o;
+                    } else
+                    if (s == o.length) {
+                        Object[] o2 = new Object[s + (s >> 2)];
+                        System.arraycopy(o, 0, o2, 0, s);
+                        fastArray = o;
+                    }
+                    o[s] = REPORT_COMPLETED;
+                    fastSize = s+ 1;
+                    missed = true;
+                    return;
+                }
+                emitting = true;
+            }
+            // if we get here, fastArray is always null because fastEmitNext always empties the arrays
+            child.onCompleted();
+         // terminal event, no need to loop or stop emitting
+        }
+        
+        void emit() {
+            synchronized (this) {
+                if (emitting) {
+                    missed = true;
+                    return;
+                }
+                emitting = true;
+            }
+            emitLoop();
+        }
+        /**
+         * The standard emission loop serializing events and requests.
+         */
+        void emitLoop() {
+            boolean skipFinal = false;
+            try {
+                final Subscriber<? super R> child = this.child;
+                for (;;) {
+                    // eagerly check if child unsubscribed or we reached a terminal state.
+                    if (checkTerminate()) {
+                        skipFinal = true;
+                        return;
+                    }
+                    RxRingBuffer svq = scalarQueue;
+                    
+                    long r = producer.get();
+                    
+                    // count the number of 'completed' sources to replenish them in batches
+                    int replenishMain = 0;
+
+                    // try emitting as many scalars as possible
+                    if (svq != null) {
+                        for (;;) {
+                            int scalarEmission = 0;
+                            Object o = null;
+                            while (r > 0) {
+                                o = svq.poll();
+                                // eagerly check if child unsubscribed or we reached a terminal state.
+                                if (checkTerminate()) {
+                                    skipFinal = true;
+                                    return;
+                                }
+                                if (o == null) {
+                                    break;
+                                }
+                                R v = nl.getValue(o);
+                                // if child throws, report bounce it back immediately
+                                try {
+                                    child.onNext(v);
+                                } catch (Throwable t) {
+                                    skipFinal = true;
+                                    Exceptions.throwIfFatal(t);
+                                    try {
+                                        child.onError(t);
+                                    } finally {
+                                        unsubscribe();
+                                    }
+                                    return;
+                                }
+                                replenishMain++;
+                                scalarEmission++;
+                                r--;
+                            }
+                            if (scalarEmission > 0) {
+                                r = producer.produced(scalarEmission);
+                            }
+                            if (r == 0L || o == null) {
+                                break;
+                            }
+                        }
+                    }
+
+                    /*
+                     * We need to read done before innerSubscribers because innerSubcribers are added
+                     * before done is set to true. If it were the other way around, we could read an empty
+                     * innerSubscribers, get paused and then read a done flag but an async producer
+                     * might have added more subscribers between the two.
+                     */
+                    boolean d = done;
+                    InnerSubscriber<?, ?>[] inner = innerSubscribers;
+                    int n = inner.length;
+                    
+                    // check if upstream is done, there are no scalar values and no active inner subscriptions
+                    if (d && (svq == null || svq.isEmpty()) && n == 0) {
+                        Queue<Throwable> e = errors;
+                        if (e == null || e.isEmpty()) {
+                            child.onCompleted();
+                        } else {
+                            reportError();
+                        }
+                        if (svq != null) {
+                            svq.release();
+                        }
+                        skipFinal = true;
+                        return;
+                    }
+                    
+                    boolean innerCompleted = false;
+                    if (n > 0) {
+                        // let's continue the round-robin emission from last location
+                        long startId = lastId;
+                        int index = lastIndex;
+                        
+                        // in case there were changes in the array or the index
+                        // no longer points to the inner with the cached id
+                        if (n <= index || inner[index].id != startId) {
+                            if (n <= index) {
+                                index = 0;
+                            }
+                            // try locating the inner with the cached index
+                            int j = index;
+                            for (int i = 0; i < n; i++) {
+                                if (inner[j].id == startId) {
+                                    break;
+                                }
+                                // wrap around in round-robin fashion
+                                j++;
+                                if (j == n) {
+                                    j = 0;
+                                }
+                            }
+                            // if we found it again, j will point to it
+                            // otherwise, we continue with the replacement at j
+                            index = j;
+                            lastIndex = j;
+                            lastId = inner[j].id;
+                        }
+                        
+                        int j = index;
+                        // loop through all sources once to avoid delaying any new sources too much
+                        for (int i = 0; i < n; i++) {
+                            // eagerly check if child unsubscribed or we reached a terminal state.
+                            if (checkTerminate()) {
+                                skipFinal = true;
+                                return;
+                            }
+                            @SuppressWarnings("unchecked")
+                            InnerSubscriber<T, R> is = (InnerSubscriber<T, R>)inner[j];
+                            
+                            Object o = null;
+                            for (;;) {
+                                int produced = 0;
+                                while (r > 0) {
+                                    // eagerly check if child unsubscribed or we reached a terminal state.
+                                    if (checkTerminate()) {
+                                        skipFinal = true;
+                                        return;
+                                    }
+                                    o = is.queue.poll();
+                                    if (o == null) {
+                                        break;
+                                    }
+                                    R v = nl.getValue(o);
+                                    // if child throws, report bounce it back immediately
+                                    try {
+                                        child.onNext(v);
+                                    } catch (Throwable t) {
+                                        skipFinal = true;
+                                        Exceptions.throwIfFatal(t);
+                                        try {
+                                            child.onError(t);
+                                        } finally {
+                                            unsubscribe();
+                                        }
+                                        return;
+                                    }
+                                    r--;
+                                    produced++;
+                                }
+                                if (produced > 0) {
+                                    r = producer.produced(produced);
+                                    is.requestMore(produced);
+                                }
+                                // if we run out of requests or queued values, break
+                                if (r == 0 || o == null) {
+                                    break;
+                                }
+                            }
+                            if (is.done && is.queue.isEmpty()) {
+                                removeInner(is);
+                                if (checkTerminate()) {
+                                    skipFinal = true;
+                                    return;
+                                }
+                                replenishMain++;
+                                innerCompleted = true;
+                            }
+                            // if we run out of requests, don't try the other sources
+                            if (r == 0) {
+                                break;
+                            }
+                            
+                            // wrap around in round-robin fashion
+                            j++;
+                            if (j == n) {
+                                j = 0;
+                            }
+                        }
+                        // if we run out of requests or just completed a round, save the index and id
+                        lastIndex = j;
+                        lastId = inner[j].id;
+                    }
+                    
+                    if (replenishMain > 0) {
+                        request(replenishMain);
+                    }
+                    // if one or more inner completed, loop again to see if we can terminate the whole stream
+                    if (innerCompleted) {
+                        continue;
+                    }
+                    // in case there were updates to the state, we loop again
+                    synchronized (this) {
+                        if (!missed) {
+                            skipFinal = true;
+                            emitting = false;
+                            break;
+                        }
+                        missed = false;
+                    }
+                }
+            } finally {
+                if (!skipFinal) {
+                    synchronized (this) {
+                        emitting = false;
+                    }
+                }
+            }
+        }
+        
+        /**
+         * Check if the operator reached some terminal state: child unsubscribed,
+         * an error was reported and we don't delay errors or simply the main
+         * source finished and no scalar values are queued.
+         * @param scalarEmpty true if the scalar value queue is empty (using parameter to avoid re-reading scalarQueue).
+         * @return true if a terminal state is reached and the emission loop should quit.
+         */
+        boolean checkTerminate() {
+            if (child.isUnsubscribed()) {
+                return true;
+            }
+            Queue<Throwable> e = errors;
+            if (!delayErrors && (e != null && !e.isEmpty())) {
+                try {
+                    reportError();
+                } finally {
+                    unsubscribe();
+                }
+                return true;
+            }
+            return false;
+        }
+        
+        static final class InnerSubscriber<T, R> extends Subscriber<R> {
+            final RxRingBuffer queue;
+            final MergeSubscriber<T, R> parent;
+            final long id;
+            volatile boolean done;
+            public InnerSubscriber(MergeSubscriber<T, R> parent, long id) {
+                this.queue = RxRingBuffer.getSpscInstance();
+                this.parent = parent;
+                this.id = id;
+                this.add(queue);
+            }
+            @Override
+            public void onStart() {
+                request(RxRingBuffer.SIZE);
+            }
+            @Override
+            public void onNext(R t) {
+                try {
+                    queue.onNext(parent.nl.next(t));
+                } catch (MissingBackpressureException ex) {
+                    unsubscribe();
+                    onError(ex);
+                    return;
+                } catch (IllegalStateException ex) {
+                    if (!isUnsubscribed()) {
+                        unsubscribe();
+                        onError(ex);
+                    }
+                    return;
+                }
+                parent.emit();
+            }
+            @Override
+            public void onError(Throwable e) {
+                done = true;
+                parent.onError(e);
+            }
+            @Override
+            public void onCompleted() {
+                done = true;
+                parent.emit();
+            }
+            
+            void requestMore(long n) {
+                request(n);
+            }
+        }
+    }
+    /**
+     * Subscriber that requests Long.MAX_VALUE from upstream and doesn't queue. 
+     * @param <T>
+     */
+    static final class FastInnerSubscriber<T, R> extends Subscriber<R> {
+        final MergeSubscriber<T, R> parent;
+        boolean done;
+        public FastInnerSubscriber(MergeSubscriber<T, R> parent) {
+            this.parent = parent;
+        }
+        @Override
+        public void onNext(R t) {
+            try {
+                parent.fastEmitNext(t);
+            } catch (Throwable e) {
+                Exceptions.throwIfFatal(e);
+                onError(e);
+                return;
+            }
+        }
+        @Override
+        public void onError(Throwable e) {
+            if (!done) {
+                done = true; // avoid calling parent twice because of fastWip
+                parent.innerError(e, this);
+            }
+        }
+        @Override
+        public void onCompleted() {
+            if (!done) {
+                done = true;
+                parent.innerComplete(this);
             }
         }
     }

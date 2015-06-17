@@ -16,46 +16,26 @@
 package rx.internal.operators;
 
 import static java.util.Arrays.asList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.*;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.junit.*;
+import org.mockito.*;
 
-import rx.Notification;
-import rx.Observable;
+import rx.*;
 import rx.Observable.OnSubscribe;
-import rx.Observer;
-import rx.Scheduler;
 import rx.Scheduler.Worker;
-import rx.Subscriber;
-import rx.Subscription;
-import rx.functions.Action0;
-import rx.functions.Action1;
-import rx.functions.Func1;
+import rx.Observable;
+import rx.Observer;
+import rx.functions.*;
 import rx.internal.util.RxRingBuffer;
 import rx.observers.TestSubscriber;
-import rx.schedulers.Schedulers;
-import rx.schedulers.TestScheduler;
+import rx.schedulers.*;
 import rx.subscriptions.Subscriptions;
 
 public class OperatorMergeTest {
@@ -494,7 +474,7 @@ public class OperatorMergeTest {
         });
     }
 
-    @Test(timeout = 10000)
+    @Test//(timeout = 10000)
     public void testConcurrency() {
         Observable<Integer> o = Observable.range(1, 10000).subscribeOn(Schedulers.newThread());
 
@@ -503,7 +483,8 @@ public class OperatorMergeTest {
             TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
             merge.subscribe(ts);
 
-            ts.awaitTerminalEvent();
+            ts.awaitTerminalEvent(3, TimeUnit.SECONDS);
+            ts.assertTerminalEvent();
             ts.assertNoErrors();
             assertEquals(1, ts.getOnCompletedEvents().size());
             List<Integer> onNextEvents = ts.getOnNextEvents();
@@ -672,7 +653,7 @@ public class OperatorMergeTest {
      * 
      * This requires merge to also obey the Product.request values coming from it's child subscriber.
      */
-    @Test
+    @Test(timeout = 10000)
     public void testBackpressureDownstreamWithConcurrentStreams() throws InterruptedException {
         final AtomicInteger generated1 = new AtomicInteger();
         Observable<Integer> o1 = createInfiniteObservable(generated1).subscribeOn(Schedulers.computation());
@@ -1055,8 +1036,9 @@ public class OperatorMergeTest {
         assertEquals(Collections.<Notification<Long>>emptyList(), subscriber.getOnCompletedEvents());
         subscriber.requestMore(1);
         subscriber.assertReceivedOnNext(asList(1L));
-        assertEquals(Collections.<Notification<Long>>emptyList(), subscriber.getOnCompletedEvents());
-        subscriber.requestMore(1);
+// TODO: it should be acceptable to get a completion event without requests
+//        assertEquals(Collections.<Notification<Long>>emptyList(), subscriber.getOnCompletedEvents());
+//        subscriber.requestMore(1);
         subscriber.assertTerminalEvent();
     }
 
@@ -1239,5 +1221,86 @@ public class OperatorMergeTest {
                 }
             }
         };
+    }
+    
+    Func1<Integer, Observable<Integer>> toScalar = new Func1<Integer, Observable<Integer>>() {
+        @Override
+        public Observable<Integer> call(Integer t) {
+            return Observable.just(t);
+        }
+    };
+    Func1<Integer, Observable<Integer>> toHiddenScalar = new Func1<Integer, Observable<Integer>>() {
+        @Override
+        public Observable<Integer> call(Integer t) {
+            return Observable.just(t).asObservable();
+        }
+    };
+    
+    void runMerge(Func1<Integer, Observable<Integer>> func, TestSubscriber<Integer> ts) {
+        List<Integer> list = new ArrayList<Integer>();
+        for (int i = 0; i < 1000; i++) {
+            list.add(i);
+        }
+        Observable<Integer> source = Observable.from(list);
+        source.flatMap(func).subscribe(ts);
+        
+        if (ts.getOnNextEvents().size() != 1000) {
+            System.out.println(ts.getOnNextEvents());
+        }
+        
+        ts.assertTerminalEvent();
+        ts.assertNoErrors();
+        ts.assertReceivedOnNext(list);
+    }
+    
+    @Test
+    public void testFastMergeFullScalar() {
+        runMerge(toScalar, new TestSubscriber<Integer>());
+    }
+    @Test
+    public void testFastMergeHiddenScalar() {
+        runMerge(toHiddenScalar, new TestSubscriber<Integer>());
+    }
+    @Test
+    public void testSlowMergeFullScalar() {
+        for (final int req : new int[] { 16, 32, 64, 128, 256 }) {
+            TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
+                int remaining = req;
+                @Override
+                public void onStart() {
+                    request(req);
+                }
+                @Override
+                public void onNext(Integer t) {
+                    super.onNext(t);
+                    if (--remaining == 0) {
+                        remaining = req;
+                        request(req);
+                    }
+                }
+            };
+            runMerge(toScalar, ts);
+        }
+    }
+    @Test
+    public void testSlowMergeHiddenScalar() {
+        for (final int req : new int[] { 16, 32, 64, 128, 256 }) {
+            TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
+                int remaining = req;
+                @Override
+                public void onStart() {
+                    request(req);
+                }
+                @Override
+                public void onNext(Integer t) {
+                    super.onNext(t);
+                    if (--remaining == 0) {
+                        remaining = req;
+                        request(req);
+                    }
+                }
+            };
+            runMerge(toHiddenScalar, ts);
+        }
     }
 }

@@ -59,22 +59,22 @@ abstract class PaddedAtomicIntegerBase extends FrontPadding {
     }
 
     public final int getAndAdd(int delta) {
-    	return updater.getAndAdd(this, delta);
+        return updater.getAndAdd(this, delta);
     }
     public final int incrementAndGet() {
-    	return updater.incrementAndGet(this);
+        return updater.incrementAndGet(this);
     }
     public final int decrementAndGet() {
-    	return updater.decrementAndGet(this);
+        return updater.decrementAndGet(this);
     }
     public final int getAndIncrement() {
-    	return updater.getAndIncrement(this);
+        return updater.getAndIncrement(this);
     }
     public final int getAndDecrement() {
-    	return updater.getAndDecrement(this);
+        return updater.getAndDecrement(this);
     }
     public final int addAndGet(int delta) {
-    	return updater.addAndGet(this, delta);
+        return updater.addAndGet(this, delta);
     }
     
     @Override
