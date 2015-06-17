@@ -64,6 +64,11 @@ public class NewThreadWorker extends Scheduler.Worker implements Subscription {
             }
             exec = Executors.newScheduledThreadPool(1, new RxThreadFactory(PURGE_THREAD_PREFIX));
             if (PURGE.compareAndSet(null, exec)) {
+                if (exec instanceof ScheduledThreadPoolExecutor) {
+                    ScheduledThreadPoolExecutor stpe = (ScheduledThreadPoolExecutor) exec;
+                    stpe.setContinueExistingPeriodicTasksAfterShutdownPolicy(false);
+                    stpe.setExecuteExistingDelayedTasksAfterShutdownPolicy(false);
+                }
                 exec.scheduleAtFixedRate(new Runnable() {
                     @Override
                     public void run() {
@@ -72,6 +77,8 @@ public class NewThreadWorker extends Scheduler.Worker implements Subscription {
                 }, PURGE_FREQUENCY, PURGE_FREQUENCY, TimeUnit.MILLISECONDS);
                 
                 break;
+            } else {
+                exec.shutdownNow();
             }
         } while (true);
         
@@ -112,6 +119,11 @@ public class NewThreadWorker extends Scheduler.Worker implements Subscription {
      * @return true if the policy was successfully enabled 
      */
     public static boolean tryEnableCancelPolicy(ScheduledExecutorService exec) {
+        if (exec instanceof ScheduledThreadPoolExecutor) {
+            ScheduledThreadPoolExecutor stpe = (ScheduledThreadPoolExecutor) exec;
+            stpe.setContinueExistingPeriodicTasksAfterShutdownPolicy(false);
+            stpe.setExecuteExistingDelayedTasksAfterShutdownPolicy(false);
+        }
         if (!PURGE_FORCE) {
             for (Method m : exec.getClass().getMethods()) {
                 if (m.getName().equals("setRemoveOnCancelPolicy")

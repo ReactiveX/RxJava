@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package rx.schedulers;
-
-import rx.Scheduler;
-import rx.internal.schedulers.NewThreadWorker;
-import rx.internal.util.RxThreadFactory;
+package rx.internal.schedulers;
 
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicReference;
+
+import rx.Scheduler;
+import rx.internal.util.RxThreadFactory;
+import rx.schedulers.*;
 
 /**
  * A default {@link ScheduledExecutorService} that can be used for scheduling actions when a {@link Scheduler} implementation doesn't have that ability.
@@ -30,15 +31,29 @@ import java.util.concurrent.*;
  * the work asynchronously on the appropriate {@link Scheduler} implementation. This means for example that you would not use this approach
  * along with {@link TrampolineScheduler} or {@link ImmediateScheduler}.
  */
-/* package */final class GenericScheduledExecutorService {
+public final class GenericScheduledExecutorService implements SchedulerLifecycle{
 
     private static final String THREAD_NAME_PREFIX = "RxScheduledExecutorPool-";
     private static final RxThreadFactory THREAD_FACTORY = new RxThreadFactory(THREAD_NAME_PREFIX);
     
-    private final static GenericScheduledExecutorService INSTANCE = new GenericScheduledExecutorService();
-    private final ScheduledExecutorService executor;
-
+    /* Schedulers needs acces to this in order to work with the lifecycle. */
+    public final static GenericScheduledExecutorService INSTANCE = new GenericScheduledExecutorService();
+    
+    private final AtomicReference<ScheduledExecutorService> executor;
+    
+    static final ScheduledExecutorService NONE;
+    static {
+        NONE = Executors.newScheduledThreadPool(0);
+        NONE.shutdownNow();
+    }
+    
     private GenericScheduledExecutorService() {
+        executor = new AtomicReference<ScheduledExecutorService>(NONE);
+        start();
+    }
+
+    @Override
+    public void start() {
         int count = Runtime.getRuntime().availableProcessors();
         if (count > 4) {
             count = count / 2;
@@ -47,21 +62,41 @@ import java.util.concurrent.*;
         if (count > 8) {
             count = 8;
         }
+        
         ScheduledExecutorService exec = Executors.newScheduledThreadPool(count, THREAD_FACTORY);
-        if (!NewThreadWorker.tryEnableCancelPolicy(exec)) {
-            if (exec instanceof ScheduledThreadPoolExecutor) {
-                NewThreadWorker.registerExecutor((ScheduledThreadPoolExecutor)exec);
+        if (executor.compareAndSet(NONE, exec)) {
+            if (!NewThreadWorker.tryEnableCancelPolicy(exec)) {
+                if (exec instanceof ScheduledThreadPoolExecutor) {
+                    NewThreadWorker.registerExecutor((ScheduledThreadPoolExecutor)exec);
+                }
+            }
+            return;
+        } else {
+            exec.shutdown();
+        }
+    }
+    
+    @Override
+    public void shutdown() {
+        for (;;) {
+            ScheduledExecutorService exec = executor.get();
+            if (exec == NONE) {
+                return;
+            }
+            if (executor.compareAndSet(exec, NONE)) {
+                NewThreadWorker.deregisterExecutor(exec);
+                exec.shutdownNow();
+                return;
             }
         }
-        executor = exec;
     }
-
+    
     /**
      * See class Javadoc for information on what this is for and how to use.
      * 
      * @return {@link ScheduledExecutorService} for generic use.
      */
     public static ScheduledExecutorService getInstance() {
-        return INSTANCE.executor;
+        return INSTANCE.executor.get();
     }
 }

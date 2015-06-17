@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import rx.*;
 import rx.functions.Action0;
-import rx.internal.schedulers.ScheduledAction;
+import rx.internal.schedulers.*;
 import rx.plugins.RxJavaPlugins;
 import rx.subscriptions.*;
 

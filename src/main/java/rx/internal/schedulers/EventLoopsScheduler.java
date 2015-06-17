@@ -104,8 +104,10 @@ public class EventLoopsScheduler extends Scheduler implements SchedulerLifecycle
     
     @Override
     public void start() {
-        // we don't care if this fails: it means some other thread has started the pool already
-        pool.compareAndSet(NONE, new FixedSchedulerPool(MAX_THREADS));
+        FixedSchedulerPool update = new FixedSchedulerPool(MAX_THREADS);
+        if (!pool.compareAndSet(NONE, update)) {
+            update.shutdown();
+        }
     }
     
     @Override

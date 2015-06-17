@@ -50,6 +50,7 @@ import java.util.concurrent.atomic.*;
         private final ConcurrentLinkedQueue<ThreadWorker> expiringWorkerQueue;
         private final CompositeSubscription allWorkers;
         private final ScheduledExecutorService evictorService;
+        private final Future<?> evictorTask;
 
         CachedWorkerPool(long keepAliveTime, TimeUnit unit) {
             this.keepAliveTime = unit != null ? unit.toNanos(keepAliveTime) : 0L;
@@ -57,9 +58,11 @@ import java.util.concurrent.atomic.*;
             this.allWorkers = new CompositeSubscription();
 
             ScheduledExecutorService evictor = null;
+            Future<?> task = null;
             if (unit != null) {
                 evictor = Executors.newScheduledThreadPool(1, EVICTOR_THREAD_FACTORY);
-                evictor.scheduleWithFixedDelay(
+                NewThreadWorker.tryEnableCancelPolicy(evictor);
+                task = evictor.scheduleWithFixedDelay(
                         new Runnable() {
                             @Override
                             public void run() {
@@ -69,6 +72,7 @@ import java.util.concurrent.atomic.*;
                 );
             }
             evictorService = evictor;
+            evictorTask = task;
         }
 
         ThreadWorker get() {
@@ -118,10 +122,16 @@ import java.util.concurrent.atomic.*;
         }
         
         void shutdown() {
-            if (evictorService != null) {
-                evictorService.shutdownNow();
+            try {
+                if (evictorTask != null) {
+                    evictorTask.cancel(true);
+                }
+                if (evictorService != null) {
+                    evictorService.shutdownNow();
+                }
+            } finally {
+                allWorkers.unsubscribe();
             }
-            allWorkers.unsubscribe();
         }
     }
 
@@ -140,7 +150,10 @@ import java.util.concurrent.atomic.*;
     
     @Override
     public void start() {
-        pool.compareAndSet(NONE, new CachedWorkerPool(KEEP_ALIVE_TIME, KEEP_ALIVE_UNIT));
+        CachedWorkerPool update = new CachedWorkerPool(KEEP_ALIVE_TIME, KEEP_ALIVE_UNIT);
+        if (!pool.compareAndSet(NONE, update)) {
+            update.shutdown();
+        }
     }
     @Override
     public void shutdown() {

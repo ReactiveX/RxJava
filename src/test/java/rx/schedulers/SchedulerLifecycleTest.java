@@ -25,11 +25,18 @@ import org.junit.Test;
 
 import rx.Scheduler.Worker;
 import rx.functions.Action0;
+import rx.internal.schedulers.GenericScheduledExecutorService;
+import rx.internal.util.RxRingBuffer;
 import rx.subscriptions.CompositeSubscription;
 
 public class SchedulerLifecycleTest {
     @Test
     public void testShutdown() throws InterruptedException {
+        tryOutSchedulers();
+        
+        System.out.println("testShutdown >> Giving time threads to spin-up");
+        Thread.sleep(500);
+        
         Set<Thread> rxThreads = new HashSet<Thread>();
         for (Thread t : Thread.getAllStackTraces().keySet()) {
             if (t.getName().startsWith("Rx")) {
@@ -40,16 +47,32 @@ public class SchedulerLifecycleTest {
         System.out.println("testShutdown >> Giving time to threads to stop");
         Thread.sleep(500);
         
+        StringBuilder b = new StringBuilder();
         for (Thread t : rxThreads) {
-            assertFalse(t.isAlive());
+            if (t.isAlive()) {
+                b.append("Thread " + t + " failed to shutdown\r\n");
+                for (StackTraceElement ste : t.getStackTrace()) {
+                    b.append("  ").append(ste).append("\r\n");
+                }
+            }
+        }
+        if (b.length() > 0) {
+            System.out.print(b);
+            System.out.println("testShutdown >> Restarting schedulers...");
+            Schedulers.start(); // restart them anyways
+            fail("Rx Threads were still alive:\r\n" + b);
         }
         
         System.out.println("testShutdown >> Restarting schedulers...");
         Schedulers.start();
         
-        final CountDownLatch cdl = new CountDownLatch(3);
+        tryOutSchedulers();
+    }
+
+    private void tryOutSchedulers() throws InterruptedException {
+        final CountDownLatch cdl = new CountDownLatch(4);
         
-        Action0 countAction = new Action0() {
+        final Action0 countAction = new Action0() {
             @Override
             public void call() {
                 cdl.countDown();
@@ -71,6 +94,15 @@ public class SchedulerLifecycleTest {
             csub.add(w3);
             w3.schedule(countAction);
             
+            GenericScheduledExecutorService.getInstance().execute(new Runnable() {
+                @Override
+                public void run() {
+                    countAction.call();
+                }
+            });
+            
+            RxRingBuffer.getSpscInstance().release();
+            
             if (!cdl.await(3, TimeUnit.SECONDS)) {
                 fail("countAction was not run by every worker");
             }
@@ -81,21 +113,28 @@ public class SchedulerLifecycleTest {
     
     @Test
     public void testStartIdempotence() throws InterruptedException {
+        tryOutSchedulers();
+        
+        System.out.println("testStartIdempotence >> giving some time");
+        Thread.sleep(500);
+        
         Set<Thread> rxThreads = new HashSet<Thread>();
         for (Thread t : Thread.getAllStackTraces().keySet()) {
             if (t.getName().startsWith("Rx")) {
                 rxThreads.add(t);
+                System.out.println("testStartIdempotence >> " + t);
             }
         }
         System.out.println("testStartIdempotence >> trying to start again");
         Schedulers.start();
-        System.out.println("testStartIdempotence >> giving some time");
+        System.out.println("testStartIdempotence >> giving some time again");
         Thread.sleep(500);
         
         Set<Thread> rxThreads2 = new HashSet<Thread>();
         for (Thread t : Thread.getAllStackTraces().keySet()) {
             if (t.getName().startsWith("Rx")) {
                 rxThreads2.add(t);
+                System.out.println("testStartIdempotence >>>> " + t);
             }
         }
         
