@@ -279,7 +279,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
      * Blocks until this {@link Subscriber} receives a notification that the {@code Observable} is complete
      * (either an {@code onCompleted} or {@code onError} notification), or until a timeout expires; if the
      * Subscriber is interrupted before either of these events take place, this method unsubscribes the
-     * Subscriber from the Observable).
+     * Subscriber from the Observable). If timeout expires then the Subscriber is unsubscribed from the Observable.
      *
      * @param timeout
      *          the duration of the timeout
@@ -288,8 +288,12 @@ public class TestSubscriber<T> extends Subscriber<T> {
      */
     public void awaitTerminalEventAndUnsubscribeOnTimeout(long timeout, TimeUnit unit) {
         try {
-            awaitTerminalEvent(timeout, unit);
-        } catch (RuntimeException e) {
+            boolean result = latch.await(timeout, unit);
+            if (!result) {
+                // timeout occurred
+                unsubscribe();
+            }
+        } catch (InterruptedException e) {
             unsubscribe();
         }
     }
