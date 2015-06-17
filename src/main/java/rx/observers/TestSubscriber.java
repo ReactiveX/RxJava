@@ -95,6 +95,31 @@ public class TestSubscriber<T> extends Subscriber<T> {
         this(-1);
     }
     
+    @Experimental
+    public static <T> TestSubscriber<T> create() {
+        return new TestSubscriber<T>();
+    }
+    
+    @Experimental
+    public static <T> TestSubscriber<T> create(long initialRequest) {
+        return new TestSubscriber<T>(initialRequest);
+    }
+    
+    @Experimental
+    public static <T> TestSubscriber<T> create(Observer<T> delegate, long initialRequest) {
+        return new TestSubscriber<T>(delegate, initialRequest);
+    }
+    
+    @Experimental
+    public static <T> TestSubscriber<T> create(Subscriber<T> delegate) {
+        return new TestSubscriber<T>(delegate);
+    }
+    
+    @Experimental
+    public static <T> TestSubscriber<T> create(Observer<T> delegate) {
+        return new TestSubscriber<T>(delegate);
+    }
+    
     @Override
     public void onStart() {
         if  (initialRequest >= 0) {
