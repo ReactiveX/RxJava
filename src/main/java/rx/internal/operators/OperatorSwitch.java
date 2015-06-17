@@ -94,15 +94,26 @@ public final class OperatorSwitch<T> implements Operator<T, Observable<? extends
                     synchronized (guard) {
                         localSubscriber = currentSubscriber;
                         if (currentSubscriber == null) {
-                            initialRequested = n;
+                            long r = initialRequested + n;
+                            if (r < 0) {
+                                infinite = true;
+                            } else {
+                                initialRequested = r;
+                            }
                         } else {
-                            // If n == Long.MAX_VALUE, infinite will become true. Then currentSubscriber.requested won't be used.
-                            // Therefore we don't need to worry about overflow.
-                            currentSubscriber.requested += n;
+                            long r = currentSubscriber.requested + n;
+                            if (r < 0) {
+                                infinite = true;
+                            } else {
+                                currentSubscriber.requested = r;
+                            }
                         }
                     }
                     if (localSubscriber != null) {
-                        localSubscriber.requestMore(n);
+                        if (infinite)
+                            localSubscriber.requestMore(Long.MAX_VALUE);
+                        else 
+                            localSubscriber.requestMore(n);
                     }
                 }
             });
@@ -167,7 +178,8 @@ public final class OperatorSwitch<T> implements Operator<T, Observable<? extends
                     if (queue == null) {
                         queue = new ArrayList<Object>();
                     }
-                    innerSubscriber.requested--;
+                    if (innerSubscriber.requested != Long.MAX_VALUE)
+                        innerSubscriber.requested--;
                     queue.add(value);
                     return;
                 }
@@ -183,7 +195,8 @@ public final class OperatorSwitch<T> implements Operator<T, Observable<? extends
                     if (once) {
                         once = false;
                         synchronized (guard) {
-                            innerSubscriber.requested--;
+                            if (innerSubscriber.requested != Long.MAX_VALUE)
+                                innerSubscriber.requested--;
                         }
                         s.onNext(value);
                     }
