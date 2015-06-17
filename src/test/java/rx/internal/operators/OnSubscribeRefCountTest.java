@@ -47,7 +47,7 @@ public class OnSubscribeRefCountTest {
     public void testRefCountAsync() {
         final AtomicInteger subscribeCount = new AtomicInteger();
         final AtomicInteger nextCount = new AtomicInteger();
-        Observable<Long> r = Observable.timer(0, 5, TimeUnit.MILLISECONDS)
+        Observable<Long> r = Observable.interval(0, 5, TimeUnit.MILLISECONDS)
                 .doOnSubscribe(new Action0() {
 
                     @Override
@@ -183,7 +183,7 @@ public class OnSubscribeRefCountTest {
     public void testRepeat() {
         final AtomicInteger subscribeCount = new AtomicInteger();
         final AtomicInteger unsubscribeCount = new AtomicInteger();
-        Observable<Long> r = Observable.timer(0, 1, TimeUnit.MILLISECONDS)
+        Observable<Long> r = Observable.interval(0, 1, TimeUnit.MILLISECONDS)
                 .doOnSubscribe(new Action0() {
 
                     @Override

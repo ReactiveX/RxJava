@@ -64,7 +64,7 @@ public class OnSubscribeTimerTest {
 
     @Test
     public void testTimerPeriodically() {
-        Subscription c = Observable.timer(100, 100, TimeUnit.MILLISECONDS, scheduler).subscribe(observer);
+        Subscription c = Observable.interval(100, 100, TimeUnit.MILLISECONDS, scheduler).subscribe(observer);
         scheduler.advanceTimeBy(100, TimeUnit.MILLISECONDS);
 
         InOrder inOrder = inOrder(observer);
@@ -260,7 +260,7 @@ public class OnSubscribeTimerTest {
     }
     @Test
     public void testPeriodicObserverThrows() {
-        Observable<Long> source = Observable.timer(100, 100, TimeUnit.MILLISECONDS, scheduler);
+        Observable<Long> source = Observable.interval(100, 100, TimeUnit.MILLISECONDS, scheduler);
         
         InOrder inOrder = inOrder(observer);
         
