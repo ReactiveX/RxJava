@@ -395,9 +395,13 @@ public class OperatorRetryTest {
         public void call(final Subscriber<? super String> o) {
             o.setProducer(new Producer() {
                 final AtomicLong req = new AtomicLong();
+                // 0 = not set, 1 = fast path, 2 = backpressure
+                final AtomicInteger path = new AtomicInteger(0);
+                volatile boolean done = false;
+                
                 @Override
                 public void request(long n) {
-                    if (n == Long.MAX_VALUE) {
+                    if (n == Long.MAX_VALUE && path.compareAndSet(0, 1)) {
                         o.onNext("beginningEveryTime");
                         int i = count.getAndIncrement();
                         if (i < numFailures) {
@@ -408,11 +412,12 @@ public class OperatorRetryTest {
                         }
                         return;
                     }
-                    if (n > 0 && req.getAndAdd(n) == 0) {
+                    if (n > 0 && req.getAndAdd(n) == 0 && (path.get() == 2 || path.compareAndSet(0, 2)) && !done) {
                         int i = count.getAndIncrement();
                         if (i < numFailures) {
                             o.onNext("beginningEveryTime");
                             o.onError(new RuntimeException("forced failure: " + (i + 1)));
+                            done = true;
                         } else {
                             do {
                                 if (i == numFailures) {
@@ -421,6 +426,7 @@ public class OperatorRetryTest {
                                 if (i > numFailures) {
                                     o.onNext("onSuccessOnly");
                                     o.onCompleted();
+                                    done = true;
                                     break;
                                 }
                                 i = count.getAndIncrement();
@@ -682,91 +688,88 @@ public class OperatorRetryTest {
         assertEquals("Start 6 threads, retry 5 then fail on 6", 6, so.efforts.get());
     }
     
-    @Test(timeout = 15000)
+    @Test//(timeout = 15000)
     public void testRetryWithBackpressure() throws InterruptedException {
-        final int NUM_RETRIES = RxRingBuffer.SIZE * 2;
-        for (int i = 0; i < 400; i++) {
-            @SuppressWarnings("unchecked")
-            Observer<String> observer = mock(Observer.class);
-            Observable<String> origin = Observable.create(new FuncWithErrors(NUM_RETRIES));
-            TestSubscriber<String> ts = new TestSubscriber<String>(observer);
-            origin.retry().observeOn(Schedulers.computation()).unsafeSubscribe(ts);
-            ts.awaitTerminalEvent(5, TimeUnit.SECONDS);
-            
-            InOrder inOrder = inOrder(observer);
-            // should have no errors
-            verify(observer, never()).onError(any(Throwable.class));
-            // should show NUM_RETRIES attempts
-            inOrder.verify(observer, times(NUM_RETRIES + 1)).onNext("beginningEveryTime");
-            // should have a single success
-            inOrder.verify(observer, times(1)).onNext("onSuccessOnly");
-            // should have a single successful onCompleted
-            inOrder.verify(observer, times(1)).onCompleted();
-            inOrder.verifyNoMoreInteractions();
+        final int NUM_LOOPS = 1;
+        for (int j=0;j<NUM_LOOPS;j++) {
+            final int NUM_RETRIES = RxRingBuffer.SIZE * 2;
+            for (int i = 0; i < 400; i++) {
+                @SuppressWarnings("unchecked")
+                Observer<String> observer = mock(Observer.class);
+                Observable<String> origin = Observable.create(new FuncWithErrors(NUM_RETRIES));
+                TestSubscriber<String> ts = new TestSubscriber<String>(observer);
+                origin.retry().observeOn(Schedulers.computation()).unsafeSubscribe(ts);
+                ts.awaitTerminalEvent(5, TimeUnit.SECONDS);
+                
+                InOrder inOrder = inOrder(observer);
+                // should have no errors
+                verify(observer, never()).onError(any(Throwable.class));
+                // should show NUM_RETRIES attempts
+                inOrder.verify(observer, times(NUM_RETRIES + 1)).onNext("beginningEveryTime");
+                // should have a single success
+                inOrder.verify(observer, times(1)).onNext("onSuccessOnly");
+                // should have a single successful onCompleted
+                inOrder.verify(observer, times(1)).onCompleted();
+                inOrder.verifyNoMoreInteractions();
+            }
         }
     }
     
-    @Test(timeout = 15000)
+    @Test//(timeout = 15000)
     public void testRetryWithBackpressureParallel() throws InterruptedException {
+        final int NUM_LOOPS = 1;
         final int NUM_RETRIES = RxRingBuffer.SIZE * 2;
         int ncpu = Runtime.getRuntime().availableProcessors();
         ExecutorService exec = Executors.newFixedThreadPool(Math.max(ncpu / 2, 2));
-        final AtomicInteger timeouts = new AtomicInteger();
-        final Map<Integer, List<String>> data = new ConcurrentHashMap<Integer, List<String>>();
-        final Map<Integer, List<Throwable>> exceptions = new ConcurrentHashMap<Integer, List<Throwable>>();
-        final Map<Integer, Integer> completions = new ConcurrentHashMap<Integer, Integer>();
-        
-        int m = 5000;
-        final CountDownLatch cdl = new CountDownLatch(m);
-        for (int i = 0; i < m; i++) {
-            final int j = i;
-            exec.execute(new Runnable() {
-                @Override
-                public void run() {
-                    final AtomicInteger nexts = new AtomicInteger();
-                    try {
-                        Observable<String> origin = Observable.create(new FuncWithErrors(NUM_RETRIES));
-                        TestSubscriber<String> ts = new TestSubscriber<String>();
-                        origin.retry()
-                        .observeOn(Schedulers.computation()).unsafeSubscribe(ts);
-                        ts.awaitTerminalEvent(2500, TimeUnit.MILLISECONDS);
-                        if (ts.getOnCompletedEvents().size() != 1) {
-                            completions.put(j, ts.getOnCompletedEvents().size());
-                        }
-                        if (ts.getOnErrorEvents().size() != 0) {
-                            exceptions.put(j, ts.getOnErrorEvents());
-                        }
-                        if (ts.getOnNextEvents().size() != NUM_RETRIES + 2) {
-                            data.put(j, ts.getOnNextEvents());
-                        }
-                    } catch (Throwable t) {
-                        timeouts.incrementAndGet();
-                        System.out.println(j + " | " + cdl.getCount() + " !!! " + nexts.get());
-                    }
-                    cdl.countDown();
+        try {
+            for (int r = 0; r < NUM_LOOPS; r++) {
+                if (r % 10 == 0) {
+                    System.out.println("testRetryWithBackpressureParallelLoop -> " + r);
                 }
-            });
-        }
-        exec.shutdown();
-        cdl.await();
-        assertEquals(0, timeouts.get());
-        if (data.size() > 0) {
-            System.out.println(allSequenceFrequency(data));
-        }
-        if (exceptions.size() > 0) {
-            System.out.println(exceptions);
-        }
-        if (completions.size() > 0) {
-            System.out.println(completions);
-        }
-        if (data.size() > 0) {
-            fail("Data content mismatch: " + allSequenceFrequency(data));
-        }
-        if (exceptions.size() > 0) {
-            fail("Exceptions received: " + exceptions);
-        }
-        if (completions.size() > 0) {
-            fail("Multiple completions received: " + completions);
+
+                final AtomicInteger timeouts = new AtomicInteger();
+                final Map<Integer, List<String>> data = new ConcurrentHashMap<Integer, List<String>>();
+
+                int m = 5000;
+                final CountDownLatch cdl = new CountDownLatch(m);
+                for (int i = 0; i < m; i++) {
+                    final int j = i;
+                    exec.execute(new Runnable() {
+                        @Override
+                        public void run() {
+                            final AtomicInteger nexts = new AtomicInteger();
+                            try {
+                                Observable<String> origin = Observable.create(new FuncWithErrors(NUM_RETRIES));
+                                TestSubscriber<String> ts = new TestSubscriber<String>();
+                                origin.retry()
+                                .observeOn(Schedulers.computation()).unsafeSubscribe(ts);
+                                ts.awaitTerminalEvent(2500, TimeUnit.MILLISECONDS);
+                                List<String> onNextEvents = new ArrayList<String>(ts.getOnNextEvents());
+                                if (onNextEvents.size() != NUM_RETRIES + 2) {
+                                    for (Throwable t : ts.getOnErrorEvents()) {
+                                        onNextEvents.add(t.toString());
+                                    }
+                                    for (Object o : ts.getOnCompletedEvents()) {
+                                        onNextEvents.add("onCompleted");
+                                    }
+                                    data.put(j, onNextEvents);
+                                }
+                            } catch (Throwable t) {
+                                timeouts.incrementAndGet();
+                                System.out.println(j + " | " + cdl.getCount() + " !!! " + nexts.get());
+                            }
+                            cdl.countDown();
+                        }
+                    });
+                }
+                cdl.await();
+                assertEquals(0, timeouts.get());
+                if (data.size() > 0) {
+                    fail("Data content mismatch: " + allSequenceFrequency(data));
+                }
+            }
+        } finally {
+            exec.shutdown();
         }
     }
     static <T> StringBuilder allSequenceFrequency(Map<Integer, List<T>> its) {
@@ -783,10 +786,10 @@ public class OperatorRetryTest {
     }
     static <T> StringBuilder sequenceFrequency(Iterable<T> it) {
         StringBuilder sb = new StringBuilder();
-        
+
         Object prev = null;
         int cnt = 0;
-        
+
         for (Object curr : it) {
             if (sb.length() > 0) {
                 if (!curr.equals(prev)) {
@@ -805,10 +808,13 @@ public class OperatorRetryTest {
             }
             prev = curr;
         }
-        
+        if (cnt > 1) {
+            sb.append(" x ").append(cnt);
+        }
+
         return sb;
     }
-    @Test(timeout = 3000)
+    @Test//(timeout = 3000)
     public void testIssue1900() throws InterruptedException {
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
@@ -849,7 +855,7 @@ public class OperatorRetryTest {
         inOrder.verify(observer, times(1)).onCompleted();
         inOrder.verifyNoMoreInteractions();
     }
-    @Test(timeout = 3000)
+    @Test//(timeout = 3000)
     public void testIssue1900SourceNotSupportingBackpressure() {
         @SuppressWarnings("unchecked")
         Observer<String> observer = mock(Observer.class);
