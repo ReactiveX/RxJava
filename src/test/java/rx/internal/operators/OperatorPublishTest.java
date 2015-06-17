@@ -226,7 +226,8 @@ public class OperatorPublishTest {
             public void call() {
                 child1Unsubscribed.set(true);
             }
-        }).take(5).subscribe(ts1);
+        }).take(5)
+        .subscribe(ts1);
         
         ts1.awaitTerminalEvent();
         ts2.awaitTerminalEvent();

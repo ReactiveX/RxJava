@@ -99,8 +99,6 @@ public class TestSubscriber<T> extends Subscriber<T> {
     public void onStart() {
         if  (initialRequest >= 0) {
             requestMore(initialRequest);
-        } else {
-            super.onStart();
         }
     }
 

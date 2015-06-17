@@ -114,8 +114,21 @@ public final class OperatorMulticast<T, R> extends ConnectableObservable<R> {
                 guardedSubscription = gs.get();
                 
                 // register any subscribers that are waiting with this new subject
-                for(Subscriber<? super R> s : waitingForConnect) {
-                    subject.unsafeSubscribe(s);
+                for(final Subscriber<? super R> s : waitingForConnect) {
+                    subject.unsafeSubscribe(new Subscriber<R>(s) {
+                        @Override
+                        public void onNext(R t) {
+                            s.onNext(t);
+                        }
+                        @Override
+                        public void onError(Throwable e) {
+                            s.onError(e);
+                        }
+                        @Override
+                        public void onCompleted() {
+                            s.onCompleted();
+                        }
+                    });
                 }
                 // clear the waiting list as any new ones that come in after leaving this synchronized block will go direct to the Subject
                 waitingForConnect.clear();

@@ -38,7 +38,7 @@ public final class OnSubscribeDefer<T> implements OnSubscribe<T> {
     }
 
     @Override
-    public void call(Subscriber<? super T> s) {
+    public void call(final Subscriber<? super T> s) {
         Observable<? extends T> o;
         try {
             o = observableFactory.call();
@@ -46,7 +46,20 @@ public final class OnSubscribeDefer<T> implements OnSubscribe<T> {
             s.onError(t);
             return;
         }
-        o.unsafeSubscribe(s);
+        o.unsafeSubscribe(new Subscriber<T>(s) {
+            @Override
+            public void onNext(T t) {
+                s.onNext(t);
+            }
+            @Override
+            public void onError(Throwable e) {
+                s.onError(e);
+            }
+            @Override
+            public void onCompleted() {
+                s.onCompleted();
+            }
+        });
     }
     
 }

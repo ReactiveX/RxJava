@@ -18,15 +18,10 @@ package rx.internal.operators;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import rx.Observable;
+import rx.*;
 import rx.Observable.OnSubscribe;
-import rx.Subscriber;
-import rx.Subscription;
 import rx.exceptions.CompositeException;
-import rx.functions.Action0;
-import rx.functions.Action1;
-import rx.functions.Func0;
-import rx.functions.Func1;
+import rx.functions.*;
 
 /**
  * Constructs an observable sequence that depends on a resource object.
@@ -48,7 +43,7 @@ public final class OnSubscribeUsing<T, Resource> implements OnSubscribe<T> {
     }
 
     @Override
-    public void call(Subscriber<? super T> subscriber) {
+    public void call(final Subscriber<? super T> subscriber) {
 
         try {
 
@@ -73,7 +68,20 @@ public final class OnSubscribeUsing<T, Resource> implements OnSubscribe<T> {
                 observable = source;
             try {
                 // start
-                observable.unsafeSubscribe(subscriber);
+                observable.unsafeSubscribe(new Subscriber<T>(subscriber) {
+                    @Override
+                    public void onNext(T t) {
+                        subscriber.onNext(t);
+                    }
+                    @Override
+                    public void onError(Throwable e) {
+                        subscriber.onError(e);
+                    }
+                    @Override
+                    public void onCompleted() {
+                        subscriber.onCompleted();
+                    }
+                });
             } catch (Throwable e) {
                 Throwable disposeError = disposeEagerlyIfRequested(disposeOnceOnly);
                 if (disposeError != null)
