@@ -15,21 +15,17 @@
  */
 package rx.internal.operators;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
-import rx.Observable;
+
+import rx.*;
 import rx.Observable.Operator;
-import rx.Observer;
-import rx.Scheduler;
 import rx.Scheduler.Worker;
-import rx.Subscriber;
+import rx.Observable;
+import rx.Observer;
 import rx.functions.Action0;
-import rx.observers.SerializedObserver;
-import rx.observers.SerializedSubscriber;
+import rx.observers.*;
+import rx.subscriptions.Subscriptions;
 
 /**
  * Creates windows of values into the source sequence with timed window creation, length and size bounds.
@@ -62,15 +58,16 @@ public final class OperatorWindowWithTime<T> implements Operator<Observable<T>, 
     @Override
     public Subscriber<? super T> call(Subscriber<? super Observable<T>> child) {
         Worker worker = scheduler.createWorker();
-        child.add(worker);
         
         if (timespan == timeshift) {
             ExactSubscriber s = new ExactSubscriber(child, worker);
+            s.add(worker);
             s.scheduleExact();
             return s;
         }
         
         InexactSubscriber s = new InexactSubscriber(child, worker);
+        s.add(worker);
         s.startNewChunk();
         s.scheduleChunk();
         return s;
@@ -118,11 +115,19 @@ public final class OperatorWindowWithTime<T> implements Operator<Observable<T>, 
         volatile State<T> state;
         
         public ExactSubscriber(Subscriber<? super Observable<T>> child, Worker worker) {
-            super(child);
             this.child = new SerializedSubscriber<Observable<T>>(child);
             this.worker = worker;
             this.guard = new Object();
             this.state = State.empty();
+            child.add(Subscriptions.create(new Action0() {
+                @Override
+                public void call() {
+                    // if there is no active window, unsubscribe the upstream
+                    if (state.consumer == null) {
+                        unsubscribe();
+                    }
+                }
+            }));
         }
         
         @Override
@@ -132,7 +137,6 @@ public final class OperatorWindowWithTime<T> implements Operator<Observable<T>, 
         
         @Override
         public void onNext(T t) {
-            List<Object> localQueue;
             synchronized (guard) {
                 if (emitting) {
                     if (queue == null) {
@@ -141,29 +145,29 @@ public final class OperatorWindowWithTime<T> implements Operator<Observable<T>, 
                     queue.add(t);
                     return;
                 }
-                localQueue = queue;
-                queue = null;
                 emitting = true;
             }
-            boolean once = true;
             boolean skipFinal = false;
             try {
-                do {
-                    drain(localQueue);
-                    if (once) {
-                        once = false;
-                        emitValue(t);
-                    }
+                if (!emitValue(t)) {
+                    return;
+                }
+
+                for (;;) {
+                    List<Object> localQueue;
                     synchronized (guard) {
                         localQueue = queue;
-                        queue = null;
                         if (localQueue == null) {
                             emitting = false;
                             skipFinal = true;
                             return;
                         }
+                        queue = null;
                     }
-                } while (!child.isUnsubscribed());
+                    if (!drain(localQueue)) {
+                        return;
+                    }
+                }
             } finally {
                 if (!skipFinal) {
                     synchronized (guard) {
@@ -172,13 +176,15 @@ public final class OperatorWindowWithTime<T> implements Operator<Observable<T>, 
                 }
             }
         }
-        void drain(List<Object> queue) {
+        boolean drain(List<Object> queue) {
             if (queue == null) {
-                return;
+                return true;
             }
             for (Object o : queue) {
                 if (o == NEXT_SUBJECT) {
-                    replaceSubject();
+                    if (!replaceSubject()) {
+                        return false;
+                    }
                 } else
                 if (nl.isError(o)) {
                     error(nl.getError(o));
@@ -190,23 +196,35 @@ public final class OperatorWindowWithTime<T> implements Operator<Observable<T>, 
                 } else {
                     @SuppressWarnings("unchecked")
                     T t = (T)o;
-                    emitValue(t);
+                    if (!emitValue(t)) {
+                        return false;
+                    }
                 }
             }
+            return true;
         }
-        void replaceSubject() {
+        boolean replaceSubject() {
             Observer<T> s = state.consumer;
             if (s != null) {
                 s.onCompleted();
             }
+            // if child has unsubscribed, unsubscribe upstream instead of opening a new window
+            if (child.isUnsubscribed()) {
+                state = state.clear();
+                unsubscribe();
+                return false;
+            }
             BufferUntilSubscriber<T> bus = BufferUntilSubscriber.create();
             state = state.create(bus, bus);
             child.onNext(bus);
+            return true;
         }
-        void emitValue(T t) {
+        boolean emitValue(T t) {
             State<T> s = state;
             if (s.consumer == null) {
-                replaceSubject();
+                if (!replaceSubject()) {
+                    return false;
+                }
                 s = state;
             }
             s.consumer.onNext(t);
@@ -217,6 +235,7 @@ public final class OperatorWindowWithTime<T> implements Operator<Observable<T>, 
                 s = s.next();
             }
             state = s;
+            return true;
         }
         
         @Override
@@ -285,7 +304,6 @@ public final class OperatorWindowWithTime<T> implements Operator<Observable<T>, 
             }, 0, timespan, unit);
         }
         void nextWindow() {
-            List<Object> localQueue;
             synchronized (guard) {
                 if (emitting) {
                     if (queue == null) {
@@ -294,29 +312,29 @@ public final class OperatorWindowWithTime<T> implements Operator<Observable<T>, 
                     queue.add(NEXT_SUBJECT);
                     return;
                 }
-                localQueue = queue;
-                queue = null;
                 emitting = true;
             }
-            boolean once = true;
             boolean skipFinal = false;
             try {
-                do {
-                    drain(localQueue);
-                    if (once) {
-                        once = false;
-                        replaceSubject();
-                    }
+                if (!replaceSubject()) {
+                    return;
+                }
+                for (;;) {
+                    List<Object> localQueue;
                     synchronized (guard) {
                         localQueue = queue;
-                        queue = null;
                         if (localQueue == null) {
                             emitting = false;
                             skipFinal = true;
                             return;
                         }
+                        queue = null;
                     }
-                } while (!child.isUnsubscribed());
+                    
+                    if (!drain(localQueue)) {
+                        return;
+                    }
+                }
             } finally {
                 if (!skipFinal) {
                     synchronized (guard) {

@@ -16,18 +16,21 @@
 package rx.internal.operators;
 
 import static org.junit.Assert.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.*;
 
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.Test;
+import org.junit.*;
 
-import static org.mockito.Mockito.*;
 import rx.*;
+import rx.Observable.OnSubscribe;
 import rx.Observable;
 import rx.Observer;
 import rx.functions.*;
+import rx.internal.util.UtilityFunctions;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 
@@ -245,4 +248,80 @@ public class OperatorWindowWithSizeTest {
         verify(o, times(1)).onCompleted(); // 1 inner
     }
 
+    public static Observable<Integer> hotStream() {
+        return Observable.create(new OnSubscribe<Integer>() {
+            @Override
+            public void call(Subscriber<? super Integer> s) {
+                while (!s.isUnsubscribed()) {
+                    // burst some number of items
+                    for (int i = 0; i < Math.random() * 20; i++) {
+                        s.onNext(i);
+                    }
+                    try {
+                        // sleep for a random amount of time
+                        // NOTE: Only using Thread.sleep here as an artificial demo.
+                        Thread.sleep((long) (Math.random() * 200));
+                    } catch (Exception e) {
+                        // do nothing
+                    }
+                }
+                System.out.println("Hot done.");
+            }
+        }).subscribeOn(Schedulers.newThread()); // use newThread since we are using sleep to block
+    }
+    
+    @Test
+    public void testTakeFlatMapCompletes() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        
+        final int indicator = 999999999;
+        
+        hotStream()
+        .window(10)
+        .take(2)
+        .flatMap(new Func1<Observable<Integer>, Observable<Integer>>() {
+            @Override
+            public Observable<Integer> call(Observable<Integer> w) {
+                return w.startWith(indicator);
+            }
+        }).subscribe(ts);
+        
+        ts.awaitTerminalEvent(2, TimeUnit.SECONDS);
+        ts.assertCompleted();
+        Assert.assertFalse(ts.getOnNextEvents().isEmpty());
+    }
+    
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testBackpressureOuterInexact() {
+        TestSubscriber<List<Integer>> ts = new TestSubscriber<List<Integer>>(0);
+        
+        Observable.range(1, 5).window(2, 1)
+        .map(new Func1<Observable<Integer>, Observable<List<Integer>>>() {
+            @Override
+            public Observable<List<Integer>> call(Observable<Integer> t) {
+                return t.toList();
+            }
+        }).concatMap(UtilityFunctions.<Observable<List<Integer>>>identity())
+        .subscribe(ts);
+        
+        ts.assertNoErrors();
+        ts.assertNoValues();
+        ts.assertNotCompleted();
+        
+        ts.requestMore(2);
+
+        ts.assertValues(Arrays.asList(1, 2), Arrays.asList(2, 3));
+        ts.assertNoErrors();
+        ts.assertNotCompleted();
+
+        ts.requestMore(5);
+
+        System.out.println(ts.getOnNextEvents());
+        
+        ts.assertValues(Arrays.asList(1, 2), Arrays.asList(2, 3),
+                Arrays.asList(3, 4), Arrays.asList(4, 5), Arrays.asList(5));
+        ts.assertNoErrors();
+        ts.assertCompleted();
+    }
 }
