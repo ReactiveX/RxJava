@@ -21,15 +21,29 @@ import rx.functions.Action0;
 import rx.internal.schedulers.EventLoopsScheduler;
 
 public final class ScalarSynchronousObservable<T> extends Observable<T> {
+    public static final <T> Observable<T> create(final T t) {
+        // create the onSubscribe func here so changes can be detected later
+        OnSubscribe<T> onSubscribe = new ScalarSynchronousOnSubscribe<T>(t);
 
-    public static final <T> ScalarSynchronousObservable<T> create(T t) {
-        return new ScalarSynchronousObservable<T>(t);
+        ScalarSynchronousObservable<T> o = new ScalarSynchronousObservable<T>(t, onSubscribe);
+
+        // check to see if the execution hooks have wrapped the onSubscribe func
+        if (o.onSubscribe instanceof ScalarSynchronousOnSubscribe) {
+            // if not then return as is
+            return o;
+        } else {
+            // there is a hook wrapping the original onSubscribe func return a normal observable that won't be optimized out.
+            return Observable.create(o.onSubscribe);
+        }
     }
 
     private final T t;
+    public static final class ScalarSynchronousOnSubscribe<T> implements OnSubscribe<T> {
+        private final T t;
 
-    protected ScalarSynchronousObservable(final T t) {
-        super(new OnSubscribe<T>() {
+        private ScalarSynchronousOnSubscribe(T t) {
+            this.t = t;
+        }
 
             @Override
             public void call(Subscriber<? super T> s) {
@@ -41,10 +55,14 @@ public final class ScalarSynchronousObservable<T> extends Observable<T> {
                  *  filter it out (such as take(0)). This prevents us from paying the price on every subscription. 
                  */
                 s.onNext(t);
-                s.onCompleted();
+                // checking unsubscribe here because if they really wanted performance then they should have called get().
+                if (!s.isUnsubscribed())
+                    s.onCompleted();
             }
+    }
 
-        });
+    protected ScalarSynchronousObservable(T t, OnSubscribe<T> onSubscribe) {
+        super(onSubscribe);
         this.t = t;
     }
 

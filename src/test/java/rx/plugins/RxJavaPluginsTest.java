@@ -21,26 +21,48 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.*;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.InOrder;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
+
+import rx.Observable;
+import rx.Observable.OnSubscribe;
+import rx.Subscriber;
+import rx.Subscription;
+import rx.exceptions.OnErrorThrowable;
+import rx.functions.Action1;
+import rx.functions.Func1;
+import rx.internal.util.ScalarSynchronousObservable.ScalarSynchronousOnSubscribe;
+import rx.observers.TestSubscriber;
+import rx.schedulers.Schedulers;
 
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
-import rx.Observable;
-import rx.Subscriber;
-import rx.exceptions.OnErrorThrowable;
-import rx.functions.Func1;
-
+@SuppressWarnings("unchecked")
 public class RxJavaPluginsTest {
+
+    @Spy
+    private RxJavaObservableExecutionHook execHook = new RxJavaObservableExecutionHookDefault();
+    @Mock
+    private RxJavaErrorHandler errHook;
+    @Mock
+    private RxJavaSchedulersHook schedHook;
 
     @Before
     public void resetBefore() {
         RxJavaPlugins.getInstance().reset();
+        MockitoAnnotations.initMocks(this);
     }
 
     @After
@@ -57,47 +79,21 @@ public class RxJavaPluginsTest {
     @Test
     public void testErrorHandlerViaRegisterMethod() {
         RxJavaPlugins p = new RxJavaPlugins();
-        p.registerErrorHandler(new RxJavaErrorHandlerTestImpl());
+        p.registerErrorHandler(errHook);
         RxJavaErrorHandler impl = p.getErrorHandler();
-        assertTrue(impl instanceof RxJavaErrorHandlerTestImpl);
+        assertSame(errHook, impl);
     }
 
     @Test
     public void testErrorHandlerViaProperty() {
         try {
             RxJavaPlugins p = new RxJavaPlugins();
-            String fullClass = getFullClassNameForTestClass(RxJavaErrorHandlerTestImpl.class);
+            String fullClass = errHook.getClass().getName();
             System.setProperty("rxjava.plugin.RxJavaErrorHandler.implementation", fullClass);
             RxJavaErrorHandler impl = p.getErrorHandler();
-            assertTrue(impl instanceof RxJavaErrorHandlerTestImpl);
+            assertTrue(errHook.getClass().isAssignableFrom(impl.getClass()));
         } finally {
             System.clearProperty("rxjava.plugin.RxJavaErrorHandler.implementation");
-        }
-    }
-
-    // inside test so it is stripped from Javadocs
-    public static class RxJavaErrorHandlerTestImpl extends RxJavaErrorHandler {
-
-        private volatile Throwable e;
-        private volatile int count = 0;
-
-        @Override
-        public void handleError(Throwable e) {
-            e.printStackTrace();
-            this.e = e;
-            count++;
-        }
-    }
-
-    public static class RxJavaErrorHandlerTestImplWithRender extends RxJavaErrorHandler {
-        @Override
-        protected String render(Object item) {
-            if (item instanceof Calendar) {
-                throw new IllegalArgumentException("calendar");
-            } else if (item instanceof Date) {
-                return String.valueOf(((Date) item).getTime());
-            }
-            return null;
         }
     }
 
@@ -111,19 +107,19 @@ public class RxJavaPluginsTest {
     @Test
     public void testObservableExecutionHookViaRegisterMethod() {
         RxJavaPlugins p = new RxJavaPlugins();
-        p.registerObservableExecutionHook(new RxJavaObservableExecutionHookTestImpl());
+        p.registerObservableExecutionHook(execHook);
         RxJavaObservableExecutionHook impl = p.getObservableExecutionHook();
-        assertTrue(impl instanceof RxJavaObservableExecutionHookTestImpl);
+        assertSame(execHook, impl);
     }
 
     @Test
     public void testObservableExecutionHookViaProperty() {
         try {
             RxJavaPlugins p = new RxJavaPlugins();
-            String fullClass = getFullClassNameForTestClass(RxJavaObservableExecutionHookTestImpl.class);
+            String fullClass = execHook.getClass().getName();
             System.setProperty("rxjava.plugin.RxJavaObservableExecutionHook.implementation", fullClass);
             RxJavaObservableExecutionHook impl = p.getObservableExecutionHook();
-            assertTrue(impl instanceof RxJavaObservableExecutionHookTestImpl);
+            assertTrue(execHook.getClass().isAssignableFrom(impl.getClass()));
         } finally {
             System.clearProperty("rxjava.plugin.RxJavaObservableExecutionHook.implementation");
         }
@@ -131,8 +127,7 @@ public class RxJavaPluginsTest {
 
     @Test
     public void testOnErrorWhenImplementedViaSubscribe() {
-        RxJavaErrorHandlerTestImpl errorHandler = new RxJavaErrorHandlerTestImpl();
-        RxJavaPlugins.getInstance().registerErrorHandler(errorHandler);
+        RxJavaPlugins.getInstance().registerErrorHandler(errHook);
 
         RuntimeException re = new RuntimeException("test onError");
         Observable.error(re).subscribe(new Subscriber<Object>() {
@@ -149,14 +144,13 @@ public class RxJavaPluginsTest {
             public void onNext(Object args) {
             }
         });
-        assertEquals(re, errorHandler.e);
-        assertEquals(1, errorHandler.count);
+        verify(errHook).handleError(re);
+        verifyNoMoreInteractions(errHook);
     }
 
     @Test
     public void testOnErrorWhenNotImplemented() {
-        RxJavaErrorHandlerTestImpl errorHandler = new RxJavaErrorHandlerTestImpl();
-        RxJavaPlugins.getInstance().registerErrorHandler(errorHandler);
+        RxJavaPlugins.getInstance().registerErrorHandler(errHook);
 
         RuntimeException re = new RuntimeException("test onError");
         try {
@@ -165,14 +159,13 @@ public class RxJavaPluginsTest {
         } catch (Throwable e) {
             // ignore as we expect it to throw
         }
-        assertEquals(re, errorHandler.e);
-        assertEquals(1, errorHandler.count);
+        verify(errHook).handleError(re);
+        verifyNoMoreInteractions(errHook);
     }
 
     @Test
     public void testOnNextValueRenderingWhenNotImplemented() {
-        RxJavaErrorHandlerTestImpl errorHandler = new RxJavaErrorHandlerTestImpl();
-        RxJavaPlugins.getInstance().registerErrorHandler(errorHandler);
+        RxJavaPlugins.getInstance().registerErrorHandler(errHook);
 
         String rendering = RxJavaPlugins.getInstance().getErrorHandler().handleOnNextValueRendering(new Date());
 
@@ -181,8 +174,7 @@ public class RxJavaPluginsTest {
 
     @Test
     public void testOnNextValueRenderingWhenImplementedAndNotManaged() {
-        RxJavaErrorHandlerTestImplWithRender errorHandler = new RxJavaErrorHandlerTestImplWithRender();
-        RxJavaPlugins.getInstance().registerErrorHandler(errorHandler);
+        RxJavaPlugins.getInstance().registerErrorHandler(errHook);
 
         String rendering = RxJavaPlugins.getInstance().getErrorHandler().handleOnNextValueRendering(
                 Collections.emptyList());
@@ -192,22 +184,23 @@ public class RxJavaPluginsTest {
 
     @Test
     public void testOnNextValueRenderingWhenImplementedAndManaged() {
-        RxJavaErrorHandlerTestImplWithRender errorHandler = new RxJavaErrorHandlerTestImplWithRender();
-        RxJavaPlugins.getInstance().registerErrorHandler(errorHandler);
+        RxJavaPlugins.getInstance().registerErrorHandler(errHook);
         long time = 1234L;
         Date date = new Date(time);
+        String dateRender = String.valueOf(time);
+        when(errHook.handleOnNextValueRendering(date)).thenReturn(dateRender);
 
         String rendering = RxJavaPlugins.getInstance().getErrorHandler().handleOnNextValueRendering(date);
 
         assertNotNull(rendering);
-        assertEquals(String.valueOf(time), rendering);
+        assertSame(dateRender, rendering);
     }
 
     @Test
     public void testOnNextValueRenderingWhenImplementedAndThrows() {
-        RxJavaErrorHandlerTestImplWithRender errorHandler = new RxJavaErrorHandlerTestImplWithRender();
-        RxJavaPlugins.getInstance().registerErrorHandler(errorHandler);
+        RxJavaPlugins.getInstance().registerErrorHandler(errHook);
         Calendar cal = Calendar.getInstance();
+        when(errHook.handleOnNextValueRendering(any(Calendar.class))).thenThrow(new IllegalArgumentException());
 
         String rendering = RxJavaPlugins.getInstance().getErrorHandler().handleOnNextValueRendering(cal);
 
@@ -217,21 +210,19 @@ public class RxJavaPluginsTest {
 
     @Test
     public void testOnNextValueCallsPlugin() {
-        RxJavaErrorHandlerTestImplWithRender errorHandler = new RxJavaErrorHandlerTestImplWithRender();
-        RxJavaPlugins.getInstance().registerErrorHandler(errorHandler);
+        RxJavaPlugins.getInstance().registerErrorHandler(errHook);
         long time = 456L;
         Date date = new Date(time);
+        String dateRender = String.valueOf(((Date) date).getTime());
+        when(errHook.handleOnNextValueRendering(date)).thenReturn(dateRender);
 
         try {
-            Date notExpected = Observable.just(date)
-                                         .map(new Func1<Date, Date>() {
-                                             @Override
-                                             public Date call(Date date) {
-                                                 throw new IllegalStateException("Trigger OnNextValue");
-                                             }
-                                         })
-                                         .timeout(500, TimeUnit.MILLISECONDS)
-                                         .toBlocking().first();
+            Date notExpected = Observable.just(date).map(new Func1<Date, Date>() {
+                @Override
+                public Date call(Date date) {
+                    throw new IllegalStateException("Trigger OnNextValue");
+                }
+            }).timeout(500, TimeUnit.MILLISECONDS).toBlocking().first();
             fail("Did not expect onNext/onCompleted, got " + notExpected);
         } catch (IllegalStateException e) {
             assertEquals("Trigger OnNextValue", e.getMessage());
@@ -242,13 +233,126 @@ public class RxJavaPluginsTest {
 
     }
 
-    // inside test so it is stripped from Javadocs
-    public static class RxJavaObservableExecutionHookTestImpl extends RxJavaObservableExecutionHook {
-        // just use defaults
+    @Test
+    public void testJustWithoutHook() {
+        RxJavaPlugins.getInstance().registerObservableExecutionHook(execHook);
+        InOrder order = inOrder(execHook);
+
+        Observable<String> o = Observable.just("a");
+        o.subscribe();
+
+        order.verify(execHook).onCreate(any(ScalarSynchronousOnSubscribe.class));
+        order.verify(execHook).onSubscribeStart(eq(o), any(ScalarSynchronousOnSubscribe.class));
+        order.verify(execHook).onSubscribeReturn(any(Subscription.class));
+        order.verifyNoMoreInteractions();
     }
 
-    private static String getFullClassNameForTestClass(Class<?> cls) {
-        return RxJavaPlugins.class.getPackage()
-                                  .getName() + "." + RxJavaPluginsTest.class.getSimpleName() + "$" + cls.getSimpleName();
+    @Test
+    public void testJustWithHook() {
+        RxJavaPlugins.getInstance().registerObservableExecutionHook(execHook);
+        InOrder order = inOrder(execHook);
+
+        OnSubscribe onSub = new OnSubscribe() {
+            @Override
+            public void call(Object t) {
+                Subscriber<String> subscriber = (Subscriber<String>) t;
+                subscriber.onNext("b");
+                subscriber.onCompleted();
+            }
+        };
+        when(execHook.onCreate(any(ScalarSynchronousOnSubscribe.class))).thenReturn(onSub);
+
+        Observable<String> o = Observable.just("a");
+        o.subscribe();
+
+        order.verify(execHook, times(2)).onCreate(any(OnSubscribe.class));
+        order.verify(execHook).onSubscribeStart(o, onSub);
+        order.verify(execHook).onSubscribeReturn(any(Subscription.class));
+        order.verifyNoMoreInteractions();
     }
+
+    @Test
+    public void testMergeJust() {
+        RxJavaPlugins.getInstance().registerObservableExecutionHook(execHook);
+        InOrder order = inOrder(execHook);
+
+        OnSubscribe onSub = new OnSubscribe() {
+            @Override
+            public void call(Object t) {
+                Subscriber<String> subscriber = (Subscriber<String>) t;
+                subscriber.onNext("b");
+                subscriber.onCompleted();
+            }
+        };
+        when(execHook.onCreate(any(ScalarSynchronousOnSubscribe.class))).thenReturn(onSub);
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+
+        Observable<String> o = Observable.merge(Observable.just(Observable.just("a")));
+        o.subscribe(ts);
+
+        ts.assertTerminalEvent();
+        ts.assertValue("b");
+
+        order.verify(execHook, times(5)).onCreate(any(OnSubscribe.class));
+        order.verify(execHook).onSubscribeStart(o, onSub);
+        order.verify(execHook).onSubscribeReturn(any(Subscription.class));
+        order.verifyNoMoreInteractions();
+    }
+
+    @Test
+    public void testSubscribeOnJust() {
+        RxJavaPlugins.getInstance().registerObservableExecutionHook(execHook);
+        InOrder order = inOrder(execHook);
+
+        OnSubscribe onSub = new OnSubscribe() {
+            @Override
+            public void call(Object t) {
+                Subscriber<String> subscriber = (Subscriber<String>) t;
+                subscriber.onNext("b");
+                subscriber.onCompleted();
+            }
+        };
+        when(execHook.onCreate(any(ScalarSynchronousOnSubscribe.class))).thenReturn(onSub);
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+
+        Observable<String> o = Observable.just("a").subscribeOn(Schedulers.computation());
+        o.subscribe(ts);
+
+        ts.assertTerminalEvent();
+        ts.assertValue("b");
+
+        order.verify(execHook, times(5)).onCreate(any(OnSubscribe.class));
+        order.verify(execHook).onSubscribeStart(o, onSub);
+        order.verify(execHook).onSubscribeReturn(any(Subscription.class));
+        order.verifyNoMoreInteractions();
+    }
+
+    @Test
+    public void testObserveOnJust() {
+        RxJavaPlugins.getInstance().registerObservableExecutionHook(execHook);
+        InOrder order = inOrder(execHook);
+
+        OnSubscribe onSub = new OnSubscribe() {
+            @Override
+            public void call(Object t) {
+                Subscriber<String> subscriber = (Subscriber<String>) t;
+                subscriber.onNext("b");
+                subscriber.onCompleted();
+            }
+        };
+        when(execHook.onCreate(any(ScalarSynchronousOnSubscribe.class))).thenReturn(onSub);
+        TestSubscriber<String> ts = new TestSubscriber<String>();
+
+        Observable<String> o = Observable.just("a").observeOn(Schedulers.computation());
+        o.subscribe(ts);
+
+        ts.assertTerminalEvent();
+        ts.assertValue("b");
+
+        order.verify(execHook, times(3)).onCreate(any(OnSubscribe.class));
+        order.verify(execHook).onSubscribeStart(o, onSub);
+        order.verify(execHook).onSubscribeReturn(any(Subscription.class));
+        order.verifyNoMoreInteractions();
+    }
+
 }
