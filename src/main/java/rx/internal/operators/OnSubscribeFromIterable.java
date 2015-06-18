@@ -15,6 +15,7 @@
  */
 package rx.internal.operators;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicLongFieldUpdater;
 
@@ -46,8 +47,15 @@ public final class OnSubscribeFromIterable<T> implements OnSubscribe<T> {
         final Iterator<? extends T> it = is.iterator();
         if (!it.hasNext() && !o.isUnsubscribed())
             o.onCompleted();
-        else 
-            o.setProducer(new IterableProducer<T>(o, it));
+        else {
+            long count;
+            if (is instanceof Collection) {
+                count = ((Collection<?>)is).size();
+            } else {
+                count = Long.MAX_VALUE;
+            }
+            o.setProducer(new IterableProducer<T>(o, it, count));
+        }
     }
 
     private static final class IterableProducer<T> implements Producer {
@@ -58,18 +66,22 @@ public final class OnSubscribeFromIterable<T> implements OnSubscribe<T> {
         @SuppressWarnings("rawtypes")
         private static final AtomicLongFieldUpdater<IterableProducer> REQUESTED_UPDATER = AtomicLongFieldUpdater.newUpdater(IterableProducer.class, "requested");
 
-        private IterableProducer(Subscriber<? super T> o, Iterator<? extends T> it) {
+        private final long count;
+        
+        private IterableProducer(Subscriber<? super T> o, Iterator<? extends T> it, long count) {
             this.o = o;
             this.it = it;
+            this.count = count;
         }
 
         @Override
         public void request(long n) {
-            if (requested == Long.MAX_VALUE) {
+            long c = count;
+            if (requested >= c) {
                 // already started with fast-path
                 return;
             }
-            if (n == Long.MAX_VALUE && REQUESTED_UPDATER.compareAndSet(this, 0, Long.MAX_VALUE)) {
+            if (n >= c && REQUESTED_UPDATER.compareAndSet(this, 0, c)) {
                 // fast-path without backpressure
 
                 while (true) {

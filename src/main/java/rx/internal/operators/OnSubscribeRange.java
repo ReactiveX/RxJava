@@ -46,20 +46,23 @@ public final class OnSubscribeRange implements OnSubscribe<Integer> {
         private static final AtomicLongFieldUpdater<RangeProducer> REQUESTED_UPDATER = AtomicLongFieldUpdater.newUpdater(RangeProducer.class, "requested");
         private long index;
         private final int end;
+        private final long count;
 
         private RangeProducer(Subscriber<? super Integer> o, int start, int end) {
             this.o = o;
             this.index = start;
             this.end = end;
+            this.count = (long)(end - start) + 1;
         }
 
         @Override
         public void request(long n) {
-            if (requested == Long.MAX_VALUE) {
+            long c = count;
+            if (requested >= c) {
                 // already started with fast-path
                 return;
             }
-            if (n == Long.MAX_VALUE && REQUESTED_UPDATER.compareAndSet(this, 0, Long.MAX_VALUE)) {
+            if (n >= c && REQUESTED_UPDATER.compareAndSet(this, 0, c)) {
                 // fast-path without backpressure
                 for (long i = index; i <= end; i++) {
                     if (o.isUnsubscribed()) {
