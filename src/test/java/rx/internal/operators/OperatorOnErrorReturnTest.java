@@ -153,11 +153,11 @@ public class OperatorOnErrorReturnTest {
         Observable.range(0, 100000)
                 .onErrorReturn(new Func1<Throwable, Integer>() {
 
-					@Override
-					public Integer call(Throwable t1) {
-						return 1;
-					}
-                	
+                    @Override
+                    public Integer call(Throwable t1) {
+                        return 1;
+                    }
+                    
                 })
                 .observeOn(Schedulers.computation())
                 .map(new Func1<Integer, Integer>() {
