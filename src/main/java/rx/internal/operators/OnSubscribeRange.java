@@ -15,11 +15,10 @@
  */
 package rx.internal.operators;
 
-import java.util.concurrent.atomic.AtomicLongFieldUpdater;
+import java.util.concurrent.atomic.AtomicLong;
 
 import rx.Observable.OnSubscribe;
-import rx.Producer;
-import rx.Subscriber;
+import rx.*;
 
 /**
  * Emit ints from start to end inclusive.
@@ -39,11 +38,11 @@ public final class OnSubscribeRange implements OnSubscribe<Integer> {
         o.setProducer(new RangeProducer(o, start, end));
     }
 
-    private static final class RangeProducer implements Producer {
+    private static final class RangeProducer extends AtomicLong implements Producer {
+        /** */
+        private static final long serialVersionUID = -3226360080946653231L;
         private final Subscriber<? super Integer> o;
         // accessed by REQUESTED_UPDATER
-        private volatile long requested;
-        private static final AtomicLongFieldUpdater<RangeProducer> REQUESTED_UPDATER = AtomicLongFieldUpdater.newUpdater(RangeProducer.class, "requested");
         private long index;
         private final int end;
         private final long count;
@@ -58,11 +57,11 @@ public final class OnSubscribeRange implements OnSubscribe<Integer> {
         @Override
         public void request(long n) {
             long c = count;
-            if (requested >= c) {
+            if (get() >= c) {
                 // already started with fast-path
                 return;
             }
-            if (n >= c && REQUESTED_UPDATER.compareAndSet(this, 0, c)) {
+            if (n >= c && compareAndSet(0, c)) {
                 // fast-path without backpressure
                 for (long i = index; i <= end; i++) {
                     if (o.isUnsubscribed()) {
@@ -75,14 +74,14 @@ public final class OnSubscribeRange implements OnSubscribe<Integer> {
                 }
             } else if (n > 0) {
                 // backpressure is requested
-                long _c = BackpressureUtils.getAndAddRequest(REQUESTED_UPDATER,this, n);
+                long _c = BackpressureUtils.getAndAddRequest(this, n);
                 if (_c == 0) {
                     while (true) {
                         /*
                          * This complicated logic is done to avoid touching the volatile `index` and `requested` values
                          * during the loop itself. If they are touched during the loop the performance is impacted significantly.
                          */
-                        long r = requested;
+                        long r = get();
                         long idx = index;
                         long numLeft = end - idx + 1;
                         long e = Math.min(numLeft, r);
@@ -100,7 +99,7 @@ public final class OnSubscribeRange implements OnSubscribe<Integer> {
                             o.onCompleted();
                             return;
                         }
-                        if (REQUESTED_UPDATER.addAndGet(this, -e) == 0) {
+                        if (addAndGet(-e) == 0) {
                             // we're done emitting the number requested so return
                             return;
                         }

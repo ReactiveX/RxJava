@@ -15,13 +15,11 @@
  */
 package rx.internal.operators;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.concurrent.atomic.AtomicLongFieldUpdater;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
 
 import rx.Observable.OnSubscribe;
-import rx.Producer;
-import rx.Subscriber;
+import rx.*;
 
 /**
  * Converts an {@code Iterable} sequence into an {@code Observable}.
@@ -58,13 +56,11 @@ public final class OnSubscribeFromIterable<T> implements OnSubscribe<T> {
         }
     }
 
-    private static final class IterableProducer<T> implements Producer {
+    private static final class IterableProducer<T> extends AtomicLong implements Producer {
+        /** */
+        private static final long serialVersionUID = 585590361203968439L;
         private final Subscriber<? super T> o;
         private final Iterator<? extends T> it;
-
-        private volatile long requested = 0;
-        @SuppressWarnings("rawtypes")
-        private static final AtomicLongFieldUpdater<IterableProducer> REQUESTED_UPDATER = AtomicLongFieldUpdater.newUpdater(IterableProducer.class, "requested");
 
         private final long count;
         
@@ -77,11 +73,11 @@ public final class OnSubscribeFromIterable<T> implements OnSubscribe<T> {
         @Override
         public void request(long n) {
             long c = count;
-            if (requested >= c) {
+            if (get() >= c) {
                 // already started with fast-path
                 return;
             }
-            if (n >= c && REQUESTED_UPDATER.compareAndSet(this, 0, c)) {
+            if (n >= c && compareAndSet(0, c)) {
                 // fast-path without backpressure
 
                 while (true) {
@@ -99,7 +95,7 @@ public final class OnSubscribeFromIterable<T> implements OnSubscribe<T> {
                 }
             } else if (n > 0) {
                 // backpressure is requested
-                long _c = BackpressureUtils.getAndAddRequest(REQUESTED_UPDATER, this, n);
+                long _c = BackpressureUtils.getAndAddRequest(this, n);
                 if (_c == 0) {
                     while (true) {
                         /*
@@ -108,7 +104,7 @@ public final class OnSubscribeFromIterable<T> implements OnSubscribe<T> {
                          * it is touched during the loop the performance is
                          * impacted significantly.
                          */
-                        long r = requested;
+                        long r = get();
                         long numToEmit = r;
                         while (true) {
                             if (o.isUnsubscribed()) {
@@ -126,7 +122,7 @@ public final class OnSubscribeFromIterable<T> implements OnSubscribe<T> {
                                 return;
                             }
                         }
-                        if (REQUESTED_UPDATER.addAndGet(this, -r) == 0) {
+                        if (addAndGet(-r) == 0) {
                             // we're done emitting the number requested so
                             // return
                             return;
