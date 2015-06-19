@@ -1029,13 +1029,15 @@ public class Observable<T> {
         return create(new OnSubscribeDefer<T>(observableFactory));
     }
 
-    /** An empty observable which just emits onCompleted to any subscriber. */
-    private static final Observable<Object> EMPTY = create(new OnSubscribe<Object>() {
-        @Override
-        public void call(Subscriber<? super Object> t1) {
-            t1.onCompleted();
-        }
-    });
+    /** Lazy initialized Holder for an empty observable which just emits onCompleted to any subscriber. */
+    private static final class EmptyHolder {
+        final static Observable<Object> INSTANCE = create(new OnSubscribe<Object>() {
+            @Override
+            public void call(Subscriber<? super Object> subscriber) {
+                subscriber.onCompleted();
+            }
+        });
+    }
     
     /**
      * Returns an Observable that emits no items to the {@link Observer} and immediately invokes its
@@ -1055,7 +1057,7 @@ public class Observable<T> {
      */
     @SuppressWarnings("unchecked")
     public final static <T> Observable<T> empty() {
-        return (Observable<T>)EMPTY;
+        return (Observable<T>) EmptyHolder.INSTANCE;
     }
 
     /**
