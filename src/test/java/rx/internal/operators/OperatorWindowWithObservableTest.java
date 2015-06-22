@@ -15,15 +15,12 @@
  */
 package rx.internal.operators;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
@@ -289,5 +286,168 @@ public class OperatorWindowWithObservableTest {
 
         assertEquals(1, ts.getOnNextEvents().size());
         assertEquals(Arrays.asList(1, 2), tsw.getOnNextEvents());
+    }
+    
+    @Test
+    public void testWindowViaObservableNoUnsubscribe() {
+        Observable<Integer> source = Observable.range(1, 10);
+        Func0<Observable<String>> boundary = new Func0<Observable<String>>() {
+            @Override
+            public Observable<String> call() {
+                return Observable.empty();
+            }
+        };
+        
+        TestSubscriber<Observable<Integer>> ts = TestSubscriber.create();
+        source.window(boundary).unsafeSubscribe(ts);
+        
+        assertFalse(ts.isUnsubscribed());
+    }
+    
+    @Test
+    public void testBoundaryUnsubscribedOnMainCompletion() {
+        PublishSubject<Integer> source = PublishSubject.create();
+        final PublishSubject<Integer> boundary = PublishSubject.create();
+        Func0<Observable<Integer>> boundaryFunc = new Func0<Observable<Integer>>() {
+            @Override
+            public Observable<Integer> call() {
+                return boundary;
+            }
+        };
+        
+        TestSubscriber<Observable<Integer>> ts = TestSubscriber.create();
+        source.window(boundaryFunc).subscribe(ts);
+        
+        assertTrue(source.hasObservers());
+        assertTrue(boundary.hasObservers());
+        
+        source.onCompleted();
+
+        assertFalse(source.hasObservers());
+        assertFalse(boundary.hasObservers());
+        
+        ts.assertCompleted();
+        ts.assertNoErrors();
+        ts.assertValueCount(1);
+    }
+    @Test
+    public void testMainUnsubscribedOnBoundaryCompletion() {
+        PublishSubject<Integer> source = PublishSubject.create();
+        final PublishSubject<Integer> boundary = PublishSubject.create();
+        Func0<Observable<Integer>> boundaryFunc = new Func0<Observable<Integer>>() {
+            @Override
+            public Observable<Integer> call() {
+                return boundary;
+            }
+        };
+        
+        TestSubscriber<Observable<Integer>> ts = TestSubscriber.create();
+        source.window(boundaryFunc).subscribe(ts);
+        
+        assertTrue(source.hasObservers());
+        assertTrue(boundary.hasObservers());
+        
+        boundary.onCompleted();
+
+        assertFalse(source.hasObservers());
+        assertFalse(boundary.hasObservers());
+        
+        ts.assertCompleted();
+        ts.assertNoErrors();
+        ts.assertValueCount(1);
+    }
+    @Test
+    public void testChildUnsubscribed() {
+        PublishSubject<Integer> source = PublishSubject.create();
+        final PublishSubject<Integer> boundary = PublishSubject.create();
+        Func0<Observable<Integer>> boundaryFunc = new Func0<Observable<Integer>>() {
+            @Override
+            public Observable<Integer> call() {
+                return boundary;
+            }
+        };
+        
+        TestSubscriber<Observable<Integer>> ts = TestSubscriber.create();
+        source.window(boundaryFunc).subscribe(ts);
+        
+        assertTrue(source.hasObservers());
+        assertTrue(boundary.hasObservers());
+
+        ts.unsubscribe();
+
+        assertFalse(source.hasObservers());
+        assertFalse(boundary.hasObservers());
+        
+        ts.assertNotCompleted();
+        ts.assertNoErrors();
+        ts.assertValueCount(1);
+    }
+    @Test
+    public void testNoBackpressure() {
+        Observable<Integer> source = Observable.range(1, 10);
+        final PublishSubject<Integer> boundary = PublishSubject.create();
+        Func0<Observable<Integer>> boundaryFunc = new Func0<Observable<Integer>>() {
+            @Override
+            public Observable<Integer> call() {
+                return boundary;
+            }
+        };
+        
+        final TestSubscriber<Integer> ts = TestSubscriber.create(1);
+        final TestSubscriber<Observable<Integer>> ts1 = new TestSubscriber<Observable<Integer>>(1) {
+            @Override
+            public void onNext(Observable<Integer> t) {
+                super.onNext(t);
+                t.subscribe(ts);
+            }
+        };
+        source.window(boundaryFunc)
+        .subscribe(ts1);
+        
+        ts1.assertNoErrors();
+        ts1.assertCompleted();
+        ts1.assertValueCount(1);
+        
+        ts.assertNoErrors();
+        ts.assertValues(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+        ts.assertCompleted();
+    }
+    @Test
+    public void newBoundaryCalledAfterWindowClosed() {
+        final AtomicInteger calls = new AtomicInteger();
+        PublishSubject<Integer> source = PublishSubject.create();
+        final PublishSubject<Integer> boundary = PublishSubject.create();
+        Func0<Observable<Integer>> boundaryFunc = new Func0<Observable<Integer>>() {
+            @Override
+            public Observable<Integer> call() {
+                calls.getAndIncrement();
+                return boundary;
+            }
+        };
+        
+        TestSubscriber<Observable<Integer>> ts = TestSubscriber.create();
+        source.window(boundaryFunc).subscribe(ts);
+        
+        source.onNext(1);
+        boundary.onNext(1);
+        assertTrue(boundary.hasObservers());
+
+        source.onNext(2);
+        boundary.onNext(2);
+        assertTrue(boundary.hasObservers());
+
+        source.onNext(3);
+        boundary.onNext(3);
+        assertTrue(boundary.hasObservers());
+        
+        source.onNext(4);
+        source.onCompleted();
+        
+        ts.assertNoErrors();
+        ts.assertValueCount(4);
+        ts.assertCompleted();
+
+        assertFalse(source.hasObservers());
+        assertFalse(boundary.hasObservers());
     }
 }
