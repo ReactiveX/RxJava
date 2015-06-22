@@ -49,22 +49,36 @@ public final class OperatorDelay<T> implements Operator<T, T> {
         final Worker worker = scheduler.createWorker();
         child.add(worker);
         return new Subscriber<T>(child) {
-
+            // indicates an error cut ahead
+            // accessed from the worker thread only
+            boolean done;
             @Override
             public void onCompleted() {
                 worker.schedule(new Action0() {
 
                     @Override
                     public void call() {
-                        child.onCompleted();
+                        if (!done) {
+                            done = true;
+                            child.onCompleted();
+                        }
                     }
 
                 }, delay, unit);
             }
 
             @Override
-            public void onError(Throwable e) {
-                child.onError(e);
+            public void onError(final Throwable e) {
+                worker.schedule(new Action0() {
+                    @Override
+                    public void call() {
+                        if (!done) {
+                            done = true;
+                            child.onError(e);
+                            worker.unsubscribe();
+                        }
+                    }
+                });
             }
 
             @Override
@@ -73,7 +87,9 @@ public final class OperatorDelay<T> implements Operator<T, T> {
 
                     @Override
                     public void call() {
-                        child.onNext(t);
+                        if (!done) {
+                            child.onNext(t);
+                        }
                     }
 
                 }, delay, unit);

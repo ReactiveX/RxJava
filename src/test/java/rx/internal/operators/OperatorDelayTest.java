@@ -798,4 +798,27 @@ public class OperatorDelayTest {
         ts.assertNoErrors();
         assertEquals(RxRingBuffer.SIZE * 2, ts.getOnNextEvents().size());
     }
+    
+    @Test
+    public void testErrorRunsBeforeOnNext() {
+        TestScheduler test = Schedulers.test();
+        
+        PublishSubject<Integer> ps = PublishSubject.create();
+        
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        ps.delay(1, TimeUnit.SECONDS, test).subscribe(ts);
+        
+        ps.onNext(1);
+        
+        test.advanceTimeBy(500, TimeUnit.MILLISECONDS);
+        
+        ps.onError(new TestException());
+        
+        test.advanceTimeBy(1, TimeUnit.SECONDS);
+        
+        ts.assertNoValues();
+        ts.assertError(TestException.class);
+        ts.assertNotCompleted();
+    }
 }
