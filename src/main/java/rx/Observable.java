@@ -5143,28 +5143,28 @@ public class Observable<T> {
     }
 
     /**
-     * Returns an Observable that emits only the first {@code num} items emitted by the source Observable.
+     * Returns an Observable that emits only the first {@code count} items emitted by the source Observable.
      * <p>
      * Alias of {@link #take(int)} to match Java 8 Stream API naming convention.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/take.png" alt="">
      * <p>
      * This method returns an Observable that will invoke a subscribing {@link Observer}'s
-     * {@link Observer#onNext onNext} function a maximum of {@code num} times before invoking
+     * {@link Observer#onNext onNext} function a maximum of {@code count} times before invoking
      * {@link Observer#onCompleted onCompleted}.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code limit} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param num
+     * @param count
      *            the maximum number of items to emit
-     * @return an Observable that emits only the first {@code num} items emitted by the source Observable, or
-     *         all of the items from the source Observable if that Observable emits fewer than {@code num} items
+     * @return an Observable that emits only the first {@code count} items emitted by the source Observable, or
+     *         all of the items from the source Observable if that Observable emits fewer than {@code count} items
      * @see <a href="http://reactivex.io/documentation/operators/take.html">ReactiveX operators documentation: Take</a>
      */
-    public final Observable<T> limit(int num) {
-        return take(num);
+    public final Observable<T> limit(int count) {
+        return take(count);
     }
     
     /**
@@ -6896,7 +6896,7 @@ public class Observable<T> {
     }
 
     /**
-     * Returns an Observable that skips the first {@code num} items emitted by the source Observable and emits
+     * Returns an Observable that skips the first {@code count} items emitted by the source Observable and emits
      * the remainder.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/skip.png" alt="">
@@ -6905,14 +6905,14 @@ public class Observable<T> {
      *  <dd>This version of {@code skip} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param num
+     * @param count
      *            the number of items to skip
      * @return an Observable that is identical to the source Observable except that it does not emit the first
-     *         {@code num} items that the source Observable emits
+     *         {@code count} items that the source Observable emits
      * @see <a href="http://reactivex.io/documentation/operators/skip.html">ReactiveX operators documentation: Skip</a>
      */
-    public final Observable<T> skip(int num) {
-        return lift(new OperatorSkip<T>(num));
+    public final Observable<T> skip(int count) {
+        return lift(new OperatorSkip<T>(count));
     }
 
     /**
@@ -7768,26 +7768,27 @@ public class Observable<T> {
     }
 
     /**
-     * Returns an Observable that emits only the first {@code num} items emitted by the source Observable.
+     * Returns an Observable that emits only the first {@code count} items emitted by the source Observable. If the source emits fewer than 
+     * {@code count} items then all of its items are emitted.
      * <p>
      * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/take.png" alt="">
      * <p>
      * This method returns an Observable that will invoke a subscribing {@link Observer}'s
-     * {@link Observer#onNext onNext} function a maximum of {@code num} times before invoking
+     * {@link Observer#onNext onNext} function a maximum of {@code count} times before invoking
      * {@link Observer#onCompleted onCompleted}.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code take} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param num
+     * @param count
      *            the maximum number of items to emit
-     * @return an Observable that emits only the first {@code num} items emitted by the source Observable, or
-     *         all of the items from the source Observable if that Observable emits fewer than {@code num} items
+     * @return an Observable that emits only the first {@code count} items emitted by the source Observable, or
+     *         all of the items from the source Observable if that Observable emits fewer than {@code count} items
      * @see <a href="http://reactivex.io/documentation/operators/take.html">ReactiveX operators documentation: Take</a>
      */
-    public final Observable<T> take(final int num) {
-        return lift(new OperatorTake<T>(num));
+    public final Observable<T> take(final int count) {
+        return lift(new OperatorTake<T>(count));
     }
 
     /**
@@ -7857,7 +7858,8 @@ public class Observable<T> {
     }
 
     /**
-     * Returns an Observable that emits only the last {@code count} items emitted by the source Observable.
+     * Returns an Observable that emits at most the last {@code count} items emitted by the source Observable. If the source emits fewer than 
+     * {@code count} items then all of its items are emitted.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeLast.n.png" alt="">
      * <dl>
@@ -7866,9 +7868,9 @@ public class Observable<T> {
      * </dl>
      * 
      * @param count
-     *            the number of items to emit from the end of the sequence of items emitted by the source
+     *            the maximum number of items to emit from the end of the sequence of items emitted by the source
      *            Observable
-     * @return an Observable that emits only the last {@code count} items emitted by the source Observable
+     * @return an Observable that emits at most the last {@code count} items emitted by the source Observable
      * @throws IndexOutOfBoundsException
      *             if {@code count} is less than zero
      * @see <a href="http://reactivex.io/documentation/operators/takelast.html">ReactiveX operators documentation: TakeLast</a>
@@ -7884,7 +7886,7 @@ public class Observable<T> {
 
     /**
      * Returns an Observable that emits at most a specified number of items from the source Observable that were
-     * emitted in a specified window of time before the Observable completed.
+     * emitted in a specified window of time before the Observable completed. 
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeLast.tn.png" alt="">
      * <dl>
@@ -7985,8 +7987,8 @@ public class Observable<T> {
     }
 
     /**
-     * Returns an Observable that emits a single List containing the last {@code count} elements emitted by the
-     * source Observable.
+     * Returns an Observable that emits a single List containing at most the last {@code count} elements emitted by the
+     * source Observable. If the source emits fewer than {@code count} items then the emitted List will contain all of the source emissions.
      * <p>
      * <img width="640" height="310" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/takeLastBuffer.png" alt="">
      * <dl>
@@ -7995,8 +7997,8 @@ public class Observable<T> {
      * </dl>
      * 
      * @param count
-     *            the number of items to emit in the list
-     * @return an Observable that emits a single list containing the last {@code count} elements emitted by the
+     *            the maximum number of items to emit in the list
+     * @return an Observable that emits a single list containing at most the last {@code count} elements emitted by the
      *         source Observable
      * @see <a href="http://reactivex.io/documentation/operators/takelast.html">ReactiveX operators documentation: TakeLast</a>
      */

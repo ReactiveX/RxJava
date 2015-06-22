@@ -22,7 +22,7 @@ import rx.Observable.Operator;
 import rx.Subscriber;
 
 /**
- * Returns an Observable that emits the last <code>count</code> items emitted by the source Observable.
+ * Returns an Observable that emits the at most the last <code>count</code> items emitted by the source Observable.
  * <p>
  * <img width="640" src="https://github.com/ReactiveX/RxJava/wiki/images/rx-operators/last.png" alt="">
  */
@@ -32,7 +32,7 @@ public final class OperatorTakeLast<T> implements Operator<T, T> {
 
     public OperatorTakeLast(int count) {
         if (count < 0) {
-            throw new IndexOutOfBoundsException("count could not be negative");
+            throw new IndexOutOfBoundsException("count cannot be negative");
         }
         this.count = count;
     }
