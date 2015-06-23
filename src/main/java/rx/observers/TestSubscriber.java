@@ -143,7 +143,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
     }
 
     /**
-     * Get the {@link Notification}s representing each time this {@link Subscriber} was notified of sequence
+     * Returns the {@link Notification}s representing each time this {@link Subscriber} was notified of sequence
      * completion via {@link #onCompleted}, as a {@link List}.
      *
      * @return a list of Notifications representing calls to this Subscriber's {@link #onCompleted} method
@@ -172,7 +172,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
     }
 
     /**
-     * Get the {@link Throwable}s this {@link Subscriber} was notified of via {@link #onError} as a
+     * Returns the {@link Throwable}s this {@link Subscriber} was notified of via {@link #onError} as a
      * {@link List}.
      *
      * @return a list of the Throwables that were passed to this Subscriber's {@link #onError} method
@@ -199,7 +199,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
     }
     
     /**
-     * Allow calling the protected {@link #request(long)} from unit tests.
+     * Allows calling the protected {@link #request(long)} from unit tests.
      *
      * @param n the maximum number of items you want the Observable to emit to the Subscriber at this time, or
      *           {@code Long.MAX_VALUE} if you want the Observable to emit items at its own pace
@@ -209,7 +209,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
     }
 
     /**
-     * Get the sequence of items observed by this {@link Subscriber}, as an ordered {@link List}.
+     * Returns the sequence of items observed by this {@link Subscriber}, as an ordered {@link List}.
      *
      * @return a list of items observed by this Subscriber, in the order in which they were observed
      */
@@ -218,7 +218,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
     }
 
     /**
-     * Assert that a particular sequence of items was received by this {@link Subscriber} in order.
+     * Asserts that a particular sequence of items was received by this {@link Subscriber} in order.
      *
      * @param items
      *          the sequence of items expected to have been observed
@@ -230,7 +230,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
     }
 
     /**
-     * Assert that a single terminal event occurred, either {@link #onCompleted} or {@link #onError}.
+     * Asserts that a single terminal event occurred, either {@link #onCompleted} or {@link #onError}.
      *
      * @throws AssertionError
      *          if not exactly one terminal event notification was received
@@ -240,7 +240,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
     }
 
     /**
-     * Assert that this {@code Subscriber} is unsubscribed.
+     * Asserts that this {@code Subscriber} is unsubscribed.
      *
      * @throws AssertionError
      *          if this {@code Subscriber} is not unsubscribed
@@ -252,7 +252,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
     }
 
     /**
-     * Assert that this {@code Subscriber} has received no {@code onError} notifications.
+     * Asserts that this {@code Subscriber} has received no {@code onError} notifications.
      * 
      * @throws AssertionError
      *          if this {@code Subscriber} has received one or more {@code onError} notifications
@@ -335,7 +335,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
     }
     
     /**
-     * Assert if there is exactly a single completion event.
+     * Asserts that there is exactly one completion event.
      *
      * @throws AssertionError if there were zero, or more than one, onCompleted events
      * @since (if this graduates from "Experimental" replace this parenthetical with the release number)
@@ -352,7 +352,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
     }
 
     /**
-     * Assert if there is no completion event.
+     * Asserts that there is no completion event.
      *
      * @throws AssertionError if there were one or more than one onCompleted events
      * @since (if this graduates from "Experimental" replace this parenthetical with the release number)
@@ -369,7 +369,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
     }
 
     /**
-     * Assert if there is exactly one error event which is a subclass of the given class.
+     * Asserts that there is exactly one error event which is a subclass of the given class.
      *
      * @param clazz the class to check the error against.
      * @throws AssertionError if there were zero, or more than one, onError events, or if the single onError
@@ -395,7 +395,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
     }
 
     /**
-     * Assert there is a single onError event with the exact exception.
+     * Asserts that there is a single onError event with the exact exception.
      *
      * @param throwable the throwable to check
      * @throws AssertionError if there were zero, or more than one, onError events, or if the single onError
@@ -421,7 +421,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
     }
 
     /**
-     * Assert for no onError and onCompleted events.
+     * Asserts that there are no onError and onCompleted events.
      *
      * @throws AssertionError if there was either an onError or onCompleted event
      * @since (if this graduates from "Experimental" replace this parenthetical with the release number)
@@ -447,7 +447,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
     }
 
     /**
-     * Assert if there are no onNext events received.
+     * Asserts that there are no onNext events received.
      *
      * @throws AssertionError if there were any onNext events
      * @since (if this graduates from "Experimental" replace this parenthetical with the release number)
@@ -461,7 +461,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
     }
 
     /**
-     * Assert if the given number of onNext events are received.
+     * Asserts that the given number of onNext events are received.
      *
      * @param count the expected number of onNext events
      * @throws AssertionError if there were more or fewer onNext events than specified by {@code count}
@@ -476,7 +476,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
     }
     
     /**
-     * Assert if the received onNext events, in order, are the specified items.
+     * Asserts that the received onNext events, in order, are the specified items.
      *
      * @param values the items to check
      * @throws AssertionError if the items emitted do not exactly match those specified by {@code values}
@@ -488,7 +488,7 @@ public class TestSubscriber<T> extends Subscriber<T> {
     }
 
     /**
-     * Assert if there is only a single received onNext event and that it marks the emission of a specific item.
+     * Asserts that there is only a single received onNext event and that it marks the emission of a specific item.
      *
      * @param value the item to check
      * @throws AssertionError if the Observable does not emit only the single item specified by {@code value}
