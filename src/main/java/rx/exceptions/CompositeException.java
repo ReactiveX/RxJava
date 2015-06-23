@@ -49,12 +49,19 @@ public final class CompositeException extends RuntimeException {
     public CompositeException(String messagePrefix, Collection<? extends Throwable> errors) {
         Set<Throwable> deDupedExceptions = new LinkedHashSet<Throwable>();
         List<Throwable> _exceptions = new ArrayList<Throwable>();
-        for (Throwable ex : errors) {
-            if (ex instanceof CompositeException) {
-                deDupedExceptions.addAll(((CompositeException) ex).getExceptions());
-            } else {
-                deDupedExceptions.add(ex);
+        if (errors != null) {
+            for (Throwable ex : errors) {
+                if (ex instanceof CompositeException) {
+                    deDupedExceptions.addAll(((CompositeException) ex).getExceptions());
+                } else 
+                if (ex != null) {
+                    deDupedExceptions.add(ex);
+                } else {
+                    deDupedExceptions.add(new NullPointerException());
+                }
             }
+        } else {
+            deDupedExceptions.add(new NullPointerException());
         }
 
         _exceptions.addAll(deDupedExceptions);
