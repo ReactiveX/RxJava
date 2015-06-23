@@ -897,9 +897,9 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
             size--;
             // can't just move the head because it would retain the very first value
             // can't null out the head's value because of late replayers would see null
-            setFirst(next.get());
+            setFirst(next);
         }
-        final void removeSome(int n) {
+        /* test */ final void removeSome(int n) {
             Node head = get();
             while (n > 0) {
                 head = head.get();
@@ -907,19 +907,14 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
                 size--;
             }
             
-            setFirst(head.get());
+            setFirst(head);
         }
         /**
          * Arranges the given node is the new head from now on.
          * @param n
          */
         final void setFirst(Node n) {
-            Node newHead = new Node(null);
-            newHead.lazySet(n);
-            if (n == null) {
-                tail = newHead;
-            }
-            set(newHead);
+            set(n);
         }
         
         @Override
@@ -1119,8 +1114,8 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
         void truncate() {
             long timeLimit = scheduler.now() - maxAgeInMillis;
             
-            Node head = get();
-            Node next = head.get();
+            Node prev = get();
+            Node next = prev.get();
             
             int e = 0;
             for (;;) {
@@ -1128,12 +1123,14 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
                     if (size > limit) {
                         e++;
                         size--;
+                        prev = next;
                         next = next.get();
                     } else {
                         Timestamped<?> v = (Timestamped<?>)next.value;
                         if (v.getTimestampMillis() <= timeLimit) {
                             e++;
                             size--;
+                            prev = next;
                             next = next.get();
                         } else {
                             break;
@@ -1144,15 +1141,15 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
                 }
             }
             if (e != 0) {
-                setFirst(next);
+                setFirst(prev);
             }
         }
         @Override
         void truncateFinal() {
             long timeLimit = scheduler.now() - maxAgeInMillis;
             
-            Node head = get();
-            Node next = head.get();
+            Node prev = get();
+            Node next = prev.get();
             
             int e = 0;
             for (;;) {
@@ -1161,6 +1158,7 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
                     if (v.getTimestampMillis() <= timeLimit) {
                         e++;
                         size--;
+                        prev = next;
                         next = next.get();
                     } else {
                         break;
@@ -1170,7 +1168,7 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
                 }
             }
             if (e != 0) {
-                setFirst(next);
+                setFirst(prev);
             }
         }
     }
