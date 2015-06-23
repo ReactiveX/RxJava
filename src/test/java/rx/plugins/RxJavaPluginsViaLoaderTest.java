@@ -57,6 +57,16 @@ public class RxJavaPluginsViaLoaderTest {
         assertTrue(impl instanceof RxJavaErrorHandlerTestImpl);
     }
 
+    @Test(expected = IllegalStateException.class)
+    public void testTwoErrorHandlersYieldException() {
+        mockLoader.register(
+            "META-INF/services/" + RxJavaErrorHandler.class.getName(),
+            RxJavaPluginsViaLoaderTest.class.getResource("RxJavaErrorHandlerTestBroken.txt")
+        );
+        RxJavaPlugins p = new RxJavaPlugins();
+        RxJavaErrorHandler impl = p.getErrorHandler();
+    }
+
     // inside test so it is stripped from Javadocs
     public static class RxJavaErrorHandlerTestImpl extends RxJavaErrorHandler {
 
@@ -70,6 +80,9 @@ public class RxJavaPluginsViaLoaderTest {
             count++;
         }
 
+    }
+
+    public static class RxJavaErrorHandlerTestImpl2 extends RxJavaErrorHandlerTestImpl {
     }
 
     @Test

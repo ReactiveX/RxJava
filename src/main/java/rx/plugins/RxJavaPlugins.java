@@ -15,6 +15,7 @@
  */
 package rx.plugins;
 
+import java.util.Iterator;
 import java.util.ServiceLoader;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -143,7 +144,13 @@ public class RxJavaPlugins {
     }
 
     private static <T> T getPluginImplementationViaProperty(Class<T> pluginClass) {
-        for (T o : ServiceLoader.load(pluginClass)) {
+        Iterator<T> it = ServiceLoader.load(pluginClass).iterator();
+        while (it.hasNext()) {
+            T o = it.next();
+            if (it.hasNext()) {
+                T n = it.next();
+                throw new IllegalStateException("Two plugins found on classpath! First: " + o.getClass() + " second: " + n.getClass());
+            }
             return o;
         }
         
