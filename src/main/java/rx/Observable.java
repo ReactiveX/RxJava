@@ -19,6 +19,7 @@ import rx.annotations.*;
 import rx.exceptions.*;
 import rx.functions.*;
 import rx.internal.operators.*;
+import rx.internal.producers.SingleProducer;
 import rx.internal.util.*;
 import rx.observables.*;
 import rx.observers.SafeSubscriber;
@@ -3857,8 +3858,14 @@ public class Observable<T> {
      *         items, or the items emitted by the source Observable
      * @see <a href="http://reactivex.io/documentation/operators/defaultifempty.html">ReactiveX operators documentation: DefaultIfEmpty</a>
      */
-    public final Observable<T> defaultIfEmpty(T defaultValue) {
-        return lift(new OperatorDefaultIfEmpty<T>(defaultValue));
+    public final Observable<T> defaultIfEmpty(final T defaultValue) {
+        //if empty switch to an observable that emits defaultValue and supports backpressure
+        return switchIfEmpty(Observable.create(new OnSubscribe<T>() {
+
+            @Override
+            public void call(Subscriber<? super T> subscriber) {
+                subscriber.setProducer(new SingleProducer<T>(subscriber, defaultValue));
+            }}));
     }
 
     /**
