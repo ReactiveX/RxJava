@@ -195,8 +195,28 @@ public class Observable<T> {
     public interface Transformer<T, R> extends Func1<Observable<T>, Observable<R>> {
         // cover for generics insanity
     }
-    
-    
+
+    /**
+     * Returns a Single that emits the single item emitted by the source Observable, if that Observable
+     * emits only a single item. If the source Observable emits more than one item or no items, notify of an
+     * {@code IllegalArgumentException} or {@code NoSuchElementException} respectively.
+     * <p>
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code toSingle} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @return a Single that emits the single item emitted by the source Observable
+     * @throws IllegalArgumentException
+     *             if the source observable emits more than one item
+     * @throws NoSuchElementException
+     *             if the source observable emits no items
+     */
+    @Experimental
+    public Single<T> toSingle() {
+        return new Single<T>(OnSubscribeSingle.create(this));
+    }
+
 
     /* *********************************************************************************************************
      * Operators Below Here
