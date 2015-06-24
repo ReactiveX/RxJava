@@ -674,6 +674,7 @@ public class SerializedObserverTest {
 
         @Override
         public void call(final Subscriber<? super String> observer) {
+            final NullPointerException npe = new NullPointerException();
             System.out.println("TestMultiThreadedObservable subscribed to ...");
             t = new Thread(new Runnable() {
 
@@ -694,7 +695,7 @@ public class SerializedObserverTest {
                                         System.out.println("TestMultiThreadedObservable onNext: " + s + " on thread " + Thread.currentThread().getName());
                                         if (s == null) {
                                             // force an error
-                                            throw new NullPointerException();
+                                            throw npe;
                                         } else {
                                              // allow the exception to queue up
                                             int sleep = (fj % 3) * 10;
