@@ -173,7 +173,7 @@ public final class OperatorWindowWithObservable<T, U> implements Operator<Observ
             child.onNext(producer);
         }
         void createNewWindow() {
-            BufferUntilSubscriber<T> bus = BufferUntilSubscriber.create();
+            BufferUntilSubscriberV2<T> bus = BufferUntilSubscriberV2.create();
             consumer = bus;
             producer = bus;
         }

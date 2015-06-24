@@ -9051,9 +9051,17 @@ public class Observable<T> {
      * Observable emits connected, non-overlapping windows. It emits the current window and opens a new one
      * whenever the Observable produced by the specified {@code closingSelector} emits an item.
      * <p>
+     * Note that the inner Observable windows each accept only a single Subscriber. All
+     * subsequent subscription attempt will call onError on the Subscriber with an IllegalStateException.
+     * Use publish() or other similar methods to multi-consume the inner Observables. 
+     * <p>
      * <img width="640" height="485" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window1.png" alt="">
      * <dl>
      *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator does not support backpressure on its returned Observable as it uses Observables 
+     *  returned by the {@code closingSelector} to control data flow,
+     *  but supports backpressure on its inner Observables. However, they will buffer and retain source
+     *  elements until a single Subscriber per Observable consumes those elements.</dd>
      *  <dd>This operator does not support backpressure as it uses the {@code closingSelector} to control data
      *      flow.</dd>
      *  <dt><b>Scheduler:</b></dt>
@@ -9078,11 +9086,15 @@ public class Observable<T> {
      * Observable completes or encounters an error, the resulting Observable emits the current window and
      * propagates the notification from the source Observable.
      * <p>
+     * Note that the inner Observable windows each accept only a single Subscriber. All
+     * subsequent subscription attempt will call onError on the Subscriber with an IllegalStateException.
+     * Use publish() or other similar methods to multi-consume the inner Observables. 
+     * <p>
      * <img width="640" height="400" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window3.png" alt="">
      * <dl>
      *  <dt><b>Backpressure Support:</b></dt>
-     *  <dd>The operator honors backpressure on its outer subscriber, ignores backpressure in its inner Observables 
-     *  but each of them will emit at most {@code count} elements.</dd>
+     *  <dd>The operator honors backpressure but each of the inner Observables 
+     *  will retain at most {@code count} elements until a single Subscriber consumes those elements.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code window} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -9103,11 +9115,15 @@ public class Observable<T> {
      * the source Observable completes or encounters an error, the resulting Observable emits the current window
      * and propagates the notification from the source Observable.
      * <p>
+     * Note that the inner Observable windows each accept only a single Subscriber. All
+     * subsequent subscription attempt will call onError on the Subscriber with an IllegalStateException.
+     * Use publish() or other similar methods to multi-consume the inner Observables. 
+     * <p>
      * <img width="640" height="365" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window4.png" alt="">
      * <dl>
      *  <dt><b>Backpressure Support:</b></dt>
-     *  <dd>The operator honors backpressure on its outer subscriber, ignores backpressure in its inner Observables 
-     *  but each of them will emit at most {@code count} elements.</dd>
+     *  <dd>The operator honors backpressure but each of the inner Observables 
+     *  will retain at most {@code count} elements until a single Subscriber consumes those elements.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code window} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -9132,10 +9148,16 @@ public class Observable<T> {
      * Observable completes or Observable completes or encounters an error, the resulting Observable emits the
      * current window and propagates the notification from the source Observable.
      * <p>
+     * Note that the inner Observable windows each accept only a single Subscriber. All
+     * subsequent subscription attempt will call onError on the Subscriber with an IllegalStateException.
+     * Use publish() or other similar methods to multi-consume the inner Observables. 
+     * <p>
      * <img width="640" height="335" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window7.png" alt="">
      * <dl>
      *  <dt><b>Backpressure Support:</b></dt>
-     *  <dd>This operator does not support backpressure as it uses time to control data flow.</dd>
+     *  <dd>This operator does not support backpressure on its returned Observable as it uses time to control data flow
+     *  but supports backpressure on its inner Observables. However, they will buffer and retain source
+     *  elements until a single Subscriber per Observable consumes those elements.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code window} operates by default on the {@code computation} {@link Scheduler}.</dd>
      * </dl>
@@ -9160,10 +9182,16 @@ public class Observable<T> {
      * Observable completes or Observable completes or encounters an error, the resulting Observable emits the
      * current window and propagates the notification from the source Observable.
      * <p>
+     * Note that the inner Observable windows each accept only a single Subscriber. All
+     * subsequent subscription attempt will call onError on the Subscriber with an IllegalStateException.
+     * Use publish() or other similar methods to multi-consume the inner Observables. 
+     * <p>
      * <img width="640" height="335" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window7.s.png" alt="">
      * <dl>
      *  <dt><b>Backpressure Support:</b></dt>
-     *  <dd>This operator does not support backpressure as it uses time to control data flow.</dd>
+     *  <dd>This operator does not support backpressure on its returned Observable as it uses time to control data flow
+     *  but supports backpressure on its inner Observables. However, they will buffer and retain source
+     *  elements until a single Subscriber per Observable consumes those elements.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>you specify which {@link Scheduler} this operator will use</dd>
      * </dl>
@@ -9191,10 +9219,16 @@ public class Observable<T> {
      * Observable completes or Observable completes or encounters an error, the resulting Observable emits the
      * current window and propagates the notification from the source Observable.
      * <p>
+     * Note that the inner Observable windows each accept only a single Subscriber. All
+     * subsequent subscription attempt will call onError on the Subscriber with an IllegalStateException.
+     * Use publish() or other similar methods to multi-consume the inner Observables. 
+     * <p>
      * <img width="640" height="335" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window7.s.png" alt="">
      * <dl>
      *  <dt><b>Backpressure Support:</b></dt>
-     *  <dd>This operator does not support backpressure as it uses time to control data flow.</dd>
+     *  <dd>This operator does not support backpressure on its returned Observable as it uses time to control data flow
+     *  but supports backpressure on its inner Observables. However, they will buffer and retain at most {@code count} source
+     *  elements until a single Subscriber per Observable consumes those elements.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>you specify which {@link Scheduler} this operator will use</dd>
      * </dl>
@@ -9222,10 +9256,16 @@ public class Observable<T> {
      * {@code timespan} argument. When the source Observable completes or encounters an error, the resulting
      * Observable emits the current window and propagates the notification from the source Observable.
      * <p>
+     * Note that the inner Observable windows each accept only a single Subscriber. All
+     * subsequent subscription attempt will call onError on the Subscriber with an IllegalStateException.
+     * Use publish() or other similar methods to multi-consume the inner Observables. 
+     * <p>
      * <img width="640" height="375" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window5.png" alt="">
      * <dl>
      *  <dt><b>Backpressure Support:</b></dt>
-     *  <dd>This operator does not support backpressure as it uses time to control data flow.</dd>
+     *  <dd>This operator does not support backpressure on its returned Observable as it uses time to control data flow
+     *  but supports backpressure on its inner Observables. However, they will buffer and retain source
+     *  elements until a single Subscriber per Observable consumes those elements.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code window} operates by default on the {@code computation} {@link Scheduler}.</dd>
      * </dl>
@@ -9250,10 +9290,16 @@ public class Observable<T> {
      * reached first). When the source Observable completes or encounters an error, the resulting Observable
      * emits the current window and propagates the notification from the source Observable.
      * <p>
+     * Note that the inner Observable windows each accept only a single Subscriber. All
+     * subsequent subscription attempt will call onError on the Subscriber with an IllegalStateException.
+     * Use publish() or other similar methods to multi-consume the inner Observables. 
+     * <p>
      * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window6.png" alt="">
      * <dl>
      *  <dt><b>Backpressure Support:</b></dt>
-     *  <dd>This operator does not support backpressure as it uses time to control data flow.</dd>
+     *  <dd>This operator does not support backpressure on its returned Observable as it uses time to control data flow
+     *  but supports backpressure on its inner Observables. However, they will buffer and retain at most {@code count} source
+     *  elements until a single Subscriber per Observable consumes those elements.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code window} operates by default on the {@code computation} {@link Scheduler}.</dd>
      * </dl>
@@ -9281,10 +9327,16 @@ public class Observable<T> {
      * first). When the source Observable completes or encounters an error, the resulting Observable emits the
      * current window and propagates the notification from the source Observable.
      * <p>
+     * Note that the inner Observable windows each accept only a single Subscriber. All
+     * subsequent subscription attempt will call onError on the Subscriber with an IllegalStateException.
+     * Use publish() or other similar methods to multi-consume the inner Observables. 
+     * <p>
      * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window6.s.png" alt="">
      * <dl>
      *  <dt><b>Backpressure Support:</b></dt>
-     *  <dd>This operator does not support backpressure as it uses time to control data flow.</dd>
+     *  <dd>This operator does not support backpressure on its returned Observable as it uses time to control data flow
+     *  but supports backpressure on its inner Observables. However, they will buffer and retain at most {@code count} source
+     *  elements until a single Subscriber per Observable consumes those elements.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>you specify which {@link Scheduler} this operator will use</dd>
      * </dl>
@@ -9313,10 +9365,16 @@ public class Observable<T> {
      * {@code timespan} argument. When the source Observable completes or encounters an error, the resulting
      * Observable emits the current window and propagates the notification from the source Observable.
      * <p>
+     * Note that the inner Observable windows each accept only a single Subscriber. All
+     * subsequent subscription attempt will call onError on the Subscriber with an IllegalStateException.
+     * Use publish() or other similar methods to multi-consume the inner Observables. 
+     * <p>
      * <img width="640" height="375" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window5.s.png" alt="">
      * <dl>
      *  <dt><b>Backpressure Support:</b></dt>
-     *  <dd>This operator does not support backpressure as it uses time to control data flow.</dd>
+     *  <dd>This operator does not support backpressure on its returned Observable as it uses time to control data flow
+     *  but supports backpressure on its inner Observables. However, they will buffer and retain at most {@code count} source
+     *  elements until a single Subscriber per Observable consumes those elements.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>you specify which {@link Scheduler} this operator will use</dd>
      * </dl>
@@ -9342,10 +9400,16 @@ public class Observable<T> {
      * the {@code windowOpenings} Observable emits an item and when the Observable returned by
      * {@code closingSelector} emits an item.
      * <p>
+     * Note that the inner Observable windows each accept only a single Subscriber. All
+     * subsequent subscription attempt will call onError on the Subscriber with an IllegalStateException.
+     * Use publish() or other similar methods to multi-consume the inner Observables. 
+     * <p>
      * <img width="640" height="550" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window2.png" alt="">
      * <dl>
      *  <dt><b>Backpressure Support:</b></dt>
-     *  <dd>This operator does not support backpressure as it uses Observables to control data flow.</dd>
+     *  <dd>This operator does not support backpressure on its returned Observable as it uses other Observables to control data flow
+     *  but supports backpressure on its inner Observables. However, they will buffer and retain source
+     *  elements until a single Subscriber per Observable consumes those elements.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code window} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -9368,11 +9432,16 @@ public class Observable<T> {
      * where the boundary of each window is determined by the items emitted from a specified boundary-governing
      * Observable.
      * <p>
+     * Note that the inner Observable windows each accept only a single Subscriber. All
+     * subsequent subscription attempt will call onError on the Subscriber with an IllegalStateException.
+     * Use publish() or other similar methods to multi-consume the inner Observables. 
+     * <p>
      * <img width="640" height="475" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window8.png" alt="">
      * <dl>
      *  <dt><b>Backpressure Support:</b></dt>
-     *  <dd>This operator does not support backpressure as it uses a {@code boundary} Observable to control data
-     *      flow.</dd>
+     *  <dd>This operator does not support backpressure on its returned Observable as it uses a {@code boundary} Observable to control data flow
+     *  but supports backpressure on its inner Observables. However, they will buffer and retain source
+     *  elements until a single Subscriber per Observable consumes those elements.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code window} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>

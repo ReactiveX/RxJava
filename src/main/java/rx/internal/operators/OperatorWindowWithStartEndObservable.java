@@ -224,7 +224,7 @@ public final class OperatorWindowWithStartEndObservable<T, U, V> implements Oper
             }
         }
         SerializedSubject<T> createSerializedSubject() {
-            BufferUntilSubscriber<T> bus = BufferUntilSubscriber.create();
+            BufferUntilSubscriberV2<T> bus = BufferUntilSubscriberV2.create();
             return new SerializedSubject<T>(bus, bus);
         }
     }
