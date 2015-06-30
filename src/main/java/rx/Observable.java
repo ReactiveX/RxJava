@@ -3909,6 +3909,26 @@ public class Observable<T> {
     }
 
     /**
+     * Returns an Observable that only emits the items emitted by the alternate Observable if the source Observable
+     * is empty. If the source Observable errors or emit any values then an error is propagated and alternate Observable is
+     * never subscribed to.
+     * <p/>
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code switchEmpty} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @param alternate
+     *              the alternate Observable to subscribe to if the source does not emit any items
+     * @return  an Observable that only emits the items of an alternate Observable if the source Observable is empty.
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
+     */
+    @Experimental
+    public final <R> Observable<R> switchEmpty(Observable<? extends R> alternate) {
+        return lift(new OperatorSwitchEmpty<R, T>(alternate));
+    }
+
+    /**
      * Returns an Observable that delays the subscription to and emissions from the souce Observable via another
      * Observable on a per-item basis.
      * <p>
