@@ -80,7 +80,7 @@ public class OnSubscribeSingle<T> implements Single.OnSubscribe<T> {
             }
         };
         child.add(parent);
-        observable.subscribe(parent);
+        observable.unsafeSubscribe(parent);
     }
 
     public static <T> OnSubscribeSingle<T> create(Observable<T> observable) {
