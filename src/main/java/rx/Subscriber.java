@@ -46,20 +46,34 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
         this(null, false);
     }
 
+    /**
+     * Construct a Subscriber by using another Subscriber for backpressure and
+     * for holding the subscription list (when <code>this.add(sub)</code> is
+     * called this will in fact call <code>subscriber.add(sub)</code>).
+     * 
+     * @param subscriber
+     *            the other Subscriber
+     */
     protected Subscriber(Subscriber<?> subscriber) {
         this(subscriber, true);
     }
 
     /**
-     * Construct a Subscriber by using another Subscriber for backpressure and optionally sharing the
-     * underlying subscriptions list.
+     * Construct a Subscriber by using another Subscriber for backpressure and
+     * optionally for holding the subscription list (if
+     * <code>shareSubscriptions</code> is <code>true</code> then when
+     * <code>this.add(sub)</code> is called this will in fact call
+     * <code>subscriber.add(sub)</code>).
      * <p>
-     * To retain the chaining of subscribers, add the created instance to {@code op} via {@link #add}.
+     * To retain the chaining of subscribers when setting
+     * <code>shareSubscriptions</code> to <code>false</code>, add the created
+     * instance to {@code subscriber} via {@link #add}.
      * 
      * @param subscriber
      *            the other Subscriber
      * @param shareSubscriptions
-     *            {@code true} to share the subscription list in {@code op} with this instance
+     *            {@code true} to share the subscription list in {@code subscriber} with
+     *            this instance
      * @since 1.0.6
      */
     protected Subscriber(Subscriber<?> subscriber, boolean shareSubscriptions) {
@@ -158,9 +172,19 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
     }
     
     /**
-     * @warn javadoc description missing
-     * @warn param producer not described
+     * If other subscriber is set (by calling constructor
+     * {@link #Subscriber(Subscriber)} or
+     * {@link #Subscriber(Subscriber, boolean)}) then this method calls
+     * <code>setProducer</code> on the other subscriber. If the other subscriber
+     * is not set and no requests have been made to this subscriber then
+     * <code>p.request(Long.MAX_VALUE)</code> is called. If the other subscriber
+     * is not set and some requests have been made to this subscriber then
+     * <code>p.request(n)</code> is called where n is the accumulated requests
+     * to this subscriber.
+     * 
      * @param p
+     *            producer to be used by this subscriber or the other subscriber
+     *            (or recursively its other subscriber) to make requests from
      */
     public void setProducer(Producer p) {
         long toRequest;
