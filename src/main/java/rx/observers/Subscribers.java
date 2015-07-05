@@ -17,6 +17,7 @@ package rx.observers;
 
 import rx.Observer;
 import rx.Subscriber;
+import rx.annotations.Experimental;
 import rx.exceptions.OnErrorNotImplementedException;
 import rx.functions.Action0;
 import rx.functions.Action1;
@@ -198,4 +199,41 @@ public final class Subscribers {
         };
     }
 
+    /**
+     * Returns a new {@link Subscriber} that passes all events to
+     * <code>subscriber</code>, has backpressure controlled by
+     * <code>subscriber</code> and uses the subscription list of
+     * <code>subscriber</code> when {@link Subscriber#add(rx.Subscription)} is
+     * called.
+     * 
+     * @param subscriber
+     *            the Subscriber to wrap.
+     * 
+     * @return a new Subscriber that passes all events to
+     *         <code>subscriber</code>, has backpressure controlled by
+     *         <code>subscriber</code> and uses <code>subscriber</code> to
+     *         manage unsubscription.
+     * 
+     */
+    @Experimental
+    public static <T> Subscriber<T> wrap(final Subscriber<? super T> subscriber) {
+        return new Subscriber<T>(subscriber) {
+
+            @Override
+            public void onCompleted() {
+                subscriber.onCompleted();
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                subscriber.onError(e);
+            }
+
+            @Override
+            public void onNext(T t) {
+                subscriber.onNext(t);
+            }
+            
+        };
+    }
 }

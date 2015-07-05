@@ -18,6 +18,7 @@ package rx.internal.operators;
 import rx.Observable.Operator;
 import rx.*;
 import rx.functions.Action0;
+import rx.observers.Subscribers;
 import rx.subscriptions.Subscriptions;
 
 /**
@@ -41,22 +42,6 @@ public class OperatorDoOnUnsubscribe<T> implements Operator<T, T> {
 
         // Pass through since this operator is for notification only, there is
         // no change to the stream whatsoever.
-        return new Subscriber<T>(child) {
-            @Override
-            public void onStart() {
-            }
-            @Override
-            public void onNext(T t) {
-                child.onNext(t);
-            }
-            @Override
-            public void onError(Throwable e) {
-                child.onError(e);
-            }
-            @Override
-            public void onCompleted() {
-                child.onCompleted();
-            }
-        };
+        return Subscribers.wrap(child);
     }
 }

@@ -22,6 +22,7 @@ import rx.*;
 import rx.Observable.OnSubscribe;
 import rx.exceptions.CompositeException;
 import rx.functions.*;
+import rx.observers.Subscribers;
 
 /**
  * Constructs an observable sequence that depends on a resource object.
@@ -68,20 +69,7 @@ public final class OnSubscribeUsing<T, Resource> implements OnSubscribe<T> {
                 observable = source;
             try {
                 // start
-                observable.unsafeSubscribe(new Subscriber<T>(subscriber) {
-                    @Override
-                    public void onNext(T t) {
-                        subscriber.onNext(t);
-                    }
-                    @Override
-                    public void onError(Throwable e) {
-                        subscriber.onError(e);
-                    }
-                    @Override
-                    public void onCompleted() {
-                        subscriber.onCompleted();
-                    }
-                });
+                observable.unsafeSubscribe(Subscribers.wrap(subscriber));
             } catch (Throwable e) {
                 Throwable disposeError = disposeEagerlyIfRequested(disposeOnceOnly);
                 if (disposeError != null)

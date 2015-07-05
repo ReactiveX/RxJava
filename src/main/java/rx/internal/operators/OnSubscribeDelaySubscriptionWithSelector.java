@@ -18,6 +18,7 @@ package rx.internal.operators;
 import rx.*;
 import rx.Observable.OnSubscribe;
 import rx.functions.Func0;
+import rx.observers.Subscribers;
 
 /**
  * Delays the subscription until the Observable<U> emits an event.
@@ -42,20 +43,7 @@ public final class OnSubscribeDelaySubscriptionWithSelector<T, U> implements OnS
                 @Override
                 public void onCompleted() {
                     // subscribe to actual source
-                    source.unsafeSubscribe(new Subscriber<T>(child) {
-                        @Override
-                        public void onNext(T t) {
-                            child.onNext(t);
-                        }
-                        @Override
-                        public void onError(Throwable e) {
-                            child.onError(e);
-                        }
-                        @Override
-                        public void onCompleted() {
-                            child.onCompleted();
-                        }
-                    });
+                    source.unsafeSubscribe(Subscribers.wrap(child));
                 }
 
                 @Override
