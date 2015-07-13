@@ -201,6 +201,7 @@ public class Observable<T> {
      * emits only a single item. If the source Observable emits more than one item or no items, notify of an
      * {@code IllegalArgumentException} or {@code NoSuchElementException} respectively.
      * <p>
+     * <img width="640" height="295" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/toSingle.png" alt="">
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code toSingle} does not operate by default on a particular {@link Scheduler}.</dd>
@@ -211,6 +212,8 @@ public class Observable<T> {
      *             if the source observable emits more than one item
      * @throws NoSuchElementException
      *             if the source observable emits no items
+     * @see <a href="http://reactivex.io/documentation/single.html">ReactiveX documentation: Single</a>
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
     @Experimental
     public Single<T> toSingle() {
