@@ -22,6 +22,7 @@ import rx.Observable;
 import rx.Observable.Operator;
 import rx.Producer;
 import rx.Subscriber;
+import rx.internal.producers.ProducerArbiter;
 import rx.observers.SerializedSubscriber;
 import rx.subscriptions.SerialSubscription;
 
@@ -46,7 +47,9 @@ public final class OperatorSwitch<T> implements Operator<T, Observable<? extends
     public static <T> OperatorSwitch<T> instance() {
         return (OperatorSwitch<T>)Holder.INSTANCE;
     }
+    
     private OperatorSwitch() { }
+    
     @Override
     public Subscriber<? super Observable<? extends T>> call(final Subscriber<? super T> child) {
         SwitchSubscriber<T> sws = new SwitchSubscriber<T>(child);
@@ -55,10 +58,12 @@ public final class OperatorSwitch<T> implements Operator<T, Observable<? extends
     }
 
     private static final class SwitchSubscriber<T> extends Subscriber<Observable<? extends T>> {
-        final SerializedSubscriber<T> s;
+        final SerializedSubscriber<T> serializedChild;
         final SerialSubscription ssub;
         final Object guard = new Object();
         final NotificationLite<?> nl = NotificationLite.instance();
+        final ProducerArbiter arbiter;
+        
         /** Guarded by guard. */
         int index;
         /** Guarded by guard. */
@@ -70,50 +75,19 @@ public final class OperatorSwitch<T> implements Operator<T, Observable<? extends
         /** Guarded by guard. */
         boolean emitting;
         /** Guarded by guard. */
-        InnerSubscriber currentSubscriber;
-        /** Guarded by guard. */
-        long initialRequested;
+        InnerSubscriber<T> currentSubscriber;
 
-        volatile boolean infinite = false;
-
-        public SwitchSubscriber(Subscriber<? super T> child) {
-            s = new SerializedSubscriber<T>(child);
+        SwitchSubscriber(Subscriber<? super T> child) {
+            serializedChild = new SerializedSubscriber<T>(child);
+            arbiter = new ProducerArbiter();
             ssub = new SerialSubscription();
             child.add(ssub);
             child.setProducer(new Producer(){
 
                 @Override
                 public void request(long n) {
-                    if (infinite) {
-                        return;
-                    }
-                    if(n == Long.MAX_VALUE) {
-                        infinite = true;
-                    }
-                    InnerSubscriber localSubscriber;
-                    synchronized (guard) {
-                        localSubscriber = currentSubscriber;
-                        if (currentSubscriber == null) {
-                            long r = initialRequested + n;
-                            if (r < 0) {
-                                infinite = true;
-                            } else {
-                                initialRequested = r;
-                            }
-                        } else {
-                            long r = currentSubscriber.requested + n;
-                            if (r < 0) {
-                                infinite = true;
-                            } else {
-                                currentSubscriber.requested = r;
-                            }
-                        }
-                    }
-                    if (localSubscriber != null) {
-                        if (infinite)
-                            localSubscriber.requestMore(Long.MAX_VALUE);
-                        else 
-                            localSubscriber.requestMore(n);
+                    if (n > 0) {
+                        arbiter.request(n);
                     }
                 }
             });
@@ -122,26 +96,18 @@ public final class OperatorSwitch<T> implements Operator<T, Observable<? extends
         @Override
         public void onNext(Observable<? extends T> t) {
             final int id;
-            long remainingRequest;
             synchronized (guard) {
                 id = ++index;
                 active = true;
-                if (infinite) {
-                    remainingRequest = Long.MAX_VALUE;
-                } else {
-                    remainingRequest = currentSubscriber == null ? initialRequested : currentSubscriber.requested;
-                }
-                currentSubscriber = new InnerSubscriber(id, remainingRequest);
-                currentSubscriber.requested = remainingRequest;
+                currentSubscriber = new InnerSubscriber<T>(id, arbiter, this);
             }
             ssub.set(currentSubscriber);
-
             t.unsafeSubscribe(currentSubscriber);
         }
 
         @Override
         public void onError(Throwable e) {
-            s.onError(e);
+            serializedChild.onError(e);
             unsubscribe();
         }
 
@@ -165,10 +131,10 @@ public final class OperatorSwitch<T> implements Operator<T, Observable<? extends
                 emitting = true;
             }
             drain(localQueue);
-            s.onCompleted();
+            serializedChild.onCompleted();
             unsubscribe();
         }
-        void emit(T value, int id, InnerSubscriber innerSubscriber) {
+        void emit(T value, int id, InnerSubscriber<T> innerSubscriber) {
             List<Object> localQueue;
             synchronized (guard) {
                 if (id != index) {
@@ -178,8 +144,6 @@ public final class OperatorSwitch<T> implements Operator<T, Observable<? extends
                     if (queue == null) {
                         queue = new ArrayList<Object>();
                     }
-                    if (innerSubscriber.requested != Long.MAX_VALUE)
-                        innerSubscriber.requested--;
                     queue.add(value);
                     return;
                 }
@@ -194,11 +158,8 @@ public final class OperatorSwitch<T> implements Operator<T, Observable<? extends
                     drain(localQueue);
                     if (once) {
                         once = false;
-                        synchronized (guard) {
-                            if (innerSubscriber.requested != Long.MAX_VALUE)
-                                innerSubscriber.requested--;
-                        }
-                        s.onNext(value);
+                        serializedChild.onNext(value);
+                        arbiter.produced(1);                        
                     }
                     synchronized (guard) {
                         localQueue = queue;
@@ -209,7 +170,7 @@ public final class OperatorSwitch<T> implements Operator<T, Observable<? extends
                             break;
                         }
                     }
-                } while (!s.isUnsubscribed());
+                } while (!serializedChild.isUnsubscribed());
             } finally {
                 if (!skipFinal) {
                     synchronized (guard) {
@@ -224,16 +185,17 @@ public final class OperatorSwitch<T> implements Operator<T, Observable<? extends
             }
             for (Object o : localQueue) {
                 if (nl.isCompleted(o)) {
-                    s.onCompleted();
+                    serializedChild.onCompleted();
                     break;
                 } else
                 if (nl.isError(o)) {
-                    s.onError(nl.getError(o));
+                    serializedChild.onError(nl.getError(o));
                     break;
                 } else {
                     @SuppressWarnings("unchecked")
                     T t = (T)o;
-                    s.onNext(t);
+                    serializedChild.onNext(t);
+                    arbiter.produced(1);
                 }
             }
         }
@@ -258,7 +220,7 @@ public final class OperatorSwitch<T> implements Operator<T, Observable<? extends
             }
 
             drain(localQueue);
-            s.onError(e);
+            serializedChild.onError(e);
             unsubscribe();
         }
         void complete(int id) {
@@ -285,51 +247,45 @@ public final class OperatorSwitch<T> implements Operator<T, Observable<? extends
             }
 
             drain(localQueue);
-            s.onCompleted();
+            serializedChild.onCompleted();
             unsubscribe();
         }
 
-        final class InnerSubscriber extends Subscriber<T> {
+    }
+    
+    private static final class InnerSubscriber<T> extends Subscriber<T> {
 
-            /**
-             * The number of request that is not acknowledged.
-             *
-             * Guarded by guard.
-             */
-            private long requested = 0;
+        private final int id;
 
-            private final int id;
+        private final ProducerArbiter arbiter;
 
-            private final long initialRequested;
+        private final SwitchSubscriber<T> parent;
 
-            public InnerSubscriber(int id, long initialRequested) {
-                this.id = id;
-                this.initialRequested = initialRequested;
-            }
+        InnerSubscriber(int id, ProducerArbiter arbiter, SwitchSubscriber<T> parent) {
+            this.id = id;
+            this.arbiter = arbiter;
+            this.parent = parent;
+        }
+        
+        @Override
+        public void setProducer(Producer p) {
+            arbiter.setProducer(p);
+        }
 
-            @Override
-            public void onStart() {
-                requestMore(initialRequested);
-            }
+        @Override
+        public void onNext(T t) {
+            parent.emit(t, id, this);
+        }
 
-            public void requestMore(long n) {
-                request(n);
-            }
+        @Override
+        public void onError(Throwable e) {
+            parent.error(e, id);
+        }
 
-            @Override
-            public void onNext(T t) {
-                emit(t, id, this);
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                error(e, id);
-            }
-
-            @Override
-            public void onCompleted() {
-                complete(id);
-            }
+        @Override
+        public void onCompleted() {
+            parent.complete(id);
         }
     }
+
 }
