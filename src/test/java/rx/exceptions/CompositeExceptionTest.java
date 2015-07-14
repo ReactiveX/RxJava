@@ -165,4 +165,17 @@ public class CompositeExceptionTest {
             }
         }
     }
+    
+    @Test
+    public void testNullCollection() {
+        CompositeException composite = new CompositeException(null);
+        composite.getCause();
+        composite.printStackTrace();
+    }
+    @Test
+    public void testNullElement() {
+        CompositeException composite = new CompositeException(Arrays.asList((Throwable)null));
+        composite.getCause();
+        composite.printStackTrace();
+    }
 }
