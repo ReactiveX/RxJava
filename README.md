@@ -58,7 +58,13 @@ All code inside the `rx.internal.*` packages is considered private API and shoul
 
 Binaries and dependency information for Maven, Ivy, Gradle and others can be found at [http://search.maven.org](http://search.maven.org/#search%7Cga%7C1%7Cio.reactivex.rxjava).
 
-Example for Maven:
+Example for Gradle:
+
+```groovy
+compile 'io.reactivex:rxjava:x.y.z'
+```
+
+and for Maven:
 
 ```xml
 <dependency>
@@ -71,6 +77,18 @@ and for Ivy:
 
 ```xml
 <dependency org="io.reactivex" name="rxjava" rev="x.y.z" />
+```
+
+Snapshots are available via [JFrog](https://oss.jfrog.org/webapp/search/artifact/?5&q=rxjava):
+
+```groovy
+repositories {
+    maven { url 'https://oss.jfrog.org/libs-snapshot' }
+}
+
+dependencies {
+    compile 'io.reactivex:rxjava:1.0.y-SNAPSHOT'
+}
 ```
 
 ## Build
