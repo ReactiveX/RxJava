@@ -32,12 +32,12 @@ import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.Subscriptions;
 
-public class OperatorSwitchIfEmptyTest {
+public class OperatorSwitchEmptyTest {
 
-    @Test
+    @Test(expected=RuntimeException.class)
     public void testSwitchWhenNotEmpty() throws Exception {
         final AtomicBoolean subscribed = new AtomicBoolean(false);
-        final Observable<Integer> observable = Observable.just(4).switchIfEmpty(Observable.just(2)
+        final Observable<Integer> observable = Observable.just(4).switchEmpty(Observable.just(2)
                 .doOnSubscribe(new Action0() {
                     @Override
                     public void call() {
@@ -45,14 +45,14 @@ public class OperatorSwitchIfEmptyTest {
                     }
                 }));
 
-        assertEquals(4, observable.toBlocking().single().intValue());
         assertFalse(subscribed.get());
+        observable.toBlocking().single();
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testSwitchWhenError() throws Exception {
         final AtomicBoolean subscribed = new AtomicBoolean(false);
-        final Observable<Integer> observable = Observable.<Integer>error(new IllegalArgumentException()).switchIfEmpty(Observable.just(2).doOnSubscribe(new Action0() {
+        final Observable<Integer> observable = Observable.error(new IllegalArgumentException()).switchEmpty(Observable.just(2).doOnSubscribe(new Action0() {
             @Override
             public void call() {
                 subscribed.set(true);
@@ -70,7 +70,7 @@ public class OperatorSwitchIfEmptyTest {
     @Test(expected = IllegalArgumentException.class)
     public void testSwitchWhenAlternateError() throws Exception {
         final AtomicBoolean subscribed = new AtomicBoolean(false);
-        final Observable<Integer> observable = Observable.<Integer>empty().switchIfEmpty(Observable.<Integer> error(new IllegalArgumentException()).doOnSubscribe(new Action0() {
+        final Observable<Integer> observable = Observable.empty().switchEmpty(Observable.<Integer> error(new IllegalArgumentException()).doOnSubscribe(new Action0() {
             @Override
             public void call() {
                 subscribed.set(true);
@@ -87,7 +87,7 @@ public class OperatorSwitchIfEmptyTest {
 
     @Test
     public void testSwitchWhenEmpty() throws Exception {
-        final Observable<Integer> observable = Observable.<Integer>empty().switchIfEmpty(Observable.from(Arrays.asList(42)));
+        final Observable<Integer> observable = Observable.<Integer>empty().switchEmpty(Observable.from(Arrays.asList(42)));
 
         assertEquals(42, observable.toBlocking().single().intValue());
     }
@@ -111,7 +111,7 @@ public class OperatorSwitchIfEmptyTest {
             }
         });
 
-        final Observable<Long> observable = Observable.<Long>empty().switchIfEmpty(withProducer);
+        final Observable<Long> observable = Observable.<Long>empty().switchEmpty(withProducer);
         assertEquals(42, observable.toBlocking().single().intValue());
     }
 
@@ -127,7 +127,7 @@ public class OperatorSwitchIfEmptyTest {
             }
         });
 
-        final Subscription sub = Observable.<Long>empty().switchIfEmpty(withProducer).lift(new Observable.Operator<Long, Long>() {
+        final Subscription sub = Observable.<Long>empty().switchEmpty(withProducer).lift(new Observable.Operator<Long, Long>() {
             @Override
             public Subscriber<? super Long> call(final Subscriber<? super Long> child) {
                 return new Subscriber<Long>(child) {
@@ -164,7 +164,7 @@ public class OperatorSwitchIfEmptyTest {
                 subscriber.add(s);
                 subscriber.onCompleted();
             }
-        }).switchIfEmpty(Observable.<Long>never()).subscribe();
+        }).switchEmpty(Observable.<Long>never()).subscribe();
         assertTrue(s.isUnsubscribed());
     }
 
@@ -178,7 +178,7 @@ public class OperatorSwitchIfEmptyTest {
                 request(1);
             }
         };
-        Observable.<Integer>empty().switchIfEmpty(Observable.just(1, 2, 3)).subscribe(ts);
+        Observable.<Integer>empty().switchEmpty(Observable.just(1, 2, 3)).subscribe(ts);
         
         assertEquals(Arrays.asList(1), ts.getOnNextEvents());
         ts.assertNoErrors();
@@ -196,7 +196,7 @@ public class OperatorSwitchIfEmptyTest {
                 request(0);
             }
         };
-        Observable.<Integer>empty().switchIfEmpty(Observable.just(1, 2, 3)).subscribe(ts);
+        Observable.<Integer>empty().switchEmpty(Observable.just(1, 2, 3)).subscribe(ts);
         assertTrue(ts.getOnNextEvents().isEmpty());
         ts.assertNoErrors();
     }
@@ -204,7 +204,7 @@ public class OperatorSwitchIfEmptyTest {
     @Test
     public void testBackpressureOnFirstObservable() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>(0);
-        Observable.just(1,2,3).switchIfEmpty(Observable.just(4, 5, 6)).subscribe(ts);
+        Observable.just(1,2,3).switchEmpty(Observable.just(4, 5, 6)).subscribe(ts);
         ts.assertNotCompleted();
         ts.assertNoErrors();
         ts.assertNoValues();
@@ -230,7 +230,7 @@ public class OperatorSwitchIfEmptyTest {
                         }
                     }});
             }})
-          .switchIfEmpty(Observable.from(Arrays.asList(1L, 2L, 3L)))
+          .switchEmpty(Observable.from(Arrays.asList(1L, 2L, 3L)))
           .subscribeOn(Schedulers.computation())
           .subscribe(ts);
         ts.requestMore(0);
