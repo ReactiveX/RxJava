@@ -3556,13 +3556,13 @@ public class Observable<T> {
      *  <dd>{@code cache} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param capacity hint for number of items to cache (for optimizing underlying data structure)
+     * @param capacityHint hint for number of items to cache (for optimizing underlying data structure)
      * @return an Observable that, when first subscribed to, caches all of its items and notifications for the
      *         benefit of subsequent subscribers
      * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
      */
-    public final Observable<T> cache(int capacity) {
-        return CachedObservable.from(this, capacity);
+    public final Observable<T> cache(int capacityHint) {
+        return CachedObservable.from(this, capacityHint);
     }
 
     /**
