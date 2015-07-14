@@ -15,13 +15,18 @@
  */
 package rx.internal.operators;
 
-import org.junit.Test;
-import rx.Observable;
-import rx.Single;
-import rx.observers.TestSubscriber;
+import static org.junit.Assert.assertFalse;
 
 import java.util.Collections;
 import java.util.NoSuchElementException;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+import org.junit.Test;
+
+import rx.Observable;
+import rx.Single;
+import rx.functions.Action0;
+import rx.observers.TestSubscriber;
 
 public class OnSubscribeSingleTest {
 
@@ -69,5 +74,20 @@ public class OnSubscribeSingleTest {
         single.subscribe(subscriber);
 
         subscriber.assertError(IllegalArgumentException.class);
+    }
+    
+    @Test
+    public void testShouldUseUnsafeSubscribeInternallyNotSubscribe() {
+        TestSubscriber<String> subscriber = TestSubscriber.create();
+        final AtomicBoolean unsubscribed = new AtomicBoolean(false);
+        Single<String> single = Observable.just("Hello World!").doOnUnsubscribe(new Action0() {
+
+            @Override
+            public void call() {
+                unsubscribed.set(true);
+            }}).toSingle();
+        single.unsafeSubscribe(subscriber);
+        subscriber.assertCompleted();
+        assertFalse(unsubscribed.get());
     }
 }
