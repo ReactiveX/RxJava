@@ -16,22 +16,15 @@
 package rx.internal.operators;
 
 import java.util.Queue;
-import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
-import java.util.concurrent.atomic.AtomicLongFieldUpdater;
+import java.util.concurrent.atomic.*;
 
 import rx.Observable.Operator;
-import rx.Producer;
-import rx.Scheduler;
-import rx.Subscriber;
-import rx.Subscription;
+import rx.*;
 import rx.exceptions.MissingBackpressureException;
 import rx.functions.Action0;
-import rx.internal.util.RxRingBuffer;
-import rx.internal.util.SynchronizedQueue;
-import rx.internal.util.unsafe.SpscArrayQueue;
-import rx.internal.util.unsafe.UnsafeAccess;
-import rx.schedulers.ImmediateScheduler;
-import rx.schedulers.TrampolineScheduler;
+import rx.internal.util.*;
+import rx.internal.util.unsafe.*;
+import rx.schedulers.*;
 
 /**
  * Delivers events on the specified {@code Scheduler} asynchronously via an unbounded buffer.
@@ -43,6 +36,21 @@ import rx.schedulers.TrampolineScheduler;
  */
 public final class OperatorObserveOn<T> implements Operator<T, T> {
 
+    /** The key to the request batch percent parameter. */
+    private static final String RX_OBSERVE_ON_REQUEST_BATCH_PERCENT = "rx.observe-on.request-batch-percent";
+    /** The number of elements to emit before requesting more in the pollQueue. */
+    static final int REQUEST_BATCH_COUNT;
+    
+    static {
+        int max = RxRingBuffer.SIZE;
+        int b = 0;
+        if (System.getProperty(RX_OBSERVE_ON_REQUEST_BATCH_PERCENT) != null) {
+            int percent = Integer.getInteger(RX_OBSERVE_ON_REQUEST_BATCH_PERCENT, 25);
+            b = Math.max(0, Math.min(max, max * percent / 100));
+        }
+        REQUEST_BATCH_COUNT = b;
+    }
+    
     private final Scheduler scheduler;
 
     /**
@@ -79,7 +87,6 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
         // the status of the current stream
         volatile boolean finished = false;
 
-        @SuppressWarnings("unused")
         volatile long requested = 0;
         
         @SuppressWarnings("rawtypes")
@@ -209,6 +216,16 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
                             r--;
                             emitted++;
                             produced++;
+                            
+                            final int rbc = REQUEST_BATCH_COUNT;
+                            if (rbc != 0 && produced == rbc) {
+                                if (requested != Long.MAX_VALUE) {
+                                    REQUESTED.addAndGet(this, -produced);
+                                }
+                                request(produced);
+                                produced = 0;
+                                emitted = 0;
+                            }
                         } else {
                             break;
                         }
