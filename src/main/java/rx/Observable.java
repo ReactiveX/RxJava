@@ -1750,6 +1750,7 @@ public class Observable<T> {
      * @throws IllegalArgumentException
      *             if {@code maxConcurrent} is less than or equal to 0
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
     @Experimental
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -2048,11 +2049,13 @@ public class Observable<T> {
      *            the maximum number of Observables that may be subscribed to concurrently
      * @return an Observable that emits all of the items emitted by the Observables in the Array
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
     @Experimental
     public final static <T> Observable<T> merge(Observable<? extends T>[] sequences, int maxConcurrent) {
         return merge(from(sequences), maxConcurrent);
     }
+
     /**
      * Flattens an Observable that emits Observables into one Observable, in a way that allows an Observer to
      * receive all successfully emitted items from all of the source Observables without being interrupted by
@@ -2080,6 +2083,7 @@ public class Observable<T> {
     public final static <T> Observable<T> mergeDelayError(Observable<? extends Observable<? extends T>> source) {
         return source.lift(OperatorMerge.<T>instance(true));
     }
+
     /**
      * Flattens an Observable that emits Observables into one Observable, in a way that allows an Observer to
      * receive all successfully emitted items from all of the source Observables without being interrupted by
@@ -2106,6 +2110,7 @@ public class Observable<T> {
      * @return an Observable that emits all of the items emitted by the Observables emitted by the
      *         {@code source} Observable
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
     @Experimental
     public final static <T> Observable<T> mergeDelayError(Observable<? extends Observable<? extends T>> source, int maxConcurrent) {
@@ -5519,6 +5524,7 @@ public class Observable<T> {
     public final Observable<T> onBackpressureBlock(int maxQueueLength) {
         return lift(new OperatorOnBackpressureBlock<T>(maxQueueLength));
     }
+
     /**
      * Instructs an Observable that is emitting items faster than its observer can consume them to block the
      * producer thread if the number of undelivered onNext events reaches the system-wide ring buffer size.
