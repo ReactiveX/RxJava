@@ -21,7 +21,9 @@ import rx.*;
 import rx.Observable.Operator;
 import rx.Observable;
 import rx.Observer;
+import rx.functions.Func0;
 import rx.observers.SerializedSubscriber;
+import rx.subscriptions.SerialSubscription;
 
 /**
  * Creates non-overlapping windows of items where each window is terminated by
@@ -30,25 +32,21 @@ import rx.observers.SerializedSubscriber;
  * @param <T> the value type
  * @param <U> the boundary value type
  */
-public final class OperatorWindowWithObservable<T, U> implements Operator<Observable<T>, T> {
-    final Observable<U> other;
+public final class OperatorWindowWithObservableFactory<T, U> implements Operator<Observable<T>, T> {
+    final Func0<? extends Observable<? extends U>> otherFactory;
 
-    public OperatorWindowWithObservable(final Observable<U> other) {
-        this.other = other;
+    public OperatorWindowWithObservableFactory(Func0<? extends Observable<? extends U>> otherFactory) {
+        this.otherFactory = otherFactory;
     }
     
     @Override
     public Subscriber<? super T> call(Subscriber<? super Observable<T>> child) {
         
-        SourceSubscriber<T> sub = new SourceSubscriber<T>(child);
-        BoundarySubscriber<T, U> bs = new BoundarySubscriber<T, U>(child, sub);
+        SourceSubscriber<T, U> sub = new SourceSubscriber<T, U>(child, otherFactory);
         
         child.add(sub);
-        child.add(bs);
         
         sub.replaceWindow();
-        
-        other.unsafeSubscribe(bs);
         
         return sub;
     }
@@ -57,7 +55,7 @@ public final class OperatorWindowWithObservable<T, U> implements Operator<Observ
     /** For error and completion indication. */
     static final NotificationLite<Object> nl = NotificationLite.instance();
     /** Observes the source. */
-    static final class SourceSubscriber<T> extends Subscriber<T> {
+    static final class SourceSubscriber<T, U> extends Subscriber<T> {
         final Subscriber<? super Observable<T>> child;
         final Object guard;
         /** Accessed from the serialized part. */
@@ -69,9 +67,17 @@ public final class OperatorWindowWithObservable<T, U> implements Operator<Observ
         /** Guarded by guard. */
         List<Object> queue;
         
-        public SourceSubscriber(Subscriber<? super Observable<T>> child) {
+        final SerialSubscription ssub;
+        
+        final Func0<? extends Observable<? extends U>> otherFactory;
+        
+        public SourceSubscriber(Subscriber<? super Observable<T>> child, 
+                Func0<? extends Observable<? extends U>> otherFactory) {
             this.child = new SerializedSubscriber<Observable<T>>(child);
             this.guard = new Object();
+            this.ssub = new SerialSubscription();
+            this.otherFactory = otherFactory;
+            this.add(ssub);
         }
         
         @Override
@@ -157,6 +163,18 @@ public final class OperatorWindowWithObservable<T, U> implements Operator<Observ
             BufferUntilSubscriber<T> bus = BufferUntilSubscriber.create();
             consumer = bus;
             producer = bus;
+            Observable<? extends U> other;
+            try {
+                other = otherFactory.call();
+            } catch (Throwable e) {
+                child.onError(e);
+                unsubscribe();
+                return;
+            }
+            
+            BoundarySubscriber<T, U> bs = new BoundarySubscriber<T, U>(child, this);
+            ssub.set(bs);
+            other.unsafeSubscribe(bs);
         }
         void emitValue(T t) {
             Observer<T> s = consumer;
@@ -267,8 +285,9 @@ public final class OperatorWindowWithObservable<T, U> implements Operator<Observ
     }
     /** Observes the boundary. */
     static final class BoundarySubscriber<T, U> extends Subscriber<U> {
-        final SourceSubscriber<T> sub;
-        public BoundarySubscriber(Subscriber<?> child, SourceSubscriber<T> sub) {
+        final SourceSubscriber<T, U> sub;
+        boolean done;
+        public BoundarySubscriber(Subscriber<?> child, SourceSubscriber<T, U> sub) {
             this.sub = sub;
         }
         
@@ -279,7 +298,10 @@ public final class OperatorWindowWithObservable<T, U> implements Operator<Observ
         
         @Override
         public void onNext(U t) {
-            sub.replaceWindow();
+            if (!done) {
+                done = true;
+                sub.replaceWindow();
+            }
         }
 
         @Override
@@ -289,7 +311,10 @@ public final class OperatorWindowWithObservable<T, U> implements Operator<Observ
 
         @Override
         public void onCompleted() {
-            sub.onCompleted();
+            if (!done) {
+                done = true;
+                sub.onCompleted();
+            }
         }
     }
 }

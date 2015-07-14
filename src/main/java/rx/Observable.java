@@ -9059,7 +9059,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/window.html">ReactiveX operators documentation: Window</a>
      */
     public final <TClosing> Observable<Observable<T>> window(Func0<? extends Observable<? extends TClosing>> closingSelector) {
-        return lift(new OperatorWindowWithObservable<T, TClosing>(closingSelector));
+        return lift(new OperatorWindowWithObservableFactory<T, TClosing>(closingSelector));
     }
 
     /**

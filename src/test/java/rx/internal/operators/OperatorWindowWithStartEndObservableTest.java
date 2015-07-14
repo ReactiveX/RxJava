@@ -15,25 +15,20 @@
  */
 package rx.internal.operators;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 
+import rx.*;
 import rx.Observable;
 import rx.Observer;
-import rx.Scheduler;
-import rx.Subscriber;
-import rx.functions.Action0;
-import rx.functions.Action1;
-import rx.functions.Func0;
-import rx.functions.Func1;
+import rx.functions.*;
+import rx.observers.TestSubscriber;
 import rx.schedulers.TestScheduler;
+import rx.subjects.PublishSubject;
 
 public class OperatorWindowWithStartEndObservableTest {
 
@@ -112,14 +107,21 @@ public class OperatorWindowWithStartEndObservableTest {
         });
 
         Func0<Observable<Object>> closer = new Func0<Observable<Object>>() {
+            int calls;
             @Override
             public Observable<Object> call() {
                 return Observable.create(new Observable.OnSubscribe<Object>() {
                     @Override
                     public void call(Subscriber<? super Object> observer) {
-                        push(observer, new Object(), 100);
-                        push(observer, new Object(), 200);
-                        complete(observer, 301);
+                        int c = calls++;
+                        if (c == 0) {
+                            push(observer, new Object(), 100);
+                        } else
+                        if (c == 1) {
+                            push(observer, new Object(), 100);
+                        } else {
+                            complete(observer, 101);
+                        }
                     }
                 });
             }
@@ -184,5 +186,69 @@ public class OperatorWindowWithStartEndObservableTest {
                 });
             }
         };
+    }
+    
+    @Test
+    public void testNoUnsubscribeAndNoLeak() {
+        PublishSubject<Integer> source = PublishSubject.create();
+        
+        PublishSubject<Integer> open = PublishSubject.create();
+        final PublishSubject<Integer> close = PublishSubject.create();
+        
+        TestSubscriber<Observable<Integer>> ts = TestSubscriber.create();
+        
+        source.window(open, new Func1<Integer, Observable<Integer>>() {
+            @Override
+            public Observable<Integer> call(Integer t) {
+                return close;
+            }
+        }).unsafeSubscribe(ts);
+        
+        open.onNext(1);
+        source.onNext(1);
+        
+        assertTrue(open.hasObservers());
+        assertTrue(close.hasObservers());
+
+        close.onNext(1);
+        
+        assertFalse(close.hasObservers());
+        
+        source.onCompleted();
+        
+        ts.assertCompleted();
+        ts.assertNoErrors();
+        ts.assertValueCount(1);
+        
+        assertFalse(ts.isUnsubscribed());
+        assertFalse(open.hasObservers());
+        assertFalse(close.hasObservers());
+    }
+    
+    @Test
+    public void testUnsubscribeAll() {
+        PublishSubject<Integer> source = PublishSubject.create();
+        
+        PublishSubject<Integer> open = PublishSubject.create();
+        final PublishSubject<Integer> close = PublishSubject.create();
+        
+        TestSubscriber<Observable<Integer>> ts = TestSubscriber.create();
+        
+        source.window(open, new Func1<Integer, Observable<Integer>>() {
+            @Override
+            public Observable<Integer> call(Integer t) {
+                return close;
+            }
+        }).unsafeSubscribe(ts);
+        
+        open.onNext(1);
+        
+        assertTrue(open.hasObservers());
+        assertTrue(close.hasObservers());
+
+        ts.unsubscribe();
+        
+        assertFalse(open.hasObservers());
+        assertFalse(close.hasObservers());
     }
 }
