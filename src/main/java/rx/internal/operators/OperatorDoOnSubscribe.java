@@ -18,6 +18,7 @@ package rx.internal.operators;
 import rx.Observable.Operator;
 import rx.Subscriber;
 import rx.functions.Action0;
+import rx.observers.Subscribers;
 
 /**
  * This operator modifies an {@link rx.Observable} so a given action is invoked when the {@link rx.Observable} is subscribed.
@@ -39,19 +40,6 @@ public class OperatorDoOnSubscribe<T> implements Operator<T, T> {
         subscribe.call();
         // Pass through since this operator is for notification only, there is
         // no change to the stream whatsoever.
-        return new Subscriber<T>(child) {
-            @Override
-            public void onNext(T t) {
-                child.onNext(t);
-            }
-            @Override
-            public void onError(Throwable e) {
-                child.onError(e);
-            }
-            @Override
-            public void onCompleted() {
-                child.onCompleted();
-            }
-        };
+        return Subscribers.wrap(child);
     }
 }

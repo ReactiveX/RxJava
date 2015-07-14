@@ -19,6 +19,7 @@ import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Subscriber;
 import rx.functions.Func0;
+import rx.observers.Subscribers;
 
 /**
  * Do not create the Observable until an Observer subscribes; create a fresh Observable on each
@@ -46,20 +47,7 @@ public final class OnSubscribeDefer<T> implements OnSubscribe<T> {
             s.onError(t);
             return;
         }
-        o.unsafeSubscribe(new Subscriber<T>(s) {
-            @Override
-            public void onNext(T t) {
-                s.onNext(t);
-            }
-            @Override
-            public void onError(Throwable e) {
-                s.onError(e);
-            }
-            @Override
-            public void onCompleted() {
-                s.onCompleted();
-            }
-        });
+        o.unsafeSubscribe(Subscribers.wrap(s));
     }
     
 }
