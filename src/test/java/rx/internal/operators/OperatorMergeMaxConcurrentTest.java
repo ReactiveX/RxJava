@@ -190,7 +190,7 @@ public class OperatorMergeMaxConcurrentTest {
             ts.assertReceivedOnNext(result);
         }
     }
-    @Test(timeout = 10000)
+    @Test(timeout = 20000)
     public void testSimpleAsyncLoop() {
         for (int i = 0; i < 200; i++) {
             testSimpleAsync();

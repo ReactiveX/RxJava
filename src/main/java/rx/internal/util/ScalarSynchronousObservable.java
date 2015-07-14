@@ -15,9 +15,12 @@
  */
 package rx.internal.util;
 
-import rx.*;
+import rx.Observable;
+import rx.Scheduler;
 import rx.Scheduler.Worker;
+import rx.Subscriber;
 import rx.functions.Action0;
+import rx.functions.Func1;
 import rx.internal.schedulers.EventLoopsScheduler;
 
 public final class ScalarSynchronousObservable<T> extends Observable<T> {
@@ -116,5 +119,33 @@ public final class ScalarSynchronousObservable<T> extends Observable<T> {
             }
             subscriber.onCompleted();
         }
+    }
+    
+    public <R> Observable<R> scalarFlatMap(final Func1<? super T, ? extends Observable<? extends R>> func) {
+        return create(new OnSubscribe<R>() {
+            @Override
+            public void call(final Subscriber<? super R> child) {
+                Observable<? extends R> o = func.call(t);
+                if (o.getClass() == ScalarSynchronousObservable.class) {
+                    child.onNext(((ScalarSynchronousObservable<? extends R>)o).t);
+                    child.onCompleted();
+                } else {
+                    o.unsafeSubscribe(new Subscriber<R>(child) {
+                        @Override
+                        public void onNext(R v) {
+                            child.onNext(v);
+                        }
+                        @Override
+                        public void onError(Throwable e) {
+                            child.onError(e);
+                        }
+                        @Override
+                        public void onCompleted() {
+                            child.onCompleted();
+                        }
+                    });
+                }
+            }
+        });
     }
 }

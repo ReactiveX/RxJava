@@ -1693,7 +1693,11 @@ public class Observable<T> {
      *         {@code source} Observable
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      */
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public final static <T> Observable<T> merge(Observable<? extends Observable<? extends T>> source) {
+        if (source.getClass() == ScalarSynchronousObservable.class) {
+            return ((ScalarSynchronousObservable<T>)source).scalarFlatMap((Func1)UtilityFunctions.identity());
+        }
         return source.lift(OperatorMerge.<T>instance(false));
     }
 
@@ -1721,8 +1725,13 @@ public class Observable<T> {
      *             if {@code maxConcurrent} is less than or equal to 0
      * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
      */
+    @Experimental
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public final static <T> Observable<T> merge(Observable<? extends Observable<? extends T>> source, int maxConcurrent) {
-        return source.lift(new OperatorMergeMaxConcurrent<T>(maxConcurrent));
+        if (source.getClass() == ScalarSynchronousObservable.class) {
+            return ((ScalarSynchronousObservable<T>)source).scalarFlatMap((Func1)UtilityFunctions.identity());
+        }
+        return source.lift(OperatorMerge.<T>instance(false, maxConcurrent));
     }
 
     /**
@@ -1993,7 +2002,31 @@ public class Observable<T> {
     public final static <T> Observable<T> merge(Observable<? extends T>[] sequences) {
         return merge(from(sequences));
     }
-
+    
+    /**
+     * Flattens an Array of Observables into one Observable, without any transformation, while limiting the
+     * number of concurrent subscriptions to these Observables.
+     * <p>
+     * <img width="640" height="370" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/merge.io.png" alt="">
+     * <p>
+     * You can combine items emitted by multiple Observables so that they appear as a single Observable, by
+     * using the {@code merge} method.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code merge} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @param sequences
+     *            the Array of Observables
+     * @param maxConcurrent
+     *            the maximum number of Observables that may be subscribed to concurrently
+     * @return an Observable that emits all of the items emitted by the Observables in the Array
+     * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
+     */
+    @Experimental
+    public final static <T> Observable<T> merge(Observable<? extends T>[] sequences, int maxConcurrent) {
+        return merge(from(sequences), maxConcurrent);
+    }
     /**
      * Flattens an Observable that emits Observables into one Observable, in a way that allows an Observer to
      * receive all successfully emitted items from all of the source Observables without being interrupted by
@@ -2020,6 +2053,37 @@ public class Observable<T> {
      */
     public final static <T> Observable<T> mergeDelayError(Observable<? extends Observable<? extends T>> source) {
         return source.lift(OperatorMerge.<T>instance(true));
+    }
+    /**
+     * Flattens an Observable that emits Observables into one Observable, in a way that allows an Observer to
+     * receive all successfully emitted items from all of the source Observables without being interrupted by
+     * an error notification from one of them, while limiting the
+     * number of concurrent subscriptions to these Observables.
+     * <p>
+     * This behaves like {@link #merge(Observable)} except that if any of the merged Observables notify of an
+     * error via {@link Observer#onError onError}, {@code mergeDelayError} will refrain from propagating that
+     * error notification until all of the merged Observables have finished emitting items.
+     * <p>
+     * <img width="640" height="380" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/mergeDelayError.png" alt="">
+     * <p>
+     * Even if multiple merged Observables send {@code onError} notifications, {@code mergeDelayError} will only
+     * invoke the {@code onError} method of its Observers once.
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code mergeDelayError} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     * 
+     * @param source
+     *            an Observable that emits Observables
+     * @param maxConcurrent
+     *            the maximum number of Observables that may be subscribed to concurrently
+     * @return an Observable that emits all of the items emitted by the Observables emitted by the
+     *         {@code source} Observable
+     * @see <a href="http://reactivex.io/documentation/operators/merge.html">ReactiveX operators documentation: Merge</a>
+     */
+    @Experimental
+    public final static <T> Observable<T> mergeDelayError(Observable<? extends Observable<? extends T>> source, int maxConcurrent) {
+        return source.lift(OperatorMerge.<T>instance(true, maxConcurrent));
     }
 
     /**
@@ -4618,6 +4682,9 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
      */
     public final <R> Observable<R> flatMap(Func1<? super T, ? extends Observable<? extends R>> func) {
+        if (getClass() == ScalarSynchronousObservable.class) {
+            return ((ScalarSynchronousObservable<T>)this).scalarFlatMap(func);
+        }
         return merge(map(func));
     }
 
@@ -4646,6 +4713,9 @@ public class Observable<T> {
      */
     @Beta
     public final <R> Observable<R> flatMap(Func1<? super T, ? extends Observable<? extends R>> func, int maxConcurrent) {
+        if (getClass() == ScalarSynchronousObservable.class) {
+            return ((ScalarSynchronousObservable<T>)this).scalarFlatMap(func);
+        }
         return merge(map(func), maxConcurrent);
     }
 
