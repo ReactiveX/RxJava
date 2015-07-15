@@ -4940,9 +4940,9 @@ public class Observable<T> {
      * @param onNext
      *            {@link Action1} to execute for each item.
      * @throws IllegalArgumentException
-     *             if {@code onNext} is null, or
-     *             if {@code onError} is null, or
-     *             if {@code onComplete} is null
+     *             if {@code onNext} is null
+     * @throws OnErrorNotImplementedException
+     *             if the Observable calls {@code onError}
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
      */
     public final void forEach(final Action1<? super T> onNext) {
@@ -4964,8 +4964,9 @@ public class Observable<T> {
      *            {@link Action1} to execute when an error is emitted.
      * @throws IllegalArgumentException
      *             if {@code onNext} is null, or
-     *             if {@code onError} is null, or
-     *             if {@code onComplete} is null
+     *             if {@code onError} is null
+     * @throws OnErrorNotImplementedException
+     *             if the Observable calls {@code onError}
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
      */
     public final void forEach(final Action1<? super T> onNext, final Action1<Throwable> onError) {
@@ -4991,6 +4992,8 @@ public class Observable<T> {
      *             if {@code onNext} is null, or
      *             if {@code onError} is null, or
      *             if {@code onComplete} is null
+     * @throws OnErrorNotImplementedException
+     *             if the Observable calls {@code onError}
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
      */
     public final void forEach(final Action1<? super T> onNext, final Action1<Throwable> onError, final Action0 onComplete) {
@@ -7485,7 +7488,7 @@ public class Observable<T> {
      * @throws IllegalArgumentException
      *             if {@code onNext} is null
      * @throws OnErrorNotImplementedException
-     *             if the Observable tries to call {@code onError}
+     *             if the Observable calls {@code onError}
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
      */
     public final Subscription subscribe(final Action1<? super T> onNext) {
