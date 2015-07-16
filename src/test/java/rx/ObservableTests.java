@@ -53,7 +53,6 @@ import rx.functions.Action2;
 import rx.functions.Func0;
 import rx.functions.Func1;
 import rx.functions.Func2;
-import rx.functions.Functions;
 import rx.observables.ConnectableObservable;
 import rx.observers.TestSubscriber;
 import rx.schedulers.TestScheduler;
@@ -1156,5 +1155,20 @@ public class ObservableTests {
         Observable.error(new Exception("boo"))
         //
         .forEach(null);
+    }
+    
+    @Test
+    public void testExtend() {
+        final TestSubscriber<Object> subscriber = new TestSubscriber<Object>();
+        final Object value = new Object();
+        Observable.just(value).x(new Func1<OnSubscribe<Object>,Object>(){
+            @Override
+            public Object call(OnSubscribe<Object> onSubscribe) {
+                onSubscribe.call(subscriber);
+                subscriber.assertNoErrors();
+                subscriber.assertCompleted();
+                subscriber.assertValue(value);
+                return subscriber.getOnNextEvents().get(0);
+            }});
     }
 }
