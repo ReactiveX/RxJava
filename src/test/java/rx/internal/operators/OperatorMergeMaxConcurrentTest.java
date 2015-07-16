@@ -224,7 +224,11 @@ public class OperatorMergeMaxConcurrentTest {
     }
     @Test(timeout = 10000)
     public void testSimpleOneLessAsync() {
+        long t = System.currentTimeMillis();
         for (int i = 2; i < 50; i++) {
+            if (System.currentTimeMillis() - t > TimeUnit.SECONDS.toMillis(9)) {
+                break;
+            }
             TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
             List<Observable<Integer>> sourceList = new ArrayList<Observable<Integer>>(i);
             Set<Integer> expected = new HashSet<Integer>(i);

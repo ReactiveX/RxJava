@@ -419,7 +419,13 @@ public class BackpressureTests {
 
     @Test(timeout = 10000)
     public void testOnBackpressureDrop() {
+        long t = System.currentTimeMillis();
         for (int i = 0; i < 100; i++) {
+            // stop the test if we are getting close to the timeout because slow machines 
+            // may not get through 100 iterations
+            if (System.currentTimeMillis() - t > TimeUnit.SECONDS.toMillis(9)) {
+                break;
+            }
             int NUM = (int) (RxRingBuffer.SIZE * 1.1); // > 1 so that take doesn't prevent buffer overflow
             AtomicInteger c = new AtomicInteger();
             TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
