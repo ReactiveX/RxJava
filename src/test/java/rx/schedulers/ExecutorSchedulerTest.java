@@ -177,11 +177,11 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
         };
         ExecutorSchedulerWorker w = (ExecutorSchedulerWorker)Schedulers.from(e).createWorker();
         
-        w.schedule(Actions.empty(), 1, TimeUnit.MILLISECONDS);
+        w.schedule(Actions.empty(), 50, TimeUnit.MILLISECONDS);
         
         assertTrue(w.tasks.hasSubscriptions());
         
-        Thread.sleep(100);
+        Thread.sleep(150);
         
         assertFalse(w.tasks.hasSubscriptions());
     }
