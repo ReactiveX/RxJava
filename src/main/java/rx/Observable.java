@@ -3583,7 +3583,8 @@ public class Observable<T> {
      * of items that will use up memory.
      * <dl>
      *  <dt><b>Backpressure Support:</b></dt>
-     *  <dd>This operator supports backpressure.</dd>
+     *  <dd>This operator does not support upstream backpressure as it is purposefully requesting and caching
+     *      everything emitted.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code cache} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -3616,7 +3617,8 @@ public class Observable<T> {
      * of items that will use up memory.
      * <dl>
      *  <dt><b>Backpressure Support:</b></dt>
-     *  <dd>This operator supports backpressure.</dd>
+     *  <dd>This operator does not support upstream backpressure as it is purposefully requesting and caching
+     *      everything emitted.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code cache} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
