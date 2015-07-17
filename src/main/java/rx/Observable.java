@@ -3594,7 +3594,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
      */
     public final Observable<T> cache() {
-        return CachedObservable.from(this);
+        return create(new OnSubscribeCache<T>(this));
     }
 
     /**
@@ -3629,7 +3629,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
      */
     public final Observable<T> cache(int capacityHint) {
-        return CachedObservable.from(this, capacityHint);
+        return create(new OnSubscribeCache<T>(this, capacityHint));
     }
 
     /**
