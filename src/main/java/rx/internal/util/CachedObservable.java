@@ -17,6 +17,8 @@
 import java.util.concurrent.atomic.*;
 
 import rx.*;
+import rx.exceptions.Exceptions;
+import rx.exceptions.OnErrorThrowable;
 import rx.internal.operators.NotificationLite;
 import rx.subscriptions.SerialSubscription;
 
@@ -170,48 +172,51 @@ public final class CachedObservable<T> extends Observable<T> {
          * Make sure this is called only once.
          */
         public void connect() {
-            connection.set(source.subscribe(this));
+            Subscriber<T> subscriber = new Subscriber<T>() {
+                @Override
+                public void onNext(T t) {
+                    CacheState.this.onNext(t);
+                }
+                @Override
+                public void onError(Throwable e) {
+                    CacheState.this.onError(e);
+                }
+                @Override
+                public void onCompleted() {
+                    CacheState.this.onCompleted();
+                }
+            };
+            connection.set(subscriber);
+            source.unsafeSubscribe(subscriber);
             isConnected = true;
         }
         @Override
         public void onNext(T t) {
-            Object o = nl.next(t);
-            synchronized (this) {
-                if (!sourceDone) {
-                    add(o);
-                } else {
-                    return;
-                }
+            if (!sourceDone) {
+                Object o = nl.next(t);
+                add(o);
+                dispatch();
             }
-            dispatch();
         }
         @Override
         public void onError(Throwable e) {
-            Object o = nl.error(e);
-            synchronized (this) {
-                if (!sourceDone) {
-                    sourceDone = true;
-                    add(o);
-                } else {
-                    return;
-                }
+            if (!sourceDone) {
+                sourceDone = true;
+                Object o = nl.error(e);
+                add(o);
+                connection.unsubscribe();
+                dispatch();
             }
-            connection.unsubscribe();
-            dispatch();
         }
         @Override
         public void onCompleted() {
-            Object o = nl.completed();
-            synchronized (this) {
-                if (!sourceDone) {
-                    sourceDone = true;
-                    add(o);
-                } else {
-                    return;
-                }
+            if (!sourceDone) {
+                sourceDone = true;
+                Object o = nl.completed();
+                add(o);
+                connection.unsubscribe();
+                dispatch();
             }
-            connection.unsubscribe();
-            dispatch();
         }
         /**
          * Signals all known children there is work to do.
@@ -352,6 +357,12 @@ public final class CachedObservable<T> extends Observable<T> {
                 for (;;) {
                     
                     long r = get();
+                    
+                    if (r < 0L) {
+                        skipFinal = true;
+                        return;
+                    }
+                        
                     // read the size, if it is non-zero, we can safely read the head and
                     // read values up to the given absolute index
                     int s = state.size();
@@ -385,16 +396,30 @@ public final class CachedObservable<T> extends Observable<T> {
                         if (r > 0) {
                             int valuesProduced = 0;
                             
-                            while (j < s && r > 0 && !child.isUnsubscribed()) {
+                            while (j < s && r > 0) {
+                                if (child.isUnsubscribed()) {
+                                    skipFinal = true;
+                                    return;
+                                }
                                 if (k == n) {
                                     b = (Object[])b[n];
                                     k = 0;
                                 }
                                 Object o = b[k];
                                 
-                                if (nl.accept(child, o)) {
+                                try {
+                                    if (nl.accept(child, o)) {
+                                        skipFinal = true;
+                                        unsubscribe();
+                                        return;
+                                    }
+                                } catch (Throwable err) {
+                                    Exceptions.throwIfFatal(err);
                                     skipFinal = true;
                                     unsubscribe();
+                                    if (!nl.isError(o) && !nl.isCompleted(o)) {
+                                        child.onError(OnErrorThrowable.addValueAsLastCause(err, nl.getValue(o)));
+                                    }
                                     return;
                                 }
                                 
@@ -402,6 +427,11 @@ public final class CachedObservable<T> extends Observable<T> {
                                 j++;
                                 r--;
                                 valuesProduced++;
+                            }
+                            
+                            if (child.isUnsubscribed()) {
+                                skipFinal = true;
+                                return;
                             }
                             
                             index = j;

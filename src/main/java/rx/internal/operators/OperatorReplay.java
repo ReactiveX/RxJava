@@ -22,6 +22,7 @@ import java.util.concurrent.atomic.*;
 import rx.*;
 import rx.Observable;
 import rx.exceptions.Exceptions;
+import rx.exceptions.OnErrorThrowable;
 import rx.functions.*;
 import rx.observables.ConnectableObservable;
 import rx.schedulers.Timestamped;
@@ -813,7 +814,16 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
                 
                 while (r != 0L && destIndex < sourceIndex) {
                     Object o = get(destIndex);
-                    if (nl.accept(output.child, o)) {
+                    try {
+                        if (nl.accept(output.child, o)) {
+                            return;
+                        }
+                    } catch (Throwable err) {
+                        Exceptions.throwIfFatal(err);
+                        output.unsubscribe();
+                        if (!nl.isError(o) && !nl.isCompleted(o)) {
+                            output.child.onError(OnErrorThrowable.addValueAsLastCause(err, nl.getValue(o)));
+                        }
                         return;
                     }
                     if (output.isUnsubscribed()) {
@@ -969,8 +979,18 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
                     Node v = node.get();
                     if (v != null) {
                         Object o = leaveTransform(v.value);
-                        if (nl.accept(output.child, o)) {
+                        try {
+                            if (nl.accept(output.child, o)) {
+                                output.index = null;
+                                return;
+                            }
+                        } catch (Throwable err) {
                             output.index = null;
+                            Exceptions.throwIfFatal(err);
+                            output.unsubscribe();
+                            if (!nl.isError(o) && !nl.isCompleted(o)) {
+                                output.child.onError(OnErrorThrowable.addValueAsLastCause(err, nl.getValue(o)));
+                            }
                             return;
                         }
                         e++;
