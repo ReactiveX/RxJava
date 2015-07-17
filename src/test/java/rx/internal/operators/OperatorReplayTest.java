@@ -16,27 +16,33 @@
 package rx.internal.operators;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.notNull;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
 
-import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.*;
+import org.junit.Test;
 import org.mockito.InOrder;
 
-import rx.*;
-import rx.Scheduler.Worker;
 import rx.Observable;
 import rx.Observer;
-import rx.functions.*;
-import rx.internal.operators.OperatorReplay.BoundedReplayBuffer;
-import rx.internal.operators.OperatorReplay.Node;
-import rx.internal.operators.OperatorReplay.SizeAndTimeBoundReplayBuffer;
+import rx.Scheduler;
+import rx.Scheduler.Worker;
+import rx.Subscription;
+import rx.functions.Action0;
+import rx.functions.Action1;
+import rx.functions.Func1;
 import rx.observables.ConnectableObservable;
-import rx.observers.TestSubscriber;
-import rx.schedulers.*;
+import rx.schedulers.TestScheduler;
 import rx.subjects.PublishSubject;
 
 public class OperatorReplayTest {
@@ -733,132 +739,4 @@ public class OperatorReplayTest {
         }
     }
 
-    @Test
-    public void testBoundedReplayBuffer() {
-        BoundedReplayBuffer<Integer> buf = new BoundedReplayBuffer<Integer>();
-        buf.addLast(new Node(1));
-        buf.addLast(new Node(2));
-        buf.addLast(new Node(3));
-        buf.addLast(new Node(4));
-        buf.addLast(new Node(5));
-        
-        List<Integer> values = new ArrayList<Integer>();
-        buf.collect(values);
-        
-        Assert.assertEquals(Arrays.asList(1, 2, 3, 4, 5), values);
-        
-        buf.removeSome(2);
-        buf.removeFirst();
-        buf.removeSome(2);
-        
-        values.clear();
-        buf.collect(values);
-        Assert.assertTrue(values.isEmpty());
-
-        buf.addLast(new Node(5));
-        buf.addLast(new Node(6));
-        buf.collect(values);
-        
-        Assert.assertEquals(Arrays.asList(5, 6), values);
-        
-    }
-    
-    @Test
-    public void testTimedAndSizedTruncation() {
-        TestScheduler test = Schedulers.test();
-        SizeAndTimeBoundReplayBuffer<Integer> buf = new SizeAndTimeBoundReplayBuffer<Integer>(2, 2000, test);
-        List<Integer> values = new ArrayList<Integer>();
-        
-        buf.next(1);
-        test.advanceTimeBy(1, TimeUnit.SECONDS);
-        buf.next(2);
-        test.advanceTimeBy(1, TimeUnit.SECONDS);
-        buf.collect(values);
-        Assert.assertEquals(Arrays.asList(1, 2), values);
-
-        buf.next(3);
-        buf.next(4);
-        values.clear();
-        buf.collect(values);
-        Assert.assertEquals(Arrays.asList(3, 4), values);
-        
-        test.advanceTimeBy(2, TimeUnit.SECONDS);
-        buf.next(5);
-        
-        values.clear();
-        buf.collect(values);
-        Assert.assertEquals(Arrays.asList(5), values);
-        
-        test.advanceTimeBy(2, TimeUnit.SECONDS);
-        buf.complete();
-        
-        values.clear();
-        buf.collect(values);
-        Assert.assertTrue(values.isEmpty());
-        
-        Assert.assertEquals(1, buf.size);
-        Assert.assertTrue(buf.hasCompleted());
-    }
-    
-    @Test
-    public void testBackpressure() {
-        final AtomicLong requested = new AtomicLong();
-        Observable<Integer> source = Observable.range(1, 1000)
-                .doOnRequest(new Action1<Long>() {
-                    @Override
-                    public void call(Long t) {
-                        requested.addAndGet(t);
-                    }
-                });
-        ConnectableObservable<Integer> co = source.replay();
-        
-        TestSubscriber<Integer> ts1 = TestSubscriber.create(10);
-        TestSubscriber<Integer> ts2 = TestSubscriber.create(90);
-        
-        co.subscribe(ts1);
-        co.subscribe(ts2);
-        
-        ts2.requestMore(10);
-        
-        co.connect();
-        
-        ts1.assertValueCount(10);
-        ts1.assertNoTerminalEvent();
-        
-        ts2.assertValueCount(100);
-        ts2.assertNoTerminalEvent();
-        
-        Assert.assertEquals(100, requested.get());
-    }
-    
-    @Test
-    public void testBackpressureBounded() {
-        final AtomicLong requested = new AtomicLong();
-        Observable<Integer> source = Observable.range(1, 1000)
-                .doOnRequest(new Action1<Long>() {
-                    @Override
-                    public void call(Long t) {
-                        requested.addAndGet(t);
-                    }
-                });
-        ConnectableObservable<Integer> co = source.replay(50);
-        
-        TestSubscriber<Integer> ts1 = TestSubscriber.create(10);
-        TestSubscriber<Integer> ts2 = TestSubscriber.create(90);
-        
-        co.subscribe(ts1);
-        co.subscribe(ts2);
-        
-        ts2.requestMore(10);
-        
-        co.connect();
-        
-        ts1.assertValueCount(10);
-        ts1.assertNoTerminalEvent();
-        
-        ts2.assertValueCount(100);
-        ts2.assertNoTerminalEvent();
-        
-        Assert.assertEquals(100, requested.get());
-    }
 }
