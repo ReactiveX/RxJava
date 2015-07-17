@@ -25,6 +25,7 @@ import rx.observables.*;
 import rx.observers.SafeSubscriber;
 import rx.plugins.*;
 import rx.schedulers.*;
+import rx.subjects.*;
 import rx.subscriptions.Subscriptions;
 
 /**
@@ -5978,9 +5979,9 @@ public class Observable<T> {
      * <img width="640" height="515" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.png" alt="">
      * <dl>
      *  <dt><b>Backpressure Support:</b></dt>
-     *  <dd>This operator supports backpressure. Note that the upstream requests are determined by the child
-     *  Subscriber which requests the largest amount: i.e., two child Subscribers with requests of 10 and 100 will
-     *  request 100 elements from the underlying Observable sequence.</dd>
+     *  <dd>This operator does not support backpressure because multicasting means the stream is "hot" with
+     *      multiple subscribers. Each child will need to manage backpressure independently using operators such
+     *      as {@link #onBackpressureDrop} and {@link #onBackpressureBuffer}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code replay} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -5990,7 +5991,14 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
      */
     public final ConnectableObservable<T> replay() {
-        return OperatorReplay.create(this);
+        return new OperatorMulticast<T, T>(this, new Func0<Subject<? super T, ? extends T>>() {
+
+            @Override
+            public Subject<? super T, ? extends T> call() {
+                return ReplaySubject.<T> create();
+            }
+            
+        });
     }
 
     /**
@@ -6000,9 +6008,9 @@ public class Observable<T> {
      * <img width="640" height="450" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.f.png" alt="">
      * <dl>
      *  <dt><b>Backpressure Support:</b></dt>
-     *  <dd>This operator supports backpressure. Note that the upstream requests are determined by the child
-     *  Subscriber which requests the largest amount: i.e., two child Subscribers with requests of 10 and 100 will
-     *  request 100 elements from the underlying Observable sequence.</dd>
+     *  <dd>This operator does not support backpressure because multicasting means the stream is "hot" with
+     *      multiple subscribers. Each child will need to manage backpressure independently using operators such
+     *      as {@link #onBackpressureDrop} and {@link #onBackpressureBuffer}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code replay} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -6017,12 +6025,12 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
      */
     public final <R> Observable<R> replay(Func1<? super Observable<T>, ? extends Observable<R>> selector) {
-        return OperatorReplay.multicastSelector(new Func0<ConnectableObservable<T>>() {
+        return create(new OnSubscribeMulticastSelector<T, T, R>(this, new Func0<Subject<T, T>>() {
             @Override
-            public ConnectableObservable<T> call() {
-                return Observable.this.replay();
+            public final Subject<T, T> call() {
+                return ReplaySubject.create();
             }
-        }, selector);
+        }, selector));
     }
 
     /**
@@ -6033,9 +6041,9 @@ public class Observable<T> {
      * <img width="640" height="440" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.fn.png" alt="">
      * <dl>
      *  <dt><b>Backpressure Support:</b></dt>
-     *  <dd>This operator supports backpressure. Note that the upstream requests are determined by the child
-     *  Subscriber which requests the largest amount: i.e., two child Subscribers with requests of 10 and 100 will
-     *  request 100 elements from the underlying Observable sequence.</dd>
+     *  <dd>This operator does not support backpressure because multicasting means the stream is "hot" with
+     *      multiple subscribers. Each child will need to manage backpressure independently using operators such
+     *      as {@link #onBackpressureDrop} and {@link #onBackpressureBuffer}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code replay} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -6053,12 +6061,12 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
      */
     public final <R> Observable<R> replay(Func1<? super Observable<T>, ? extends Observable<R>> selector, final int bufferSize) {
-        return OperatorReplay.multicastSelector(new Func0<ConnectableObservable<T>>() {
+        return create(new OnSubscribeMulticastSelector<T, T, R>(this, new Func0<Subject<T, T>>() {
             @Override
-            public ConnectableObservable<T> call() {
-                return Observable.this.replay(bufferSize);
+            public final Subject<T, T> call() {
+                return ReplaySubject.<T>createWithSize(bufferSize);
             }
-        }, selector);
+        }, selector));
     }
 
     /**
@@ -6069,9 +6077,9 @@ public class Observable<T> {
      * <img width="640" height="445" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.fnt.png" alt="">
      * <dl>
      *  <dt><b>Backpressure Support:</b></dt>
-     *  <dd>This operator supports backpressure. Note that the upstream requests are determined by the child
-     *  Subscriber which requests the largest amount: i.e., two child Subscribers with requests of 10 and 100 will
-     *  request 100 elements from the underlying Observable sequence.</dd>
+     *  <dd>This operator does not support backpressure because multicasting means the stream is "hot" with
+     *      multiple subscribers. Each child will need to manage backpressure independently using operators such
+     *      as {@link #onBackpressureDrop} and {@link #onBackpressureBuffer}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code replay} operates by default on the {@code computation} {@link Scheduler}.</dd>
      * </dl>
@@ -6105,9 +6113,9 @@ public class Observable<T> {
      * <img width="640" height="445" height="440" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.fnts.png" alt="">
      * <dl>
      *  <dt><b>Backpressure Support:</b></dt>
-     *  <dd>This operator supports backpressure. Note that the upstream requests are determined by the child
-     *  Subscriber which requests the largest amount: i.e., two child Subscribers with requests of 10 and 100 will
-     *  request 100 elements from the underlying Observable sequence.</dd>
+     *  <dd>This operator does not support backpressure because multicasting means the stream is "hot" with
+     *      multiple subscribers. Each child will need to manage backpressure independently using operators such
+     *      as {@link #onBackpressureDrop} and {@link #onBackpressureBuffer}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>you specify which {@link Scheduler} this operator will use</dd>
      * </dl>
@@ -6137,12 +6145,12 @@ public class Observable<T> {
         if (bufferSize < 0) {
             throw new IllegalArgumentException("bufferSize < 0");
         }
-        return OperatorReplay.multicastSelector(new Func0<ConnectableObservable<T>>() {
+        return create(new OnSubscribeMulticastSelector<T, T, R>(this, new Func0<Subject<T, T>>() {
             @Override
-            public ConnectableObservable<T> call() {
-                return Observable.this.replay(bufferSize, time, unit, scheduler);
+            public final Subject<T, T> call() {
+                return ReplaySubject.<T>createWithTimeAndSize(time, unit, bufferSize, scheduler);
             }
-        }, selector);
+        }, selector));
     }
 
     /**
@@ -6153,9 +6161,9 @@ public class Observable<T> {
      * <img width="640" height="440" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.fns.png" alt="">
      * <dl>
      *  <dt><b>Backpressure Support:</b></dt>
-     *  <dd>This operator supports backpressure. Note that the upstream requests are determined by the child
-     *  Subscriber which requests the largest amount: i.e., two child Subscribers with requests of 10 and 100 will
-     *  request 100 elements from the underlying Observable sequence.</dd>
+     *  <dd>This operator does not support backpressure because multicasting means the stream is "hot" with
+     *      multiple subscribers. Each child will need to manage backpressure independently using operators such
+     *      as {@link #onBackpressureDrop} and {@link #onBackpressureBuffer}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>you specify which {@link Scheduler} this operator will use</dd>
      * </dl>
@@ -6174,18 +6182,13 @@ public class Observable<T> {
      *         replaying no more than {@code bufferSize} notifications
      * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
      */
-    public final <R> Observable<R> replay(final Func1<? super Observable<T>, ? extends Observable<R>> selector, final int bufferSize, final Scheduler scheduler) {
-        return OperatorReplay.multicastSelector(new Func0<ConnectableObservable<T>>() {
+    public final <R> Observable<R> replay(Func1<? super Observable<T>, ? extends Observable<R>> selector, final int bufferSize, final Scheduler scheduler) {
+        return create(new OnSubscribeMulticastSelector<T, T, R>(this, new Func0<Subject<T, T>>() {
             @Override
-            public ConnectableObservable<T> call() {
-                return Observable.this.replay(bufferSize);
+            public final Subject<T, T> call() {
+                return OperatorReplay.<T> createScheduledSubject(ReplaySubject.<T>createWithSize(bufferSize), scheduler);
             }
-        }, new Func1<Observable<T>, Observable<R>>() {
-            @Override
-            public Observable<R> call(Observable<T> t) {
-                return selector.call(t).observeOn(scheduler);
-            }
-        });
+        }, selector));
     }
 
     /**
@@ -6196,9 +6199,9 @@ public class Observable<T> {
      * <img width="640" height="435" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.ft.png" alt="">
      * <dl>
      *  <dt><b>Backpressure Support:</b></dt>
-     *  <dd>This operator supports backpressure. Note that the upstream requests are determined by the child
-     *  Subscriber which requests the largest amount: i.e., two child Subscribers with requests of 10 and 100 will
-     *  request 100 elements from the underlying Observable sequence.</dd>
+     *  <dd>This operator does not support backpressure because multicasting means the stream is "hot" with
+     *      multiple subscribers. Each child will need to manage backpressure independently using operators such
+     *      as {@link #onBackpressureDrop} and {@link #onBackpressureBuffer}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code replay} operates by default on the {@code computation} {@link Scheduler}.</dd>
      * </dl>
@@ -6229,9 +6232,9 @@ public class Observable<T> {
      * <img width="640" height="440" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.fts.png" alt="">
      * <dl>
      *  <dt><b>Backpressure Support:</b></dt>
-     *  <dd>This operator supports backpressure. Note that the upstream requests are determined by the child
-     *  Subscriber which requests the largest amount: i.e., two child Subscribers with requests of 10 and 100 will
-     *  request 100 elements from the underlying Observable sequence.</dd>
+     *  <dd>This operator does not support backpressure because multicasting means the stream is "hot" with
+     *      multiple subscribers. Each child will need to manage backpressure independently using operators such
+     *      as {@link #onBackpressureDrop} and {@link #onBackpressureBuffer}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>you specify which {@link Scheduler} this operator will use</dd>
      * </dl>
@@ -6253,12 +6256,12 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
      */
     public final <R> Observable<R> replay(Func1<? super Observable<T>, ? extends Observable<R>> selector, final long time, final TimeUnit unit, final Scheduler scheduler) {
-        return OperatorReplay.multicastSelector(new Func0<ConnectableObservable<T>>() {
+        return create(new OnSubscribeMulticastSelector<T, T, R>(this, new Func0<Subject<T, T>>() {
             @Override
-            public ConnectableObservable<T> call() {
-                return Observable.this.replay(time, unit, scheduler);
+            public final Subject<T, T> call() {
+                return ReplaySubject.<T>createWithTime(time, unit, scheduler);
             }
-        }, selector);
+        }, selector));
     }
 
     /**
@@ -6268,9 +6271,9 @@ public class Observable<T> {
      * <img width="640" height="445" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.fs.png" alt="">
      * <dl>
      *  <dt><b>Backpressure Support:</b></dt>
-     *  <dd>This operator supports backpressure. Note that the upstream requests are determined by the child
-     *  Subscriber which requests the largest amount: i.e., two child Subscribers with requests of 10 and 100 will
-     *  request 100 elements from the underlying Observable sequence.</dd>
+     *  <dd>This operator does not support backpressure because multicasting means the stream is "hot" with
+     *      multiple subscribers. Each child will need to manage backpressure independently using operators such
+     *      as {@link #onBackpressureDrop} and {@link #onBackpressureBuffer}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>you specify which {@link Scheduler} this operator will use</dd>
      * </dl>
@@ -6287,18 +6290,13 @@ public class Observable<T> {
      *         replaying all items
      * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
      */
-    public final <R> Observable<R> replay(final Func1<? super Observable<T>, ? extends Observable<R>> selector, final Scheduler scheduler) {
-        return OperatorReplay.multicastSelector(new Func0<ConnectableObservable<T>>() {
+    public final <R> Observable<R> replay(Func1<? super Observable<T>, ? extends Observable<R>> selector, final Scheduler scheduler) {
+        return create(new OnSubscribeMulticastSelector<T, T, R>(this, new Func0<Subject<T, T>>() {
             @Override
-            public ConnectableObservable<T> call() {
-                return Observable.this.replay();
+            public final Subject<T, T> call() {
+                return OperatorReplay.createScheduledSubject(ReplaySubject.<T> create(), scheduler);
             }
-        }, new Func1<Observable<T>, Observable<R>>() {
-            @Override
-            public Observable<R> call(Observable<T> t) {
-                return selector.call(t).observeOn(scheduler);
-            }
-        });
+        }, selector));
     }
 
     /**
@@ -6310,9 +6308,9 @@ public class Observable<T> {
      * <img width="640" height="515" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.n.png" alt="">
      * <dl>
      *  <dt><b>Backpressure Support:</b></dt>
-     *  <dd>This operator supports backpressure. Note that the upstream requests are determined by the child
-     *  Subscriber which requests the largest amount: i.e., two child Subscribers with requests of 10 and 100 will
-     *  request 100 elements from the underlying Observable sequence.</dd>
+     *  <dd>This operator does not support backpressure because multicasting means the stream is "hot" with
+     *      multiple subscribers. Each child will need to manage backpressure independently using operators such
+     *      as {@link #onBackpressureDrop} and {@link #onBackpressureBuffer}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code replay} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
@@ -6324,7 +6322,14 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
      */
     public final ConnectableObservable<T> replay(final int bufferSize) {
-        return OperatorReplay.create(this, bufferSize);
+        return new OperatorMulticast<T, T>(this, new Func0<Subject<? super T, ? extends T>>() {
+
+            @Override
+            public Subject<? super T, ? extends T> call() {
+                return ReplaySubject.<T>createWithSize(bufferSize);
+            }
+            
+        });
     }
 
     /**
@@ -6336,9 +6341,9 @@ public class Observable<T> {
      * <img width="640" height="515" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.nt.png" alt="">
      * <dl>
      *  <dt><b>Backpressure Support:</b></dt>
-     *  <dd>This operator supports backpressure. Note that the upstream requests are determined by the child
-     *  Subscriber which requests the largest amount: i.e., two child Subscribers with requests of 10 and 100 will
-     *  request 100 elements from the underlying Observable sequence.</dd>
+     *  <dd>This operator does not support backpressure because multicasting means the stream is "hot" with
+     *      multiple subscribers. Each child will need to manage backpressure independently using operators such
+     *      as {@link #onBackpressureDrop} and {@link #onBackpressureBuffer}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code replay} operates by default on the {@code computation} {@link Scheduler}.</dd>
      * </dl>
@@ -6367,9 +6372,9 @@ public class Observable<T> {
      * <img width="640" height="515" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.nts.png" alt="">
      * <dl>
      *  <dt><b>Backpressure Support:</b></dt>
-     *  <dd>This operator supports backpressure. Note that the upstream requests are determined by the child
-     *  Subscriber which requests the largest amount: i.e., two child Subscribers with requests of 10 and 100 will
-     *  request 100 elements from the underlying Observable sequence.</dd>
+     *  <dd>This operator does not support backpressure because multicasting means the stream is "hot" with
+     *      multiple subscribers. Each child will need to manage backpressure independently using operators such
+     *      as {@link #onBackpressureDrop} and {@link #onBackpressureBuffer}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>you specify which {@link Scheduler} this operator will use</dd>
      * </dl>
@@ -6393,7 +6398,14 @@ public class Observable<T> {
         if (bufferSize < 0) {
             throw new IllegalArgumentException("bufferSize < 0");
         }
-        return OperatorReplay.create(this, time, unit, scheduler, bufferSize);
+        return new OperatorMulticast<T, T>(this, new Func0<Subject<? super T, ? extends T>>() {
+
+            @Override
+            public Subject<? super T, ? extends T> call() {
+                return ReplaySubject.<T>createWithTimeAndSize(time, unit, bufferSize, scheduler);
+            }
+            
+        });
     }
 
     /**
@@ -6405,9 +6417,9 @@ public class Observable<T> {
      * <img width="640" height="515" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.ns.png" alt="">
      * <dl>
      *  <dt><b>Backpressure Support:</b></dt>
-     *  <dd>This operator supports backpressure. Note that the upstream requests are determined by the child
-     *  Subscriber which requests the largest amount: i.e., two child Subscribers with requests of 10 and 100 will
-     *  request 100 elements from the underlying Observable sequence.</dd>
+     *  <dd>This operator does not support backpressure because multicasting means the stream is "hot" with
+     *      multiple subscribers. Each child will need to manage backpressure independently using operators such
+     *      as {@link #onBackpressureDrop} and {@link #onBackpressureBuffer}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>you specify which {@link Scheduler} this operator will use</dd>
      * </dl>
@@ -6421,7 +6433,14 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
      */
     public final ConnectableObservable<T> replay(final int bufferSize, final Scheduler scheduler) {
-        return OperatorReplay.observeOn(replay(bufferSize), scheduler);
+        return new OperatorMulticast<T, T>(this, new Func0<Subject<? super T, ? extends T>>() {
+
+            @Override
+            public Subject<? super T, ? extends T> call() {
+                return OperatorReplay.createScheduledSubject(ReplaySubject.<T>createWithSize(bufferSize), scheduler);
+            }
+            
+        });
     }
 
     /**
@@ -6433,9 +6452,9 @@ public class Observable<T> {
      * <img width="640" height="515" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.t.png" alt="">
      * <dl>
      *  <dt><b>Backpressure Support:</b></dt>
-     *  <dd>This operator supports backpressure. Note that the upstream requests are determined by the child
-     *  Subscriber which requests the largest amount: i.e., two child Subscribers with requests of 10 and 100 will
-     *  request 100 elements from the underlying Observable sequence.</dd>
+     *  <dd>This operator does not support backpressure because multicasting means the stream is "hot" with
+     *      multiple subscribers. Each child will need to manage backpressure independently using operators such
+     *      as {@link #onBackpressureDrop} and {@link #onBackpressureBuffer}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>This version of {@code replay} operates by default on the {@code computation} {@link Scheduler}.</dd>
      * </dl>
@@ -6461,9 +6480,9 @@ public class Observable<T> {
      * <img width="640" height="515" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.ts.png" alt="">
      * <dl>
      *  <dt><b>Backpressure Support:</b></dt>
-     *  <dd>This operator supports backpressure. Note that the upstream requests are determined by the child
-     *  Subscriber which requests the largest amount: i.e., two child Subscribers with requests of 10 and 100 will
-     *  request 100 elements from the underlying Observable sequence.</dd>
+     *  <dd>This operator does not support backpressure because multicasting means the stream is "hot" with
+     *      multiple subscribers. Each child will need to manage backpressure independently using operators such
+     *      as {@link #onBackpressureDrop} and {@link #onBackpressureBuffer}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>you specify which {@link Scheduler} this operator will use</dd>
      * </dl>
@@ -6479,7 +6498,14 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
      */
     public final ConnectableObservable<T> replay(final long time, final TimeUnit unit, final Scheduler scheduler) {
-        return OperatorReplay.create(this, time, unit, scheduler);
+        return new OperatorMulticast<T, T>(this, new Func0<Subject<? super T, ? extends T>>() {
+
+            @Override
+            public Subject<? super T, ? extends T> call() {
+                return ReplaySubject.<T>createWithTime(time, unit, scheduler);
+            }
+            
+        });
     }
 
     /**
@@ -6491,9 +6517,9 @@ public class Observable<T> {
      * <img width="640" height="515" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/replay.s.png" alt="">
      * <dl>
      *  <dt><b>Backpressure Support:</b></dt>
-     *  <dd>This operator supports backpressure. Note that the upstream requests are determined by the child
-     *  Subscriber which requests the largest amount: i.e., two child Subscribers with requests of 10 and 100 will
-     *  request 100 elements from the underlying Observable sequence.</dd>
+     *  <dd>This operator does not support backpressure because multicasting means the stream is "hot" with
+     *      multiple subscribers. Each child will need to manage backpressure independently using operators such
+     *      as {@link #onBackpressureDrop} and {@link #onBackpressureBuffer}.</dd>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>you specify which {@link Scheduler} this operator will use</dd>
      * </dl>
@@ -6506,7 +6532,14 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/replay.html">ReactiveX operators documentation: Replay</a>
      */
     public final ConnectableObservable<T> replay(final Scheduler scheduler) {
-        return OperatorReplay.observeOn(replay(), scheduler);
+        return new OperatorMulticast<T, T>(this, new Func0<Subject<? super T, ? extends T>>() {
+
+            @Override
+            public Subject<? super T, ? extends T> call() {
+                return OperatorReplay.createScheduledSubject(ReplaySubject.<T> create(), scheduler);
+            }
+            
+        });
     }
 
     /**
