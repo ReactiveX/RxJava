@@ -21,6 +21,7 @@ import rx.Observable.OnSubscribe;
 import rx.*;
 import rx.functions.Action1;
 import rx.observables.ConnectableObservable;
+import rx.observers.Subscribers;
 
 /**
  * Wraps a ConnectableObservable and calls its connect() method once
@@ -47,7 +48,7 @@ public final class OnSubscribeAutoConnect<T> implements OnSubscribe<T> {
     }
     @Override
     public void call(Subscriber<? super T> child) {
-        source.unsafeSubscribe(child);
+        source.unsafeSubscribe(Subscribers.wrap(child));
         if (clients.incrementAndGet() == numberOfSubscribers) {
             source.connect(connection);
         }

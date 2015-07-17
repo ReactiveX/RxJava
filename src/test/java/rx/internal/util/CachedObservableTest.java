@@ -183,7 +183,7 @@ public class CachedObservableTest {
     }
     @Test
     public void testAsyncComeAndGo() {
-        Observable<Long> source = Observable.timer(1, 1, TimeUnit.MILLISECONDS)
+        Observable<Long> source = Observable.interval(1, 1, TimeUnit.MILLISECONDS)
                 .take(1000)
                 .subscribeOn(Schedulers.io());
         CachedObservable<Long> cached = CachedObservable.from(source);
@@ -260,5 +260,34 @@ public class CachedObservableTest {
         ts2.assertReceivedOnNext(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
         Assert.assertTrue(ts2.getOnCompletedEvents().isEmpty());
         Assert.assertEquals(1, ts2.getOnErrorEvents().size());
+    }
+    
+    @Test
+    public void unsafeChildThrows() {
+        final AtomicInteger count = new AtomicInteger();
+        
+        Observable<Integer> source = Observable.range(1, 100)
+        .doOnNext(new Action1<Integer>() {
+            @Override
+            public void call(Integer t) {
+                count.getAndIncrement();
+            }
+        })
+        .cache();
+        
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                throw new TestException();
+            }
+        };
+        
+        source.unsafeSubscribe(ts);
+        
+        Assert.assertEquals(100, count.get());
+
+        ts.assertNoValues();
+        ts.assertNotCompleted();
+        ts.assertError(TestException.class);
     }
 }
