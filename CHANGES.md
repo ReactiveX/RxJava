@@ -1,5 +1,132 @@
 # RxJava Releases #
 
+### Version 1.0.13 – July 20th 2015 ([Maven Central](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.0.13%7C)) ###
+
+This release has quite a few bug fixes and some new functionality. Items of note are detailed here with the list of changes at the bottom.
+
+##### merge
+
+The `merge` operator went through a major rewrite to fix some edge case bugs in the previous version. This has been sitting for months going through review and performance testing due to the importance and ubiquity of its usage. It is believed this rewrite is now production ready and achieves the goal of being more correct (no known edge cases at this time) while retaining comparable performance and memory usage. 
+
+Special thanks to @akarnokd for this as `merge` is a challenging one to implement. 
+
+##### window fix and behavior change
+
+Unsubscription bugs were fixed in `window`. Along the way it also resulted in a fix to one of the `window` overloads that had a functional discrepancy.
+
+```java
+window(Func0<? extends Observable<? extends TClosing>> closingSelector)
+```
+
+This is a small behavior change that corrects it. If you use this overload, please review the change to ensure your application is not affected by an assumption of the previously buggy behavior: https://github.com/ReactiveX/RxJava/pull/3039
+
+Note that this behavior change only affects that particular overload while the broader bug fixes affect all `window` overloads. 
+
+##### rx.Single
+
+After [much discussion](https://github.com/ReactiveX/RxJava/issues/1594) it was decided to add a new type to represent an `Observable` that emits a single item. Much bike-shedding led to the name `Single`. This was chosen because `Future`, `Promise` and `Task` are overused and already have nuanced connotations that differ from `rx.Single`, and we didn't want long, obnoxious names with `Observable` as a prefix or suffix. Read the issue thread if you want to dig into the long debates.
+
+If you want to understand the reasoning behind adding this type, you can read about it [in this comment](https://github.com/ReactiveX/RxJava/issues/1594#issuecomment-101300655).
+
+In short, request/response semantics are so common that it was decided worth creating a type that composes well with an `Observable` but only exposes request/response. The difference in behavior and comparability was also deemed worth having an alternative to `Future`. In particular, a `Single` is lazy whereas `Future` is eager. Additionally, merging of `Single`s becomes an `Observable`, whereas combining `Future`s always emits another `Future`. 
+
+Note that the API is added in an `@Experimental` state. We are fairly confident this will stick around, but are holding final judgement until it is used more broadly. We will promote to a stable API in v1.1 or v1.2. 
+
+Examples below demonstrate use of `Single`.
+
+```java
+// Hello World
+Single<String> hello = Single.just("Hello World!");
+hello.subscribe(System.out::println);
+
+// Async request/response
+Single<String> one = getData(1);
+Single<String> two = getOtherData(2);
+
+// merge request/responses into an Observable of multiple values (not possible with Futures)
+Observable<String> merged = one.mergeWith(two);
+
+// zip request/responses into another Single (similar to combining 2 Futures)
+Single<String> zipped = one.zipWith(two, (a, b) -> a + b);
+
+// flatMap to a Single
+Single<String> flatMapSingle = one.flatMap(v -> {
+	return getOtherData(5);
+});
+
+// flatMap to an Observable
+Observable<Integer> flatMapObservable = one.flatMapObservable(v -> {
+	return Observable.just(1, 2, 3);
+});
+
+// toObservable
+Observable<String> toObservable = one.toObservable();
+
+// toSingle
+Single<Integer> toSingle = Observable.just(1).toSingle();
+
+public static Single<String> getData(int id) {
+	return Single.<String> create(s -> {
+		// do blocking IO
+		s.onSuccess("data_" + id);
+	}).subscribeOn(Schedulers.io());
+}
+
+public static Single<String> getOtherData(int id) {
+	return Single.<String> create(s -> {
+		// simulate non-blocking IO
+		new Thread(() -> {
+			try {
+				s.onSuccess("other_" + id);
+			} catch (Exception e) {
+				s.onError(e);
+			}
+		}).start();
+	});
+}
+```
+
+##### ConnectableObservable.autoConnect
+
+A new feature was added to `ConnectableObservable` similar in behavior to `refCount()`, except that it doesn't disconnect when subscribers are lost. This is useful in triggering an "auto connect" once a certain number of subscribers have subscribed. 
+
+The [JavaDocs](https://github.com/ReactiveX/RxJava/blob/1877fa7bbc176029bcb5af00d8a7715dfbb6d373/src/main/java/rx/observables/ConnectableObservable.java#L96) and [unit tests](https://github.com/ReactiveX/RxJava/blob/1.x/src/test/java/rx/observables/ConnectableObservableTest.java) are good places to understand the feature.
+
+##### Deprecated onBackpressureBlock
+
+The `onBackpressureBlock` operator has been deprecated. It will not ever be removed during the 1.x lifecycle, but it is recommended to not use it. It has proven to be a common source of deadlocks and is difficult to debug. It is instead recommended to use non-blocking approaches to backpressure, rather than callstack blocking. Approaches to backpressure and flow control are [discussed on the wiki](https://github.com/ReactiveX/RxJava/wiki/Backpressure).
+
+#### Changes
+
+* [Pull 3012] (https://github.com/ReactiveX/RxJava/pull/3012) rx.Single
+* [Pull 2983] (https://github.com/ReactiveX/RxJava/pull/2983) Fixed multiple calls to onStart.
+* [Pull 2970] (https://github.com/ReactiveX/RxJava/pull/2970) Deprecated onBackpressureBlock
+* [Pull 2997] (https://github.com/ReactiveX/RxJava/pull/2997) Fix retry() race conditions
+* [Pull 3028] (https://github.com/ReactiveX/RxJava/pull/3028) Delay: error cut ahead was not properly serialized
+* [Pull 3042] (https://github.com/ReactiveX/RxJava/pull/3042) add backpressure support for defaultIfEmpty()
+* [Pull 3049] (https://github.com/ReactiveX/RxJava/pull/3049) single: add toSingle method to Observable
+* [Pull 3055] (https://github.com/ReactiveX/RxJava/pull/3055) toSingle() should use unsafeSubscribe
+* [Pull 3023] (https://github.com/ReactiveX/RxJava/pull/3023) ConnectableObservable autoConnect operator
+* [Pull 2928] (https://github.com/ReactiveX/RxJava/pull/2928) Merge and MergeMaxConcurrent unified and rewritten
+* [Pull 3039] (https://github.com/ReactiveX/RxJava/pull/3039) Window with Observable: fixed unsubscription and behavior
+* [Pull 3045] (https://github.com/ReactiveX/RxJava/pull/3045) ElementAt request management enhanced
+* [Pull 3048] (https://github.com/ReactiveX/RxJava/pull/3048) CompositeException extra NPE protection
+* [Pull 3052] (https://github.com/ReactiveX/RxJava/pull/3052) Reduce test failure likelihood of testMultiThreadedWithNPEinMiddle
+* [Pull 3031] (https://github.com/ReactiveX/RxJava/pull/3031) Fix OperatorFlatMapPerf.flatMapIntPassthruAsync Perf Test
+* [Pull 2975] (https://github.com/ReactiveX/RxJava/pull/2975) Deprecate and rename two timer overloads to interval
+* [Pull 2982] (https://github.com/ReactiveX/RxJava/pull/2982) TestSubscriber - add factory methods
+* [Pull 2995] (https://github.com/ReactiveX/RxJava/pull/2995) switchOnNext - ensure initial requests additive and fix request overflow
+* [Pull 2972] (https://github.com/ReactiveX/RxJava/pull/2972) Fixed window(time) to work properly with unsubscription, added
+* [Pull 2990] (https://github.com/ReactiveX/RxJava/pull/2990) Improve Subscriber readability
+* [Pull 3018] (https://github.com/ReactiveX/RxJava/pull/3018) TestSubscriber - fix awaitTerminalEventAndUnsubscribeOnTimeout
+* [Pull 3034] (https://github.com/ReactiveX/RxJava/pull/3034) Instantiate EMPTY lazily
+* [Pull 3033] (https://github.com/ReactiveX/RxJava/pull/3033) takeLast() javadoc fixes, standardize parameter names (count instead of num)
+* [Pull 3043] (https://github.com/ReactiveX/RxJava/pull/3043) TestSubscriber javadoc cleanup
+* [Pull 3065] (https://github.com/ReactiveX/RxJava/pull/3065) add Subscribers.wrap
+* [Pull 3091] (https://github.com/ReactiveX/RxJava/pull/3091) Fix autoConnect calling onStart twice.
+* [Pull 3092] (https://github.com/ReactiveX/RxJava/pull/3092) Single.toObservable
+
+
 ### Version 1.0.12 – June 9th 2015 ([Maven Central](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.0.12%7C)) ###
 
 * [Pull 2963] (https://github.com/ReactiveX/RxJava/pull/2963) Set of standard producers and updated queue implementations
