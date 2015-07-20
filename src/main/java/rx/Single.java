@@ -1649,6 +1649,17 @@ public class Single<T> {
     public final Single<T> subscribeOn(Scheduler scheduler) {
         return nest().lift(new OperatorSubscribeOn<T>(scheduler));
     }
+    
+    /**
+     * Converts this Single into an {@link Observable}.
+     * <p>
+     * <img width="640" height="305" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/Single.toObservable.png" alt="">
+     * 
+     * @return an {@link Observable} that emits a single item T.
+     */
+    public final Observable<T> toObservable() {
+    	return asObservable(this);
+    }
 
     /**
      * Returns a Single that mirrors the source Single but applies a timeout policy for its emitted item. If it
