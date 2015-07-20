@@ -124,6 +124,30 @@ public class BackpressureTests {
     }
 
     @Test
+    public void testMergeAsyncThenObserveOnLoop() {
+        for (int i = 0; i < 500; i++) {
+            if (i % 10 == 0) {
+                System.out.println("testMergeAsyncThenObserveOnLoop >> " + i);
+            }
+            // Verify there is no MissingBackpressureException
+            int NUM = (int) (RxRingBuffer.SIZE * 4.1);
+            AtomicInteger c1 = new AtomicInteger();
+            AtomicInteger c2 = new AtomicInteger();
+            
+            TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+            Observable<Integer> merged = Observable.merge(
+                    incrementingIntegers(c1).subscribeOn(Schedulers.computation()),
+                    incrementingIntegers(c2).subscribeOn(Schedulers.computation()));
+
+            merged.observeOn(Schedulers.io()).take(NUM).subscribe(ts);
+            ts.awaitTerminalEvent();
+            ts.assertNoErrors();
+            System.out.println("testMergeAsyncThenObserveOn => Received: " + ts.getOnNextEvents().size() + "  Emitted: " + c1.get() + " / " + c2.get());
+            assertEquals(NUM, ts.getOnNextEvents().size());
+        }
+    }
+    
+    @Test
     public void testMergeAsyncThenObserveOn() {
         int NUM = (int) (RxRingBuffer.SIZE * 4.1);
         AtomicInteger c1 = new AtomicInteger();
