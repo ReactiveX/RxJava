@@ -315,7 +315,8 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
             if (r != 0L) {
                 synchronized (this) {
                     // if nobody is emitting and child has available requests
-                    if (!emitting) {
+                    r = producer.get();
+                    if (!emitting && r != 0L) {
                         emitting = true;
                         success = true;
                     }
@@ -422,7 +423,8 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
             if (r != 0L) {
                 synchronized (this) {
                     // if nobody is emitting and child has available requests
-                    if (!emitting) {
+                    r = producer.get();
+                    if (!emitting && r != 0L) {
                         emitting = true;
                         success = true;
                     }
