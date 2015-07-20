@@ -452,4 +452,13 @@ public class SingleTest {
 
         ts.assertValue("hello");
     }
+    
+    @Test
+    public void testToObservable() {
+    	Observable<String> a = Single.just("a").toObservable();
+    	TestSubscriber<String> ts = TestSubscriber.create();
+    	a.subscribe(ts);
+    	ts.assertValue("a");
+    	ts.assertCompleted();
+    }
 }
