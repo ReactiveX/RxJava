@@ -9152,7 +9152,7 @@ public class Observable<T> {
      * Observable emits connected, non-overlapping windows. It emits the current window and opens a new one
      * whenever the Observable produced by the specified {@code closingSelector} emits an item.
      * <p>
-     * <img width="640" height="485" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window1.png" alt="">
+     * <img width="640" height="460" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/window1.png" alt="">
      * <dl>
      *  <dt><b>Backpressure Support:</b></dt>
      *  <dd>This operator does not support backpressure as it uses the {@code closingSelector} to control data
