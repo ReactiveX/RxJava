@@ -1461,6 +1461,12 @@ public class OperatorGroupByTest {
         final AtomicBoolean completed = new AtomicBoolean(false);
         Observable
                 .just(1, 2, 3)
+                .doOnRequest(new Action1<Long>() {
+                    @Override
+                    public void call(Long t) {
+                        System.out.println("testRequestOverflow >> groupBy requested: " + t);
+                    }
+                })
                 // group into one group
                 .groupBy(new Func1<Integer, Integer>() {
                     @Override
@@ -1468,11 +1474,28 @@ public class OperatorGroupByTest {
                         return 1;
                     }
                 })
+                .doOnRequest(new Action1<Long>() {
+                    @Override
+                    public void call(Long t) {
+                        System.out.println("testRequestOverflow >> concatMap requested: " + t);
+                    }
+                })
                 // flatten
                 .concatMap(new Func1<GroupedObservable<Integer, Integer>, Observable<Integer>>() {
                     @Override
                     public Observable<Integer> call(GroupedObservable<Integer, Integer> g) {
-                        return g;
+                        return g.doOnRequest(new Action1<Long>() {
+                            @Override
+                            public void call(Long t) {
+                                System.out.println("testRequestOverflow >> groupObservable requested: " + t);
+                            }
+                        });
+                    }
+                })
+                .doOnRequest(new Action1<Long>() {
+                    @Override
+                    public void call(Long t) {
+                        System.out.println("testRequestOverflow >> subscriber requested: " + t);
                     }
                 })
                 .subscribe(new Subscriber<Integer>() {
@@ -1490,7 +1513,7 @@ public class OperatorGroupByTest {
 
                     @Override
                     public void onError(Throwable e) {
-                        
+                        e.printStackTrace();
                     }
 
                     @Override
