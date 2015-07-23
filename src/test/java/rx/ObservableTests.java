@@ -53,6 +53,7 @@ import rx.functions.Action2;
 import rx.functions.Func0;
 import rx.functions.Func1;
 import rx.functions.Func2;
+import rx.functions.Functions;
 import rx.observables.ConnectableObservable;
 import rx.observers.TestSubscriber;
 import rx.schedulers.TestScheduler;
@@ -1137,5 +1138,23 @@ public class ObservableTests {
         subscription.unsubscribe();
 
         subscriber.assertUnsubscribed();
+    }
+
+    @Test(expected=OnErrorNotImplementedException.class)
+    public void testForEachWithError() {
+        Observable.error(new Exception("boo"))
+        //
+        .forEach(new Action1<Object>() {
+            @Override
+            public void call(Object t) {
+                //do nothing
+            }});
+    }
+    
+    @Test(expected=IllegalArgumentException.class)
+    public void testForEachWithNull() {
+        Observable.error(new Exception("boo"))
+        //
+        .forEach(null);
     }
 }
