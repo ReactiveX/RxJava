@@ -43,12 +43,13 @@ public final class OperatorTake<T> implements Operator<T, T> {
     public Subscriber<? super T> call(final Subscriber<? super T> child) {
         final Subscriber<T> parent = new Subscriber<T>() {
 
-            int count = 0;
-            boolean completed = false;
+            int count;
+            boolean completed;
 
             @Override
             public void onCompleted() {
                 if (!completed) {
+                    completed = true;
                     child.onCompleted();
                 }
             }
@@ -56,20 +57,27 @@ public final class OperatorTake<T> implements Operator<T, T> {
             @Override
             public void onError(Throwable e) {
                 if (!completed) {
-                    child.onError(e);
+                    completed = true;
+                    try {
+                        child.onError(e);
+                    } finally {
+                        unsubscribe();
+                    }
                 }
             }
 
             @Override
             public void onNext(T i) {
                 if (!isUnsubscribed()) {
-                    if (++count >= limit) {
-                        completed = true;
-                    }
+                    boolean stop = ++count >= limit;
                     child.onNext(i);
-                    if (completed) {
-                        child.onCompleted();
-                        unsubscribe();
+                    if (stop && !completed) {
+                        completed = true;
+                        try {
+                            child.onCompleted();
+                        } finally {
+                            unsubscribe();
+                        }
                     }
                 }
             }
