@@ -99,13 +99,25 @@ public class SynchronizedQueue<T> implements Queue<T> {
     }
 
     @Override
-    public synchronized boolean equals(Object o) {
-        return list.equals(o);
+    public int hashCode() {
+        return list.hashCode();
     }
 
     @Override
-    public synchronized int hashCode() {
-        return list.hashCode();
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        SynchronizedQueue<?> other = (SynchronizedQueue<?>) obj;
+        if (list == null) {
+            if (other.list != null)
+                return false;
+        } else if (!list.equals(other.list))
+            return false;
+        return true;
     }
 
     @Override
