@@ -36,15 +36,7 @@ abstract class SpscArrayQueueL1Pad<E> extends SpscArrayQueueColdField<E> {
 }
 
 abstract class SpscArrayQueueProducerFields<E> extends SpscArrayQueueL1Pad<E> {
-    protected final static long P_INDEX_OFFSET;
-    static {
-        try {
-            P_INDEX_OFFSET =
-                UNSAFE.objectFieldOffset(SpscArrayQueueProducerFields.class.getDeclaredField("producerIndex"));
-        } catch (NoSuchFieldException e) {
-            throw new RuntimeException(e);
-        }
-    }
+    protected final static long P_INDEX_OFFSET = UnsafeAccess.addressOf(SpscArrayQueueProducerFields.class, "producerIndex");
     protected long producerIndex;
     protected long producerLookAhead;
 
@@ -64,15 +56,7 @@ abstract class SpscArrayQueueL2Pad<E> extends SpscArrayQueueProducerFields<E> {
 
 abstract class SpscArrayQueueConsumerField<E> extends SpscArrayQueueL2Pad<E> {
     protected long consumerIndex;
-    protected final static long C_INDEX_OFFSET;
-    static {
-        try {
-            C_INDEX_OFFSET =
-                UNSAFE.objectFieldOffset(SpscArrayQueueConsumerField.class.getDeclaredField("consumerIndex"));
-        } catch (NoSuchFieldException e) {
-            throw new RuntimeException(e);
-        }
-    }
+    protected final static long C_INDEX_OFFSET = UnsafeAccess.addressOf(SpscArrayQueueConsumerField.class, "consumerIndex");
     public SpscArrayQueueConsumerField(int capacity) {
         super(capacity);
     }
@@ -116,6 +100,9 @@ public final class SpscArrayQueue<E> extends SpscArrayQueueL3Pad<E> {
      */
     @Override
     public boolean offer(final E e) {
+        if (e == null) {
+            throw new NullPointerException("null elements not allowed");
+        }
         // local load of field to avoid repeated loads after volatile reads
         final E[] lElementBuffer = buffer;
         final long index = producerIndex;
