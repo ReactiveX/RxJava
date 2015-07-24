@@ -58,7 +58,7 @@ public final class MpscLinkedAtomicQueue<E> extends BaseLinkedAtomicQueue<E> {
     @Override
     public final boolean offer(final E nextValue) {
         if (nextValue == null) {
-            throw new IllegalArgumentException("null elements not allowed");
+            throw new NullPointerException("null elements not allowed");
         }
         final LinkedQueueNode<E> nextNode = new LinkedQueueNode<E>(nextValue);
         final LinkedQueueNode<E> prevProducerNode = xchgProducerNode(nextNode);

@@ -28,15 +28,7 @@ abstract class SpmcArrayQueueL1Pad<E> extends ConcurrentCircularArrayQueue<E> {
 }
 
 abstract class SpmcArrayQueueProducerField<E> extends SpmcArrayQueueL1Pad<E> {
-    protected final static long P_INDEX_OFFSET;
-    static {
-        try {
-            P_INDEX_OFFSET =
-                    UNSAFE.objectFieldOffset(SpmcArrayQueueProducerField.class.getDeclaredField("producerIndex"));
-        } catch (NoSuchFieldException e) {
-            throw new RuntimeException(e);
-        }
-    }
+    protected final static long P_INDEX_OFFSET = UnsafeAccess.addressOf(SpmcArrayQueueProducerField.class, "producerIndex");
     private volatile long producerIndex;
 
     protected final long lvProducerIndex() {
@@ -62,15 +54,7 @@ abstract class SpmcArrayQueueL2Pad<E> extends SpmcArrayQueueProducerField<E> {
 }
 
 abstract class SpmcArrayQueueConsumerField<E> extends SpmcArrayQueueL2Pad<E> {
-    protected final static long C_INDEX_OFFSET;
-    static {
-        try {
-            C_INDEX_OFFSET =
-                    UNSAFE.objectFieldOffset(SpmcArrayQueueConsumerField.class.getDeclaredField("consumerIndex"));
-        } catch (NoSuchFieldException e) {
-            throw new RuntimeException(e);
-        }
-    }
+    protected final static long C_INDEX_OFFSET = UnsafeAccess.addressOf(SpmcArrayQueueConsumerField.class, "consumerIndex");
     private volatile long consumerIndex;
 
     public SpmcArrayQueueConsumerField(int capacity) {

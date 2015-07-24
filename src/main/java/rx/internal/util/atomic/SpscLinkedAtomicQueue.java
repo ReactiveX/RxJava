@@ -59,7 +59,7 @@ public final class SpscLinkedAtomicQueue<E> extends BaseLinkedAtomicQueue<E> {
     @Override
     public boolean offer(final E nextValue) {
         if (nextValue == null) {
-            throw new IllegalArgumentException("null elements not allowed");
+            throw new NullPointerException("null elements not allowed");
         }
         final LinkedQueueNode<E> nextNode = new LinkedQueueNode<E>(nextValue);
         lpProducerNode().soNext(nextNode);
