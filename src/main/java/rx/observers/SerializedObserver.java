@@ -16,7 +16,8 @@
 package rx.observers;
 
 import rx.Observer;
-import rx.exceptions.Exceptions;
+import rx.exceptions.*;
+import rx.internal.operators.NotificationLite;
 
 /**
  * Enforces single-threaded, serialized, ordered execution of {@link #onNext}, {@link #onCompleted}, and
@@ -35,13 +36,15 @@ import rx.exceptions.Exceptions;
 public class SerializedObserver<T> implements Observer<T> {
     private final Observer<? super T> actual;
 
-    private boolean emitting = false;
-    private boolean terminated = false;
+    private boolean emitting;
+    /** Set to true if a terminal event was received. */
+    private volatile boolean terminated;
+    /** If not null, it indicates more work. */
     private FastList queue;
+    private final NotificationLite<T> nl = NotificationLite.instance();
 
-    private static final int MAX_DRAIN_ITERATION = Integer.MAX_VALUE;
-    private static final Object NULL_SENTINEL = new Object();
-    private static final Object COMPLETE_SENTINEL = new Object();
+    /** Number of iterations without additional safepoint poll in the drain loop. */
+    private static final int MAX_DRAIN_ITERATION = 1024;
 
     static final class FastList {
         Object[] array;
@@ -64,150 +67,119 @@ public class SerializedObserver<T> implements Observer<T> {
         }
     }
 
-    private static final class ErrorSentinel {
-        final Throwable e;
-
-        ErrorSentinel(Throwable e) {
-            this.e = e;
-        }
-    }
-
     public SerializedObserver(Observer<? super T> s) {
         this.actual = s;
     }
 
     @Override
-    public void onCompleted() {
-        FastList list;
+    public void onNext(T t) {
+        if (terminated) {
+            return;
+        }
+        synchronized (this) {
+            if (terminated) {
+                return;
+            }
+            if (emitting) {
+                FastList list = queue;
+                if (list == null) {
+                    list = new FastList();
+                    queue = list;
+                }
+                list.add(nl.next(t));
+                return;
+            }
+            emitting = true;
+        }
+        try {
+            actual.onNext(t);
+        } catch (Throwable e) {
+            terminated = true;
+            Exceptions.throwIfFatal(e);
+            actual.onError(OnErrorThrowable.addValueAsLastCause(e, t));
+            return;
+        }
+        for (;;) {
+            for (int i = 0; i < MAX_DRAIN_ITERATION; i++) {
+                FastList list;
+                synchronized (this) {
+                    list = queue;
+                    if (list == null) {
+                        emitting = false;
+                        return;
+                    }
+                    queue = null;
+                }
+                for (Object o : list.array) {
+                    if (o == null) {
+                        break;
+                    }
+                    try {
+                        if (nl.accept(actual, o)) {
+                            terminated = true;
+                            return;
+                        }
+                    } catch (Throwable e) {
+                        terminated = true;
+                        Exceptions.throwIfFatal(e);
+                        actual.onError(OnErrorThrowable.addValueAsLastCause(e, t));
+                        return;
+                    }
+                }
+            }
+        }
+    }
+    
+    @Override
+    public void onError(final Throwable e) {
+        Exceptions.throwIfFatal(e);
+        if (terminated) {
+            return;
+        }
         synchronized (this) {
             if (terminated) {
                 return;
             }
             terminated = true;
             if (emitting) {
-                if (queue == null) {
-                    queue = new FastList();
+                /* 
+                 * FIXME: generally, errors jump the queue but this wasn't true 
+                 * for SerializedObserver and may break existing expectations. 
+                 */
+                FastList list = queue;
+                if (list == null) {
+                    list = new FastList();
+                    queue = list;
                 }
-                queue.add(COMPLETE_SENTINEL);
+                list.add(nl.error(e));
                 return;
             }
             emitting = true;
-            list = queue;
-            queue = null;
         }
-        drainQueue(list);
-        actual.onCompleted();
-    }
-
-    @Override
-    public void onError(final Throwable e) {
-        Exceptions.throwIfFatal(e);
-        FastList list;
-        synchronized (this) {
-            if (terminated) {
-                return;
-            }
-            if (emitting) {
-                if (queue == null) {
-                    queue = new FastList();
-                }
-                queue.add(new ErrorSentinel(e));
-                return;
-            }
-            emitting = true;
-            list = queue;
-            queue = null;
-        }
-        drainQueue(list);
         actual.onError(e);
-        synchronized(this) {
-            emitting = false;
-        }
     }
 
     @Override
-    public void onNext(T t) {
-        FastList list;
-
-        synchronized (this) {
-            if (terminated) {
-                return;
-            }
-            if (emitting) {
-                if (queue == null) {
-                    queue = new FastList();
-                }
-                queue.add(t != null ? t : NULL_SENTINEL);
-                // another thread is emitting so we add to the queue and return
-                return;
-            }
-            // we can emit
-            emitting = true;
-            // reference to the list to drain before emitting our value
-            list = queue;
-            queue = null;
-        }
-
-        // we only get here if we won the right to emit, otherwise we returned in the if(emitting) block above
-        boolean skipFinal = false;
-        try {
-            int iter = MAX_DRAIN_ITERATION;
-            do {
-                drainQueue(list);
-                if (iter == MAX_DRAIN_ITERATION) {
-                    // after the first draining we emit our own value
-                    actual.onNext(t);
-                }
-                --iter;
-                if (iter > 0) {
-                    synchronized (this) {
-                        list = queue;
-                        queue = null;
-                        if (list == null) {
-                            emitting = false;
-                            skipFinal = true;
-                            return;
-                        }
-                    }
-                }
-            } while (iter > 0);
-        } finally {
-            if (!skipFinal) {
-                synchronized (this) {
-                    if (terminated) {
-                        list = queue;
-                        queue = null;
-                    } else {
-                        emitting = false;
-                        list = null;
-                    }
-                }
-            }
-        }
-        
-        // this will only drain if terminated (done here outside of synchronized block)
-        drainQueue(list);
-    }
-    
-    void drainQueue(FastList list) {
-        if (list == null || list.size == 0) {
+    public void onCompleted() {
+        if (terminated) {
             return;
         }
-        for (Object v : list.array) {
-            if (v == null) {
-                break;
+        synchronized (this) {
+            if (terminated) {
+                return;
             }
-            if (v == NULL_SENTINEL) {
-                actual.onNext(null);
-            } else if (v == COMPLETE_SENTINEL) {
-                actual.onCompleted();
-            } else if (v.getClass() == ErrorSentinel.class) {
-                actual.onError(((ErrorSentinel) v).e);
-            } else {
-                @SuppressWarnings("unchecked")
-                T t = (T)v;
-                actual.onNext(t);
+            terminated = true;
+            if (emitting) {
+                FastList list = queue;
+                if (list == null) {
+                    list = new FastList();
+                    queue = list;
+                }
+                list.add(nl.completed());
+                return;
             }
+            emitting = true;
         }
+        actual.onCompleted();
     }
 }

@@ -258,10 +258,15 @@ public class TestSubscriber<T> extends Subscriber<T> {
      *          if this {@code Subscriber} has received one or more {@code onError} notifications
      */
     public void assertNoErrors() {
-        if (getOnErrorEvents().size() > 0) {
-            // can't use AssertionError because (message, cause) doesn't exist until Java 7
-            throw new RuntimeException("Unexpected onError events: " + getOnErrorEvents().size(), getOnErrorEvents().get(0));
-            // TODO possibly check for Java7+ and then use AssertionError at runtime (since we always compile with 7)
+        List<Throwable> onErrorEvents = getOnErrorEvents();
+        if (onErrorEvents.size() > 0) {
+            AssertionError ae = new AssertionError("Unexpected onError events: " + getOnErrorEvents().size());
+            if (onErrorEvents.size() == 1) {
+                ae.initCause(getOnErrorEvents().get(0));
+            } else {
+                ae.initCause(new CompositeException(onErrorEvents));
+            }
+            throw ae;
         }
     }
 
