@@ -15,11 +15,7 @@
  */
 package rx.observers;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
@@ -27,9 +23,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.junit.Test;
 
 import rx.Subscriber;
-import rx.exceptions.CompositeException;
-import rx.exceptions.OnErrorFailedException;
-import rx.exceptions.OnErrorNotImplementedException;
+import rx.exceptions.*;
 import rx.functions.Action0;
 import rx.subscriptions.Subscriptions;
 
@@ -461,5 +455,46 @@ public class SafeObserverTest {
         public SafeObserverTestException(String message) {
             super(message);
         }
+    }
+    
+    @Test
+    public void testOnCompletedThrows() {
+        final AtomicReference<Throwable> error = new AtomicReference<Throwable>();
+        SafeSubscriber<Integer> s = new SafeSubscriber<Integer>(new Subscriber<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+                
+            }
+            @Override
+            public void onError(Throwable e) {
+                error.set(e);
+            }
+            @Override
+            public void onCompleted() {
+                throw new TestException();
+            }
+        });
+        
+        s.onCompleted();
+        
+        assertTrue("Error not received", error.get() instanceof TestException);
+    }
+    
+    @Test
+    public void testActual() {
+        Subscriber<Integer> actual = new Subscriber<Integer>() {
+            @Override
+            public void onNext(Integer t) {
+            }
+            @Override
+            public void onError(Throwable e) {
+            }
+            @Override
+            public void onCompleted() {
+            }
+        };
+        SafeSubscriber<Integer> s = new SafeSubscriber<Integer>(actual);
+        
+        assertSame(actual, s.getActual());
     }
 }
