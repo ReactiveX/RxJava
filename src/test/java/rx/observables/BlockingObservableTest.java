@@ -15,20 +15,17 @@
  */
 package rx.observables;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.util.Iterator;
-import java.util.NoSuchElementException;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import rx.Observable;
 import rx.Observable.OnSubscribe;
@@ -39,6 +36,12 @@ import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.Subscriptions;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class BlockingObservableTest {
 
@@ -357,7 +360,7 @@ public class BlockingObservableTest {
 
     @Test
     public void testFirstOrDefaultWithEmpty() {
-        BlockingObservable<String> observable = BlockingObservable.from(Observable.<String> empty());
+        BlockingObservable<String> observable = BlockingObservable.from(Observable.<String>empty());
         assertEquals("default", observable.firstOrDefault("default"));
     }
 
@@ -411,117 +414,196 @@ public class BlockingObservableTest {
         assertTrue("Timeout means `unsubscribe` is not called", unsubscribe.await(30, TimeUnit.SECONDS));
     }
 
+    private Action1<BlockingObservable<Void>> singleAction = new Action1<BlockingObservable<Void>>() {
+        @Override
+        public void call(final BlockingObservable<Void> o) {
+            o.single();
+        }
+    };
+
     @Test
     public void testUnsubscribeFromSingleWhenInterrupted() throws InterruptedException {
-        new InterruptionTests().assertUnsubscribeIsInvoked("single()", new Action1<BlockingObservable<Void>>() {
-            @Override
-            public void call(final BlockingObservable<Void> o) {
-                o.single();
-            }
-        });
+        new InterruptionTests().assertUnsubscribeIsInvoked("single()", singleAction);
     }
+
+    @Test
+    public void testNoInterruptedExceptionWhenInterruptedWhileSingleOnSynchronousObservable() throws InterruptedException {
+        new InterruptionTests().assertNoInterruptedExceptionWhenSynchronous("single()", singleAction);
+    }
+
+    private Action1<BlockingObservable<Void>> forEachAction = new Action1<BlockingObservable<Void>>() {
+        @Override
+        public void call(final BlockingObservable<Void> o) {
+            o.forEach(new Action1<Void>() {
+                @Override
+                public void call(final Void aVoid) {
+                    // nothing
+                }
+            });
+        }
+    };
 
     @Test
     public void testUnsubscribeFromForEachWhenInterrupted() throws InterruptedException {
-        new InterruptionTests().assertUnsubscribeIsInvoked("forEach()", new Action1<BlockingObservable<Void>>() {
-            @Override
-            public void call(final BlockingObservable<Void> o) {
-                o.forEach(new Action1<Void>() {
-                    @Override
-                    public void call(final Void aVoid) {
-                        // nothing
-                    }
-                });
-            }
-        });
+        new InterruptionTests().assertUnsubscribeIsInvoked("forEach()", forEachAction);
     }
+
+    @Test
+    public void testNoInterruptedExceptionWhenInterruptedWhileForEachOnSynchronousObservable() throws InterruptedException {
+        new InterruptionTests().assertNoInterruptedExceptionWhenSynchronous("forEach()", forEachAction);
+    }
+
+    private Action1<BlockingObservable<Void>> firstAction = new Action1<BlockingObservable<Void>>() {
+        @Override
+        public void call(final BlockingObservable<Void> o) {
+            o.first();
+        }
+    };
 
     @Test
     public void testUnsubscribeFromFirstWhenInterrupted() throws InterruptedException {
-        new InterruptionTests().assertUnsubscribeIsInvoked("first()", new Action1<BlockingObservable<Void>>() {
-            @Override
-            public void call(final BlockingObservable<Void> o) {
-                o.first();
-            }
-        });
+        new InterruptionTests().assertUnsubscribeIsInvoked("first()", firstAction);
     }
+
+    @Test
+    public void testNoInterruptedExceptionWhenInterruptedWhileFirstOnSynchronousObservable() throws InterruptedException {
+        new InterruptionTests().assertNoInterruptedExceptionWhenSynchronous("first()", firstAction);
+    }
+
+    private Action1<BlockingObservable<Void>> lastAction = new Action1<BlockingObservable<Void>>() {
+        @Override
+        public void call(final BlockingObservable<Void> o) {
+            o.last();
+        }
+    };
 
     @Test
     public void testUnsubscribeFromLastWhenInterrupted() throws InterruptedException {
-        new InterruptionTests().assertUnsubscribeIsInvoked("last()", new Action1<BlockingObservable<Void>>() {
-            @Override
-            public void call(final BlockingObservable<Void> o) {
-                o.last();
-            }
-        });
+        new InterruptionTests().assertUnsubscribeIsInvoked("last()", lastAction);
     }
+
+    @Test
+    public void testNoInterruptedExceptionWhenInterruptedWhileLastOnSynchronousObservable() throws InterruptedException {
+        new InterruptionTests().assertNoInterruptedExceptionWhenSynchronous("last()", lastAction);
+    }
+
+    private Action1<BlockingObservable<Void>> latestAction = new Action1<BlockingObservable<Void>>() {
+        @Override
+        public void call(final BlockingObservable<Void> o) {
+            o.latest().iterator().next();
+        }
+    };
 
     @Test
     public void testUnsubscribeFromLatestWhenInterrupted() throws InterruptedException {
-        new InterruptionTests().assertUnsubscribeIsInvoked("latest()", new Action1<BlockingObservable<Void>>() {
-            @Override
-            public void call(final BlockingObservable<Void> o) {
-                o.latest().iterator().next();
-            }
-        });
+        new InterruptionTests().assertUnsubscribeIsInvoked("latest()", latestAction);
     }
+
+    // NOTE: latest() is intended to be async, so InterruptedException will be thrown even if synchronous
+
+    private Action1<BlockingObservable<Void>> nextAction = new Action1<BlockingObservable<Void>>() {
+        @Override
+        public void call(final BlockingObservable<Void> o) {
+            o.next().iterator().next();
+        }
+    };
 
     @Test
     public void testUnsubscribeFromNextWhenInterrupted() throws InterruptedException {
-        new InterruptionTests().assertUnsubscribeIsInvoked("next()", new Action1<BlockingObservable<Void>>() {
-            @Override
-            public void call(final BlockingObservable<Void> o) {
-                o.next().iterator().next();
-            }
-        });
+        new InterruptionTests().assertUnsubscribeIsInvoked("next()", nextAction);
     }
+
+    // NOTE: next() is intended to be async, so InterruptedException will be thrown even if synchronous
+
+    private Action1<BlockingObservable<Void>> getIteratorAction = new Action1<BlockingObservable<Void>>() {
+        @Override
+        public void call(final BlockingObservable<Void> o) {
+            o.getIterator().next();
+        }
+    };
 
     @Test
     public void testUnsubscribeFromGetIteratorWhenInterrupted() throws InterruptedException {
-        new InterruptionTests().assertUnsubscribeIsInvoked("getIterator()", new Action1<BlockingObservable<Void>>() {
-            @Override
-            public void call(final BlockingObservable<Void> o) {
-                o.getIterator().next();
-            }
-        });
+        new InterruptionTests().assertUnsubscribeIsInvoked("getIterator()", getIteratorAction);
     }
 
     @Test
+    public void testNoInterruptedExceptionWhenInterruptedWhileGetIteratorOnSynchronousObservable() throws InterruptedException {
+        new InterruptionTests().assertNoInterruptedExceptionWhenSynchronous("getIterator()", getIteratorAction);
+    }
+
+    private Action1<BlockingObservable<Void>> toIterableAction = new Action1<BlockingObservable<Void>>() {
+        @Override
+        public void call(final BlockingObservable<Void> o) {
+            o.toIterable().iterator().next();
+        }
+    };
+
+    @Test
     public void testUnsubscribeFromToIterableWhenInterrupted() throws InterruptedException {
-        new InterruptionTests().assertUnsubscribeIsInvoked("toIterable()", new Action1<BlockingObservable<Void>>() {
-            @Override
-            public void call(final BlockingObservable<Void> o) {
-                o.toIterable().iterator().next();
-            }
-        });
+        new InterruptionTests().assertUnsubscribeIsInvoked("toIterable()", toIterableAction);
+    }
+
+    @Test
+    public void testNoInterruptedExceptionWhenInterruptedWhileToIterableOnSynchronousObservable() throws InterruptedException {
+        new InterruptionTests().assertNoInterruptedExceptionWhenSynchronous("toIterable()", toIterableAction);
     }
 
     /** Utilities set for interruption behaviour tests. */
     private static class InterruptionTests {
 
         private boolean isUnSubscribed;
-        private RuntimeException error;
+        private final AtomicReference<RuntimeException> errorRef = new AtomicReference<RuntimeException>();
         private CountDownLatch latch = new CountDownLatch(1);
 
-        private Observable<Void> createObservable() {
-            return Observable.<Void>never().doOnUnsubscribe(new Action0() {
+        private Action0 createOnUnsubscribe() {
+            return new Action0() {
                 @Override
                 public void call() {
                     isUnSubscribed = true;
                 }
-            });
+            };
         }
 
-        private void startBlockingAndInterrupt(final Action1<BlockingObservable<Void>> blockingAction) {
+        private Observable<Void> createNeverObservable() {
+            return Observable.<Void>never().doOnUnsubscribe(createOnUnsubscribe());
+        }
+
+        private Observable<Void> createSynchronousObservable() {
+            return Observable.from(new Iterable<Void>() {
+                @Override
+                public Iterator<Void> iterator() {
+                    return new Iterator<Void>() {
+                        private boolean nextCalled = false;
+
+                        @Override
+                        public boolean hasNext() {
+                            return !(nextCalled && Thread.currentThread().isInterrupted());
+                        }
+
+                        @Override
+                        public Void next() {
+                            nextCalled = true;
+                            return null;
+                        }
+
+                        @Override
+                        public void remove() {
+                            throw new UnsupportedOperationException("Read-only iterator.");
+                        }
+                    };
+                }
+            }).takeLast(1).doOnUnsubscribe(createOnUnsubscribe());
+        }
+
+        private <T> void startBlockingAndInterrupt(final Observable<T> observable, final Action1<BlockingObservable<T>> blockingAction) {
             Thread subscriptionThread = new Thread() {
                 @Override
                 public void run() {
                     try {
-                        blockingAction.call(createObservable().toBlocking());
+                        blockingAction.call(observable.toBlocking());
                     } catch (RuntimeException e) {
-                        if (!(e.getCause() instanceof InterruptedException)) {
-                            error = e;
-                        }
+                        errorRef.set(e);
                     }
                     latch.countDown();
                 }
@@ -532,12 +614,29 @@ public class BlockingObservableTest {
 
         void assertUnsubscribeIsInvoked(final String method, final Action1<BlockingObservable<Void>> blockingAction)
             throws InterruptedException {
-            startBlockingAndInterrupt(blockingAction);
+            startBlockingAndInterrupt(createNeverObservable(), blockingAction);
             assertTrue("Timeout means interruption is not performed", latch.await(30, TimeUnit.SECONDS));
-            if (error != null) {
-                throw error;
-            }
+            assertNotNull("InterruptedException is not thrown", getInterruptedExceptionOrNull());
             assertTrue("'unsubscribe' is not invoked when thread is interrupted for " + method, isUnSubscribed);
+        }
+
+        void assertNoInterruptedExceptionWhenSynchronous(final String method, final Action1<BlockingObservable<Void>> blockingAction)
+            throws InterruptedException {
+            startBlockingAndInterrupt(createSynchronousObservable(), blockingAction);
+            assertTrue("Timeout means interruption is not performed", latch.await(30, TimeUnit.SECONDS));
+            assertNull("'InterruptedException' is thrown when observable is synchronous for " + method, getInterruptedExceptionOrNull());
+        }
+
+        private InterruptedException getInterruptedExceptionOrNull() {
+            RuntimeException error = errorRef.get();
+            if (error == null) {
+                return null;
+            }
+            Throwable cause = error.getCause();
+            if (cause instanceof InterruptedException) {
+                return (InterruptedException) cause;
+            }
+            throw error;
         }
 
     }
