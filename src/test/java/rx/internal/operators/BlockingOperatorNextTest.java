@@ -15,11 +15,8 @@
  */
 package rx.internal.operators;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static rx.internal.operators.BlockingOperatorNext.next;
+import org.junit.Assert;
+import org.junit.Test;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -28,18 +25,20 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.Assert;
-import org.junit.Test;
-
 import rx.Observable;
 import rx.Subscriber;
 import rx.exceptions.TestException;
-import rx.internal.operators.BlockingOperatorNext;
 import rx.observables.BlockingObservable;
 import rx.schedulers.Schedulers;
 import rx.subjects.BehaviorSubject;
 import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static rx.internal.operators.BlockingOperatorNext.next;
 
 public class BlockingOperatorNextTest {
 
@@ -82,6 +81,13 @@ public class BlockingOperatorNextTest {
         fireOnNextInNewThread(obs, "two");
         assertTrue(it.hasNext());
         assertEquals("two", it.next());
+
+        fireOnNextInNewThread(obs, "three");
+        try {
+            assertEquals("three", it.next());
+        } catch (NoSuchElementException e) {
+            fail("Calling next() without hasNext() should wait for next fire");
+        }
 
         obs.onCompleted();
         assertFalse(it.hasNext());

@@ -93,6 +93,10 @@ public final class BlockingOperatorToIterator {
 
             private Notification<? extends T> take() {
                 try {
+                    Notification<? extends T> poll = notifications.poll();
+                    if (poll != null) {
+                        return poll;
+                    }
                     return notifications.take();
                 } catch (InterruptedException e) {
                     subscription.unsubscribe();
