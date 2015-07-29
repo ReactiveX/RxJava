@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package rx.jmh;
 
 import java.util.Iterator;
@@ -40,46 +41,43 @@ public abstract class InputWithIncrementingInteger {
     @Setup
     public void setup(final Blackhole bh) {
         this.bh = bh;
-        observable = Observable.range(0, getSize());
+        final int size = getSize();
+        observable = Observable.range(0, size);
 
         firehose = Observable.create(new OnSubscribe<Integer>() {
 
             @Override
             public void call(Subscriber<? super Integer> s) {
-                for (int i = 0; i < getSize(); i++) {
+                for (int i = 0; i < size; i++) {
                     s.onNext(i);
                 }
                 s.onCompleted();
             }
 
         });
-
         iterable = new Iterable<Integer>() {
-
             @Override
             public Iterator<Integer> iterator() {
                 return new Iterator<Integer>() {
-
                     int i = 0;
-
+                    
                     @Override
                     public boolean hasNext() {
-                        return i < getSize();
+                        return i < size;
                     }
-
+                    
                     @Override
                     public Integer next() {
+                        Blackhole.consumeCPU(10);
                         return i++;
                     }
-
+                    
                     @Override
                     public void remove() {
-
+                        
                     }
-
                 };
             }
-
         };
         observer = new Observer<Integer>() {
 
