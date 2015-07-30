@@ -16,13 +16,15 @@
 package rx.internal.schedulers;
 
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 import rx.*;
 import rx.functions.Action0;
 import rx.internal.util.*;
+import rx.schedulers.SchedulerLifecycle;
 import rx.subscriptions.*;
 
-public class EventLoopsScheduler extends Scheduler {
+public class EventLoopsScheduler extends Scheduler implements SchedulerLifecycle {
     /** Manages a fixed number of workers. */
     private static final String THREAD_NAME_PREFIX = "RxComputationThreadPool-";
     private static final RxThreadFactory THREAD_FACTORY = new RxThreadFactory(THREAD_NAME_PREFIX);
@@ -44,40 +46,82 @@ public class EventLoopsScheduler extends Scheduler {
         }
         MAX_THREADS = max;
     }
+    
+    static final PoolWorker SHUTDOWN_WORKER;
+    static {
+        SHUTDOWN_WORKER = new PoolWorker(new RxThreadFactory("RxComputationShutdown-"));
+        SHUTDOWN_WORKER.unsubscribe();
+    }
+    
     static final class FixedSchedulerPool {
         final int cores;
 
         final PoolWorker[] eventLoops;
         long n;
 
-        FixedSchedulerPool() {
+        FixedSchedulerPool(int maxThreads) {
             // initialize event loops
-            this.cores = MAX_THREADS;
-            this.eventLoops = new PoolWorker[cores];
-            for (int i = 0; i < cores; i++) {
+            this.cores = maxThreads;
+            this.eventLoops = new PoolWorker[maxThreads];
+            for (int i = 0; i < maxThreads; i++) {
                 this.eventLoops[i] = new PoolWorker(THREAD_FACTORY);
             }
         }
 
         public PoolWorker getEventLoop() {
+            int c = cores;
+            if (c == 0) {
+                return SHUTDOWN_WORKER;
+            }
             // simple round robin, improvements to come
-            return eventLoops[(int)(n++ % cores)];
+            return eventLoops[(int)(n++ % c)];
+        }
+        
+        public void shutdown() {
+            for (PoolWorker w : eventLoops) {
+                w.unsubscribe();
+            }
         }
     }
+    /** This will indicate no pool is active. */
+    static final FixedSchedulerPool NONE = new FixedSchedulerPool(0);
 
-    final FixedSchedulerPool pool;
+    final AtomicReference<FixedSchedulerPool> pool;
     
     /**
      * Create a scheduler with pool size equal to the available processor
      * count and using least-recent worker selection policy.
      */
     public EventLoopsScheduler() {
-        pool = new FixedSchedulerPool();
+        this.pool = new AtomicReference<FixedSchedulerPool>(NONE);
+        start();
     }
     
     @Override
     public Worker createWorker() {
-        return new EventLoopWorker(pool.getEventLoop());
+        return new EventLoopWorker(pool.get().getEventLoop());
+    }
+    
+    @Override
+    public void start() {
+        FixedSchedulerPool update = new FixedSchedulerPool(MAX_THREADS);
+        if (!pool.compareAndSet(NONE, update)) {
+            update.shutdown();
+        }
+    }
+    
+    @Override
+    public void shutdown() {
+        for (;;) {
+            FixedSchedulerPool curr = pool.get();
+            if (curr == NONE) {
+                return;
+            }
+            if (pool.compareAndSet(curr, NONE)) {
+                curr.shutdown();
+                return;
+            }
+        }
     }
     
     /**
@@ -87,7 +131,7 @@ public class EventLoopsScheduler extends Scheduler {
      * @return the subscription
      */
     public Subscription scheduleDirect(Action0 action) {
-       PoolWorker pw = pool.getEventLoop();
+       PoolWorker pw = pool.get().getEventLoop();
        return pw.scheduleActual(action, -1, TimeUnit.NANOSECONDS);
     }
 
