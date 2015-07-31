@@ -24,7 +24,9 @@ import org.junit.Test;
 
 import rx.Observable;
 import rx.Observer;
+import rx.Subscriber;
 import rx.functions.Action1;
+import rx.observers.TestSubscriber;
 import rx.subjects.PublishSubject;
 
 public class ExceptionsTest {
@@ -162,4 +164,19 @@ public class ExceptionsTest {
         }
     }
 
+    @Test
+    public void shouldAllowThrowingNullError() {
+        TestSubscriber<Object> testSubscriber = new TestSubscriber<Object>();
+
+        Observable
+                .create(new Observable.OnSubscribe<Object>() {
+                    @Override
+                    public void call(Subscriber<? super Object> subscriber) {
+                        subscriber.onError(null);
+                    }
+                })
+                .subscribe(testSubscriber);
+
+        testSubscriber.assertError((Throwable) null);
+    }
 }
