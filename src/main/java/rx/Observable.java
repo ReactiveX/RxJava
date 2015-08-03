@@ -6576,6 +6576,8 @@ public class Observable<T> {
      * <p>
      * <img width="640" height="315" src="https://raw.github.com/wiki/ReactiveX/RxJava/images/rx-operators/retry.png" alt="">
      * <dl>
+     *  <dt><b>Backpressure Support:</b></dt>
+     *  <dd>This operator honors backpressure.</td>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code retry} operates by default on the {@code trampoline} {@link Scheduler}.</dd>
      * </dl>
