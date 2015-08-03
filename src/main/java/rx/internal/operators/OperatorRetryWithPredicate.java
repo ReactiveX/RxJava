@@ -16,11 +16,14 @@
 package rx.internal.operators;
 
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
+
 import rx.Observable;
+import rx.Producer;
 import rx.Scheduler;
 import rx.Subscriber;
 import rx.functions.Action0;
 import rx.functions.Func2;
+import rx.internal.producers.ProducerArbiter;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.SerialSubscription;
 
@@ -38,8 +41,9 @@ public final class OperatorRetryWithPredicate<T> implements Observable.Operator<
         final SerialSubscription serialSubscription = new SerialSubscription();
         // add serialSubscription so it gets unsubscribed if child is unsubscribed
         child.add(serialSubscription);
-        
-        return new SourceSubscriber<T>(child, predicate, inner, serialSubscription);
+        ProducerArbiter pa = new ProducerArbiter();
+        child.setProducer(pa);
+        return new SourceSubscriber<T>(child, predicate, inner, serialSubscription, pa);
     }
     
     static final class SourceSubscriber<T> extends Subscriber<Observable<T>> {
@@ -47,79 +51,89 @@ public final class OperatorRetryWithPredicate<T> implements Observable.Operator<
         final Func2<Integer, Throwable, Boolean> predicate;
         final Scheduler.Worker inner;
         final SerialSubscription serialSubscription;
+        final ProducerArbiter pa;
         
         volatile int attempts;
         @SuppressWarnings("rawtypes")
         static final AtomicIntegerFieldUpdater<SourceSubscriber> ATTEMPTS_UPDATER
                 = AtomicIntegerFieldUpdater.newUpdater(SourceSubscriber.class, "attempts");
 
-        public SourceSubscriber(Subscriber<? super T> child, final Func2<Integer, Throwable, Boolean> predicate, Scheduler.Worker inner, 
-                SerialSubscription serialSubscription) {
+        public SourceSubscriber(Subscriber<? super T> child, 
+                final Func2<Integer, Throwable, Boolean> predicate, 
+                Scheduler.Worker inner, 
+                SerialSubscription serialSubscription,
+                ProducerArbiter pa) {
             this.child = child;
             this.predicate = predicate;
             this.inner = inner;
             this.serialSubscription = serialSubscription;
+            this.pa = pa;
         }
         
         
         @Override
-            public void onCompleted() {
-                // ignore as we expect a single nested Observable<T>
-            }
+        public void onCompleted() {
+            // ignore as we expect a single nested Observable<T>
+        }
 
-            @Override
-            public void onError(Throwable e) {
-                child.onError(e);
-            }
+        @Override
+        public void onError(Throwable e) {
+            child.onError(e);
+        }
 
-            @Override
-            public void onNext(final Observable<T> o) {
-                inner.schedule(new Action0() {
+        @Override
+        public void onNext(final Observable<T> o) {
+            inner.schedule(new Action0() {
 
-                    @Override
-                    public void call() {
-                        final Action0 _self = this;
-                        ATTEMPTS_UPDATER.incrementAndGet(SourceSubscriber.this);
+                @Override
+                public void call() {
+                    final Action0 _self = this;
+                    ATTEMPTS_UPDATER.incrementAndGet(SourceSubscriber.this);
 
-                        // new subscription each time so if it unsubscribes itself it does not prevent retries
-                        // by unsubscribing the child subscription
-                        Subscriber<T> subscriber = new Subscriber<T>() {
-                            boolean done;
-                            @Override
-                            public void onCompleted() {
-                                if (!done) {
-                                    done = true;
-                                    child.onCompleted();
+                    // new subscription each time so if it unsubscribes itself it does not prevent retries
+                    // by unsubscribing the child subscription
+                    Subscriber<T> subscriber = new Subscriber<T>() {
+                        boolean done;
+                        @Override
+                        public void onCompleted() {
+                            if (!done) {
+                                done = true;
+                                child.onCompleted();
+                            }
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            if (!done) {
+                                done = true;
+                                if (predicate.call(attempts, e) && !inner.isUnsubscribed()) {
+                                    // retry again
+                                    inner.schedule(_self);
+                                } else {
+                                    // give up and pass the failure
+                                    child.onError(e);
                                 }
                             }
+                        }
 
-                            @Override
-                            public void onError(Throwable e) {
-                                if (!done) {
-                                    done = true;
-                                    if (predicate.call(attempts, e) && !inner.isUnsubscribed()) {
-                                        // retry again
-                                        inner.schedule(_self);
-                                    } else {
-                                        // give up and pass the failure
-                                        child.onError(e);
-                                    }
-                                }
+                        @Override
+                        public void onNext(T v) {
+                            if (!done) {
+                                child.onNext(v);
+                                pa.produced(1);
                             }
+                        }
 
-                            @Override
-                            public void onNext(T v) {
-                                if (!done) {
-                                    child.onNext(v);
-                                }
-                            }
-
-                        };
-                        // register this Subscription (and unsubscribe previous if exists) 
-                        serialSubscription.set(subscriber);
-                        o.unsafeSubscribe(subscriber);
-                    }
-                });
-            }
+                        @Override
+                        public void setProducer(Producer p) {
+                            pa.setProducer(p);
+                        }
+                    };
+                    // register this Subscription (and unsubscribe previous if exists) 
+                    serialSubscription.set(subscriber);
+                    o.unsafeSubscribe(subscriber);
+                }
+            });
+        }
     }
 }
