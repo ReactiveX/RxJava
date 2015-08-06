@@ -26,8 +26,9 @@ import rx.internal.util.unsafe.SpscArrayQueue;
 import rx.internal.util.unsafe.UnsafeAccess;
 
 /**
- * This assumes Spsc or Spmc usage. This means only a single producer calling the on* methods. This is the Rx contract of an Observer.
- * Concurrent invocations of on* methods will not be thread-safe.
+ * This assumes Spsc or Spmc usage. This means only a single producer calling the on* methods. This is the Rx
+ * contract of an Observer (see http://reactivex.io/documentation/contract.html). Concurrent invocations of
+ * on* methods will not be thread-safe.
  */
 public class RxRingBuffer implements Subscription {
 
