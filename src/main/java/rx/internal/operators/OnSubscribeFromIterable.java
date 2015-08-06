@@ -15,12 +15,11 @@
  */
 package rx.internal.operators;
 
-import java.util.Iterator;
-import java.util.concurrent.atomic.AtomicLongFieldUpdater;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
 
 import rx.Observable.OnSubscribe;
-import rx.Producer;
-import rx.Subscriber;
+import rx.*;
 
 /**
  * Converts an {@code Iterable} sequence into an {@code Observable}.
@@ -46,30 +45,39 @@ public final class OnSubscribeFromIterable<T> implements OnSubscribe<T> {
         final Iterator<? extends T> it = is.iterator();
         if (!it.hasNext() && !o.isUnsubscribed())
             o.onCompleted();
-        else 
-            o.setProducer(new IterableProducer<T>(o, it));
+        else {
+            long count;
+            if (is instanceof Collection) {
+                count = ((Collection<?>)is).size();
+            } else {
+                count = Long.MAX_VALUE;
+            }
+            o.setProducer(new IterableProducer<T>(o, it, count));
+        }
     }
 
-    private static final class IterableProducer<T> implements Producer {
+    private static final class IterableProducer<T> extends AtomicLong implements Producer {
+        /** */
+        private static final long serialVersionUID = 585590361203968439L;
         private final Subscriber<? super T> o;
         private final Iterator<? extends T> it;
 
-        private volatile long requested = 0;
-        @SuppressWarnings("rawtypes")
-        private static final AtomicLongFieldUpdater<IterableProducer> REQUESTED_UPDATER = AtomicLongFieldUpdater.newUpdater(IterableProducer.class, "requested");
-
-        private IterableProducer(Subscriber<? super T> o, Iterator<? extends T> it) {
+        private final long count;
+        
+        private IterableProducer(Subscriber<? super T> o, Iterator<? extends T> it, long count) {
             this.o = o;
             this.it = it;
+            this.count = count;
         }
 
         @Override
         public void request(long n) {
-            if (requested == Long.MAX_VALUE) {
+            long c = count;
+            if (get() >= c) {
                 // already started with fast-path
                 return;
             }
-            if (n == Long.MAX_VALUE && REQUESTED_UPDATER.compareAndSet(this, 0, Long.MAX_VALUE)) {
+            if (n >= c && compareAndSet(0, c)) {
                 // fast-path without backpressure
 
                 while (true) {
@@ -87,7 +95,7 @@ public final class OnSubscribeFromIterable<T> implements OnSubscribe<T> {
                 }
             } else if (n > 0) {
                 // backpressure is requested
-                long _c = BackpressureUtils.getAndAddRequest(REQUESTED_UPDATER, this, n);
+                long _c = BackpressureUtils.getAndAddRequest(this, n);
                 if (_c == 0) {
                     while (true) {
                         /*
@@ -96,7 +104,7 @@ public final class OnSubscribeFromIterable<T> implements OnSubscribe<T> {
                          * it is touched during the loop the performance is
                          * impacted significantly.
                          */
-                        long r = requested;
+                        long r = get();
                         long numToEmit = r;
                         while (true) {
                             if (o.isUnsubscribed()) {
@@ -114,7 +122,7 @@ public final class OnSubscribeFromIterable<T> implements OnSubscribe<T> {
                                 return;
                             }
                         }
-                        if (REQUESTED_UPDATER.addAndGet(this, -r) == 0) {
+                        if (addAndGet(-r) == 0) {
                             // we're done emitting the number requested so
                             // return
                             return;
