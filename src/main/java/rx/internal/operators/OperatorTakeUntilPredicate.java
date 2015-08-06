@@ -73,7 +73,7 @@ public final class OperatorTakeUntilPredicate<T> implements Operator<T, T> {
             }
         }
         void downstreamRequest(long n) {
-            request(n);
+            requestFromProducer(n);
         }
     }
 

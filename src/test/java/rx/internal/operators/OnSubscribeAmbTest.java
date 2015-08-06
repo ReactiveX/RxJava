@@ -257,7 +257,7 @@ public class OnSubscribeAmbTest {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
             @Override
             public void onStart() {
-                request(1);
+                requestFromProducer(1);
             }};
         Observable.amb(o1, o2).subscribe(ts);
         // before first emission request 20 more

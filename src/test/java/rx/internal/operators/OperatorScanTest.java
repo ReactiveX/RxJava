@@ -168,7 +168,7 @@ public class OperatorScanTest {
 
                     @Override
                     public void onStart() {
-                        request(10);
+                        requestFromProducer(10);
                     }
 
                     @Override
@@ -209,7 +209,7 @@ public class OperatorScanTest {
 
                     @Override
                     public void onStart() {
-                        request(10);
+                        requestFromProducer(10);
                     }
 
                     @Override
@@ -348,12 +348,12 @@ public class OperatorScanTest {
 
             @Override
             public void onStart() {
-                request(1);
+                requestFromProducer(1);
             }
 
             @Override
             public void onNext(Integer integer) {
-                request(1);
+                requestFromProducer(1);
             }
         });
 

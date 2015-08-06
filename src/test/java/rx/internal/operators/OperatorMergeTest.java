@@ -1176,7 +1176,7 @@ public class OperatorMergeTest {
             
             @Override
             public void onStart() {
-                request(1);
+                requestFromProducer(1);
             }
 
             @Override
@@ -1192,8 +1192,8 @@ public class OperatorMergeTest {
             @Override
             public void onNext(Integer t) {
                 latch.countDown();
-                request(2);
-                request(Long.MAX_VALUE-1);
+                requestFromProducer(2);
+                requestFromProducer(Long.MAX_VALUE-1);
             }});
         assertTrue(latch.await(10, TimeUnit.SECONDS));
     }
@@ -1268,14 +1268,14 @@ public class OperatorMergeTest {
                 int remaining = req;
                 @Override
                 public void onStart() {
-                    request(req);
+                    requestFromProducer(req);
                 }
                 @Override
                 public void onNext(Integer t) {
                     super.onNext(t);
                     if (--remaining == 0) {
                         remaining = req;
-                        request(req);
+                        requestFromProducer(req);
                     }
                 }
             };
@@ -1289,14 +1289,14 @@ public class OperatorMergeTest {
                 int remaining = req;
                 @Override
                 public void onStart() {
-                    request(req);
+                    requestFromProducer(req);
                 }
                 @Override
                 public void onNext(Integer t) {
                     super.onNext(t);
                     if (--remaining == 0) {
                         remaining = req;
-                        request(req);
+                        requestFromProducer(req);
                     }
                 }
             };

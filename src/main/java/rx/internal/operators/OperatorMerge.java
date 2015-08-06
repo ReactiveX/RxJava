@@ -183,7 +183,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
             this.innerGuard = new Object();
             this.innerSubscribers = EMPTY;
             long r = Math.min(maxConcurrent, RxRingBuffer.SIZE);
-            request(r);
+            requestFromProducer(r);
         }
         
         Queue<Throwable> getOrCreateErrorQueue() {
@@ -403,7 +403,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
         }
 
         public void requestMore(long n) {
-            request(n);
+            requestFromProducer(n);
         }
         
         /**
@@ -734,7 +734,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
                     }
                     
                     if (replenishMain > 0) {
-                        request(replenishMain);
+                        requestFromProducer(replenishMain);
                     }
                     // if one or more inner completed, loop again to see if we can terminate the whole stream
                     if (innerCompleted) {
@@ -795,7 +795,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
         @Override
         public void onStart() {
             outstanding = RxRingBuffer.SIZE;
-            request(RxRingBuffer.SIZE);
+            requestFromProducer(RxRingBuffer.SIZE);
         }
         @Override
         public void onNext(T t) {
@@ -821,7 +821,7 @@ public final class OperatorMerge<T> implements Operator<T, Observable<? extends 
             outstanding = RxRingBuffer.SIZE;
             int k = RxRingBuffer.SIZE - r;
             if (k > 0) {
-                request(k);
+                requestFromProducer(k);
             }
         }
     }}

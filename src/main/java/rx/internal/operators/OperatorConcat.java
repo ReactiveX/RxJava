@@ -112,7 +112,7 @@ public final class OperatorConcat<T> implements Operator<T, Observable<? extends
         public void onStart() {
             // no need for more than 1 at a time since we concat 1 at a time, so we'll request 2 to start ...
             // 1 to be subscribed to, 1 in the queue, then we'll keep requesting 1 at a time after that
-            request(2);
+            requestFromProducer(2);
         }
 
         private void requestFromChild(long n) {
@@ -161,7 +161,7 @@ public final class OperatorConcat<T> implements Operator<T, Observable<? extends
             if (WIP.decrementAndGet(this) > 0) {
                 subscribeNext();
             }
-            request(1);
+            requestFromProducer(1);
         }
 
         void subscribeNext() {

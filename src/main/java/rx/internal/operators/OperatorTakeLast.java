@@ -50,7 +50,7 @@ public final class OperatorTakeLast<T> implements Operator<T, T> {
             @Override
             public void onStart() {
                 // we do this to break the chain of the child subscriber being passed through
-                request(Long.MAX_VALUE);
+                requestFromProducer(Long.MAX_VALUE);
             }
 
             @Override

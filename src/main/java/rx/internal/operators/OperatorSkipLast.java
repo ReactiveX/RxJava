@@ -68,7 +68,7 @@ public class OperatorSkipLast<T> implements Operator<T, T> {
                 if (deque.size() == count) {
                     subscriber.onNext(on.getValue(deque.removeFirst()));
                 } else {
-                    request(1);
+                    requestFromProducer(1);
                 }
                 deque.offerLast(on.next(value));
             }

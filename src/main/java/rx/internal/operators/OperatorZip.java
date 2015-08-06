@@ -305,11 +305,11 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
 
             @Override
             public void onStart() {
-                request(RxRingBuffer.SIZE);
+                requestFromProducer(RxRingBuffer.SIZE);
             }
             
             public void requestMore(long n) {
-                request(n);
+                requestFromProducer(n);
             }
 
             @Override

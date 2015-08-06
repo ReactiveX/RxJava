@@ -44,7 +44,7 @@ public final class OperatorSkipWhile<T> implements Operator<T, T> {
                         skipping = false;
                         child.onNext(t);
                     } else {
-                        request(1);
+                        requestFromProducer(1);
                     }
                 }
             }

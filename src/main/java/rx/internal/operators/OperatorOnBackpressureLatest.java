@@ -201,7 +201,7 @@ public final class OperatorOnBackpressureLatest<T> implements Operator<T, T> {
         @Override
         public void onStart() {
             // don't run until the child actually requested to avoid synchronous problems
-            request(0); 
+            requestFromProducer(0); 
         }
 
         @Override
@@ -219,7 +219,7 @@ public final class OperatorOnBackpressureLatest<T> implements Operator<T, T> {
             producer.onCompleted();
         }
         void requestMore(long n) {
-            request(n);
+            requestFromProducer(n);
         }
     }
 }

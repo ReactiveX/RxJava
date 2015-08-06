@@ -76,7 +76,7 @@ public final class OperatorWindowWithObservable<T, U> implements Operator<Observ
         
         @Override
         public void onStart() {
-            request(Long.MAX_VALUE);
+            requestFromProducer(Long.MAX_VALUE);
         }
         
         @Override
@@ -274,7 +274,7 @@ public final class OperatorWindowWithObservable<T, U> implements Operator<Observ
         
         @Override
         public void onStart() {
-            request(Long.MAX_VALUE);
+            requestFromProducer(Long.MAX_VALUE);
         }
         
         @Override

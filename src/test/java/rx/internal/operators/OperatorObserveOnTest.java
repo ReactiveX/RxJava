@@ -738,7 +738,7 @@ public class OperatorObserveOnTest {
                     
                     @Override
                     public void onStart() {
-                        request(2);
+                        requestFromProducer(2);
                     }
 
                     @Override
@@ -755,9 +755,9 @@ public class OperatorObserveOnTest {
                     public void onNext(Integer t) {
                         count.incrementAndGet();
                         if (first) {
-                            request(Long.MAX_VALUE - 1);
-                            request(Long.MAX_VALUE - 1);
-                            request(10);
+                            requestFromProducer(Long.MAX_VALUE - 1);
+                            requestFromProducer(Long.MAX_VALUE - 1);
+                            requestFromProducer(10);
                             first = false;
                         }
                     }
@@ -784,7 +784,7 @@ public class OperatorObserveOnTest {
 
                     @Override
                     public void onStart() {
-                        request(1);
+                        requestFromProducer(1);
                     }
 
                     @Override

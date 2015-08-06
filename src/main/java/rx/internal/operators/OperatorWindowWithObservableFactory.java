@@ -82,7 +82,7 @@ public final class OperatorWindowWithObservableFactory<T, U> implements Operator
         
         @Override
         public void onStart() {
-            request(Long.MAX_VALUE);
+            requestFromProducer(Long.MAX_VALUE);
         }
         
         @Override
@@ -293,7 +293,7 @@ public final class OperatorWindowWithObservableFactory<T, U> implements Operator
         
         @Override
         public void onStart() {
-            request(Long.MAX_VALUE);
+            requestFromProducer(Long.MAX_VALUE);
         }
         
         @Override

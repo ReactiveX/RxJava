@@ -787,7 +787,7 @@ public class OperatorConcatTest {
 
             @Override
             public void onNext(Integer t) {
-                request(2);
+                requestFromProducer(2);
             }});
         
         assertTrue(completed.get());

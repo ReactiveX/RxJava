@@ -126,7 +126,7 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
         @Override
         public void onStart() {
             // signal that this is an async operator capable of receiving this many
-            request(RxRingBuffer.SIZE);
+            requestFromProducer(RxRingBuffer.SIZE);
         }
 
         @Override
@@ -221,7 +221,7 @@ public final class OperatorObserveOn<T> implements Operator<T, T> {
                 }
             } while (COUNTER_UPDATER.decrementAndGet(this) > 0);
             if (emitted > 0) {
-                request(emitted);
+                requestFromProducer(emitted);
             }
         }
     }

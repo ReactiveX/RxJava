@@ -100,7 +100,7 @@ public final class OperatorWindowWithSize<T> implements Operator<Observable<T>, 
         }
         
         void requestMore(long n) {
-            request(n);
+            requestFromProducer(n);
         }
 
         @Override
@@ -186,7 +186,7 @@ public final class OperatorWindowWithSize<T> implements Operator<Observable<T>, 
         }
         
         void requestMore(long n) {
-            request(n);
+            requestFromProducer(n);
         }
 
         @Override

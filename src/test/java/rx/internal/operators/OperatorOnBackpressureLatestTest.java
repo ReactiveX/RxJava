@@ -54,7 +54,7 @@ public class OperatorOnBackpressureLatestTest {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
             @Override
             public void onStart() {
-                request(2);
+                requestFromProducer(2);
             }
         };
         
@@ -70,7 +70,7 @@ public class OperatorOnBackpressureLatestTest {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
             @Override
             public void onStart() {
-                request(0);
+                requestFromProducer(0);
             }
         };
         
@@ -116,7 +116,7 @@ public class OperatorOnBackpressureLatestTest {
             final Random rnd = new Random();
             @Override
             public void onStart() {
-                request(1);
+                requestFromProducer(1);
             }
             @Override
             public void onNext(Integer t) {
@@ -128,7 +128,7 @@ public class OperatorOnBackpressureLatestTest {
                         ex.printStackTrace();
                     }
                 }
-                request(1);
+                requestFromProducer(1);
             }
         };
         int m = 100000;

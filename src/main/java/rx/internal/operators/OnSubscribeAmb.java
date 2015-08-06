@@ -275,11 +275,11 @@ public final class OnSubscribeAmb<T> implements OnSubscribe<T>{
             this.subscriber = subscriber;
             this.selection = selection;
             // initial request
-            request(requested);
+            requestFromProducer(requested);
         }
 
         private final void requestMore(long n) {
-            request(n);
+            requestFromProducer(n);
         }
 
         @Override

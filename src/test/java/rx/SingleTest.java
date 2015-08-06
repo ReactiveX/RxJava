@@ -440,7 +440,7 @@ public class SingleTest {
         TestSubscriber<String> ts = new TestSubscriber<String>() {
             @Override
             public void onStart() {
-                request(0);
+                requestFromProducer(0);
             }
         };
 

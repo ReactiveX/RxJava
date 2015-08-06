@@ -244,7 +244,7 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
         public void onStart() {
             // since subscribers may have different amount of requests, we try to 
             // optimize by buffering values up-front and replaying it on individual demand
-            request(RxRingBuffer.SIZE);
+            requestFromProducer(RxRingBuffer.SIZE);
         }
         @Override
         public void onNext(T t) {
@@ -526,7 +526,7 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
                                 return;
                             }
                             // otherwise, just ask for a new value
-                            request(1);
+                            requestFromProducer(1);
                             // and retry emitting to potential new child-subscribers
                             continue;
                         }
@@ -574,7 +574,7 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
                         
                         // if we did emit at least one element, request more to replenish the queue
                         if (d > 0) {
-                            request(d);
+                            requestFromProducer(d);
                         }
                         // if we have requests but not an empty queue after emission
                         // let's try again to see if more requests/child-subscribers are 

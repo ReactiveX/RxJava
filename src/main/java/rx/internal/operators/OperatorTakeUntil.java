@@ -64,7 +64,7 @@ public final class OperatorTakeUntil<T, E> implements Operator<T, T> {
         final Subscriber<E> so = new Subscriber<E>() {
             @Override
             public void onStart() {
-                request(Long.MAX_VALUE);
+                requestFromProducer(Long.MAX_VALUE);
             }
             
             @Override

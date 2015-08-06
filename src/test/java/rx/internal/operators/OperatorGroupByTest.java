@@ -1479,7 +1479,7 @@ public class OperatorGroupByTest {
                     
                     @Override
                     public void onStart() {
-                        request(2);
+                        requestFromProducer(2);
                     }
 
                     @Override
@@ -1497,7 +1497,7 @@ public class OperatorGroupByTest {
                     public void onNext(Integer t) {
                         System.out.println(t);
                         //provoke possible request overflow
-                        request(Long.MAX_VALUE-1);
+                        requestFromProducer(Long.MAX_VALUE-1);
                     }});
         assertTrue(completed.get());
     }

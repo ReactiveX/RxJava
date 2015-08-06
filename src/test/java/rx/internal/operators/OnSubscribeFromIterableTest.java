@@ -175,7 +175,7 @@ public class OnSubscribeFromIterableTest {
             
             @Override
             public void onStart() {
-                request(2);
+                requestFromProducer(2);
             }
 
             @Override
@@ -191,7 +191,7 @@ public class OnSubscribeFromIterableTest {
             @Override
             public void onNext(Integer t) {
                 latch.countDown();
-                request(Long.MAX_VALUE-1);
+                requestFromProducer(Long.MAX_VALUE-1);
             }});
         assertTrue(latch.await(10, TimeUnit.SECONDS));
     }
@@ -203,7 +203,7 @@ public class OnSubscribeFromIterableTest {
 
             @Override
             public void onStart() {
-                request(0);
+                requestFromProducer(0);
             }
             
             @Override

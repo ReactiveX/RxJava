@@ -498,7 +498,7 @@ public class OperatorSwitchTest {
             @Override
             public void onStart() {
                 requested = 3;
-                request(3);
+                requestFromProducer(3);
             }
 
             @Override
@@ -517,7 +517,7 @@ public class OperatorSwitchTest {
                 requested--;
                 if(requested == 0) {
                     requested = 3;
-                    request(3);
+                    requestFromProducer(3);
                 }
             }
         });

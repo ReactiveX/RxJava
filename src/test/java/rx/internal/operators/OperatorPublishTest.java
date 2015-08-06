@@ -343,7 +343,7 @@ public class OperatorPublishTest {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
             @Override
             public void onStart() {
-                request(0);
+                requestFromProducer(0);
             }
         };
         

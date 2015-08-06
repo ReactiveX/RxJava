@@ -42,7 +42,7 @@ public class SubscriberTest {
     @Test
     public void testRequestFromFinalSubscribeWithRequestValue() {
         Subscriber<String> s = new TestSubscriber<String>();
-        s.request(10);
+        s.requestFromProducer(10);
         final AtomicLong r = new AtomicLong();
         s.setProducer(new Producer() {
 
@@ -101,7 +101,7 @@ public class SubscriberTest {
             }
 
         };
-        s.request(10);
+        s.requestFromProducer(10);
         Subscriber<? super String> ns = o.call(s);
 
         final AtomicLong r = new AtomicLong();
@@ -146,7 +146,7 @@ public class SubscriberTest {
             }
 
         };
-        s.request(10);
+        s.requestFromProducer(10);
         Subscriber<? super String> ns = o.call(s);
 
         final AtomicLong r = new AtomicLong();
@@ -201,12 +201,12 @@ public class SubscriberTest {
 
                 };
                 // we request 99 up to the parent
-                as.request(99);
+                as.requestFromProducer(99);
                 return as;
             }
 
         };
-        s.request(10);
+        s.requestFromProducer(10);
         Subscriber<? super String> ns = o.call(s);
 
         final AtomicLong r = new AtomicLong();
@@ -227,7 +227,7 @@ public class SubscriberTest {
     @Test
     public void testRequestToObservable() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        ts.request(3);
+        ts.requestFromProducer(3);
         final AtomicLong requested = new AtomicLong();
         Observable.create(new OnSubscribe<Integer>() {
 
@@ -250,7 +250,7 @@ public class SubscriberTest {
     @Test
     public void testRequestThroughMap() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        ts.request(3);
+        ts.requestFromProducer(3);
         final AtomicLong requested = new AtomicLong();
         Observable.create(new OnSubscribe<Integer>() {
 
@@ -280,7 +280,7 @@ public class SubscriberTest {
     @Test
     public void testRequestThroughTakeThatReducesRequest() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        ts.request(3);
+        ts.requestFromProducer(3);
         final AtomicLong requested = new AtomicLong();
         Observable.create(new OnSubscribe<Integer>() {
 
@@ -303,7 +303,7 @@ public class SubscriberTest {
     @Test
     public void testRequestThroughTakeWhereRequestIsSmallerThanTake() {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
-        ts.request(3);
+        ts.requestFromProducer(3);
         final AtomicLong requested = new AtomicLong();
         Observable.create(new OnSubscribe<Integer>() {
 
@@ -331,7 +331,7 @@ public class SubscriberTest {
             @Override
             public void onStart() {
                 c.incrementAndGet();
-                request(1);
+                requestFromProducer(1);
             }
 
             @Override
@@ -346,7 +346,7 @@ public class SubscriberTest {
 
             @Override
             public void onNext(Integer t) {
-                request(1);
+                requestFromProducer(1);
             }
 
         });
@@ -362,7 +362,7 @@ public class SubscriberTest {
             @Override
             public void onStart() {
                 c.incrementAndGet();
-                request(1);
+                requestFromProducer(1);
             }
 
             @Override
@@ -377,7 +377,7 @@ public class SubscriberTest {
 
             @Override
             public void onNext(Integer t) {
-                request(1);
+                requestFromProducer(1);
             }
 
         });
@@ -397,7 +397,7 @@ public class SubscriberTest {
                     @Override
                     public void onStart() {
                         c.incrementAndGet();
-                        request(1);
+                        requestFromProducer(1);
                     }
 
                     @Override
@@ -413,7 +413,7 @@ public class SubscriberTest {
                     @Override
                     public void onNext(Integer t) {
                         child.onNext(t);
-                        request(1);
+                        requestFromProducer(1);
                     }
 
                 };
@@ -432,7 +432,7 @@ public class SubscriberTest {
 
             @Override
             public void onStart() {
-                request(1);
+                requestFromProducer(1);
             }
             
             @Override
@@ -448,8 +448,8 @@ public class SubscriberTest {
 
             @Override
             public void onNext(Integer t) {
-                request(-1);
-                request(1);
+                requestFromProducer(-1);
+                requestFromProducer(1);
             }});
         assertTrue(latch.await(10, TimeUnit.SECONDS));
         assertTrue(exception.get() instanceof IllegalArgumentException);
@@ -461,8 +461,8 @@ public class SubscriberTest {
         Observable.just(1,2,3,4,5).subscribe(new Subscriber<Integer>() {
             @Override
             public void onStart() {
-                request(3);
-                request(2);
+                requestFromProducer(3);
+                requestFromProducer(2);
             }
             
             @Override
@@ -488,8 +488,8 @@ public class SubscriberTest {
         Observable.just(1,2,3,4,5).subscribe(new Subscriber<Integer>() {
             @Override
             public void onStart() {
-                request(2);
-                request(Long.MAX_VALUE-1);
+                requestFromProducer(2);
+                requestFromProducer(Long.MAX_VALUE-1);
             }
             
             @Override

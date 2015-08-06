@@ -49,7 +49,7 @@ public final class OperatorDebounceWithSelector<T, U> implements Operator<T, T> 
             @Override
             public void onStart() {
                 // debounce wants to receive everything as a firehose without backpressure
-                request(Long.MAX_VALUE);
+                requestFromProducer(Long.MAX_VALUE);
             }
             
             @Override

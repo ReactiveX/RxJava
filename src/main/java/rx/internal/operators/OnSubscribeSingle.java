@@ -45,7 +45,7 @@ public class OnSubscribeSingle<T> implements Single.OnSubscribe<T> {
             public void onStart() {
                 // We request 2 here since we need 1 for the single and 1 to check that the observable
                 // doesn't emit more than one item
-                request(2);
+                requestFromProducer(2);
             }
 
             @Override

@@ -142,7 +142,7 @@ public class OperatorSingleTest {
 
                     @Override
                     public void onStart() {
-                        request(1);
+                        requestFromProducer(1);
                     }
 
                     @Override
@@ -157,7 +157,7 @@ public class OperatorSingleTest {
 
                     @Override
                     public void onNext(Integer t) {
-                        request(2);
+                        requestFromProducer(2);
                     }
                 });
         assertEquals(Arrays.asList(2L), requests);
@@ -181,7 +181,7 @@ public class OperatorSingleTest {
 
                     @Override
                     public void onStart() {
-                        request(3);
+                        requestFromProducer(3);
                     }
 
                     @Override
@@ -219,7 +219,7 @@ public class OperatorSingleTest {
 
                     @Override
                     public void onStart() {
-                        request(1);
+                        requestFromProducer(1);
                     }
 
                     @Override
@@ -417,7 +417,7 @@ public class OperatorSingleTest {
 
             @Override
             public void onStart() {
-                request(1);
+                requestFromProducer(1);
             }
 
             @Override
@@ -432,7 +432,7 @@ public class OperatorSingleTest {
 
             @Override
             public void onNext(Integer integer) {
-                request(1);
+                requestFromProducer(1);
             }
         });
         observable.subscribe(subscriber);
