@@ -26,7 +26,7 @@ import rx.plugins.RxJavaPlugins;
 
 /**
  * {@code SafeSubscriber} is a wrapper around {@code Subscriber} that ensures that the {@code Subscriber}
- * complies with the Rx contract.
+ * complies with <a href="http://reactivex.io/documentation/contract.html">the Observable contract</a>.
  * <p>
  * The following is taken from <a href="http://go.microsoft.com/fwlink/?LinkID=205219">the Rx Design Guidelines
  * document</a>:

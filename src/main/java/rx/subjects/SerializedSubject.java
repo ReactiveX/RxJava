@@ -24,8 +24,8 @@ import rx.observers.SerializedObserver;
  * <p>
  * When you use an ordinary {@link Subject} as a {@link Subscriber}, you must take care not to call its
  * {@link Subscriber#onNext} method (or its other {@code on} methods) from multiple threads, as this could lead
- * to non-serialized calls, which violates the Observable contract and creates an ambiguity in the resulting
- * Subject.
+ * to non-serialized calls, which violates <a href="http://reactivex.io/documentation/contract.html">the
+ * Observable contract</a> and creates an ambiguity in the resulting Subject.
  * <p>
  * To protect a {@code Subject} from this danger, you can convert it into a {@code SerializedSubject} with code
  * like the following:

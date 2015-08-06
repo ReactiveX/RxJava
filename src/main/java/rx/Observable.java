@@ -6830,8 +6830,8 @@ public class Observable<T> {
     }
 
     /**
-     * Forces an Observable's emissions and notifications to be serialized and for it to obey the Rx contract
-     * in other ways.
+     * Forces an Observable's emissions and notifications to be serialized and for it to obey
+     * <a href="http://reactivex.io/documentation/contract.html">the Observable contract</a> in other ways.
      * <p>
      * It is possible for an Observable to invoke its Subscribers' methods asynchronously, perhaps from
      * different threads. This could make such an Observable poorly-behaved, in that it might try to invoke
@@ -7672,7 +7672,9 @@ public class Observable<T> {
      * error handling, unsubscribe, or execution hooks.
      * <p>
      * Use this only for implementing an {@link Operator} that requires nested subscriptions. For other
-     * purposes, use {@link #subscribe(Subscriber)} which ensures the Rx contract and other functionality.
+     * purposes, use {@link #subscribe(Subscriber)} which ensures
+     * <a href="http://reactivex.io/documentation/contract.html">the Observable contract</a> and other
+     * functionality.
      * <dl>
      *  <dt><b>Scheduler:</b></dt>
      *  <dd>{@code unsafeSubscribe} does not operate by default on a particular {@link Scheduler}.</dd>

@@ -96,7 +96,7 @@ public final class BlockingObservable<T> {
 
         /*
          * Use 'subscribe' instead of 'unsafeSubscribe' for Rx contract behavior
-         * as this is the final subscribe in the chain.
+         * (see http://reactivex.io/documentation/contract.html) as this is the final subscribe in the chain.
          */
         Subscription subscription = o.subscribe(new Subscriber<T>() {
             @Override
