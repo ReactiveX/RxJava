@@ -110,6 +110,23 @@ public class Observable<T> {
     }
 
     /**
+     * Passes all emitted values from {@code this} Observable to the provided {@link ConversionFunc} to be 
+     * collected and returned as a single value. Note that it is legal for a {@link ConversionFunc} to 
+     * return an Observable (enabling chaining). 
+     * 
+     * @param conversion a function that converts from this {@code Observable<T>} to an {@code R}
+     * @return an instance of R created by the provided Conversion
+     */
+    @Experimental
+    public <R> R x(Func1<? super OnSubscribe<T>, ? extends R> conversion) {
+        return conversion.call(new OnSubscribe<T>() {
+            @Override
+            public void call(Subscriber<? super T> subscriber) {
+                subscriber.add(Observable.subscribe(subscriber, Observable.this));
+            }});
+    }
+    
+    /**
      * Lifts a function to the current Observable and returns a new Observable that when subscribed to will pass
      * the values of the current Observable through the Operator function.
      * <p>
@@ -127,17 +144,17 @@ public class Observable<T> {
      *  <dd>{@code lift} does not operate by default on a particular {@link Scheduler}.</dd>
      * </dl>
      * 
-     * @param lift the Operator that implements the Observable-operating function to be applied to the source
+     * @param operator the Operator that implements the Observable-operating function to be applied to the source
      *             Observable
      * @return an Observable that is the result of applying the lifted Operator to the source Observable
      * @see <a href="https://github.com/ReactiveX/RxJava/wiki/Implementing-Your-Own-Operators">RxJava wiki: Implementing Your Own Operators</a>
      */
-    public final <R> Observable<R> lift(final Operator<? extends R, ? super T> lift) {
+    public final <R> Observable<R> lift(final Operator<? extends R, ? super T> operator) {
         return new Observable<R>(new OnSubscribe<R>() {
             @Override
             public void call(Subscriber<? super R> o) {
                 try {
-                    Subscriber<? super T> st = hook.onLift(lift).call(o);
+                    Subscriber<? super T> st = hook.onLift(operator).call(o);
                     try {
                         // new Subscriber created and being subscribed with so 'onStart' it
                         st.onStart();
@@ -162,7 +179,6 @@ public class Observable<T> {
             }
         });
     }
-    
     
     /**
      * Transform an Observable by applying a particular Transformer function to it.
@@ -7752,11 +7768,15 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/subscribe.html">ReactiveX operators documentation: Subscribe</a>
      */
     public final Subscription subscribe(Subscriber<? super T> subscriber) {
-        // validate and proceed
+        return Observable.subscribe(subscriber, this);
+    }
+    
+    private static <T> Subscription subscribe(Subscriber<? super T> subscriber, Observable<T> observable) {
+     // validate and proceed
         if (subscriber == null) {
             throw new IllegalArgumentException("observer can not be null");
         }
-        if (onSubscribe == null) {
+        if (observable.onSubscribe == null) {
             throw new IllegalStateException("onSubscribe function can not be null.");
             /*
              * the subscribe function can also be overridden but generally that's not the appropriate approach
@@ -7780,7 +7800,7 @@ public class Observable<T> {
         // The code below is exactly the same an unsafeSubscribe but not used because it would add a sigificent depth to alreay huge call stacks.
         try {
             // allow the hook to intercept and/or decorate
-            hook.onSubscribeStart(this, onSubscribe).call(subscriber);
+            hook.onSubscribeStart(observable, observable.onSubscribe).call(subscriber);
             return hook.onSubscribeReturn(subscriber);
         } catch (Throwable e) {
             // special handling for certain Throwable/Error/Exception types
