@@ -110,12 +110,13 @@ public class Observable<T> {
     }
 
     /**
-     * Passes all emitted values from {@code this} Observable to the provided {@link ConversionFunc} to be 
-     * collected and returned as a single value. Note that it is legal for a {@link ConversionFunc} to 
-     * return an Observable (enabling chaining). 
+     * Passes all emitted values from this Observable to the provided conversion function to be collected and
+     * returned as a single value. Note that it is legal for a conversion function to return an Observable
+     * (enabling chaining). 
      * 
      * @param conversion a function that converts from this {@code Observable<T>} to an {@code R}
-     * @return an instance of R created by the provided Conversion
+     * @return an instance of R created by the provided conversion function
+     * @since (if this graduates from Experimental/Beta to supported, replace this parenthetical with the release number)
      */
     @Experimental
     public <R> R x(Func1<? super OnSubscribe<T>, ? extends R> conversion) {
