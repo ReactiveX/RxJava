@@ -16,11 +16,10 @@
 package rx.internal.operators;
 
 import java.util.Iterator;
-import java.util.concurrent.atomic.AtomicLongFieldUpdater;
+import java.util.concurrent.atomic.AtomicLong;
 
+import rx.*;
 import rx.Observable.OnSubscribe;
-import rx.Producer;
-import rx.Subscriber;
 
 /**
  * Converts an {@code Iterable} sequence into an {@code Observable}.
@@ -50,13 +49,11 @@ public final class OnSubscribeFromIterable<T> implements OnSubscribe<T> {
             o.setProducer(new IterableProducer<T>(o, it));
     }
 
-    private static final class IterableProducer<T> implements Producer {
+    private static final class IterableProducer<T> extends AtomicLong implements Producer {
+        /** */
+        private static final long serialVersionUID = -8730475647105475802L;
         private final Subscriber<? super T> o;
         private final Iterator<? extends T> it;
-
-        private volatile long requested = 0;
-        @SuppressWarnings("rawtypes")
-        private static final AtomicLongFieldUpdater<IterableProducer> REQUESTED_UPDATER = AtomicLongFieldUpdater.newUpdater(IterableProducer.class, "requested");
 
         private IterableProducer(Subscriber<? super T> o, Iterator<? extends T> it) {
             this.o = o;
@@ -65,18 +62,41 @@ public final class OnSubscribeFromIterable<T> implements OnSubscribe<T> {
 
         @Override
         public void request(long n) {
-            if (requested == Long.MAX_VALUE) {
+            if (get() == Long.MAX_VALUE) {
                 // already started with fast-path
                 return;
             }
-            if (n == Long.MAX_VALUE && REQUESTED_UPDATER.compareAndSet(this, 0, Long.MAX_VALUE)) {
-                // fast-path without backpressure
+            if (n == Long.MAX_VALUE && compareAndSet(0, Long.MAX_VALUE)) {
+                fastpath();
+            } else 
+            if (n > 0 && BackpressureUtils.getAndAddRequest(this, n) == 0L) {
+                slowpath(n);
+            }
 
+        }
+
+        void slowpath(long n) {
+            // backpressure is requested
+            final Subscriber<? super T> o = this.o;
+            final Iterator<? extends T> it = this.it;
+
+            long r = n;
+            while (true) {
+                /*
+                 * This complicated logic is done to avoid touching the
+                 * volatile `requested` value during the loop itself. If
+                 * it is touched during the loop the performance is
+                 * impacted significantly.
+                 */
+                long numToEmit = r;
                 while (true) {
                     if (o.isUnsubscribed()) {
                         return;
                     } else if (it.hasNext()) {
-                        o.onNext(it.next());
+                        if (--numToEmit >= 0) {
+                            o.onNext(it.next());
+                        } else
+                            break;
                     } else if (!o.isUnsubscribed()) {
                         o.onCompleted();
                         return;
@@ -85,45 +105,34 @@ public final class OnSubscribeFromIterable<T> implements OnSubscribe<T> {
                         return;
                     }
                 }
-            } else if (n > 0) {
-                // backpressure is requested
-                long _c = BackpressureUtils.getAndAddRequest(REQUESTED_UPDATER, this, n);
-                if (_c == 0) {
-                    while (true) {
-                        /*
-                         * This complicated logic is done to avoid touching the
-                         * volatile `requested` value during the loop itself. If
-                         * it is touched during the loop the performance is
-                         * impacted significantly.
-                         */
-                        long r = requested;
-                        long numToEmit = r;
-                        while (true) {
-                            if (o.isUnsubscribed()) {
-                                return;
-                            } else if (it.hasNext()) {
-                                if (--numToEmit >= 0) {
-                                    o.onNext(it.next());
-                                } else
-                                    break;
-                            } else if (!o.isUnsubscribed()) {
-                                o.onCompleted();
-                                return;
-                            } else {
-                                // is unsubscribed
-                                return;
-                            }
-                        }
-                        if (REQUESTED_UPDATER.addAndGet(this, -r) == 0) {
-                            // we're done emitting the number requested so
-                            // return
-                            return;
-                        }
+                r = addAndGet(-r);
+                if (r == 0L) {
+                    // we're done emitting the number requested so
+                    // return
+                    return;
+                }
 
-                    }
+            }
+        }
+
+        void fastpath() {
+            // fast-path without backpressure
+            final Subscriber<? super T> o = this.o;
+            final Iterator<? extends T> it = this.it;
+
+            while (true) {
+                if (o.isUnsubscribed()) {
+                    return;
+                } else if (it.hasNext()) {
+                    o.onNext(it.next());
+                } else if (!o.isUnsubscribed()) {
+                    o.onCompleted();
+                    return;
+                } else {
+                    // is unsubscribed
+                    return;
                 }
             }
-
         }
     }
 
