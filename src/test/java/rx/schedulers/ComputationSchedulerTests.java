@@ -26,6 +26,7 @@ import org.junit.Test;
 
 import rx.Observable;
 import rx.Scheduler;
+import rx.Scheduler.Worker;
 import rx.functions.Action0;
 import rx.functions.Action1;
 import rx.functions.Func1;
@@ -150,5 +151,21 @@ public class ComputationSchedulerTests extends AbstractSchedulerConcurrencyTests
     @Test
     public final void testHandledErrorIsNotDeliveredToThreadHandler() throws InterruptedException {
         SchedulerTests.testHandledErrorIsNotDeliveredToThreadHandler(getScheduler());
+    }
+    
+    @Test(timeout = 30000)
+    public void testCancelledTaskRetention() throws InterruptedException {
+        Worker w = Schedulers.computation().createWorker();
+        try {
+            ExecutorSchedulerTest.testCancelledRetention(w, false);
+        } finally {
+            w.unsubscribe();
+        }
+        w = Schedulers.computation().createWorker();
+        try {
+            ExecutorSchedulerTest.testCancelledRetention(w, true);
+        } finally {
+            w.unsubscribe();
+        }
     }
 }

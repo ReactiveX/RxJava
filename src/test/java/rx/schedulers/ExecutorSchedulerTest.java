@@ -48,8 +48,8 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
     public final void testHandledErrorIsNotDeliveredToThreadHandler() throws InterruptedException {
         SchedulerTests.testHandledErrorIsNotDeliveredToThreadHandler(getScheduler());
     }
-    @Test(timeout = 30000)
-    public void testCancelledTaskRetention() throws InterruptedException {
+    
+    public static void testCancelledRetention(Scheduler.Worker w, boolean periodic) throws InterruptedException {
         System.out.println("Wait before GC");
         Thread.sleep(1000);
         
@@ -64,13 +64,32 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
         long initial = memHeap.getUsed();
         
         System.out.printf("Starting: %.3f MB%n", initial / 1024.0 / 1024.0);
-        
-        Scheduler.Worker w = Schedulers.io().createWorker();
-        for (int i = 0; i < 500000; i++) {
-            if (i % 50000 == 0) {
-                System.out.println("  -> still scheduling: " + i);
+
+        int n = 500 * 1000;
+        if (periodic) {
+            final CountDownLatch cdl = new CountDownLatch(n);
+            final Action0 action = new Action0() {
+                @Override
+                public void call() {
+                    cdl.countDown();
+                }
+            };
+            for (int i = 0; i < n; i++) {
+                if (i % 50000 == 0) {
+                    System.out.println("  -> still scheduling: " + i);
+                }
+                w.schedulePeriodically(action, 0, 1, TimeUnit.DAYS);
             }
-            w.schedule(Actions.empty(), 1, TimeUnit.DAYS);
+            
+            System.out.println("Waiting for the first round to finish...");
+            cdl.await();
+        } else {
+            for (int i = 0; i < n; i++) {
+                if (i % 50000 == 0) {
+                    System.out.println("  -> still scheduling: " + i);
+                }
+                w.schedule(Actions.empty(), 1, TimeUnit.DAYS);
+            }
         }
         
         memHeap = memoryMXBean.getHeapMemoryUsage();
@@ -95,7 +114,30 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
             fail(String.format("Tasks retained: %.3f -> %.3f -> %.3f", initial / 1024 / 1024.0, after / 1024 / 1024.0, finish / 1024 / 1024d));
         }
     }
-
+    
+    @Test(timeout = 30000)
+    public void testCancelledTaskRetention() throws InterruptedException {
+        ExecutorService exec = Executors.newSingleThreadExecutor();
+        Scheduler s = Schedulers.from(exec);
+        try {
+            Scheduler.Worker w = s.createWorker();
+            try {
+                testCancelledRetention(w, false);
+            } finally {
+                w.unsubscribe();
+            }
+            
+            w = s.createWorker();
+            try {
+                testCancelledRetention(w, true);
+            } finally {
+                w.unsubscribe();
+            }
+        } finally {
+            exec.shutdownNow();
+        }
+    }
+    
     /** A simple executor which queues tasks and executes them one-by-one if executeOne() is called. */
     static final class TestExecutor implements Executor {
         final ConcurrentLinkedQueue<Runnable> queue = new ConcurrentLinkedQueue<Runnable>();
@@ -199,6 +241,35 @@ public class ExecutorSchedulerTest extends AbstractSchedulerConcurrencyTests {
         Subscription s = w.schedule(Actions.empty(), 1, TimeUnit.DAYS);
         
         assertTrue(w.tasks.hasSubscriptions());
+        
+        s.unsubscribe();
+        
+        assertFalse(w.tasks.hasSubscriptions());
+    }
+    
+    @Test
+    public void testNoPeriodicTimedTaskPartRetention() throws InterruptedException {
+        Executor e = new Executor() {
+            @Override
+            public void execute(Runnable command) {
+                command.run();
+            }
+        };
+        ExecutorSchedulerWorker w = (ExecutorSchedulerWorker)Schedulers.from(e).createWorker();
+        
+        final CountDownLatch cdl = new CountDownLatch(1);
+        final Action0 action = new Action0() {
+            @Override
+            public void call() {
+                cdl.countDown();
+            }
+        };
+        
+        Subscription s = w.schedulePeriodically(action, 0, 1, TimeUnit.DAYS);
+        
+        assertTrue(w.tasks.hasSubscriptions());
+        
+        cdl.await();
         
         s.unsubscribe();
         
