@@ -77,7 +77,7 @@ public final class Exceptions {
         if (t instanceof OnErrorNotImplementedException) {
             throw (OnErrorNotImplementedException) t;
         } else if (t instanceof OnErrorFailedException) {
-            Throwable cause = ((OnErrorFailedException) t).getCause();
+            Throwable cause = t.getCause();
             if (cause instanceof RuntimeException) {
                 throw (RuntimeException) cause;
             } else {
