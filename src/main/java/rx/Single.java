@@ -147,7 +147,7 @@ public class Single<T> {
     /**
      * Invoked when Single.execute is called.
      */
-    public static interface OnSubscribe<T> extends Action1<SingleSubscriber<? super T>> {
+    public interface OnSubscribe<T> extends Action1<SingleSubscriber<? super T>> {
         // cover for generics insanity
     }
 
@@ -235,7 +235,7 @@ public class Single<T> {
      * 
      * @warn more complete description needed
      */
-    public static interface Transformer<T, R> extends Func1<Single<T>, Single<R>> {
+    public interface Transformer<T, R> extends Func1<Single<T>, Single<R>> {
         // cover for generics insanity
     }
 

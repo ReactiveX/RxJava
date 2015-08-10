@@ -162,7 +162,7 @@ public final class Notification<T> {
         }
     }
 
-    public static enum Kind {
+    public enum Kind {
         OnNext, OnError, OnCompleted
     }
 
