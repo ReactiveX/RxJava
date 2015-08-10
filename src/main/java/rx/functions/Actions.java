@@ -24,7 +24,7 @@ public final class Actions {
     }
 
     @SuppressWarnings("unchecked")
-    public static final <T0, T1, T2, T3, T4, T5, T6, T7, T8> EmptyAction<T0, T1, T2, T3, T4, T5, T6, T7, T8> empty() {
+    public static <T0, T1, T2, T3, T4, T5, T6, T7, T8> EmptyAction<T0, T1, T2, T3, T4, T5, T6, T7, T8> empty() {
         return EMPTY_ACTION;
     }
 
