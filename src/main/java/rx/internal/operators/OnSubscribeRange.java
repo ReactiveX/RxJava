@@ -15,11 +15,10 @@
  */
 package rx.internal.operators;
 
-import java.util.concurrent.atomic.AtomicLongFieldUpdater;
+import java.util.concurrent.atomic.AtomicLong;
 
+import rx.*;
 import rx.Observable.OnSubscribe;
-import rx.Producer;
-import rx.Subscriber;
 
 /**
  * Emit ints from start to end inclusive.
@@ -39,13 +38,13 @@ public final class OnSubscribeRange implements OnSubscribe<Integer> {
         o.setProducer(new RangeProducer(o, start, end));
     }
 
-    private static final class RangeProducer implements Producer {
+    private static final class RangeProducer extends AtomicLong implements Producer {
+        /** */
+        private static final long serialVersionUID = 4114392207069098388L;
+        
         private final Subscriber<? super Integer> o;
-        // accessed by REQUESTED_UPDATER
-        private volatile long requested;
-        private static final AtomicLongFieldUpdater<RangeProducer> REQUESTED_UPDATER = AtomicLongFieldUpdater.newUpdater(RangeProducer.class, "requested");
-        private long index;
         private final int end;
+        private long index;
 
         private RangeProducer(Subscriber<? super Integer> o, int start, int end) {
             this.o = o;
@@ -55,54 +54,79 @@ public final class OnSubscribeRange implements OnSubscribe<Integer> {
 
         @Override
         public void request(long n) {
-            if (requested == Long.MAX_VALUE) {
+            if (get() == Long.MAX_VALUE) {
                 // already started with fast-path
                 return;
             }
-            if (n == Long.MAX_VALUE && REQUESTED_UPDATER.compareAndSet(this, 0, Long.MAX_VALUE)) {
+            if (n == Long.MAX_VALUE && compareAndSet(0L, Long.MAX_VALUE)) {
                 // fast-path without backpressure
-                for (long i = index; i <= end; i++) {
+                fastpath();
+            } else if (n > 0L) {
+                long c = BackpressureUtils.getAndAddRequest(this, n);
+                if (c == 0L) {
+                    // backpressure is requested
+                    slowpath(n);
+                }
+            }
+        }
+
+        /**
+         * 
+         */
+        void slowpath(long r) {
+            long idx = index;
+            while (true) {
+                /*
+                 * This complicated logic is done to avoid touching the volatile `index` and `requested` values
+                 * during the loop itself. If they are touched during the loop the performance is impacted significantly.
+                 */
+                long fs = end - idx + 1;
+                long e = Math.min(fs, r);
+                final boolean complete = fs <= r;
+
+                fs = e + idx;
+                final Subscriber<? super Integer> o = this.o;
+                
+                for (long i = idx; i != fs; i++) {
                     if (o.isUnsubscribed()) {
                         return;
                     }
                     o.onNext((int) i);
                 }
-                if (!o.isUnsubscribed()) {
-                    o.onCompleted();
-                }
-            } else if (n > 0) {
-                // backpressure is requested
-                long _c = BackpressureUtils.getAndAddRequest(REQUESTED_UPDATER,this, n);
-                if (_c == 0) {
-                    while (true) {
-                        /*
-                         * This complicated logic is done to avoid touching the volatile `index` and `requested` values
-                         * during the loop itself. If they are touched during the loop the performance is impacted significantly.
-                         */
-                        long r = requested;
-                        long idx = index;
-                        long numLeft = end - idx + 1;
-                        long e = Math.min(numLeft, r);
-                        boolean completeOnFinish = numLeft <= r;
-                        long stopAt = e + idx;
-                        for (long i = idx; i < stopAt; i++) {
-                            if (o.isUnsubscribed()) {
-                                return;
-                            }
-                            o.onNext((int) i);
-                        }
-                        index = stopAt;
-                        
-                        if (completeOnFinish) {
-                            o.onCompleted();
-                            return;
-                        }
-                        if (REQUESTED_UPDATER.addAndGet(this, -e) == 0) {
-                            // we're done emitting the number requested so return
-                            return;
-                        }
+                
+                if (complete) {
+                    if (o.isUnsubscribed()) {
+                        return;
                     }
+                    o.onCompleted();
+                    return;
                 }
+                
+                idx = fs;
+                index = fs;
+                
+                r = addAndGet(-e);
+                if (r == 0L) {
+                    // we're done emitting the number requested so return
+                    return;
+                }
+            }
+        }
+
+        /**
+         * 
+         */
+        void fastpath() {
+            final long end = this.end + 1L;
+            final Subscriber<? super Integer> o = this.o;
+            for (long i = index; i != end; i++) {
+                if (o.isUnsubscribed()) {
+                    return;
+                }
+                o.onNext((int) i);
+            }
+            if (!o.isUnsubscribed()) {
+                o.onCompleted();
             }
         }
     }

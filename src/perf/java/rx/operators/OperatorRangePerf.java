@@ -17,18 +17,11 @@ package rx.operators;
 
 import java.util.concurrent.TimeUnit;
 
-import org.openjdk.jmh.annotations.Benchmark;
-import org.openjdk.jmh.annotations.BenchmarkMode;
-import org.openjdk.jmh.annotations.Mode;
-import org.openjdk.jmh.annotations.OutputTimeUnit;
-import org.openjdk.jmh.annotations.Param;
-import org.openjdk.jmh.annotations.Scope;
-import org.openjdk.jmh.annotations.Setup;
-import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
 
-import rx.Observable;
-import rx.Subscriber;
+import rx.*;
+import rx.internal.operators.OnSubscribeRange;
 
 @BenchmarkMode(Mode.Throughput)
 @OutputTimeUnit(TimeUnit.SECONDS)
@@ -50,7 +43,7 @@ public class OperatorRangePerf {
 
         @Setup
         public void setup(final Blackhole bh) {
-            observable = Observable.range(0, size);
+            observable = Observable.create(new OnSubscribeRange(0, size));
             this.bh = bh;
         }
 
@@ -98,7 +91,7 @@ public class OperatorRangePerf {
 
         @Setup
         public void setup(final Blackhole bh) {
-            observable = Observable.range(0, size);
+            observable = Observable.create(new OnSubscribeRange(0, size));
             this.bh = bh;
 
         }
