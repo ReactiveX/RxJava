@@ -15,25 +15,22 @@
  */
 package rx.observers;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
+import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.rules.ExpectedException;
 import org.mockito.InOrder;
 
-import rx.Observable;
-import rx.Observer;
+import rx.*;
+import rx.Scheduler.Worker;
+import rx.exceptions.*;
 import rx.functions.Action0;
+import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 
 public class TestSubscriberTest {
@@ -160,4 +157,442 @@ public class TestSubscriberTest {
         assertTrue(unsub.get());
     }
 
+    @Test(expected = NullPointerException.class)
+    public void testNullDelegate1() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>((Observer<Integer>)null);
+        ts.onCompleted();
+    }
+    
+    @Test(expected = NullPointerException.class)
+    public void testNullDelegate2() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>((Subscriber<Integer>)null);
+        ts.onCompleted();
+    }
+    
+    @Test(expected = NullPointerException.class)
+    public void testNullDelegate3() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>((Subscriber<Integer>)null, 0);
+        ts.onCompleted();
+    }
+    
+    @Test
+    public void testDelegate1() {
+        TestObserver<Integer> to = new TestObserver<Integer>();
+        TestSubscriber<Integer> ts = TestSubscriber.create(to);
+        ts.onCompleted();
+        
+        to.assertTerminalEvent();
+    }
+    
+    @Test
+    public void testDelegate2() {
+        TestSubscriber<Integer> ts1 = TestSubscriber.create();
+        TestSubscriber<Integer> ts2 = TestSubscriber.create(ts1);
+        ts2.onCompleted();
+        
+        ts1.assertCompleted();
+    }
+    
+    @Test
+    public void testDelegate3() {
+        TestSubscriber<Integer> ts1 = TestSubscriber.create();
+        TestSubscriber<Integer> ts2 = TestSubscriber.create(ts1, 0);
+        ts2.onCompleted();
+        ts1.assertCompleted();
+    }
+    
+    @Test
+    public void testUnsubscribed() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        try {
+            ts.assertUnsubscribed();
+        } catch (AssertionError ex) {
+            // expected
+            return;
+        }
+        fail("Not unsubscribed but not reported!");
+    }
+    
+    @Test
+    public void testNoErrors() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        ts.onError(new TestException());
+        try {
+            ts.assertNoErrors();
+        } catch (AssertionError ex) {
+            // expected
+            return;
+        }
+        fail("Error present but no assertion error!");
+    }
+    
+    @Test
+    public void testNotCompleted() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        try {
+            ts.assertCompleted();
+        } catch (AssertionError ex) {
+            // expected
+            return;
+        }
+        fail("Not completed and no assertion error!");
+    }
+    
+    @Test
+    public void testMultipleCompletions() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        ts.onCompleted();
+        ts.onCompleted();
+        try {
+            ts.assertCompleted();
+        } catch (AssertionError ex) {
+            // expected
+            return;
+        }
+        fail("Multiple completions and no assertion error!");
+    }
+    
+    @Test
+    public void testCompleted() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        ts.onCompleted();
+        try {
+            ts.assertNotCompleted();
+        } catch (AssertionError ex) {
+            // expected
+            return;
+        }
+        fail("Completed and no assertion error!");
+    }
+    
+    @Test
+    public void testMultipleCompletions2() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        ts.onCompleted();
+        ts.onCompleted();
+        try {
+            ts.assertNotCompleted();
+        } catch (AssertionError ex) {
+            // expected
+            return;
+        }
+        fail("Multiple completions and no assertion error!");
+    }
+    
+    @Test
+    public void testMultipleErrors() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        ts.onError(new TestException());
+        ts.onError(new TestException());
+        try {
+            ts.assertNoErrors();
+        } catch (AssertionError ex) {
+            if (!(ex.getCause() instanceof CompositeException)) {
+                fail("Multiple Error present but the reported error doesn't have a composite cause!");
+            }
+            // expected
+            return;
+        }
+        fail("Multiple Error present but no assertion error!");
+    }
+    
+    @Test
+    public void testMultipleErrors2() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        ts.onError(new TestException());
+        ts.onError(new TestException());
+        try {
+            ts.assertError(TestException.class);
+        } catch (AssertionError ex) {
+            if (!(ex.getCause() instanceof CompositeException)) {
+                fail("Multiple Error present but the reported error doesn't have a composite cause!");
+            }
+            // expected
+            return;
+        }
+        fail("Multiple Error present but no assertion error!");
+    }
+    
+    @Test
+    public void testMultipleErrors3() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        ts.onError(new TestException());
+        ts.onError(new TestException());
+        try {
+            ts.assertError(new TestException());
+        } catch (AssertionError ex) {
+            if (!(ex.getCause() instanceof CompositeException)) {
+                fail("Multiple Error present but the reported error doesn't have a composite cause!");
+            }
+            // expected
+            return;
+        }
+        fail("Multiple Error present but no assertion error!");
+    }
+    
+    @Test
+    public void testDifferentError() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        ts.onError(new TestException());
+        try {
+            ts.assertError(new TestException());
+        } catch (AssertionError ex) {
+            // expected
+            return;
+        }
+        fail("Different Error present but no assertion error!");
+    }
+    
+    @Test
+    public void testDifferentError2() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        ts.onError(new RuntimeException());
+        try {
+            ts.assertError(new TestException());
+        } catch (AssertionError ex) {
+            // expected
+            return;
+        }
+        fail("Different Error present but no assertion error!");
+    }
+    
+    @Test
+    public void testDifferentError3() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        ts.onError(new RuntimeException());
+        try {
+            ts.assertError(TestException.class);
+        } catch (AssertionError ex) {
+            // expected
+            return;
+        }
+        fail("Different Error present but no assertion error!");
+    }
+    
+    @Test
+    public void testNoError() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        try {
+            ts.assertError(TestException.class);
+        } catch (AssertionError ex) {
+            // expected
+            return;
+        }
+        fail("No present but no assertion error!");
+    }
+
+    @Test
+    public void testNoError2() {
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
+        try {
+            ts.assertError(new TestException());
+        } catch (AssertionError ex) {
+            // expected
+            return;
+        }
+        fail("No present but no assertion error!");
+    }
+    
+    @Test
+    public void testInterruptTerminalEventAwait() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+
+        final Thread t0 = Thread.currentThread();
+        Worker w = Schedulers.computation().createWorker();
+        try {
+            w.schedule(new Action0() {
+                @Override
+                public void call() {
+                    t0.interrupt();
+                }
+            }, 200, TimeUnit.MILLISECONDS);
+            
+            try {
+                ts.awaitTerminalEvent();
+                fail("Did not interrupt wait!");
+            } catch (RuntimeException ex) {
+                if (!(ex.getCause() instanceof InterruptedException)) {
+                    fail("The cause is not InterruptedException! " + ex.getCause());
+                }
+            }
+        } finally {
+            w.unsubscribe();
+        }
+    }
+    
+    @Test
+    public void testInterruptTerminalEventAwaitTimed() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+
+        final Thread t0 = Thread.currentThread();
+        Worker w = Schedulers.computation().createWorker();
+        try {
+            w.schedule(new Action0() {
+                @Override
+                public void call() {
+                    t0.interrupt();
+                }
+            }, 200, TimeUnit.MILLISECONDS);
+            
+            try {
+                ts.awaitTerminalEvent(5, TimeUnit.SECONDS);
+                fail("Did not interrupt wait!");
+            } catch (RuntimeException ex) {
+                if (!(ex.getCause() instanceof InterruptedException)) {
+                    fail("The cause is not InterruptedException! " + ex.getCause());
+                }
+            }
+        } finally {
+            w.unsubscribe();
+        }
+    }
+    
+    @Test
+    public void testInterruptTerminalEventAwaitAndUnsubscribe() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+
+        final Thread t0 = Thread.currentThread();
+        Worker w = Schedulers.computation().createWorker();
+        try {
+            w.schedule(new Action0() {
+                @Override
+                public void call() {
+                    t0.interrupt();
+                }
+            }, 200, TimeUnit.MILLISECONDS);
+            
+            ts.awaitTerminalEventAndUnsubscribeOnTimeout(5, TimeUnit.SECONDS);
+            if (!ts.isUnsubscribed()) {
+                fail("Did not unsubscribe!");
+            }
+        } finally {
+            w.unsubscribe();
+        }
+    }
+    
+    @Test
+    public void testNoTerminalEventBut1Completed() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        ts.onCompleted();
+        
+        try {
+            ts.assertNoTerminalEvent();
+            fail("Failed to report there were terminal event(s)!");
+        } catch (AssertionError ex) {
+            // expected
+        }
+    }
+    
+    @Test
+    public void testNoTerminalEventBut1Error() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        ts.onError(new TestException());
+        
+        try {
+            ts.assertNoTerminalEvent();
+            fail("Failed to report there were terminal event(s)!");
+        } catch (AssertionError ex) {
+            // expected
+        }
+    }
+    
+    @Test
+    public void testNoTerminalEventBut1Error1Completed() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        ts.onCompleted();
+        ts.onError(new TestException());
+        
+        try {
+            ts.assertNoTerminalEvent();
+            fail("Failed to report there were terminal event(s)!");
+        } catch (AssertionError ex) {
+            // expected
+        }
+    }
+    
+    @Test
+    public void testNoTerminalEventBut2Errors() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        ts.onError(new TestException());
+        ts.onError(new TestException());
+        
+        try {
+            ts.assertNoTerminalEvent();
+            fail("Failed to report there were terminal event(s)!");
+        } catch (AssertionError ex) {
+            // expected
+            if (!(ex.getCause() instanceof CompositeException)) {
+                fail("Did not report a composite exception cause: " + ex.getCause());
+            }
+        }
+    }
+    
+    @Test
+    public void testNoValues() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        ts.onNext(1);
+        
+        try {
+            ts.assertNoValues();
+            fail("Failed to report there were values!");
+        } catch (AssertionError ex) {
+            // expected
+        }
+    }
+    
+    @Test
+    public void testValueCount() {
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        ts.onNext(1);
+        ts.onNext(2);
+        
+        try {
+            ts.assertValueCount(3);
+            fail("Failed to report there were values!");
+        } catch (AssertionError ex) {
+            // expected
+        }
+    }
+    
+    @Test(timeout = 1000)
+    public void testOnCompletedCrashCountsDownLatch() {
+        TestObserver<Integer> to = new TestObserver<Integer>() {
+            @Override
+            public void onCompleted() {
+                throw new TestException();
+            }
+        };
+        TestSubscriber<Integer> ts = TestSubscriber.create(to);
+        
+        try {
+            ts.onCompleted();
+        } catch (TestException ex) {
+            // expected
+        }
+        
+        ts.awaitTerminalEvent();
+    }
+    
+    @Test(timeout = 1000)
+    public void testOnErrorCrashCountsDownLatch() {
+        TestObserver<Integer> to = new TestObserver<Integer>() {
+            @Override
+            public void onError(Throwable e) {
+                throw new TestException();
+            }
+        };
+        TestSubscriber<Integer> ts = TestSubscriber.create(to);
+        
+        try {
+            ts.onError(new RuntimeException());
+        } catch (TestException ex) {
+            // expected
+        }
+        
+        ts.awaitTerminalEvent();
+    }
 }
