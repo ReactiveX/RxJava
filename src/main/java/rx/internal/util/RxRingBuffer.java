@@ -276,7 +276,8 @@ public class RxRingBuffer implements Subscription {
     }
     public static final int SIZE = _size;
 
-    private static ObjectPool<Queue<Object>> SPSC_POOL = new ObjectPool<Queue<Object>>() {
+    /* Public so Schedulers can manage the lifecycle of the inner worker. */
+    public static ObjectPool<Queue<Object>> SPSC_POOL = new ObjectPool<Queue<Object>>() {
 
         @Override
         protected SpscArrayQueue<Object> createObject() {
@@ -285,7 +286,8 @@ public class RxRingBuffer implements Subscription {
 
     };
 
-    private static ObjectPool<Queue<Object>> SPMC_POOL = new ObjectPool<Queue<Object>>() {
+    /* Public so Schedulers can manage the lifecycle of the inner worker. */
+    public static ObjectPool<Queue<Object>> SPMC_POOL = new ObjectPool<Queue<Object>>() {
 
         @Override
         protected SpmcArrayQueue<Object> createObject() {
