@@ -108,7 +108,7 @@ public final class OperatorToMultimap<T, K, V> implements Operator<Map<K, Collec
 
             @Override
             public void onStart() {
-                request(Long.MAX_VALUE);
+                requestFromProducer(Long.MAX_VALUE);
             }
             
             @Override

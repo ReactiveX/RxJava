@@ -137,7 +137,7 @@ public abstract class Subscriber<T> implements Observer<T>, Subscription {
      * @throws IllegalArgumentException
      *             if {@code n} is negative
      */
-    protected final void request(long n) {
+    protected final void requestFromProducer(long n) {
         if (n < 0) {
             throw new IllegalArgumentException("number requested cannot be negative: " + n);
         } 

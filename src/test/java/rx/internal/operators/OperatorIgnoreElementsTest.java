@@ -106,7 +106,7 @@ public class OperatorIgnoreElementsTest {
 
                     @Override
                     public void onStart() {
-                        request(1);
+                        requestFromProducer(1);
                     }
 
                     @Override

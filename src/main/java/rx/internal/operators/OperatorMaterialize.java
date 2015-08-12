@@ -87,12 +87,12 @@ public final class OperatorMaterialize<T> implements Operator<Notification<T>, T
 
         @Override
         public void onStart() {
-            request(0);
+            requestFromProducer(0);
         }
 
         void requestMore(long n) {
             BackpressureUtils.getAndAddRequest(REQUESTED, this, n);
-            request(n);
+            requestFromProducer(n);
             drain();
         }
 

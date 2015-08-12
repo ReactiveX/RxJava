@@ -60,7 +60,7 @@ public class OperatorDoOnRequest<T> implements Operator<T, T> {
         }
 
         private void requestMore(long n) {
-            request(n);
+            requestFromProducer(n);
         }
 
         @Override

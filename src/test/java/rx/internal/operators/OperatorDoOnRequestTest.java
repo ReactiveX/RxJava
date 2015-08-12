@@ -56,7 +56,7 @@ public class OperatorDoOnRequestTest {
 
                     @Override
                     public void onStart() {
-                        request(3);
+                        requestFromProducer(3);
                     }
 
                     @Override
@@ -71,7 +71,7 @@ public class OperatorDoOnRequestTest {
 
                     @Override
                     public void onNext(Integer t) {
-                        request(t);
+                        requestFromProducer(t);
                     }
                 });
         assertEquals(Arrays.asList(3L,1L,2L,3L,4L,5L), requests);

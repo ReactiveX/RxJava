@@ -962,7 +962,7 @@ public class OperatorBufferTest {
 
             @Override
             public void onStart() {
-                request(Long.MAX_VALUE / 2 - 4);
+                requestFromProducer(Long.MAX_VALUE / 2 - 4);
             }
 
             @Override
@@ -975,7 +975,7 @@ public class OperatorBufferTest {
 
             @Override
             public void onNext(List<Integer> t) {
-                request(Long.MAX_VALUE / 2);
+                requestFromProducer(Long.MAX_VALUE / 2);
             }
 
         });

@@ -226,7 +226,7 @@ public final class OnSubscribeCombineLatest<T, R> implements OnSubscribe<R> {
             super(child);
             this.index = index;
             this.producer = producer;
-            request(initial);
+            requestFromProducer(initial);
         }
 
         public void requestUpTo(long n) {
@@ -234,7 +234,7 @@ public final class OnSubscribeCombineLatest<T, R> implements OnSubscribe<R> {
                 long r = emitted.get();
                 long u = Math.min(r, n);
                 if (emitted.compareAndSet(r, r - u)) {
-                    request(u);
+                    requestFromProducer(u);
                     break;
                 }
             } while (true);
@@ -256,7 +256,7 @@ public final class OnSubscribeCombineLatest<T, R> implements OnSubscribe<R> {
             emitted.incrementAndGet();
             boolean emitted = producer.onNext(index, t);
             if (!emitted) {
-                request(1);
+                requestFromProducer(1);
             }
         }
 
@@ -299,7 +299,7 @@ public final class OnSubscribeCombineLatest<T, R> implements OnSubscribe<R> {
         }
 
         public void requestMore(long n) {
-            request(n);
+            requestFromProducer(n);
         }
 
         @Override

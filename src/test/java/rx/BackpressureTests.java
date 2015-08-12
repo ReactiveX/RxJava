@@ -341,7 +341,7 @@ public class BackpressureTests {
 
             @Override
             public void onStart() {
-                request(100);
+                requestFromProducer(100);
             }
 
             @Override
@@ -363,7 +363,7 @@ public class BackpressureTests {
                 }
                 if (received.get() == 100) {
                     batches.incrementAndGet();
-                    request(100);
+                    requestFromProducer(100);
                     received.set(0);
                 }
             }
@@ -387,7 +387,7 @@ public class BackpressureTests {
 
             @Override
             public void onStart() {
-                request(100);
+                requestFromProducer(100);
             }
 
             @Override
@@ -413,7 +413,7 @@ public class BackpressureTests {
                     batches.incrementAndGet();
                     received.set(0);
                     if (!done) {
-                        request(100);
+                        requestFromProducer(100);
                     }
                 }
                 if (done) {

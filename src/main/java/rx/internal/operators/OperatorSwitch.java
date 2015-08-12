@@ -313,7 +313,7 @@ public final class OperatorSwitch<T> implements Operator<T, Observable<? extends
             }
 
             public void requestMore(long n) {
-                request(n);
+                requestFromProducer(n);
             }
 
             @Override

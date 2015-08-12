@@ -139,7 +139,7 @@ public class OperatorSwitchIfEmptyTest {
 
             @Override
             public void onStart() {
-                request(1);
+                requestFromProducer(1);
             }
         };
         Observable.<Integer>empty().switchIfEmpty(Observable.just(1, 2, 3)).subscribe(ts);
@@ -157,7 +157,7 @@ public class OperatorSwitchIfEmptyTest {
 
             @Override
             public void onStart() {
-                request(0);
+                requestFromProducer(0);
             }
         };
         Observable.<Integer>empty().switchIfEmpty(Observable.just(1, 2, 3)).subscribe(ts);

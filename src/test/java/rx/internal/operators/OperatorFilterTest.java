@@ -87,7 +87,7 @@ public class OperatorFilterTest {
             public void onNext(String t) {
                 System.out.println("Received: " + t);
                 // request more each time we receive
-                request(1);
+                requestFromProducer(1);
             }
 
         };
@@ -133,7 +133,7 @@ public class OperatorFilterTest {
             public void onNext(Integer t) {
                 System.out.println("Received: " + t);
                 // request more each time we receive
-                request(1);
+                requestFromProducer(1);
             }
         };
         // this means it will only request 1 item and expect to receive more

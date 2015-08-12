@@ -529,7 +529,7 @@ public class AbstractOnSubscribeTest {
 
             @Override
             public void onNext(Integer t) {
-                request(1);
+                requestFromProducer(1);
             }
         });
         if (exception.get()!=null) {

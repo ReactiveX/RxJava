@@ -54,7 +54,7 @@ public final class OperatorFilter<T> implements Operator<T, T> {
                         child.onNext(t);
                     } else {
                         // TODO consider a more complicated version that batches these
-                        request(1);
+                        requestFromProducer(1);
                     }
                 } catch (Throwable e) {
                     child.onError(OnErrorThrowable.addValueAsLastCause(e, t));

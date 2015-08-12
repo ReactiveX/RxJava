@@ -100,7 +100,7 @@ public final class OperatorSingle<T> implements Operator<T, T> {
         }
 
         void requestMore(long n) {
-            request(n);
+            requestFromProducer(n);
         }
 
         @Override

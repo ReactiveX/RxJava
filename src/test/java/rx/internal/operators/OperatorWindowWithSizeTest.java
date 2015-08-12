@@ -213,7 +213,7 @@ public class OperatorWindowWithSizeTest {
         source.subscribe(new Subscriber<Observable<Integer>>() {
             @Override
             public void onStart() {
-                request(1);
+                requestFromProducer(1);
             }
             @Override
             public void onNext(Observable<Integer> t) {

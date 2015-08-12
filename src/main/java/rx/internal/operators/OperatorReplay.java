@@ -330,7 +330,7 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
             this.shouldConnect = new AtomicBoolean();
             // make sure the source doesn't produce values until the child subscribers
             // expressed their request amounts
-            this.request(0);
+            this.requestFromProducer(0);
         }
         /** Should be called after the constructor finished to setup nulling-out the current reference. */
         void init() {

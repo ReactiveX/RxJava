@@ -59,7 +59,7 @@ public class OperatorRangePerf {
 
                 @Override
                 public void onStart() {
-                    request(size);
+                    requestFromProducer(size);
                 }
                 
                 @Override

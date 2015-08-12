@@ -50,7 +50,7 @@ public class OperatorPublishPerf {
         }
         @Override
         public void onStart() {
-            request(batchFrequency);
+            requestFromProducer(batchFrequency);
         }
         @Override
         public void onNext(Integer t) {
@@ -59,7 +59,7 @@ public class OperatorPublishPerf {
             }
             if (++received == batchFrequency) {
                 received = 0;
-                request(batchFrequency);
+                requestFromProducer(batchFrequency);
             }
         }
         @Override

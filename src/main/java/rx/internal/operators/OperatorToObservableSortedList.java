@@ -62,7 +62,7 @@ public final class OperatorToObservableSortedList<T> implements Operator<List<T>
             
             @Override
             public void onStart() {
-                request(Long.MAX_VALUE);
+                requestFromProducer(Long.MAX_VALUE);
             }
 
             @Override

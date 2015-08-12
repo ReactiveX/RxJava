@@ -63,7 +63,7 @@ public class OperatorOnBackpressureDrop<T> implements Operator<T, T> {
         return new Subscriber<T>(child) {
             @Override
             public void onStart() {
-                request(Long.MAX_VALUE);
+                requestFromProducer(Long.MAX_VALUE);
             }
 
             @Override

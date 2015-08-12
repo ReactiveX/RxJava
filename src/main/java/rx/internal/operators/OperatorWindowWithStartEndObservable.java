@@ -55,7 +55,7 @@ public final class OperatorWindowWithStartEndObservable<T, U, V> implements Oper
 
             @Override
             public void onStart() {
-                request(Long.MAX_VALUE);
+                requestFromProducer(Long.MAX_VALUE);
             }
             
             @Override
@@ -109,7 +109,7 @@ public final class OperatorWindowWithStartEndObservable<T, U, V> implements Oper
         
         @Override
         public void onStart() {
-            request(Long.MAX_VALUE);
+            requestFromProducer(Long.MAX_VALUE);
         }
         
         @Override

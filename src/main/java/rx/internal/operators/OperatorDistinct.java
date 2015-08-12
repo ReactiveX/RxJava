@@ -62,7 +62,7 @@ public final class OperatorDistinct<T, U> implements Operator<T, T> {
                 if (keyMemory.add(key)) {
                     child.onNext(t);
                 } else {
-                    request(1);
+                    requestFromProducer(1);
                 }
             }
 

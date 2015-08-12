@@ -72,7 +72,7 @@ public final class OperatorSkipUntil<T, U> implements Operator<T, T> {
                 if (gate.get()) {
                     s.onNext(t);
                 } else {
-                    request(1);
+                    requestFromProducer(1);
                 }
             }
 

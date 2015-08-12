@@ -81,7 +81,7 @@ public final class OperatorToMap<T, K, V> implements Operator<Map<K, V>, T> {
 
             @Override
             public void onStart() {
-                request(Long.MAX_VALUE);
+                requestFromProducer(Long.MAX_VALUE);
             }
             
             @Override

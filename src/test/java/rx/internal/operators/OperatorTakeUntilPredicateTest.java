@@ -124,7 +124,7 @@ public class OperatorTakeUntilPredicateTest {
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
             @Override
             public void onStart() {
-                request(5);
+                requestFromProducer(5);
             }
         };
         

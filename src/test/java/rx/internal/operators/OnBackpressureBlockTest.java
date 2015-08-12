@@ -63,7 +63,7 @@ public class OnBackpressureBlockTest {
         TestSubscriber<Integer> o = new TestSubscriber<Integer>() {
             @Override
             public void onStart() {
-                request(0); // make sure it doesn't start in unlimited mode
+                requestFromProducer(0); // make sure it doesn't start in unlimited mode
             }
         };
         source.subscribe(o);
@@ -119,7 +119,7 @@ public class OnBackpressureBlockTest {
         TestSubscriber<Integer> o = new TestSubscriber<Integer>() {
             @Override
             public void onStart() {
-                request(0); // make sure it doesn't start in unlimited mode
+                requestFromProducer(0); // make sure it doesn't start in unlimited mode
             }
         };
         source.subscribe(o);
@@ -146,7 +146,7 @@ public class OnBackpressureBlockTest {
         TestSubscriber<Integer> o = new TestSubscriber<Integer>() {
             @Override
             public void onStart() {
-                request(0); // make sure it doesn't start in unlimited mode
+                requestFromProducer(0); // make sure it doesn't start in unlimited mode
             }
         };
         source.subscribe(o);
@@ -187,7 +187,7 @@ public class OnBackpressureBlockTest {
         TestSubscriber<Integer> o = new TestSubscriber<Integer>() {
             @Override
             public void onStart() {
-                request(0); // make sure it doesn't start in unlimited mode
+                requestFromProducer(0); // make sure it doesn't start in unlimited mode
             }
         };
         source.subscribe(o);
@@ -219,7 +219,7 @@ public class OnBackpressureBlockTest {
         TestSubscriber<Integer> o = new TestSubscriber<Integer>() {
             @Override
             public void onStart() {
-                request(0); // make sure it doesn't start in unlimited mode
+                requestFromProducer(0); // make sure it doesn't start in unlimited mode
             }
         };
         source.subscribe(o);
@@ -270,7 +270,7 @@ public class OnBackpressureBlockTest {
         TestSubscriber<Integer> o = new TestSubscriber<Integer>() {
             @Override
             public void onStart() {
-                request(0); // make sure it doesn't start in unlimited mode
+                requestFromProducer(0); // make sure it doesn't start in unlimited mode
             }
         };
         Observable.<Integer>empty().onBackpressureBlock(2).subscribe(o);
@@ -285,7 +285,7 @@ public class OnBackpressureBlockTest {
         TestSubscriber<Integer> o = new TestSubscriber<Integer>() {
             @Override
             public void onStart() {
-                request(0); // make sure it doesn't start in unlimited mode
+                requestFromProducer(0); // make sure it doesn't start in unlimited mode
             }
         };
         Observable.just(1).onBackpressureBlock(2).subscribe(o);
@@ -300,7 +300,7 @@ public class OnBackpressureBlockTest {
         TestSubscriber<Integer> o = new TestSubscriber<Integer>() {
             @Override
             public void onStart() {
-                request(0); // make sure it doesn't start in unlimited mode
+                requestFromProducer(0); // make sure it doesn't start in unlimited mode
             }
             @Override
             public void onNext(Integer t) {
@@ -323,7 +323,7 @@ public class OnBackpressureBlockTest {
             boolean once = true;
             @Override
             public void onStart() {
-                request(0); // make sure it doesn't start in unlimited mode
+                requestFromProducer(0); // make sure it doesn't start in unlimited mode
             }
             @Override
             public void onNext(Integer t) {

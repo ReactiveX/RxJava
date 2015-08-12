@@ -99,12 +99,12 @@ public class OperatorTakeLastOneTest {
         final List<T> list = new ArrayList<T>();
 
         public void requestMore(long n) {
-            request(n);
+            requestFromProducer(n);
         }
 
         @Override
         public void onStart() {
-            request(initialRequest);
+            requestFromProducer(initialRequest);
         }
 
         @Override

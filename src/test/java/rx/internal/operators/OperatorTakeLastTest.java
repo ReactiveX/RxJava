@@ -171,7 +171,7 @@ public class OperatorTakeLastTest {
 
             @Override
             public void onStart() {
-                request(Long.MAX_VALUE);
+                requestFromProducer(Long.MAX_VALUE);
             }
 
             @Override
@@ -185,7 +185,7 @@ public class OperatorTakeLastTest {
 
             @Override
             public void onNext(Integer integer) {
-                request(Long.MAX_VALUE);
+                requestFromProducer(Long.MAX_VALUE);
             }
         });
     }
@@ -197,7 +197,7 @@ public class OperatorTakeLastTest {
 
             @Override
             public void onStart() {
-                request(1);
+                requestFromProducer(1);
             }
 
             @Override
@@ -210,7 +210,7 @@ public class OperatorTakeLastTest {
 
             @Override
             public void onNext(Integer integer) {
-                request(1);
+                requestFromProducer(1);
             }
         });
     }
@@ -222,7 +222,7 @@ public class OperatorTakeLastTest {
 
             @Override
             public void onStart() {
-                request(1);
+                requestFromProducer(1);
             }
 
             @Override
@@ -236,7 +236,7 @@ public class OperatorTakeLastTest {
 
             @Override
             public void onNext(Integer integer) {
-                request(Long.MAX_VALUE);
+                requestFromProducer(Long.MAX_VALUE);
             }
         });
     }
@@ -249,7 +249,7 @@ public class OperatorTakeLastTest {
 
             @Override
             public void onStart() {
-                request(Long.MAX_VALUE);
+                requestFromProducer(Long.MAX_VALUE);
             }
 
             @Override
@@ -263,7 +263,7 @@ public class OperatorTakeLastTest {
 
             @Override
             public void onNext(Integer integer) {
-                request(1);
+                requestFromProducer(1);
             }
         });
     }
@@ -275,7 +275,7 @@ public class OperatorTakeLastTest {
 
             @Override
             public void onStart() {
-                request(Long.MAX_VALUE);
+                requestFromProducer(Long.MAX_VALUE);
             }
 
             @Override
@@ -303,7 +303,7 @@ public class OperatorTakeLastTest {
 
             @Override
             public void onStart() {
-                request(2);
+                requestFromProducer(2);
             }
             
             @Override
@@ -319,7 +319,7 @@ public class OperatorTakeLastTest {
             @Override
             public void onNext(Integer t) {
                 list.add(t);
-                request(Long.MAX_VALUE-1);
+                requestFromProducer(Long.MAX_VALUE-1);
             }});
         assertEquals(50, list.size());
     }

@@ -65,7 +65,7 @@ public final class OperatorDebounceWithTime<T> implements Operator<T, T> {
 
             @Override
             public void onStart() {
-                request(Long.MAX_VALUE);
+                requestFromProducer(Long.MAX_VALUE);
             }
 
             @Override
