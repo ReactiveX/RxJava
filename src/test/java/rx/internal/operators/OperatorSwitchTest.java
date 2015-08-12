@@ -25,7 +25,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -642,32 +641,34 @@ public class OperatorSwitchTest {
     }
     
     @Test(timeout = 10000)
-    public void testSecondaryRequestsAdditivelyAreMoreThanLongMaxValueInducesMaxValueRequestFromUpstream() throws InterruptedException {
+    public void testSecondaryRequestsAdditivelyAreMoreThanLongMaxValueInducesMaxValueRequestFromUpstream()
+            throws InterruptedException {
         final List<Long> requests = new CopyOnWriteArrayList<Long>();
         final Action1<Long> addRequest = new Action1<Long>() {
 
             @Override
             public void call(Long n) {
                 requests.add(n);
-            }};
-        TestSubscriber<Long> ts = new TestSubscriber<Long>(0);
+            }
+        };
+        TestSubscriber<Long> ts = new TestSubscriber<Long>(1);
         Observable.switchOnNext(
                 Observable.interval(100, TimeUnit.MILLISECONDS)
                         .map(new Func1<Long, Observable<Long>>() {
                             @Override
                             public Observable<Long> call(Long t) {
-                                return Observable.from(Arrays.asList(1L, 2L, 3L)).doOnRequest(addRequest);
+                                return Observable.from(Arrays.asList(1L, 2L, 3L)).doOnRequest(
+                                        addRequest);
                             }
                         }).take(3)).subscribe(ts);
-        ts.requestMore(1);
-        //we will miss two of the first observable
+        // we will miss two of the first observables
         Thread.sleep(250);
         ts.requestMore(Long.MAX_VALUE - 1);
         ts.requestMore(Long.MAX_VALUE - 1);
         ts.awaitTerminalEvent();
         assertTrue(ts.getOnNextEvents().size() > 0);
         assertEquals(5, (int) requests.size());
-        assertEquals(Long.MAX_VALUE, (long) requests.get(3));
-        assertEquals(Long.MAX_VALUE, (long) requests.get(4));
+        assertEquals(Long.MAX_VALUE, (long) requests.get(requests.size()-1));
     }
+
 }
