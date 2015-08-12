@@ -15,6 +15,8 @@
  */
 package rx.plugins;
 
+import java.util.Iterator;
+import java.util.ServiceLoader;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -141,7 +143,17 @@ public class RxJavaPlugins {
         }
     }
 
-    private static Object getPluginImplementationViaProperty(Class<?> pluginClass) {
+    private static <T> T getPluginImplementationViaProperty(Class<T> pluginClass) {
+        Iterator<T> it = ServiceLoader.load(pluginClass).iterator();
+        while (it.hasNext()) {
+            T o = it.next();
+            if (it.hasNext()) {
+                T n = it.next();
+                throw new IllegalStateException("Two plugins found on classpath! First: " + o.getClass() + " second: " + n.getClass());
+            }
+            return o;
+        }
+        
         String classSimpleName = pluginClass.getSimpleName();
         /*
          * Check system properties for plugin class.
@@ -153,9 +165,7 @@ public class RxJavaPlugins {
         if (implementingClass != null) {
             try {
                 Class<?> cls = Class.forName(implementingClass);
-                // narrow the scope (cast) to the type we're expecting
-                cls = cls.asSubclass(pluginClass);
-                return cls.newInstance();
+                return pluginClass.cast(cls.newInstance());
             } catch (ClassCastException e) {
                 throw new RuntimeException(classSimpleName + " implementation is not an instance of " + classSimpleName + ": " + implementingClass);
             } catch (ClassNotFoundException e) {
