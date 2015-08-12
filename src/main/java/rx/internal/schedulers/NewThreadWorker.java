@@ -82,6 +82,8 @@ public class NewThreadWorker extends Scheduler.Worker implements Subscription {
                 }, PURGE_FREQUENCY, PURGE_FREQUENCY, TimeUnit.MILLISECONDS);
                 
                 break;
+            } else {
+                exec.shutdownNow();
             }
         } while (true);
         
