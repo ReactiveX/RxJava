@@ -1,5 +1,34 @@
 # RxJava Releases #
 
+### Version 1.0.14 – August 12th 2015 ([Maven Central](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.0.14%7C)) ###
+
+* [Pull 2963] (https://github.com/ReactiveX/RxJava/pull/2963) Set of standard producers and updated queue implementations
+* [Pull 3138] (https://github.com/ReactiveX/RxJava/pull/3138) Range overhead reduction.
+* [Pull 3137] (https://github.com/ReactiveX/RxJava/pull/3137) FromIterable overhead reduction.
+* [Pull 3078] (https://github.com/ReactiveX/RxJava/pull/3078) switchOnNext() - fix lost requests race condition
+* [Pull 3112] (https://github.com/ReactiveX/RxJava/pull/3112) Observers package test coverage and fixes.
+* [Pull 3123] (https://github.com/ReactiveX/RxJava/pull/3123) Remove redundant type parameter in EmptyAction 
+* [Pull 3104] (https://github.com/ReactiveX/RxJava/pull/3104) Fix SynchronizedQueue.equals
+* [Pull 3147] (https://github.com/ReactiveX/RxJava/pull/3147) Remove unnecessary static modifier
+* [Pull 3144] (https://github.com/ReactiveX/RxJava/pull/3144) Remove redundant cast in Exceptions
+* [Pull 3143] (https://github.com/ReactiveX/RxJava/pull/3143) Fix for BackpressureUtils method javadoc
+* [Pull 3141] (https://github.com/ReactiveX/RxJava/pull/3141) Improved Scheduler.Worker memory leak detection
+* [Pull 3082] (https://github.com/ReactiveX/RxJava/pull/3082) Observable.x(ConversionFunc) to allow extensions to Observables
+* [Pull 3103] (https://github.com/ReactiveX/RxJava/pull/3103) materialize() - add backpressure support
+* [Pull 3129] (https://github.com/ReactiveX/RxJava/pull/3129) Fix retry with predicate ignoring backpressure.
+* [Pull 3121] (https://github.com/ReactiveX/RxJava/pull/3121) Improve performance of NewThreadWorker, disable search for setRemoveOnCancelPolicy() on Android API < 21
+* [Pull 3120] (https://github.com/ReactiveX/RxJava/pull/3120) No InterruptedException with synchronous BlockingObservable
+* [Pull 3117] (https://github.com/ReactiveX/RxJava/pull/3117) Operator replay() now supports backpressure
+* [Pull 3116] (https://github.com/ReactiveX/RxJava/pull/3116) cache() now supports backpressure
+* [Pull 3110] (https://github.com/ReactiveX/RxJava/pull/3110) Test coverage of rx.functions utility methods.
+* [Pull 3101] (https://github.com/ReactiveX/RxJava/pull/3101) Fix take swallowing exception if thrown by exactly the nth onNext call to it.
+* [Pull 3109] (https://github.com/ReactiveX/RxJava/pull/3109) Unit tests and cleanup of JCTools' queues.
+* [Pull 3108] (https://github.com/ReactiveX/RxJava/pull/3108) remove OperatorOnErrorFlatMap because unused
+* [Pull 3079] (https://github.com/ReactiveX/RxJava/pull/3079) fix forEach javadoc
+* [Pull 3085] (https://github.com/ReactiveX/RxJava/pull/3085) break tests as approach timeout so that don't fail on slow machines
+* [Pull 3086] (https://github.com/ReactiveX/RxJava/pull/3086) improve ExecutorSchedulerTest.testOnBackpressureDrop
+* [Pull 3093] (https://github.com/ReactiveX/RxJava/pull/3093) Fix request != 0 checking in the scalar paths of merge()
+
 ### Version 1.0.13 – July 20th 2015 ([Maven Central](http://search.maven.org/#artifactdetails%7Cio.reactivex%7Crxjava%7C1.0.13%7C)) ###
 
 This release has quite a few bug fixes and some new functionality. Items of note are detailed here with the list of changes at the bottom.
