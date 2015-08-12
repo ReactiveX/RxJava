@@ -409,20 +409,29 @@ public class TestSubscriber<T> extends Subscriber<T> {
      */
     @Experimental
     public void assertError(Throwable throwable) {
-        List<Throwable> err = testObserver.getOnErrorEvents();
-        if (err.size() == 0) {
+        final List<Throwable> errorEvents = testObserver.getOnErrorEvents();
+
+        if (errorEvents.isEmpty()) {
             throw new AssertionError("No errors");
-        } else
-        if (err.size() > 1) {
-            AssertionError ae = new AssertionError("Multiple errors: " + err.size());
-            ae.initCause(new CompositeException(err));
-            throw ae;
-        } else
-        if (!throwable.equals(err.get(0))) {
-            AssertionError ae = new AssertionError("Exceptions differ; expected: " + throwable + ", actual: " + err.get(0));
-            ae.initCause(err.get(0));
+        }
+
+        if (errorEvents.size() > 1) {
+            AssertionError ae = new AssertionError("Multiple errors: " + errorEvents.size());
+            ae.initCause(new CompositeException(errorEvents));
             throw ae;
         }
+
+        final Throwable firstError = errorEvents.isEmpty()
+                ? null
+                : errorEvents.get(0);
+
+        if (throwable != firstError && !throwable.equals(firstError)) {
+            AssertionError ae = new AssertionError("Exceptions differ; expected: " + throwable + ", actual: " + firstError);
+            ae.initCause(firstError);
+            throw ae;
+        }
+
+        // assert passed
     }
 
     /**
