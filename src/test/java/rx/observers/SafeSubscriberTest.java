@@ -110,7 +110,7 @@ public class SafeSubscriberTest {
         
         TestSubscriber<Integer> ts = new TestSubscriber<Integer>();
         SafeSubscriber<Integer> safe = new SafeSubscriber<Integer>(ts);
-        safe.add(Subscriptions.create(new Action0() {
+        safe.add(Subscriptions.doOnUnsubscribe(new Action0() {
             @Override
             public void call() {
                 throw new RuntimeException();
@@ -139,7 +139,7 @@ public class SafeSubscriberTest {
             }
         };
         SafeSubscriber<Integer> safe = new SafeSubscriber<Integer>(ts);
-        safe.add(Subscriptions.create(new Action0() {
+        safe.add(Subscriptions.doOnUnsubscribe(new Action0() {
             @Override
             public void call() {
                 throw new RuntimeException();
@@ -190,7 +190,7 @@ public class SafeSubscriberTest {
             }
         };
         SafeSubscriber<Integer> safe = new SafeSubscriber<Integer>(ts);
-        safe.add(Subscriptions.create(new Action0() {
+        safe.add(Subscriptions.doOnUnsubscribe(new Action0() {
             @Override
             public void call() {
                 throw new RuntimeException();
@@ -218,7 +218,7 @@ public class SafeSubscriberTest {
             }
         };
         SafeSubscriber<Integer> safe = new SafeSubscriber<Integer>(ts);
-        safe.add(Subscriptions.create(new Action0() {
+        safe.add(Subscriptions.doOnUnsubscribe(new Action0() {
             @Override
             public void call() {
                 throw new RuntimeException();

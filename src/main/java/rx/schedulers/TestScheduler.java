@@ -146,7 +146,7 @@ public class TestScheduler extends Scheduler {
         public Subscription schedule(Action0 action, long delayTime, TimeUnit unit) {
             final TimedAction timedAction = new TimedAction(this, time + unit.toNanos(delayTime), action);
             queue.add(timedAction);
-            return Subscriptions.create(new Action0() {
+            return Subscriptions.doOnUnsubscribe(new Action0() {
 
                 @Override
                 public void call() {
@@ -160,7 +160,7 @@ public class TestScheduler extends Scheduler {
         public Subscription schedule(Action0 action) {
             final TimedAction timedAction = new TimedAction(this, 0, action);
             queue.add(timedAction);
-            return Subscriptions.create(new Action0() {
+            return Subscriptions.doOnUnsubscribe(new Action0() {
 
                 @Override
                 public void call() {

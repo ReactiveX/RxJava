@@ -394,7 +394,7 @@ public class BlockingObservableTest {
         Observable<Integer> o = Observable.create(new OnSubscribe<Integer>() {
             @Override
             public void call(Subscriber<? super Integer> subscriber) {
-                subscriber.add(Subscriptions.create(new Action0() {
+                subscriber.add(Subscriptions.doOnUnsubscribe(new Action0() {
                     @Override
                     public void call() {
                         unsubscribe.countDown();

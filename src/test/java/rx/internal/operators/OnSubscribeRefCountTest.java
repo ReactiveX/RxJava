@@ -345,7 +345,7 @@ public class OnSubscribeRefCountTest {
             @Override
             public void call(Subscriber<? super Integer> observer) {
                 subscriptionCount.incrementAndGet();
-                observer.add(Subscriptions.create(new Action0() {
+                observer.add(Subscriptions.doOnUnsubscribe(new Action0() {
                     @Override
                     public void call() {
                         unsubscriptionCount.incrementAndGet();

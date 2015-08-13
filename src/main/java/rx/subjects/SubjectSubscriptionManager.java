@@ -65,7 +65,7 @@ import rx.subscriptions.Subscriptions;
     }
     /** Registers the unsubscribe action for the given subscriber. */
     void addUnsubscriber(Subscriber<? super T> child, final SubjectObserver<T> bo) {
-        child.add(Subscriptions.create(new Action0() {
+        child.add(Subscriptions.doOnUnsubscribe(new Action0() {
             @Override
             public void call() {
                 remove(bo);

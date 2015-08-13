@@ -19,7 +19,6 @@ import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
-import static rx.subscriptions.Subscriptions.create;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -35,7 +34,7 @@ public class RefCountSubscriptionTest {
     @Before
     public void before() {
         main = mock(Action0.class);
-        rcs = new RefCountSubscription(create(main));
+        rcs = new RefCountSubscription(Subscriptions.doOnUnsubscribe(main));
     }
 
     @Test

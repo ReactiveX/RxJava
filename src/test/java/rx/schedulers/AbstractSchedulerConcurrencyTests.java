@@ -308,7 +308,7 @@ public abstract class AbstractSchedulerConcurrencyTests extends AbstractSchedule
                         }
                     });
     
-                    observer.add(Subscriptions.create(new Action0() {
+                    observer.add(Subscriptions.doOnUnsubscribe(new Action0() {
     
                         @Override
                         public void call() {

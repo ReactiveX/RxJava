@@ -229,7 +229,7 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
         
         /** Should be called after the constructor finished to setup nulling-out the current reference. */
         void init() {
-            add(Subscriptions.create(new Action0() {
+            add(Subscriptions.doOnUnsubscribe(new Action0() {
                 @Override
                 public void call() {
                     PublishSubscriber.this.producers.getAndSet(TERMINATED);

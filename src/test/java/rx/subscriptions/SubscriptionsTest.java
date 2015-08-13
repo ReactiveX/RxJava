@@ -20,7 +20,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static rx.subscriptions.Subscriptions.create;
 
 import org.junit.Test;
 
@@ -32,7 +31,7 @@ public class SubscriptionsTest {
     @Test
     public void testUnsubscribeOnlyOnce() {
         Action0 unsubscribe = mock(Action0.class);
-        Subscription subscription = create(unsubscribe);
+        Subscription subscription = Subscriptions.doOnUnsubscribe(unsubscribe);
         subscription.unsubscribe();
         subscription.unsubscribe();
         verify(unsubscribe, times(1)).call();

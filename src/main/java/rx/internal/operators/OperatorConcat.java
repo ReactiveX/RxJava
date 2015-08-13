@@ -100,7 +100,7 @@ public final class OperatorConcat<T> implements Operator<T, Observable<? extends
             this.current = current;
             this.arbiter = new ProducerArbiter();
             this.queue = new ConcurrentLinkedQueue<Object>();
-            add(Subscriptions.create(new Action0() {
+            add(Subscriptions.doOnUnsubscribe(new Action0() {
                 @Override
                 public void call() {
                     queue.clear();

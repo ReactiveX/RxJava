@@ -112,7 +112,7 @@ public class OperatorMergeTest {
             @Override
             public void call(final Subscriber<? super Observable<Long>> observer) {
                 // verbose on purpose so I can track the inside of it
-                final Subscription s = Subscriptions.create(new Action0() {
+                final Subscription s = Subscriptions.doOnUnsubscribe(new Action0() {
 
                     @Override
                     public void call() {
@@ -461,7 +461,7 @@ public class OperatorMergeTest {
 
             @Override
             public void call(Subscriber<? super Long> s) {
-                s.add(Subscriptions.create(new Action0() {
+                s.add(Subscriptions.doOnUnsubscribe(new Action0() {
 
                     @Override
                     public void call() {

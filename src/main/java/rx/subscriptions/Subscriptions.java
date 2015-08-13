@@ -18,6 +18,7 @@ package rx.subscriptions;
 import java.util.concurrent.Future;
 
 import rx.Subscription;
+import rx.annotations.Beta;
 import rx.annotations.Experimental;
 import rx.functions.Action0;
 
@@ -65,13 +66,22 @@ public final class Subscriptions {
     }
 
     /**
+     * @deprecated Use {@link #doOnUnsubscribe(Action0)}.
+     */
+    @Deprecated
+    public static Subscription create(final Action0 unsubscribe) {
+        return BooleanSubscription.create(unsubscribe);
+    }
+
+    /**
      * Creates and returns a {@link Subscription} that invokes the given {@link Action0} when unsubscribed.
      * 
      * @param unsubscribe
      *            Action to invoke on unsubscribe.
      * @return {@link Subscription}
      */
-    public static Subscription create(final Action0 unsubscribe) {
+    @Beta
+    public static Subscription doOnUnsubscribe(final Action0 unsubscribe) {
         return BooleanSubscription.create(unsubscribe);
     }
 

@@ -92,7 +92,7 @@ public class OperatorGroupBy<T, K, R> implements Operator<GroupedObservable<K, R
             this.keySelector = keySelector;
             this.elementSelector = elementSelector;
             this.child = child;
-            child.add(Subscriptions.create(new Action0() {
+            child.add(Subscriptions.doOnUnsubscribe(new Action0() {
 
                 @Override
                 public void call() {

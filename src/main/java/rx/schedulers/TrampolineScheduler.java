@@ -83,7 +83,7 @@ public final class TrampolineScheduler extends Scheduler {
                 return Subscriptions.unsubscribed();
             } else {
                 // queue wasn't empty, a parent is already processing so we just add to the end of the queue
-                return Subscriptions.create(new Action0() {
+                return Subscriptions.doOnUnsubscribe(new Action0() {
 
                     @Override
                     public void call() {

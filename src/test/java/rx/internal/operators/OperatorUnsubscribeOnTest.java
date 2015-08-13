@@ -124,7 +124,7 @@ public class OperatorUnsubscribeOnTest {
 
         private final CountDownLatch latch = new CountDownLatch(1);
 
-        private final Subscription s = Subscriptions.create(new Action0() {
+        private final Subscription s = Subscriptions.doOnUnsubscribe(new Action0() {
 
             @Override
             public void call() {
