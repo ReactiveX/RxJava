@@ -157,10 +157,9 @@ class OperatorTimeoutBase<T> implements Operator<T, T> {
         }
 
         public void onTimeout(long seqId) {
-            long expected = seqId;
             boolean timeoutWins = false;
             synchronized (gate) {
-                if (expected == actual && TERMINATED_UPDATER.getAndSet(this, 1) == 0) {
+                if (seqId == actual && TERMINATED_UPDATER.getAndSet(this, 1) == 0) {
                     timeoutWins = true;
                 }
             }
