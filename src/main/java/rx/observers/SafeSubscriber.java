@@ -20,9 +20,11 @@ import java.util.Arrays;
 import rx.Subscriber;
 import rx.exceptions.CompositeException;
 import rx.exceptions.Exceptions;
+import rx.exceptions.OnCompletedFailedException;
 import rx.exceptions.OnErrorFailedException;
 import rx.exceptions.OnErrorNotImplementedException;
-import rx.plugins.RxJavaPlugins;
+import rx.exceptions.UnsubscribeFailedException;
+import rx.internal.util.RxJavaPluginUtils;
 
 /**
  * {@code SafeSubscriber} is a wrapper around {@code Subscriber} that ensures that the {@code Subscriber}
@@ -83,11 +85,17 @@ public class SafeSubscriber<T> extends Subscriber<T> {
                 // we handle here instead of another method so we don't add stacks to the frame
                 // which can prevent it from being able to handle StackOverflow
                 Exceptions.throwIfFatal(e);
-                // handle errors if the onCompleted implementation fails, not just if the Observable fails
-                _onError(e);
+                RxJavaPluginUtils.handleException(e);
+                throw new OnCompletedFailedException(e.getMessage(), e);
             } finally {
-                // auto-unsubscribe
-                unsubscribe();
+                try {
+                    // Similarly to onError if failure occurs in unsubscribe then Rx contract is broken
+                    // and we throw an UnsubscribeFailureException.
+                    unsubscribe();
+                } catch (Throwable e) {
+                    RxJavaPluginUtils.handleException(e);
+                    throw new UnsubscribeFailedException(e.getMessage(), e);
+                }
             }
         }
     }
@@ -145,11 +153,7 @@ public class SafeSubscriber<T> extends Subscriber<T> {
      * @see <a href="https://github.com/ReactiveX/RxJava/issues/630">the report of this bug</a>
      */
     protected void _onError(Throwable e) {
-        try {
-            RxJavaPlugins.getInstance().getErrorHandler().handleError(e);
-        } catch (Throwable pluginException) {
-            handlePluginException(pluginException);
-        }
+        RxJavaPluginUtils.handleException(e);
         try {
             actual.onError(e);
         } catch (Throwable e2) {
@@ -168,11 +172,7 @@ public class SafeSubscriber<T> extends Subscriber<T> {
                 try {
                     unsubscribe();
                 } catch (Throwable unsubscribeException) {
-                    try {
-                        RxJavaPlugins.getInstance().getErrorHandler().handleError(unsubscribeException);
-                    } catch (Throwable pluginException) {
-                        handlePluginException(pluginException);
-                    }
+                    RxJavaPluginUtils.handleException(unsubscribeException);
                     throw new RuntimeException("Observer.onError not implemented and error while unsubscribing.", new CompositeException(Arrays.asList(e, unsubscribeException)));
                 }
                 throw (OnErrorNotImplementedException) e2;
@@ -182,19 +182,11 @@ public class SafeSubscriber<T> extends Subscriber<T> {
                  * 
                  * https://github.com/ReactiveX/RxJava/issues/198
                  */
-                try {
-                    RxJavaPlugins.getInstance().getErrorHandler().handleError(e2);
-                } catch (Throwable pluginException) {
-                    handlePluginException(pluginException);
-                }
+                RxJavaPluginUtils.handleException(e2);
                 try {
                     unsubscribe();
                 } catch (Throwable unsubscribeException) {
-                    try {
-                        RxJavaPlugins.getInstance().getErrorHandler().handleError(unsubscribeException);
-                    } catch (Throwable pluginException) {
-                        handlePluginException(pluginException);
-                    }
+                    RxJavaPluginUtils.handleException(unsubscribeException);
                     throw new OnErrorFailedException("Error occurred when trying to propagate error to Observer.onError and during unsubscription.", new CompositeException(Arrays.asList(e, e2, unsubscribeException)));
                 }
 
@@ -205,23 +197,9 @@ public class SafeSubscriber<T> extends Subscriber<T> {
         try {
             unsubscribe();
         } catch (RuntimeException unsubscribeException) {
-            try {
-                RxJavaPlugins.getInstance().getErrorHandler().handleError(unsubscribeException);
-            } catch (Throwable pluginException) {
-                handlePluginException(pluginException);
-            }
+            RxJavaPluginUtils.handleException(unsubscribeException);
             throw new OnErrorFailedException(unsubscribeException);
         }
-    }
-
-    private void handlePluginException(Throwable pluginException) {
-        /*
-         * We don't want errors from the plugin to affect normal flow.
-         * Since the plugin should never throw this is a safety net
-         * and will complain loudly to System.err so it gets fixed.
-         */
-        System.err.println("RxJavaErrorHandler threw an Exception. It shouldn't. => " + pluginException.getMessage());
-        pluginException.printStackTrace();
     }
 
     /**
