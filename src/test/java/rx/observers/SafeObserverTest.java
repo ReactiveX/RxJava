@@ -22,6 +22,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.Test;
 
+import junit.framework.Assert;
 import rx.Subscriber;
 import rx.exceptions.*;
 import rx.functions.Action0;
@@ -65,19 +66,6 @@ public class SafeObserverTest {
             assertNull(onError.get());
             assertTrue(e instanceof SafeObserverTestException);
             assertEquals("onCompletedFail", e.getMessage());
-        }
-    }
-
-    @Test
-    public void onCompletedFailureSafe() {
-        AtomicReference<Throwable> onError = new AtomicReference<Throwable>();
-        try {
-            new SafeSubscriber<String>(OBSERVER_ONCOMPLETED_FAIL(onError)).onCompleted();
-            assertNotNull(onError.get());
-            assertTrue(onError.get() instanceof SafeObserverTestException);
-            assertEquals("onCompletedFail", onError.get().getMessage());
-        } catch (Exception e) {
-            fail("expects exception to be passed to onError");
         }
     }
 
@@ -184,8 +172,8 @@ public class SafeObserverTest {
             e.printStackTrace();
 
             assertTrue(o.isUnsubscribed());
-
-            assertTrue(e instanceof SafeObserverTestException);
+            assertTrue(e instanceof UnsubscribeFailedException);
+            assertTrue(e.getCause() instanceof SafeObserverTestException);
             assertEquals("failure from unsubscribe", e.getMessage());
             // expected since onError fails so SafeObserver can't help
         }
@@ -475,9 +463,12 @@ public class SafeObserverTest {
             }
         });
         
-        s.onCompleted();
-        
-        assertTrue("Error not received", error.get() instanceof TestException);
+        try {
+            s.onCompleted();
+            Assert.fail();
+        } catch (OnCompletedFailedException e) {
+           assertNull(error.get());
+        }
     }
     
     @Test
