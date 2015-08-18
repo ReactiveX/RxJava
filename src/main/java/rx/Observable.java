@@ -1068,6 +1068,10 @@ public class Observable<T> {
     public final static <T> Observable<T> defer(Func0<Observable<T>> observableFactory) {
         return create(new OnSubscribeDefer<T>(observableFactory));
     }
+    
+    public final static <T> Observable<T> deferJust(Func0<T> valueFactory) {
+        return ScalarSynchronousLazyObservable.create(valueFactory);
+    }
 
     /** Lazy initialized Holder for an empty observable which just emits onCompleted to any subscriber. */
     private static final class EmptyHolder {
@@ -1376,7 +1380,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/just.html">ReactiveX operators documentation: Just</a>
      */
     public final static <T> Observable<T> just(final T value) {
-        return ScalarSynchronousObservable.create(value);
+        return ScalarSynchronousEagerObservable.create(value);
     }
     
     /**
@@ -1737,8 +1741,8 @@ public class Observable<T> {
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     public final static <T> Observable<T> merge(Observable<? extends Observable<? extends T>> source) {
-        if (source.getClass() == ScalarSynchronousObservable.class) {
-            return ((ScalarSynchronousObservable<T>)source).scalarFlatMap((Func1)UtilityFunctions.identity());
+        if (source instanceof ScalarSynchronousObservable) {
+            return ((ScalarSynchronousObservable<Observable<T>>)source).get();
         }
         return source.lift(OperatorMerge.<T>instance(false));
     }
@@ -1771,8 +1775,8 @@ public class Observable<T> {
     @Experimental
     @SuppressWarnings({"unchecked", "rawtypes"})
     public final static <T> Observable<T> merge(Observable<? extends Observable<? extends T>> source, int maxConcurrent) {
-        if (source.getClass() == ScalarSynchronousObservable.class) {
-            return ((ScalarSynchronousObservable<T>)source).scalarFlatMap((Func1)UtilityFunctions.identity());
+        if (source instanceof ScalarSynchronousObservable) {
+            return ((ScalarSynchronousObservable<Observable<T>>)source).get();
         }
         return source.lift(OperatorMerge.<T>instance(false, maxConcurrent));
     }
@@ -4737,7 +4741,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/flatmap.html">ReactiveX operators documentation: FlatMap</a>
      */
     public final <R> Observable<R> flatMap(Func1<? super T, ? extends Observable<? extends R>> func) {
-        if (getClass() == ScalarSynchronousObservable.class) {
+        if (this instanceof ScalarSynchronousObservable) {
             return ((ScalarSynchronousObservable<T>)this).scalarFlatMap(func);
         }
         return merge(map(func));
@@ -4768,7 +4772,7 @@ public class Observable<T> {
      */
     @Beta
     public final <R> Observable<R> flatMap(Func1<? super T, ? extends Observable<? extends R>> func, int maxConcurrent) {
-        if (getClass() == ScalarSynchronousObservable.class) {
+        if (this instanceof ScalarSynchronousObservable) {
             return ((ScalarSynchronousObservable<T>)this).scalarFlatMap(func);
         }
         return merge(map(func), maxConcurrent);

@@ -23,37 +23,14 @@ import rx.functions.Action0;
 import rx.functions.Func1;
 import rx.internal.schedulers.EventLoopsScheduler;
 
-public final class ScalarSynchronousObservable<T> extends Observable<T> {
+public abstract class ScalarSynchronousObservable<T> extends Observable<T> {
 
-    public static final <T> ScalarSynchronousObservable<T> create(T t) {
-        return new ScalarSynchronousObservable<T>(t);
+    protected ScalarSynchronousObservable(OnSubscribe<T> onSubscribe) {
+        super(onSubscribe);
     }
 
-    private final T t;
+    public abstract T get();
 
-    protected ScalarSynchronousObservable(final T t) {
-        super(new OnSubscribe<T>() {
-
-            @Override
-            public void call(Subscriber<? super T> s) {
-                /*
-                 *  We don't check isUnsubscribed as it is a significant performance impact in the fast-path use cases.
-                 *  See PerfBaseline tests and https://github.com/ReactiveX/RxJava/issues/1383 for more information.
-                 *  The assumption here is that when asking for a single item we should emit it and not concern ourselves with 
-                 *  being unsubscribed already. If the Subscriber unsubscribes at 0, they shouldn't have subscribed, or it will 
-                 *  filter it out (such as take(0)). This prevents us from paying the price on every subscription. 
-                 */
-                s.onNext(t);
-                s.onCompleted();
-            }
-
-        });
-        this.t = t;
-    }
-
-    public T get() {
-        return t;
-    }
     /**
      * Customized observeOn/subscribeOn implementation which emits the scalar
      * value directly or with less overhead on the specified scheduler.
@@ -63,9 +40,9 @@ public final class ScalarSynchronousObservable<T> extends Observable<T> {
     public Observable<T> scalarScheduleOn(Scheduler scheduler) {
         if (scheduler instanceof EventLoopsScheduler) {
             EventLoopsScheduler es = (EventLoopsScheduler) scheduler;
-            return create(new DirectScheduledEmission<T>(es, t));
+            return create(new DirectScheduledEmission<T>(es, get()));
         }
-        return create(new NormalScheduledEmission<T>(scheduler, t));
+        return create(new NormalScheduledEmission<T>(scheduler, get()));
     }
     
     /** Optimized observeOn for scalar value observed on the EventLoopsScheduler. */
@@ -125,9 +102,9 @@ public final class ScalarSynchronousObservable<T> extends Observable<T> {
         return create(new OnSubscribe<R>() {
             @Override
             public void call(final Subscriber<? super R> child) {
-                Observable<? extends R> o = func.call(t);
-                if (o.getClass() == ScalarSynchronousObservable.class) {
-                    child.onNext(((ScalarSynchronousObservable<? extends R>)o).t);
+                Observable<? extends R> o = func.call(get());
+                if (o instanceof ScalarSynchronousObservable) {
+                    child.onNext(((ScalarSynchronousObservable<? extends R>)o).get());
                     child.onCompleted();
                 } else {
                     o.unsafeSubscribe(new Subscriber<R>(child) {
