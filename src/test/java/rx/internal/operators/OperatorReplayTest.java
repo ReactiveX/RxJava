@@ -1120,4 +1120,29 @@ public class OperatorReplayTest {
         ts.assertNotCompleted();
         ts.assertError(TestException.class);
     }
+    
+    @Test
+    public void unboundedLeavesEarly() {
+        PublishSubject<Integer> source = PublishSubject.create();
+
+        final List<Long> requests = new ArrayList<Long>();
+
+        Observable<Integer> out = source
+                .doOnRequest(new Action1<Long>() {
+                    @Override
+                    public void call(Long t) {
+                        requests.add(t);
+                    }
+                }).replay().autoConnect();
+        
+        TestSubscriber<Integer> ts1 = TestSubscriber.create(5);
+        TestSubscriber<Integer> ts2 = TestSubscriber.create(10);
+        
+        out.subscribe(ts1);
+        out.subscribe(ts2);
+        ts2.unsubscribe();
+        
+        Assert.assertEquals(Arrays.asList(5L, 5L), requests);
+    }
+    
 }
