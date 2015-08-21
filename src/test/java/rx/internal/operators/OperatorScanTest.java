@@ -15,33 +15,23 @@
  */
 package rx.internal.operators;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Matchers.anyString;
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.*;
+import java.util.concurrent.atomic.*;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.mockito.MockitoAnnotations;
 
+import rx.*;
 import rx.Observable;
 import rx.Observer;
-import rx.Producer;
-import rx.Subscriber;
-import rx.functions.Action2;
-import rx.functions.Func0;
-import rx.functions.Func1;
-import rx.functions.Func2;
+import rx.functions.*;
+import rx.observables.AbstractOnSubscribe;
 import rx.observers.TestSubscriber;
+import rx.subjects.PublishSubject;
 
 public class OperatorScanTest {
 
@@ -359,5 +349,46 @@ public class OperatorScanTest {
 
         verify(producer.get(), never()).request(0);
         verify(producer.get(), times(2)).request(1);
+    }
+    
+    @Test
+    public void testInitialValueEmittedNoProducer() {
+        PublishSubject<Integer> source = PublishSubject.create();
+        
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        source.scan(0, new Func2<Integer, Integer, Integer>() {
+            @Override
+            public Integer call(Integer t1, Integer t2) {
+                return t1 + t2;
+            }
+        }).subscribe(ts);
+        
+        ts.assertNoErrors();
+        ts.assertNotCompleted();
+        ts.assertValue(0);
+    }
+    
+    @Test
+    public void testInitialValueEmittedWithProducer() {
+        Observable<Integer> source = new AbstractOnSubscribe<Integer, Void>() {
+            @Override
+            protected void next(rx.observables.AbstractOnSubscribe.SubscriptionState<Integer, Void> state) {
+                state.stop();
+            }
+        }.toObservable();
+        
+        TestSubscriber<Integer> ts = TestSubscriber.create();
+        
+        source.scan(0, new Func2<Integer, Integer, Integer>() {
+            @Override
+            public Integer call(Integer t1, Integer t2) {
+                return t1 + t2;
+            }
+        }).subscribe(ts);
+        
+        ts.assertNoErrors();
+        ts.assertNotCompleted();
+        ts.assertValue(0);
     }
 }
