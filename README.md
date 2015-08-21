@@ -29,7 +29,7 @@ Learn more about RxJava on the <a href="https://github.com/ReactiveX/RxJava/wiki
 
 ## Master Build Status
 
-<a href='https://travis-ci.org/ReactiveX/RxJava/builds'><img src='https://travis-ci.org/ReactiveX/RxJava.svg?branch=1.x'></a>
+<a href='https://travis-ci.org/ReactiveX/RxJava/builds'><img src='https://travis-ci.org/ReactiveX/RxJava.svg?branch=2.x'></a>
 
 ## Communication
 
