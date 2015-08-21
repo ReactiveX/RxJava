@@ -24,6 +24,7 @@ Learn more about RxJava on the <a href="https://github.com/ReactiveX/RxJava/wiki
 - Google Group: [RxJava](http://groups.google.com/d/forum/rxjava)
 - Twitter: [@RxJava](http://twitter.com/RxJava)
 - [GitHub Issues](https://github.com/ReactiveX/RxJava/issues)
+- [StackOverflow](http://stackoverflow.com/search?q=rx-java)
 
 ## Versioning
 
