@@ -82,6 +82,6 @@ public class Observable<T> implements Publisher<T> {
         }
         Objects.requireNonNull(publisher);
         
-        return create(publisher::subscribe);
+        return create(s -> publisher.subscribe(s)); // javac fails to compile publisher::subscribe, Eclipse is just fine
     }
 }
