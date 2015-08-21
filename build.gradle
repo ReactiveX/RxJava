@@ -8,6 +8,9 @@ description = 'RxJava: Reactive Extensions for the JVM – a library for composi
 apply plugin: 'rxjava-project'
 apply plugin: 'java'
 
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
+
 dependencies {
     testCompile 'junit:junit-dep:4.10'
     testCompile 'org.mockito:mockito-core:1.8.5'
