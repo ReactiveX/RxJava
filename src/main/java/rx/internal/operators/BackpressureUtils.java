@@ -44,11 +44,7 @@ public final class BackpressureUtils {
         // add n to field but check for overflow
         while (true) {
             long current = requested.get(object);
-            long next = current + n;
-            // check for overflow
-            if (next < 0) {
-                next = Long.MAX_VALUE;
-            }
+            long next = addCap(current, n);
             if (requested.compareAndSet(object, current, next)) {
                 return current;
             }
@@ -70,14 +66,41 @@ public final class BackpressureUtils {
         // add n to field but check for overflow
         while (true) {
             long current = requested.get();
-            long next = current + n;
-            // check for overflow
-            if (next < 0) {
-                next = Long.MAX_VALUE;
-            }
+            long next = addCap(current, n);
             if (requested.compareAndSet(current, next)) {
                 return current;
             }
         }
     }
+    
+    /**
+     * Multiplies two positive longs and caps the result at Long.MAX_VALUE.
+     * @param a the first value
+     * @param b the second value
+     * @return the capped product of a and b
+     */
+    public static long multiplyCap(long a, long b) {
+        long u = a * b;
+        if (((a | b) >>> 31) != 0) {
+            if (b != 0L && (u / b != a)) {
+                u = Long.MAX_VALUE;
+            }
+        }
+        return u;
+    }
+    
+    /**
+     * Adds two positive longs and caps the result at Long.MAX_VALUE.
+     * @param a the first value
+     * @param b the second value
+     * @return the capped sum of a and b
+     */
+    public static long addCap(long a, long b) {
+        long u = a + b;
+        if (u < 0L) {
+            u = Long.MAX_VALUE;
+        }
+        return u;
+    }
+    
 }
