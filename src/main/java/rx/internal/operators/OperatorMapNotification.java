@@ -19,16 +19,12 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicLong;
 
+import rx.*;
 import rx.Observable.Operator;
-import rx.Producer;
-import rx.Subscriber;
-import rx.Subscription;
-import rx.exceptions.MissingBackpressureException;
-import rx.exceptions.OnErrorThrowable;
-import rx.functions.Func0;
-import rx.functions.Func1;
-import rx.internal.util.unsafe.SpscArrayQueue;
-import rx.internal.util.unsafe.UnsafeAccess;
+import rx.exceptions.*;
+import rx.functions.*;
+import rx.internal.producers.ProducerArbiter;
+import rx.internal.util.unsafe.*;
 
 /**
  * Applies a function of your choosing to every item emitted by an {@code Observable}, and emits the results of
@@ -50,44 +46,60 @@ public final class OperatorMapNotification<T, R> implements Operator<R, T> {
 
     @Override
     public Subscriber<? super T> call(final Subscriber<? super R> o) {
-        Subscriber<T> subscriber = new Subscriber<T>() {
-            SingleEmitter<R> emitter;
-            @Override
-            public void setProducer(Producer producer) {
-                emitter = new SingleEmitter<R>(o, producer, this);
-                o.setProducer(emitter);
-            }
-            
-            @Override
-            public void onCompleted() {
-                try {
-                    emitter.offerAndComplete(onCompleted.call());
-                } catch (Throwable e) {
-                    o.onError(e);
-                }
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                try {
-                    emitter.offerAndComplete(onError.call(e));
-                } catch (Throwable e2) {
-                    o.onError(e);
-                }
-            }
-
-            @Override
-            public void onNext(T t) {
-                try {
-                    emitter.offer(onNext.call(t));
-                } catch (Throwable e) {
-                    o.onError(OnErrorThrowable.addValueAsLastCause(e, t));
-                }
-            }
-
-        };
+        final ProducerArbiter pa = new ProducerArbiter();
+        
+        MapNotificationSubscriber subscriber = new MapNotificationSubscriber(pa, o);
         o.add(subscriber);
+        subscriber.init();
         return subscriber;
+    }
+    
+    final class MapNotificationSubscriber extends Subscriber<T> {
+        private final Subscriber<? super R> o;
+        private final ProducerArbiter pa;
+        final SingleEmitter<R> emitter;
+        
+        private MapNotificationSubscriber(ProducerArbiter pa, Subscriber<? super R> o) {
+            this.pa = pa;
+            this.o = o;
+            this.emitter = new SingleEmitter<R>(o, pa, this);
+        }
+        
+        void init() {
+            o.setProducer(emitter);
+        }
+
+        @Override
+        public void setProducer(Producer producer) {
+            pa.setProducer(producer);
+        }
+
+        @Override
+        public void onCompleted() {
+            try {
+                emitter.offerAndComplete(onCompleted.call());
+            } catch (Throwable e) {
+                o.onError(e);
+            }
+        }
+
+        @Override
+        public void onError(Throwable e) {
+            try {
+                emitter.offerAndComplete(onError.call(e));
+            } catch (Throwable e2) {
+                o.onError(e);
+            }
+        }
+
+        @Override
+        public void onNext(T t) {
+            try {
+                emitter.offer(onNext.call(t));
+            } catch (Throwable e) {
+                o.onError(OnErrorThrowable.addValueAsLastCause(e, t));
+            }
+        }
     }
     static final class SingleEmitter<T> extends AtomicLong implements Producer, Subscription {
         /** */
