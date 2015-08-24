@@ -501,7 +501,7 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
                 InnerProducer<T>[] a = producers.get();
                 
                 long ri = maxChildRequested;
-                long maxTotalRequests = 0;
+                long maxTotalRequests = ri;
 
                 for (InnerProducer<T> rp : a) {
                     maxTotalRequests = Math.max(maxTotalRequests, rp.totalRequested.get());
