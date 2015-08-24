@@ -17,6 +17,7 @@ package rx.internal.operators;
 
 import rx.*;
 import rx.Observable.OnSubscribe;
+import rx.exceptions.Exceptions;
 import rx.functions.Func0;
 import rx.observers.Subscribers;
 
@@ -58,7 +59,7 @@ public final class OnSubscribeDelaySubscriptionWithSelector<T, U> implements OnS
 
             });
         } catch (Throwable e) {
-            child.onError(e);
+            Exceptions.throwOrReport(e, child);
         }
     }
 

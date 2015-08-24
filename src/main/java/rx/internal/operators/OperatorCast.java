@@ -16,8 +16,8 @@
 package rx.internal.operators;
 
 import rx.Observable.Operator;
+import rx.exceptions.*;
 import rx.Subscriber;
-import rx.exceptions.OnErrorThrowable;
 
 /**
  * Converts the elements of an observable sequence to the specified type.
@@ -49,7 +49,7 @@ public class OperatorCast<T, R> implements Operator<R, T> {
                 try {
                     o.onNext(castClass.cast(t));
                 } catch (Throwable e) {
-                    onError(OnErrorThrowable.addValueAsLastCause(e, t));
+                    Exceptions.throwOrReport(e, this, t);
                 }
             }
         };

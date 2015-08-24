@@ -15,20 +15,15 @@
  */
 package rx.internal.operators;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import rx.*;
 import rx.Observable;
 import rx.Observable.OnSubscribe;
-import rx.Subscriber;
-import rx.Subscription;
-import rx.functions.Func1;
-import rx.functions.Func2;
+import rx.exceptions.Exceptions;
+import rx.functions.*;
 import rx.observers.SerializedSubscriber;
-import rx.subscriptions.CompositeSubscription;
-import rx.subscriptions.SerialSubscription;
+import rx.subscriptions.*;
 
 /**
  * Correlates the elements of two sequences based on overlapping durations.
@@ -154,7 +149,7 @@ public final class OnSubscribeJoin<TLeft, TRight, TLeftDuration, TRightDuration,
                         subscriber.onNext(result);
                     }
                 } catch (Throwable t) {
-                    onError(t);
+                    Exceptions.throwOrReport(t, this);
                 }
             }
 
@@ -266,7 +261,7 @@ public final class OnSubscribeJoin<TLeft, TRight, TLeftDuration, TRightDuration,
                     }
                     
                 } catch (Throwable t) {
-                    onError(t);
+                    Exceptions.throwOrReport(t, this);
                 }
             }
 

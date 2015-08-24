@@ -15,11 +15,7 @@
  */
 package rx.internal.operators;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import rx.Observable;
-import rx.Producer;
-import rx.Subscriber;
+import rx.*;
 
 /**
  * Returns an Observable that skips the first <code>num</code> items emitted by the source

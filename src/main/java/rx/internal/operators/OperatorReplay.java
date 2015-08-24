@@ -63,8 +63,7 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
                     co = connectableFactory.call();
                     observable = selector.call(co);
                 } catch (Throwable e) {
-                    Exceptions.throwIfFatal(e);
-                    child.onError(e);
+                    Exceptions.throwOrReport(e, child);
                     return;
                 }
                 

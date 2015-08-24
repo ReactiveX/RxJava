@@ -20,11 +20,10 @@ import java.util.concurrent.atomic.AtomicLongFieldUpdater;
 
 import rx.Observable;
 import rx.Observable.Operator;
+import rx.exceptions.*;
 import rx.Observer;
 import rx.Producer;
 import rx.Subscriber;
-import rx.exceptions.MissingBackpressureException;
-import rx.exceptions.OnErrorThrowable;
 import rx.functions.Func2;
 import rx.functions.Func3;
 import rx.functions.Func4;
@@ -265,7 +264,7 @@ public final class OperatorZip<R> implements Operator<R, Observable<?>[]> {
                                 requested.decrementAndGet();
                                 emitted++;
                             } catch (Throwable e) {
-                                child.onError(OnErrorThrowable.addValueAsLastCause(e, vs));
+                                Exceptions.throwOrReport(e, child, vs);
                                 return;
                             }
                             // now remove them

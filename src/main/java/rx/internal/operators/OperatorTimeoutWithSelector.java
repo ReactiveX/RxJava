@@ -49,8 +49,7 @@ public class OperatorTimeoutWithSelector<T, U, V> extends
                     try {
                         o = firstTimeoutSelector.call();
                     } catch (Throwable t) {
-                        Exceptions.throwIfFatal(t);
-                        timeoutSubscriber.onError(t);
+                        Exceptions.throwOrReport(t, timeoutSubscriber);
                         return Subscriptions.unsubscribed();
                     }
                     return o.unsafeSubscribe(new Subscriber<U>() {
@@ -85,8 +84,7 @@ public class OperatorTimeoutWithSelector<T, U, V> extends
                 try {
                     o = timeoutSelector.call(value);
                 } catch (Throwable t) {
-                    Exceptions.throwIfFatal(t);
-                    timeoutSubscriber.onError(t);
+                    Exceptions.throwOrReport(t, timeoutSubscriber);
                     return Subscriptions.unsubscribed();
                 }
                 return o.unsafeSubscribe(new Subscriber<V>() {

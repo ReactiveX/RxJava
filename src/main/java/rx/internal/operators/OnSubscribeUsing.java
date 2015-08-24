@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import rx.*;
 import rx.Observable.OnSubscribe;
-import rx.exceptions.CompositeException;
+import rx.exceptions.*;
 import rx.functions.*;
 import rx.observers.Subscribers;
 
@@ -72,6 +72,8 @@ public final class OnSubscribeUsing<T, Resource> implements OnSubscribe<T> {
                 observable.unsafeSubscribe(Subscribers.wrap(subscriber));
             } catch (Throwable e) {
                 Throwable disposeError = disposeEagerlyIfRequested(disposeOnceOnly);
+                Exceptions.throwIfFatal(e);
+                Exceptions.throwIfFatal(disposeError);
                 if (disposeError != null)
                     subscriber.onError(new CompositeException(Arrays.asList(e, disposeError)));
                 else
@@ -80,7 +82,7 @@ public final class OnSubscribeUsing<T, Resource> implements OnSubscribe<T> {
             }
         } catch (Throwable e) {
             // then propagate error
-            subscriber.onError(e);
+            Exceptions.throwOrReport(e, subscriber);
         }
     }
 

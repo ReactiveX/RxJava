@@ -16,18 +16,16 @@
 package rx.internal.operators;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 import java.util.concurrent.CountDownLatch;
 
-import org.junit.Test;
+import org.junit.*;
 import org.mockito.Mockito;
 
-import rx.Observable;
-import rx.Observer;
-import rx.functions.Func1;
+import rx.*;
+import rx.exceptions.*;
+import rx.functions.*;
 import rx.internal.util.RxRingBuffer;
 import rx.observers.TestSubscriber;
 
@@ -143,5 +141,30 @@ public class OperatorFilterTest {
 
         // this will wait forever unless OperatorTake handles the request(n) on filtered items
         latch.await();
+    }
+    
+    @Test
+    public void testFatalError() {
+        try {
+            Observable.just(1)
+            .filter(new Func1<Integer, Boolean>() {
+                @Override
+                public Boolean call(Integer t) {
+                    return true;
+                }
+            })
+            .first()
+            .subscribe(new Action1<Integer>() {
+                @Override
+                public void call(Integer t) {
+                    throw new TestException();
+                }
+            });
+            Assert.fail("No exception was thrown");
+        } catch (OnErrorNotImplementedException ex) {
+            if (!(ex.getCause() instanceof TestException)) {
+                Assert.fail("Failed to report the original exception, instead: " + ex.getCause());
+            }
+        }
     }
 }

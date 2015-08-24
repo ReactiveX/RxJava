@@ -26,10 +26,10 @@ import java.util.concurrent.atomic.AtomicLongFieldUpdater;
 import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Observable.Operator;
+import rx.exceptions.*;
 import rx.Observer;
 import rx.Producer;
 import rx.Subscriber;
-import rx.exceptions.OnErrorThrowable;
 import rx.functions.Action0;
 import rx.functions.Func1;
 import rx.observables.GroupedObservable;
@@ -226,7 +226,7 @@ public class OperatorGroupBy<T, K, R> implements Operator<GroupedObservable<K, R
                     emitItem(group, nl.next(t));
                 }
             } catch (Throwable e) {
-                onError(OnErrorThrowable.addValueAsLastCause(e, t));
+                Exceptions.throwOrReport(e, this, t);
             }
         }
 
@@ -287,7 +287,7 @@ public class OperatorGroupBy<T, K, R> implements Operator<GroupedObservable<K, R
                             try {
                                 o.onNext(elementSelector.call(t));
                             } catch (Throwable e) {
-                                onError(OnErrorThrowable.addValueAsLastCause(e, t));
+                                Exceptions.throwOrReport(e, this, t);
                             }
                         }
                     });

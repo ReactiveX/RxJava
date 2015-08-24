@@ -20,6 +20,7 @@ import java.util.List;
 
 import rx.Observable;
 import rx.Observable.Operator;
+import rx.exceptions.Exceptions;
 import rx.Observer;
 import rx.Subscriber;
 import rx.functions.Func0;
@@ -79,7 +80,7 @@ public final class OperatorBufferWithSingleObservable<T, TClosing> implements Op
         try {
             closing = bufferClosingSelector.call();
         } catch (Throwable t) {
-            child.onError(t);
+            Exceptions.throwOrReport(t, child);
             return Subscribers.empty();
         }
         final BufferingSubscriber bsub = new BufferingSubscriber(new SerializedSubscriber<List<T>>(child));
@@ -157,7 +158,7 @@ public final class OperatorBufferWithSingleObservable<T, TClosing> implements Op
                 }
                 child.onNext(toEmit);
             } catch (Throwable t) {
-                child.onError(t);
+                Exceptions.throwOrReport(t, child);
                 return;
             }
             child.onCompleted();
@@ -183,7 +184,7 @@ public final class OperatorBufferWithSingleObservable<T, TClosing> implements Op
                     }
                     done = true;
                 }
-                child.onError(t);
+                Exceptions.throwOrReport(t, child);
             }
         }
     }

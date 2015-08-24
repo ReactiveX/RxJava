@@ -64,8 +64,7 @@ public final class SingleProducer<T> extends AtomicBoolean implements Producer {
             try {
                 c.onNext(v);
             } catch (Throwable e) {
-                Exceptions.throwIfFatal(e);
-                c.onError(OnErrorThrowable.addValueAsLastCause(e, v));
+                Exceptions.throwOrReport(e, c, v);
                 return;
             }
             // eagerly check for unsubscription

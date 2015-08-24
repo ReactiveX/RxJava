@@ -18,6 +18,7 @@ package rx.internal.operators;
 import rx.Observable;
 import rx.Observable.OnSubscribe;
 import rx.Subscriber;
+import rx.exceptions.Exceptions;
 import rx.functions.Func0;
 import rx.observers.Subscribers;
 
@@ -44,7 +45,7 @@ public final class OnSubscribeDefer<T> implements OnSubscribe<T> {
         try {
             o = observableFactory.call();
         } catch (Throwable t) {
-            s.onError(t);
+            Exceptions.throwOrReport(t, s);
             return;
         }
         o.unsafeSubscribe(Subscribers.wrap(s));

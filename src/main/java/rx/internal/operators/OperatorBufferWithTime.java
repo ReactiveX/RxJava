@@ -25,6 +25,7 @@ import rx.Observable.Operator;
 import rx.Scheduler;
 import rx.Scheduler.Worker;
 import rx.Subscriber;
+import rx.exceptions.Exceptions;
 import rx.functions.Action0;
 import rx.observers.SerializedSubscriber;
 
@@ -159,7 +160,7 @@ public final class OperatorBufferWithTime<T> implements Operator<List<T>, T> {
                     child.onNext(chunk);
                 }
             } catch (Throwable t) {
-                child.onError(t);
+                Exceptions.throwOrReport(t, child);
                 return;
             }
             child.onCompleted();
@@ -208,7 +209,7 @@ public final class OperatorBufferWithTime<T> implements Operator<List<T>, T> {
                 try {
                     child.onNext(chunkToEmit);
                 } catch (Throwable t) {
-                    onError(t);
+                    Exceptions.throwOrReport(t, this);
                 }
             }
         }
@@ -273,7 +274,7 @@ public final class OperatorBufferWithTime<T> implements Operator<List<T>, T> {
                 }
                 child.onNext(toEmit);
             } catch (Throwable t) {
-                child.onError(t);
+                Exceptions.throwOrReport(t, child);
                 return;
             }
             child.onCompleted();
@@ -299,7 +300,7 @@ public final class OperatorBufferWithTime<T> implements Operator<List<T>, T> {
             try {
                 child.onNext(toEmit);
             } catch (Throwable t) {
-                onError(t);
+                Exceptions.throwOrReport(t, this);
             }
         }
     }

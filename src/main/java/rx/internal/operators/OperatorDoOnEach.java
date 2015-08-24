@@ -15,11 +15,9 @@
  */
 package rx.internal.operators;
 
+import rx.*;
 import rx.Observable.Operator;
-import rx.Observer;
-import rx.Subscriber;
 import rx.exceptions.Exceptions;
-import rx.exceptions.OnErrorThrowable;
 
 /**
  * Converts the elements of an observable sequence to the specified type.
@@ -45,7 +43,7 @@ public class OperatorDoOnEach<T> implements Operator<T, T> {
                 try {
                     doOnEachObserver.onCompleted();
                 } catch (Throwable e) {
-                    onError(e);
+                    Exceptions.throwOrReport(e, this);
                     return;
                 }
                 // Set `done` here so that the error in `doOnEachObserver.onCompleted()` can be noticed by observer
@@ -64,7 +62,7 @@ public class OperatorDoOnEach<T> implements Operator<T, T> {
                 try {
                     doOnEachObserver.onError(e);
                 } catch (Throwable e2) {
-                    observer.onError(e2);
+                    Exceptions.throwOrReport(e2, observer);
                     return;
                 }
                 observer.onError(e);
@@ -78,7 +76,7 @@ public class OperatorDoOnEach<T> implements Operator<T, T> {
                 try {
                     doOnEachObserver.onNext(value);
                 } catch (Throwable e) {
-                    onError(OnErrorThrowable.addValueAsLastCause(e, value));
+                    Exceptions.throwOrReport(e, this, value);
                     return;
                 }
                 observer.onNext(value);
