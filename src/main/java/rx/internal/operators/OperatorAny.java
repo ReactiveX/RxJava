@@ -16,11 +16,9 @@
 package rx.internal.operators;
 
 
-import rx.Observable;
+import rx.*;
 import rx.Observable.Operator;
-import rx.Subscriber;
 import rx.exceptions.Exceptions;
-import rx.exceptions.OnErrorThrowable;
 import rx.functions.Func1;
 import rx.internal.producers.SingleDelayedProducer;
 
@@ -51,8 +49,7 @@ public final class OperatorAny<T> implements Operator<Boolean, T> {
                 try {
                     result = predicate.call(t);
                 } catch (Throwable e) {
-                    Exceptions.throwIfFatal(e);
-                    onError(OnErrorThrowable.addValueAsLastCause(e, t));
+                    Exceptions.throwOrReport(e, this, t);
                     return;
                 }
                 if (result && !done) {

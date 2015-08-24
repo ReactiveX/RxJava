@@ -117,9 +117,7 @@ public final class QueuedValueProducer<T> extends AtomicLong implements Producer
                             c.onNext(t);
                         }
                     } catch (Throwable ex) {
-                        Exceptions.throwIfFatal(ex);
-                        Throwable ex1 = OnErrorThrowable.addValueAsLastCause(ex, v != NULL_SENTINEL ? v : null);
-                        c.onError(ex1);
+                        Exceptions.throwOrReport(ex, c, v != NULL_SENTINEL ? v : null);
                         return;
                     }
                     if (c.isUnsubscribed()) {

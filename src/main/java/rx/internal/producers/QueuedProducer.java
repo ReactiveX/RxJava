@@ -169,9 +169,7 @@ public final class QueuedProducer<T> extends AtomicLong implements Producer, Obs
                             c.onNext(t);
                         }
                     } catch (Throwable ex) {
-                        Exceptions.throwIfFatal(ex);
-                        Throwable ex1 = OnErrorThrowable.addValueAsLastCause(ex, v != NULL_SENTINEL ? v : null);
-                        c.onError(ex1);
+                        Exceptions.throwOrReport(ex, c, v != NULL_SENTINEL ? v : null);
                         return;
                     }
                     r--;

@@ -17,8 +17,8 @@ package rx.internal.operators;
 
 import rx.Observable;
 import rx.Observable.Operator;
+import rx.exceptions.*;
 import rx.Subscriber;
-import rx.exceptions.OnErrorThrowable;
 import rx.functions.Func1;
 import rx.functions.Func2;
 
@@ -85,7 +85,7 @@ public final class OperatorMapPair<T, U, R> implements Operator<Observable<? ext
                         }
                     }));
                 } catch (Throwable e) {
-                    o.onError(OnErrorThrowable.addValueAsLastCause(e, outer));
+                    Exceptions.throwOrReport(e, o, outer);
                 }
             }
 

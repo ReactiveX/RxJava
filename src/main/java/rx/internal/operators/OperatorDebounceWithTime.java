@@ -19,6 +19,7 @@ import java.util.concurrent.TimeUnit;
 import rx.Observable.Operator;
 import rx.Scheduler;
 import rx.Scheduler.Worker;
+import rx.exceptions.Exceptions;
 import rx.Subscriber;
 import rx.functions.Action0;
 import rx.observers.SerializedSubscriber;
@@ -130,7 +131,7 @@ public final class OperatorDebounceWithTime<T> implements Operator<T, T> {
             try {
                 onNextAndComplete.onNext(localValue);
             } catch (Throwable e) {
-                onError.onError(e);
+                Exceptions.throwOrReport(e, onError, localValue);
                 return;
             }
 
@@ -166,7 +167,7 @@ public final class OperatorDebounceWithTime<T> implements Operator<T, T> {
                 try {
                     onNextAndComplete.onNext(localValue);
                 } catch (Throwable e) {
-                    onError.onError(e);
+                    Exceptions.throwOrReport(e, onError, localValue);
                     return;
                 }
             }

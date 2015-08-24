@@ -78,6 +78,7 @@ public final class OperatorOnErrorReturn<T> implements Operator<T, T> {
                     T result = resultFunction.call(e);
                     child.onNext(result);
                 } catch (Throwable x) {
+                    Exceptions.throwIfFatal(x);
                     child.onError(new CompositeException(Arrays.asList(e, x)));
                     return;
                 }

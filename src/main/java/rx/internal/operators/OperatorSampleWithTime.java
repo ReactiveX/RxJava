@@ -20,6 +20,7 @@ import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 import rx.Observable.Operator;
 import rx.Scheduler;
 import rx.Scheduler.Worker;
+import rx.exceptions.Exceptions;
 import rx.Subscriber;
 import rx.functions.Action0;
 import rx.observers.SerializedSubscriber;
@@ -103,7 +104,7 @@ public final class OperatorSampleWithTime<T> implements Operator<T, T> {
                     T v = (T)localValue;
                     subscriber.onNext(v);
                 } catch (Throwable e) {
-                    onError(e);
+                    Exceptions.throwOrReport(e, this);
                 }
             }
         }

@@ -19,6 +19,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import rx.Observable.OnSubscribe;
+import rx.exceptions.Exceptions;
 import rx.Subscriber;
 import rx.functions.Action0;
 import rx.subscriptions.Subscriptions;
@@ -83,7 +84,7 @@ public final class OnSubscribeToObservableFuture {
                     //refuse to emit onError if already unsubscribed
                     return;
                 }
-                subscriber.onError(e);
+                Exceptions.throwOrReport(e, subscriber);
             }
         }
     }

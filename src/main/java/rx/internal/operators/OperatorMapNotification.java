@@ -79,7 +79,7 @@ public final class OperatorMapNotification<T, R> implements Operator<R, T> {
             try {
                 emitter.offerAndComplete(onCompleted.call());
             } catch (Throwable e) {
-                o.onError(e);
+                Exceptions.throwOrReport(e, o);
             }
         }
 
@@ -88,7 +88,7 @@ public final class OperatorMapNotification<T, R> implements Operator<R, T> {
             try {
                 emitter.offerAndComplete(onError.call(e));
             } catch (Throwable e2) {
-                o.onError(e);
+                Exceptions.throwOrReport(e2, o);
             }
         }
 
@@ -97,7 +97,7 @@ public final class OperatorMapNotification<T, R> implements Operator<R, T> {
             try {
                 emitter.offer(onNext.call(t));
             } catch (Throwable e) {
-                o.onError(OnErrorThrowable.addValueAsLastCause(e, t));
+                Exceptions.throwOrReport(e, o, t);
             }
         }
     }

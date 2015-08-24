@@ -18,6 +18,7 @@ package rx.internal.operators;
 import java.util.Iterator;
 
 import rx.Observable.Operator;
+import rx.exceptions.Exceptions;
 import rx.Subscriber;
 import rx.functions.Func2;
 import rx.observers.Subscribers;
@@ -41,7 +42,8 @@ public final class OperatorZipIterable<T1, T2, R> implements Operator<R, T1> {
                 return Subscribers.empty();
             }
         } catch (Throwable e) {
-            subscriber.onError(e);
+            Exceptions.throwOrReport(e, subscriber);
+            return Subscribers.empty();
         }
         return new Subscriber<T1>(subscriber) {
             boolean once;
@@ -67,7 +69,7 @@ public final class OperatorZipIterable<T1, T2, R> implements Operator<R, T1> {
                         onCompleted();
                     }
                 } catch (Throwable e) {
-                    onError(e);
+                    Exceptions.throwOrReport(e, this);
                 }
             }
 

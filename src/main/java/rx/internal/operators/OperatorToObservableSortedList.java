@@ -18,6 +18,7 @@ package rx.internal.operators;
 import java.util.*;
 
 import rx.Observable.Operator;
+import rx.exceptions.Exceptions;
 import rx.*;
 import rx.functions.Func2;
 import rx.internal.producers.SingleDelayedProducer;
@@ -75,7 +76,7 @@ public final class OperatorToObservableSortedList<T> implements Operator<List<T>
                         // sort the list before delivery
                         Collections.sort(a, sortFunction);
                     } catch (Throwable e) {
-                        onError(e);
+                        Exceptions.throwOrReport(e, this);
                         return;
                     }
                     producer.setValue(a);
