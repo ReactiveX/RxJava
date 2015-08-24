@@ -15,15 +15,25 @@
  */
 package rx.observers;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.Method;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.*;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 
-import rx.exceptions.*;
+import rx.exceptions.OnCompletedFailedException;
+import rx.exceptions.OnErrorFailedException;
+import rx.exceptions.OnErrorNotImplementedException;
+import rx.exceptions.TestException;
+import rx.exceptions.UnsubscribeFailedException;
 import rx.functions.Action0;
-import rx.plugins.*;
+import rx.plugins.RxJavaErrorHandler;
+import rx.plugins.RxJavaPlugins;
 import rx.subscriptions.Subscriptions;
 
 public class SafeSubscriberTest {
@@ -51,10 +61,12 @@ public class SafeSubscriberTest {
             }
         };
         SafeSubscriber<Integer> safe = new SafeSubscriber<Integer>(ts);
-        
-        safe.onCompleted();
-        
-        assertTrue(safe.isUnsubscribed());
+        try {
+            safe.onCompleted();
+            Assert.fail();
+        } catch (OnCompletedFailedException e) {
+            assertTrue(safe.isUnsubscribed());
+        }
     }
     
     @Test
@@ -76,7 +88,7 @@ public class SafeSubscriberTest {
         assertTrue(safe.isUnsubscribed());
     }
     
-    @Test
+    @Test(expected=OnCompletedFailedException.class)
     public void testPluginException() {
         RxJavaPlugins.getInstance().registerErrorHandler(new RxJavaErrorHandler() {
             @Override
@@ -227,4 +239,81 @@ public class SafeSubscriberTest {
         
         safe.onError(new TestException());
     }
+    
+    @Test
+    public void testPluginErrorHandlerReceivesExceptionWhenUnsubscribeAfterCompletionThrows() {
+        final AtomicInteger calls = new AtomicInteger();
+        RxJavaPlugins.getInstance().registerErrorHandler(new RxJavaErrorHandler() {
+            @Override
+            public void handleError(Throwable e) {
+                calls.incrementAndGet();
+            }
+        });
+        
+        final AtomicInteger errors = new AtomicInteger();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
+            @Override
+            public void onError(Throwable e) {
+                errors.incrementAndGet();
+            }
+        };
+        final RuntimeException ex = new RuntimeException();
+        SafeSubscriber<Integer> safe = new SafeSubscriber<Integer>(ts);
+        safe.add(Subscriptions.create(new Action0() {
+            @Override
+            public void call() {
+                throw ex;
+            }
+        }));
+        
+        try {
+            safe.onCompleted();
+            Assert.fail();
+        } catch(UnsubscribeFailedException e) {
+            assertEquals(1, (int) calls.get());
+            assertEquals(0, (int) errors.get());
+        }
+    }
+
+    @Test
+    public void testPluginErrorHandlerReceivesExceptionFromFailingUnsubscribeAfterCompletionThrows() {
+        final AtomicInteger calls = new AtomicInteger();
+        RxJavaPlugins.getInstance().registerErrorHandler(new RxJavaErrorHandler() {
+            @Override
+            public void handleError(Throwable e) {
+                calls.incrementAndGet();
+            }
+        });
+        
+        final AtomicInteger errors = new AtomicInteger();
+        TestSubscriber<Integer> ts = new TestSubscriber<Integer>() {
+            
+            @Override 
+            public void onCompleted() {
+                throw new RuntimeException();
+            }
+            
+            @Override
+            public void onError(Throwable e) {
+                errors.incrementAndGet();
+            }
+        };
+        SafeSubscriber<Integer> safe = new SafeSubscriber<Integer>(ts);
+        safe.add(Subscriptions.create(new Action0() {
+            @Override
+            public void call() {
+                throw new RuntimeException();
+            }
+        }));
+        
+        try {
+            safe.onCompleted();
+            Assert.fail();
+        } catch(UnsubscribeFailedException e) {
+            assertEquals(2, (int) calls.get());
+            assertEquals(0, (int) errors.get());
+        }
+    }
+
+    
 }
