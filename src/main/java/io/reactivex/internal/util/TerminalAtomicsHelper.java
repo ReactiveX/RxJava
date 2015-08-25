@@ -33,7 +33,7 @@ public enum TerminalAtomicsHelper {
         U a = updater.get(instance);
         if (a != terminalValue) {
             a = updater.getAndSet(instance, terminalValue);
-            if (a != terminalValue) {
+            if (a != terminalValue && a != null) {
                 onTerminate.accept(a);
             }
         }
@@ -50,7 +50,7 @@ public enum TerminalAtomicsHelper {
         U a = instance.get();
         if (a != terminalValue) {
             a = instance.getAndSet(terminalValue);
-            if (a != terminalValue) {
+            if (a != terminalValue && a != null) {
                 onTerminate.accept(a);
             }
         }
@@ -103,11 +103,15 @@ public enum TerminalAtomicsHelper {
         for (;;) {
             U a = updater.get(instance);
             if (a == terminalValue) {
-                onTerminate.accept(newValue);
+                if (newValue != null) {
+                    onTerminate.accept(newValue);
+                }
                 return false;
             }
             if (updater.compareAndSet(instance, a, newValue)) {
-                onTerminate.accept(a);
+                if (a != null) {
+                    onTerminate.accept(a);
+                }
                 return true;
             }
         }
@@ -128,11 +132,15 @@ public enum TerminalAtomicsHelper {
         for (;;) {
             U a = instance.get();
             if (a == terminalValue) {
-                onTerminate.accept(newValue);
+                if (newValue != null) {
+                    onTerminate.accept(newValue);
+                }
                 return false;
             }
             if (instance.compareAndSet(a, newValue)) {
-                onTerminate.accept(a);
+                if (a != null) {
+                    onTerminate.accept(a);
+                }
                 return true;
             }
         }
@@ -154,7 +162,9 @@ public enum TerminalAtomicsHelper {
         for (;;) {
             U a = updater.get(instance);
             if (a == terminalValue) {
-                onTerminate.accept(newValue);
+                if (newValue != null) {
+                    onTerminate.accept(newValue);
+                }
                 return false;
             }
             if (updater.compareAndSet(instance, a, newValue)) {
@@ -178,7 +188,9 @@ public enum TerminalAtomicsHelper {
         for (;;) {
             U a = instance.get();
             if (a == terminalValue) {
-                onTerminate.accept(newValue);
+                if (newValue != null) {
+                    onTerminate.accept(newValue);
+                }
                 return false;
             }
             if (instance.compareAndSet(a, newValue)) {

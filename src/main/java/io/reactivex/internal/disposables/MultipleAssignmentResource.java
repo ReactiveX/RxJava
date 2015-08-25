@@ -1,0 +1,76 @@
+/**
+ * Copyright 2015 Netflix, Inc.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is
+ * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See
+ * the License for the specific language governing permissions and limitations under the License.
+ */
+
+package io.reactivex.internal.disposables;
+
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
+
+import io.reactivex.disposables.Disposable;
+import io.reactivex.internal.util.TerminalAtomicsHelper;
+
+/**
+ * Holds onto resources with a custom disposer callback and replacing a resource doesn't
+ * call the disposer but only when the MultipleAssignmentResource is disposed.
+ * 
+ * <p>This resource container disposable helps in avoiding the wrapping of other resources
+ * into Disposables.
+ * 
+ * <p>Note that since the implementation leaks the methods of AtomicReference, one must be
+ * careful to only call setResource and dispose on it. All other methods may lead to undefined behavior
+ * and should be used by internal means only.
+ * 
+ * @param <T> the resource type
+ */
+public final class MultipleAssignmentResource<T> extends AtomicReference<Object> implements Disposable {
+    /** */
+    private static final long serialVersionUID = 5247635821051810205L;
+    /** The callback to dispose the resource. */
+    final Consumer<? super T> disposer;
+    /** The indicator object that this container has been disposed. */
+    static final Object DISPOSED = new Object();
+    
+    /**
+     * Constructor with a custom disposer callback.
+     * @param disposer
+     */
+    public MultipleAssignmentResource(Consumer<? super T> disposer) {
+        this.disposer = disposer;
+    }
+    
+    /**
+     * Constructor with a custom disposer callback and the initial resource
+     * @param disposer
+     * @param initialResource
+     */
+    public MultipleAssignmentResource(Consumer<? super T> disposer, T initialResource) {
+        this(disposer);
+        lazySet(initialResource);
+    }
+    
+    /**
+     * Atomically replaces the current resource with the new resource but doesn't call the disposer
+     * for it.
+     * @param newResource the new resource to replace the old one
+     */
+    @SuppressWarnings("unchecked")
+    public void setResource(T newResource) {
+        TerminalAtomicsHelper.update(this, newResource, DISPOSED, (Consumer<Object>)disposer);
+    }
+    
+    @Override
+    @SuppressWarnings("unchecked")
+    public void dispose() {
+        TerminalAtomicsHelper.terminate(this, DISPOSED, (Consumer<Object>)disposer);
+    }
+}
