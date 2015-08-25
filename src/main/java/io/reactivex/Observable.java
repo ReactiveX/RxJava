@@ -19,13 +19,13 @@ import java.util.function.*;
 import org.reactivestreams.*;
 
 public class Observable<T> implements Publisher<T> {
-    final Consumer<Subscriber<? super T>> onSubscribe;
+    final Publisher<T> onSubscribe;
     
-    private Observable(Consumer<Subscriber<? super T>> onSubscribe) {
+    protected Observable(Publisher<T> onSubscribe) {
         this.onSubscribe = onSubscribe;
     }
     
-    public static <T> Observable<T> create(Consumer<Subscriber<? super T>> onSubscribe) {
+    public static <T> Observable<T> create(Publisher<T> onSubscribe) {
         // TODO plugin wrapping
         return new Observable<>(onSubscribe);
     }
@@ -34,7 +34,7 @@ public class Observable<T> implements Publisher<T> {
     public final void subscribe(Subscriber<? super T> s) {
         Objects.requireNonNull(s);
         try {
-            onSubscribe.accept(s);
+            onSubscribe.subscribe(s);
         } catch (NullPointerException e) {
             throw e;
         } catch (Throwable e) {
@@ -46,12 +46,22 @@ public class Observable<T> implements Publisher<T> {
         }
     }
     
-    public final <R> Observable<R> lift(Function<Subscriber<? super R>, Subscriber<? super T>> lifter) {
+    /**
+     * Interface to map/wrap a downstream subscriber to an upstream subscriber.
+     *
+     * @param <Downstream> the value type of the downstream
+     * @param <Upstream> the value type of the upstream
+     */
+    public interface Operator<Downstream, Upstream> extends Function<Subscriber<? super Downstream>, Subscriber<? super Upstream>> {
+        
+    }
+    
+    public final <R> Observable<R> lift(Operator<? extends R, ? super T> lifter) {
         return create(su -> {
             try {
                 Subscriber<? super T> st = lifter.apply(su);
                 // TODO plugin wrapping
-                onSubscribe.accept(st);
+                onSubscribe.subscribe(st);
             } catch (NullPointerException e) {
                 throw e;
             } catch (Throwable e) {
