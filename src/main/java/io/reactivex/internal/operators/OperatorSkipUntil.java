@@ -22,71 +22,79 @@ import io.reactivex.internal.disposables.ArrayCompositeResource;
 import io.reactivex.internal.subscriptions.EmptySubscription;
 import io.reactivex.subscribers.SerializedSubscriber;
 
-/**
- * 
- */
-public final class OperatorTakeUntil<T, U> implements Operator<T, T> {
-    final Publisher<? extends U> other;
-    public OperatorTakeUntil(Publisher<? extends U> other) {
+public final class OperatorSkipUntil<T, U> implements Operator<T, T> {
+    final Publisher<? extends T> source;
+    final Publisher<U> other;
+    public OperatorSkipUntil(Publisher<? extends T> source, Publisher<U> other) {
+        this.source = source;
         this.other = other;
     }
+    
     @Override
     public Subscriber<? super T> apply(Subscriber<? super T> child) {
+        
         SerializedSubscriber<T> serial = new SerializedSubscriber<>(child);
         
         ArrayCompositeResource<Subscription> frc = new ArrayCompositeResource<>(2, Subscription::cancel);
         
-        TakeUntilSubscriber<T> tus = new TakeUntilSubscriber<>(serial, frc); 
+        SkipUntilSubscriber<T> sus = new SkipUntilSubscriber<>(serial, frc);
         
         other.subscribe(new Subscriber<U>() {
+            Subscription s;
             @Override
             public void onSubscribe(Subscription s) {
+                if (this.s != null) {
+                    s.cancel();
+                    onError(new IllegalStateException("Subscription already set!"));
+                    return;
+                }
+                this.s = s;
                 if (frc.setResource(1, s)) {
                     s.request(Long.MAX_VALUE);
                 }
             }
+            
             @Override
             public void onNext(U t) {
-                frc.dispose();
-                if (tus.compareAndSet(false, true)) {
-                    serial.onSubscribe(EmptySubscription.INSTANCE);
-                    serial.onComplete();
-                }
+                s.cancel();
+                sus.notSkipping = true;
             }
+            
             @Override
             public void onError(Throwable t) {
                 frc.dispose();
-                if (tus.compareAndSet(false, true)) {
+                // in case the other emits an onError before the main even sets a subscription
+                if (sus.compareAndSet(false, true)) {
                     serial.onSubscribe(EmptySubscription.INSTANCE);
                     serial.onError(t);
                 }
             }
+            
             @Override
             public void onComplete() {
-                frc.dispose();
-                if (tus.compareAndSet(false, true)) {
-                    serial.onSubscribe(EmptySubscription.INSTANCE);
-                    serial.onComplete();
-                }
+                sus.notSkipping = true;
             }
         });
         
-        return tus;
+        return sus;
     }
     
-    static final class TakeUntilSubscriber<T> extends AtomicBoolean implements Subscriber<T>, Subscription {
+    static final class SkipUntilSubscriber<T> extends AtomicBoolean implements Subscriber<T>, Subscription {
         /** */
-        private static final long serialVersionUID = 3451719290311127173L;
+        private static final long serialVersionUID = -1113667257122396604L;
         final Subscriber<? super T> actual;
         final ArrayCompositeResource<Subscription> frc;
         
         Subscription s;
         
-        public TakeUntilSubscriber(Subscriber<? super T> actual, ArrayCompositeResource<Subscription> frc) {
+        volatile boolean notSkipping;
+        boolean notSkippingLocal;
+
+        public SkipUntilSubscriber(Subscriber<? super T> actual, ArrayCompositeResource<Subscription> frc) {
             this.actual = actual;
             this.frc = frc;
         }
-
+        
         @Override
         public void onSubscribe(Subscription s) {
             if (this.s != null) {
@@ -104,7 +112,15 @@ public final class OperatorTakeUntil<T, U> implements Operator<T, T> {
         
         @Override
         public void onNext(T t) {
-            actual.onNext(t);
+            if (notSkippingLocal) {
+                actual.onNext(t);
+            } else
+            if (notSkipping) {
+                notSkippingLocal = true;
+                actual.onNext(t);
+            } else {
+                s.request(1);
+            }
         }
         
         @Override
