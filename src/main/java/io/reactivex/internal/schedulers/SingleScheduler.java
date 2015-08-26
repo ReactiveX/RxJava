@@ -18,6 +18,7 @@ import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 import io.reactivex.Scheduler;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.*;
+import io.reactivex.plugins.RxJavaPlugins;
 
 public final class SingleScheduler extends Scheduler {
     
@@ -81,25 +82,29 @@ public final class SingleScheduler extends Scheduler {
     
     @Override
     public Disposable scheduleDirect(Runnable run, long delay, TimeUnit unit) {
+        Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
         try {
             Future<?> f;
             if (delay <= 0L) {
-                f = executor.submit(run);
+                f = executor.submit(decoratedRun);
             } else {
-                f = executor.schedule(run, delay, unit);
+                f = executor.schedule(decoratedRun, delay, unit);
             }
             return () -> f.cancel(true);
         } catch (RejectedExecutionException ex) {
+            RxJavaPlugins.onError(ex);
             return EmptyDisposable.INSTANCE;
         }
     }
     
     @Override
     public Disposable schedulePeriodicallyDirect(Runnable run, long initialDelay, long period, TimeUnit unit) {
+        Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
         try {
-            Future<?> f = executor.scheduleAtFixedRate(run, initialDelay, period, unit);
+            Future<?> f = executor.scheduleAtFixedRate(decoratedRun, initialDelay, period, unit);
             return () -> f.cancel(true);
         } catch (RejectedExecutionException ex) {
+            RxJavaPlugins.onError(ex);
             return EmptyDisposable.INSTANCE;
         }
     }
@@ -123,7 +128,9 @@ public final class SingleScheduler extends Scheduler {
                 return EmptyDisposable.INSTANCE;
             }
             
-            ScheduledRunnable sr = new ScheduledRunnable(run, tasks);
+            Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
+            
+            ScheduledRunnable sr = new ScheduledRunnable(decoratedRun, tasks);
             tasks.add(sr);
             
             try {
@@ -137,6 +144,7 @@ public final class SingleScheduler extends Scheduler {
                 sr.setFuture(f);
             } catch (RejectedExecutionException ex) {
                 dispose();
+                RxJavaPlugins.onError(ex);
                 return EmptyDisposable.INSTANCE;
             }
             

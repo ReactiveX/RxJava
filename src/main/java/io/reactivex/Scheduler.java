@@ -17,6 +17,7 @@ import java.util.concurrent.TimeUnit;
 
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.*;
+import io.reactivex.plugins.RxJavaPlugins;
 
 public abstract class Scheduler {
     
@@ -68,9 +69,11 @@ public abstract class Scheduler {
     public Disposable scheduleDirect(Runnable run, long delay, TimeUnit unit) {
         Worker w = createWorker();
         
+        Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
+        
         w.schedule(() -> {
             try {
-                run.run();
+                decoratedRun.run();
             } finally {
                 w.dispose();
             }
@@ -84,9 +87,11 @@ public abstract class Scheduler {
         Worker w = createWorker();
         acr.lazySet(0, w);
         
+        Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
+        
         acr.setResource(1, w.schedulePeriodically(() -> {
             try {
-                run.run();
+                decoratedRun.run();
             } catch (final Throwable e) {
                 // make sure the worker is released if the run crashes
                 acr.dispose();
@@ -110,13 +115,15 @@ public abstract class Scheduler {
 
             MultipleAssignmentResource<Disposable> mar = new MultipleAssignmentResource<>(Disposable::dispose, first);
             
+            Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
+            
             first.setResource(schedule(new Runnable() {
                 long lastNow = now(unit);
                 long startTime = lastNow + initialDelay;
                 long count;
                 @Override
                 public void run() {
-                    run.run();
+                    decoratedRun.run();
                     
                     long t = now(unit);
                     long c = ++count;

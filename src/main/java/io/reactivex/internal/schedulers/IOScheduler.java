@@ -1,0 +1,237 @@
+/**
+ * Copyright 2015 Netflix, Inc.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package io.reactivex.internal.schedulers;
+
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.*;
+
+import io.reactivex.Scheduler;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.internal.disposables.*;
+import io.reactivex.plugins.RxJavaPlugins;
+
+/**
+ * Scheduler that creates and caches a set of thread pools and reuses them if possible.
+ */
+public final class IOScheduler extends Scheduler implements SchedulerLifecycle {
+    private static final String WORKER_THREAD_NAME_PREFIX = "RxCachedThreadScheduler-";
+    private static final RxThreadFactory WORKER_THREAD_FACTORY =
+            new RxThreadFactory(WORKER_THREAD_NAME_PREFIX);
+
+    private static final String EVICTOR_THREAD_NAME_PREFIX = "RxCachedWorkerPoolEvictor-";
+    private static final RxThreadFactory EVICTOR_THREAD_FACTORY =
+            new RxThreadFactory(EVICTOR_THREAD_NAME_PREFIX);
+
+    private static final long KEEP_ALIVE_TIME = 60;
+    private static final TimeUnit KEEP_ALIVE_UNIT = TimeUnit.SECONDS;
+    
+    static final ThreadWorker SHUTDOWN_THREADWORKER;
+    static {
+        SHUTDOWN_THREADWORKER = new ThreadWorker(new RxThreadFactory("RxCachedThreadSchedulerShutdown-"));
+        SHUTDOWN_THREADWORKER.dispose();
+    }
+    
+    private static final class CachedWorkerPool {
+        private final long keepAliveTime;
+        private final ConcurrentLinkedQueue<ThreadWorker> expiringWorkerQueue;
+        private final SetCompositeResource<Disposable> allWorkers;
+        private final ScheduledExecutorService evictorService;
+        private final Future<?> evictorTask;
+
+        CachedWorkerPool(long keepAliveTime, TimeUnit unit) {
+            this.keepAliveTime = unit != null ? unit.toNanos(keepAliveTime) : 0L;
+            this.expiringWorkerQueue = new ConcurrentLinkedQueue<>();
+            this.allWorkers = new SetCompositeResource<>(Disposable::dispose);
+
+            ScheduledExecutorService evictor = null;
+            Future<?> task = null;
+            if (unit != null) {
+                evictor = Executors.newScheduledThreadPool(1, EVICTOR_THREAD_FACTORY);
+                ((ScheduledThreadPoolExecutor)evictor).setRemoveOnCancelPolicy(true);
+                try {
+                    task = evictor.scheduleWithFixedDelay(
+                            new Runnable() {
+                                @Override
+                                public void run() {
+                                    evictExpiredWorkers();
+                                }
+                            }, this.keepAliveTime, this.keepAliveTime, TimeUnit.NANOSECONDS
+                    );
+                } catch (RejectedExecutionException ex) {
+                    RxJavaPlugins.onError(ex);
+                }
+            }
+            evictorService = evictor;
+            evictorTask = task;
+        }
+
+        ThreadWorker get() {
+            if (allWorkers.isDisposed()) {
+                return SHUTDOWN_THREADWORKER;
+            }
+            while (!expiringWorkerQueue.isEmpty()) {
+                ThreadWorker threadWorker = expiringWorkerQueue.poll();
+                if (threadWorker != null) {
+                    return threadWorker;
+                }
+            }
+
+            // No cached worker found, so create a new one.
+            ThreadWorker w = new ThreadWorker(WORKER_THREAD_FACTORY);
+            allWorkers.add(w);
+            return w;
+        }
+
+        void release(ThreadWorker threadWorker) {
+            // Refresh expire time before putting worker back in pool
+            threadWorker.setExpirationTime(now() + keepAliveTime);
+
+            expiringWorkerQueue.offer(threadWorker);
+        }
+
+        void evictExpiredWorkers() {
+            if (!expiringWorkerQueue.isEmpty()) {
+                long currentTimestamp = now();
+
+                for (ThreadWorker threadWorker : expiringWorkerQueue) {
+                    if (threadWorker.getExpirationTime() <= currentTimestamp) {
+                        if (expiringWorkerQueue.remove(threadWorker)) {
+                            allWorkers.remove(threadWorker);
+                        }
+                    } else {
+                        // Queue is ordered with the worker that will expire first in the beginning, so when we
+                        // find a non-expired worker we can stop evicting.
+                        break;
+                    }
+                }
+            }
+        }
+
+        long now() {
+            return System.nanoTime();
+        }
+        
+        void shutdown() {
+            try {
+                if (evictorTask != null) {
+                    evictorTask.cancel(true);
+                }
+                if (evictorService != null) {
+                    evictorService.shutdownNow();
+                }
+            } finally {
+                allWorkers.dispose();
+            }
+        }
+    }
+
+    final AtomicReference<CachedWorkerPool> pool;
+    
+    static final CachedWorkerPool NONE;
+    static {
+        NONE = new CachedWorkerPool(0, null);
+        NONE.shutdown();
+    }
+    
+    public IOScheduler() {
+        this.pool = new AtomicReference<>(NONE);
+        start();
+    }
+    
+    @Override
+    public void start() {
+        CachedWorkerPool update = new CachedWorkerPool(KEEP_ALIVE_TIME, KEEP_ALIVE_UNIT);
+        if (!pool.compareAndSet(NONE, update)) {
+            update.shutdown();
+        }
+    }
+    @Override
+    public void shutdown() {
+        for (;;) {
+            CachedWorkerPool curr = pool.get();
+            if (curr == NONE) {
+                return;
+            }
+            if (pool.compareAndSet(curr, NONE)) {
+                curr.shutdown();
+                return;
+            }
+        }
+    }
+    
+    @Override
+    public Worker createWorker() {
+        return new EventLoopWorker(pool.get());
+    }
+
+    private static final class EventLoopWorker extends Scheduler.Worker {
+        private final SetCompositeResource<Disposable> tasks;
+        private final CachedWorkerPool pool;
+        private final ThreadWorker threadWorker;
+        @SuppressWarnings("unused")
+        volatile int once;
+        static final AtomicIntegerFieldUpdater<EventLoopWorker> ONCE_UPDATER
+                = AtomicIntegerFieldUpdater.newUpdater(EventLoopWorker.class, "once");
+
+        EventLoopWorker(CachedWorkerPool pool) {
+            this.pool = pool;
+            this.tasks = new SetCompositeResource<>(Disposable::dispose);
+            this.threadWorker = pool.get();
+        }
+
+        @Override
+        public void dispose() {
+            if (ONCE_UPDATER.compareAndSet(this, 0, 1)) {
+                tasks.dispose();
+
+                // releasing the pool should be the last action
+                // should prevent pool reuse in case there is a blocking
+                // action not responding to cancellation
+                threadWorker.scheduleDirect(() -> {
+                    pool.release(threadWorker);
+                }, 0, TimeUnit.MILLISECONDS);
+            }
+        }
+
+        @Override
+        public Disposable schedule(Runnable action, long delayTime, TimeUnit unit) {
+            if (tasks.isDisposed()) {
+                // don't schedule, we are unsubscribed
+                return EmptyDisposable.INSTANCE;
+            }
+
+            return threadWorker.scheduleActual(action, delayTime, unit, tasks);
+        }
+    }
+
+    private static final class ThreadWorker extends NewThreadWorker {
+        private long expirationTime;
+
+        ThreadWorker(ThreadFactory threadFactory) {
+            super(threadFactory);
+            this.expirationTime = 0L;
+        }
+
+        public long getExpirationTime() {
+            return expirationTime;
+        }
+
+        public void setExpirationTime(long expirationTime) {
+            this.expirationTime = expirationTime;
+        }
+    }
+}

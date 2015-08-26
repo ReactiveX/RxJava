@@ -14,6 +14,8 @@ package io.reactivex.plugins;
 
 import org.reactivestreams.*;
 
+import io.reactivex.Scheduler;
+
 public final class RxJavaPlugins {
     private RxJavaPlugins() {
         throw new IllegalStateException("No instances!");
@@ -51,4 +53,45 @@ public final class RxJavaPlugins {
         // TODO dispatch to the appropriate plugin
         return publisher;
     }
+
+    /**
+     * Called when a task is scheduled.
+     * @param run
+     * @return
+     */
+    public static Runnable onSchedule(Runnable run) {
+        // TODO dispatch to the appropriate plugin
+        return run;
+    }
+    
+    public static Scheduler initComputationScheduler(Scheduler defaultScheduler) {
+     // TODO dispatch to the appropriate plugin
+        return defaultScheduler;
+    }
+
+    public static Scheduler initIOScheduler(Scheduler defaultScheduler) {
+     // TODO dispatch to the appropriate plugin
+        return defaultScheduler;
+    }
+
+    public static Scheduler initSingleScheduler(Scheduler defaultScheduler) {
+     // TODO dispatch to the appropriate plugin
+        return defaultScheduler;
+    }
+    
+    public static Scheduler onComputationScheduler(Scheduler defaultScheduler) {
+        // TODO dispatch to the appropriate plugin
+        return defaultScheduler;
+    }
+
+    public static Scheduler onIOScheduler(Scheduler defaultScheduler) {
+        // TODO dispatch to the appropriate plugin
+        return defaultScheduler;
+    }
+
+    public static Scheduler onSingleScheduler(Scheduler defaultScheduler) {
+        // TODO dispatch to the appropriate plugin
+        return defaultScheduler;
+    }
+
 }
