@@ -99,4 +99,8 @@ public final class ArrayCompositeResource<T> extends AtomicReferenceArray<Object
             }
         }
     }
+    
+    public boolean isDisposed() {
+        return get(0) == DISPOSED;
+    }
 }

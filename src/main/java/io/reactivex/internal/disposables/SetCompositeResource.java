@@ -23,7 +23,7 @@ import io.reactivex.internal.util.OpenHashSet;
  *
  * @param <T> the resource type
  */
-public final class SetCompositeResource<T> implements Disposable {
+public final class SetCompositeResource<T> implements CompositeResource<T>, Disposable {
     final Consumer<? super T> disposer;
     
     /** Indicates this resource has been disposed. */
@@ -61,6 +61,7 @@ public final class SetCompositeResource<T> implements Disposable {
      * @param newResource the new resource to add, not-null (not checked)
      * @return
      */
+    @Override
     public boolean add(T newResource) {
         if (!disposed) {
             synchronized (this) {
@@ -85,6 +86,7 @@ public final class SetCompositeResource<T> implements Disposable {
      * @param resource the resource to remove, not-null (not verified)
      * @return
      */
+    @Override
     public boolean remove(T resource) {
         if (delete(resource)) {
             disposer.accept(resource);
@@ -98,6 +100,7 @@ public final class SetCompositeResource<T> implements Disposable {
      * @param resource the resource to delete, not-null (not verified)
      * @return
      */
+    @Override
     public boolean delete(T resource) {
         if (disposed) {
             return false;
@@ -131,5 +134,9 @@ public final class SetCompositeResource<T> implements Disposable {
                 s.forEach(disposer);
             }
         }
+    }
+    
+    public boolean isDisposed() {
+        return disposed;
     }
 }
