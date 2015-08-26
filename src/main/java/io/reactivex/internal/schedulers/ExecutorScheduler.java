@@ -22,6 +22,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.*;
 import io.reactivex.internal.queue.MpscLinkedQueue;
 import io.reactivex.internal.schedulers.ExecutorScheduler.ExecutorWorker.BooleanRunnable;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
 
 public final class ExecutorScheduler extends Scheduler {
@@ -41,27 +42,31 @@ public final class ExecutorScheduler extends Scheduler {
     
     @Override
     public Disposable scheduleDirect(Runnable run) {
+        Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
         try {
             if (executor instanceof ExecutorService) {
-                Future<?> f = ((ExecutorService)executor).submit(run);
+                Future<?> f = ((ExecutorService)executor).submit(decoratedRun);
                 return () -> f.cancel(true);
             }
             
-            BooleanRunnable br = new BooleanRunnable(run);
+            BooleanRunnable br = new BooleanRunnable(decoratedRun);
             executor.execute(br);
             return br;
         } catch (RejectedExecutionException ex) {
+            RxJavaPlugins.onError(ex);
             return EmptyDisposable.INSTANCE;
         }
     }
     
     @Override
     public Disposable scheduleDirect(Runnable run, long delay, TimeUnit unit) {
+        Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
         if (executor instanceof ScheduledExecutorService) {
             try {
-                Future<?> f = ((ScheduledExecutorService)executor).schedule(run, delay, unit);
+                Future<?> f = ((ScheduledExecutorService)executor).schedule(decoratedRun, delay, unit);
                 return () -> f.cancel(true);
             } catch (RejectedExecutionException ex) {
+                RxJavaPlugins.onError(ex);
                 return EmptyDisposable.INSTANCE;
             }
         }
@@ -70,7 +75,7 @@ public final class ExecutorScheduler extends Scheduler {
         MultipleAssignmentResource<Disposable> mar = new MultipleAssignmentResource<>(Disposable::dispose, first);
 
         Disposable delayed = HELPER.scheduleDirect(() -> {
-            mar.setResource(scheduleDirect(run));
+            mar.setResource(scheduleDirect(decoratedRun));
         }, delay, unit);
         
         first.setResource(delayed);
@@ -81,10 +86,12 @@ public final class ExecutorScheduler extends Scheduler {
     @Override
     public Disposable schedulePeriodicallyDirect(Runnable run, long initialDelay, long period, TimeUnit unit) {
         if (executor instanceof ScheduledExecutorService) {
+            Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
             try {
-                Future<?> f = ((ScheduledExecutorService)executor).scheduleAtFixedRate(run, initialDelay, period, unit);
+                Future<?> f = ((ScheduledExecutorService)executor).scheduleAtFixedRate(decoratedRun, initialDelay, period, unit);
                 return () -> f.cancel(true);
             } catch (RejectedExecutionException ex) {
+                RxJavaPlugins.onError(ex);
                 return EmptyDisposable.INSTANCE;
             }
         }
@@ -113,7 +120,8 @@ public final class ExecutorScheduler extends Scheduler {
                 return EmptyDisposable.INSTANCE;
             }
             
-            BooleanRunnable br = new BooleanRunnable(run);
+            Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
+            BooleanRunnable br = new BooleanRunnable(decoratedRun);
             
             queue.offer(br);
             
@@ -123,6 +131,7 @@ public final class ExecutorScheduler extends Scheduler {
                 } catch (RejectedExecutionException ex) {
                     disposed = true;
                     queue.clear();
+                    RxJavaPlugins.onError(ex);
                     return EmptyDisposable.INSTANCE;
                 }
             }
@@ -146,7 +155,9 @@ public final class ExecutorScheduler extends Scheduler {
             
             Disposable delayed;
 
-            Runnable r = () -> mar.setResource(schedule(run));
+            Runnable decoratedRun = RxJavaPlugins.onSchedule(run);
+            
+            Runnable r = () -> mar.setResource(schedule(decoratedRun));
             
             if (executor instanceof ScheduledExecutorService) {
                 try {
@@ -154,6 +165,7 @@ public final class ExecutorScheduler extends Scheduler {
                     delayed = () -> f.cancel(true);
                 } catch (RejectedExecutionException ex) {
                     disposed = true;
+                    RxJavaPlugins.onError(ex);
                     return EmptyDisposable.INSTANCE;
                 }
             } else {

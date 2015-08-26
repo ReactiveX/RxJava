@@ -17,6 +17,7 @@ import java.util.concurrent.*;
 
 import io.reactivex.Scheduler;
 import io.reactivex.internal.schedulers.*;
+import io.reactivex.plugins.RxJavaPlugins;
 
 public final class Schedulers {
     
@@ -29,31 +30,39 @@ public final class Schedulers {
         throw new IllegalStateException("No instances");
     }
 
-    static final Scheduler single;
+    static final Scheduler SINGLE;
+    
+    static final Scheduler COMPUTATION;
+    
+    static final Scheduler IO;
+    
+    static final Scheduler TRAMPOLINE;
     
     static {
         // TODO plugins and stuff
-        single = new SingleScheduler();
+        SINGLE = RxJavaPlugins.initSingleScheduler(new SingleScheduler());
+        
+        COMPUTATION = RxJavaPlugins.initComputationScheduler(new ComputationScheduler());
+        
+        IO = RxJavaPlugins.initIOScheduler(new IOScheduler());
+        
+        TRAMPOLINE = TrampolineScheduler.instance();
     }
     
     public static Scheduler computation() {
-        // TODO implement
-        throw new UnsupportedOperationException();
+        return RxJavaPlugins.onComputationScheduler(COMPUTATION);
     }
     
     public static Scheduler io() {
-        // TODO implement
-        throw new UnsupportedOperationException();
+        return RxJavaPlugins.onIOScheduler(IO);
     }
     
     public static TestScheduler test() {
-        // TODO implement
-        throw new UnsupportedOperationException();
+        return new TestScheduler();
     }
 
     public static Scheduler trampoline() {
-        // TODO implement
-        throw new UnsupportedOperationException();
+        return TRAMPOLINE;
     }
 
     /*
@@ -64,7 +73,7 @@ public final class Schedulers {
      * - support benchmarks that pipeline data from the main thread to some other thread and avoid core-bashing of computation's round-robin nature. 
      */
     public static Scheduler single() {
-        return single;
+        return RxJavaPlugins.onSingleScheduler(SINGLE);
     }
     
     // TODO I don't think immediate scheduler should be supported any further
