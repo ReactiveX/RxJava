@@ -22,7 +22,9 @@ import org.reactivestreams.*;
 
 import io.reactivex.internal.operators.*;
 import io.reactivex.internal.subscriptions.EmptySubscription;
+import io.reactivex.observables.ConnectableObservable;
 import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.SafeSubscriber;
 
 public class Observable<T> implements Publisher<T> {
@@ -420,4 +422,130 @@ public class Observable<T> implements Publisher<T> {
             return v;
         });
     }
+    
+    public final Observable<T> observeOn(Scheduler scheduler) {
+        return observeOn(scheduler, false, bufferSize());
+    }
+    
+    public final Observable<T> observeOn(Scheduler scheduler, boolean delayError) {
+        return observeOn(scheduler, delayError, bufferSize());
+    }
+    
+    public final Observable<T> observeOn(Scheduler scheduler, boolean delayError, int bufferSize) {
+        // TODO implement
+        throw new UnsupportedOperationException();
+    }
+    
+    public final Observable<T> subscribeOn(Scheduler scheduler) {
+        // TODO implement
+        throw new UnsupportedOperationException();
+    }
+    
+    public final Observable<T> unsubscribeOn(Scheduler scheduler) {
+        // TODO implement
+        throw new UnsupportedOperationException();
+    }
+    
+    public final Observable<T> cache() {
+        return CachedObservable.from(this);
+    }
+
+    public final Observable<T> cache(int capacityHint) {
+        return CachedObservable.from(this, capacityHint);
+    }
+
+    public final ConnectableObservable<T> publish() {
+        return publish(bufferSize());
+    }
+
+    public final ConnectableObservable<T> publish(int bufferSize) {
+        if (bufferSize <= 0) {
+            throw new IllegalArgumentException("bufferSize > 0 required but it was " + bufferSize);
+        }
+        return OperatorPublish.create(this, bufferSize);
+    }
+
+    public final <R> Observable<R> publish(Function<? super Observable<T>, ? extends Observable<R>> selector) {
+        return publish(selector, bufferSize());
+    }
+
+    public final <R> Observable<R> publish(Function<? super Observable<T>, ? extends Observable<R>> selector, int bufferSize) {
+        if (bufferSize <= 0) {
+            throw new IllegalArgumentException("bufferSize > 0 required but it was " + bufferSize);
+        }
+        return OperatorPublish.create(this, selector, bufferSize);
+    }
+
+    public final ConnectableObservable<T> replay() {
+        return OperatorReplay.create(this);
+    }
+
+    public final <R> Observable<R> replay(Function<? super Observable<T>, ? extends Observable<R>> selector) {
+        return OperatorReplay.multicastSelector(this::replay, selector);
+    }
+    
+    public final <R> Observable<R> replay(Function<? super Observable<T>, ? extends Observable<R>> selector, final int bufferSize) {
+        return OperatorReplay.multicastSelector(() -> replay(bufferSize), selector);
+    }
+    
+    public final <R> Observable<R> replay(Function<? super Observable<T>, ? extends Observable<R>> selector, int bufferSize, long time, TimeUnit unit) {
+        return replay(selector, bufferSize, time, unit, Schedulers.computation());
+    }
+
+    public final <R> Observable<R> replay(Function<? super Observable<T>, ? extends Observable<R>> selector, final int bufferSize, final long time, final TimeUnit unit, final Scheduler scheduler) {
+        if (bufferSize < 0) {
+            throw new IllegalArgumentException("bufferSize < 0");
+        }
+        return OperatorReplay.multicastSelector(() -> replay(bufferSize, time, unit, scheduler), selector);
+    }
+
+    public final <R> Observable<R> replay(final Function<? super Observable<T>, ? extends Observable<R>> selector, final int bufferSize, final Scheduler scheduler) {
+        return OperatorReplay.multicastSelector(() -> replay(bufferSize), 
+                t -> selector.apply(t).observeOn(scheduler));
+    }
+
+    public final <R> Observable<R> replay(Function<? super Observable<T>, ? extends Observable<R>> selector, long time, TimeUnit unit) {
+        return replay(selector, time, unit, Schedulers.computation());
+    }
+
+    public final <R> Observable<R> replay(Function<? super Observable<T>, ? extends Observable<R>> selector, final long time, final TimeUnit unit, final Scheduler scheduler) {
+        return OperatorReplay.multicastSelector(() -> replay(time, unit, scheduler), selector);
+    }
+
+    public final <R> Observable<R> replay(final Function<? super Observable<T>, ? extends Observable<R>> selector, final Scheduler scheduler) {
+        return OperatorReplay.multicastSelector(() -> replay(), 
+                t -> selector.apply(t).observeOn(scheduler));
+    }
+
+    public final ConnectableObservable<T> replay(final int bufferSize) {
+        return OperatorReplay.create(this, bufferSize);
+    }
+
+    public final ConnectableObservable<T> replay(int bufferSize, long time, TimeUnit unit) {
+        return replay(bufferSize, time, unit, Schedulers.computation());
+    }
+
+    public final ConnectableObservable<T> replay(final int bufferSize, final long time, final TimeUnit unit, final Scheduler scheduler) {
+        if (bufferSize < 0) {
+            throw new IllegalArgumentException("bufferSize < 0");
+        }
+        return OperatorReplay.create(this, time, unit, scheduler, bufferSize);
+    }
+
+    public final ConnectableObservable<T> replay(final int bufferSize, final Scheduler scheduler) {
+        return OperatorReplay.observeOn(replay(bufferSize), scheduler);
+    }
+
+    public final ConnectableObservable<T> replay(long time, TimeUnit unit) {
+        return replay(time, unit, Schedulers.computation());
+    }
+
+    public final ConnectableObservable<T> replay(final long time, final TimeUnit unit, final Scheduler scheduler) {
+        return OperatorReplay.create(this, time, unit, scheduler);
+    }
+
+    public final ConnectableObservable<T> replay(final Scheduler scheduler) {
+        return OperatorReplay.observeOn(replay(), scheduler);
+    }
+
 }

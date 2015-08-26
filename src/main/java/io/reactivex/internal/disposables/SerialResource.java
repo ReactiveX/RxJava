@@ -64,8 +64,8 @@ public final class SerialResource<T> extends AtomicReference<Object> implements 
      * @param newResource the new resource to replace the old one
      */
     @SuppressWarnings("unchecked")
-    public void setResource(T newResource) {
-        TerminalAtomicsHelper.set(this, newResource, DISPOSED, (Consumer<Object>)disposer);
+    public boolean setResource(T newResource) {
+        return TerminalAtomicsHelper.set(this, newResource, DISPOSED, (Consumer<Object>)disposer);
     }
     
     @Override
