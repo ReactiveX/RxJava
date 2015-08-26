@@ -21,6 +21,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.reactivestreams.*;
 
 import io.reactivex.internal.util.BackpressureHelper;
+import io.reactivex.plugins.RxJavaPlugins;
 
 /**
  * 
@@ -61,7 +62,7 @@ public final class PublisherRangeSource implements Publisher<Integer> {
                     slowpath(n);
                 }
             } else {
-                new IllegalArgumentException("request > 0 required").printStackTrace();
+                RxJavaPlugins.onError(new IllegalArgumentException("request > 0 required but it was " + n));
             }
         }
         

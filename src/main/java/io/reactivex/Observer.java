@@ -15,14 +15,15 @@ package io.reactivex;
 
 import org.reactivestreams.*;
 
+import io.reactivex.plugins.RxJavaPlugins;
+
 public abstract class Observer<T> implements Subscriber<T> {
     private Subscription s;
     @Override
     public final void onSubscribe(Subscription s) {
         if (this.s != null) {
             s.cancel();
-            // TODO plugin error handler
-            new IllegalStateException("Subscription already set!").printStackTrace();
+            RxJavaPlugins.onError(new IllegalStateException("Subscription already set!"));
             return;
         }
         this.s = s;

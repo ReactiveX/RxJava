@@ -18,6 +18,7 @@ import java.util.concurrent.atomic.AtomicReferenceArray;
 
 import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.disposables.*;
+import io.reactivex.plugins.RxJavaPlugins;
 
 public final class ScheduledRunnable extends AtomicReferenceArray<Object> implements Runnable, Disposable {
     /** */
@@ -40,8 +41,7 @@ public final class ScheduledRunnable extends AtomicReferenceArray<Object> implem
         try {
             actual.run();
         } catch (Throwable e) {
-            // TODO error management with plugins, etc.
-            e.printStackTrace();
+            RxJavaPlugins.onError(e);
         } finally {
             Object o = get(0);
             if (o != DISPOSED) {
