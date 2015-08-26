@@ -18,6 +18,7 @@ import java.util.function.IntFunction;
 import org.reactivestreams.*;
 
 import io.reactivex.internal.util.*;
+import io.reactivex.plugins.RxJavaPlugins;
 
 /**
  * A Subject that multicasts events to Subscribers that are currently subscribed to it.
@@ -311,8 +312,7 @@ public final class PublishSubject<T> extends Subject<T, T> {
         public void request(long n) {
             if (n <= 0) {
                 // can't really call onError here because request could be async in respect to other onXXX calls
-                // TODO report error to plugins
-                new IllegalStateException("n > 0 required but it was " + n).printStackTrace();
+                RxJavaPlugins.onError(new IllegalStateException("n > 0 required but it was " + n));
                 return;
             }
             BackpressureHelper.add(this, n);

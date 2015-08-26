@@ -16,6 +16,7 @@ package io.reactivex.subjects;
 import org.reactivestreams.Subscription;
 
 import io.reactivex.internal.util.*;
+import io.reactivex.plugins.RxJavaPlugins;
 
 /**
  * Serializes calls to the Subscriber methods.
@@ -94,25 +95,32 @@ import io.reactivex.internal.util.*;
     @Override
     public void onError(Throwable t) {
         if (done) {
-            // TODO perhaps report the exception to plugins
+            RxJavaPlugins.onError(t);
             return;
         }
+        boolean reportError;
         synchronized (this) {
             if (done) {
-                // TODO perhaps report the exception to plugins, outside the sync block of course
+                reportError = true;
                 return;
-            }
-            done = true;
-            if (emitting) {
-                AppendOnlyLinkedArrayList<Object> q = queue;
-                if (q == null) {
-                    q = new AppendOnlyLinkedArrayList<>(4);
-                    queue = q;
+            } else {
+                done = true;
+                if (emitting) {
+                    AppendOnlyLinkedArrayList<Object> q = queue;
+                    if (q == null) {
+                        q = new AppendOnlyLinkedArrayList<>(4);
+                        queue = q;
+                    }
+                    q.setFirst(NotificationLite.error(t));
+                    return;
                 }
-                q.setFirst(NotificationLite.error(t));
-                return;
+                reportError = false;
+                emitting = true;
             }
-            emitting = true;
+        }
+        if (reportError) {
+            RxJavaPlugins.onError(t);
+            return;
         }
         actual.onError(t);
     }
