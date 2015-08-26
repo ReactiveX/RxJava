@@ -18,6 +18,8 @@ package io.reactivex.internal.subscriptions;
 
 import org.reactivestreams.Subscription;
 
+import io.reactivex.plugins.RxJavaPlugins;
+
 /**
  * 
  */
@@ -26,7 +28,7 @@ public enum EmptySubscription implements Subscription {
     @Override
     public void request(long n) {
         if (n <= 0) {
-            new IllegalArgumentException("n > 0 required").printStackTrace();
+            RxJavaPlugins.onError(new IllegalArgumentException("n > 0 required"));
         }
     }
     @Override

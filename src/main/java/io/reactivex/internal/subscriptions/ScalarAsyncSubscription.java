@@ -21,6 +21,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.reactivestreams.*;
 
+import io.reactivex.plugins.RxJavaPlugins;
+
 /**
  * 
  */
@@ -43,7 +45,7 @@ public final class ScalarAsyncSubscription<T> extends AtomicInteger implements S
     @Override
     public void request(long n) {
         if (n <= 0) {
-            new IllegalArgumentException("n > 0 required").printStackTrace();
+            RxJavaPlugins.onError(new IllegalArgumentException("n > 0 required but it was " + n));
             return;
         }
         for (;;) {

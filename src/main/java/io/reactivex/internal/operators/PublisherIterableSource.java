@@ -22,6 +22,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.internal.subscriptions.EmptySubscription;
 import io.reactivex.internal.util.BackpressureHelper;
+import io.reactivex.plugins.RxJavaPlugins;
 
 /**
  *
@@ -62,7 +63,7 @@ public final class PublisherIterableSource<T> extends AtomicBoolean implements P
         @Override
         public void request(long n) {
             if (n <= 0) {
-                new IllegalArgumentException("n > 0 required").printStackTrace();
+                RxJavaPlugins.onError(new IllegalArgumentException("n > 0 required but it was " + n));
                 return;
             }
             if (BackpressureHelper.add(this, n) != 0L) {

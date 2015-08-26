@@ -20,6 +20,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.reactivestreams.*;
 
+import io.reactivex.plugins.RxJavaPlugins;
+
 /**
  * 
  */
@@ -39,7 +41,7 @@ public final class ScalarSubscription<T> extends AtomicBoolean implements Subscr
     @Override
     public void request(long n) {
         if (n <= 0) {
-            new IllegalArgumentException("n > 0 required").printStackTrace();
+            RxJavaPlugins.onError(new IllegalArgumentException("n > 0 required but it was " + n));
             return;
         }
         if (compareAndSet(false, true)) {
