@@ -13,7 +13,7 @@
 package io.reactivex;
 
 
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.*;
 import java.util.stream.Stream;
@@ -377,5 +377,47 @@ public class Observable<T> implements Publisher<T> {
     public final Observable<T> filter(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate);
         return lift(new OperatorFilter<>(predicate));
+    }
+    
+    public final Observable<List<T>> toList() {
+        return lift(OperatorToList.defaultInstance());
+    }
+    
+    public final Observable<List<T>> toList(int capacityHint) {
+        if (capacityHint <= 0) {
+            throw new IllegalArgumentException("capacityHint > 0 required but it was " + capacityHint);
+        }
+        return lift(new OperatorToList<>(() -> new ArrayList<>(capacityHint)));
+    }
+    
+    public final <U extends Collection<? super T>> Observable<U> toList(Supplier<U> collectionSupplier) {
+        Objects.requireNonNull(collectionSupplier);
+        return lift(new OperatorToList<>(collectionSupplier));
+    }
+    
+    @SuppressWarnings({ "unchecked", "rawtypes"})
+    public final Observable<List<T>> toSortedList() {
+        return toSortedList((Comparator)Comparator.naturalOrder());
+    }
+
+    @SuppressWarnings({ "unchecked", "rawtypes"})
+    public final Observable<List<T>> toSortedList(int capacityHint) {
+        return toSortedList((Comparator)Comparator.naturalOrder(), capacityHint);
+    }
+
+    public final Observable<List<T>> toSortedList(Comparator<? super T> comparator) {
+        Objects.requireNonNull(comparator);
+        return toList().map(v -> {
+            Collections.sort(v, comparator);
+            return v;
+        });
+    }
+    
+    public final Observable<List<T>> toSortedList(Comparator<? super T> comparator, int capacityHint) {
+        Objects.requireNonNull(comparator);
+        return toList(capacityHint).map(v -> {
+            Collections.sort(v, comparator);
+            return v;
+        });
     }
 }
