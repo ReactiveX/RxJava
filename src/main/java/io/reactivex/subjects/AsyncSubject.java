@@ -19,6 +19,7 @@ import java.util.function.IntFunction;
 import org.reactivestreams.*;
 
 import io.reactivex.internal.util.*;
+import io.reactivex.plugins.RxJavaPlugins;
 
 /**
  * A Subject that emits the very last value followed by a completion event or the received error to Subscribers.
@@ -307,8 +308,7 @@ public final class AsyncSubject<T> extends Subject<T, T> {
         @Override
         public void request(long n) {
             if (n <= 0) {
-                // TODO report error to plugin
-                new IllegalArgumentException("n > 0 required but it was " + n).printStackTrace();
+                RxJavaPlugins.onError(new IllegalArgumentException("n > 0 required but it was " + n));
                 return;
             }
             for (;;) {

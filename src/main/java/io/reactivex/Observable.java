@@ -22,6 +22,8 @@ import org.reactivestreams.*;
 
 import io.reactivex.internal.operators.*;
 import io.reactivex.internal.subscriptions.EmptySubscription;
+import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.subscribers.SafeSubscriber;
 
 public class Observable<T> implements Publisher<T> {
     final Publisher<T> onSubscribe;
@@ -36,23 +38,43 @@ public class Observable<T> implements Publisher<T> {
     }
     
     public static <T> Observable<T> create(Publisher<T> onSubscribe) {
-        // TODO plugin wrapping
+        onSubscribe = RxJavaPlugins.onCreate(onSubscribe);
         return new Observable<>(onSubscribe);
     }
     
-    @Override
-    public final void subscribe(Subscriber<? super T> s) {
+    private void subscribeActual(Subscriber<? super T> s) {
         Objects.requireNonNull(s);
         try {
+            s = RxJavaPlugins.onSubscribe(s);
+            
             onSubscribe.subscribe(s);
         } catch (NullPointerException e) {
             throw e;
         } catch (Throwable e) {
-            // TODO throw if fatal
-            // TODO plugin error handler
+            // TODO throw if fatal?
             // can't call onError because no way to know if a Subscription has been set or not
             // can't call onSubscribe because the call might have set a Subscription already
-            e.printStackTrace();
+            RxJavaPlugins.onError(e);
+        }
+    }
+    
+    // TODO decide if safe subscription or unsafe should be the default
+    @Override
+    public final void subscribe(Subscriber<? super T> s) {
+        subscribeActual(s);
+    }
+    
+    // TODO decide if safe subscription or unsafe should be the default
+    public final void unsafeSubscribe(Subscriber<? super T> s) {
+        subscribeActual(s);
+    }
+    
+    // TODO decide if safe subscription or unsafe should be the default
+    public final void safeSubscribe(Subscriber<? super T> s) {
+        if (s instanceof SafeSubscriber) {
+            subscribeActual(s);
+        } else {
+            subscribeActual(new SafeSubscriber<>(s));
         }
     }
     
@@ -71,16 +93,17 @@ public class Observable<T> implements Publisher<T> {
         return create(su -> {
             try {
                 Subscriber<? super T> st = lifter.apply(su);
-                // TODO plugin wrapping
+                
+                st = RxJavaPlugins.onSubscribe(st);
+                
                 onSubscribe.subscribe(st);
             } catch (NullPointerException e) {
                 throw e;
             } catch (Throwable e) {
-                // TODO throw if fatal
-                // TODO plugin error handler
+                // TODO throw if fatal?
                 // can't call onError because no way to know if a Subscription has been set or not
                 // can't call onSubscribe because the call might have set a Subscription already
-                e.printStackTrace();
+                RxJavaPlugins.onError(e);
             }
         });
     }
