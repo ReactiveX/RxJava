@@ -23,10 +23,8 @@ import io.reactivex.internal.subscriptions.EmptySubscription;
 import io.reactivex.subscribers.SerializedSubscriber;
 
 public final class OperatorSkipUntil<T, U> implements Operator<T, T> {
-    final Publisher<? extends T> source;
     final Publisher<U> other;
-    public OperatorSkipUntil(Publisher<? extends T> source, Publisher<U> other) {
-        this.source = source;
+    public OperatorSkipUntil(Publisher<U> other) {
         this.other = other;
     }
     
