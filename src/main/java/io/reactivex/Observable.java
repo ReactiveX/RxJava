@@ -251,7 +251,10 @@ public class Observable<T> implements Publisher<T> {
         if (bufferSize <= 0) {
             throw new IllegalArgumentException("bufferSize > 0 required but it was " + bufferSize);
         }
-        
+        if (onSubscribe instanceof PublisherScalarSource) {
+            PublisherScalarSource<T> scalar = (PublisherScalarSource<T>) onSubscribe;
+            return create(scalar.flatMap(mapper));
+        }
         return lift(new OperatorFlatMap<>(mapper, delayErrors, maxConcurrency, bufferSize));
     }
     
@@ -432,18 +435,25 @@ public class Observable<T> implements Publisher<T> {
     }
     
     public final Observable<T> observeOn(Scheduler scheduler, boolean delayError, int bufferSize) {
-        // TODO implement
-        throw new UnsupportedOperationException();
+        Objects.requireNonNull(scheduler);
+        if (bufferSize <= 0) {
+            throw new IllegalArgumentException("bufferSize > 0 required but it was " + bufferSize);
+        }
+        return lift(new OperatorObserveOn<>(scheduler, delayError, bufferSize));
     }
     
     public final Observable<T> subscribeOn(Scheduler scheduler) {
-        // TODO implement
-        throw new UnsupportedOperationException();
+        return subscribeOn(scheduler, true);
+    }
+    
+    public final Observable<T> subscribeOn(Scheduler scheduler, boolean requestOn) {
+        Objects.requireNonNull(scheduler);
+        return create(new PublisherSubscribeOn<>(this, scheduler, requestOn));
     }
     
     public final Observable<T> unsubscribeOn(Scheduler scheduler) {
-        // TODO implement
-        throw new UnsupportedOperationException();
+        Objects.requireNonNull(scheduler);
+        return lift(new OperatorUnsubscribeOn<>(scheduler));
     }
     
     public final Observable<T> cache() {
@@ -473,6 +483,7 @@ public class Observable<T> implements Publisher<T> {
         if (bufferSize <= 0) {
             throw new IllegalArgumentException("bufferSize > 0 required but it was " + bufferSize);
         }
+        Objects.requireNonNull(selector);
         return OperatorPublish.create(this, selector, bufferSize);
     }
 
@@ -481,10 +492,12 @@ public class Observable<T> implements Publisher<T> {
     }
 
     public final <R> Observable<R> replay(Function<? super Observable<T>, ? extends Observable<R>> selector) {
+        Objects.requireNonNull(selector);
         return OperatorReplay.multicastSelector(this::replay, selector);
     }
     
     public final <R> Observable<R> replay(Function<? super Observable<T>, ? extends Observable<R>> selector, final int bufferSize) {
+        Objects.requireNonNull(selector);
         return OperatorReplay.multicastSelector(() -> replay(bufferSize), selector);
     }
     
@@ -496,6 +509,7 @@ public class Observable<T> implements Publisher<T> {
         if (bufferSize < 0) {
             throw new IllegalArgumentException("bufferSize < 0");
         }
+        Objects.requireNonNull(selector);
         return OperatorReplay.multicastSelector(() -> replay(bufferSize, time, unit, scheduler), selector);
     }
 
