@@ -92,8 +92,9 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
      * @param source
      * @return
      */
+    // TODO javac 1.8 fails with ambiguity error if this method is called create(), works properly
     @SuppressWarnings("unchecked")
-    public static <T> ConnectableObservable<T> create(Observable<? extends T> source) {
+    public static <T> ConnectableObservable<T> createFrom(Observable<? extends T> source) {
         return create(source, DEFAULT_UNBOUNDED_FACTORY);
     }
     
@@ -106,7 +107,7 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
     public static <T> ConnectableObservable<T> create(Observable<? extends T> source, 
             final int bufferSize) {
         if (bufferSize == Integer.MAX_VALUE) {
-            return create(source);
+            return createFrom(source);
         }
         return create(source, () -> new SizeBoundReplayBuffer<>(bufferSize));
     }

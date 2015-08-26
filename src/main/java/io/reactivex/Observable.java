@@ -477,7 +477,7 @@ public class Observable<T> implements Publisher<T> {
     }
 
     public final ConnectableObservable<T> replay() {
-        return OperatorReplay.create(this);
+        return OperatorReplay.createFrom(this);
     }
 
     public final <R> Observable<R> replay(Function<? super Observable<T>, ? extends Observable<R>> selector) {
@@ -547,5 +547,4 @@ public class Observable<T> implements Publisher<T> {
     public final ConnectableObservable<T> replay(final Scheduler scheduler) {
         return OperatorReplay.observeOn(replay(), scheduler);
     }
-
 }
