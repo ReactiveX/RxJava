@@ -545,6 +545,49 @@ public class Observable<T> implements Publisher<T> {
     }
 
     public final ConnectableObservable<T> replay(final Scheduler scheduler) {
+        Objects.requireNonNull(scheduler);
         return OperatorReplay.observeOn(replay(), scheduler);
+    }
+    
+    public final Observable<Boolean> any(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate);
+        return lift(new OperatorAny<>(predicate));
+    }
+    
+    public final Observable<Boolean> all(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate);
+        return lift(new OperatorAny<>(predicate));
+    }
+    
+    public final Observable<Long> count() {
+        return lift(OperatorCount.instance());
+    }
+    
+    public final Observable<T> elementAt(long index) {
+        if (index < 0) {
+            throw new IllegalArgumentException("index >= 0 required but it was " + index);
+        }
+        return lift(new OperatorElementAt<>(index, null));
+    }
+
+    public final Observable<T> elementAt(long index, T defaultValue) {
+        if (index < 0) {
+            throw new IllegalArgumentException("index >= 0 required but it was " + index);
+        }
+        Objects.requireNonNull(defaultValue);
+        return lift(new OperatorElementAt<>(index, defaultValue));
+    }
+    
+    public final Observable<Boolean> isEmpty() {
+        return any(v -> true);
+    }
+    
+    public final Observable<T> single() {
+        return lift(OperatorSingle.instanceNoDefault());
+    }
+    
+    public final Observable<T> single(T defaultValue) {
+        Objects.requireNonNull(defaultValue);
+        return lift(new OperatorSingle<>(defaultValue));
     }
 }
