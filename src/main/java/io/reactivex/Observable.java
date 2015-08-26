@@ -38,12 +38,12 @@ public class Observable<T> implements Publisher<T> {
     }
     
     public static <T> Observable<T> create(Publisher<T> onSubscribe) {
+        Objects.requireNonNull(onSubscribe);
         onSubscribe = RxJavaPlugins.onCreate(onSubscribe);
         return new Observable<>(onSubscribe);
     }
     
     private void subscribeActual(Subscriber<? super T> s) {
-        Objects.requireNonNull(s);
         try {
             s = RxJavaPlugins.onSubscribe(s);
             
@@ -61,16 +61,19 @@ public class Observable<T> implements Publisher<T> {
     // TODO decide if safe subscription or unsafe should be the default
     @Override
     public final void subscribe(Subscriber<? super T> s) {
+        Objects.requireNonNull(s);
         subscribeActual(s);
     }
     
     // TODO decide if safe subscription or unsafe should be the default
     public final void unsafeSubscribe(Subscriber<? super T> s) {
+        Objects.requireNonNull(s);
         subscribeActual(s);
     }
     
     // TODO decide if safe subscription or unsafe should be the default
     public final void safeSubscribe(Subscriber<? super T> s) {
+        Objects.requireNonNull(s);
         if (s instanceof SafeSubscriber) {
             subscribeActual(s);
         } else {
@@ -90,6 +93,7 @@ public class Observable<T> implements Publisher<T> {
     }
     
     public final <R> Observable<R> lift(Operator<? extends R, ? super T> lifter) {
+        Objects.requireNonNull(lifter);
         return create(su -> {
             try {
                 Subscriber<? super T> st = lifter.apply(su);
@@ -146,10 +150,12 @@ public class Observable<T> implements Publisher<T> {
     }
     
     public static <T> Observable<T> error(Throwable e) {
+        Objects.requireNonNull(e);
         return error(() -> e);
     }
     
     public static <T> Observable<T> error(Supplier<? extends Throwable> errorSupplier) {
+        Objects.requireNonNull(errorSupplier);
         return create(new PublisherErrorSource<>(errorSupplier));
     }
     
@@ -166,7 +172,7 @@ public class Observable<T> implements Publisher<T> {
         return create(new PublisherScalarAsyncSource<>(supplier));
     }
     
-    public Observable<T> asObservable() {
+    public final Observable<T> asObservable() {
         return create(s -> this.subscribe(s));
     }
     
@@ -183,14 +189,17 @@ public class Observable<T> implements Publisher<T> {
     }
     
     public static <T> Observable<T> fromIterable(Iterable<? extends T> source) {
+        Objects.requireNonNull(source);
         return create(new PublisherIterableSource<>(source));
     }
     
     public static <T> Observable<T> fromStream(Stream<? extends T> stream) {
+        Objects.requireNonNull(stream);
         return create(new PublisherStreamSource<>(stream));
     }
     
     public static <T> Observable<T> fromFuture(CompletableFuture<? extends T> future) {
+        Objects.requireNonNull(future);
         return create(new PublisherCompletableFutureSource<>(future));
     }
     
@@ -210,4 +219,92 @@ public class Observable<T> implements Publisher<T> {
     public static <T> Observable<T> defer(Supplier<? extends Publisher<? extends T>> supplier) {
         return create(new PublisherDefer<>(supplier));
     }
+    
+    public final <R> Observable<R> map(Function<? super T, ? extends R> mapper) {
+        return lift(new OperatorMap<>(mapper));
+    }
+    
+    public final <R> Observable<R> flatMap(Function<? super T, ? extends Publisher<? extends R>> mapper) {
+        return flatMap(mapper, false, bufferSize(), bufferSize());
+    }
+    
+    public final <R> Observable<R> flatMap(Function<? super T, ? extends Publisher<? extends R>> mapper, int maxConcurrency) {
+        return flatMap(mapper, false, maxConcurrency, bufferSize());
+    }
+
+    public final <R> Observable<R> flatMap(Function<? super T, ? extends Publisher<? extends R>> mapper, boolean delayErrors) {
+        return flatMap(mapper, delayErrors, bufferSize(), bufferSize());
+    }
+    
+    public final <R> Observable<R> flatMap(Function<? super T, ? extends Publisher<? extends R>> mapper, boolean delayErrors, int maxConcurrency) {
+        return flatMap(mapper, delayErrors, maxConcurrency, bufferSize());
+    }
+    
+    public final <R> Observable<R> flatMap(Function<? super T, ? extends Publisher<? extends R>> mapper, 
+            boolean delayErrors, int maxConcurrency, int bufferSize) {
+        Objects.requireNonNull(mapper);
+        if (maxConcurrency <= 0) {
+            throw new IllegalArgumentException("maxConcurrency > 0 required but it was " + maxConcurrency);
+        }
+        if (bufferSize <= 0) {
+            throw new IllegalArgumentException("bufferSize > 0 required but it was " + bufferSize);
+        }
+        
+        return lift(new OperatorFlatMap<>(mapper, delayErrors, maxConcurrency, bufferSize));
+    }
+    
+    @SafeVarargs
+    public static <T> Observable<T> merge(Publisher<? extends T>... sources) {
+        return fromArray(sources).flatMap(v -> v, sources.length);
+    }
+    
+    public static <T> Observable<T> merge(Iterable<? extends Publisher<? extends T>> sources) {
+        return fromIterable(sources).flatMap(v -> v);
+    }
+    
+    @SafeVarargs
+    public static <T> Observable<T> merge(int maxConcurrency, Publisher<? extends T>... sources) {
+        return fromArray(sources).flatMap(v -> v, maxConcurrency);
+    }
+    
+    public static <T> Observable<T> merge(int maxConcurrency, Iterable<? extends Publisher<? extends T>> sources) {
+        return fromIterable(sources).flatMap(v -> v, maxConcurrency);
+    }
+
+    @SafeVarargs
+    public static <T> Observable<T> merge(int maxConcurrency, int bufferSize, Publisher<? extends T>... sources) {
+        return fromArray(sources).flatMap(v -> v, false, maxConcurrency, bufferSize);
+    }
+    
+    public static <T> Observable<T> merge(int maxConcurrency, int bufferSize, Iterable<? extends Publisher<? extends T>> sources) {
+        return fromIterable(sources).flatMap(v -> v, false, maxConcurrency, bufferSize);
+    }
+
+    @SafeVarargs
+    public static <T> Observable<T> mergeDelayError(Publisher<? extends T>... sources) {
+        return fromArray(sources).flatMap(v -> v, true, sources.length);
+    }
+    
+    public static <T> Observable<T> mergeDelayError(boolean delayErrors, Iterable<? extends Publisher<? extends T>> sources) {
+        return fromIterable(sources).flatMap(v -> v, true);
+    }
+    
+    @SafeVarargs
+    public static <T> Observable<T> mergeDelayError(int maxConcurrency, Publisher<? extends T>... sources) {
+        return fromArray(sources).flatMap(v -> v, true, maxConcurrency);
+    }
+    
+    public static <T> Observable<T> mergeDelayError(int maxConcurrency, Iterable<? extends Publisher<? extends T>> sources) {
+        return fromIterable(sources).flatMap(v -> v, true, maxConcurrency);
+    }
+
+    @SafeVarargs
+    public static <T> Observable<T> mergeDelayError(int maxConcurrency, int bufferSize, Publisher<? extends T>... sources) {
+        return fromArray(sources).flatMap(v -> v, true, maxConcurrency, bufferSize);
+    }
+    
+    public static <T> Observable<T> mergeDelayError(int maxConcurrency, int bufferSize, Iterable<? extends Publisher<? extends T>> sources) {
+        return fromIterable(sources).flatMap(v -> v, true, maxConcurrency, bufferSize);
+    }
+
 }
