@@ -14,12 +14,22 @@ package io.reactivex;
 
 
 import java.util.Objects;
+import java.util.concurrent.*;
 import java.util.function.*;
+import java.util.stream.Stream;
 
 import org.reactivestreams.*;
 
+import io.reactivex.internal.operators.*;
+import io.reactivex.internal.subscriptions.EmptySubscription;
+
 public class Observable<T> implements Publisher<T> {
     final Publisher<T> onSubscribe;
+    
+    static final int BUFFER_SIZE;
+    static {
+        BUFFER_SIZE = Math.max(16, Integer.getInteger("rx2.buffer-size", 128));
+    }
     
     protected Observable(Publisher<T> onSubscribe) {
         this.onSubscribe = onSubscribe;
@@ -52,6 +62,7 @@ public class Observable<T> implements Publisher<T> {
      * @param <Downstream> the value type of the downstream
      * @param <Upstream> the value type of the upstream
      */
+    @FunctionalInterface
     public interface Operator<Downstream, Upstream> extends Function<Subscriber<? super Downstream>, Subscriber<? super Upstream>> {
         
     }
@@ -93,5 +104,87 @@ public class Observable<T> implements Publisher<T> {
         Objects.requireNonNull(publisher);
         
         return create(s -> publisher.subscribe(s)); // javac fails to compile publisher::subscribe, Eclipse is just fine
+    }
+    
+    public static int bufferSize() {
+        return BUFFER_SIZE;
+    }
+    
+    public static <T> Observable<T> just(T value) {
+        Objects.requireNonNull(value);
+        return create(new PublisherScalarSource<>(value));
+    }
+    
+    static final Observable<Object> EMPTY = create(PublisherEmptySource.INSTANCE);
+    
+    @SuppressWarnings("unchecked")
+    public static <T> Observable<T> empty() {
+        return (Observable<T>)EMPTY;
+    }
+    
+    public static <T> Observable<T> error(Throwable e) {
+        return error(() -> e);
+    }
+    
+    public static <T> Observable<T> error(Supplier<? extends Throwable> errorSupplier) {
+        return create(new PublisherErrorSource<>(errorSupplier));
+    }
+    
+    static final Observable<Object> NEVER = create(s -> s.onSubscribe(EmptySubscription.INSTANCE));
+    
+    @SuppressWarnings("unchecked")
+    public static <T> Observable<T> never() {
+        return (Observable<T>)NEVER;
+    }
+    
+    // TODO match naming with RxJava 1.x
+    public static <T> Observable<T> fromCallable(Callable<? extends T> supplier) {
+        Objects.requireNonNull(supplier);
+        return create(new PublisherScalarAsyncSource<>(supplier));
+    }
+    
+    public Observable<T> asObservable() {
+        return create(s -> this.subscribe(s));
+    }
+    
+    @SafeVarargs
+    public static <T> Observable<T> fromArray(T... values) {
+        Objects.requireNonNull(values);
+        if (values.length == 0) {
+            return empty();
+        } else
+        if (values.length == 1) {
+            return just(values[0]);
+        }
+        return create(new PublisherArraySource<>(values));
+    }
+    
+    public static <T> Observable<T> fromIterable(Iterable<? extends T> source) {
+        return create(new PublisherIterableSource<>(source));
+    }
+    
+    public static <T> Observable<T> fromStream(Stream<? extends T> stream) {
+        return create(new PublisherStreamSource<>(stream));
+    }
+    
+    public static <T> Observable<T> fromFuture(CompletableFuture<? extends T> future) {
+        return create(new PublisherCompletableFutureSource<>(future));
+    }
+    
+    public static Observable<Integer> range(int start, int count) {
+        if (count == 0) {
+            return empty();
+        } else
+        if (count == 1) {
+            return just(start);
+        }
+        if (start + (long)count > Integer.MAX_VALUE) {
+            throw new IllegalArgumentException("Integer overflow");
+        }
+        return create(new PublisherRangeSource(start, count));
+    }
+    
+    public static <T> Observable<T> defer(Supplier<? extends Publisher<? extends T>> supplier) {
+        return create(new PublisherDefer<>(supplier));
     }
 }
