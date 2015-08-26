@@ -307,7 +307,7 @@ public class Observable<T> implements Publisher<T> {
         return fromIterable(sources).flatMap(v -> v, true, maxConcurrency, bufferSize);
     }
 
-    public Observable<T> take(long n) {
+    public final Observable<T> take(long n) {
         if (n < 0) {
             throw new IllegalArgumentException("n >= required but it was " + n);
         } else
@@ -317,15 +317,17 @@ public class Observable<T> implements Publisher<T> {
         return lift(new OperatorTake<>(n));
     }
     
-    public <U> Observable<T> takeUntil(Publisher<U> other) {
+    public final <U> Observable<T> takeUntil(Publisher<U> other) {
+        Objects.requireNonNull(other);
         return lift(new OperatorTakeUntil<>(other));
     }
     
-    public Observable<T> takeUntil(Predicate<? super T> predicate) {
+    public final Observable<T> takeUntil(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate);
         return lift(new OperatorTakeUntilPredicate<>(predicate));
     }
     
-    public Observable<T> takeLast(int n) {
+    public final Observable<T> takeLast(int n) {
         if (n < 0) {
             throw new IllegalArgumentException("n >= required but it was " + n);
         } else
@@ -338,7 +340,42 @@ public class Observable<T> implements Publisher<T> {
         return lift(new OperatorTakeLast<>(n));
     }
     
-    public Observable<T> ignoreElements() {
+    public final Observable<T> ignoreElements() {
         return lift(OperatorIgnoreElements.instance());
+    }
+    
+    public final Observable<T> skip(long n) {
+        if (n < 0) {
+            throw new IllegalArgumentException("n >= 0 required but it was " + n);
+        } else
+        if (n == 0) {
+            return this;
+        }
+        return lift(new OperatorSkip<>(n));
+    }
+    
+    public final Observable<T> skipLast(int n) {
+        if (n < 0) {
+            throw new IllegalArgumentException("n >= 0 required but it was " + n);
+        } else
+        if (n == 0) {
+            return this;
+        }
+        return lift(new OperatorSkipLast<>(n));
+    }
+    
+    public final Observable<T> skipWhile(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate);
+        return lift(new OperatorSkipWhile<>(predicate));
+    }
+    
+    public final Observable<T> skipUntil(Publisher<? extends T> other) {
+        Objects.requireNonNull(other);
+        return lift(new OperatorSkipUntil<>(other));
+    }
+    
+    public final Observable<T> filter(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate);
+        return lift(new OperatorFilter<>(predicate));
     }
 }
