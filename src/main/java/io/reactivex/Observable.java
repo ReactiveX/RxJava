@@ -25,7 +25,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.operators.*;
 import io.reactivex.internal.subscribers.*;
 import io.reactivex.internal.subscriptions.EmptySubscription;
-import io.reactivex.observables.ConnectableObservable;
+import io.reactivex.observables.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subscribers.SafeSubscriber;
@@ -891,5 +891,35 @@ public class Observable<T> implements Publisher<T> {
     
     public final Observable<T> onBackpressureLatest() {
         return lift(OperatorOnBackpressureLatest.instance());
+    }
+    
+    public final <K> Observable<GroupedObservable<T, K>> groupBy(Function<? super T, ? extends K> keySelector) {
+        return groupBy(keySelector, v -> v, false, bufferSize());
+    }
+
+    public final <K> Observable<GroupedObservable<T, K>> groupBy(Function<? super T, ? extends K> keySelector, boolean delayError) {
+        return groupBy(keySelector, v -> v, delayError, bufferSize());
+    }
+
+    public final <K, V> Observable<GroupedObservable<V, K>> groupBy(Function<? super T, ? extends K> keySelector, 
+            Function<? super T, ? extends V> valueSelector) {
+        return groupBy(keySelector, valueSelector, false, bufferSize());
+    }
+
+    public final <K, V> Observable<GroupedObservable<V, K>> groupBy(Function<? super T, ? extends K> keySelector, 
+            Function<? super T, ? extends V> valueSelector, boolean delayError) {
+        return groupBy(keySelector, valueSelector, false, bufferSize());
+    }
+
+    public final <K, V> Observable<GroupedObservable<V, K>> groupBy(Function<? super T, ? extends K> keySelector, 
+            Function<? super T, ? extends V> valueSelector, 
+            boolean delayError, int bufferSize) {
+        Objects.requireNonNull(keySelector);
+        Objects.requireNonNull(valueSelector);
+        if (bufferSize <= 0) {
+            throw new IllegalArgumentException("bufferSize > 0 required but it was " + bufferSize);
+        }
+        
+        return lift(new OperatorGroupBy<>(keySelector, valueSelector, bufferSize, delayError));
     }
 }
