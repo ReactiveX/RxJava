@@ -100,7 +100,7 @@ public final class SubscriptionArbiter extends AtomicInteger implements Subscrip
             }
             requested = u;
         }, () -> {
-            BackpressureHelper.add(MISSED_REQUESTED, this, n);
+            BackpressureHelper.add(MISSED_PRODUCED, this, n);
         }, this::drain);
     }
     
