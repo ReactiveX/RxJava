@@ -803,6 +803,61 @@ public class Observable<T> implements Publisher<T> {
             throw new IllegalArgumentException("times >= 0 required but it was " + times);
         }
         Objects.requireNonNull(predicate);
+        
         return create(new PublisherRetryPredicate<>(this, times, predicate));
+    }
+
+    public static Observable<Long> interval(long delay, TimeUnit unit) {
+        return interval(delay, unit, Schedulers.computation());
+    }
+
+    public static Observable<Long> interval(long delay, TimeUnit unit, Scheduler scheduler) {
+        if (delay < 0) {
+            delay = 0L;
+        }
+        Objects.requireNonNull(unit);
+        Objects.requireNonNull(scheduler);
+        
+        return create(new PublisherIntervalOnceSource(delay, unit, scheduler));
+    }
+
+    public static Observable<Long> interval(long initialDelay, long period, TimeUnit unit) {
+        return interval(initialDelay, period, unit, Schedulers.computation());
+    }
+    
+    public static Observable<Long> interval(long initialDelay, long period, TimeUnit unit, Scheduler scheduler) {
+        if (initialDelay < 0) {
+            initialDelay = 0L;
+        }
+        if (period < 0) {
+            period = 0L;
+        }
+        Objects.requireNonNull(unit);
+        Objects.requireNonNull(scheduler);
+        
+        return create(new PublisherIntervalSource(initialDelay, period, unit, scheduler));
+    }
+
+    public static Observable<Long> intervalRange(long start, long count, long initialDelay, long period, TimeUnit unit) {
+        return intervalRange(start, count, initialDelay, period, unit, Schedulers.computation());
+    }
+    
+    public static Observable<Long> intervalRange(long start, long count, long initialDelay, long period, TimeUnit unit, Scheduler scheduler) {
+        
+        long end = start + (count - 1);
+        if (end < 0) {
+            throw new IllegalArgumentException("Overflow! start + count is bigger than Long.MAX_VALUE");
+        }
+        
+        if (initialDelay < 0) {
+            initialDelay = 0L;
+        }
+        if (period < 0) {
+            period = 0L;
+        }
+        Objects.requireNonNull(unit);
+        Objects.requireNonNull(scheduler);
+        
+        return create(new PublisherIntervalRangeSource(start, end, initialDelay, period, unit, scheduler));
     }
 }
