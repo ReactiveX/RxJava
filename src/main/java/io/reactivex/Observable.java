@@ -860,4 +860,36 @@ public class Observable<T> implements Publisher<T> {
         
         return create(new PublisherIntervalRangeSource(start, end, initialDelay, period, unit, scheduler));
     }
+    
+    public final Observable<T> onBackpressureDrop() {
+        return lift(OperatorOnBackpressureDrop.instance());
+    }
+    
+    public final Observable<T> onBackpressureDrop(Consumer<? super T> onDrop) {
+        return lift(new OperatorOnBackpressureDrop<>(onDrop));
+    }
+    
+    public final Observable<T> onBackpressureBuffer() {
+        return onBackpressureBuffer(bufferSize(), false, true);
+    }
+    
+    public final Observable<T> onBackpressureBuffer(int bufferSize) {
+        return onBackpressureBuffer(bufferSize, false, false);
+    }
+    
+    public final Observable<T> onBackpressureBuffer(boolean delayError) {
+        return onBackpressureBuffer(bufferSize(), true, true);
+    }
+    
+    public final Observable<T> onBackpressureBuffer(int bufferSize, boolean delayError) {
+        return onBackpressureBuffer(bufferSize, true, false);
+    }
+    
+    public final Observable<T> onBackpressureBuffer(int bufferSize, boolean delayError, boolean unbounded) {
+        return lift(new OperatorOnBackpressureBuffer<>(bufferSize, unbounded, delayError));
+    }
+    
+    public final Observable<T> onBackpressureLatest() {
+        return lift(OperatorOnBackpressureLatest.instance());
+    }
 }
