@@ -15,12 +15,15 @@ package io.reactivex;
 
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.*;
 import java.util.stream.Stream;
 
 import org.reactivestreams.*;
 
+import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.operators.*;
+import io.reactivex.internal.subscribers.*;
 import io.reactivex.internal.subscriptions.EmptySubscription;
 import io.reactivex.observables.ConnectableObservable;
 import io.reactivex.plugins.RxJavaPlugins;
@@ -672,5 +675,91 @@ public class Observable<T> implements Publisher<T> {
     
     public final Observable<T> endWith(Iterable<? extends T> values) {
         return concat(this, fromIterable(values));
+    }
+    
+    public final Disposable subscribe() {
+        return subscribe(v -> { }, RxJavaPlugins::onError, () -> { }, s -> s.request(Long.MAX_VALUE));
+    }
+    
+    public final Disposable subscribe(Consumer<? super T> onNext) {
+        return subscribe(onNext, RxJavaPlugins::onError, () -> { }, s -> s.request(Long.MAX_VALUE));
+    }
+
+    public final Disposable forEach(Consumer<? super T> onNext) {
+        return subscribe(onNext);
+    }
+    
+    public final Disposable forEachWhile(Predicate<? super T> onNext) {
+        return forEachWhile(onNext, RxJavaPlugins::onError, () -> { });
+    }
+
+    public final Disposable forEachWhile(Predicate<? super T> onNext, Consumer<? super Throwable> onError) {
+        return forEachWhile(onNext, onError, () -> { });
+    }
+
+    public final Disposable forEachWhile(Predicate<? super T> onNext, Consumer<? super Throwable> onError,
+            Runnable onComplete) {
+        Objects.requireNonNull(onNext);
+        Objects.requireNonNull(onError);
+        Objects.requireNonNull(onComplete);
+        
+        AtomicReference<Subscription> subscription = new AtomicReference<>();
+        return subscribe(v -> {
+            if (!onNext.test(v)) {
+                subscription.get().cancel();
+                onComplete.run();
+            }
+        }, onError, onComplete, s -> {
+            subscription.lazySet(s);
+            s.request(Long.MAX_VALUE);
+        });
+    }
+
+    public final Disposable subscribe(Consumer<? super T> onNext, Consumer<? super Throwable> onError) {
+        return subscribe(onNext, onError, () -> { }, s -> s.request(Long.MAX_VALUE));
+    }
+    
+    public final Disposable subscribe(Consumer<? super T> onNext, Consumer<? super Throwable> onError, 
+            Runnable onComplete) {
+        return subscribe(onNext, onError, onComplete, s -> s.request(Long.MAX_VALUE));
+    }
+    
+    public final Disposable subscribe(Consumer<? super T> onNext, Consumer<? super Throwable> onError, 
+            Runnable onComplete, Consumer<? super Subscription> onSubscribe) {
+        Objects.requireNonNull(onNext);
+        Objects.requireNonNull(onError);
+        Objects.requireNonNull(onComplete);
+        Objects.requireNonNull(onSubscribe);
+        
+        LambdaSubscriber<T> ls = new LambdaSubscriber<>(onNext, onError, onComplete, onSubscribe);
+        
+        unsafeSubscribe(ls);
+        
+        return ls;
+    }
+    
+    public final Observable<T> doOnSubscribe(Consumer<? super Subscription> onSubscribe) {
+        return doOnLifecycle(onSubscribe, n -> { }, () -> { });
+    }
+    
+    public final Observable<T> doOnRequest(LongConsumer onRequest) {
+        return doOnLifecycle(s -> { }, onRequest, () -> { });
+    }
+    
+    public final Observable<T> doOnCancel(Runnable onCancel) {
+        return doOnLifecycle(s -> { }, n -> { }, onCancel);
+    }
+    
+    /**
+     *
+     * @deprecated use {@link #doOnCancel(Runnable)} instead
+     */
+    @Deprecated
+    public final Observable<T> doOnUnsubscribe(Runnable onUnsubscribe) {
+        return doOnCancel(onUnsubscribe);
+    }
+    
+    public final Observable<T> doOnLifecycle(Consumer<? super Subscription> onSubscribe, LongConsumer onRequest, Runnable onCancel) {
+        return lift(s -> new SubscriptionLambdaSubscriber<>(s, onSubscribe, onRequest, onCancel));
     }
 }

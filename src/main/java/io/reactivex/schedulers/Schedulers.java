@@ -38,6 +38,8 @@ public final class Schedulers {
     
     static final Scheduler TRAMPOLINE;
     
+    static final Scheduler NEW_THREAD;
+    
     static {
         // TODO plugins and stuff
         SINGLE = RxJavaPlugins.initSingleScheduler(new SingleScheduler());
@@ -47,6 +49,8 @@ public final class Schedulers {
         IO = RxJavaPlugins.initIOScheduler(new IOScheduler());
         
         TRAMPOLINE = TrampolineScheduler.instance();
+        
+        NEW_THREAD = NewThreadScheduler.instance();
     }
     
     public static Scheduler computation() {
@@ -65,6 +69,10 @@ public final class Schedulers {
         return TRAMPOLINE;
     }
 
+    public static Scheduler newThread() {
+        return NEW_THREAD;
+    }
+    
     /*
      * TODO This is a deliberately single threaded scheduler.
      * I can see a few uses for such scheduler:
