@@ -202,6 +202,11 @@ public final class Notification<T> {
             return false;
         if (hasThrowable() && !getThrowable().equals(notification.getThrowable()))
             return false;
+        if(!hasValue() && !hasThrowable() && notification.hasValue())
+        	return false;
+        if(!hasValue() && !hasThrowable() && notification.hasThrowable())
+        	return false;
+        
         return true;
     }
 }
