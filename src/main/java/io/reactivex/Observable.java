@@ -762,4 +762,47 @@ public class Observable<T> implements Publisher<T> {
     public final Observable<T> doOnLifecycle(Consumer<? super Subscription> onSubscribe, LongConsumer onRequest, Runnable onCancel) {
         return lift(s -> new SubscriptionLambdaSubscriber<>(s, onSubscribe, onRequest, onCancel));
     }
+    
+    public final Observable<T> repeat() {
+        return repeat(Long.MAX_VALUE);
+    }
+    
+    public final Observable<T> repeat(long times) {
+        if (times < 0) {
+            throw new IllegalArgumentException("times >= 0 required but it was " + times);
+        }
+        if (times == 0) {
+            return empty();
+        }
+        return create(new PublisherRepeat<>(this, times));
+    }
+    
+    public final Observable<T> repeatUntil(BooleanSupplier stop) {
+        return create(new PublisherRepeatUntil<>(this, stop));
+    }
+    
+    public final Observable<T> retry() {
+        return retry(Long.MAX_VALUE, e -> true);
+    }
+
+    public final Observable<T> retry(long times) {
+        return retry(times, e -> true);
+    }
+    
+    public final Observable<T> retryUntil(BooleanSupplier stop) {
+        return retry(Long.MAX_VALUE, e -> !stop.getAsBoolean());
+    }
+    
+    public final Observable<T> retry(Predicate<? super Throwable> predicate) {
+        return retry(Long.MAX_VALUE, predicate);
+    }
+    
+    // Retries at most times or until the predicate returns false, whichever happens first
+    public final Observable<T> retry(long times, Predicate<? super Throwable> predicate) {
+        if (times < 0) {
+            throw new IllegalArgumentException("times >= 0 required but it was " + times);
+        }
+        Objects.requireNonNull(predicate);
+        return create(new PublisherRetryPredicate<>(this, times, predicate));
+    }
 }
