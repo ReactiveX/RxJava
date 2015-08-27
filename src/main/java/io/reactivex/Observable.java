@@ -604,4 +604,73 @@ public class Observable<T> implements Publisher<T> {
         Objects.requireNonNull(defaultValue);
         return lift(new OperatorSingle<>(defaultValue));
     }
+    
+    public final Observable<T> mergeWith(Publisher<? extends T> other) {
+        return merge(this, other);
+    }
+    
+    public final <R> Observable<R> concatMap(Function<? super T, ? extends Publisher<? extends R>> mapper) {
+        return concatMap(mapper, 2);
+    }
+    
+    public final <R> Observable<R> concatMap(Function<? super T, ? extends Publisher<? extends R>> mapper, int prefetch) {
+        Objects.requireNonNull(mapper);
+        if (prefetch <= 0) {
+            throw new IllegalArgumentException("prefetch > 0 required but it was " + prefetch);
+        }
+        return lift(new ConcatMap<>(mapper, prefetch));
+    }
+    
+    public final Observable<T> concatWith(Publisher<? extends T> other) {
+        Objects.requireNonNull(other);
+        return concat(this, other);
+    }
+    
+    @SafeVarargs
+    public static <T> Observable<T> concat(Publisher<? extends T>... sources) {
+        Objects.requireNonNull(sources);
+        return fromArray(sources).concatMap(v -> v);
+    }
+    
+    public static <T> Observable<T> concat(Iterable<? extends Publisher<? extends T>> sources) {
+        Objects.requireNonNull(sources);
+        return fromIterable(sources).concatMap(v -> v);
+    }
+    
+    @SafeVarargs
+    public static <T> Observable<T> concat(int prefetch, Publisher<? extends T>... sources) {
+        Objects.requireNonNull(sources);
+        return fromArray(sources).concatMap(v -> v, prefetch);
+    }
+    
+    public static <T> Observable<T> concat(int prefetch, Iterable<? extends Publisher<? extends T>> sources) {
+        Objects.requireNonNull(sources);
+        return fromIterable(sources).concatMap(v -> v, prefetch);
+    }
+    
+    @SafeVarargs
+    public final Observable<T> startWith(T... values) {
+        Observable<T> fromArray = fromArray(values);
+        if (fromArray == empty()) {
+            return this;
+        }
+        return concat(fromArray, this);
+    }
+    
+    public final Observable<T> startWith(Iterable<? extends T> values) {
+        return concat(fromIterable(values), this);
+    }
+    
+    @SafeVarargs
+    public final Observable<T> endWith(T... values) {
+        Observable<T> fromArray = fromArray(values);
+        if (fromArray == empty()) {
+            return this;
+        }
+        return concat(this, fromArray);
+    }
+    
+    public final Observable<T> endWith(Iterable<? extends T> values) {
+        return concat(this, fromIterable(values));
+    }
 }
