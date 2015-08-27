@@ -22,6 +22,7 @@ import java.util.stream.Stream;
 import org.reactivestreams.*;
 
 import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.*;
 import io.reactivex.internal.operators.*;
 import io.reactivex.internal.subscribers.*;
 import io.reactivex.internal.subscriptions.EmptySubscription;
@@ -921,5 +922,96 @@ public class Observable<T> implements Publisher<T> {
         }
         
         return lift(new OperatorGroupBy<>(keySelector, valueSelector, bufferSize, delayError));
+    }
+    
+    
+    @SuppressWarnings("unchecked")
+    public static <T1, T2, R> Observable<R> zip(
+            Publisher<? extends T1> p1, Publisher<? extends T2> p2, 
+            BiFunction<? super T1, ? super T2, ? extends R> zipper) {
+        Function<Object[], R> f = a -> {
+            if (a.length != 2) {
+                throw new IllegalArgumentException("Array of size 2 expected but got " + a.length);
+            }
+            return ((BiFunction<Object, Object, R>)zipper).apply(a[0], a[1]);
+        };
+        return zipArray(f, false, bufferSize(), (Publisher<Object>)p1, (Publisher<Object>)p2);
+    }
+
+    public static <T1, T2, T3, R> Observable<R> zip(
+            Publisher<? extends T1> p1, Publisher<? extends T2> p2, Publisher<? extends T3> p3, 
+            Function3<? super T1, ? super T2, ? super T3, ? extends R> zipper) {
+        return zipArray(zipper, false, bufferSize(), p1, p2, p3);
+    }
+
+    public static <T1, T2, T3, T4, R> Observable<R> zip(
+            Publisher<? extends T1> p1, Publisher<? extends T2> p2, Publisher<? extends T3> p3,
+            Publisher<? extends T4> p4,
+            Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> zipper) {
+        return zipArray(zipper, false, bufferSize(), p1, p2, p3, p4);
+    }
+    
+    public static <T1, T2, T3, T4, T5, R> Observable<R> zip(
+            Publisher<? extends T1> p1, Publisher<? extends T2> p2, Publisher<? extends T3> p3,
+            Publisher<? extends T4> p4, Publisher<? extends T5> p5,
+            Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> zipper) {
+        return zipArray(zipper, false, bufferSize(), p1, p2, p3, p4, p5);
+    }
+
+    public static <T1, T2, T3, T4, T5, T6, R> Observable<R> zip(
+            Publisher<? extends T1> p1, Publisher<? extends T2> p2, Publisher<? extends T3> p3,
+            Publisher<? extends T4> p4, Publisher<? extends T5> p5, Publisher<? extends T6> p6,
+            Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> zipper) {
+        return zipArray(zipper, false, bufferSize(), p1, p2, p3, p4, p5, p6);
+    }
+
+    public static <T1, T2, T3, T4, T5, T6, T7, R> Observable<R> zip(
+            Publisher<? extends T1> p1, Publisher<? extends T2> p2, Publisher<? extends T3> p3,
+            Publisher<? extends T4> p4, Publisher<? extends T5> p5, Publisher<? extends T6> p6,
+            Publisher<? extends T7> p7,
+            Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> zipper) {
+        return zipArray(zipper, false, bufferSize(), p1, p2, p3, p4, p5, p6, p7);
+    }
+
+    public static <T1, T2, T3, T4, T5, T6, T7, T8, R> Observable<R> zip(
+            Publisher<? extends T1> p1, Publisher<? extends T2> p2, Publisher<? extends T3> p3,
+            Publisher<? extends T4> p4, Publisher<? extends T5> p5, Publisher<? extends T6> p6,
+            Publisher<? extends T7> p7, Publisher<? extends T8> p8,
+            Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> zipper) {
+        return zipArray(zipper, false, bufferSize(), p1, p2, p3, p4, p5, p6, p7, p8);
+    }
+
+    public static <T1, T2, T3, T4, T5, T6, T7, T8, T9, R> Observable<R> zip(
+            Publisher<? extends T1> p1, Publisher<? extends T2> p2, Publisher<? extends T3> p3,
+            Publisher<? extends T4> p4, Publisher<? extends T5> p5, Publisher<? extends T6> p6,
+            Publisher<? extends T7> p7, Publisher<? extends T8> p8, Publisher<? extends T9> p9,
+            Function9<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? super T9, ? extends R> zipper) {
+        return zipArray(zipper, false, bufferSize(), p1, p2, p3, p4, p5, p6, p7, p8, p9);
+    }
+
+    // TODO rest of the new zip overloads (got tired copy-pasting)
+    
+    @SafeVarargs
+    public static <T, R> Observable<R> zipArray(Function<? super Object[], ? extends R> zipper, 
+            boolean delayError, int bufferSize, Publisher<? extends T>... sources) {
+        if (sources.length == 0) {
+            return empty();
+        }
+        Objects.requireNonNull(zipper);
+        if (bufferSize <= 0) {
+            throw new IllegalArgumentException("bufferSize > 0 required but it was " + bufferSize);
+        }
+        return create(new PublisherZip<>(sources, null, zipper, bufferSize, delayError));
+    }
+    
+    public static <T, R> Observable<R> zipIterable(Function<? super Object[], ? extends R> zipper,
+            boolean delayError, int bufferSize, 
+            Iterable<? extends Publisher<? extends T>> sources) {
+        Objects.requireNonNull(zipper);
+        Objects.requireNonNull(sources);
+        if (bufferSize <= 0) {
+            throw new IllegalArgumentException("bufferSize > 0 required but it was " + bufferSize);
+        }
+        return create(new PublisherZip<>(null, sources, zipper, bufferSize, delayError));
     }
 }
