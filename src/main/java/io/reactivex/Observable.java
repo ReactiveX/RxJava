@@ -1412,4 +1412,89 @@ public class Observable<T> implements Publisher<T> {
         Observable<T> o = fromFuture(future, timeout, unit); 
         return o.subscribeOn(scheduler);
     }
+
+    public final Observable<T> skipLast(long time, TimeUnit unit) {
+        return skipLast(time, unit, Schedulers.trampoline(), false, bufferSize());
+    }
+    
+    public final Observable<T> skipLast(long time, TimeUnit unit, boolean delayError) {
+        return skipLast(time, unit, Schedulers.trampoline(), delayError, bufferSize());
+    }
+    
+    public final Observable<T> skipLast(long time, TimeUnit unit, Scheduler scheduler) {
+        return skipLast(time, unit, scheduler, false, bufferSize());
+    }
+    
+    public final Observable<T> skipLast(long time, TimeUnit unit, Scheduler scheduler, boolean delayError) {
+        return skipLast(time, unit, scheduler, delayError, bufferSize());
+    }
+    
+    public final Observable<T> skipLast(long time, TimeUnit unit, Scheduler scheduler, boolean delayError, int bufferSize) {
+        Objects.requireNonNull(unit);
+        Objects.requireNonNull(scheduler);
+        if (bufferSize <= 0) {
+            throw new IllegalArgumentException("bufferSize > 0 required but it was " + bufferSize);
+        }
+        return lift(new OperatorSkipLastTimed<>(time, unit, scheduler, bufferSize, delayError));
+    }
+    
+    public final Observable<T> takeLast(long time, TimeUnit unit) {
+        return takeLast(time, unit, Schedulers.trampoline(), false, bufferSize());
+    }
+
+    public final Observable<T> takeLast(long count, long time, TimeUnit unit) {
+        return takeLast(count, time, unit, Schedulers.trampoline(), false, bufferSize());
+    }
+
+    public final Observable<T> takeLast(long time, TimeUnit unit, boolean delayError) {
+        return takeLast(time, unit, Schedulers.trampoline(), delayError, bufferSize());
+    }
+    
+    public final Observable<T> takeLast(long time, TimeUnit unit, Scheduler scheduler) {
+        return takeLast(time, unit, scheduler, false, bufferSize());
+    }
+
+    public final Observable<T> takeLast(long count, long time, TimeUnit unit, Scheduler scheduler) {
+        return takeLast(count, time, unit, scheduler, false, bufferSize());
+    }
+
+    public final Observable<T> takeLast(long time, TimeUnit unit, Scheduler scheduler, boolean delayError) {
+        return takeLast(time, unit, scheduler, delayError, bufferSize());
+    }
+    
+    public final Observable<T> takeLast(long time, TimeUnit unit, Scheduler scheduler, boolean delayError, int bufferSize) {
+        return takeLast(Long.MAX_VALUE, time, unit, scheduler, delayError, bufferSize);
+    }
+    
+    public final Observable<T> takeLast(long count, long time, TimeUnit unit, Scheduler scheduler, boolean delayError, int bufferSize) {
+        Objects.requireNonNull(unit);
+        Objects.requireNonNull(scheduler);
+        if (bufferSize <= 0) {
+            throw new IllegalArgumentException("bufferSize > 0 required but it was " + bufferSize);
+        }
+        if (count < 0) {
+            throw new IllegalArgumentException("count >= 0 required but it was " + count);
+        }
+        return lift(new OperatorTakeLastTimed<>(count, time, unit, scheduler, bufferSize, delayError));
+    }
+    
+    public final Observable<List<T>> takeLastBuffer(int count) {
+        return takeLast(count).toList();
+    }
+    
+    public final Observable<List<T>> takeLastBuffer(int count, long time, TimeUnit unit) {
+        return takeLast(count, time, unit).toList();
+    }
+    
+    public final Observable<List<T>> takeLastBuffer(int count, long time, TimeUnit unit, Scheduler scheduler) {
+        return takeLast(count, time, unit, scheduler).toList();
+    }
+    
+    public final Observable<List<T>> takeLastBuffer(long time, TimeUnit unit) {
+        return takeLast(time, unit).toList();
+    }
+    
+    public final Observable<List<T>> takeLastBuffer(long time, TimeUnit unit, Scheduler scheduler) {
+        return takeLast(time, unit, scheduler).toList();
+    }
 }
