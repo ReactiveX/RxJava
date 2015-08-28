@@ -1368,4 +1368,12 @@ public class Observable<T> implements Publisher<T> {
         Objects.requireNonNull(sampler);
         return lift(new OperatorSamplePublisher<>(sampler));
     }
+    
+    public final Observable<T> switchIfEmpty(Publisher<? extends T> other) {
+        return lift(new OperatorSwitchIfEmpty<>(other));
+    }
+    
+    public final Observable<T> defaultIfEmpty(T value) {
+        return switchIfEmpty(just(value));
+    }
 }
