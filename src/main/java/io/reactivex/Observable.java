@@ -100,22 +100,8 @@ public class Observable<T> implements Publisher<T> {
     
     public final <R> Observable<R> lift(Operator<? extends R, ? super T> lifter) {
         Objects.requireNonNull(lifter);
-        return create(su -> {
-            try {
-                Subscriber<? super T> st = lifter.apply(su);
-                
-                st = RxJavaPlugins.onSubscribe(st);
-                
-                onSubscribe.subscribe(st);
-            } catch (NullPointerException e) {
-                throw e;
-            } catch (Throwable e) {
-                // TODO throw if fatal?
-                // can't call onError because no way to know if a Subscription has been set or not
-                // can't call onSubscribe because the call might have set a Subscription already
-                RxJavaPlugins.onError(e);
-            }
-        });
+        // using onSubscribe so the fusing has access to the underlying raw Publisher
+        return create(new PublisherLift<>(onSubscribe, lifter));
     }
     
     // TODO generics
@@ -1013,5 +999,12 @@ public class Observable<T> implements Publisher<T> {
             throw new IllegalArgumentException("bufferSize > 0 required but it was " + bufferSize);
         }
         return create(new PublisherZip<>(null, sources, zipper, bufferSize, delayError));
+    }
+    
+    public <U, R> Observable<R> withLatestFrom(Publisher<? extends U> other, BiFunction<? super T, ? super U, ? extends R> combiner) {
+        Objects.requireNonNull(other);
+        Objects.requireNonNull(combiner);
+        
+        return lift(new OperatorWithLatestFrom<>(combiner, other));
     }
 }
