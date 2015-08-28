@@ -18,6 +18,7 @@ package rx.internal.operators;
 
 import rx.Producer;
 import rx.Subscriber;
+import rx.exceptions.Exceptions;
 
 import java.util.Deque;
 import java.util.concurrent.atomic.AtomicLongFieldUpdater;
@@ -75,7 +76,7 @@ final class TakeLastQueueProducer<T> implements Producer {
                         notification.accept(subscriber, value);
                     }
                 } catch (Throwable e) {
-                    subscriber.onError(e);
+                    Exceptions.throwOrReport(e, subscriber);
                 } finally {
                     deque.clear();
                 }

@@ -19,7 +19,7 @@ import java.util.Queue;
 import java.util.concurrent.atomic.*;
 
 import rx.*;
-import rx.exceptions.MissingBackpressureException;
+import rx.exceptions.*;
 import rx.functions.*;
 import rx.internal.util.*;
 import rx.internal.util.unsafe.*;
@@ -561,7 +561,7 @@ public final class OperatorPublish<T> extends ConnectableObservable<T> {
                                     } catch (Throwable t) {
                                         // we bounce back exceptions and kick out the child subscriber
                                         ip.unsubscribe();
-                                        ip.child.onError(t);
+                                        Exceptions.throwOrReport(t, ip.child, value);
                                         continue;
                                     }
                                     // indicate this child has received 1 element

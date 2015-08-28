@@ -17,7 +17,7 @@ package rx.internal.operators;
 
 import rx.Observable.Operator;
 import rx.Subscriber;
-import rx.exceptions.OnErrorThrowable;
+import rx.exceptions.*;
 import rx.functions.Func1;
 
 /**
@@ -57,7 +57,7 @@ public final class OperatorFilter<T> implements Operator<T, T> {
                         request(1);
                     }
                 } catch (Throwable e) {
-                    child.onError(OnErrorThrowable.addValueAsLastCause(e, t));
+                    Exceptions.throwOrReport(e, child, t);
                 }
             }
 

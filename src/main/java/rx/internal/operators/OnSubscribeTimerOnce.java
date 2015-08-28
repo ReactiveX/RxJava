@@ -19,6 +19,7 @@ import java.util.concurrent.TimeUnit;
 import rx.Observable.OnSubscribe;
 import rx.Scheduler;
 import rx.Scheduler.Worker;
+import rx.exceptions.Exceptions;
 import rx.Subscriber;
 import rx.functions.Action0;
 
@@ -47,7 +48,7 @@ public final class OnSubscribeTimerOnce implements OnSubscribe<Long> {
                 try {
                     child.onNext(0L);
                 } catch (Throwable t) {
-                    child.onError(t);
+                    Exceptions.throwOrReport(t, child);
                     return;
                 }
                 child.onCompleted();

@@ -3,6 +3,7 @@ package rx.internal.operators;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import rx.Observable.Operator;
+import rx.exceptions.Exceptions;
 import rx.Producer;
 import rx.Subscriber;
 
@@ -150,7 +151,7 @@ public class OperatorTakeLastOne<T> implements Operator<T, T> {
                 try {
                     child.onNext(t);
                 } catch (Throwable e) {
-                    child.onError(e);
+                    Exceptions.throwOrReport(e, child);
                     return;
                 }
             }

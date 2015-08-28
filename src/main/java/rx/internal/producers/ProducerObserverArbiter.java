@@ -233,9 +233,7 @@ public final class ProducerObserverArbiter<T> implements Producer, Observer<T> {
                     try {
                         c.onNext(v);
                     } catch (Throwable ex) {
-                        Exceptions.throwIfFatal(ex);
-                        Throwable ex1 = OnErrorThrowable.addValueAsLastCause(ex, v);
-                        c.onError(ex1);
+                        Exceptions.throwOrReport(ex, c, v);
                         return;
                     }
                 }

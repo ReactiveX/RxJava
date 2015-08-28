@@ -17,6 +17,7 @@ package rx.internal.operators;
 
 import rx.Observable;
 import rx.Observable.Operator;
+import rx.exceptions.Exceptions;
 import rx.Subscriber;
 import rx.functions.Func1;
 import rx.observers.SerializedSubscriber;
@@ -71,7 +72,7 @@ public final class OperatorDelayWithSelector<T, V> implements Operator<T, T> {
 
                     }));
                 } catch (Throwable e) {
-                    onError(e);
+                    Exceptions.throwOrReport(e, this);
                 }
             }
 

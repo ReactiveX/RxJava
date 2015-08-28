@@ -18,11 +18,9 @@ package rx.internal.operators;
 import rx.Observable.Operator;
 import rx.Subscriber;
 import rx.exceptions.Exceptions;
-import rx.exceptions.OnErrorThrowable;
-import rx.functions.Func1;
-import rx.functions.Func2;
+import rx.functions.*;
 
-/**
+/**O
  * Returns an Observable that emits items emitted by the source Observable as long as a specified
  * condition is true.
  * <p>
@@ -60,8 +58,7 @@ public final class OperatorTakeWhile<T> implements Operator<T, T> {
                     isSelected = predicate.call(t, counter++);
                 } catch (Throwable e) {
                     done = true;
-                    Exceptions.throwIfFatal(e);
-                    subscriber.onError(OnErrorThrowable.addValueAsLastCause(e, t));
+                    Exceptions.throwOrReport(e, subscriber, t);
                     unsubscribe();
                     return;
                 }

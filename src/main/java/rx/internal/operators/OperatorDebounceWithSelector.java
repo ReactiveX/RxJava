@@ -17,6 +17,7 @@ package rx.internal.operators;
 
 import rx.Observable;
 import rx.Observable.Operator;
+import rx.exceptions.Exceptions;
 import rx.Subscriber;
 import rx.functions.Func1;
 import rx.internal.operators.OperatorDebounceWithTime.DebounceState;
@@ -59,7 +60,7 @@ public final class OperatorDebounceWithSelector<T, U> implements Operator<T, T> 
                 try {
                     debouncer = selector.call(t);
                 } catch (Throwable e) {
-                    onError(e);
+                    Exceptions.throwOrReport(e, this);
                     return;
                 }
                 

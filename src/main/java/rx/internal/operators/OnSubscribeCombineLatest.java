@@ -23,9 +23,9 @@ import java.util.concurrent.atomic.AtomicLongFieldUpdater;
 
 import rx.Observable;
 import rx.Observable.OnSubscribe;
+import rx.exceptions.*;
 import rx.Producer;
 import rx.Subscriber;
-import rx.exceptions.MissingBackpressureException;
 import rx.functions.FuncN;
 import rx.internal.util.RxRingBuffer;
 
@@ -202,7 +202,7 @@ public final class OnSubscribeCombineLatest<T, R> implements OnSubscribe<R> {
                     } catch (MissingBackpressureException e) {
                         onError(e);
                     } catch (Throwable e) {
-                        onError(e);
+                        Exceptions.throwOrReport(e, child);
                     }
                 }
             }

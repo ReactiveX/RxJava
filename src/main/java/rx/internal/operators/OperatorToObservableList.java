@@ -18,6 +18,7 @@ package rx.internal.operators;
 import java.util.*;
 
 import rx.Observable.Operator;
+import rx.exceptions.Exceptions;
 import rx.*;
 import rx.internal.producers.SingleDelayedProducer;
 
@@ -85,7 +86,7 @@ public final class OperatorToObservableList<T> implements Operator<List<T>, T> {
                          */
                         result = new ArrayList<T>(list);
                     } catch (Throwable t) {
-                        onError(t);
+                        Exceptions.throwOrReport(t, this);
                         return;
                     }
                     list = null;

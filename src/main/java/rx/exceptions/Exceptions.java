@@ -15,10 +15,9 @@
  */
 package rx.exceptions;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
+import rx.Observer;
 import rx.annotations.Experimental;
 
 /**
@@ -177,5 +176,29 @@ public final class Exceptions {
             throw new CompositeException(
                     "Multiple exceptions", exceptions);
         }
+    }
+    
+    /**
+     * Forwards a fatal exception or reports it along with the value
+     * caused it to the given Observer.
+     * @param t the exception
+     * @param o the observer to report to
+     * @param value the value that caused the exception
+     */
+    @Experimental
+    public static void throwOrReport(Throwable t, Observer<?> o, Object value) {
+        Exceptions.throwIfFatal(t);
+        o.onError(OnErrorThrowable.addValueAsLastCause(t, value));
+    }
+    /**
+     * Forwards a fatal exception or reports it to the given Observer.
+     * @param t the exception
+     * @param o the observer to report to
+     * @param value the value that caused the exception
+     */
+    @Experimental
+    public static void throwOrReport(Throwable t, Observer<?> o) {
+        Exceptions.throwIfFatal(t);
+        o.onError(t);
     }
 }

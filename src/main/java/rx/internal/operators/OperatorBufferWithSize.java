@@ -24,6 +24,7 @@ import rx.Observable;
 import rx.Observable.Operator;
 import rx.Producer;
 import rx.Subscriber;
+import rx.exceptions.Exceptions;
 
 /**
  * This operation takes
@@ -118,7 +119,7 @@ public final class OperatorBufferWithSize<T> implements Operator<List<T>, T> {
                         try {
                             child.onNext(oldBuffer);
                         } catch (Throwable t) {
-                            onError(t);
+                            Exceptions.throwOrReport(t, this);
                             return;
                         }
                     }
@@ -218,7 +219,7 @@ public final class OperatorBufferWithSize<T> implements Operator<List<T>, T> {
                         try {
                             child.onNext(chunk);
                         } catch (Throwable t) {
-                            onError(t);
+                            Exceptions.throwOrReport(t, this);
                             return;
                         }
                     }
