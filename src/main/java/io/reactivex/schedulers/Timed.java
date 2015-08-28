@@ -16,14 +16,19 @@ package io.reactivex.schedulers;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
-public final class Timestamped<T> {
+/**
+ * Holds onto a value along with time information.
+ *
+ * @param <T> the value type
+ */
+public final class Timed<T> {
     final T value;
-    final long timestamp;
+    final long time;
     final TimeUnit unit;
-    public Timestamped(T value, long timestamp, TimeUnit unit) {
+    public Timed(T value, long time, TimeUnit unit) {
         this.value = value;
-        this.timestamp = timestamp;
-        this.unit = unit;
+        this.time = time;
+        this.unit = Objects.requireNonNull(unit);
     }
     
     public T value() {
@@ -34,20 +39,20 @@ public final class Timestamped<T> {
         return unit;
     }
     
-    public long timestamp() {
-        return timestamp;
+    public long time() {
+        return time;
     }
     
-    public long timestamp(TimeUnit unit) {
-        return unit.convert(timestamp, this.unit);
+    public long time(TimeUnit unit) {
+        return unit.convert(time, this.unit);
     }
     
     @Override
     public boolean equals(Object other) {
-        if (other instanceof Timestamped) {
-            Timestamped<?> o = (Timestamped<?>) other;
+        if (other instanceof Timed) {
+            Timed<?> o = (Timed<?>) other;
             return Objects.equals(value, o.value)
-                    && timestamp == o.timestamp
+                    && time == o.time
                     && Objects.equals(unit, o.unit);
         }
         return false;
@@ -55,6 +60,6 @@ public final class Timestamped<T> {
     
     @Override
     public String toString() {
-        return "Timestamped[timestamp=" + timestamp + ", unit=" + unit + ", value=" + value + "]";
+        return "Timed[time=" + time + ", unit=" + unit + ", value=" + value + "]";
     }
 }

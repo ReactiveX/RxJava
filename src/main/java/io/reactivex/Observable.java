@@ -29,7 +29,7 @@ import io.reactivex.internal.subscriptions.EmptySubscription;
 import io.reactivex.observables.*;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.schedulers.*;
-import io.reactivex.subscribers.SafeSubscriber;
+import io.reactivex.subscribers.*;
 
 public class Observable<T> implements Publisher<T> {
     final Publisher<T> onSubscribe;
@@ -364,7 +364,7 @@ public class Observable<T> implements Publisher<T> {
         return lift(new OperatorSkipWhile<>(predicate));
     }
     
-    public final Observable<T> skipUntil(Publisher<? extends T> other) {
+    public final <U> Observable<T> skipUntil(Publisher<? extends U> other) {
         Objects.requireNonNull(other);
         return lift(new OperatorSkipUntil<>(other));
     }
@@ -1111,20 +1111,20 @@ public class Observable<T> implements Publisher<T> {
         return filter(clazz::isInstance).cast(clazz);
     }
 
-    public final Observable<Timestamped<T>> timestamp() {
+    public final Observable<Timed<T>> timestamp() {
         return timestamp(TimeUnit.MILLISECONDS, Schedulers.trampoline());
     }
 
-    public final Observable<Timestamped<T>> timestamp(Scheduler scheduler) {
+    public final Observable<Timed<T>> timestamp(Scheduler scheduler) {
         return timestamp(TimeUnit.MILLISECONDS, scheduler);
     }
 
-    public final Observable<Timestamped<T>> timestamp(TimeUnit unit) {
+    public final Observable<Timed<T>> timestamp(TimeUnit unit) {
         return timestamp(unit, Schedulers.trampoline());
     }
     
-    public final Observable<Timestamped<T>> timestamp(TimeUnit unit, Scheduler scheduler) {
-        return map(v -> new Timestamped<>(v, scheduler.now(unit), unit));
+    public final Observable<Timed<T>> timestamp(TimeUnit unit, Scheduler scheduler) {
+        return map(v -> new Timed<>(v, scheduler.now(unit), unit));
     }
     
     public final Observable<Try<Optional<T>>> materialize() {
@@ -1145,5 +1145,52 @@ public class Observable<T> implements Publisher<T> {
     @Deprecated
     public final Observable<T> limit(long n) {
         return take(n);
+    }
+    
+    public final Observable<T> distinct() {
+        return distinct(HashSet::new);
+    }
+    
+    public final Observable<T> distinct(Supplier<? extends Collection<? super T>> collectionSupplier) {
+        return lift(OperatorDistinct.withCollection(collectionSupplier));
+    }
+    
+    public final Observable<T> distinctUntilChanged() {
+        return lift(OperatorDistinct.untilChanged());
+    }
+    
+    @Deprecated
+    public final Observable<Observable<T>> nest() {
+        return just(this);
+    }
+    
+    public final Observable<T> serialize() {
+        return lift(s -> new SerializedSubscriber<>(s));
+    }
+    
+    public final Observable<T> take(long time, TimeUnit unit, Scheduler scheduler) {
+        // TODO consider inlining this behavior
+        return takeUntil(timer(time, unit, scheduler));
+    }
+    
+    public final Observable<T> skip(long time, TimeUnit unit, Scheduler scheduler) {
+        // TODO consider inlining this behavior
+        return skipUntil(timer(time, unit, scheduler));
+    }
+
+    public final Observable<Timed<T>> timeInterval() {
+        return timeInterval(TimeUnit.MILLISECONDS, Schedulers.trampoline());
+    }
+    
+    public final Observable<Timed<T>> timeInterval(Scheduler scheduler) {
+        return timeInterval(TimeUnit.MILLISECONDS, scheduler);
+    }
+    
+    public final Observable<Timed<T>> timeInterval(TimeUnit unit) {
+        return timeInterval(unit, Schedulers.trampoline());
+    }
+    
+    public final Observable<Timed<T>> timeInterval(TimeUnit unit, Scheduler scheduler) {
+        return lift(new OperatorTimeInterval<>(unit, scheduler));
     }
 }

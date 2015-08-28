@@ -27,7 +27,7 @@ import io.reactivex.internal.subscriptions.EmptySubscription;
 import io.reactivex.internal.util.NotificationLite;
 import io.reactivex.observables.ConnectableObservable;
 import io.reactivex.plugins.RxJavaPlugins;
-import io.reactivex.schedulers.Timestamped;
+import io.reactivex.schedulers.Timed;
 
 public final class OperatorReplay<T> extends ConnectableObservable<T> {
     /** The source observable. */
@@ -1078,12 +1078,12 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
         
         @Override
         Object enterTransform(Object value) {
-            return new Timestamped<>(value, scheduler.now(unit), unit);
+            return new Timed<>(value, scheduler.now(unit), unit);
         }
         
         @Override
         Object leaveTransform(Object value) {
-            return ((Timestamped<?>)value).value();
+            return ((Timed<?>)value).value();
         }
         
         @Override
@@ -1102,8 +1102,8 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
                         prev = next;
                         next = next.get();
                     } else {
-                        Timestamped<?> v = (Timestamped<?>)next.value;
-                        if (v.timestamp() <= timeLimit) {
+                        Timed<?> v = (Timed<?>)next.value;
+                        if (v.time() <= timeLimit) {
                             e++;
                             size--;
                             prev = next;
@@ -1130,8 +1130,8 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
             int e = 0;
             for (;;) {
                 if (next != null && size > 1) {
-                    Timestamped<?> v = (Timestamped<?>)next.value;
-                    if (v.timestamp() <= timeLimit) {
+                    Timed<?> v = (Timed<?>)next.value;
+                    if (v.time() <= timeLimit) {
                         e++;
                         size--;
                         prev = next;
