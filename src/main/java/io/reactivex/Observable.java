@@ -1370,10 +1370,46 @@ public class Observable<T> implements Publisher<T> {
     }
     
     public final Observable<T> switchIfEmpty(Publisher<? extends T> other) {
+        Objects.requireNonNull(other);
         return lift(new OperatorSwitchIfEmpty<>(other));
     }
     
     public final Observable<T> defaultIfEmpty(T value) {
+        Objects.requireNonNull(value);
         return switchIfEmpty(just(value));
+    }
+    
+    /*
+     * It doesn't add cancellation support by default like 1.x
+     * if necessary, one can use composition to achieve it:
+     * futureObservable.doOnCancel(() -> future.cancel(true));
+     */
+    public static <T> Observable<T> fromFuture(Future<? extends T> future) {
+        if (future instanceof CompletableFuture) {
+            return fromFuture((CompletableFuture<? extends T>)future);
+        }
+        Objects.requireNonNull(future);
+        Observable<T> o = create(new PublisherFutureSource<>(future, 0L, null));
+        
+        return o;
+    }
+
+    public static <T> Observable<T> fromFuture(Future<? extends T> future, long timeout, TimeUnit unit) {
+        Objects.requireNonNull(future);
+        Objects.requireNonNull(unit);
+        Observable<T> o = create(new PublisherFutureSource<>(future, timeout, unit));
+        return o;
+    }
+
+    public static <T> Observable<T> fromFuture(Future<? extends T> future, Scheduler scheduler) {
+        Objects.requireNonNull(scheduler);
+        Observable<T> o = fromFuture(future);
+        return o.subscribeOn(Schedulers.io());
+    }
+    
+    public static <T> Observable<T> fromFuture(Future<? extends T> future, long timeout, TimeUnit unit, Scheduler scheduler) {
+        Objects.requireNonNull(scheduler);
+        Observable<T> o = fromFuture(future, timeout, unit); 
+        return o.subscribeOn(scheduler);
     }
 }
