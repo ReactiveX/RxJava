@@ -1262,7 +1262,7 @@ public class Observable<T> implements Publisher<T> {
         return repeat(times).subscribeOn(scheduler);
     }
 
-    public final <U> Observable<U> collect(U initialValue, BiConsumer<? super U, ? super T> collector) {
+    public final <U> Observable<U> collectInto(U initialValue, BiConsumer<? super U, ? super T> collector) {
         return collect(() -> initialValue, collector);
     }
 
