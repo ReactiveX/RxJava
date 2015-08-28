@@ -13,17 +13,16 @@
 
 package io.reactivex.internal.operators;
 
-import java.util.Queue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.*;
 
 import org.reactivestreams.*;
 
 import io.reactivex.Observable.Operator;
+import io.reactivex.Scheduler;
 import io.reactivex.internal.queue.SpscLinkedArrayQueue;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BackpressureHelper;
-import io.reactivex.Scheduler;
 
 public final class OperatorSkipLastTimed<T> implements Operator<T, T> {
     final long time;
@@ -88,12 +87,11 @@ public final class OperatorSkipLastTimed<T> implements Operator<T, T> {
         
         @Override
         public void onNext(T t) {
-            final Queue<Object> q = queue;
+            final SpscLinkedArrayQueue<Object> q = queue;
 
             long now = scheduler.now(unit);
             
-            q.offer(now);
-            q.offer(t);
+            q.offer(now, t);
 
             drain();
         }

@@ -1497,4 +1497,20 @@ public class Observable<T> implements Publisher<T> {
     public final Observable<List<T>> takeLastBuffer(long time, TimeUnit unit, Scheduler scheduler) {
         return takeLast(time, unit, scheduler).toList();
     }
+    
+    public final Observable<T> first() {
+        return take(1).single();
+    }
+    
+    public final Observable<T> first(T defaultValue) {
+        return take(1).single(defaultValue);
+    }
+    
+    public final Observable<T> last() {
+        return takeLast(1).single();
+    }
+    
+    public final Observable<T> last(T defaultValue) {
+        return takeLast(1).single(defaultValue);
+    }
 }
