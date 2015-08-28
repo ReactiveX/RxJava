@@ -70,7 +70,6 @@ public final class PublisherZip<T, R> implements Publisher<R> {
         }
         
         ZipCoordinator<T, R> zc = new ZipCoordinator<>(s, zipper, count, delayError);
-        s.onSubscribe(zc);
         zc.subscribe(sources, bufferSize);
     }
     
@@ -109,6 +108,7 @@ public final class PublisherZip<T, R> implements Publisher<R> {
             }
             // this makes sure the contents of the subscribers array is visible
             REQUESTED.lazySet(this, 0);
+            actual.onSubscribe(this);
             for (int i = 0; i < len; i++) {
                 if (cancelled) {
                     return;
@@ -162,9 +162,9 @@ public final class PublisherZip<T, R> implements Publisher<R> {
                 boolean unbounded = r == Long.MAX_VALUE;
                 long e = 0;
                 
+                outer:
                 while (r != 0) {
                     int i = 0;
-                    boolean full = true;
                     for (ZipSubscriber<T, R> z : zs) {
                         boolean d = z.done;
                         T v = z.queue.peek();
@@ -175,21 +175,18 @@ public final class PublisherZip<T, R> implements Publisher<R> {
                         }
                         
                         if (empty) {
-                            full = false;
-                            break;
+                            break outer;
                         }
                         
                         os[i] = v;
                         i++;
                     }
                     
-                    if (full) {
-                        // consume the row
-                        for (ZipSubscriber<T, R> z : zs) {
-                            z.queue.poll();
-                        }
+                    // consume the row
+                    for (ZipSubscriber<T, R> z : zs) {
+                        z.queue.poll();
                     }
-                    
+
                     R v;
                     try {
                         v = zipper.apply(os.clone());
@@ -317,6 +314,8 @@ public final class PublisherZip<T, R> implements Publisher<R> {
                     lazySet(bufferSize);
                     s.request(bufferSize);
                     return;
+                } else {
+                    s.cancel();
                 }
             }
             

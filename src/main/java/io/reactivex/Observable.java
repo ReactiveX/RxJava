@@ -28,7 +28,7 @@ import io.reactivex.internal.subscribers.*;
 import io.reactivex.internal.subscriptions.EmptySubscription;
 import io.reactivex.observables.*;
 import io.reactivex.plugins.RxJavaPlugins;
-import io.reactivex.schedulers.Schedulers;
+import io.reactivex.schedulers.*;
 import io.reactivex.subscribers.SafeSubscriber;
 
 public class Observable<T> implements Publisher<T> {
@@ -794,11 +794,11 @@ public class Observable<T> implements Publisher<T> {
         return create(new PublisherRetryPredicate<>(this, times, predicate));
     }
 
-    public static Observable<Long> interval(long delay, TimeUnit unit) {
-        return interval(delay, unit, Schedulers.computation());
+    public static Observable<Long> timer(long delay, TimeUnit unit) {
+        return timer(delay, unit, Schedulers.computation());
     }
 
-    public static Observable<Long> interval(long delay, TimeUnit unit, Scheduler scheduler) {
+    public static Observable<Long> timer(long delay, TimeUnit unit, Scheduler scheduler) {
         if (delay < 0) {
             delay = 0L;
         }
@@ -807,7 +807,14 @@ public class Observable<T> implements Publisher<T> {
         
         return create(new PublisherIntervalOnceSource(delay, unit, scheduler));
     }
+    public static Observable<Long> interval(long period, TimeUnit unit) {
+        return interval(period, period, unit, Schedulers.computation());
+    }
 
+    public static Observable<Long> interval(long period, TimeUnit unit, Scheduler scheduler) {
+        return interval(period, period, unit, scheduler);
+    }
+    
     public static Observable<Long> interval(long initialDelay, long period, TimeUnit unit) {
         return interval(initialDelay, period, unit, Schedulers.computation());
     }
@@ -910,20 +917,35 @@ public class Observable<T> implements Publisher<T> {
         return lift(new OperatorGroupBy<>(keySelector, valueSelector, bufferSize, delayError));
     }
     
-    
     @SuppressWarnings("unchecked")
-    public static <T1, T2, R> Observable<R> zip(
-            Publisher<? extends T1> p1, Publisher<? extends T2> p2, 
-            BiFunction<? super T1, ? super T2, ? extends R> zipper) {
-        Function<Object[], R> f = a -> {
+    private static <T1, T2, R> Function<Object[], R> toFunction(BiFunction<? super T1, ? super T2, ? extends R> biFunction) {
+        return a -> {
             if (a.length != 2) {
                 throw new IllegalArgumentException("Array of size 2 expected but got " + a.length);
             }
-            return ((BiFunction<Object, Object, R>)zipper).apply(a[0], a[1]);
+            return ((BiFunction<Object, Object, R>)biFunction).apply(a[0], a[1]);
         };
-        return zipArray(f, false, bufferSize(), (Publisher<Object>)p1, (Publisher<Object>)p2);
+    }
+    
+    public static <T1, T2, R> Observable<R> zip(
+            Publisher<? extends T1> p1, Publisher<? extends T2> p2, 
+            BiFunction<? super T1, ? super T2, ? extends R> zipper) {
+        return zipArray(toFunction(zipper), false, bufferSize(), p1, p2);
     }
 
+    public static <T1, T2, R> Observable<R> zip(
+            Publisher<? extends T1> p1, Publisher<? extends T2> p2, 
+            BiFunction<? super T1, ? super T2, ? extends R> zipper, boolean delayError) {
+        return zipArray(toFunction(zipper), delayError, bufferSize(), p1, p2);
+    }
+
+    public static <T1, T2, R> Observable<R> zip(
+            Publisher<? extends T1> p1, Publisher<? extends T2> p2, 
+            BiFunction<? super T1, ? super T2, ? extends R> zipper, boolean delayError, int bufferSize) {
+        return zipArray(toFunction(zipper), delayError, bufferSize, p1, p2);
+    }
+
+    
     public static <T1, T2, T3, R> Observable<R> zip(
             Publisher<? extends T1> p1, Publisher<? extends T2> p2, Publisher<? extends T3> p3, 
             Function3<? super T1, ? super T2, ? super T3, ? extends R> zipper) {
@@ -1001,10 +1023,127 @@ public class Observable<T> implements Publisher<T> {
         return create(new PublisherZip<>(null, sources, zipper, bufferSize, delayError));
     }
     
-    public <U, R> Observable<R> withLatestFrom(Publisher<? extends U> other, BiFunction<? super T, ? super U, ? extends R> combiner) {
+    public final <U, R> Observable<R> withLatestFrom(Publisher<? extends U> other, BiFunction<? super T, ? super U, ? extends R> combiner) {
         Objects.requireNonNull(other);
         Objects.requireNonNull(combiner);
         
         return lift(new OperatorWithLatestFrom<>(combiner, other));
+    }
+    
+    public final <U, R> Observable<R> zipWith(Publisher<? extends U> other, BiFunction<? super T, ? super U, ? extends R> zipper) {
+        return zip(this, other, zipper);
+    }
+
+    public final <U, R> Observable<R> zipWith(Publisher<? extends U> other, BiFunction<? super T, ? super U, ? extends R> zipper, boolean delayError) {
+        return zip(this, other, zipper, delayError);
+    }
+
+    public final <U, R> Observable<R> zipWith(Publisher<? extends U> other, BiFunction<? super T, ? super U, ? extends R> zipper, boolean delayError, int bufferSize) {
+        return zip(this, other, zipper, delayError, bufferSize);
+    }
+
+    public final <U, R> Observable<R> zipWith(Iterable<? extends U> other,  BiFunction<? super T, ? super U, ? extends R> zipper) {
+        return zip(this, new PublisherIterableSource<>(other), zipper);
+    }
+
+    public final <U, R> Observable<R> zipWith(Iterable<? extends U> other,  BiFunction<? super T, ? super U, ? extends R> zipper, int bufferSize) {
+        return zip(this, new PublisherIterableSource<>(other), zipper, false, bufferSize);
+    }
+
+    public static <T, R> Observable<R> zip(Publisher<? extends Publisher<? extends T>> sources, Function<Object[], R> zipper) {
+        return fromPublisher(sources).toList().flatMap(list -> {
+            return zipIterable(zipper, false, bufferSize(), list);
+        });
+    }
+    
+    public final <U> Observable<U> cast(Class<U> clazz) {
+        return map(clazz::cast);
+    }
+    
+    public final Observable<Boolean> contains(Object o) {
+        return any(v -> Objects.equals(v, o));
+    }
+    
+    /**
+     * @deprecated use {@link #any(Predicate)}
+     */
+    @Deprecated
+    public final Observable<Boolean> exists(Predicate<? super T> predicate) {
+        return any(predicate);
+    }
+    
+    public final <U> Observable<U> flatMapIterable(Function<? super T, ? extends Iterable<? extends U>> mapper) {
+        return flatMap(v -> new PublisherIterableSource<>(mapper.apply(v)));
+    }
+
+    public final <U> Observable<U> flatMapIterable(Function<? super T, ? extends Iterable<? extends U>> mapper, int bufferSize) {
+        return flatMap(v -> new PublisherIterableSource<>(mapper.apply(v)), false, bufferSize);
+    }
+
+    public final <U> Observable<U> concatMapIterable(Function<? super T, ? extends Iterable<? extends U>> mapper) {
+        return concatMap(v -> new PublisherIterableSource<>(mapper.apply(v)));
+    }
+    
+    public final <U> Observable<U> concatMapIterable(Function<? super T, ? extends Iterable<? extends U>> mapper, int prefetch) {
+        return concatMap(v -> new PublisherIterableSource<>(mapper.apply(v)), prefetch);
+    }
+
+    public final <U, R> Observable<R> flatMap(Function<? super T, ? extends Publisher<? extends U>> mapper, BiFunction<? super T, ? super U, ? extends R> combiner, boolean delayError) {
+        return flatMap(mapper, combiner, delayError, bufferSize(), bufferSize());
+    }
+    
+    public final <U, R> Observable<R> flatMap(Function<? super T, ? extends Publisher<? extends U>> mapper, BiFunction<? super T, ? super U, ? extends R> combiner, int maxConcurrency) {
+        return flatMap(mapper, combiner, false, maxConcurrency, bufferSize());
+    }
+
+    public final <U, R> Observable<R> flatMap(Function<? super T, ? extends Publisher<? extends U>> mapper, BiFunction<? super T, ? super U, ? extends R> combiner, boolean delayError, int maxConcurrency) {
+        return flatMap(mapper, combiner, delayError, maxConcurrency, bufferSize());
+    }
+    
+    public <U, R> Observable<R> flatMap(Function<? super T, ? extends Publisher<? extends U>> mapper, BiFunction<? super T, ? super U, ? extends R> combiner, boolean delayError, int maxConcurrency, int bufferSize) {
+        return flatMap(t -> {
+            Observable<U> u = fromPublisher(mapper.apply(t));
+            return u.map(w -> combiner.apply(t, w));
+        }, delayError, maxConcurrency, bufferSize);
+    }
+    
+    public final <U> Observable<U> ofType(Class<U> clazz) {
+        return filter(clazz::isInstance).cast(clazz);
+    }
+
+    public final Observable<Timestamped<T>> timestamp() {
+        return timestamp(TimeUnit.MILLISECONDS, Schedulers.trampoline());
+    }
+
+    public final Observable<Timestamped<T>> timestamp(Scheduler scheduler) {
+        return timestamp(TimeUnit.MILLISECONDS, scheduler);
+    }
+
+    public final Observable<Timestamped<T>> timestamp(TimeUnit unit) {
+        return timestamp(unit, Schedulers.trampoline());
+    }
+    
+    public final Observable<Timestamped<T>> timestamp(TimeUnit unit, Scheduler scheduler) {
+        return map(v -> new Timestamped<>(v, scheduler.now(unit), unit));
+    }
+    
+    public final Observable<Try<Optional<T>>> materialize() {
+        // TODO implement
+        throw new UnsupportedOperationException();
+    }
+    
+//    @SuppressWarnings("unchecked")
+    public final Observable<T> dematerialize() {
+//        Observable<Try<Optional<T>>> m = (Observable<Try<Optional<T>>>)this;
+        // TODO implement
+        throw new UnsupportedOperationException();
+    }
+    
+    /**
+     * @deprecated use {@link #take(long)} instead
+     */
+    @Deprecated
+    public final Observable<T> limit(long n) {
+        return take(n);
     }
 }

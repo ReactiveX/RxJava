@@ -29,7 +29,7 @@ abstract class BaseArrayQueue<E> extends AtomicReferenceArray<E> implements Queu
     protected final int mask;
     public BaseArrayQueue(int capacity) {
         super(Pow2.roundToPowerOfTwo(capacity));
-        this.mask = size() - 1;
+        this.mask = length() - 1;
     }
     @Override
     public Iterator<E> iterator() {
