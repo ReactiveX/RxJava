@@ -249,6 +249,7 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
     /**
      * Awaits until this TestSubscriber receives an onError or onComplete events.
      * @throws InterruptedException if the current thread is interrupted while waiting
+     * @see #awaitTerminalEvent()
      */
     public final void await() throws InterruptedException {
         if (done.getCount() == 0) {
@@ -263,7 +264,9 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
      * receives an onError or onComplete events, whichever happens first.
      * @param time the waiting time
      * @param unit the time unit of the waiting time
+     * @return true if the TestSubscriber terminated, false if timeout happened
      * @throws InterruptedException if the current thread is interrupted while waiting
+     * @see #awaitTerminalEvent(long, TimeUnit)
      */
     public final boolean await(long time, TimeUnit unit) throws InterruptedException {
         if (done.getCount() == 0) {
@@ -285,7 +288,13 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
      */
     private void fail(String prefix, String message, Iterable<? extends Throwable> errors) {
         AssertionError ae = new AssertionError(prefix + message);
-        errors.forEach(ae::addSuppressed);
+        errors.forEach(e -> {
+            if (e == null) {
+                ae.addSuppressed(new NullPointerException("Throwable was null!"));
+            } else {
+                ae.addSuppressed(e);
+            }
+        });
         throw ae;
     }
     
@@ -572,6 +581,60 @@ public class TestSubscriber<T> implements Subscriber<T>, Subscription, Disposabl
         } else
         if (!errors.isEmpty()) {
             fail(prefix, "Not subscribed but errors found", errors);
+        }
+    }
+    
+    /**
+     * Waits until the any terminal event has been received by this TestSubscriber
+     * or returns false if the wait has been interrupted.
+     * @return true if the TestSubscriber terminated, false if the wait has been interrupted
+     */
+    public boolean awaitTerminalEvent() {
+        try {
+            await();
+            return true;
+        } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
+            return false;
+        }
+    }
+    
+    /**
+     * Awaits the specified amount of time or until this TestSubscriber 
+     * receives an onError or onComplete events, whichever happens first.
+     * @param time the waiting time
+     * @param unit the time unit of the waiting time
+     * @return true if the TestSubscriber terminated, false if timeout or interrupt happened
+     */
+    public boolean awaitTerminalEvent(long duration, TimeUnit unit) {
+        try {
+            return await(duration, unit);
+        } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
+            return false;
+        }
+    }
+    
+    public void assertErrorMessage(String message) {
+        String prefix = "";
+        if (done.getCount() != 0) {
+            prefix = "Subscriber still running! ";
+        }
+        int s = errors.size();
+        if (s == 0) {
+            fail(prefix, "No errors", Collections.emptyList());
+        } else
+        if (s == 1) {
+            Throwable e = errors.get(0);
+            if (e == null) {
+                fail(prefix, "Error is null", Collections.emptyList());
+            }
+            String errorMessage = e.getMessage();
+            if (!Objects.equals(message, errorMessage)) {
+                fail(prefix, "Error message differs; Expected: " + message + ", Actual: " + errorMessage, Collections.singletonList(e));
+            }
+        } else {
+            fail(prefix, "Multiple errors", errors);
         }
     }
 }

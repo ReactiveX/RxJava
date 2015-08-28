@@ -122,6 +122,10 @@ public final class OperatorFlatMap<T, U> implements Operator<U, T> {
         
         @Override
         public void onNext(T t) {
+            // safeguard against misbehaving sources
+            if (done) {
+                return;
+            }
             Publisher<? extends U> p;
             try {
                 p = mapper.apply(t);
@@ -257,6 +261,10 @@ public final class OperatorFlatMap<T, U> implements Operator<U, T> {
         
         @Override
         public void onError(Throwable t) {
+            // safeguard against misbehaving sources
+            if (done) {
+                return;
+            }
             getErrorQueue().offer(t);
             done = true;
             drain();
@@ -264,6 +272,10 @@ public final class OperatorFlatMap<T, U> implements Operator<U, T> {
         
         @Override
         public void onComplete() {
+            // safeguard against misbehaving sources
+            if (done) {
+                return;
+            }
             done = true;
             drain();
         }
