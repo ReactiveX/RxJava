@@ -1353,4 +1353,19 @@ public class Observable<T> implements Publisher<T> {
             coll.add(value);
         });
     }
+
+    public final Observable<T> sample(long period, TimeUnit unit) {
+        return sample(period, unit, Schedulers.computation());
+    }
+
+    public final Observable<T> sample(long period, TimeUnit unit, Scheduler scheduler) {
+        Objects.requireNonNull(unit);
+        Objects.requireNonNull(scheduler);
+        return lift(new OperatorSampleTimed<>(period, unit, scheduler));
+    }
+    
+    public final <U> Observable<T> sample(Publisher<U> sampler) {
+        Objects.requireNonNull(sampler);
+        return lift(new OperatorSamplePublisher<>(sampler));
+    }
 }
