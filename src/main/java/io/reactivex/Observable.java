@@ -1193,4 +1193,72 @@ public class Observable<T> implements Publisher<T> {
     public final Observable<Timed<T>> timeInterval(TimeUnit unit, Scheduler scheduler) {
         return lift(new OperatorTimeInterval<>(unit, scheduler));
     }
+    
+    private Observable<T> doOnEach(Consumer<? super T> onNext, Consumer<? super Throwable> onError, Runnable onComplete, Runnable onAfterTerminate) {
+        Objects.requireNonNull(onNext);
+        Objects.requireNonNull(onError);
+        Objects.requireNonNull(onComplete);
+        Objects.requireNonNull(onAfterTerminate);
+        return lift(new OperatorDoOnEach<>(onNext, onError, onComplete, onAfterTerminate));
+    }
+    
+    public final Observable<T> doOnNext(Consumer<? super T> onNext) {
+        return doOnEach(onNext, e -> { }, () -> { }, () -> { });
+    }
+
+    public final Observable<T> doOnError(Consumer<? super Throwable> onError) {
+        return doOnEach(v -> { }, onError, () -> { }, () -> { });
+    }
+    
+    public final Observable<T> doOnComplete(Runnable onComplete) {
+        return doOnEach(v -> { }, e -> { }, onComplete, () -> { });
+    }
+
+    public final Observable<T> doOnTerminate(Runnable onTerminate) {
+        return doOnEach(v -> { }, e -> onTerminate.run(), onTerminate, () -> { });
+    }
+    
+    public final Observable<T> finallyDo(Runnable onFinally) {
+        return doOnEach(v -> { }, e -> { }, () -> { }, onFinally);
+    }
+    
+    public final Observable<T> doOnEach(Observer<? super T> observer) {
+        return doOnEach(observer::onNext, observer::onError, observer::onComplete, () -> { });
+    }
+    
+    public final Observable<T> doOnEach(Consumer<? super Try<Optional<T>>> consumer) {
+        return doOnEach(
+                v -> consumer.accept(Try.ofValue(Optional.of(v))),
+                e -> consumer.accept(Try.ofError(e)),
+                () -> consumer.accept(Try.ofValue(Optional.empty())),
+                () -> { }
+        );
+    }
+    
+    /**
+     *
+     * @deprecated use composition
+     */
+    @Deprecated
+    public static Observable<Integer> range(int start, int count, Scheduler scheduler) {
+        return range(start, count).subscribeOn(scheduler);
+    }
+    
+    /**
+     *
+     * @deprecated use composition
+     */
+    @Deprecated
+    public final Observable<T> repeat(Scheduler scheduler) {
+        return repeat().subscribeOn(scheduler);
+    }
+    
+    /**
+     *
+     * @deprecated use composition
+     */
+    @Deprecated
+    public final Observable<T> repeat(long times, Scheduler scheduler) {
+        return repeat(times).subscribeOn(scheduler);
+    }
 }
