@@ -18,6 +18,7 @@ import java.util.function.Predicate;
 import org.reactivestreams.*;
 
 import io.reactivex.Observable.Operator;
+import io.reactivex.internal.subscribers.ConditionalSubscriber;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
@@ -34,7 +35,7 @@ public final class OperatorFilter<T> implements Operator<T, T> {
         return new FilterSubscriber<>(s, predicate);
     }
     
-    static final class FilterSubscriber<T> implements Subscriber<T> {
+    static final class FilterSubscriber<T> implements ConditionalSubscriber<T> {
         final Predicate<? super T> filter;
         final Subscriber<? super T> actual;
         Subscription subscription;
@@ -54,20 +55,27 @@ public final class OperatorFilter<T> implements Operator<T, T> {
         }
         @Override
         public void onNext(T t) {
+            if (!onNextIf(t)) {
+                subscription.request(1);
+            }
+        }
+        
+        @Override
+        public boolean onNextIf(T t) {
             boolean b;
             try {
                 b = filter.test(t);
             } catch (Throwable e) {
                 subscription.cancel();
                 actual.onError(e);
-                return;
+                return true;
             }
             if (b) {
                 actual.onNext(t);
-            } else {
-                subscription.request(1);
             }
+            return b;
         }
+        
         @Override
         public void onError(Throwable t) {
             actual.onError(t);

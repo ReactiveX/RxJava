@@ -20,6 +20,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import org.reactivestreams.*;
 
+import io.reactivex.internal.subscribers.ConditionalSubscriber;
 import io.reactivex.internal.util.BackpressureHelper;
 import io.reactivex.plugins.RxJavaPlugins;
 
@@ -36,8 +37,14 @@ public final class PublisherArraySource<T> implements Publisher<T> {
     }
     @Override
     public void subscribe(Subscriber<? super T> s) {
-        s.onSubscribe(new ArraySourceSubscription<>(array, s));
+        if (s instanceof ConditionalSubscriber) {
+            ConditionalSubscriber<? super T> cs = (ConditionalSubscriber<? super T>) s;
+            s.onSubscribe(new ConditionalArraySourceSubscription<>(array, cs));
+        } else {
+            s.onSubscribe(new ArraySourceSubscription<>(array, s));
+        }
     }
+    
     static final class ArraySourceSubscription<T> extends AtomicLong implements Subscription {
         /** */
         private static final long serialVersionUID = -225561973532207332L;
@@ -52,6 +59,7 @@ public final class PublisherArraySource<T> implements Publisher<T> {
             this.array = array;
             this.subscriber = subscriber;
         }
+        
         @Override
         public void request(long n) {
             if (n <= 0) {
@@ -93,6 +101,79 @@ public final class PublisherArraySource<T> implements Publisher<T> {
                         }
                         r--;
                         e--;
+                    }
+                    index = i;
+                    r = addAndGet(e);
+                    if (r == 0L) {
+                        return;
+                    }
+                }
+            }
+        }
+        @Override
+        public void cancel() {
+            cancelled = true;
+        }
+    }
+    
+    static final class ConditionalArraySourceSubscription<T> extends AtomicLong implements Subscription {
+        /** */
+        private static final long serialVersionUID = -225561973532207332L;
+        
+        final T[] array;
+        final ConditionalSubscriber<? super T> subscriber;
+        
+        int index;
+        volatile boolean cancelled;
+        
+        public ConditionalArraySourceSubscription(T[] array, ConditionalSubscriber<? super T> subscriber) {
+            this.array = array;
+            this.subscriber = subscriber;
+        }
+        
+        @Override
+        public void request(long n) {
+            if (n <= 0) {
+                RxJavaPlugins.onError(new IllegalArgumentException("n > 0 required but it was " + n));
+                return;
+            }
+            if (BackpressureHelper.add(this, n) == 0L) {
+                long r = n;
+                final ConditionalSubscriber<? super T> s = subscriber;
+                for (;;) {
+                    int i = index;
+                    T[] a = array;
+                    int len = a.length;
+                    if (i + r >= len) {
+                        if (cancelled) {
+                            return;
+                        }
+                        for (int j = i; j < len; j++) {
+                            s.onNext(a[j]);
+                            if (cancelled) {
+                                return;
+                            }
+                        }
+                        s.onComplete();
+                        return;
+                    }
+                    long e = 0;
+                    if (cancelled) {
+                        return;
+                    }
+                    while (r != 0 && i < len) {
+                        boolean b = s.onNextIf(a[i]);
+                        if (cancelled) {
+                            return;
+                        }
+                        if (++i == len) {
+                            s.onComplete();
+                            return;
+                        }
+                        if (b) {
+                            r--;
+                            e--;
+                        }
                     }
                     index = i;
                     r = addAndGet(e);
