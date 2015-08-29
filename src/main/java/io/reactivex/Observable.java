@@ -1585,4 +1585,30 @@ public class Observable<T> implements Publisher<T> {
     public Observable<T> ambWith(Publisher<? extends T> other) {
         return amb(this, other);
     }
+    
+    // TODO would result in ambiguity with onErrorReturn(Function)
+    public Observable<T> onErrorReturnValue(T value) {
+        Objects.requireNonNull(value);
+        return onErrorReturn(e -> value);
+    }
+    
+    public Observable<T> onErrorReturn(Function<? super Throwable, ? extends T> valueSupplier) {
+        Objects.requireNonNull(valueSupplier);
+        return lift(new OperatorOnErrorReturn<>(valueSupplier));
+    }
+    
+    public Observable<T> onErrorResumeNext(Publisher<? extends T> next) {
+        Objects.requireNonNull(next);
+        return onErrorResumeNext(e -> next);
+    }
+    
+    public Observable<T> onErrorResumeNext(Function<? super Throwable, ? extends Publisher<? extends T>> resumeFunction) {
+        Objects.requireNonNull(resumeFunction);
+        return lift(new OperatorOnErrorNext<>(resumeFunction, false));
+    }
+    
+    public Observable<T> onExceptionResumeNext(Publisher<? extends T> next) {
+        Objects.requireNonNull(next);
+        return lift(new OperatorOnErrorNext<>(e -> next, true));
+    }
 }
