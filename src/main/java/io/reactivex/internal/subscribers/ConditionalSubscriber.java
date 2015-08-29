@@ -26,11 +26,6 @@ import org.reactivestreams.Subscriber;
  * @param <T> the value type
  */
 public interface ConditionalSubscriber<T> extends Subscriber<T> {
-    @Override
-    default void onNext(T t) {
-        onNextIf(t);
-    }
-    
     /**
      * Conditionally takes the value.
      * @param t the value to deliver
