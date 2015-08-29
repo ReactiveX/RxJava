@@ -19,7 +19,6 @@ import java.util.function.Function;
 
 import org.reactivestreams.*;
 
-import io.reactivex.Observable;
 import io.reactivex.Observable.Operator;
 import io.reactivex.internal.queue.*;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
@@ -364,9 +363,5 @@ public final class OperatorSwitchMap<T, R> implements Operator<R, T> {
                 }
             }
         }
-    }
-    
-    public static void main(String[] args) {
-        Observable.range(1, 10).switchMap(Observable::just).subscribe(System.out::println);
     }
 }
