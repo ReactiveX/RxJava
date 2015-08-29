@@ -53,7 +53,7 @@ public final class PublisherRedo<T> implements Publisher<T> {
         s.onSubscribe(parent.arbiter);
 
         // trigger first subscription
-        parent.handle(Notification.ofNull());
+        parent.handle(Notification.complete());
     }
     
     static final class RedoSubscriber<T> extends AtomicBoolean implements Subscriber<T> {

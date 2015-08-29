@@ -19,9 +19,12 @@ import java.util.function.Consumer;
 import org.reactivestreams.*;
 
 import io.reactivex.*;
+import io.reactivex.internal.subscriptions.SubscriptionHelper;
 
 public final class ToNotificationSubscriber<T> implements Subscriber<T> {
     final Consumer<? super Try<Optional<Object>>> consumer;
+    
+    Subscription s;
     
     public ToNotificationSubscriber(Consumer<? super Try<Optional<Object>>> consumer) {
         this.consumer = consumer;
@@ -29,15 +32,21 @@ public final class ToNotificationSubscriber<T> implements Subscriber<T> {
     
     @Override
     public void onSubscribe(Subscription s) {
+        if (SubscriptionHelper.validateSubscription(this.s, s)) {
+            return;
+        }
+        this.s = s;
         s.request(Long.MAX_VALUE);
     }
     
     @Override
     public void onNext(T t) {
         if (t == null) {
-            consumer.accept(Notification.ofNull());
+            s.cancel();
+            onError(new NullPointerException());
+        } else {
+            consumer.accept(Try.ofValue(Optional.of(t)));
         }
-        consumer.accept(Try.ofValue(Optional.of(t)));
     }
     
     @Override
