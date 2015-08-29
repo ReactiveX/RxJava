@@ -93,6 +93,9 @@ public final class SubscriptionArbiter extends AtomicInteger implements Subscrip
         }
         QueueDrainHelper.queueDrainLoop(this, () -> {
             long r = requested;
+            if (r == Long.MAX_VALUE) {
+                return;
+            }
             long u = r - n;
             if (u < 0L) {
                 RxJavaPlugins.onError(new IllegalArgumentException("More produced than requested: " + u));
