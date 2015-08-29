@@ -1636,4 +1636,26 @@ public class Observable<T> implements Publisher<T> {
         Objects.requireNonNull(predicate);
         return lift(new OperatorTakeWhile<>(predicate));
     }
+    
+    public static <T> Observable<Boolean> sequenceEqual(Publisher<? extends T> p1, Publisher<? extends T> p2) {
+        return sequenceEqual(p1, p2, Objects::equals, bufferSize());
+    }
+
+    public static <T> Observable<Boolean> sequenceEqual(Publisher<? extends T> p1, Publisher<? extends T> p2, int bufferSize) {
+        return sequenceEqual(p1, p2, Objects::equals, bufferSize);
+    }
+
+    public static <T> Observable<Boolean> sequenceEqual(Publisher<? extends T> p1, Publisher<? extends T> p2, BiPredicate<? super T, ? super T> isEqual) {
+        return sequenceEqual(p1, p2, isEqual, bufferSize());
+    }
+
+    public static <T> Observable<Boolean> sequenceEqual(Publisher<? extends T> p1, Publisher<? extends T> p2, BiPredicate<? super T, ? super T> isEqual, int bufferSize) {
+        Objects.requireNonNull(p1);
+        Objects.requireNonNull(p2);
+        Objects.requireNonNull(isEqual);
+        if (bufferSize <= 0) {
+            throw new IllegalArgumentException("bufferSize > 0 required but it was " + bufferSize);
+        }
+        return create(new PublisherSequenceEqual<>(p1, p2, isEqual, bufferSize));
+    }
 }
