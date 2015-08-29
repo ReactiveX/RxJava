@@ -25,10 +25,10 @@ import io.reactivex.internal.util.Pow2;
 import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subscribers.SerializedSubscriber;
 
-public final class ConcatMap<T, U> implements Operator<U, T> {
+public final class OperatorConcatMap<T, U> implements Operator<U, T> {
     final Function<? super T, ? extends Publisher<? extends U>> mapper;
     final int bufferSize;
-    public ConcatMap(Function<? super T, ? extends Publisher<? extends U>> mapper, int bufferSize) {
+    public OperatorConcatMap(Function<? super T, ? extends Publisher<? extends U>> mapper, int bufferSize) {
         this.mapper = mapper;
         this.bufferSize = bufferSize;
     }

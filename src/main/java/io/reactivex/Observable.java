@@ -274,6 +274,14 @@ public class Observable<T> implements Publisher<T> {
     public static <T> Observable<T> merge(int maxConcurrency, int bufferSize, Iterable<? extends Publisher<? extends T>> sources) {
         return fromIterable(sources).flatMap(v -> v, false, maxConcurrency, bufferSize);
     }
+    
+    public static <T> Observable<T> merge(Publisher<? extends Publisher<? extends T>> sources) {
+        return merge(sources, bufferSize());
+    }
+
+    public static <T> Observable<T> merge(Publisher<? extends Publisher<? extends T>> sources, int maxConcurrency) {
+        return fromPublisher(sources).flatMap(v -> v, maxConcurrency);
+    }
 
     @SafeVarargs
     public static <T> Observable<T> mergeDelayError(Publisher<? extends T>... sources) {
@@ -302,6 +310,15 @@ public class Observable<T> implements Publisher<T> {
         return fromIterable(sources).flatMap(v -> v, true, maxConcurrency, bufferSize);
     }
 
+    public static <T> Observable<T> mergeDelayError(Publisher<? extends Publisher<? extends T>> sources) {
+        return mergeDelayError(sources, bufferSize());
+    }
+
+    public static <T> Observable<T> mergeDelayError(Publisher<? extends Publisher<? extends T>> sources, int maxConcurrency) {
+        return fromPublisher(sources).flatMap(v -> v, true, maxConcurrency);
+    }
+
+    
     public final Observable<T> take(long n) {
         if (n < 0) {
             throw new IllegalArgumentException("n >= required but it was " + n);
@@ -608,7 +625,7 @@ public class Observable<T> implements Publisher<T> {
         if (prefetch <= 0) {
             throw new IllegalArgumentException("prefetch > 0 required but it was " + prefetch);
         }
-        return lift(new ConcatMap<>(mapper, prefetch));
+        return lift(new OperatorConcatMap<>(mapper, prefetch));
     }
 
     public final Observable<T> concatWith(Publisher<? extends T> other) {
@@ -616,9 +633,22 @@ public class Observable<T> implements Publisher<T> {
         return concat(this, other);
     }
 
+    public final Observable<T> concat(Publisher<? extends Publisher<? extends T>> sources) {
+        return concat(sources, bufferSize());
+    }
+    
+    public final Observable<T> concat(Publisher<? extends Publisher<? extends T>> sources, int bufferSize) {
+        return fromPublisher(sources).concatMap(v -> v);
+    }
+    
     @SafeVarargs
     public static <T> Observable<T> concat(Publisher<? extends T>... sources) {
-        Objects.requireNonNull(sources);
+        if (sources.length == 0) {
+            return empty();
+        } else
+        if (sources.length == 1) {
+            return fromPublisher(sources[0]);
+        }
         return fromArray(sources).concatMap(v -> v);
     }
 
@@ -1512,5 +1542,25 @@ public class Observable<T> implements Publisher<T> {
     
     public final Observable<T> last(T defaultValue) {
         return takeLast(1).single(defaultValue);
+    }
+
+    public final <R> Observable<R> switchMap(Function<? super T, ? extends Publisher<? extends R>> mapper) {
+        return switchMap(mapper, bufferSize());
+    }
+    
+    public final <R> Observable<R> switchMap(Function<? super T, ? extends Publisher<? extends R>> mapper, int bufferSize) {
+        Objects.requireNonNull(mapper);
+        if (bufferSize <= 0) {
+            throw new IllegalArgumentException("bufferSize > 0 required but it was " + bufferSize);
+        }
+        return lift(new OperatorSwitchMap<>(mapper, bufferSize));
+    }
+    
+    public static <T> Observable<T> switchOnNext(Publisher<? extends Publisher<? extends T>> sources) {
+        return fromPublisher(sources).switchMap(v -> v);
+    }
+
+    public static <T> Observable<T> switchOnNext(int bufferSize, Publisher<? extends Publisher<? extends T>> sources) {
+        return fromPublisher(sources).switchMap(v -> v, bufferSize);
     }
 }
