@@ -31,7 +31,9 @@ public final class OperatorOnErrorNext<T> implements Operator<T, T> {
     
     @Override
     public Subscriber<? super T> apply(Subscriber<? super T> t) {
-        return new OnErrorNextSubscriber<>(t, nextSupplier, allowFatal);
+        OnErrorNextSubscriber<T> parent = new OnErrorNextSubscriber<>(t, nextSupplier, allowFatal);
+        t.onSubscribe(parent.arbiter);
+        return parent;
     }
     
     static final class OnErrorNextSubscriber<T> implements Subscriber<T> {
