@@ -17,6 +17,7 @@ import java.util.function.*;
 import org.reactivestreams.*;
 
 import io.reactivex.Observable.Operator;
+import io.reactivex.internal.subscribers.CancelledSubscriber;
 import io.reactivex.internal.subscriptions.*;
 
 public final class OperatorCollect<T, U> implements Operator<U, T> {

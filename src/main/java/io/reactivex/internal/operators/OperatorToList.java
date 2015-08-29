@@ -19,6 +19,7 @@ import java.util.function.Supplier;
 import org.reactivestreams.*;
 
 import io.reactivex.Observable.Operator;
+import io.reactivex.internal.subscribers.CancelledSubscriber;
 import io.reactivex.internal.subscriptions.EmptySubscription;
 import io.reactivex.plugins.RxJavaPlugins;
 

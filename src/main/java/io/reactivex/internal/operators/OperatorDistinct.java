@@ -19,7 +19,7 @@ import java.util.function.*;
 import org.reactivestreams.*;
 
 import io.reactivex.Observable.Operator;
-import io.reactivex.internal.subscribers.CancellingSubscriber;
+import io.reactivex.internal.subscribers.CancelledSubscriber;
 import io.reactivex.internal.subscriptions.*;
 
 public final class OperatorDistinct<T> implements Operator<T, T> {
@@ -77,13 +77,13 @@ public final class OperatorDistinct<T> implements Operator<T, T> {
         } catch (Throwable e) {
             t.onSubscribe(EmptySubscription.INSTANCE);
             t.onError(e);
-            return CancellingSubscriber.INSTANCE;
+            return CancelledSubscriber.INSTANCE;
         }
         
         if (coll == null) {
             t.onSubscribe(EmptySubscription.INSTANCE);
             t.onError(new NullPointerException("predicateSupplier returned null"));
-            return CancellingSubscriber.INSTANCE;
+            return CancelledSubscriber.INSTANCE;
         }
         
         return null;
