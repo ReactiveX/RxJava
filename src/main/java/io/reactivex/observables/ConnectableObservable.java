@@ -19,7 +19,7 @@ import org.reactivestreams.*;
 
 import io.reactivex.Observable;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.internal.operators.PublisherAutoConnect;
+import io.reactivex.internal.operators.*;
 
 /**
  * A {@code ConnectableObservable} resembles an ordinary {@link Observable}, except that it does not begin
@@ -74,9 +74,7 @@ public abstract class ConnectableObservable<T> extends Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/refcount.html">ReactiveX documentation: RefCount</a>
      */
     public Observable<T> refCount() {
-//        TODO implement RefCount
-//        return create(new PublisherRefCount<T>(this));
-        throw new UnsupportedOperationException();
+        return create(new PublisherRefCount<>(this));
     }
 
     /**

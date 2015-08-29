@@ -1814,4 +1814,5 @@ public class Observable<T> implements Publisher<T> {
     public final BlockingObservable<T> toBlocking() {
         return BlockingObservable.from(this);
     }
+    
 }
