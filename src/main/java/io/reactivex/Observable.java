@@ -1631,4 +1631,9 @@ public class Observable<T> implements Publisher<T> {
         
         return create(new PublisherRedo<>(this, f));
     }
+    
+    public final Observable<T> takeWhile(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate);
+        return lift(new OperatorTakeWhile<>(predicate));
+    }
 }
