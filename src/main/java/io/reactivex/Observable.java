@@ -1753,4 +1753,14 @@ public class Observable<T> implements Publisher<T> {
         return combineLatest(combiner, false, bufferSize(), p1, p2, p3, p4, p5, p6, p7, p8, p9);
     }
 
+    public static <T, D> Observable<T> using(Supplier<? extends D> resourceSupplier, Function<? super D, ? extends Publisher<? extends T>> sourceSupplier, Consumer<? super D> disposer) {
+        return using(resourceSupplier, sourceSupplier, disposer, true);
+    }
+
+    public static <T, D> Observable<T> using(Supplier<? extends D> resourceSupplier, Function<? super D, ? extends Publisher<? extends T>> sourceSupplier, Consumer<? super D> disposer, boolean eager) {
+        Objects.requireNonNull(resourceSupplier);
+        Objects.requireNonNull(sourceSupplier);
+        Objects.requireNonNull(disposer);
+        return create(new PublisherUsing<>(resourceSupplier, sourceSupplier, disposer, eager));
+    }
 }

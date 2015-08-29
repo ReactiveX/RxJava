@@ -16,23 +16,42 @@
 
 package io.reactivex.internal.subscriptions;
 
-import org.reactivestreams.Subscription;
-
-import io.reactivex.plugins.RxJavaPlugins;
+import org.reactivestreams.*;
 
 /**
- * 
+ * An empty subscription that does nothing other than validates the request amount.
  */
 public enum EmptySubscription implements Subscription {
+    /** A singleton, stateless instance. */
     INSTANCE;
+    
     @Override
     public void request(long n) {
-        if (n <= 0) {
-            RxJavaPlugins.onError(new IllegalArgumentException("n > 0 required"));
-        }
+        SubscriptionHelper.validateRequest(n);
     }
     @Override
     public void cancel() {
-        
+        // no-op
+    }
+    
+    /**
+     * Sets the empty subscription instance on the subscriber and then
+     * calls onError with the supplied error.
+     * @param e the error to deliver to the subscriber
+     * @param s the target subscriber
+     */
+    public static void error(Throwable e, Subscriber<?> s) {
+        s.onSubscribe(INSTANCE);
+        s.onError(e);
+    }
+
+    /**
+     * Sets the empty subscription instance on the subscriber and then
+     * calls onComplete.
+     * @param s the target subscriber
+     */
+    public static void complete(Subscriber<?> s) {
+        s.onSubscribe(INSTANCE);
+        s.onComplete();
     }
 }

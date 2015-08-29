@@ -57,8 +57,7 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
                 co = connectableFactory.get();
                 observable = selector.apply(co);
             } catch (Throwable e) {
-                child.onSubscribe(EmptySubscription.INSTANCE);
-                child.onError(e);
+                EmptySubscription.error(e, child);
                 return;
             }
             

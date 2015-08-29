@@ -41,8 +41,7 @@ public final class PublisherIterableSource<T> extends AtomicBoolean implements P
         try {
             it = source.iterator();
         } catch (Throwable e) {
-            s.onSubscribe(EmptySubscription.INSTANCE);
-            s.onError(e);
+            EmptySubscription.error(e, s);
             return;
         }
         s.onSubscribe(new IteratorSourceSubscription<>(it, s));

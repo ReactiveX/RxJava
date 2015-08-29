@@ -43,15 +43,13 @@ public final class PublisherStreamSource<T> extends AtomicBoolean implements Pub
             try {
                 it = stream.iterator();
             } catch (Throwable e) {
-                s.onSubscribe(EmptySubscription.INSTANCE);
-                s.onError(e);
+                EmptySubscription.error(e, s);
                 return;
             }
             s.onSubscribe(new StreamSourceSubscription<>(stream, it, s));
             return;
         }
-        s.onSubscribe(EmptySubscription.INSTANCE);
-        s.onError(new IllegalStateException("Contents already consumed"));
+        EmptySubscription.error(new IllegalStateException("Contents already consumed"), s);
     }
     
     static final class StreamSourceSubscription<T> extends AtomicLong implements Subscription {

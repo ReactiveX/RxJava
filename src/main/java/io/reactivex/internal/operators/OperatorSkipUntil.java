@@ -63,8 +63,7 @@ public final class OperatorSkipUntil<T, U> implements Operator<T, T> {
                 frc.dispose();
                 // in case the other emits an onError before the main even sets a subscription
                 if (sus.compareAndSet(false, true)) {
-                    serial.onSubscribe(EmptySubscription.INSTANCE);
-                    serial.onError(t);
+                    EmptySubscription.error(t, serial);
                 }
             }
             
