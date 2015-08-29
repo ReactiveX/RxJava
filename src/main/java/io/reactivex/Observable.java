@@ -1563,4 +1563,26 @@ public class Observable<T> implements Publisher<T> {
     public static <T> Observable<T> switchOnNext(int bufferSize, Publisher<? extends Publisher<? extends T>> sources) {
         return fromPublisher(sources).switchMap(v -> v, bufferSize);
     }
+    
+    @SafeVarargs
+    public static <T> Observable<T> amb(Publisher<? extends T>... sources) {
+        Objects.requireNonNull(sources);
+        int len = sources.length;
+        if (len == 0) {
+            return empty();
+        } else
+        if (len == 1) {
+            return fromPublisher(sources[0]);
+        }
+        return create(new PublisherAmb<>(sources, null));
+    }
+    
+    public static <T> Observable<T> amb(Iterable<? extends Publisher<? extends T>> sources) {
+        Objects.requireNonNull(sources);
+        return create(new PublisherAmb<>(null, sources));
+    }
+    
+    public Observable<T> ambWith(Publisher<? extends T> other) {
+        return amb(this, other);
+    }
 }
