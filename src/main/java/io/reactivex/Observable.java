@@ -1145,15 +1145,13 @@ public class Observable<T> implements Publisher<T> {
     }
 
     public final Observable<Try<Optional<T>>> materialize() {
-        // TODO implement
-        throw new UnsupportedOperationException();
+        return lift(OperatorMaterialize.instance());
     }
 
-    //    @SuppressWarnings("unchecked")
     public final Observable<T> dematerialize() {
-        //        Observable<Try<Optional<T>>> m = (Observable<Try<Optional<T>>>)this;
-        // TODO implement
-        throw new UnsupportedOperationException();
+        @SuppressWarnings("unchecked")
+        Observable<Try<Optional<T>>> m = (Observable<Try<Optional<T>>>)this;
+        return m.lift(OperatorDematerialize.instance());
     }
 
     /**

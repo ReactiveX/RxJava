@@ -24,22 +24,6 @@ public final class Notification {
     }
     
     static final Try<Optional<?>> COMPLETE = Try.ofValue(Optional.empty());
-    static final Try<Optional<?>> NULL = Try.ofValue(Optional.ofNullable(null));
-    
-    /**
-     * Returns a null notification.
-     * 
-     * <p>Note that null values are generally forbidden.
-     * Check the operator documentation to see if a null notification is
-     * accepted or not.
-     * 
-     * @return the null notification instance
-     */
-    
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public static <T> Try<Optional<T>> ofNull() {
-        return (Try)NULL; // because generics
-    }
     
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public static <T> Try<Optional<T>> complete() {
