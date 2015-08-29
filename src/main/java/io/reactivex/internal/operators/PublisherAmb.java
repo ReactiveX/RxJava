@@ -50,8 +50,7 @@ public final class PublisherAmb<T> implements Publisher<T> {
         }
         
         if (count == 0) {
-            s.onSubscribe(EmptySubscription.INSTANCE);
-            s.onComplete();
+            EmptySubscription.complete(s);
             return;
         } else
         if (count == 1) {

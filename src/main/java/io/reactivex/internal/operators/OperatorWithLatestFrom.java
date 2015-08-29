@@ -179,8 +179,7 @@ public final class OperatorWithLatestFrom<T, U, R> implements Operator<R, T> {
         
         public void otherError(Throwable e) {
             if (S.compareAndSet(this, null, CANCELLED)) {
-                actual.onSubscribe(EmptySubscription.INSTANCE);
-                actual.onError(e);
+                EmptySubscription.error(e, actual);
             } else {
                 if (s != CANCELLED) {
                     cancel();

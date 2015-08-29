@@ -45,8 +45,7 @@ public final class PublisherScalarSource<T> implements Publisher<T> {
             try {
                 other = mapper.apply(value);
             } catch (Throwable e) {
-                s.onSubscribe(EmptySubscription.INSTANCE);
-                s.onError(e);
+                EmptySubscription.error(e, s);
                 return;
             }
             other.subscribe(s);

@@ -49,24 +49,21 @@ public final class OperatorTakeUntil<T, U> implements Operator<T, T> {
             public void onNext(U t) {
                 frc.dispose();
                 if (tus.compareAndSet(false, true)) {
-                    serial.onSubscribe(EmptySubscription.INSTANCE);
-                    serial.onComplete();
+                    EmptySubscription.complete(serial);
                 }
             }
             @Override
             public void onError(Throwable t) {
                 frc.dispose();
                 if (tus.compareAndSet(false, true)) {
-                    serial.onSubscribe(EmptySubscription.INSTANCE);
-                    serial.onError(t);
+                    EmptySubscription.error(t, serial);
                 }
             }
             @Override
             public void onComplete() {
                 frc.dispose();
                 if (tus.compareAndSet(false, true)) {
-                    serial.onSubscribe(EmptySubscription.INSTANCE);
-                    serial.onComplete();
+                    EmptySubscription.complete(serial);
                 }
             }
         });

@@ -63,8 +63,7 @@ public final class PublisherCombineLatest<T, R> implements Publisher<R> {
         }
         
         if (count == 0) {
-            s.onSubscribe(EmptySubscription.INSTANCE);
-            s.onComplete();
+            EmptySubscription.complete(s);
             return;
         }
         

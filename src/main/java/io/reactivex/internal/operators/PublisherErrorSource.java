@@ -32,18 +32,16 @@ public final class PublisherErrorSource<T> implements Publisher<T> {
     }
     @Override
     public void subscribe(Subscriber<? super T> s) {
-        s.onSubscribe(EmptySubscription.INSTANCE);
         Throwable error;
         try {
             error = errorSupplier.get();
         } catch (Throwable t) {
-            s.onError(t);
+            error = t;
             return;
         }
-        if (error != null) {
-            s.onError(error);
-        } else {
-            s.onError(new NullPointerException());
+        if (error == null) {
+            error = new NullPointerException();
         }
+        EmptySubscription.error(error, s);
     }
 }

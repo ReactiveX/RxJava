@@ -35,14 +35,12 @@ public final class PublisherDefer<T> implements Publisher<T> {
         try {
             pub = supplier.get();
         } catch (Throwable t) {
-            s.onSubscribe(EmptySubscription.INSTANCE);
-            s.onError(t);
+            EmptySubscription.error(t, s);
             return;
         }
         
         if (pub == null) {
-            s.onSubscribe(EmptySubscription.INSTANCE);
-            s.onError(new NullPointerException());
+            EmptySubscription.error(new NullPointerException("null publisher supplied"), s);
             return;
         }
         pub.subscribe(s);

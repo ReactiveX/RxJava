@@ -75,14 +75,12 @@ public final class OperatorDistinct<T> implements Operator<T, T> {
         try {
             coll = predicateSupplier.get();
         } catch (Throwable e) {
-            t.onSubscribe(EmptySubscription.INSTANCE);
-            t.onError(e);
+            EmptySubscription.error(e, t);
             return CancelledSubscriber.INSTANCE;
         }
         
         if (coll == null) {
-            t.onSubscribe(EmptySubscription.INSTANCE);
-            t.onError(new NullPointerException("predicateSupplier returned null"));
+            EmptySubscription.error(new NullPointerException("predicateSupplier returned null"), t);
             return CancelledSubscriber.INSTANCE;
         }
         

@@ -45,8 +45,7 @@ public final class OperatorToList<T, U extends Collection<? super T>> implements
         try {
             coll = collectionSupplier.get();
         } catch (Throwable e) {
-            t.onSubscribe(EmptySubscription.INSTANCE);
-            t.onError(e);
+            EmptySubscription.error(e, t);
             return CancelledSubscriber.INSTANCE;
         }
         return new ToListSubscriber<>(t, coll);

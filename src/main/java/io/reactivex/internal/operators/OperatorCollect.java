@@ -36,8 +36,7 @@ public final class OperatorCollect<T, U> implements Operator<U, T> {
         try {
             u = initialSupplier.get();
         } catch (Throwable e) {
-            t.onSubscribe(EmptySubscription.INSTANCE);
-            t.onError(e);
+            EmptySubscription.error(e, t);
             return CancelledSubscriber.INSTANCE;
         }
         
