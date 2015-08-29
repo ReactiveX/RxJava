@@ -41,6 +41,7 @@ import rx.internal.operators.OperatorSubscribeOn;
 import rx.internal.operators.OperatorTimeout;
 import rx.internal.operators.OperatorZip;
 import rx.internal.producers.SingleDelayedProducer;
+import rx.singles.BlockingSingle;
 import rx.observers.SafeSubscriber;
 import rx.plugins.RxJavaObservableExecutionHook;
 import rx.plugins.RxJavaPlugins;
@@ -1792,6 +1793,21 @@ public class Single<T> {
             other = Single.<T> error(new TimeoutException());
         }
         return lift(new OperatorTimeout<T>(timeout, timeUnit, asObservable(other), scheduler));
+    }
+
+    /**
+     * Converts a Single into a {@link BlockingSingle} (a Single with blocking operators).
+     * <dl>
+     *  <dt><b>Scheduler:</b></dt>
+     *  <dd>{@code toBlocking} does not operate by default on a particular {@link Scheduler}.</dd>
+     * </dl>
+     *
+     * @return a {@code BlockingSingle} version of this Single.
+     * @see <a href="http://reactivex.io/documentation/operators/to.html">ReactiveX operators documentation: To</a>
+     */
+    @Experimental
+    public final BlockingSingle<T> toBlocking() {
+        return BlockingSingle.from(this);
     }
 
     /**

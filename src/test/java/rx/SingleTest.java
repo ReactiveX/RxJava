@@ -13,6 +13,7 @@
 package rx;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -40,6 +41,7 @@ import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.functions.Func2;
 import rx.schedulers.TestScheduler;
+import rx.singles.BlockingSingle;
 import rx.observers.TestSubscriber;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.Subscriptions;
@@ -258,6 +260,14 @@ public class SingleTest {
         ts.awaitTerminalEvent();
         ts.assertNoErrors();
         ts.assertValue("hello");
+    }
+
+    @Test
+    public void testToBlocking() {
+        Single<String> s = Single.just("one");
+        BlockingSingle<String> blocking = s.toBlocking();
+        assertNotNull(blocking);
+        assertEquals("one", blocking.value());
     }
 
     @Test
