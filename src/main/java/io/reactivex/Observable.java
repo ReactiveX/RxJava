@@ -1761,4 +1761,53 @@ public class Observable<T> implements Publisher<T> {
         Objects.requireNonNull(disposer);
         return create(new PublisherUsing<>(resourceSupplier, sourceSupplier, disposer, eager));
     }
+    
+    public final Observable<T> share() {
+        return publish().refCount();
+    }
+
+    public final Observable<T> delaySubscription(long delay, TimeUnit unit) {
+        return delaySubscription(delay, unit, Schedulers.computation());
+    }
+    
+    // TODO a more efficient implementation if necessary
+    public final Observable<T> delaySubscription(long delay, TimeUnit unit, Scheduler scheduler) {
+        Objects.requireNonNull(unit);
+        Objects.requireNonNull(scheduler);
+        
+        return timer(delay, unit, scheduler).flatMap(v -> this);
+    }
+    
+    public final <U> Observable<T> delaySubscription(Supplier<? extends Publisher<U>> delaySupplier) {
+        return fromCallable(delaySupplier::get).take(1).flatMap(v -> this);
+    }
+    
+    // TODO a more efficient implementation if necessary
+    public final <U> Observable<T> delay(Function<? super T, ? extends Publisher<U>> itemDelay) {
+        Objects.requireNonNull(itemDelay);
+        return flatMap(v -> fromPublisher(itemDelay.apply(v)).take(1).map(u -> v).defaultIfEmpty(v));
+    }
+    
+    public final <U, V> Observable<T> delay(Supplier<? extends Publisher<U>> delaySupplier,
+            Function<? super T, ? extends Publisher<V>> itemDelay) {
+        return delaySubscription(delaySupplier).delay(itemDelay);
+    }
+
+    public final Observable<T> delay(long delay, TimeUnit unit) {
+        return delay(delay, unit, Schedulers.computation(), false);
+    }
+
+    public final Observable<T> delay(long delay, TimeUnit unit, boolean delayError) {
+        return delay(delay, unit, Schedulers.computation(), delayError);
+    }
+
+    public final Observable<T> delay(long delay, TimeUnit unit, Scheduler scheduler) {
+        return delay(delay, unit, scheduler, false);
+    }
+    public final Observable<T> delay(long delay, TimeUnit unit, Scheduler scheduler, boolean delayError) {
+        Objects.requireNonNull(unit);
+        Objects.requireNonNull(scheduler);
+        
+        return lift(new OperatorDelay<>(delay, unit, scheduler, delayError));
+    }
 }
