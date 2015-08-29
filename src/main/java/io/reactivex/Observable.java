@@ -1810,4 +1810,8 @@ public class Observable<T> implements Publisher<T> {
         
         return lift(new OperatorDelay<>(delay, unit, scheduler, delayError));
     }
+    
+    public final BlockingObservable<T> toBlocking() {
+        return BlockingObservable.from(this);
+    }
 }
