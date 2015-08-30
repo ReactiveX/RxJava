@@ -1814,5 +1814,86 @@ public class Observable<T> implements Publisher<T> {
     public final BlockingObservable<T> toBlocking() {
         return BlockingObservable.from(this);
     }
+
+    public final Observable<List<T>> buffer(int count) {
+        return buffer(count, count);
+    }
+
+    public final <U extends Collection<? super T>> Observable<U> buffer(int count, Supplier<U> bufferSupplier) {
+        return buffer(count, count, bufferSupplier);
+    }
+
+    public final Observable<List<T>> buffer(int count, int skip) {
+        return buffer(count, skip, ArrayList::new);
+    }
+
+    public final <U extends Collection<? super T>> Observable<U> buffer(int count, int skip, Supplier<U> bufferSupplier) {
+        return lift(new OperatorBuffer<>(count, skip, bufferSupplier));
+    }
     
+    public final Observable<List<T>> buffer(long timespan, TimeUnit unit) {
+        return buffer(timespan, unit, Integer.MAX_VALUE, Schedulers.computation());
+    }
+
+    public final Observable<List<T>> buffer(long timespan, TimeUnit unit, int count) {
+        return buffer(timespan, unit, count, Schedulers.computation());
+    }
+
+    public final Observable<List<T>> buffer(long timespan, TimeUnit unit, int count, Scheduler scheduler) {
+        return buffer(timespan, unit, count, scheduler, ArrayList::new, false);
+    }
+    
+    public final Observable<List<T>> buffer(long timespan, TimeUnit unit, Scheduler scheduler) {
+        return buffer(timespan, unit, Integer.MAX_VALUE, scheduler, ArrayList::new, false);
+    }
+
+    public final <U extends Collection<? super T>> Observable<U> buffer(
+            long timespan, TimeUnit unit, 
+            int count, Scheduler scheduler, 
+            Supplier<U> bufferSupplier, 
+            boolean restartTimerOnMaxSize) {
+        Objects.requireNonNull(unit);
+        Objects.requireNonNull(scheduler);
+        Objects.requireNonNull(bufferSupplier);
+        if (count <= 0) {
+            throw new IllegalArgumentException("count > 0 required but it was " + count);
+        }
+        return lift(new OperatorBufferTimed<>(timespan, timespan, unit, scheduler, bufferSupplier, count, restartTimerOnMaxSize));
+    }
+
+    public final <U extends Collection<? super T>> Observable<U> buffer(long timespan, long timeskip, TimeUnit unit, Scheduler scheduler, Supplier<U> bufferSupplier) {
+        Objects.requireNonNull(unit);
+        Objects.requireNonNull(scheduler);
+        Objects.requireNonNull(bufferSupplier);
+        return lift(new OperatorBufferTimed<>(timespan, timeskip, unit, scheduler, bufferSupplier, Integer.MAX_VALUE, false));
+    }
+    
+    public final <TOpening, TClosing> Observable<List<T>> buffer(
+            Observable<? extends TOpening> bufferOpenings, 
+            Function<? super TOpening, ? extends Publisher<? extends TClosing>> bufferClosingSelector) {
+        return buffer(bufferOpenings, bufferClosingSelector, ArrayList::new);
+    }
+
+    public final <TOpening, TClosing, U extends Collection<? super T>> Observable<U> buffer(
+            Observable<? extends TOpening> bufferOpenings, 
+            Function<? super TOpening, ? extends Publisher<? extends TClosing>> bufferClosingSelector,
+            Supplier<U> bufferSupplier) {
+        // TODO
+        throw new UnsupportedOperationException();
+    }
+    public final <B> Observable<List<T>> buffer(Observable<B> boundary) {
+        /*
+         * XXX: javac complains if this is not manually cast, Eclipse is fine
+         */
+        return buffer(boundary, (Supplier<List<T>>)ArrayList::new);
+    }
+
+    public final <B, U extends Collection<? super T>> Observable<List<T>> buffer(Observable<B> boundary, Supplier<U> bufferSupplier) {
+        // TODO
+        throw new UnsupportedOperationException();
+    }
+
+    public final <B> Observable<List<T>> buffer(Observable<B> boundary, int initialCapacity) {
+        return buffer(boundary, () -> new ArrayList<>(initialCapacity));
+    }
 }
