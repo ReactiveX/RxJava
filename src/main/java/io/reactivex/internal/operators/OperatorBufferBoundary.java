@@ -209,7 +209,7 @@ public final class OperatorBufferBoundary<T, U extends Collection<? super T>, Op
         
         void openFinished(Disposable d) {
             if (resources.remove(d)) {
-                if (WIP.decrementAndGet(this) == 0) {
+                if (leave(-1) == 0) {
                     onComplete();
                 }
             }
@@ -227,7 +227,7 @@ public final class OperatorBufferBoundary<T, U extends Collection<? super T>, Op
             }
             
             if (resources.remove(d)) {
-                if (WIP.decrementAndGet(this) == 0) {
+                if (leave(-1) == 0) {
                     onComplete();
                 }
             }

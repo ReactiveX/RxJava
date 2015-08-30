@@ -128,10 +128,13 @@ public final class OperatorBufferTimed<T, U extends Collection<? super T>> imple
             
             actual.onSubscribe(this);
             
-            s.request(Long.MAX_VALUE);
-            
-            if (timer == null) {
-                timer = scheduler.schedulePeriodicallyDirect(this, timespan, timespan, unit);
+            if (!cancelled) {
+                s.request(Long.MAX_VALUE);
+                
+                Disposable d = scheduler.schedulePeriodicallyDirect(this, timespan, timespan, unit);
+                if (TIMER.compareAndSet(this, null, d)) {
+                    d.dispose();
+                }
             }
         }
         
