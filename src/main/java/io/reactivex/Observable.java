@@ -1920,5 +1920,58 @@ public class Observable<T> implements Publisher<T> {
         return lift(new OperatorWindow<>(count, skip, bufferSize));
     }
 
+    public final Observable<Observable<T>> window(long timespan, TimeUnit unit) {
+        return window(timespan, unit, Schedulers.computation(), Long.MAX_VALUE, false);
+    }
+
+    public final Observable<Observable<T>> window(long timespan, TimeUnit unit, 
+            long count) {
+        return window(timespan, unit, Schedulers.computation(), count, false);
+    }
+
+    public final Observable<Observable<T>> window(long timespan, TimeUnit unit, 
+            long count, boolean restart) {
+        return window(timespan, unit, Schedulers.computation(), count, restart);
+    }
+
+    public final Observable<Observable<T>> window(long timespan, TimeUnit unit, 
+            Scheduler scheduler) {
+        return window(timespan, unit, scheduler, Long.MAX_VALUE, false);
+    }
+
+    public final Observable<Observable<T>> window(long timespan, TimeUnit unit, 
+            Scheduler scheduler, long count) {
+        return window(timespan, unit, scheduler, count, false);
+    }
+
+    public final Observable<Observable<T>> window(long timespan, TimeUnit unit, 
+            Scheduler scheduler, long count, boolean restart) {
+        return window(timespan, unit, scheduler, count, restart);
+    }
+
+    public final Observable<Observable<T>> window(long timespan, TimeUnit unit, Scheduler scheduler, long count, boolean restart, int bufferSize) {
+        validateBufferSize(bufferSize);
+        Objects.requireNonNull(scheduler);
+        Objects.requireNonNull(unit);
+        if (count <= 0) {
+            throw new IllegalArgumentException("count > 0 required but it was " + count);
+        }
+        return lift(new OperatorWindowTimed<>(timespan, timespan, unit, scheduler, count, bufferSize, restart));
+    }
+
+    public final Observable<Observable<T>> window(long timespan, long timeskip, TimeUnit unit) {
+        return window(timespan, timeskip, unit, Schedulers.computation(), bufferSize());
+    }
+
+    public final Observable<Observable<T>> window(long timespan, long timeskip, TimeUnit unit, Scheduler scheduler) {
+        return window(timespan, timeskip, unit, scheduler, bufferSize());
+    }
+    
+    public final Observable<Observable<T>> window(long timespan, long timeskip, TimeUnit unit, Scheduler scheduler, int bufferSize) {
+        validateBufferSize(bufferSize);
+        Objects.requireNonNull(scheduler);
+        Objects.requireNonNull(unit);
+        return lift(new OperatorWindowTimed<>(timespan, timeskip, unit, scheduler, Long.MAX_VALUE, bufferSize, false));
+    }
 
 }

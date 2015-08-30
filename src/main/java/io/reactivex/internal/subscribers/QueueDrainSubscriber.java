@@ -59,6 +59,10 @@ public abstract class QueueDrainSubscriber<T, U, V> extends QueueDrainSubscriber
         return WIP.getAndIncrement(this) == 0;
     }
     
+    public final boolean fastEnter() {
+        return wip == 0 && WIP.compareAndSet(this, 0, 1);
+    }
+    
     protected final void fastpathEmit(U value, boolean delayError) {
         final Subscriber<? super V> s = actual;
         final Queue<U> q = queue;
@@ -198,7 +202,7 @@ public abstract class QueueDrainSubscriber<T, U, V> extends QueueDrainSubscriber
     
     @Override
     public final long produced(long n) {
-        return REQUESTED.addAndGet(this, n);
+        return REQUESTED.addAndGet(this, -n);
     }
     
     public final void requested(long n) {
@@ -221,8 +225,8 @@ class QueueDrainSubscriberPad0 {
 
 /** The WIP counter. */
 class QueueDrainSubscriberWip extends QueueDrainSubscriberPad0 {
-    protected volatile int wip;
-    protected static final AtomicIntegerFieldUpdater<QueueDrainSubscriberWip> WIP =
+    volatile int wip;
+    static final AtomicIntegerFieldUpdater<QueueDrainSubscriberWip> WIP =
             AtomicIntegerFieldUpdater.newUpdater(QueueDrainSubscriberWip.class, "wip");
 }
 
@@ -234,8 +238,8 @@ class QueueDrainSubscriberPad2 extends QueueDrainSubscriberWip {
 
 /** Contains the requested field. */
 class QueueDrainSubscriberPad3 extends QueueDrainSubscriberPad2 {
-    protected volatile long requested;
-    protected static final AtomicLongFieldUpdater<QueueDrainSubscriberPad3> REQUESTED =
+    volatile long requested;
+    static final AtomicLongFieldUpdater<QueueDrainSubscriberPad3> REQUESTED =
             AtomicLongFieldUpdater.newUpdater(QueueDrainSubscriberPad3.class, "requested");
 }
 
