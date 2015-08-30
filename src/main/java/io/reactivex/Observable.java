@@ -1900,4 +1900,25 @@ public class Observable<T> implements Publisher<T> {
     public final <B> Observable<List<T>> buffer(Observable<B> boundary, int initialCapacity) {
         return buffer(boundary, () -> new ArrayList<>(initialCapacity));
     }
+    
+    public final Observable<Observable<T>> window(long count) {
+        return window(count, count, bufferSize());
+    }
+
+    public final Observable<Observable<T>> window(long count, long skip) {
+        return window(count, skip, bufferSize());
+    }
+    
+    public final Observable<Observable<T>> window(long count, long skip, int bufferSize) {
+        if (skip <= 0) {
+            throw new IllegalArgumentException("skip > 0 required but it was " + skip);
+        }
+        if (count <= 0) {
+            throw new IllegalArgumentException("count > 0 required but it was " + count);
+        }
+        validateBufferSize(bufferSize);
+        return lift(new OperatorWindow<>(count, skip, bufferSize));
+    }
+
+
 }
