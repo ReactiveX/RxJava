@@ -34,8 +34,8 @@ public final class Try<T> {
     /**
      * Constructs a Try instance by wrapping the given value.
      * 
-     * @param value
-     * @return
+     * @param value the value to wrap 
+     * @return the created Try instance
      */
     public static <T> Try<T> ofValue(T value) {
         // TODO ? Objects.requireNonNull(value);
@@ -47,17 +47,16 @@ public final class Try<T> {
      * 
      * <p>Null Throwables are replaced by NullPointerException instance in this Try.
      * 
-     * @param e
-     * @return
+     * @param e the exception to wrap
+     * @return the new Try instance holding the exception
      */
     public static <T> Try<T> ofError(Throwable e) {
-        // TODO ? Objects.requireNonNull(e);
         return new Try<>(null, e != null ? e : new NullPointerException());
     }
     
     /**
      * Returns the value or null if the value is actually null or if this Try holds an error instead.
-     * @return
+     * @return the value contained
      * @see #hasValue()
      */
     public T value() {
@@ -67,7 +66,7 @@ public final class Try<T> {
     /**
      * Returns the error or null if this Try holds a value instead.
      * 
-     * @return
+     * @return the Throwable contained or null
      * 
      */
     public Throwable error() {
@@ -76,7 +75,7 @@ public final class Try<T> {
     
     /**
      * Returns true if this Try holds an error.
-     * @return
+     * @return true if this Try holds an error
      */
     public boolean hasError() {
         return error != null;
@@ -84,7 +83,7 @@ public final class Try<T> {
     
     /**
      * Returns true if this Try holds a value.
-     * @return
+     * @return true if this Try holds a value
      */
     public boolean hasValue() {
         return error == null;

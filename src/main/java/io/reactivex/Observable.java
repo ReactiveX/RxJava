@@ -1878,9 +1878,12 @@ public class Observable<T> implements Publisher<T> {
             Observable<? extends TOpening> bufferOpenings, 
             Function<? super TOpening, ? extends Publisher<? extends TClosing>> bufferClosingSelector,
             Supplier<U> bufferSupplier) {
-        // TODO
-        throw new UnsupportedOperationException();
+        Objects.requireNonNull(bufferOpenings);
+        Objects.requireNonNull(bufferClosingSelector);
+        Objects.requireNonNull(bufferSupplier);
+        return lift(new OperatorBufferBoundary<>(bufferOpenings, bufferClosingSelector, bufferSupplier));
     }
+    
     public final <B> Observable<List<T>> buffer(Observable<B> boundary) {
         /*
          * XXX: javac complains if this is not manually cast, Eclipse is fine
@@ -1888,9 +1891,10 @@ public class Observable<T> implements Publisher<T> {
         return buffer(boundary, (Supplier<List<T>>)ArrayList::new);
     }
 
-    public final <B, U extends Collection<? super T>> Observable<List<T>> buffer(Observable<B> boundary, Supplier<U> bufferSupplier) {
-        // TODO
-        throw new UnsupportedOperationException();
+    public final <B, U extends Collection<? super T>> Observable<U> buffer(Observable<B> boundary, Supplier<U> bufferSupplier) {
+        Objects.requireNonNull(boundary);
+        Objects.requireNonNull(bufferSupplier);
+        return lift(new OperatorBufferExactBoundary<>(boundary, bufferSupplier));
     }
 
     public final <B> Observable<List<T>> buffer(Observable<B> boundary, int initialCapacity) {
