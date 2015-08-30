@@ -15,7 +15,7 @@ package io.reactivex.internal.operators;
 
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.*;
+import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
 import java.util.function.Supplier;
 
 import org.reactivestreams.*;
@@ -24,8 +24,9 @@ import io.reactivex.Observable.Operator;
 import io.reactivex.Scheduler;
 import io.reactivex.Scheduler.Worker;
 import io.reactivex.disposables.Disposable;
+import io.reactivex.internal.queue.MpscLinkedQueue;
+import io.reactivex.internal.subscribers.QueueDrainSubscriber;
 import io.reactivex.internal.subscriptions.*;
-import io.reactivex.internal.util.BackpressureHelper;
 import io.reactivex.subscribers.SerializedSubscriber;
 
 public final class OperatorBufferTimed<T, U extends Collection<? super T>> implements Operator<U, T> {
@@ -72,11 +73,8 @@ public final class OperatorBufferTimed<T, U extends Collection<? super T>> imple
                 bufferSupplier, timespan, timeskip, unit, w);
     }
     
-    static final class BufferExactUnboundedSubscriber<T, U extends Collection<? super T>> extends AtomicLong implements Subscriber<T>, Subscription, Runnable {
-        /** */
-        private static final long serialVersionUID = -2494880612098980129L;
-        
-        final Subscriber<? super U> actual;
+    static final class BufferExactUnboundedSubscriber<T, U extends Collection<? super T>>
+    extends QueueDrainSubscriber<T, U, U> implements Subscription, Runnable, Disposable {
         final Supplier<U> bufferSupplier;
         final long timespan;
         final TimeUnit unit;
@@ -94,11 +92,11 @@ public final class OperatorBufferTimed<T, U extends Collection<? super T>> imple
                 AtomicReferenceFieldUpdater.newUpdater(BufferExactUnboundedSubscriber.class, Disposable.class, "timer");
         
         static final Disposable CANCELLED = () -> { };
-        
+
         public BufferExactUnboundedSubscriber(
                 Subscriber<? super U> actual, Supplier<U> bufferSupplier,
                 long timespan, TimeUnit unit, Scheduler scheduler) {
-            this.actual = actual;
+            super(actual, new MpscLinkedQueue<>());
             this.bufferSupplier = bufferSupplier;
             this.timespan = timespan;
             this.unit = unit;
@@ -128,8 +126,13 @@ public final class OperatorBufferTimed<T, U extends Collection<? super T>> imple
                 return;
             }
             
-            timer = scheduler.schedulePeriodicallyDirect(this, timespan, timespan, unit);
             actual.onSubscribe(this);
+            
+            s.request(Long.MAX_VALUE);
+            
+            if (timer == null) {
+                timer = scheduler.schedulePeriodicallyDirect(this, timespan, timespan, unit);
+            }
         }
         
         @Override
@@ -158,31 +161,21 @@ public final class OperatorBufferTimed<T, U extends Collection<? super T>> imple
             U b;
             synchronized (this) {
                 b = buffer;
-                buffer = null;
-            }
-            if (b != null) {
-                long r = get();
-                if (r != 0L) {
-                    actual.onNext(b);
-                    if (r != Long.MAX_VALUE) {
-                        decrementAndGet();
-                    }
-                } else {
-                    cancel();
-                    actual.onError(new IllegalStateException("Could not emit buffer due to lack of requests"));
+                if (b == null) {
                     return;
                 }
+                buffer = null;
             }
-            
-            actual.onComplete();
+            queue.offer(b);
+            done = true;
+            if (enter()) {
+                drainMaxLoop(queue, actual, false, this);
+            }
         }
         
         @Override
         public void request(long n) {
-            if (SubscriptionHelper.validateRequest(n)) {
-                return;
-            }
-            BackpressureHelper.add(this, n);
+            requested(n);
         }
         
         @Override
@@ -195,7 +188,10 @@ public final class OperatorBufferTimed<T, U extends Collection<? super T>> imple
         void disposeTimer() {
             Disposable d = timer;
             if (d != CANCELLED) {
-                
+                d = TIMER.getAndSet(this, CANCELLED);
+                if (d != CANCELLED && d != null) {
+                    d.dispose();
+                }
             }
         }
         
@@ -244,25 +240,24 @@ public final class OperatorBufferTimed<T, U extends Collection<? super T>> imple
                 return;
             }
 
-            long r = get();
-            if (r != 0L) {
-                actual.onNext(current);
-                if (r != Long.MAX_VALUE) {
-                    decrementAndGet();
-                }
-            } else {
-                selfCancel = true;
-                cancel();
-                actual.onError(new IllegalStateException("Could not emit buffer due to lack of requests"));
-            }
+            fastpathEmitMax(current, false, this);
         }
         
+        @Override
+        public boolean accept(Subscriber<? super U> a, U v) {
+            actual.onNext(v);
+            return true;
+        }
+        
+        @Override
+        public void dispose() {
+            selfCancel = true;
+            cancel();
+        }
     }
     
-    static final class BufferSkipBoundedSubscriber<T, U extends Collection<? super T>> extends AtomicLong implements Subscriber<T>, Subscription, Runnable {
-        /** */
-        private static final long serialVersionUID = -2714725589685327677L;
-        final Subscriber<? super U> actual;
+    static final class BufferSkipBoundedSubscriber<T, U extends Collection<? super T>>
+    extends QueueDrainSubscriber<T, U, U> implements Subscription, Runnable {
         final Supplier<U> bufferSupplier;
         final long timespan;
         final long timeskip;
@@ -273,12 +268,10 @@ public final class OperatorBufferTimed<T, U extends Collection<? super T>> imple
         
         List<U> buffers;
         
-        volatile boolean stop;
-
         public BufferSkipBoundedSubscriber(Subscriber<? super U> actual, 
                 Supplier<U> bufferSupplier, long timespan,
                 long timeskip, TimeUnit unit, Worker w) {
-            this.actual = actual;
+            super(actual, new MpscLinkedQueue<>());
             this.bufferSupplier = bufferSupplier;
             this.timespan = timespan;
             this.timeskip = timeskip;
@@ -313,10 +306,12 @@ public final class OperatorBufferTimed<T, U extends Collection<? super T>> imple
             }
             
             buffers.add(b);
-            
-            w.schedulePeriodically(this, timeskip, timeskip, unit);
-            
+
             actual.onSubscribe(this);
+            
+            s.request(Long.MAX_VALUE);
+
+            w.schedulePeriodically(this, timeskip, timeskip, unit);
         }
         
         @Override
@@ -328,7 +323,7 @@ public final class OperatorBufferTimed<T, U extends Collection<? super T>> imple
         
         @Override
         public void onError(Throwable t) {
-            stop = true;
+            done = true;
             w.dispose();
             clear();
             actual.onError(t);
@@ -336,37 +331,22 @@ public final class OperatorBufferTimed<T, U extends Collection<? super T>> imple
         
         @Override
         public void onComplete() {
-            stop = true;
-            w.dispose();
             List<U> bs;
             synchronized (this) {
                 bs = new ArrayList<>(buffers);
                 buffers.clear();
             }
             
-            long r = get();
-            for (U u : bs) {
-                if (r != 0L) {
-                    actual.onNext(u);
-                    if (r != Long.MAX_VALUE) {
-                        r = addAndGet(-1);
-                    }
-                } else {
-                    actual.onError(new IllegalStateException("Could not emit buffer due to lack of requests"));
-                    return;
-                }
-                
+            bs.forEach(b -> queue.add(b));
+            done = true;
+            if (enter()) {
+                drainMaxLoop(queue, actual, false, w);
             }
-            
-            actual.onComplete();
         }
         
         @Override
         public void request(long n) {
-            if (SubscriptionHelper.validateRequest(n)) {
-                return;
-            }
-            BackpressureHelper.add(this, n);
+            requested(n);
         }
         
         @Override
@@ -384,7 +364,7 @@ public final class OperatorBufferTimed<T, U extends Collection<? super T>> imple
         
         @Override
         public void run() {
-            if (stop) {
+            if (cancelled) {
                 return;
             }
             U b;
@@ -404,7 +384,7 @@ public final class OperatorBufferTimed<T, U extends Collection<? super T>> imple
             }
             
             synchronized (this) {
-                if (stop) {
+                if (cancelled) {
                     return;
                 }
                 buffers.add(b);
@@ -415,26 +395,19 @@ public final class OperatorBufferTimed<T, U extends Collection<? super T>> imple
                     buffers.remove(b);
                 }
                 
-                long r = get();
-                
-                if (r != 0L) {
-                    actual.onNext(b);
-                    if (r != Long.MAX_VALUE) {
-                        decrementAndGet();
-                    }
-                } else {
-                    cancel();
-                    actual.onError(new IllegalStateException("Could not emit buffer due to lack of requests"));
-                }
-                
+                fastpathOrderedEmitMax(b, false, w);
             }, timespan, unit);
+        }
+        
+        @Override
+        public boolean accept(Subscriber<? super U> a, U v) {
+            a.onNext(v);
+            return true;
         }
     }
     
-    static final class BufferExactBoundedSubscriber<T, U extends Collection<? super T>> extends AtomicLong implements Subscriber<T>, Subscription, Runnable {
-        /** */
-        private static final long serialVersionUID = -1778453504578862865L;
-        final Subscriber<? super U> actual;
+    static final class BufferExactBoundedSubscriber<T, U extends Collection<? super T>>
+    extends QueueDrainSubscriber<T, U, U> implements Subscription, Runnable, Disposable {
         final Supplier<U> bufferSupplier;
         final long timespan;
         final TimeUnit unit;
@@ -451,13 +424,13 @@ public final class OperatorBufferTimed<T, U extends Collection<? super T>> imple
         long producerIndex;
         
         long consumerIndex;
-        
+
         public BufferExactBoundedSubscriber(
                 Subscriber<? super U> actual,
                 Supplier<U> bufferSupplier,
                 long timespan, TimeUnit unit, int maxSize,
                 boolean restartOnMaxSize, Worker w) {
-            this.actual = actual;
+            super(actual, new MpscLinkedQueue<>());
             this.bufferSupplier = bufferSupplier;
             this.timespan = timespan;
             this.unit = unit;
@@ -493,9 +466,11 @@ public final class OperatorBufferTimed<T, U extends Collection<? super T>> imple
             
             buffer = b;
             
-            timer = w.schedulePeriodically(this, timespan, timespan, unit);
-            
             actual.onSubscribe(this);
+
+            s.request(Long.MAX_VALUE);
+
+            timer = w.schedulePeriodically(this, timespan, timespan, unit);
         }
         
         @Override
@@ -520,6 +495,7 @@ public final class OperatorBufferTimed<T, U extends Collection<? super T>> imple
             timer.dispose();
             
             actual.onNext(b);
+            fastpathOrderedEmitMax(b, false, this);
             
             try {
                 b = bufferSupplier.get();
@@ -563,36 +539,43 @@ public final class OperatorBufferTimed<T, U extends Collection<? super T>> imple
                 buffer = null;
             }
             
-            if (b != null) {
-                long r = get();
-                if (r != 0L) {
-                    actual.onNext(b);
-                } else {
-                    actual.onError(new IllegalStateException("Could not deliver final buffer due to lack of requests"));
-                    return;
-                }
+            queue.offer(b);
+            done = true;
+            if (enter()) {
+                drainMaxLoop(queue, actual, false, this);
             }
-            actual.onComplete();
         }
         
         @Override
+        public boolean accept(Subscriber<? super U> a, U v) {
+            a.onNext(v);
+            return true;
+        }
+        
+        
+        @Override
         public void request(long n) {
-            if (SubscriptionHelper.validateRequest(n)) {
-                return;
-            }
-            
-            BackpressureHelper.add(this, n);
+            requested(n);
         }
         
         @Override
         public void cancel() {
+            if (!cancelled) {
+                cancelled = true;
+                dispose();
+            }
+        }
+        
+        @Override
+        public void dispose() {
             w.dispose();
             synchronized (this) {
                 buffer = null;
             }
             s.cancel();
         }
-
+        
+        
         @Override
         public void run() {
             U next;
@@ -620,17 +603,8 @@ public final class OperatorBufferTimed<T, U extends Collection<? super T>> imple
                 }
                 buffer = next;
             }
-            
-            long r = get();
-            if (r != 0L) {
-                actual.onNext(current);
-                if (r != Long.MAX_VALUE) {
-                    decrementAndGet();
-                }
-            } else {
-                cancel();
-                actual.onError(new IllegalStateException("Could not emit buffer due to lack of requests"));
-            }
+
+            fastpathOrderedEmitMax(current, false, this);
         }
     }
 }

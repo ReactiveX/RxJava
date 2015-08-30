@@ -84,7 +84,7 @@ public final class SetCompositeResource<T> implements CompositeResource<T>, Disp
      * Removes the given resource from this composite and calls the disposer if the resource
      * was indeed in the composite.
      * @param resource the resource to remove, not-null (not verified)
-     * @return
+     * @return true if the resource was removed, false otherwise
      */
     @Override
     public boolean remove(T resource) {

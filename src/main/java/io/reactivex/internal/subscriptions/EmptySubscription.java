@@ -37,6 +37,10 @@ public enum EmptySubscription implements Subscription {
     /**
      * Sets the empty subscription instance on the subscriber and then
      * calls onError with the supplied error.
+     * 
+     * <p>Make sure this is only called if the subscriber hasn't received a 
+     * subscription already (there is no way of telling this).
+     * 
      * @param e the error to deliver to the subscriber
      * @param s the target subscriber
      */
@@ -48,6 +52,10 @@ public enum EmptySubscription implements Subscription {
     /**
      * Sets the empty subscription instance on the subscriber and then
      * calls onComplete.
+     * 
+     * <p>Make sure this is only called if the subscriber hasn't received a 
+     * subscription already (there is no way of telling this).
+     * 
      * @param s the target subscriber
      */
     public static void complete(Subscriber<?> s) {
