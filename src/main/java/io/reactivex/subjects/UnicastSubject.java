@@ -131,7 +131,7 @@ public final class UnicastSubject<T> extends Subject<T, T> {
         
         @Override
         public void onSubscribe(Subscription s) {
-            if (done) {
+            if (done || cancelled) {
                 s.cancel();
                 return;
             }
