@@ -288,7 +288,7 @@ public class Observable<T> {
      * @see <a href="http://reactivex.io/documentation/operators/amb.html">ReactiveX operators documentation: Amb</a>
      */
     public final static <T> Observable<T> amb(Observable<? extends T> o1, Observable<? extends T> o2, Observable<? extends T> o3) {
-        return create(OnSubscribeAmb.amb(o1, o2, o3));
+        return create( OnSubscribeAmb.amb(o1, o2, o3));
     }
 
     /**
