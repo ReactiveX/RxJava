@@ -23,6 +23,7 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.subscribers.DisposableSubscriber;
 import io.reactivex.internal.subscriptions.SubscriptionHelper;
 import io.reactivex.internal.util.BackpressureHelper;
+import io.reactivex.plugins.RxJavaPlugins;
 import io.reactivex.subscribers.SerializedSubscriber;
 
 public final class OperatorDebounce<T, U> implements Operator<T, T> {
@@ -37,7 +38,7 @@ public final class OperatorDebounce<T, U> implements Operator<T, T> {
         return new DebounceSubscriber<>(new SerializedSubscriber<>(t), debounceSelector);
     }
     
-    static final class DebounceSubscriber<T, U> extends AtomicLong implements Subscriber<T>, Subscription {
+    static final class DebounceSubscriber<T, U> extends AtomicInteger implements Subscriber<T>, Subscription {
         /** */
         private static final long serialVersionUID = 6725975399620862591L;
         final Subscriber<? super T> actual;
@@ -53,11 +54,21 @@ public final class OperatorDebounce<T, U> implements Operator<T, T> {
                 AtomicReferenceFieldUpdater.newUpdater(DebounceSubscriber.class, Disposable.class, "debouncer");
         
         static final Disposable CANCELLED = () -> { };
+
+        volatile long index;
         
+        volatile long requested;
+        @SuppressWarnings("rawtypes")
+        static final AtomicLongFieldUpdater<DebounceSubscriber> REQUESTED =
+                AtomicLongFieldUpdater.newUpdater(DebounceSubscriber.class, "requested");
+
+        boolean done;
+
         public DebounceSubscriber(Subscriber<? super T> actual,
                 Function<? super T, ? extends Publisher<U>> debounceSelector) {
             this.actual = actual;
             this.debounceSelector = debounceSelector;
+            lazySet(1);
         }
         
         @Override
@@ -73,41 +84,39 @@ public final class OperatorDebounce<T, U> implements Operator<T, T> {
         
         @Override
         public void onNext(T t) {
-            if (!gate) {
-                gate = true;
-
-                Publisher<U> p;
-                
-                try {
-                    p = debounceSelector.apply(t);
-                } catch (Throwable e) {
-                    s.cancel();
-                    actual.onError(e);
-                    return;
-                }
-                
-                if (p == null) {
-                    s.cancel();
-                    actual.onError(new NullPointerException("The publisher returned by the selector is null"));
-                    return;
-                }
-                
-                long r = get();
-                if (r != 0) {
-                    actual.onNext(t);
-                    if (r != Long.MAX_VALUE) {
-                        decrementAndGet();
-                    }
-                } else {
-                    s.cancel();
-                    actual.onError(new IllegalStateException("Could not deliver value due to lack of requests"));
-                    return;
-                }
-                
-                DebounceInnerSubscriber<T, U> dis = new DebounceInnerSubscriber<>(this);
-                if (DEBOUNCER.compareAndSet(this, null, dis)) {
-                    p.subscribe(dis);
-                }
+            if (done) {
+                return;
+            }
+            
+            long idx = index + 1;
+            index = idx;
+            
+            Disposable d = debouncer;
+            if (d != null) {
+                d.dispose();
+            }
+            
+            Publisher<U> p;
+            
+            try {
+                p = debounceSelector.apply(t);
+            } catch (Throwable e) {
+                cancel();
+                actual.onError(e);
+                return;
+            }
+            
+            if (p == null) {
+                cancel();
+                actual.onError(new NullPointerException("The publisher supplied is null"));
+                return;
+            }
+            
+            DebounceInnerSubscriber<T, U> dis = new DebounceInnerSubscriber<>(this, idx, t);
+            
+            if (DEBOUNCER.compareAndSet(this, d, dis)) {
+                getAndIncrement();
+                p.subscribe(dis);
             }
         }
         
@@ -119,8 +128,14 @@ public final class OperatorDebounce<T, U> implements Operator<T, T> {
         
         @Override
         public void onComplete() {
-            disposeDebouncer();
-            actual.onComplete();
+            if (done) {
+                return;
+            }
+            done = true;
+            if (decrementAndGet() == 0) {
+                disposeDebouncer();
+                actual.onComplete();
+            }
         }
         
         @Override
@@ -129,7 +144,7 @@ public final class OperatorDebounce<T, U> implements Operator<T, T> {
                 return;
             }
             
-            BackpressureHelper.add(this, n);
+            BackpressureHelper.add(REQUESTED, this, n);
         }
         
         @Override
@@ -148,19 +163,32 @@ public final class OperatorDebounce<T, U> implements Operator<T, T> {
             }
         }
         
-        void open(Disposable d) {
-            if (DEBOUNCER.compareAndSet(this, d, null)) {
-                gate = false;
+        void emit(long idx, T value) {
+            if (idx == index) {
+                long r = requested;
+                if (r != 0L) {
+                    actual.onNext(value);
+                    if (r != Long.MAX_VALUE) {
+                        REQUESTED.decrementAndGet(this);
+                    }
+                } else {
+                    cancel();
+                    actual.onError(new IllegalStateException("Could not deliver value due to lack of requests"));
+                }
             }
         }
         
         static final class DebounceInnerSubscriber<T, U> extends DisposableSubscriber<U> {
             final DebounceSubscriber<T, U> parent;
+            final long index;
+            final T value;
             
             boolean done;
             
-            public DebounceInnerSubscriber(DebounceSubscriber<T, U> parent) {
+            public DebounceInnerSubscriber(DebounceSubscriber<T, U> parent, long index, T value) {
                 this.parent = parent;
+                this.index = index;
+                this.value = value;
             }
             
             @Override
@@ -170,12 +198,13 @@ public final class OperatorDebounce<T, U> implements Operator<T, T> {
                 }
                 done = true;
                 cancel();
-                parent.open(this);
+                parent.emit(index, value);
             }
             
             @Override
             public void onError(Throwable t) {
                 if (done) {
+                    RxJavaPlugins.onError(t);
                     return;
                 }
                 done = true;
@@ -188,7 +217,7 @@ public final class OperatorDebounce<T, U> implements Operator<T, T> {
                     return;
                 }
                 done = true;
-                parent.open(this);
+                parent.emit(index, value);
             }
         }
     }
