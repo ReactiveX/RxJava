@@ -49,10 +49,10 @@ public final class OperatorReplay<T> extends ConnectableObservable<T> {
      */
     public static <T, U, R> Observable<R> multicastSelector(
             final Supplier<? extends ConnectableObservable<U>> connectableFactory,
-            final Function<? super Observable<U>, ? extends Observable<R>> selector) {
+            final Function<? super Observable<U>, ? extends Publisher<R>> selector) {
         return Observable.create(child -> {
             ConnectableObservable<U> co;
-            Observable<R> observable;
+            Publisher<R> observable;
             try {
                 co = connectableFactory.get();
                 observable = selector.apply(co);
